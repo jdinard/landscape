@@ -401,7 +401,7 @@ Allowed with reason (emergency purchase, counter purchase). Creates a "PO-less r
 
 #### 4.4.4 Field receipts and card purchases [MVP]
 
-A crew lead buys 6 bags of quick-set concrete at a big-box store. In the crew app: "Add expense" -> photo of receipt -> AI extracts lines and total -> lead picks job (defaults to current visit) -> submits. The office sees it in the AP queue; when the company card transaction arrives via bank feed ([Ledger](09-accounting-ledger-integrations.md)), Rootline auto-matches by amount, date and merchant. Offline: the receipt is queued with the photo.
+A crew lead buys 6 bags of quick-set concrete at a big-box store. In the crew app: "Add expense" -> photo of receipt -> rules-based OCR reads the header (merchant, date, total, tax and card last four; no LLM and no AI credits) [MVP], and AI extraction adds the line items from [V1] (AI2 in [Ledger](09-accounting-ledger-integrations.md), metered per page on the [Pricing](22-business-model-pricing-gtm.md) rate card) -> lead picks job (defaults to current visit) -> submits. The office sees it in the AP queue; when the company card transaction arrives via bank feed ([Ledger](09-accounting-ledger-integrations.md)), Rootline auto-matches by amount, date and merchant. Offline: the receipt is queued with the photo, and OCR runs on sync.
 
 ### 4.5 Cycle counts and physical inventory
 
@@ -575,7 +575,7 @@ Vendor bills are recorded in the built-in [Ledger](09-accounting-ledger-integrat
 #### 4.11.1 Bill intake [MVP basic, V1 AI]
 
 - Channels: dedicated inbox (`bills@<company-slug>.rootline.app`, illustrative), upload, vendor confirmation link, Nursery Connect, EDI 810 [V2].
-- AI extraction of header (vendor, invoice number, date, due date, terms, totals, tax) and lines; vendor identified by sender, remit-to and tax ID; PO number detected from the document.
+- Extraction: [MVP] rules-based OCR of the header (vendor, invoice number, date, totals, tax and PO number) through deterministic rules and per-vendor templates, with no LLM and no AI credits; the AP clerk confirms or keys the rest, including lines. [V1] AI extraction of header (vendor, invoice number, date, due date, terms, totals, tax) and lines, run by the A9 AP Agent ([AI copilot and automation](17-ai-copilot-automation.md)) and metered at 2 credits per page (AI2 in [Ledger](09-accounting-ledger-integrations.md)). Vendor identified by sender, remit-to and tax ID; PO number detected from the document.
 - Duplicate detection: same vendor plus invoice number, or same vendor plus amount within 30 days plus similar lines, blocks posting until reviewed.
 
 #### 4.11.2 Match rules [MVP 2-way, V1 3-way with tolerances]
@@ -1524,11 +1524,11 @@ The yard manager's morning screen in May: what to water, what is aging, what is 
 
 ## 7. Data model
 
-All tables carry `tenant_id` (row-level security per [Architecture](20-architecture-security.md)), `branch_id` where relevant, `created_at`, `created_by`, `updated_at`, and soft-delete `archived_at`. Money is stored as integer minor units with an ISO currency code; quantities as `numeric(18,4)` with an explicit UOM. Geo fields use PostGIS. Shared entities owned by other modules are referenced, not duplicated: `job`, `visit`, `property`, `client` ([Scheduling](04-scheduling-dispatch-routing.md)), `estimate_line` and `price_book_item` ([Estimating](03-crm-sales-estimating-proposals.md)), `takeoff_line` and `plant_instance` ([Design Studio](10-design-studio.md)), `plant` ([Plant KB](12-plant-knowledge-base.md)), `vendor_bill` and `journal_entry` ([Ledger](09-accounting-ledger-integrations.md)), `employee` and `credential` ([Team](15-team-hr-payroll.md); the 20 module map calls it `certification`).
+All tables carry `tenant_id` (row-level security per [Architecture](20-architecture-security.md)), `branch_id` where relevant, `created_at`, `created_by`, `updated_at`, and soft-delete `archived_at`. Money is stored as integer minor units with an ISO currency code; quantities as `numeric(18,4)` with an explicit UOM. Geo fields use PostGIS. Shared entities owned by other modules are referenced, not duplicated: `job`, `visit`, `property`, `client` ([Scheduling](04-scheduling-dispatch-routing.md)), `estimate_line` and `price_book_item` ([Estimating](03-crm-sales-estimating-proposals.md)), `takeoff_line` and `plant_instance` ([Design Studio](10-design-studio.md)), `plant` ([Plant KB](12-plant-knowledge-base.md)), `vendor_bill` and `journal_entry` ([Ledger](09-accounting-ledger-integrations.md)), `employee` and `credential` ([Team](15-team-hr-payroll.md); `certification` is a registered alias in [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules-mvp) section 4.3).
 
 ### 7.1 Key entities
 
-These tables live in the `inventory` module of the [Architecture](20-architecture-security.md) module map. Its summary entity names map as follows: `equipment` is `asset` here, `item_stock` is `stock_balance` (the on-hand projection of `stock_movement`), `maintenance_record` is `maintenance_work_order`, and `purchase_order` and `vendor` keep their names.
+These tables live in the `inventory` module of the [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules-mvp) module map, which uses the names in this section (`item`, `stock_balance` as the on-hand projection of `stock_movement`, `purchase_order`, `vendor`, `asset`, `tool_checkout`, `maintenance_work_order`). The earlier summary names `equipment`, `item_stock`, `maintenance_record` and `equipment_assignment` stay registered aliases in its schema registry.
 
 | Entity | Key fields | Notes |
 |---|---|---|
@@ -2075,7 +2075,7 @@ All AI calls go through the AI Gateway and are metered as AI credits ([AI copilo
 
 | # | Opportunity | What it does | Model class | Guardrails | Priority |
 |---|---|---|---|---|---|
-| 1 | Document extraction: bills, delivery tickets, scale tickets, receipts | Extracts header, lines, weights and totals; detects PO numbers; proposes matches. Bill-side work runs as the A9 AP Agent in [AI copilot and automation](17-ai-copilot-automation.md) using the match rules in 4.11 | Frontier LLM with vision (Claude family) | Confidence per field; low confidence forces review; original image always attached | [V1] (receipts [MVP]) |
+| 1 | Document extraction: bills, delivery tickets, scale tickets, receipts | Extracts header, lines, weights and totals; detects PO numbers; proposes matches. Bill-side work runs as the A9 AP Agent in [AI copilot and automation](17-ai-copilot-automation.md) using the match rules in 4.11. At MVP, receipts and bills get rules-based header OCR only (no LLM, no AI credits; 4.4.4, 4.11.1, AI2 in [Ledger](09-accounting-ledger-integrations.md)) | Frontier LLM with vision (Claude family); MVP header OCR is a dedicated OCR pass with deterministic rules | Confidence per field; low confidence forces review; original image always attached | [V1] (MVP: rules-based header OCR) |
 | 2 | COI and license reader | Reads ACORD 25 certificates and license cards; compares to requirements | Frontier LLM with vision | Human verification required before `compliant` | [V1] |
 | 3 | Price list and availability parser | Turns nursery PDFs and spreadsheets into structured availability mapped to Plant KB and Items | Frontier LLM plus botanical-name matcher from the Plant KB | Unmapped lines queued for curator or tenant; never auto-creates canonical Plants | [V1] |
 | 4 | Purchasing copilot | "Buy everything for next week's installs from the cheapest approved vendor and keep deliveries under 3 per day" produces draft POs with explanations. Runs as the A21 Procurement Agent defined in [AI copilot and automation](17-ai-copilot-automation.md) | Frontier LLM agent with tool calls to the workbench | Drafts only; approval rules unchanged; sending a PO to a vendor is a T3 action (explicit human confirm) | [V1] |

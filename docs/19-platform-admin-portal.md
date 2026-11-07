@@ -367,7 +367,7 @@ Validation rules (examples, all configurable per importer):
 - Employees: no SSN/SIN imported (blocked by rule); pay rates allowed only for `owner`-approved imports.
 
 **PA-022 White-glove migration queue [MVP]**
-- Kanban board with states: `requested` -> `scoping` -> `awaiting_files` -> `mapping` -> `validating` -> `tenant_review` -> `committing` -> `reconciling` -> `live` -> `closed` (plus `blocked` and `cancelled`).
+- Kanban board with states: `requested` -> `scoping` -> `awaiting_files` -> `mapping` -> `validating` -> `tenant_review` -> `committing` -> `reconciling` -> `live` -> `closed` (plus `blocked` and `canceled`; US spelling, matching the platform-wide `canceled` state keys).
 - Each migration project has: source systems, object scope, cutover date, go-live target, assigned specialist, SLA clock, file checklist, mapping profile, validation report, tenant approvals, reconciliation report, hours logged.
 - SLA targets (targets, not benchmarks): scoping call within 2 business days; files-to-dry-run within 5 business days for up to 5,000 clients; go-live within 15 business days for standard scope.
 - Entitlement (owned by [22](22-business-model-pricing-gtm.md) sections 4.2 and 6.8): the migration concierge is free for **one source system on annual Grow** and **up to three on Pro**; Enterprise gets a scoped project; Starter is self-serve; monthly plans pay **$499 per source system**, credited back automatically if the tenant switches to annual within 60 days. The console enforces the count (a "source system" is one of the importer rows in PA-021) and posts the one-time charge or credit to the platform Stripe account. Specialist hours are still logged per project for cost-to-serve analysis.

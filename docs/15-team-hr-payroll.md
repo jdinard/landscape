@@ -1552,7 +1552,7 @@ All tables live in the `people` domain module ([20](20-architecture-security.md)
 
 ### 7.1 Entity catalog
 
-These tables live in the `people` module of the [Architecture](20-architecture-security.md) module map. Its summary entity names map as follows: `certification` is `credential` here (employee licenses, certifications and subcontractor credentials share one model), `time_entry` is `time_segment` (derived from the punch events in [05](05-field-crew-mobile-app.md)), and `payroll_run_export` is `payroll_batch`; `employee`, `pay_rate` and `timesheet` keep their names.
+These tables live in the `people` module of the [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules-mvp) module map, which uses the names in this catalog: `employee`, `credential` (employee licenses, certifications and subcontractor credentials share one model), `pay_rate`, `time_segment` (derived from the punch events in [05](05-field-crew-mobile-app.md)), `timesheet` and `payroll_batch`. The earlier summary names `certification`, `time_entry` and `payroll_run_export` stay registered aliases in its schema registry.
 
 | Group | Entity | Purpose and key fields |
 |---|---|---|

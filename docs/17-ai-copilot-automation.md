@@ -901,7 +901,7 @@ The Automation Builder is how non-technical owners encode "how we do things here
 |----------|----------|
 | Sales | `lead.created`, `lead.status_changed`, `opportunity.stage_changed`, `estimate.approved_internal`, `proposal.sent`, `proposal.viewed`, `proposal.approved`, `proposal.declined`, `proposal.expiring` (N days before) |
 | Jobs and schedule | `job.created`, `job.status_changed`, `visit.scheduled`, `visit.started`, `visit.completed`, `visit.skipped`, `route.published`, `job.cost_overrun` (threshold) [V1] |
-| Agreements | `agreement.activated`, `agreement.renewal_due` (N days), `agreement.cancelled`, `agreement.paused` |
+| Agreements | `agreement.activated`, `agreement.renewal_due` (N days), `agreement.canceled`, `agreement.suspended`, `agreement.resumed` (names per [07](07-invoicing-billing-contracts.md) section 8.3) |
 | Billing | `invoice.created`, `invoice.sent`, `invoice.viewed`, `invoice.overdue` (N days), `payment.succeeded`, `payment.failed`, `deposit.received`, `dispute.opened` (from the Stripe connected-account webhook) |
 | Field | `note.created`, `media.uploaded` ([05](05-field-crew-mobile-app.md) 8.3), `checklist.exception`, `chemical_application.recorded` (name per the event registry in [20](20-architecture-security.md)), `issue.reported` |
 | Clients | `client.created`, `client.tag_added`, `portal.request_submitted`, `review.received` [MVP Google, V1 others], `nps.response` [MVP] |
@@ -1223,7 +1223,7 @@ Each agent has a **model card and eval card** in the AI Ops console showing vers
 
 #### 4.11.5 Cost and AI credit metering [MVP]
 
-**Unit:** an **AI credit** is Rootline's normalized unit for AI compute (LLM tokens, image generation, speech minutes, document pages, aerial measurement). Credits are priced to keep AI gross margin at 60% or more over blended model costs. The **published rate card, plan allowances (300 / 2,000 / 6,000 credits per month by tier) and credit packs (for example, 1,000 credits for $25)** are owned by [Business Model](22-business-model-pricing-gtm.md) section 4.4.1 (proposed; verify there). Rows below that also appear in that rate card use its values. The other rows are **proposed additions and planning estimates** for agents specified in this doc, to be validated against real usage and then added to the rate card.
+**Unit:** an **AI credit** is Rootline's normalized unit for AI compute (LLM tokens, image generation, speech minutes, document pages, aerial measurement). Credits are priced to keep AI gross margin at 60% or more over blended model costs. The **published rate card, plan allowances (300 / 2,000 / 6,000 credits per month by tier) and credit packs (for example, 1,000 credits for $25)** are owned by [Business Model](22-business-model-pricing-gtm.md) section 4.4.1 (proposed; verify there). Rows below marked "Per the rate card" are published in that rate card at these values, including the agent rows for the daily briefing (A1), inbox triage (A2), lead follow-up (A3) and field voice notes (A4). The other rows are **proposed additions and planning estimates** for agents specified in this doc, to be validated against real usage and then added to the rate card.
 
 | Action | Est. credits | Notes |
 |--------|--------------|-------|
@@ -1232,11 +1232,11 @@ Each agent has a **model card and eval card** in the AI Ops console showing vers
 | Estimate or proposal draft from notes, photos or voice memo | 8 | Per the rate card; includes price-book mapping |
 | Complex multi-step Copilot action (for example, rain reschedule with client drafts) | 3-8 | Proposed; cost shown on the action button |
 | Agent task run (planning-heavy, for example "draft next week's routes and flag weather conflicts") | 10-30, quoted before run | Per the rate card |
-| Daily owner briefing | 2 | Text; plus 1 for audio |
-| Inbox triage per message | 0.5 | Small-tier classification plus draft. Fractional credits accrue on the ledger and settle daily, rounded up |
-| Lead follow-up conversation (full nurture) | 3-6 | |
-| Voice note (per minute) | 1 | STT plus translation plus extraction |
-| AP invoice extraction (per page) | 2 | Vision document understanding |
+| Daily owner briefing (A1) | 2 (+1 for audio) | Per the rate card; text briefing, plus 1 credit for the audio version |
+| Inbox triage per message (A2) | 0.5 | Per the rate card; small-tier classification plus draft. Fractional credits accrue on the ledger and settle daily, rounded up |
+| Lead follow-up conversation (full nurture, A3) | 3-6 | Per the rate card; charged per conversation as it runs, shown on the agent's run log and limited by per-agent caps |
+| Voice note (per minute, A4) | 1 | Per the rate card; STT plus translation plus extraction |
+| AP invoice extraction (per page) | 2 | Per the rate card (document understanding per page, [V1]); vision document understanding |
 | Bank transaction categorization (per 100 transactions) | 1 | Rules and classifier first; LLM only for the novel ones |
 | RFP parse (per 10 pages) | 5 | Long-context frontier tier |
 | Nursery sheet parse (per sheet) | 3-10 | Depends on rows and matching difficulty |

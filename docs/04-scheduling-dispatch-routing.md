@@ -281,7 +281,7 @@ stateDiagram-v2
 
 #### 4.1.3 Visit state machine (canonical) [MVP]
 
-The [Architecture](20-architecture-security.md) entity notes list the coarse states `unscheduled -> scheduled -> dispatched -> in_progress -> completed / skipped / canceled`. This module defines the full canonical machine; the crew app ([05](05-field-crew-mobile-app.md) section 5.2) implements the field subset. `en_route`, `on_site` and `paused` roll up to `in_progress` for coarse reporting, and `partially_completed` rolls up to `completed` with a flag.
+This module defines the full canonical machine, which the [Architecture](20-architecture-security.md) entity notes (section 7.4) cite as-is; the crew app ([05](05-field-crew-mobile-app.md) section 5.2) implements the field subset. For coarse reporting only, `en_route`, `on_site` and `paused` roll up to `in_progress`, and `partially_completed` rolls up to `completed` with a flag, giving the reporting roll-up `unscheduled -> scheduled -> dispatched -> in_progress -> completed / skipped / canceled`. The roll-up is a reporting view, not a separate state machine.
 
 ```mermaid
 stateDiagram-v2
@@ -1282,7 +1282,7 @@ From the crew app: "We're running 40 minutes behind" (triggers the late-running 
 ### 5.1 Sold weekly maintenance becomes a route stop [MVP]
 
 1. A homeowner signs a proposal for weekly mowing (Apr 1 - Nov 15), a spring cleanup, a mulch install and two fall cleanups ([03](03-crm-sales-estimating-proposals.md)).
-2. `proposal.accepted` creates a Client, Property and Service Agreement; [07](07-invoicing-billing-contracts.md) activates the agreement and emits `service_agreement.activated`.
+2. `proposal.accepted` creates a Client, Property and Service Agreement; [07](07-invoicing-billing-contracts.md) activates the agreement and emits `agreement.activated` (registered alias `service_agreement.activated`).
 3. This module creates one Service Schedule per recurring line (mowing: weekly, 0.75 crew-hours, zone-anchored) and seasonal calendar Visits (spring cleanup in its window, mulch in its window, two fall cleanups 14+ days apart).
 4. Best-day runs (4.7.5): Tuesday, Crew 1, between stops 11 and 12, +4 minutes of drive. The office accepts (or auto-accept if the Company enabled it for new recurring clients).
 5. Materialization creates Visits for the next 8 weeks; seasonal Visits are created as `unscheduled` with windows and appear in the backlog when their window approaches (default 21 days before window start).
@@ -2499,7 +2499,7 @@ Events are published through the transactional outbox to the event bus as CloudE
 | Event | Producer | Effect here |
 |---|---|---|
 | `proposal.accepted` | [03](03-crm-sales-estimating-proposals.md) | Create Jobs, gates, tentative placements |
-| `service_agreement.activated` / `.suspended` / `.reactivated` / `.canceled` (registered in [07](07-invoicing-billing-contracts.md) as `agreement.activated` / `.suspended` / `.resumed` / `.canceled`; one name per event in the schema registry of [20](20-architecture-security.md)) | [07](07-invoicing-billing-contracts.md) | Create Service Schedules; pause/resume materialization and apply hold rules (4.2.4); cancel future Visits |
+| `agreement.activated` / `.suspended` / `.resumed` / `.canceled` (canonical names in the [20](20-architecture-security.md) schema registry and [07](07-invoicing-billing-contracts.md) section 8.3; `service_agreement.*` spellings are registered aliases) | [07](07-invoicing-billing-contracts.md) | Create Service Schedules; pause/resume materialization and apply hold rules (4.2.4); cancel future Visits |
 | `agreement.amended` | [07](07-invoicing-billing-contracts.md) | Split or edit Service Schedules from the effective date ("This and following" scope, 4.2.4) |
 | `payments.deposit.received` | [08](08-payments-stripe.md) | Satisfy deposit gate (4.1.2 deposit rules) |
 | `payments.payment.pending` / `payments.payment.returned` / `payments.refund.completed` (when the payment is a deposit) | [08](08-payments-stripe.md) | Deposit gate `pending_clearing` / `reopened` (4.1.2) |

@@ -39,7 +39,7 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 .scroll-x { overflow-x: auto; }
 .art-frame svg { display: block; width: 100%; height: auto; min-width: 780px; }
 .hero-art figcaption { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 10px 28px; margin-top: 14px; font-size: .86rem; color: var(--text-2); }
-.plant-key { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 4px 18px; }
+.plant-key { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 4px 18px; }
 .plant-key li { display: flex; gap: 8px; align-items: baseline; }
 .plant-key b { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--text); font-size: .7rem; color: var(--text); flex: none; }
 .plant-key i { font-style: italic; color: var(--text); }
@@ -83,6 +83,10 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 .tot-track .today { left: 67%; width: 32%; background: var(--accent); }
 .tot-track .rl { left: 0; width: 39.3%; background: var(--primary); }
 .tot-axis { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: .68rem; color: var(--text-3); margin-left: 160px; margin-right: 120px; }
+.season-bill { margin-top: 14px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); }
+.season-bill h4 { font-size: .95rem; margin: 0 0 2px; }
+.season-bill table { margin-top: 8px; }
+.season-bill td:last-child { color: var(--text-2); font-size: .8rem; }
 .pains { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
 .pain { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); }
 .pain .rk { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; color: var(--accent); line-height: 1; }
@@ -136,6 +140,14 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 .mod li { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; color: var(--text-2); line-height: 1.4; transition: opacity .15s; }
 .mod li .tag { flex: none; }
 .mod .fn { margin-top: auto; padding-top: 7px; border-top: 1px dashed var(--border); font-family: var(--font-mono); font-size: .7rem; color: var(--text-3); overflow-wrap: anywhere; }
+.mod.summary { background: var(--surface-2); border-style: dashed; }
+@media (min-width: 900px) { .mod.summary { grid-column: span 2; } }
+.mod.summary p { font-size: .84rem; color: var(--text-2); }
+.catbar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); margin: 4px 0 2px; }
+.catbar span { display: block; height: 100%; }
+.catbar .c-mvp { background: var(--moss-500); } .catbar .c-v1 { background: var(--sky-500); } .catbar .c-v2 { background: var(--marigold-400); } .catbar .c-v3 { background: var(--clay-500); }
+.catlegend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .78rem; color: var(--text-2); }
+.catlegend b { font-family: var(--font-mono); color: var(--text); font-variant-numeric: tabular-nums; }
 .atlas[data-show="mvp"] li[data-t]:not([data-t="mvp"]),
 .atlas[data-show="v1"] li[data-t]:not([data-t="v1"]),
 .atlas[data-show="later"] li[data-t="mvp"], .atlas[data-show="later"] li[data-t="v1"] { opacity: .32; }
@@ -143,6 +155,7 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 /* 06 Signature */
 .sig { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); gap: 40px; align-items: center; padding: 36px 0; border-top: 1px solid var(--border); }
 .sig:first-of-type { border-top: 0; padding-top: 6px; }
+.sig.flip { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); }
 .sig.flip .sig-text { order: 2; }
 .sig .kicker { font-family: var(--font-mono); font-size: .74rem; font-weight: 600; color: var(--accent); letter-spacing: .04em; }
 .sig h3 { font-family: var(--font-display); font-size: clamp(1.35rem, 2.3vw, 1.7rem); font-weight: 600; margin: 6px 0 10px; line-height: 1.2; }
@@ -151,12 +164,12 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 .points li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; color: var(--text-2); }
 .points li .ic { color: var(--primary); margin-top: 3px; }
 .points b { color: var(--text); }
-.go { display: inline-flex; gap: 6px; align-items: center; margin-top: 16px; font-weight: 600; }
-.go + .go { margin-left: 18px; }
+.go { display: flex; width: fit-content; gap: 6px; align-items: center; margin-top: 16px; font-weight: 600; }
+.go + .go { margin-top: 8px; }
 .visual { min-width: 0; }
 .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 16px; box-shadow: var(--shadow-1); }
 .panel svg { display: block; width: 100%; height: auto; }
-.panel .scroll-x svg { min-width: 520px; }
+.panel .scroll-x svg { min-width: 480px; }
 .prp { margin-top: 12px; border: 1px solid var(--border); border-radius: var(--radius-m); overflow: hidden; }
 .prp-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 10px 12px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
 .prp-head b { font-size: .92rem; } .prp-head i { font-style: italic; }
@@ -180,7 +193,7 @@ table.data tfoot td, table.data tfoot th { font-weight: 700; border-bottom: 0; b
 .plain { margin-top: 10px; font-size: .84rem; color: var(--text-2); background: var(--surface-2); border-radius: var(--radius-s); padding: 9px 12px; }
 .sync-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .phones.mini { gap: 18px; }
-.phone.mini { width: 262px; border-width: 8px; border-radius: 32px; }
+.phone.mini { width: 250px; border-width: 8px; border-radius: 32px; }
 .phone.mini .body { min-height: 0; padding: 10px; gap: 8px; font-size: .82rem; }
 .ph-top { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }
 .ph-top b { font-size: .9rem; }
@@ -297,7 +310,7 @@ table.matrix tfoot th[scope="row"] { font-family: var(--font-body); }
 .funnel h4 { font-size: .92rem; margin: 4px 0 4px; }
 .funnel p { font-size: .8rem; color: var(--text-2); }
 .funnel .step { font-family: var(--font-mono); font-size: .7rem; color: var(--accent); font-weight: 600; }
-.econ { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
+.econ { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
 
 /* 09 Roadmap */
 .road-frame { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 16px; box-shadow: var(--shadow-1); }
@@ -440,6 +453,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
   .hero-grid, .problem-grid, .position { grid-template-columns: 1fr; }
   .sec-head { grid-template-columns: 1fr; }
   .sig { grid-template-columns: 1fr; gap: 22px; }
+  .sig.flip { grid-template-columns: 1fr; }
   .sig.flip .sig-text { order: 0; }
   .hero-art figcaption { grid-template-columns: 1fr; }
   .funnel { grid-template-columns: 1fr 1fr; }
@@ -463,7 +477,6 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
   .prp-body { grid-template-columns: 1fr; }
   .prp-body dl + dl { border-left: 0; border-top: 1px solid var(--border); }
   .grant dl { grid-template-columns: 1fr; }
-  .go + .go { margin-left: 0; }
 }
 </style>
 </head>
@@ -853,7 +866,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <li class="sc-row"><span class="n">04</span><span class="what"><b>Reviews and marketing</b><span>Marketing Suite or a review tool</span></span><span class="sc-track" aria-hidden="true"><span class="sc-bar hi" style="width:11.3%"></span><span class="sc-bar lo" style="width:5.6%"></span></span><span class="sc-cost">$39-$79</span></li>
 <li class="sc-row"><span class="n">05</span><span class="what"><b>Phone answering</b><span>AI receptionist add-on</span></span><span class="sc-track" aria-hidden="true"><span class="sc-bar hi" style="width:14.1%"></span><span class="sc-bar lo" style="width:4.1%"></span></span><span class="sc-cost">$29-$99</span></li>
 <li class="sc-row"><span class="n">06</span><span class="what"><b>Website</b><span>Site builder</span></span><span class="sc-track" aria-hidden="true"><span class="sc-bar hi" style="width:7.1%"></span><span class="sc-bar lo" style="width:4.3%"></span></span><span class="sc-cost">$30-$50</span></li>
-<li class="sc-row"><span class="n">07</span><span class="what"><b>Measurement and takeoff</b><span>PropertyIntel, SiteRecon or Attentive.ai</span></span><span class="sc-track" aria-hidden="true"><span class="sc-bar quoted" style="width:22%"></span></span><span class="sc-cost">Add-on, quoted</span></li>
+<li class="sc-row"><span class="n">07</span><span class="what"><b>Measurement and takeoff</b><span>PropertyIntel, SiteRecon or Attentive.ai</span></span><span class="sc-track" aria-hidden="true"><span class="sc-bar quoted" style="width:22%"></span></span><span class="sc-cost">Quoted</span></li>
 <li class="sc-row"><span class="n">08</span><span class="what"><b>Payments</b><span>Processor chosen by the software vendor</span></span><span class="sc-track" aria-hidden="true"><span class="sc-bar pts" style="width:100%"></span></span><span class="sc-cost">+0.3-1.0 pts</span></li>
         </ol>
         <div class="totals" role="group" aria-label="Monthly total compared">
@@ -861,6 +874,18 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
           <div class="tot-row"><b>Rootline Grow</b><span class="tot-track" aria-hidden="true"><span class="rl"></span></span><span class="val">about $393</span></div>
           <div class="tot-axis" aria-hidden="true"><span>$0</span><span>$500</span><span>$1,000/mo</span></div>
           <p class="small muted">Grow at $249 plus one office seat, field-seat overage, AI Receptionist and Website add-ons. With measurement, R2 puts a 12-person stack at $1,000-$1,500 a month. On payments, steering big invoices to ACH on the Company's own Stripe account saves a $2M firm about $13,700 a year, about four times the Grow subscription (01 section 5.2).</p>
+        </div>
+        <div class="season-bill">
+          <h4>The July bill and the January bill</h4>
+          <p class="small muted">2 office staff, 12 field staff in July, 3 in January (01 section 5.2, monthly list prices).</p>
+          <div class="table-scroll"><table class="data">
+            <caption class="sr-only">Seasonal bill comparison</caption>
+            <thead><tr><th scope="col">Plan</th><th scope="col" class="num">July</th><th scope="col" class="num">January</th><th scope="col">Why</th></tr></thead>
+            <tbody>
+              <tr><td>Jobber Grow</td><td class="num">$315-$415</td><td class="num">$199-$299</td><td>Seat caps count every user; peak price all year on annual billing</td></tr>
+              <tr><td><b>Rootline Grow</b></td><td class="num"><b>$309</b></td><td class="num"><b>$289</b></td><td>Field seats billed only in months they are active; $10 each over 10</td></tr>
+            </tbody>
+          </table></div>
         </div>
       </div>
       <div>
@@ -1026,6 +1051,13 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <li class="mod"><div class="mod-h"><span class="dn">21</span><h3>UX, design system and sitemaps</h3></div><ul><li data-t="mvp"><span>Role-aware Today home and command palette</span><span class="tag mvp">MVP</span></li><li data-t="mvp"><span>WCAG 2.2 AA tokens; Iris reserved for AI</span><span class="tag mvp">MVP</span></li><li data-t="v1"><span>French-Canadian localization</span><span class="tag v1">V1</span></li></ul><span class="fn">21-ux-design-system-sitemaps.md</span></li>
 <li class="mod"><div class="mod-h"><span class="dn">22</span><h3>Business model, pricing and GTM</h3></div><ul><li data-t="mvp"><span>Published tiers; active-only field seats</span><span class="tag mvp">MVP</span></li><li data-t="mvp"><span>Published AI credit rate card and ledger</span><span class="tag mvp">MVP</span></li><li data-t="v2"><span>Plant API and external data products</span><span class="tag v2">V2</span></li></ul><span class="fn">22-business-model-pricing-gtm.md</span></li>
 <li class="mod"><div class="mod-h"><span class="dn">23</span><h3>Innovation and moonshots</h3></div><ul><li data-t="mvp"><span>14 rails: stable object IDs, plant instances</span><span class="tag mvp">MVP</span></li><li data-t="v2"><span>Property digital twin and Landscape Passport</span><span class="tag v2">V2</span></li><li data-t="v3"><span>Closed-loop smart irrigation autopilot</span><span class="tag v3">V3</span></li></ul><span class="fn">23-innovation-moonshots.md</span></li>
+      <li class="mod summary">
+        <div class="mod-h"><span class="dn">24</span><h3>The whole catalog: 744 features, deduplicated</h3></div>
+        <div class="catbar" role="img" aria-label="744 features: 439 MVP, 255 V1, 46 V2, 4 V3"><span class="c-mvp" style="width:59%"></span><span class="c-v1" style="width:34.3%"></span><span class="c-v2" style="width:6.2%"></span><span class="c-v3" style="width:0.5%"></span></div>
+        <div class="catlegend"><span><b>439</b> MVP</span><span><b>255</b> V1</span><span><b>46</b> V2</span><span><b>4</b> V3</span></div>
+        <p>Each feature has an ID, a tag, a primary persona and a link to its spec section. 01-market-landscape.md frames the market, and 24-roadmap-feature-catalog.md is the authority on scope and tags.</p>
+        <span class="fn">24-roadmap-feature-catalog.md · 01-market-landscape.md</span>
+      </li>
     </ul>
   </div>
 </section>
@@ -1080,7 +1112,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
           <div class="prp" role="group" aria-label="Plant Region Profile example">
             <div class="prp-head">
               <div><b><i>Hydrangea paniculata</i> 'Limelight'</b><small>RL-P-004821 · Plant Region Profile · Central Ohio · reviewed Mar 2027</small></div>
-              <div class="rating" aria-label="Rated 5 of 5"><i></i><i></i><i></i><i></i><i></i><span class="small" style="margin-left:6px;font-weight:700">5/5</span></div>
+              <div class="rating" role="img" aria-label="Rated 5 of 5 for Central Ohio"><i></i><i></i><i></i><i></i><i></i><span class="small" style="margin-left:6px;font-weight:700">5/5</span></div>
             </div>
             <div class="prp-body">
               <dl><dt>Curator note</dt><dd>"Top performer; tolerates our clay if not waterlogged."</dd><dt>Mature size</dt><dd>6-8 ft × 6-8 ft</dd><dt>Exposure</dt><dd>Full sun to part sun</dd><dt>Bloom here</dt><dd>Jul-Sep, on new wood</dd></dl>
@@ -1491,7 +1523,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <path d="M875.0,40 V48" class="rm-tick"/>
 <path d="M950.0,40 V48" class="rm-tick"/>
 <path d="M1025.0,40 V48" class="rm-tick"/>
-<circle cx="155.0" cy="44" r="4" class="f-ember"/><text x="153.0" y="32" class="t-11 tx2" text-anchor="start">Today · Nov 2026</text>
+<circle cx="155.0" cy="44" r="4" class="f-ember"/><text x="161.0" y="57" class="t-10 tx2">Today</text>
 <text x="16" y="80" class="t-12 tx t-b">Foundations</text>
 <text x="16" y="116" class="t-12 tx t-b">Plant KB</text>
 <text x="16" y="154" class="t-12 tx t-b">MVP · 439</text>
@@ -1499,18 +1531,19 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <text x="16" y="244" class="t-12 tx t-b">V2 · 46</text>
 <text x="16" y="284" class="t-12 tx t-b">V3 · 4 + bets</text>
 <text x="16" y="320" class="t-12 tx t-b">Calendar</text>
-<rect x="156.7" y="65.0" width="118.3" height="22" rx="5" class="rm-found"/><text x="163.7" y="80.0" class="t-11 tx t-b">Hires, spikes, ledger kernel</text>
-<rect x="225.0" y="101.0" width="137.5" height="22" rx="5" class="rm-kb"/><text x="232.0" y="116.0" class="t-11 tx t-b">Seed 3,000 plants</text>
-<rect x="300.0" y="122" width="136.7" height="6" rx="3" class="rm-kbph"/><text x="365.8" y="135" class="t-10 tx2">KB photography May-Oct 2027</text>
+<rect x="156.7" y="65.0" width="118.3" height="22" rx="5" class="rm-found"/>
+<text x="283.0" y="80" class="t-11 tx2">Hires, architecture spikes, ledger kernel</text>
+<rect x="225.0" y="98.0" width="137.5" height="16" rx="5" class="rm-kb"/><text x="232.0" y="110.0" class="t-11 tx t-b">Seed 3,000 plants</text>
+<rect x="300.0" y="117" width="136.7" height="7" rx="3" class="rm-kbph"/><text x="294.0" y="125" text-anchor="end" class="t-10 tx2">KB photography</text>
 <rect x="225.0" y="139.0" width="263.3" height="22" rx="5" class="rm-mvp"/><text x="232.0" y="154.0" class="t-11 tx t-b">MVP build</text>
-<rect x="307.5" y="139.0" width="66.7" height="22" rx="5" class="rm-mvp2"/><text x="314.5" y="154.0" class="t-11 t-onp t-b">Field alpha · 5</text>
-<rect x="410.0" y="139.0" width="78.3" height="22" rx="5" class="rm-mvp2"/><text x="417.0" y="154.0" class="t-11 t-onp t-b">Season 0 beta · 20</text>
+<rect x="307.5" y="139.0" width="66.7" height="22" rx="5" class="rm-mvp2"/><text x="314.5" y="154.0" class="t-11 t-onp t-b">Alpha · 5</text>
+<rect x="410.0" y="139.0" width="78.3" height="22" rx="5" class="rm-mvp2"/><text x="417.0" y="154.0" class="t-11 t-onp t-b">Beta · 20</text>
 <path d="M507.5,138 l12,12 -12,12 -12,-12z" class="f-primary"/>
-<text x="521.5" y="134" class="t-12 tx t-b">GA · 10 Jan 2028</text>
+<text x="524.5" y="154" class="t-12 tx t-b">GA · 10 Jan 2028</text>
 <rect x="508.3" y="185.0" width="297.5" height="22" rx="5" class="rm-v1"/>
 <path d="M561.7,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="561.7" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.0</text>
 <path d="M661.7,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="661.7" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.1</text>
-<path d="M728.3,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="728.3" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.2 snow</text>
+<path d="M728.3,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="728.3" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.2</text>
 <path d="M805.8,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="805.8" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.3</text>
 <rect x="806.7" y="229.0" width="293.3" height="22" rx="5" class="rm-v2"/>
 <path d="M861.7,232 l7,8 -7,8 -7,-8z" class="f-mari6"/><text x="861.7" y="223" text-anchor="middle" class="t-10 tx2 smono">V2.0</text>

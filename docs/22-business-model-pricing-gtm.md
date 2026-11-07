@@ -300,7 +300,7 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | Copilot (chat, drafting) | Y (credits) | Y | Y | Y | [17](17-ai-copilot-automation.md) | [MVP] |
 | Automation builder | L (5 active rules) | L (50) | Y (unlimited) | Y | [17](17-ai-copilot-automation.md) | [MVP] |
 | MVP agents: Daily Owner Briefing, Inbox Triage, Lead Follow-up, Field-Note, Estimating from notes (A1-A4, A6), collections reminders (A5) | Y (credits) | Y (credits) | Y (credits) | Y | [17](17-ai-copilot-automation.md) | [MVP] |
-| V1 agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A21) | - | L | Y | Y | [17](17-ai-copilot-automation.md) | [V1] |
+| V1 agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A17, A19, A21; A18 review requests ship at [MVP] with [16](16-marketing-growth-communications.md), and A20 Snow Event is [V2]) | - | L | Y | Y | [17](17-ai-copilot-automation.md) | [V1] |
 | Standard dashboards | Y | Y | Y | Y | [18](18-reporting-analytics.md) | [MVP] |
 | Report builder (scheduled delivery ships at [MVP]) | - | Y | Y | Y | [18](18-reporting-analytics.md) | [V1] |
 | Benchmarking (opt-in peer comparisons) | - | Y | Y | Y | [18](18-reporting-analytics.md) | [V1] |
@@ -2241,6 +2241,7 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 18. **10DLC fee absorption:** absorbing one-time registration fees on annual Grow/Pro (4.4) is cheap today. Revisit if carriers raise vetting fees or require annual re-vetting.
 19. **Granum and Xplor switching programs:** how aggressive should the switching credit be for Companies forced to re-onboard payments (full contract buyout vs the standard 3 months)? Decide before the first winter campaign.
 20. **Onboarding cost classification:** this doc counts pre-go-live onboarding in CAC (7.1, 6.12). Confirm with `platform_finance` and auditors whether paid migrations and onboarding should sit in COGS for reporting, which would move about 3 points of gross margin.
+21. **Website visualizer subsidy:** should Rootline fund the first 500 widget credits a month for Grow tenants as a growth investment, since widget leads also feed Rootline Match (5.3)? The 4.4.1 default cap of 600 credits funds only about 15 visitors a month, so a subsidy would make the widget useful out of the box. Raised in [11](11-ai-design-mockups.md) open question 1, which names this doc as the owner.
 
 ---
 

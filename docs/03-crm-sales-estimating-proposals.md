@@ -1853,7 +1853,7 @@ sequenceDiagram
 | `job.completed` + `job_cost.finalized` ([09](09-accounting-ledger-integrations.md)) | Estimate-vs-actual record; production rate calibration samples |
 | `vendor.price_list_imported` ([13](13-operations-inventory-equipment.md)) | Cost update and impact report |
 | `call.completed` / `message.received` ([16](16-marketing-growth-communications.md)) | Lead creation or timeline entry |
-| `service_agreement.ending` ([07](07-invoicing-billing-contracts.md)) | Create renewal |
+| `agreement.renewal_due` ([07](07-invoicing-billing-contracts.md); registered alias `service_agreement.renewal_due`) | Create renewal |
 
 ### 8.4 Public API (REST, versioned `/v1`, OAuth2 client credentials or user tokens)
 
