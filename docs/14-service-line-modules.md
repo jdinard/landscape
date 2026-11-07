@@ -136,7 +136,7 @@ Plan names follow [22](22-business-model-pricing-gtm.md) section 4.2 (Starter, G
 | `irrigation` | Irrigation systems, seasonal services, repairs | Property Asset Registry | All plans (22) | MVP |
 | `backflow` | Backflow testing and municipal submission | `irrigation` | Grow, Pro, Enterprise (proposed) | V1 |
 | `smart_irrigation` | Smart controller integrations, water budgets, leak alerts | `irrigation` | Pro and Enterprise; Grow limited to 25 linked controllers (proposed) | V1 |
-| `snow_ice` | Snow and ice management | Snow Lite: Visit and photo pipeline only; full module: Storm Event Engine | Snow Lite (4.3.0) on all plans at no charge (proposed); full module as add-on `snow_ice` on Starter, Grow and Pro, billed Nov-Mar only, included in Enterprise (22 section 4.5) | MVP (Snow Lite); V1 (full module) |
+| `snow_ice` | Snow and ice management | Snow Lite: Visit and photo pipeline only; full module: Storm Event Engine | Snow Lite (4.3.0) on all plans at no charge, and it stays included after the add-on launches (22); full module as add-on `snow_ice` on Starter, Grow and Pro, billed Nov-Mar only, included in Enterprise (22 section 4.5) | MVP (Snow Lite); V1 (full module) |
 | `tree_care` | Tree inventory, ISA risk, prescriptions, permits, crane jobs | Plant KB, Inspection Engine | Add-on `tree_care` on Starter and Grow; included in Pro and Enterprise (22) | V2 |
 | `install_projects` | Installation and hardscape project management | Project Engine, Warranty Engine | All plans (22); Gantt view Pro and Enterprise (proposed); 811 gating on every plan because it is a safety control | MVP |
 | `commercial_grounds` | SOW specs, quality audits, enhancement pipeline, property reports | Inspection Engine | Grow limited to 5 commercial clients (matches the commercial portal limit in 22); unlimited on Pro and Enterprise (proposed) | MVP |
@@ -571,8 +571,8 @@ Snow Lite lets a design-build-maintain or lawn Company that also plows its maint
 | Proof of service | A per-site PDF for a date range: each storm visit with times, crew, services, photos with their GPS coordinates and device and server timestamps, and notes. The footer says it is a service-log export, not a sealed packet | Hash-manifested, retention-locked proof packets with legal hold and incident packets (4.3.6) |
 
 Rules:
-- Snow Lite writes ordinary Visits and Billable Items; it creates no `storm_event`, `event_site` or `proof_packet` records (7.4). Photos and logs follow the retention of visit records, and the 72-hour billing-state carve-out in 4.0.3 applies to storm visit logging.
-- When a Company adds the `snow_ice` add-on, its Snow Lite sites become the starting `snow_site` list and past storm visits stay on the Property timeline as history; they are not re-sealed as proof packets.
+- Snow Lite stores its site list as `snow_site` rows with a priority and sequence only (no polygon, map features or Snow Terms) and writes ordinary Visits and Billable Items; it creates no `storm_event`, `event_site` or `proof_packet` records (7.4). Photos and logs follow the retention of visit records, and the 72-hour billing-state carve-out in 4.0.3 applies to storm visit logging.
+- Snow Lite stays included on every plan after the full module ships. When a Company adds the `snow_ice` add-on, its Snow Lite sites are already the starting `snow_site` list, ready for site maps and Snow Terms, and past storm visits stay on the Property timeline as history; they are not re-sealed as proof packets ([22](22-business-model-pricing-gtm.md#45-add-on-catalog)).
 - No weather feeds, triggers, salt inventory, Snow Terms or client portal snow board in Snow Lite; clients see storm visits in their normal visit history ([06](06-customer-portal.md)).
 
 #### 4.3.1 Snow contracts and pricing models [V1]
