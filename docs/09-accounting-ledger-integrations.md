@@ -255,7 +255,7 @@ The phasing reflects one opinion: **the ledger engine runs for every tenant from
 | Reversals, not edits | Correcting an entry creates a reversing entry (mirror lines, same dimensions, `reverses_entry_id`) and, usually, a corrected replacement entry. Both link to the original and to the reason. | Reversal API is the only mutation path; UI shows original, reversal and replacement as a struck-through stack. |
 | Periods and locks | Each legal entity has fiscal years and monthly periods with states `open`, `soft_closed`, `locked`. Posting dates must fall in a postable period. | Trigger on period state ([20](20-architecture-security.md) L3); late events redirect to the first open period with the original `service_date` kept (4.1.5). |
 | Multi-currency | One functional currency per legal entity (USD or CAD); lines can carry a transaction currency, rate and rate source. | [20](20-architecture-security.md) L9 plus 4.1.6. |
-| Idempotent posting from domain events | A domain event processed twice, or the same business fact emitted twice under two different event IDs, produces one entry. | Unique `(tenant_id, posting_key)` where `posting_key` is a deterministic **business key** built by the rule from the source document, never from the event ID: `invoice:{invoice_id}:issue`, `invoice:{invoice_id}:void`, `stripe_bt:{balance_transaction_id}:{rule_version}`, `payout:{payout_id}:settle`, `timesheet:{time_entry_id}:approve:{revision}` ([20](20-architecture-security.md) L4). The event ID is used only for consumer-inbox deduplication. |
+| Idempotent posting from domain events | A domain event processed twice, or the same business fact emitted twice under two different event IDs, produces one entry. | Unique `(tenant_id, posting_key)` where `posting_key` is a deterministic **business key** built by the rule from the source document, never from the event ID: `invoice:{invoice_id}:issue`, `invoice:{invoice_id}:void`, `stripe_bt:{balance_transaction_id}`, `payout:{payout_id}:settle`, `timesheet:{time_entry_id}:approve:{revision}` ([20](20-architecture-security.md) L4). The event ID is used only for consumer-inbox deduplication. Keys should not include the rule version, so a replay after a pack update cannot mint a second key for the same fact (open question 16). |
 | Gapless numbering | Journal numbers are sequential per legal entity with no gaps, which auditors and some tax authorities expect. | Sequence row locked in the posting transaction ([20](20-architecture-security.md) L5). |
 | Tamper evidence | Each entry is hash-chained to the previous one per tenant; daily chain heads anchored to write-once storage. | [20](20-architecture-security.md) L8. |
 | Money is integers | Amounts in minor units; rounding at line level; tax rounding per jurisdiction. | [20](20-architecture-security.md) L10. |
@@ -316,9 +316,11 @@ The posting engine is the `ledger` module's consumer of domain events from the t
 
 ```mermaid
 flowchart LR
-    EV["Domain event from outbox (invoice.issued, payment.succeeded, ops.stock.moved...)"] --> DD["Dedupe on source event id"]
+    EV["Domain event from outbox (invoice.issued, payment.succeeded, ops.stock.moved...)"] --> DD["Inbox dedupe on event id"]
     DD --> RS["Resolve posting rule version effective on event date"]
-    RS --> DEP{"Dependencies posted? (e.g., invoice before its payment)"}
+    RS --> PK{"Business posting key already in posted_source?"}
+    PK -->|"Yes"| SKIP["Skip and count L4 duplicate attempt"]
+    PK -->|"No"| DEP{"Dependencies posted? (e.g., invoice before its payment)"}
     DEP -->|"No"| HOLD["Hold in pending_posting with timeout alert"]
     HOLD --> DEP
     DEP -->|"Yes"| BUILD["Build lines via account roles and dimension mapping"]
@@ -335,7 +337,7 @@ flowchart LR
 Behaviors and rules:
 
 1. **Ordering and dependencies.** Each rule declares dependencies (for example `payments.charge` depends on the invoice or deposit request it allocates to). Out-of-order events wait in `pending_posting` (up to 24 hours by default) and raise a bookkeeper task if the dependency never arrives. Payments that arrive for invoices that will never exist (a payment link with no invoice) post to `customer_credits` instead.
-2. **Batching.** High-volume rules (07 P5 per-visit recognition, labor accruals, equipment usage) post as **daily summarized entries** per legal entity, one line per dimension combination, while the subledger keeps per-document detail. A 140-person Summit Grounds June day produces about 30 summarized labor lines rather than 1,200 entries.
+2. **Batching.** High-volume rules (07 P5 per-visit recognition, labor accruals, equipment usage) post as **daily summarized entries** per legal entity, one line per dimension combination, while the subledger keeps per-document detail. A 140-person Summit Grounds June day produces about 30 summarized labor lines rather than 1,200 entries. Idempotency survives summarization: every contributing source writes its own business key to `posted_source` (unique per tenant) in the same transaction as the summary entry, so a time entry can never be summarized twice. The summary for a day is built at a cutoff (default 02:00 entity time the next morning); sources that arrive after the cutoff post as a **supplemental summary** for the same `entry_date` (`labor:{entity}:{date}:summary:{n}`) rather than reopening the first one.
 3. **Back-dated events.** A crew app that syncs a completed visit three weeks later, after March is locked, posts into April with `service_date = 2027-03-28` and a note. Job cost and operational reports use `service_date`; the GL uses `entry_date`. The close checklist for April lists "late events from locked periods" so the CPA can decide whether to reopen.
 4. **Rule failures never block the business.** If a rule cannot resolve an account role (a Company deleted its "Dump fees" account), the line posts to suspense (`1099 Suspense`) with a task and the event keeps flowing. Invoices are never blocked from sending because accounting setup is incomplete.
 5. **Re-posting after correction.** If a source document is corrected (credit memo, voided invoice, reversed stock movement), the source module emits a new event and the engine posts the reversal or delta. The engine never mutates its own past output.

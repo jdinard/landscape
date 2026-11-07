@@ -1826,6 +1826,78 @@ Validation rules: promotion requires the stage's exit evidence attached to the f
 +--------------------------------------+
 ```
 
+### 6.7 Wireframe: Plant Doctor (S-10, crew app)
+
+```text
++----------------------------------------+
+| PLANT DOCTOR        Visit #8812  [EN|ES]|
+| 'Green Mountain' boxwood  (plant #B-114)|
+| Zone 6a | Jun 24 | 1,180 GDD | dry 9 d  |
++----------------------------------------+
+| PHOTOS  [whole][area][leaf top][under*] |
+|         * requested: leaf underside     |
++----------------------------------------+
+| LIKELY CAUSES                           |
+| 1 Boxwood mite         0.71  ######.   |
+|   evidence: stippling, bronze cast      |
+|   confirm: white-paper tap test         |
+| 2 Boxwood leafminer    0.14  #.....    |
+| 3 Drought stress       0.09  #.....    |
+|   (abiotic always checked)              |
++----------------------------------------+
+| IPM PLAN (draft)                        |
+| - Cultural: deep water 1x/wk in dry spell|
+| - Chemical: horticultural oil, label OK |
+|   for site/plant/pest  [needs license]  |
+| Approver: R. Ortiz (QAL #12345) [Send]  |
++----------------------------------------+
+| [Save offline]   [Escalate to lab]      |
++----------------------------------------+
+```
+
+### 6.8 Wireframe: Financing offers (S-17)
+
+```text
++------------------------------------------------------------------------------------------+
+| FINANCING  > Spring Ramp                                    Data share: 2 lenders, 30 days |
++------------------------------------------------------------------------------------------+
+| READINESS   [ok] 24 months on Ledger  [ok] Books reconciled thru Feb  [ok] AR aging        |
+|             [!] Suspense balance 1.4% of revenue (limit 2%)  -> [Fix in Ledger]            |
+| PACKAGE     P&L + BS (24 mo), AR aging, backlog $612k (Apr-Nov), top-10 concentration 31%  |
+|             hash 7f3a...c91  [Preview] [Revoke shares]                                    |
++------------------------------------------------------------------------------------------+
+| OFFERS (ranked by total cost to you)                                                      |
+|   Lender          Amount    Draw    Repay           Total repay  Est. APR  Rootline fee   |
+| 1 Partner A       $90,000   Mar 1   Jun-Nov fixed   $96,300      ~14%      $900 (disclosed)|
+| 2 Partner B       $90,000   Mar 1   12% of receipts $98,100      ~18%      $1,350          |
+|   Disclosures: [State commercial financing disclosure] [Prepayment terms]                 |
+|   [Compare]  [Accept with Partner A -> sign on lender site]                               |
++------------------------------------------------------------------------------------------+
+| Rootline is not a lender. Offers, approvals and any adverse-action notices come from the |
+| lender. Numbers above are illustrative.                                                   |
++------------------------------------------------------------------------------------------+
+```
+
+### 6.9 Wireframe: Innovation lab console (S-23, Platform Admin)
+
+```text
++------------------------------------------------------------------------------------------+
+| PLATFORM ADMIN > Innovation lab                      Next review: Q1 2028 (Jan 12)        |
++------------------------------------------------------------------------------------------+
+| Bet                     Stage      Cohort          Pilot KPI (target)        Kill rule    |
+| M-01 Twin timeline      2 Pilot    9 tenants       precision 0.74 (0.70) ok  2 iter left |
+| M-07 Hydro assist       2 Pilot    6 tenants       savings 12% (15%) !       1 iter left |
+| M-20 Voice assistant    3 Beta     140 tenants     voice notes 46% (40%) ok  -           |
+| M-15 Overflow market    1 Proto    internal        legal review open         -           |
+| M-21 Gen. video         0 Explore  -               cost/30s 310 cr (<200)    shelve?     |
++------------------------------------------------------------------------------------------+
+| ENGINEERING CAPACITY ON MOONSHOTS  14% (cap 15% until V1 GA)                              |
+| RAILS R-01..R-14        13 shipped, 1 in progress (R-04 photo stations)                   |
+| TRUST INCIDENTS (90 d)  0 Sev-1, 2 Sev-3                                                  |
+| [Promote M-20 to GA] [Extend M-07 pilot] [Shelve M-21] [Export review pack]               |
++------------------------------------------------------------------------------------------+
+```
+
 ---
 
 ## 7. Data model

@@ -645,3 +645,147 @@ quadrantChart
 TechRadar's 2026 review says Jobber's receptionist "won't replace a real office manager when a job goes sideways" ([TechRadar](https://www.techradar.com/pro/software-services/jobber-crm-review)) [S]. Aspire's own survey found 43% of commercial landscape leaders believe in AI but only 15% use it daily ([Finviz/Aspire](https://finviz.com/news/401821/aspire-report-finds-commercial-landscapers-prioritizing-growth-as-businesses-navigate-operational-complexity)) [S, vendor-run]. The gap between belief and use is the opportunity: AI that does a landscaper's daily work rather than chatting about it.
 
 ---
+
+## 5. Pricing benchmark
+
+### 5.1 List prices (as of Nov 2026, verify every number)
+
+Third-party trackers routinely disagree; ranges are shown where they do. Evidence tags apply to each row.
+
+| Product | Pricing model | Entry | Mid | Top | Extra users or seats | Notable add-ons and one-time fees | Evidence |
+|---|---|---|---|---|---|---|---|
+| Yardbook | Free core, paid extras | Free | about $15-$60/mo | - | n/a | Payments | [S3P] [Toolradar](https://toolradar.com/tools/yardbook/pricing) |
+| Jobber | Tiers with included users (1/5/10/15) | Core about $49 | Connect about $139-$149; Grow about $199-$299 | Plus about $499-$699 | about $29/user | Marketing Suite $79; AI Receptionist $29-$99 (conflicting); Feb 2026 price change logged | [S3P] [OneCrew](https://www.getonecrew.com/post/jobber-pricing), [Fieldproxy](https://www.fieldproxy.ai/fsm-software-pricing/jobber), [Costbench](https://costbench.com/changelog/jobber-price-increase-2026-02-3/); [S] [Jobber Marketing Suite](https://productupdates.getjobber.com/71315-meet-the-easier-way-to-grow-your-business-with-marketing-suite) |
+| Housecall Pro | Tiers with included users (1/5/8) | Basic about $79 ($59 annual) | Essentials about $189 ($149 annual) | MAX about $329 ($299 annual) | $35-$100/user (disputed) | AI and marketing vary by tier | [S3P] [Fieldproxy](https://www.fieldproxy.ai/fsm-software-pricing/housecall-pro), [ContractorToolStack](https://contractortoolstack.com/software/housecall-pro/pricing/) |
+| Workiz | Tiers (Standard, Pro, Ultimate) | about $65+ | about $169-$275 | Custom | about $55-$65 beyond 5 (one source) | Phone about $100/mo; Jessica AI about $200/mo | [S3P] [ServiceAgent](https://serviceagent.ai/blogs/workiz-pricing/) |
+| ServiceTitan | Per technician, quoted, contracts | n/a | n/a | n/a | Per tech | Many "Pro" add-ons; implementation fees | [B] |
+| GorillaDesk | Per route per month | about $49/route | - | about $99/route | n/a | - | [B] |
+| Service Fusion | Flat tiers, unlimited users | low $200s | $300s | $500s | None | GPS add-on | [B] |
+| ServiceM8 | Job volume per month, unlimited users | Free low-volume tier | tens to low hundreds | mid hundreds | None | Add-on marketplace | [B] |
+| Service Autopilot | Tiers | Startup $49 | Pro $199 | Pro Plus $499; Elite custom (alternative source: $279-$849 flat) | Tiered | Setup, implementation, portal integration costs | [S3P] [CostBench](https://costbench.com/software/lawn-care-software/service-autopilot/) |
+| Copilot CRM | Not verified | - | - | - | - | - | [S negative] |
+| Real Green | Custom; scales with active customers | "from $199/mo" | - | Custom | - | Implementation about $995 (unverified); Sales Center and marketing add-ons | [S3P] [Softwarefinder](https://softwarefinder.com/fleet-management-software/realgreen-by-workwave), [IntegrateIQ](https://integrateiq.com/comparisons/realgreen-vs-fieldroutes/) |
+| LMN | Bundles (1 office + 5 crew; 3 office + 15 crew) or per user (sources conflict) | Starter about $297 | Professional about $598-$697 | Enterprise custom | Bundled | Implementation about $797-$1,497; SMS about $75 one-time + $30/mo | [S3P] [Capterra](https://www.capterra.com/p/142064/LMN/pricing/), [CostBench](https://costbench.com/software/lawn-care-software/lmn-landscape/) |
+| SingleOps | Tiers (per user vs per account conflicts) | Essential about $200-$220 | Plus about $350-$385 | Premier about $500-$550 | $55-$150/user by tier | POs and inventory Premier-only | [S3P] [ITQlick](https://www.itqlick.com/singleops/pricing); [S] [SingleOps docs](https://docs.singleops.com/hc/articles/43339572958491) |
+| SynkedUP | Per user (as listed) | $297-$399/user/mo | - | - | Per user | Coaching-led; 10% annual discount | [S3P] [Capterra](https://www.capterra.com/p/228695/SynkedUP/pricing/) |
+| Arborgold | Per user | from about $150/user | - | - | Per user | Portal and pay-from-portal on higher tiers | [S3P] [Arborgold pricing](https://arborgold.com/?p=17837) |
+| Aspire | Custom; one monthly license, no user limit (per third parties) | Custom | - | - | Not per user | Implementation; ServiceTitan-class rollouts $5k-$50k+ (unverified); PropertyIntel separate | [S3P] [FieldServiceSoftware.io](https://fieldservicesoftware.io/software/aspire/), [CostBench](https://costbench.com/software/lawn-care-software/aspire-landscape/) |
+| PRO Landscape+ | Subscription | about $90/mo or $900/yr | - | - | Per license | - | [S] [Capterra](https://www.capterra.com/p/126135/PRO-Landscape/) |
+| Vectorworks Landmark | Annual per seat | about $3,000/seat/yr | - | - | Per seat | - | [B] |
+| SketchUp | Annual tiers | about $120/yr | - | about $750/yr | Per seat | Plugins and renderers extra | [B] |
+| iScape | Consumer and pro app | Free | Pro about $29.99/mo | - | - | - | [S3P] [AI Tools Bakery](https://aitoolsbakery.com/blog/iscape-review/) |
+| QuickBooks Online | Tiers | Simple Start about $38 | Essentials about $75; Plus about $115 | Advanced about $275 | Per plan user caps | Payroll and Payments priced separately; Desktop editions withdrawn for new US subscribers after Sep 2024 | [B, verify] ([R4](research/R4-industry-payments-accounting.md) section 23) |
+| **Rootline (proposed)** | **Tiers on office seats; field seats billed only when active; metered AI** | **Starter $79 ($69 annual)** | **Grow $289 ($249 annual)** | **Pro $599 ($529 annual); Enterprise from $1,500** | **Office $35-$39; active field $8-$12; designer $59-$79** | **No implementation fee on standard tiers; free migration concierge on annual Grow and Pro** | [22](22-business-model-pricing-gtm.md) section 4.2 |
+
+**Price bands [E].** Free to about $60 a month (Yardbook, solo tools); about $50-$500 a month SMB tiers (Jobber, Housecall Pro, Service Autopilot); about $200-$700 a month landscape specialists or per-user pricing that reaches that level at 3-5 users (LMN, SingleOps, SynkedUP, Arborgold); custom enterprise (Aspire, Real Green, ServiceTitan). Design tools add $75-$250 a month on top. Implementation fees ($797-$1,497 LMN, about $995 Real Green, five figures for enterprise rollouts) are common switching barriers [S3P].
+
+### 5.2 Total cost of ownership: the stack Rootline replaces
+
+[22](22-business-model-pricing-gtm.md) section 2.5 works a 15-person design-build example in detail: an FSM-led stack costs about $670-$880 a month and an estimating-led stack about $860-$990 a month, versus about $393 a month for Rootline Grow with the equivalent add-ons [E]. This section adds the two cost lines that comparison leaves out, because they are where the bigger money is.
+
+**Seasonality (archetype B, illustrative) [E].** 2 office staff, 12 field staff in July, 3 field staff in January.
+
+| Plan | July bill | January bill | Why |
+|---|---|---|---|
+| Jobber Grow (10 users included, about $29 each extra; monthly list) | $315-$415 | $199-$299 if users are removed; peak price all year on annual billing per [R1](research/R1-field-service-platforms.md) | Seat caps count every user |
+| Rootline Grow (3 office, 10 active field included; $10 per extra active field seat) | $289 + 2 x $10 = $309 | $289 | Field seats billed only in months they are active |
+
+**Payments (archetype C, $2M revenue, illustrative) [E].** [R4](research/R4-industry-payments-accounting.md) section 13.4 models card and ACH costs for a $2M Company: about $37,200 a year in processing with a typical card-heavy mix, falling to about $23,500 when autopay and large invoices are steered to ACH (Stripe ACH Direct Debit is reported at 0.8% capped at $5 versus 2.9% + $0.30 for online cards ([Dodo Payments](https://dodopayments.com/blogs/stripe-ach-fees/)) [S3P]). On a single $4,800 prepaid maintenance season that is $5 instead of about $139.50. **The roughly $13,700 a year of avoidable processing cost is about four times the Rootline Grow subscription.** On vendor-run payments the Company cannot negotiate its own rate as it grows and pays the vendor's instant-payout fees (1% at Jobber and Housecall Pro) [S].
+
+> **Competitive edge (cost).** Competitors quote one product. Rootline quotes the whole stack, the winter bill next to the July bill, and the processing line the Company can cut by steering big invoices to ACH on its own Stripe account. That is a fair comparison because the prospect enters the competitor prices ([22](22-business-model-pricing-gtm.md) calculator).
+
+---
+
+## 6. Voice of the customer: the top 15 pain points
+
+### 6.1 Ranking method
+
+Each pain point is scored 1-3 on four factors and ranked by the total (maximum 12); ties are broken by money at stake.
+
+| Factor | 3 | 2 | 1 |
+|---|---|---|---|
+| **Evidence strength** | Multiple [S] sources (vendor docs, review sites, vendor community) | One [S] or several [S3P] | [B] only |
+| **Breadth** | Hurts 4-5 archetypes | 2-3 archetypes | 1 archetype |
+| **Money at stake** | Points of net margin or a five-figure annual cost | Thousands of dollars or several office hours a week | Annoyance, low direct cost |
+| **Frequency in sources** | Recurs across 3+ products or sources | 2 | 1 |
+
+### 6.2 The ranked list
+
+| Rank | Pain point | Score (E+B+M+F) | Evidence | Who it hurts | Money at stake [E] | Rootline answer | Owner doc |
+|---|---|---|---|---|---|---|---|
+| 1 | **Tool sprawl and re-keying** between design, measurement, estimating, operations and books | 12 (3+3+3+3) | Re-keying errors in paver counts, wall heights, head spacing ([JackMacBiz](https://jackmacbiz.github.io/blog/2026-06-13-why-your-current-landscape-design-app-is-wasting-8-hours-per/), anecdotal); Jobber's measuring workaround is tracing in Google Maps ([Jobber help](https://help.getjobber.com/es/articles/how-to-measure-property-distance-and-size/)); Jobber users ask for separate design software ([Jobber Community](https://community.getjobber.com/discussions/operations-forum/looking-for-landscape-design-software--training/8084)); Aspire firms buy SiteDNA, Vergo, Wilson360 and Motive as bolt-ons ([SiteDNA](https://sitedna-marketing-site.pages.dev/), [Vergo](https://www.getvergo.com/learn/best-ap-automation-software-for-landscape-companies-using-aspire)) [S] | B, C, D, E | $1,000-$1,500/mo of software plus 2-8 office hours a week | One record from parcel polygon to design to estimate to job to invoice to ledger | [10](10-design-studio.md), [03](03-crm-sales-estimating-proposals.md) [MVP] |
+| 2 | **Books live outside the system and the sync breaks** | 12 (3+3+3+3) | Jobber QBO sync is one-way, no paid status back, parent-customer only, no Desktop, one client error blocks all that client's invoices ([Jobber QBO FAQ](https://help.getjobber.com/es/articles/quickbooks-integration-faqs/), [sync errors](https://help.getjobber.com/hc/en-us/articles/10466688449431-Common-QuickBooks-Sync-Errors-and-How-to-Fix-Them)); Real Green accounting "basically unusable" ([Capterra](https://www.capterra.com/p/78106/Service-Assistant/reviews/?page=5)); Aspire depends on the GL for vendors ([Aspire](https://www.youraspire.com/features/purchasing)) [S] | All with a bookkeeper (B-E) | Bookkeeper hours; wrong AR; QBO subscription $38-$275/mo [B] | Built-in double-entry ledger; or a sync with per-record quarantine, sub-customers per Property, Desktop support | [09](09-accounting-ledger-integrations.md) [MVP] |
+| 3 | **Locked-in payment processors and rate creep** | 11 (3+3+3+2) | "The company was bought by a credit card processor so you no longer have a choice of processor" ([GetApp](https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/)); LMN Pay accounts "NOT Stripe accounts you control" ([Merchant Cost Consulting](https://merchantcostconsulting.com/lower-credit-card-processing-fees/lmn-pay-stripe-migration/), single opinion); 1% instant payouts ([Jobber help](https://help.getjobber.com/en/articles/instant-payouts/)) [S] | B, C, D, E | 0.3-1.0 points of processing; re-collecting 400 stored cards on exit | Bring-your-own Stripe, zero markup by default, ACH steering | [08](08-payments-stripe.md) [MVP] |
+| 4 | **Pricing for profit is hard; estimating lives outside the field tool** | 11 (3+2+3+3) | A 37% overhead ratio appears as a 204% markup on a labor-only base ([LMN help](https://intercom.help/lmn/en/articles/15939065-how-lmn-calculates-overhead-labor-burden-and-profit-in-estimates)); "If you don't recoup overhead costs, there's not even $1 of profit in a job" ([Total Landscape Care](https://www.totallandscapecare.com/business/article/15034644/how-to-properly-cost-a-job)); Jobber quotes are line items with no production-rate engine ([R1](research/R1-field-service-platforms.md) s3.3) [S/E] | C, D, E | 2-5 points of net margin on mispriced installs | LMN-identical budget math, Aspire-style kits, takeoff-driven estimates, overhead recovery tracked against actuals | [03](03-crm-sales-estimating-proposals.md) [MVP] |
+| 5 | **Hard to learn, slow and costly to implement** | 11 (3+3+2+3) | Aspire: "learning curve, and some common tasks require too many steps", "intensive ramp up period" ([GetApp UK](https://www.getapp.co.uk/reviews/9108/aspire)); LMN "too difficult to use" ([Capterra](https://www.capterra.com/p/142064/LMN/reviews/)); Service Autopilot ease of use 3.8 ([Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/)); implementation fees $797-$1,497 (LMN) and about $995 (Real Green) [S/S3P] | B-E | Implementation fees; a lost spring if go-live slips | Opinionated defaults, regional starter price books and budgets, productized migration in days | [19](19-platform-admin-portal.md), [21](21-ux-design-system-sitemaps.md) [MVP] |
+| 6 | **Crew apps crash, need signal, or exclude crew members** | 10 (3+3+2+2) | LMN crashes and clunky navigation ([GetApp](https://www.getapp.com/industries-software/a/lmn/)); legacy Aspire Crew Mobile averaged 2.28 stars ([AppGoblin](https://appgoblin.info/apps/1392810365)); LMN Crew Member seats historically could not punch in or upload photos ([LMN permissions](https://intercom.help/lmn/en/articles/17699017-lmn-user-permissions)) [S] | A-E | Lost time records, re-entry, unbilled extras | Offline-first app on local SQLite, Spanish, every crew member included | [05](05-field-crew-mobile-app.md) [MVP] |
+| 7 | **Measuring is slow or a second subscription** | 10 (3+2+2+3) | Measuring large commercial sites "would take literal days" ([G2](https://www.g2.com/products/lmn)); PropertyIntel sold as an add-on ([Aspire](https://www.youraspire.com/go/landscape-estimating-property-measurement)); Jobber's Google Maps workaround ([Jobber help](https://help.getjobber.com/es/articles/how-to-measure-property-distance-and-size/)) [S] | B, C, D | Estimator days per commercial bid; a takeoff subscription | Parcel and aerial auto-trace in the Design Studio; geometry reused everywhere | [10](10-design-studio.md) [MVP] |
+| 8 | **Routing that wastes drive time** | 9 (3+2+3+1) | Optimizer uses "as the crow flies" distance; 30-40 stops a day; raised since week one ([Jobber Community](https://community.getjobber.com/discussions/job-details-scheduling/how-does-jobber-calculate-routes-and-can-it-use-real-driving-directions-instead-/8663/replies/9863)) [S] | A, B, E | Drive time is unbilled labor at about 43% labor share of revenue ([Wilson 360](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)) | Road-network routing, multi-crew VRP with skills, equipment and time windows | [04](04-scheduling-dispatch-routing.md) [MVP]/[V1] |
+| 9 | **Add-on stacking, tier gates and unpredictable prices** | 9 (3+2+2+2) | Users who only want Google reviews resent buying the Marketing Suite ([Jobber Community](https://community.getjobber.com/discussions/marketing-tools/google-reviews-only-for-marketing-suite/3726)); add-ons "add up fast" ([FieldCamp](https://fieldcamp.ai/reviews/jobber-reviews/)); trackers disagree by $100+/mo ([Costbench](https://costbench.com/changelog/jobber-price-increase-2026-02-3/)) [S/S3P] | A, B, C | 30-100% above list price [E, R1] | Every differentiator in Grow; published prices; Price Lock Promise | [22](22-business-model-pricing-gtm.md) [MVP] |
+| 10 | **Proposals that don't let clients see the result** | 9 (3+2+3+1) | Aspire users want "adding more photos to proposals" ([Capterra](https://www.capterra.com/p/161544/Aspire/reviews/?page=3)); contractors pay about $900/yr for PRO Landscape+ imaging ([Capterra](https://www.capterra.com/p/126135/PRO-Landscape/)); homeowners now use AI to visualize ([Axios](https://www.axios.com/local/washington-dc/2026/05/08/landscape-design-ai)) [S] | C (and enhancements in D) | Close rate on $10k+ installs | AI mockups of the client's own yard, plan views and plant cards in every proposal | [11](11-ai-design-mockups.md) [MVP] |
+| 11 | **Per-seat pricing punishes seasonal crews** | 9 (2+3+2+2) | Seat caps (Jobber 1/5/10/15, HCP 1/5/8) and per-user overages [S3P]; separate LMN seat types ([LMN permissions](https://intercom.help/lmn/en/articles/17699017-lmn-user-permissions)) [S]; winter headcount a third to two-fifths of peak ([02](02-personas-roles-permissions.md)) [E] | A-E | Paying peak seats all year | Active-only field seats; Winter Mode | [22](22-business-model-pricing-gtm.md) [MVP] |
+| 12 | **Plant choices ignore the Region; AI tools invent plants** | 8 (3+1+2+2) | PRO Landscape+ reviewers want "more native plants suited to their climate zone" ([Capterra UK](https://www.capterra.co.uk/software/126135/pro-landscape)); Neighborbrite could not recognize most plants in a test ([Penn State Extension](https://extension.psu.edu/ai-garden-design-intelligent-choices)); AI tools suggest plants that won't survive the zone ([Cognitive Future](https://cognitivefuture.ai/best-ai-tools-for-landscape-design/)) [S/S3P] | C | Plant warranty replacements; credibility | Operator-curated Plant KB with Region Profiles; closed-world AI rendering | [12](12-plant-knowledge-base.md) [MVP] |
+| 13 | **Snow and pesticide compliance need a second system or paper** | 8 (2+2+3+1) | "Manual job creation during snow events and spreadsheets for per-inch pricing" ([Agiled](https://agiled.app/blog/best-client-management-software-for-snow-removal), competitor-written); in-season documentation as "a legal shield" ([SIMA](https://resources.sima.org/snow-and-ice-resource-center/effective-in-season-documentation)); about 21-23 states plus DC have lawn-pesticide notification laws ([Beyond Pesticides](https://beyondpesticides.org/assets/media/documents/lawn/factsheets/STATE%20NOTFICATION%20LAWS%20-%20LAWN.pdf)) [S] | B, E | Slip-and-fall claims; fines; unbilled pushes | Snow event engine with proof-of-service packets; Application Compliance Engine with state rule packs | [14](14-service-line-modules.md) [MVP] lawn, [V1] snow |
+| 14 | **Support got worse after acquisitions** | 8 (3+2+1+2) | Slower support after the Xplor deal ([GetApp](https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/)); strong support complaints for Real Green ([Software Advice](https://www.softwareadvice.com.au/software/361337/service-assistant)) [S] | B, D | Downtime in peak season | In-app support grounded in docs and tenant data; SLAs on paid tiers; Copilot for how-to | [19](19-platform-admin-portal.md), [17](17-ai-copilot-automation.md) [MVP] |
+| 15 | **Reports collect data but don't drive decisions** | 8 (3+2+2+1) | Jobber "tracks the data but does nothing with it" ([LawnSite](https://www.lawnsite.com/threads/jobber-business-management-software-review.392517/)); Aspire pivot tables hard to read ([Capterra](https://www.capterra.com/p/161544/Aspire/reviews/?page=4)) [S] | B-E | Mispriced services that persist for seasons | KPI Dictionary, natural-language questions, "margin found" dashboard | [18](18-reporting-analytics.md) [MVP] |
+
+**Honorable mentions (score 6-7).** Automation that only works "once configured" (Service Autopilot) ([Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/?page=3)) [S]; AI receptionists without context ([TechRadar](https://www.techradar.com/pro/software-services/jobber-crm-review)) [S]; portals that are not mobile-friendly or are paywalled ([G2](https://g2.com/products/service-autopilot/reviews?page=3), [Arborgold pricing](https://arborgold.com/?p=17837)) [S]; no public API, hard to leave ([Supergood](https://supergood.ai/api-report-card/lmn)) [S3P]; commercial clients with 20 sites and no portfolio view [E]; contractors asking how to add card fees without compliance guidance ([Jobber Community](https://community.getjobber.com/discussions/invoicing-getting-paid/advice-adding-the-credit-card-service-fee-to-invoices/1228/replies/8669)) [S].
+
+**Owner-forum themes to verify [B].** Owners running three to five tools glued together with spreadsheets; software built for HVAC that does not understand seasons, programs or production rates; dread of a tool change in spring; a strong preference for tools a non-technical office manager can learn in a week. These recur in r/landscaping, r/lawncare and LawnSite discussions but were not retrieved as quotations in this run.
+
+```mermaid
+flowchart LR
+  P1["1 Tool sprawl"] --> M1["One shared record"]
+  P2["2 Books outside"] --> M2["Built-in ledger"]
+  P3["3 Processor lock-in"] --> M3["Bring your own Stripe"]
+  P4["4 Pricing for profit"] --> M4["Production-rate estimating"]
+  P7["7 Slow measuring"] --> M1
+  P10["10 Clients cannot see it"] --> M5["AI mockups tied to the plan"]
+  P12["12 Wrong plants"] --> M6["Curated region-aware Plant KB"]
+  P6["6 Fragile crew apps"] --> M7["Offline-first bilingual crew app"]
+  P8["8 Bad routing"] --> M8["Road-network multi-crew routing"]
+```
+
+---
+
+## 7. White-space opportunities
+
+Ranked by size of prize and how hard each is for incumbents to copy [E].
+
+| Rank | White space | Closest today | Why nobody occupies it | Size of prize [E] | Copy difficulty for incumbents (1-5) | Rootline asset | Priority |
+|---|---|---|---|---|---|---|---|
+| 1 | **Design-to-install-to-books on one data model** | PRO Landscape+ (design to proposal); Aspire (estimate to job cost) | Design tools and ops tools come from different eras, companies and data models | Every design-build sale and every enhancement | 5 (requires a rebuild) | Design Studio + estimating + scheduling + ledger ([10](10-design-studio.md), [03](03-crm-sales-estimating-proposals.md), [09](09-accounting-ledger-integrations.md)) | [MVP] |
+| 2 | **Region-aware plant intelligence inside sales and design** | Calscape-style regional lists outside any business tool | Requires horticultural curation and licensing, not just software ([R3](research/R3-design-ai-plant-data.md)) | Every planting job; warranty cost reduction | 5 (years of curation) | Operator-curated Plant KB with Region Profiles ([12](12-plant-knowledge-base.md)) | [MVP] |
+| 3 | **AI mockups constrained by real dimensions and real plants** | PRO Landscape+ AI; consumer apps | Generic image models ignore scale and Region; image generation is cheap, the constraints are the moat ([R3](research/R3-design-ai-plant-data.md)) | Close rate on residential design-build | 4 | Dimension-aware layouts and closed-world rendering ([11](11-ai-design-mockups.md)) | [MVP] |
+| 4 | **A vertical ERP with a real ledger at SMB price** | Aspire (stops at QuickBooks) | Accounting is hard and incumbents partner with Intuit | Bookkeeper hours, WIP accuracy, lender-ready financials, QBO subscription removed | 4 | Built-in GL ([09](09-accounting-ledger-integrations.md)) | [MVP] |
+| 5 | **Company-owned payments in vertical software** | None verified | Payments margin funds the incumbents | Trust, switching ease, 0.3-1.0 points of processing | 3 technically, 5 economically (they would give up their profit pool) | Bring-your-own Stripe ([08](08-payments-stripe.md)) | [MVP] |
+| 6 | **Twelve-month operations (green plus white) for mid-size firms** | Aspire snow module; Yeti | Snow tools and green tools are separate products; ERP modules priced for enterprise | Snow-belt firms, $1M-$20M revenue | 3 | Snow module on the shared model ([14](14-service-line-modules.md)) | [V1] |
+| 7 | **Mixed-service compliance** (chemicals plus design-build plus maintenance) | Real Green (lawn only) | Lawn tools do records; others do not | Every lawn division inside a full-service firm | 3 | Application Compliance Engine ([14](14-service-line-modules.md)) | [MVP] |
+| 8 | **Commercial client experience** (multi-property approvals, spend limits, audit-to-enhancement) | Aspire portal; Real Green address toggle | Portals are residential-first and transactional | Commercial retention and enhancement revenue | 3 | Commercial portal, site audits ([06](06-customer-portal.md)) | [V1] |
+| 9 | **Instant, satellite-priced booking under the Company's brand** | LawnStarter (marketplace owns the client); Real Green | Marketplaces want the client; SMB tools lack measurement | Residential maintenance acquisition | 3 | Branded instant quotes ([16](16-marketing-growth-communications.md)) | [V1] |
+| 10 | **Plan-set reading for commercial bids** | LMN with Beam AI (partner) | Requires document AI plus plant data plus estimating | Bids per estimator per week | 3 | Document understanding to takeoff to estimate ([17](17-ai-copilot-automation.md)) | [V1] |
+| 11 | **Offline-first, Spanish-first crew experience** | Unverified across vendors | Thin mobile clients over web-first backends | Labor productivity, retention of a 44.5% Hispanic workforce ([Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers)) | 2 | Crew app ([05](05-field-crew-mobile-app.md)) | [MVP] |
+| 12 | **Cross-tenant benchmarks with exact KPI definitions** | Wilson360 partner surveys | Benchmarks are surveys with inconsistent definitions | Owner engagement, pricing confidence | 4 (needs ledger-grade data at scale) | Opt-in anonymized benchmarks ([18](18-reporting-analytics.md)) | [V2] |
+| 13 | **Homeowner demand engine that feeds local Companies** | Yardzen (design plus referral); consumer AI apps | Consumer apps have no installer; marketplaces own the client | Design-ready leads | 4 | Rootline Home and Match ([22](22-business-model-pricing-gtm.md), [23](23-innovation-moonshots.md)) | [V1]-[V2] |
+
+```mermaid
+flowchart TB
+  G["Parcel and aerial geometry"] --> DS["Design Studio plan"]
+  KB["Region-aware Plant KB"] --> DS
+  DS --> MK["AI mockup of the client's yard"]
+  DS --> TO["Takeoff"]
+  TO --> ES["Estimate with production rates"]
+  ES --> PR["Proposal with options and deposit"]
+  MK --> PR
+  PR --> JB["Job, phases and visits"]
+  JB --> RT["Routes and crew app"]
+  JB --> PO["Purchase orders and nursery availability"]
+  RT --> INV["Invoices and autopay on the Company's Stripe"]
+  INV --> GL["Double-entry ledger, job cost and WIP"]
+  GL --> BM["Benchmarks and pricing feedback"]
+  BM --> ES
+```
+
+The diagram is the moat in one picture: every arrow is a re-keying step or a sync job in today's stack.
+
+---
