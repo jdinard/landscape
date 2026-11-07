@@ -16,7 +16,7 @@
 - **Differentiators:** one platform for multi-line companies that today run 2-4 niche tools; cross-module rules (seeding-safe pre-emergents, rainfast irrigation holds, zone maps that protect heads during aeration); court-ready snow proof; the Company's own private-line as-builts shown at the dig gate.
 - **Key cross-links:** [06](06-customer-portal.md) (treatments log, snow service log, warranty claims), [12](12-plant-knowledge-base.md) (species, pests and Region profiles for PHC and trees), [17](17-ai-copilot-automation.md) (AI Gateway, agents), [18](18-reporting-analytics.md) (module KPIs), [02](02-personas-roles-permissions.md) (roles and field masking).
 
-**Related docs:** [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md) | [Scheduling, dispatch and routing](04-scheduling-dispatch-routing.md) | [Field crew mobile app](05-field-crew-mobile-app.md) | [Customer portal](06-customer-portal.md) | [Invoicing and billing](07-invoicing-billing-contracts.md) | [Payments](08-payments-stripe.md) | [Accounting and ledger](09-accounting-ledger-integrations.md) | [Design Studio](10-design-studio.md) | [AI design and mockups](11-ai-design-mockups.md) | [Plant Knowledge Base](12-plant-knowledge-base.md) | [Operations, inventory and equipment](13-operations-inventory-equipment.md) | [Team, HR and payroll](15-team-hr-payroll.md) | [Marketing and growth](16-marketing-growth-communications.md) | [AI copilot and automation](17-ai-copilot-automation.md) | [Reporting and analytics](18-reporting-analytics.md) | [Platform admin](19-platform-admin-portal.md) | [Architecture and security](20-architecture-security.md) | [Pricing and GTM](22-business-model-pricing-gtm.md) | [Moonshots](23-innovation-moonshots.md) | [Roadmap](24-roadmap-feature-catalog.md)
+**Related docs:** [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md) | [Scheduling, dispatch and routing](04-scheduling-dispatch-routing.md) | [Field crew mobile app](05-field-crew-mobile-app.md) | [Customer portal](06-customer-portal.md) | [Invoicing and billing](07-invoicing-billing-contracts.md) | [Payments](08-payments-stripe.md) | [Accounting and ledger](09-accounting-ledger-integrations.md) | [Design Studio](10-design-studio.md) | [AI design and mockups](11-ai-design-mockups.md) | [Plant Knowledge Base](12-plant-knowledge-base.md) | [Operations, inventory and equipment](13-operations-inventory-equipment.md) | [Team, HR and payroll](15-team-hr-payroll.md) | [Marketing and growth](16-marketing-growth-communications.md) | [AI copilot and automation](17-ai-copilot-automation.md) | [Reporting and analytics](18-reporting-analytics.md) | [Platform admin](19-platform-admin-portal.md) | [Architecture and security](20-architecture-security.md) | [Pricing and GTM](22-business-model-pricing-gtm.md) | [Moonshots](23-innovation-moonshots.md) | [Product scope and feature catalog](24-roadmap-feature-catalog.md)
 
 **Scope boundary.** This doc owns the *domain rules* of each service line: what data exists, which rules gate scheduling, what compliance records must be produced, how each line is priced and billed. Generic mechanics live elsewhere and are only summarized here: the visit/route engine ([04](04-scheduling-dispatch-routing.md)), the mobile capture UX ([05](05-field-crew-mobile-app.md)), invoice generation and tax ([07](07-invoicing-billing-contracts.md)), revenue recognition and job costing ([09](09-accounting-ledger-integrations.md)), materials and subcontractor master data ([13](13-operations-inventory-equipment.md)), licenses and certifications of employees ([15](15-team-hr-payroll.md)).
 
@@ -26,14 +26,14 @@
 
 ### 1.1 Goals
 
-| # | Goal | Measurable target (estimate, to validate in beta) |
+| # | Goal | Measurable target (estimate, to validate with design partners) |
 |---|------|-----------------------------------------------|
 | G1 | A Company can switch on any combination of service lines in minutes, with region-appropriate templates pre-loaded. | Median time from toggle-on to first scheduled visit in that line under 30 minutes. |
 | G2 | Each module is deep enough that a specialist company (lawn-only, snow-heavy, tree-only) would not need a second niche tool. | Fewer than 10% of tenants using a given module also pay for a niche competitor for that line after 6 months (survey-based). |
 | G3 | Compliance is produced as a by-product of doing the work: pesticide records, sign posting, registry notifications, backflow reports, snow proof-of-service, 811 tickets. | 100% of chemical applications completed in the crew app produce a state-compliant record with zero extra office data entry. |
 | G4 | Every line bills itself correctly: rounds, prepay, per push, per event, seasonal with caps, per device, per tree, progress billing, storage fees. | Storm-event invoices generated within 2 hours of event closure; under 2% of event invoices disputed (estimate). |
 | G5 | Service lines cross-sell each other through shared property data (an irrigation zone map protects heads during aeration; an audit finding becomes an enhancement proposal; a tree inventory seeds a PHC program). | Multi-line clients (2+ lines) grow as a share of revenue quarter over quarter. |
-| G6 | The platform operator (platform_owner) and curators (platform_curator) maintain shared rule packs (state pesticide rules, product label library, backflow jurisdiction rules) once, for every tenant. | Rule pack coverage for all US states plus the Canadian provinces where tenants operate before GA of each compliance feature. |
+| G6 | The platform operator (platform_owner) and curators (platform_curator) maintain shared rule packs (state pesticide rules, product label library, backflow jurisdiction rules) once, for every tenant. | Rule pack coverage for all US states plus the Canadian provinces where tenants operate before each compliance feature ships. |
 
 ### 1.2 Non-goals
 
@@ -119,7 +119,7 @@ The landscape software market splits along service lines:
 
 ## 4. Feature specification
 
-Feature tags: **[MVP]** first sellable release, **[V1]** within ~12 months of MVP, **[V2]** 12-24 months, **[V3]** moonshot 2+ years.
+Feature tags are scope tiers, not dates: **[MVP]** first sellable release, **[V1]** next scope wave, **[V2]** later wave, **[V3]** moonshot or long-term.
 
 ### 4.0 Service-Line Framework and configuration model
 
@@ -613,7 +613,7 @@ Common contract parameters:
 | Seasonal installments and true-ups | Floors, caps, per-inch indexing | Event billing (4.3.8) and season-end true-up |
 
 Validation rules:
-- A site cannot be dispatched without a Snow Terms block, an approved site map (warning only at V1 launch; hard requirement in V2) and, for subcontracted sites, a valid subcontractor COI on file ([13](13-operations-inventory-equipment.md)).
+- A site cannot be dispatched without a Snow Terms block, an approved site map (warning only at [V1]; hard requirement at [V2]) and, for subcontracted sites, a valid subcontractor COI on file ([13](13-operations-inventory-equipment.md)).
 - Contracts with seasonal models must define installments; installments are invoiced regardless of events; event logs still record work for proof and job costing.
 
 #### 4.3.2 Site maps with priorities [V1 basic, V2 full]
@@ -779,7 +779,7 @@ The Inspection Engine ships a risk assessment template aligned with ANSI A300 Pa
 
 #### 4.4.4 Permits [V2]
 
-- **Protected tree rules** (tenant-maintained at V2 launch, curated packs for top metros in V3): jurisdiction, protected species list, DBH threshold, heritage tree rules, replacement requirements, permit fee, review time.
+- **Protected tree rules** (tenant-maintained at [V2], curated packs for top metros at [V3]): jurisdiction, protected species list, DBH threshold, heritage tree rules, replacement requirements, permit fee, review time.
 - Prescriptions that match a rule auto-create a **Permit** record (type: tree removal, right-of-way/street tree, traffic control/lane closure, crane/road occupancy) with status (`not_started`, `submitted`, `approved`, `denied`, `expired`), attachments, fee and expiry. Removal Visits cannot be scheduled until the permit is `approved` (override by owner with reason).
 - **Nesting season check:** removal or heavy pruning scheduled during the configured nesting season prompts a pre-work nest inspection checklist (federal Migratory Bird Treaty Act protections apply to active nests of covered species; verify Company procedures with counsel).
 
@@ -2943,7 +2943,7 @@ The AI-numbered rows below are this module's opportunities; agent runtime, auton
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Rule packs out of date or wrong | Tenant violates law believing the software was correct. | `last_verified_on` displayed; curator SLAs (each pack re-verified at least annually and on known law changes); disclaimers; tenant can add stricter rules; legal review of top-10 states before GA; pack change notifications to affected tenants. |
+| Rule packs out of date or wrong | Tenant violates law believing the software was correct. | `last_verified_on` displayed; curator SLAs (each pack re-verified at least annually and on known law changes); disclaimers; tenant can add stricter rules; legal review of top-10 states before their packs ship; pack change notifications to affected tenants. |
 | Over-blocking operations (gates too strict) | Crews idle on a clear day because of a data issue. | Every gate has an audited override path for owner/ops; gate health dashboard; offline cached gate state. |
 | Proof packets challenged in court | Lost claims, reputational damage. | Hashing, object lock, trusted timestamps, explicit gap disclosure, chain-of-custody export; engage a snow-litigation attorney to review the packet format before launch. |
 | Smart-controller API changes or rate limits | Broken integrations, silent data gaps. | Adapter pattern, contract tests, vendor relationship, link health monitoring visible in the admin console. |
@@ -2951,7 +2951,7 @@ The AI-numbered rows below are this module's opportunities; agent runtime, auton
 | AI misidentifies species or risk | Unsafe tree work or wrong treatment. | AI never assigns risk or applies products; assessor/applicator confirmation is mandatory. |
 | Snow-season load spikes | Thousands of tenants hit the platform at 3 a.m. in the same storm. | Regional autoscaling, offline-first crew app, queue-based log ingestion, load tests simulating a Northeast storm ([20](20-architecture-security.md)). |
 | Cross-module rule fatigue | Too many warnings and crews start ignoring them, including the safety ones. | Three severities only; per-tenant hit and override analytics; any warn-level rule overridden more than 30% of the time is reviewed by `platform_curator` for tuning; safety blocks are few and never noisy by design. |
-| Scope creep across thirteen modules | Specialist depth promised everywhere, delivered nowhere. | Phasing in 4.0.1 (snow V1, tree V2); each module needs three design-partner Companies running it in production before GA. |
+| Scope creep across thirteen modules | Specialist depth promised everywhere, delivered nowhere. | Phasing in 4.0.1 (snow V1, tree V2); each module needs three design-partner Companies running it in production before it is offered to all tenants. |
 
 ---
 
@@ -3034,8 +3034,8 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 
 ## 14. Open questions
 
-1. **Rule pack liability and staffing:** how many `platform_curator` hours per state per year are needed to keep pesticide, fertilizer, registry and auto-renew rule packs current, and should packs be sold as a premium "Compliance+" add-on or included? (Recommendation: include basic packs; charge for registry automation and regulator export formats.)
-2. **Which states first?** The launch region sets the first set: Ohio, Michigan, Illinois, Indiana and Wisconsin for the Wave 1 Great Lakes Regions, then New York and Pennsylvania (and Ontario) for Wave 2 at V1, plus all states with registries, validated with counsel before GA ([24](24-roadmap-feature-catalog.md) OD-01).
+1. **Rule pack liability and upkeep:** what curation process (review cadence, source watchers, counsel sign-off per state) keeps pesticide, fertilizer, registry and auto-renew rule packs current in every state, and should packs be sold as a premium "Compliance+" add-on or included? (Recommendation: include basic packs; charge for registry automation and regulator export formats.)
+2. **Which states first?** The launch region sets the first set: Ohio, Michigan, Illinois, Indiana and Wisconsin for the Wave 1 Great Lakes Regions, then New York and Pennsylvania (and Ontario) for Wave 2 at [V1], plus all states with registries, each validated with counsel before its packs ship ([24](24-roadmap-feature-catalog.md) OD-01).
 3. **Snow proof format review:** which snow-litigation defense attorneys and insurers will review the packet format, and do we need an expert-witness-ready affidavit template?
 4. **Seasonal snow revenue recognition:** confirm with the accounting advisor the default recognition pattern for seasonal contracts (ratably over the season vs by expected events) and how caps/overages affect it ([09](09-accounting-ledger-integrations.md)).
 5. **Smart controller partnerships:** do Hunter, Rachio, Rain Bird and Weathermatic offer contractor-partner API programs with higher rate limits and multi-site tokens, and on what commercial terms?
@@ -3044,12 +3044,12 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 8. **TRAQ dependency:** should risk reports be hard-blocked for non-TRAQ users, or should the Company define its own qualification policy? (Current spec: template-level flag set by the Company.)
 9. **Module pricing:** which modules are plan-included vs paid add-ons ([22](22-business-model-pricing-gtm.md))? Snow is the most valuable add-on candidate; lawn compliance may be a wedge that should be included.
 10. **Franchise systems:** mosquito and holiday lighting are heavily franchised; do we need franchisor-level rollups (central product mixes, brand-standard programs) in V1 or V2?
-11. **Canada at launch:** which provinces' pesticide and one-call rules are in the launch set, and is French-language content required for rule-pack notices in Quebec before French UI ships?
+11. **Canada at [V1]:** which provinces' pesticide and one-call rules are in the first Canadian set (Ontario at minimum, with the Golden Horseshoe Region), and is French-language content required for rule-pack notices in Quebec before French UI ships?
 12. **Employee location data:** what is the default breadcrumb retention for employees (separate from proof packets) that balances privacy law and claim defense?
-13. **Agronomy authority:** cross-module rules X1, X3 and X5 encode label-driven agronomy. Does `platform_curator` need a turf agronomist (in addition to horticulturists) on staff or on an advisory board to own those defaults, and how are label-specific intervals kept in sync with the product library?
+13. **Agronomy authority:** cross-module rules X1, X3 and X5 encode label-driven agronomy. Should a turf agronomist (in addition to the horticulturists who curate plants) review and sign off those defaults for `platform_curator`, and how are label-specific intervals kept in sync with the product library?
 14. **Leased holiday lights in the books:** should leased strands default to inventory (expensed as consumed) or to a capitalized equipment class with a 3-5 year life? The answer changes the posting rules in [09](09-accounting-ledger-integrations.md) and should be decided with the accounting advisor.
-15. **Snow clause library legal review:** which jurisdictions' anti-indemnification statutes and contract norms must be reviewed by counsel before the clause library ships at V1, and does SIMA offer reviewed template language we can license?
-16. **Phasing confirmation:** confirmed in [24](24-roadmap-feature-catalog.md): the full `snow_ice` module is [V1] and `tree_care` is [V2], and the MVP includes Snow Lite (4.3.0) on every plan because the launch region is the Great Lakes (OD-01, OD-05). Still open: which Wave 1 design partners need more than Snow Lite in the MVP winter (seasonal caps, subcontracted sites, salt tracking), and how each bridges until the full module.
+15. **Snow clause library legal review:** which jurisdictions' anti-indemnification statutes and contract norms must be reviewed by counsel before the clause library ships at [V1], and does SIMA offer reviewed template language we can license?
+16. **Phasing confirmation:** confirmed in [24](24-roadmap-feature-catalog.md): the full `snow_ice` module is [V1] and `tree_care` is [V2], and the MVP includes Snow Lite (4.3.0) on every plan because the launch region is the Great Lakes (OD-01, OD-05). Still open: which Wave 1 design partners need more than Snow Lite at [MVP] (seasonal caps, subcontracted sites, salt tracking), and how each bridges until the full module.
 
 ---
 

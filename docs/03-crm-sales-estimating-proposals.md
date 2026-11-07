@@ -158,7 +158,7 @@ Role keys follow [02 - Personas, roles and permissions](02-personas-roles-permis
 
 ## 4. Feature specification
 
-Every feature carries a priority tag: **[MVP]** first sellable release, **[V1]** within about 12 months of MVP, **[V2]** 12-24 months, **[V3]** moonshot.
+Every feature carries a scope tag: **[MVP]** first sellable release, **[V1]** next scope wave, **[V2]** later wave, **[V3]** moonshot / long-term. Tags are scope tiers, not dates; [24](24-roadmap-feature-catalog.md) is binding where docs differ.
 
 ### 4.1 Lead capture and intake
 
@@ -2057,7 +2057,7 @@ Legal statements in this section come from general legal knowledge, not primary 
 | Time-to-estimate | Median time from estimate open to approved, by job type | Mowing under 2 min; 300 sq ft patio under 20 min |
 | Visual proposal share | Executed proposals with mockup or plan / executed proposals | 40% for design-build |
 | Intel coverage | Quotes produced with intel-sourced measurements / all quotes | 70% residential maintenance |
-| AI draft acceptance | AI-created lines accepted without edit / AI-created lines | 60% at V1 GA |
+| AI draft acceptance | AI-created lines accepted without edit / AI-created lines | 60% after a tenant's first 90 days of AI drafting |
 | Instant quote conversion | Online quotes signed / online quotes shown | Track; no target until baseline |
 | Follow-up automation coverage | Sent proposals with an active cadence / sent proposals | 95% |
 | Quick Quote share | Residential maintenance and enhancement proposals created in Quick Quote / all such proposals | 60% by end of first season |

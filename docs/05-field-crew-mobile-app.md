@@ -6,12 +6,12 @@
 
 - **What it is:** the React Native (Expo), offline-first app that `technician`, `crew_lead` and field estimators use all day. It executes the Visits and Routes planned in [04](04-scheduling-dispatch-routing.md) and produces the field truth (time, photos, materials, chemical records, signatures, field payments) behind job costing, invoicing, payroll and the client portal.
 - **Decision 1 - offline is the normal state.** The UI reads only from local SQLite; every action is a local write plus a mutation in a priority lane, synced with the bucket protocol owned by [20](20-architecture-security.md) section 4.11 (ADR-008). Append-only records for punches, chemical records and signatures; state-machine merge for Visit status (`completed` beats an office `canceled` and opens a billing review); field-level last-writer-wins by HLC elsewhere. Nothing is silently discarded.
-- **Decision 2 - time is an append-only stream of punch events.** Segments are `shop`, `drive`, `job`, `meal_break`, `rest_break`, `training` and `equipment_repair`, with a one-tap crew-level punch and signed clock-out attestations. Timesheet derivation, pay rules and weekly approval belong to [15](15-team-hr-payroll.md).
+- **Decision 2 - time is an append-only stream of punch events.** Segments are `shop`, `drive`, `job`, `meal_break`, `rest_break`, `training` and `equipment_repair`, with a one-tap crew-level punch and signed clock-out attestations ([V1], with the California pack). Timesheet derivation, pay rules and weekly approval belong to [15](15-team-hr-payroll.md).
 - **Decision 3 - Visit states are the canonical keys from [04](04-scheduling-dispatch-routing.md) 4.1.3.** The app runs the field subset (`dispatched` -> `en_route` -> `on_site` -> `in_progress` / `paused` -> `completed` / `partially_completed` / `skipped`) with the closed skip reason codes, and the server-computed verification status (4.4.5a) gates per-visit invoicing in [07](07-invoicing-billing-contracts.md).
 - **Decision 4 - field money lands in the Company's own Stripe account** as direct charges ([08](08-payments-stripe.md)); Rootline never holds client funds. Cash and checks follow the ledger posting rules in [09](09-accounting-ledger-integrations.md) (1065 Cash in Transit, then 1060 Undeposited Funds, then the bank).
 - **Decision 5 - "off the clock = invisible."** No location collection when clocked out or during unpaid meals; payroll-grade arrivals come from dual-path detection (OS geofences plus in-app GPS against the parcel polygon).
-- **[MVP]:** Today and route view, navigation handoff, visit workflow with checklists and before/after photos, crew and individual time with California meal/rest attestations, chemical application records with weather auto-fill, the Snow Lite storm visit log, signatures, check/cash recording, text-to-pay and card on file, Spot it upsell capture, voice notes with EN/ES translation, safety (tailgate talks, DVIR, California heat procedures, incident reports), crew chat and announcements, the sync engine, Outdoor Mode and Spanish-first UX.
-- **[V1] and later:** Tap to Pay and Bluetooth readers, shop kiosk, MDM, manager mode, satellite offline map packs, non-California break and heat packs, multi-day install logs, JHA, lone-worker safety, "Pick up extra work" [V1]; in-app turn-by-turn and consented face verification [V2].
+- **[MVP]:** Today and route view, navigation handoff, visit workflow with checklists and before/after photos, crew and individual time with meal and rest break segments and Federal plus Great Lakes launch-state break reminders, chemical application records with weather auto-fill, the Snow Lite storm visit log, signatures, check/cash recording, text-to-pay and card on file, Spot it upsell capture, voice notes with EN/ES translation, safety (tailgate talks, DVIR, incident reports), crew chat and announcements, the sync engine, Outdoor Mode and Spanish-first UX.
+- **[V1] and later:** Tap to Pay and Bluetooth readers, shop kiosk, MDM, manager mode, satellite offline map packs, California meal/rest attestations and heat procedures plus other state and provincial break and heat packs (the Great Lakes launch states need none of them at MVP), multi-day install logs, JHA, lone-worker safety, "Pick up extra work" [V1]; in-app turn-by-turn and consented face verification [V2].
 - **Differentiators:** a full 10-hour day in a dead zone with zero lost records, UX for gloves, glare and a 3 GB Android, compliance produced as a side effect of the work (attestations, chemical records, heat logs), and tips split to the crew by clocked hours.
 - **Key cross-links:** schedule, Visit state machine and ETA in [04](04-scheduling-dispatch-routing.md); client-visible photos, notes and application records in [06](06-customer-portal.md); payments in [08](08-payments-stripe.md); posting rules in [09](09-accounting-ledger-integrations.md); program rounds and pesticide compliance in [14](14-service-line-modules.md); timesheets and pay in [15](15-team-hr-payroll.md); sync protocol and device security in [20](20-architecture-security.md); crew app sitemap in [21](21-ux-design-system-sitemaps.md).
 
@@ -131,7 +131,7 @@ Maria is a crew lead for "Greenleaf Grounds Co." in Sacramento in July. At 6:45 
 
 ## 4. Feature specification
 
-Priority tags: [MVP] first sellable release, [V1] within ~12 months of MVP, [V2] 12-24 months, [V3] moonshot.
+Scope tags: [MVP] first sellable release, [V1] next scope wave, [V2] later wave, [V3] moonshot / long-term. Tags are scope tiers, not dates; [24](24-roadmap-feature-catalog.md) is binding where docs differ.
 
 ### 4.0 App shell, device modes and navigation
 
@@ -340,7 +340,7 @@ Rules:
 - Neighboring stops (a cul-de-sac with 3 clients on the route) are disambiguated by the route order, then by the nearest polygon. If two visits remain plausible, the prompt asks "Which property? 14 Pine / 16 Pine".
 - Detection telemetry (path A only, path B only, both, manual) is logged per arrival so precision and recall can be tracked per device model (section 12).
 
-**4.5.5 Breaks and meals [MVP].** "Start break" (rest) and "Start meal" (unpaid) for the crew or an individual. During an unpaid meal, location tracking is paused (section 4.23) and the clock pill counts down ("Meal 18:40 left"). Jurisdiction-aware reminders [MVP for CA, V1 for other states/provinces]:
+**4.5.5 Breaks and meals [MVP].** "Start break" (rest) and "Start meal" (unpaid) for the crew or an individual. During an unpaid meal, location tracking is paused (section 4.23) and the clock pill counts down ("Meal 18:40 left"). Jurisdiction-aware reminders use the policy packs in [15](15-team-hr-payroll.md): Federal plus the Great Lakes launch states (Ohio, Michigan, Illinois, Indiana, Wisconsin) at [MVP]; California, the reference pack below, and other states and provinces at [V1] (per [24](24-roadmap-feature-catalog.md) section 4.6 #18):
 
 | Jurisdiction rule (California example, verify with counsel) | App behavior |
 |---|---|
@@ -351,7 +351,7 @@ Rules:
 | No rounding of meal punches | Meal punches are stored and paid to the minute; rounding rules never apply to meal segments |
 | Daily overtime > 8 h, double time > 12 h | Approaching-OT alert to crew lead at 7h30m and 11h30m; weekly 38h alert |
 
-Other jurisdiction packs [V1] use the same reminder engine with different parameters. The values below are the starting configuration for legal review, not legal advice (all verify):
+Other jurisdiction packs use the same reminder engine with different parameters: the launch-state rows are [MVP], all others [V1]. The values below are the starting configuration for legal review, not legal advice (all verify):
 
 | Jurisdiction | Meal rule (summary) | Rest rule (summary) | Reminder configuration |
 |---|---|---|---|
@@ -360,11 +360,12 @@ Other jurisdiction packs [V1] use the same reminder engine with different parame
 | Colorado (COMPS Order) | 30-min meal for shifts over 5 hours | 10-min paid rest per 4 hours | California-like pattern without the second-meal alert |
 | Ontario (ESA) | 30-min eating period so no more than 5 consecutive hours are worked without one | No statutory paid rest | Alert at 4h30m consecutive work |
 | British Columbia (ESA) | 30-min meal so no more than 5 consecutive hours are worked without one | No statutory paid rest | Same as Ontario |
-| States with no adult meal/rest mandate (many) | Company policy only | Company policy only | Reminders off by default; Company can enable its own policy |
+| Illinois (One Day Rest in Seven Act) [MVP] | 20-min meal for 7.5 or more continuous hours, starting no later than the 5th hour; another 20-min meal for each further 4.5 continuous hours | No statutory paid rest | Meal reminder at 4h15m; alert at 4h45m |
+| States with no adult meal/rest mandate (many, including the launch states Ohio, Michigan, Indiana and Wisconsin) [MVP] | Company policy only | Company policy only | Reminders off by default; Company can enable its own policy |
 
 **4.5.6 Shared-tablet PIN mode [MVP].** On a crew device, a big numeric keypad screen ("¿Quién eres? / Who are you?") with crew members' faces/initials as quick-pick tiles, then PIN. Actions available without PIN: none except emergency info. Punch photo [V1]: an optional camera capture at punch to deter buddy punching, stored as a photo (no biometric template). Face matching is **not** performed by default; a consented face-verification option [V2] is disabled in jurisdictions with biometric privacy laws (Illinois BIPA, Texas, Washington; verify) unless the Company completes the required written-consent workflow.
 
-**4.5.7 Clock-out attestations [MVP].** At clock-out (individual or crew-lead initiated with member confirmation), Rootline shows a short attestation in the member's language when the Company's policy requires it (default on for California):
+**4.5.7 Clock-out attestations [V1, with the California pack].** At clock-out (individual or crew-lead initiated with member confirmation), Rootline shows a short attestation in the member's language when the Company's policy requires it (default on for California):
 
 ```text
 Today you worked 9 h 42 min.
@@ -578,7 +579,7 @@ Outputs by category and Company rules:
 
 **4.12.4 Incident reports [MVP].** Types: injury/illness, near miss, vehicle accident, property damage (e.g., mower-thrown rock broke a window), client complaint on site, equipment damage, chemical exposure/spill. Captures: who, what, where (map), when, photos/video, witnesses (with statements by voice), immediate actions, first aid given, third-party info (driver license/insurance photos for vehicle accidents). Rules: injury incidents notify `owner` and safety contact immediately (push + SMS); report remains editable by the reporter for 24 h then locks; OSHA 300 log fields (case classification, days away) completed in the web app by the safety admin ([15](15-team-hr-payroll.md)); property-damage incidents can generate a client communication and an internal claim.
 
-**4.12.5 Heat illness prevention [MVP for CA, V1 elsewhere].** California's outdoor heat standard requires fresh water, shade when temperatures exceed 80 F and when requested, cool-down rest, and high-heat procedures at 95 F for certain industries ([Ogletree](https://ogletree.com/insights/the-heat-is-on-in-california-cal-oshas-heat-illness-prevention-requirements-for-outdoor-work-sites/), [Cal/OSHA news](https://dir.ca.gov/DIRNews/2023/2023-43.html)). Landscaping is listed among the 8 CCR 3395(e) high-heat industries. The water provision is commonly stated as at least one quart per employee per hour (verify current 8 CCR 3395). Three details from the standard shape the app (verify each against the current text):
+**4.12.5 Heat illness prevention [V1; California pack first].** California's outdoor heat standard requires fresh water, shade when temperatures exceed 80 F and when requested, cool-down rest, and high-heat procedures at 95 F for certain industries ([Ogletree](https://ogletree.com/insights/the-heat-is-on-in-california-cal-oshas-heat-illness-prevention-requirements-for-outdoor-work-sites/), [Cal/OSHA news](https://dir.ca.gov/DIRNews/2023/2023-43.html)). Landscaping is listed among the 8 CCR 3395(e) high-heat industries. The water provision is commonly stated as at least one quart per employee per hour (verify current 8 CCR 3395). Three details from the standard shape the app (verify each against the current text):
 - **Effective communication.** During high heat, employees must be able to reach a supervisor by voice, observation or electronic means. Electronic means such as a phone count only where reception is reliable. When the crew device has had no signal for 15 minutes or more during an active High Heat Procedure, the app shows the crew lead: "No signal here. Phone check-ins don't count. Use voice or visual checks." That condition is also recorded in the heat log.
 - **Mandatory periodic cool-down.** The mandatory 10-minute cool-down every 2 hours at 95 F applies to agriculture in the California rule, not to landscaping. Rootline's 2-hour prompts for landscaping are a Company policy default and are labeled that way, so the app never claims a legal requirement it cannot cite.
 - **Heat waves and acclimatization.** Close observation applies to new employees during their first 14 days and to everyone during a heat wave. Rootline uses a working definition of 80 F or above and at least 10 F above the average high of the prior 5 days (verify). The heat wave is computed from the cached forecast and history for each route.
@@ -910,7 +911,7 @@ Target: invite to first successful clock-in in under 10 minutes, median, without
 - **No surprises mid-shift.** An update downloads in the background but applies only at a cold start while the user is clocked out and `_mutation_queue` is empty. Critical security fixes can force the update at the next clock-out.
 - **Staged rollout:** 1% of devices, then 10%, 50% and 100%, with automatic gates between steps: crash-free sessions >= 99.8%, sync success >= 99.9% and no rise in `_conflict` rate against the previous version. A failed gate halts the rollout and rolls the bundle back.
 - **Kill switches:** every major feature (geofence automation, Tap to Pay, AI translation, Field Design AR) has a remote flag delivered through `GET /mobile/v1/config` and controlled from the operator console ([19](19-platform-admin-portal.md)). A misbehaving feature is turned off for one tenant, one device model or everyone in minutes, without a store release.
-- Native releases go through the stores every 2-4 weeks, with the minimum-version gate in 4.21.4.
+- Native releases go through the app stores on a regular cadence, with the minimum-version gate in 4.21.4.
 
 **4.24.4 In-app support and diagnostics [MVP].** "Report a problem" (from More, or by shaking the phone, which can be turned off for gloved users) captures a voice or text description and a **diagnostics bundle**. The bundle holds app and OS version, device model, permission states, battery-optimization state, storage free, queue counts by type and age, the last 50 sync errors and geofence telemetry. It contains no record contents, photos or location breadcrumbs. It goes to the Company admin and, if the Company allows, to `platform_support` ([19](19-platform-admin-portal.md)). With tenant consent, support can raise one device's log level for 24 hours. The crew lead sees a plain-language "Your phone is fine / Your phone needs attention" result with the top fix, for example "Battery saver is stopping Rootline. Tap to fix."
 
@@ -1214,7 +1215,7 @@ flowchart TD
 | S12 | Spot it | All field | Yes | [MVP] |
 | S13 | Clock (self) and break timer | All employees | Yes | [MVP] |
 | S14 | Crew clock (crew-level punch, detach/attach) | crew_lead | Yes | [MVP] |
-| S15 | Clock-out attestation | Employees in policy jurisdictions | Yes | [MVP] |
+| S15 | Clock-out attestation | Employees in policy jurisdictions | Yes | [V1] |
 | S16 | Crew time review and approval | crew_lead | Yes | [MVP] |
 | S17 | End-of-day report | crew_lead | Yes (AI draft on sync) | [MVP] |
 | S18 | Safety hub: tailgate talk, JHA, DVIR, incident, heat log, emergency | crew_lead, all | Yes | [MVP]/[V1] |
@@ -1892,7 +1893,7 @@ Guardrails: AI never submits time, attestations, chem records or payments; AI-tr
 | Crews refuse location permissions | Medium | Medium | Clear "off the clock = invisible" promise, Spanish explanation, app works without location (manual punches flagged "no location") |
 | Tap to Pay availability/entitlement delays | Medium | Medium | Payment links and Bluetooth readers as fallback; apply for entitlement early |
 | AI translation errors on critical instructions | Medium | High | Human-reviewed platform content; "original" always one tap away; glossary; crew-lead confirmation for safety-critical notes |
-| Regulatory variance across 60+ jurisdictions | High | Medium | Policy packs maintained by platform staff with legal review; California first; clear "verify with counsel" in setup |
+| Regulatory variance across 60+ jurisdictions | High | Medium | Policy packs maintained by platform staff with legal review; Federal and Great Lakes launch-state packs first, California at [V1]; clear "verify with counsel" in setup |
 | Low-end device performance | Medium | High | Performance budgets enforced in CI on reference devices; lazy-loaded modules |
 | Gamification backlash (surveillance feel) | Medium | Medium | Team-based defaults, opt-in individual boards, no speed-only metrics |
 | Map SDK and AI costs per device | Medium | Medium | Offline tile caps, AI credit metering, telematics-assisted low-power mode |

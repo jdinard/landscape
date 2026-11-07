@@ -15,7 +15,7 @@
 - **Differentiators:** personal prices in every campaign, a design-led lead magnet that delivers leads with photos and dimensions, route-aware neighbor marketing, ROI to the ledger, and compliance plumbing that competitors leave to their customers.
 - **Key cross-links:** pipeline and pricing engine in [03](03-crm-sales-estimating-proposals.md); visualizer engine in [11](11-ai-design-mockups.md); meters and packaging in [22](22-business-model-pricing-gtm.md); automation and agents in [17](17-ai-copilot-automation.md); posting rules in [09](09-accounting-ledger-integrations.md); preference center in [06](06-customer-portal.md); permission keys in [02](02-personas-roles-permissions.md).
 
-**Document status:** Proposal, 2026-11-07. Priority tags: [MVP] first sellable release, [V1] within ~12 months of MVP, [V2] 12-24 months, [V3] moonshot.
+**Document status:** Proposal, 2026-11-07. Priority tags are scope tiers: [MVP] first sellable release, [V1] next scope wave, [V2] later wave, [V3] moonshot / long-term.
 
 **Related docs:** [CRM, Sales, Estimating, Proposals](03-crm-sales-estimating-proposals.md) (owns Lead/Opportunity pipeline), [Scheduling](04-scheduling-dispatch-routing.md) (capacity, routes, weather), [Crew App](05-field-crew-mobile-app.md) (photos, on-my-way, door hangers), [Customer Portal](06-customer-portal.md) (preference center, portal messages), [Invoicing](07-invoicing-billing-contracts.md), [Payments](08-payments-stripe.md), [Ledger](09-accounting-ledger-integrations.md), [AI Design and Mockups](11-ai-design-mockups.md), [Plant KB](12-plant-knowledge-base.md), [Service Lines](14-service-line-modules.md), [AI Copilot and Automation](17-ai-copilot-automation.md) (automation engine shared with journeys), [Reporting](18-reporting-analytics.md), [Platform Admin](19-platform-admin-portal.md), [Architecture and Security](20-architecture-security.md), [UX and Design System](21-ux-design-system-sitemaps.md), [Pricing and GTM](22-business-model-pricing-gtm.md).
 
@@ -51,7 +51,7 @@
 | G2 | Prospects can get a **firm** price and book recurring lawn service online without a site visit for standard properties ([V1]). | At least 60% of residential mowing inquiries in supported regions receive an auto-priced instant quote; repricing after first visit under 3%. |
 | G3 | Every inbound lead, from any channel, lands in one inbox and gets a first response in minutes, day or night. | Median speed-to-first-response under 2 minutes (AI or human) across channels; missed-call rate under 5% for tenants with AI receptionist. |
 | G4 | Owners can see which marketing dollars produce **profitable** work, using revenue and margin from the built-in [Ledger](09-accounting-ledger-integrations.md), not just "leads". | Attribution coverage (leads with a known source) at least 90%; campaign ROI report reconciles to GL revenue within 1%. |
-| G5 | Turn the existing client base into the cheapest growth channel: reviews, referrals, upsells and neighbors. | Review requests sent after at least 80% of eligible completed jobs; referral program live at 40% of tenants within 12 months of its V1 launch; upsell revenue tracked per campaign. |
+| G5 | Turn the existing client base into the cheapest growth channel: reviews, referrals, upsells and neighbors. | Review requests sent after at least 80% of eligible completed jobs; referral program live at 40% of tenants within 12 months of the program's release ([V1]); upsell revenue tracked per campaign. |
 | G6 | Make messaging compliance invisible but airtight: 10DLC registration, consent evidence, opt-outs, quiet hours, recording disclosures. | 95% of US tenants with approved 10DLC campaign within 10 business days of signup (dependent on carriers); zero sends to opted-out recipients (hard invariant). |
 | G7 | Provide all platform modules with one notification and template system that is localized (English and Spanish at launch), brandable and auditable. | 100% of client-facing messages rendered through the template service; Spanish coverage of all platform default templates at MVP. |
 
@@ -154,7 +154,7 @@ The module is organized into nine feature groups:
 
 Each Company gets one primary Site (multiple Sites per Company for multi-brand operators [V2]). Sites are rendered by a multi-tenant Next.js renderer on an edge CDN with incremental static regeneration (see [20](20-architecture-security.md)); content is structured data, not free-form HTML, so it can be regenerated, translated and kept in sync with operational data.
 
-**Roadmap and packaging:** Sites ship at [V1] (binding retag in [24](24-roadmap-feature-catalog.md) section 4.6) as the Website + Online Booking add-on ($49 a month on Starter and Grow, one site included on Pro, per [22](22-business-model-pricing-gtm.md)). Sending-domain DNS in 4.1.7 ships at [MVP], because every Company's email needs it from the first day. Until Sites ship, Companies keep their current website and embed Rootline forms, chat and the visualizer widget (4.2.2).
+**Scope and packaging:** Sites ship at [V1] (binding retag in [24](24-roadmap-feature-catalog.md) section 4.6) as the Website + Online Booking add-on ($49 a month on Starter and Grow, one site included on Pro, per [22](22-business-model-pricing-gtm.md)). Sending-domain DNS in 4.1.7 ships at [MVP], because every Company's email needs it from the first day. Until Sites ship, Companies keep their current website and embed Rootline forms, chat and the visualizer widget (4.2.2).
 
 <a id="411-landscape-templates-and-theme-system-mvp"></a>
 
@@ -211,7 +211,7 @@ Local SEO depends on city pages, but templated pages that differ only by city na
 - Plant library pages show KB data relevant to the Company's Region(s): common and botanical names, mature size, light, water, hardiness, bloom time, native status for the ecoregion, deer resistance, and the **Plant Region Profile** rating and notes written by `platform_curator` ([12](12-plant-knowledge-base.md)).
 - Tenants can add **"We install this"** notes, their own photos of the plant in their projects, and a typical installed price per container size.
 - **Duplicate-content strategy (opinionated):** KB core text is identical across many tenant sites. To avoid thin duplicated pages, a tenant plant page is **indexable only when it has tenant-unique content** (at least 2 tenant project photos featuring the plant and at least 120 words of tenant notes). Otherwise it is rendered for visitors (useful for browsing and proposals) with `noindex` and a canonical link to the Rootline public plant encyclopedia on the marketing site. This protects tenants from duplicate-content dilution and builds a platform-level SEO asset (see [22](22-business-model-pricing-gtm.md)).
-- **Plant of the month** block rotates seasonally appropriate plants for the Region (e.g., in Central Ohio, Zone 6a, in October: switchgrass, aromatic aster, winterberry holly).
+- **Plant of the month** block rotates seasonally appropriate plants for the Region (e.g., in Central Ohio, Zone 6b, in October: switchgrass, aromatic aster, winterberry holly).
 
 <a id="416-seo-toolkit-mvp"></a>
 
@@ -1221,7 +1221,7 @@ flowchart TD
 +-----------------+-------------------------------------------+--------------------------------------+
 | VIEWS           | Dana Lee  * existing client  [SMS] [Call] | CLIENT                               |
 | > Mine (7)      |-------------------------------------------| Dana Lee   Residential   since 2023  |
-|   Unassigned (3)| Tue 7:42 AM  SMS in                       | 88 Maple Ct, Westfield  (Zone 6a)    |
+|   Unassigned (3)| Tue 7:42 AM  SMS in                       | 88 Maple Ct, Westfield  (Zone 6b)    |
 |   New leads (5) | "Hi - the crew skipped the side yard      | Weekly mowing  Tue  Crew 2 (Luis)    |
 |   SLA at risk(2)|  last week. Also can you do aeration?"    | Turf 6,200 sq ft  Irrigation 6 zones |
 |   Billing (1)   |                                           | AR: $0.00   NPS: 9 (May)             |
@@ -2280,7 +2280,7 @@ Ideas the founder did not ask for that compound the module's value. Longer-horiz
 4. **Canadian SMS:** confirm current Canadian carrier requirements for A2P on long codes and short codes, and French-language requirements for Quebec recipients.
 5. **Google API approvals:** start GBP API access and Google Ads developer token applications before MVP; confirm whether the LSA Partner Program offers better lead access for a multi-tenant platform.
 6. **Thumbtack and other marketplaces:** confirm partner API availability and terms (including any restrictions on moving conversations off-platform).
-7. **Plant page SEO strategy:** validate the indexability threshold and canonical approach with an SEO advisor before V1 launch.
+7. **Plant page SEO strategy:** validate the indexability threshold and canonical approach with an SEO advisor before tenant plant pages ship ([V1]).
 8. **Lead magnet economics:** who pays is settled by [22](22-business-model-pricing-gtm.md) (the Company's credit pool at 24 credits per preview set, under a widget cap with a default of 600 credits a month). Still open: what verified-lead conversion rate justifies the cost per Region, and when design partners should move from `verify_first` to the `teaser_then_verify` default.
 9. **Recording defaults:** keep "record all calls with disclosure" as default everywhere, or offer per-state defaults?
 10. **Imagery licensing:** confirm that chosen imagery and parcel providers permit measurements to be shown to homeowners on tenant sites and stored on the Property.
@@ -2290,7 +2290,7 @@ Ideas the founder did not ask for that compound the module's value. Longer-horiz
 14. **Texas and other state registrations:** which tenant profiles are exempt under Texas's telephone-solicitation statute (for example, texting existing customers), and should Rootline offer a registration filing service or only the attestation gate? Owner: counsel with `platform_owner`.
 15. **Reply-to-book scope:** should keyword booking be allowed for new services that change the agreement's annual value by more than a threshold (e.g., $500), or only for add-ons under it? The current proposal applies the agreement's add-on terms; counsel should review the electronic-acceptance wording.
 16. **RCS timing:** when RCS Business Messaging with verified senders reaches enough of a tenant's clients (iPhone and Android, US and Canadian carriers) to justify a channel adapter, and whether 10DLC-style registration requirements will carry over.
-17. **Gift certificate law matrix:** confirm expiry, dormancy-fee and escheat rules for launch states and provinces before enabling sales. [24](24-roadmap-feature-catalog.md) section 4.6 schedules gift credits for [V1] once this matrix is done, matching [07](07-invoicing-billing-contracts.md) and this doc; [08](08-payments-stripe.md) still lists "Gift a Service" as [V2] and should follow.
+17. **Gift certificate law matrix:** confirm expiry, dormancy-fee and escheat rules for launch states and provinces before enabling sales. [24](24-roadmap-feature-catalog.md) section 4.6 tags gift credits [V1] once this matrix is done, matching [07](07-invoicing-billing-contracts.md) and this doc; [08](08-payments-stripe.md) still lists "Gift a Service" as [V2] and should follow.
 
 ---
 

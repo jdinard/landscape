@@ -1,6 +1,6 @@
 # 22 - Business Model, Pricing and Go-to-Market
 
-> Rootline earns money mainly from a seasonally aware SaaS subscription. On top of that sit metered usage (AI credits, AI receptionist minutes, SMS) and add-ons that match landscaping work (Design Studio seats, a snow module billed only in snow months, payroll, advanced accounting, websites). Basic snow work (Snow Lite: storm visit logs, per-push invoices and proof-of-service PDFs) is included in every tier from launch. Payments are bring-your-own-Stripe, so client money never passes through Rootline. We turn that into a selling point: Rootline adds no markup on processing by default, and a cheaper subscription paid for with a small, disclosed application fee is offered only as an opt-in. Three newer revenue lines grow from the same assets: a free homeowner AI design app that sends qualified, design-ready leads to subscribing Companies; licensing of the curated Plant Knowledge Base and anonymized industry benchmarks; and a partner network of distributors, nurseries, associations, franchise systems and CPAs. The go-to-market starts with one beachhead: 5-40 employee residential design-build-maintain firms in one launch region, the Great Lakes (six Wave 1 Regions from Columbus to Milwaukee), chosen with the weighted criteria in section 6.2 because curated plant knowledge matters most there and the winter planning season is long. Sales run as a free trial plus inside sales, timed to the November-to-March planning season, with a migration concierge that makes switching cheap. This doc specifies the packaging, the entitlement and metering system engineers must build, the unit economics with every assumption stated, 5-year revenue scenarios, positioning, the pricing page and the main risks.
+> Rootline earns money mainly from a seasonally aware SaaS subscription. On top of that sit metered usage (AI credits, AI receptionist minutes, SMS) and add-ons that match landscaping work (Design Studio seats, a snow module billed only in snow months, payroll, advanced accounting, websites). Basic snow work (Snow Lite: storm visit logs, per-push invoices and proof-of-service PDFs) is included in every tier from launch. Payments are bring-your-own-Stripe, so client money never passes through Rootline. We turn that into a selling point: Rootline adds no markup on processing by default, and a cheaper subscription paid for with a small, disclosed application fee is offered only as an opt-in. Three newer revenue lines grow from the same assets: a free homeowner AI design app that sends qualified, design-ready leads to subscribing Companies; licensing of the curated Plant Knowledge Base and anonymized industry benchmarks; and a partner network of distributors, nurseries, associations, franchise systems and CPAs. The go-to-market starts with one beachhead: 5-40 employee residential design-build-maintain firms in one launch region, the Great Lakes (six Wave 1 Regions from Columbus to Milwaukee), chosen with the weighted criteria in section 6.2 because curated plant knowledge matters most there and the winter planning season is long. Sales run as a free trial plus inside sales, timed to the November-to-March planning season, with a migration concierge that makes switching cheap. This doc specifies the packaging, the entitlement and metering system engineers must build, the per-account unit economics with every assumption stated, positioning, the pricing page and the main risks.
 
 **At a glance**
 
@@ -12,12 +12,12 @@
 - **Decision - GTM:** a beachhead of 5-40 person residential design-build-maintain firms in one launch region, the Great Lakes: six Wave 1 Regions at MVP, Ontario and four more Regions in Wave 2 at V1, and a second US cluster in Wave 3 at V2, chosen later on traction (6.2); a free trial (14 days, 30 in winter) plus inside sales timed to the November-March planning season, a migration concierge and a Spring-Ready Guarantee.
 - **MVP:** the three self-serve tiers, active field-seat billing, AI credit ledger and packs, SMS meter, trials, dunning, the Founding Customer program and Snow Lite in every tier. **V1:** Enterprise, Winter Mode, pay-as-you-grow, Rootline Home and Rootline Match (design-ready homeowner leads), the partner program and in-app Pulse benchmarks. **V2:** the Plant API, external data products and franchise rollups.
 - **Differentiators:** cheaper than the 5-10 tool stack it replaces, published prices and credit costs, a Price Lock Promise, and a trust rule that dunning, Winter Mode and limit overruns never stop a Company from getting paid.
-- **Unit economics (estimates):** blended gross margin of 72% or more by Year 2 and 77% or more by Year 5, with CAC payback of 12 months or less in every self-serve and inside-sales segment (section 7).
+- **Unit economics (estimates):** blended gross margin of 72% or more, rising to 77% or more at scale, with CAC payback of 12 months or less in every self-serve and inside-sales segment (section 7). The doc models per-account economics only; it makes no multi-year revenue projections.
 - **Cross-links:** billing, entitlement and dunning tooling in [19](19-platform-admin-portal.md); access per lifecycle state in [20](20-architecture-security.md) section 4.4.7; payments mechanics in [08](08-payments-stripe.md); AI credit metering in [17](17-ai-copilot-automation.md); module-level feature detail behind the tier matrix in [4.2.1](#421-feature-by-tier-matrix-summary-module-docs-hold-the-detail).
 
 **Related docs:** [Market landscape](01-market-landscape.md) - [Personas and RBAC](02-personas-roles-permissions.md) - [Payments (BYO Stripe)](08-payments-stripe.md) - [Ledger and integrations](09-accounting-ledger-integrations.md) - [Design Studio](10-design-studio.md) - [AI design and mockups](11-ai-design-mockups.md) - [Plant Knowledge Base](12-plant-knowledge-base.md) - [Service line modules](14-service-line-modules.md) - [Team, HR, payroll](15-team-hr-payroll.md) - [Marketing and growth](16-marketing-growth-communications.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Platform admin portal](19-platform-admin-portal.md) - [Architecture and security](20-architecture-security.md) - [UX and sitemaps](21-ux-design-system-sitemaps.md) - [Innovation moonshots](23-innovation-moonshots.md) - [Roadmap and feature catalog](24-roadmap-feature-catalog.md)
 
-**Reading note on numbers.** Competitor prices below are "as of November 2026, verify". They come from third-party pricing trackers and review sites, which often disagree with each other, and are cross-checked against the raw research in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and the sibling module docs. Claude model prices in section 7.4 match Anthropic's published model table as of October 2026. Every Rootline price, cost and conversion figure in this doc is a **proposed value or a labeled estimate**, not a measured fact. All of them are meant to be tested and replaced with real data during the beta.
+**Reading note on numbers.** Competitor prices below are "as of November 2026, verify". They come from third-party pricing trackers and review sites, which often disagree with each other, and are cross-checked against the raw research in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and the sibling module docs. Claude model prices in section 7.4 match Anthropic's published model table as of October 2026. Every Rootline price, cost and conversion figure in this doc is a **proposed value or a labeled estimate**, not a measured fact. All of them are meant to be tested and replaced with real data from design partners and paying Companies.
 
 **What this doc decides for other docs.** This doc is the pricing authority. Where a sibling doc proposed a commercial number or deferred a decision here, this doc settles it: the AI credit rate card and allotments ([11](11-ai-design-mockups.md), [17](17-ai-copilot-automation.md)), how SMS, 10DLC and AI receptionist minutes are charged ([16](16-marketing-growth-communications.md)), the pay-as-you-grow application fee ([08](08-payments-stripe.md) option B), the dunning timings the tenant lifecycle uses ([19](19-platform-admin-portal.md)), and the plan codes the catalog uses (section 4.2.2).
 
@@ -31,7 +31,7 @@
 4. [Packaging and pricing specification](#4-packaging-and-pricing-specification)
 5. [New revenue lines: payments, data products, homeowner app, partners](#5-new-revenue-lines-payments-data-products-homeowner-app-partners)
 6. [Go-to-market strategy](#6-go-to-market-strategy)
-7. [Unit economics and revenue scenarios](#7-unit-economics-and-revenue-scenarios)
+7. [Unit economics](#7-unit-economics)
 8. [Key user flows](#8-key-user-flows)
 9. [Screens and wireframes (incl. pricing page mock)](#9-screens-and-wireframes-incl-pricing-page-mock)
 10. [Data model](#10-data-model)
@@ -55,9 +55,9 @@
 | G1 | A price that is cheaper than the stack it replaces. A 15-person design-build-maintain firm should pay less for Rootline than for its current field-service tool + QuickBooks Online + design tool + website + review tool. | Pricing calculator shows a net saving for at least 70% of ICP prospects who enter their current stack |
 | G2 | Packaging that follows how landscapers buy and use software: seasonal crews, a winter planning season, add-ons by service line | Field-seat billing on **active** users. Snow module billed only Nov-Mar, with Snow Lite included in every tier. Seasonal "Winter Mode" |
 | G3 | Transparency as a brand asset: published prices, published AI credit costs, no processing markup by default, a written price-increase policy | Public pricing page for every tier except Enterprise. Zero hidden fees. A "Price Lock Promise" written into the terms of service |
-| G4 | Healthy SaaS unit economics even with heavy AI and GPU use | Blended gross margin of 72% or more by Year 2 and 77% or more by Year 5. CAC payback of 12 months or less in every self-serve and inside-sales segment |
-| G5 | A low-cost, defensible demand engine that competitors cannot copy quickly | Homeowner app plus Plant KB SEO produce 25% or more of new Grow/Pro logos by Year 3 |
-| G6 | Win a beachhead before going broad | 40% or more of Year-1 logos from the six Wave 1 Regions of the Great Lakes launch region (6.2). Logo share among ICP firms in those Regions measurable through association membership lists |
+| G4 | Healthy SaaS unit economics even with heavy AI and GPU use | Blended gross margin of 72% or more, rising to 77% or more at scale. CAC payback of 12 months or less in every self-serve and inside-sales segment |
+| G5 | A low-cost, defensible demand engine that competitors cannot copy quickly | Homeowner app plus Plant KB SEO produce 25% or more of new Grow/Pro logos once both are live |
+| G6 | Win a beachhead before going broad | 40% or more of the logos won before Wave 2 opens come from the six Wave 1 Regions of the Great Lakes launch region (6.2). Logo share among ICP firms in those Regions measurable through association membership lists |
 | G7 | A billing and entitlement system that lets the platform operator change packaging without engineering releases | All plan, price, entitlement, meter and discount changes made in the [Platform Admin console](19-platform-admin-portal.md) with versioning and audit |
 
 ### 1.2 Non-goals
@@ -549,7 +549,7 @@ Architecture is fixed by [08-payments-stripe.md](08-payments-stripe.md). Each Co
 
 **Revenue foregone, made explicit (estimate).** A $1.5M-revenue design-build-maintain Company that collects 70% of revenue online processes about $1.05M per year. A hypothetical 0.5% platform spread on that would be about $5,250/year, comparable to its whole Grow subscription. Zero markup therefore gives up roughly as much revenue as the subscription brings in for mid-size Companies. We accept that trade because (a) it is the clearest differentiator we can state in one sentence, (b) BYO Stripe already removes payments-facilitator economics from our model, and (c) the [Ledger](09-accounting-ledger-integrations.md) and portal create retention that processing lock-in would otherwise provide.
 
-**Pay-as-you-grow economics, stated honestly (estimate).** Because Rootline nudges every opt-in Company back to standard Starter once it passes break-even, the plan is roughly revenue-neutral by design. A typical opt-in Company processing about $4,500/month online pays about $22.50/month in fees, which is less than the $30/month discount it receives, so Rootline nets about -$90/year per opt-in Company against annual Starter. The plan exists to win price-sensitive first-year operators away from free tools and $39-$49 entry tiers, not to earn payments revenue. It is worth keeping only if it lifts Starter gross adds by about 4% or more (the break-even lift at Y5 volumes, section 7.8). If the V1 test does not show that lift, retire it and keep the pledge absolute (open question 17.2).
+**Pay-as-you-grow economics, stated honestly (estimate).** Because Rootline nudges every opt-in Company back to standard Starter once it passes break-even, the plan is roughly revenue-neutral by design. A typical opt-in Company processing about $4,500/month online pays about $22.50/month in fees, which is less than the $30/month discount it receives, so Rootline nets about -$90/year per opt-in Company against annual Starter. The plan exists to win price-sensitive first-year operators away from free tools and $39-$49 entry tiers, not to earn payments revenue. It is worth keeping only if it lifts Starter gross adds by about 4% or more (the break-even lift, section 7.8). If the [V1] holdout test does not show that lift, retire it and keep the pledge absolute (open question 17.2).
 
 > **Competitive edge - payments.** Jobber and Housecall Pro run their own embedded payments products, and the landscape specialists are moving the same way: LMN Pay relaunched on Stripe in 2026 as vendor-controlled accounts (per one consultant), and Service Autopilot reviewers say they lost their choice of processor after the Xplor acquisition ([R2](research/R2-landscape-specific-platforms.md)). Rootline's pitch: *your Stripe account, your payouts, your disputes, your data, zero markup.* If a Company ever leaves Rootline, its payment history, saved cards (stored in its own Stripe account) and payouts stay with it. No vendor-run payments product in the benchmark offers that portability. We do not claim a lower card rate than Jobber's list price; we claim ownership, negotiability and no hidden take (section 2.2).
 
@@ -629,9 +629,9 @@ Guardrails: free replacement or credit for invalid leads (wrong contact, not the
 
 #### 5.3.4 Rootline Home unit economics and guardrails (estimates) [V1]
 
-The base case (7.7) books $2.8M of lead revenue and $0.7M of Homeowner Plus revenue at Y5. This table shows what the funnel must look like for that to be true and what it costs Rootline, because the free app is paid for entirely by Rootline.
+This table works the funnel through at one illustrative annual scale (about 1.3M homeowners creating a mockup in a year; a sizing example, not a forecast) to show what each accepted lead costs Rootline, because the free app is paid for entirely by Rootline. The ratios (request rate, qualification, acceptance, cost per accepted lead) are what matter; they hold at any scale once fixed costs are covered.
 
-| Funnel step or cost line (Y5, base case) | Assumption | Result |
+| Funnel step or cost line (illustrative annual scale) | Assumption | Result |
 |---|---|---|
 | Homeowners creating at least 1 mockup in the year | Back-solved from the steps below | about 1.3M (roughly 1-2% of US and Canadian owner-occupied homes per year; estimate) |
 | "Get it installed" request rate | 6% of homeowners with a mockup (KPI in section 15) | about 78,000 requests |
@@ -640,8 +640,8 @@ The base case (7.7) books $2.8M of lead revenue and $0.7M of Homeowner Plus reve
 | Lead revenue | $55 average fee x 85% net of refunds | about $2.8M |
 | AI cost of free usage | 2.5 mockup sets per homeowner at about $0.20 raw each, plus plant and budget calls | about $0.55-$0.75M |
 | Paid homeowner acquisition | Most traffic is organic (Plant Finder SEO, shared designs, Company referrals); paid budget capped | about $0.5M |
-| Verification, parcel checks, dispute handling, support | SMS codes, parcel lookups, about 2 FTE | about $0.2M |
-| **Contribution after direct costs** | Lead revenue + Plus $0.7M minus the lines above (direct costs about $1.25-$1.45M) | **about $2.05-$2.25M (about 59-64%)** |
+| Verification, parcel checks, dispute handling, support | SMS codes, parcel lookups, dispute review and support time | about $0.2M |
+| **Contribution after direct costs** | Lead revenue + Homeowner Plus (about $0.7M at this scale) minus the lines above (direct costs about $1.25-$1.45M) | **about $2.05-$2.25M (about 59-64%)** |
 | Cost per accepted lead | Direct costs / accepted leads | **about $20-$25** against about $47 net fee |
 
 Guardrails that keep this from becoming a cash sink:
@@ -681,7 +681,7 @@ Guardrails that keep this from becoming a cash sink:
 
 ### 6.1 Segments and ideal customer profile (ICP)
 
-| Segment | Size (employees) | Typical revenue band (estimate) | Service mix | Current stack | Fit | Plan | Motion | GTM focus (phase) |
+| Segment | Size (employees) | Typical revenue band (estimate) | Service mix | Current stack | Fit | Plan | Motion | GTM focus (scope tag) |
 |---|---|---|---|---|---|---|---|---|
 | S1 Solo / micro mow-and-maintain | 1-3 | < $250k | Weekly mowing Apr-Nov, cleanups | Free apps, Yardbook, paper, QuickBooks | Low ARPA, high churn | Starter | Self-serve only | Secondary, self-serve [MVP] |
 | **S2 Residential design-build-maintain (BEACHHEAD)** | **5-40** | **$750k-$6M** | Installs (beds, plantings, paver patios, walls, lighting, irrigation) + maintenance programs | Jobber/LMN/SingleOps/SynkedUP + QuickBooks + separate design or CAD tool + spreadsheets | **Highest**: every differentiator matters | Grow / Pro | Trial + inside sales | **Primary [MVP]** |
@@ -708,7 +708,7 @@ A score of 70 or more marks the account as ICP for routing to inside sales. Scor
 
 ### 6.2 Beachhead selection
 
-**Decision (founder): the launch region is the Great Lakes.** Rootline launches in a single US cluster, the Plant KB macro-region that keeps its existing name "Great Lakes and Ohio Valley" ([12](12-plant-knowledge-base.md)). This replaces the earlier plan of two beachhead clusters (Great Lakes and Ohio Valley plus the higher-scoring of Mid-Atlantic Piedmont or Front Range) and closes open question 17.1. The brief says to start "where the operator's plant knowledge is strongest"; the weighted criteria below are how the launch region was scored, and they stay in force for choosing every later cluster (Wave 3 below). The ICP (6.1), tier prices (4.2), the sample tenant Greenleaf Grounds Co. (Columbus, Ohio) and Canada timing do not change.
+**Decision (founder): the launch region is the Great Lakes.** Rootline launches in a single US cluster, the Plant KB macro-region that keeps its existing name "Great Lakes and Ohio Valley" ([12](12-plant-knowledge-base.md)). This replaces the earlier plan of two beachhead clusters (Great Lakes and Ohio Valley plus the higher-scoring of Mid-Atlantic Piedmont or Front Range) and closes open question 17.1. The brief says to start "where the operator's plant knowledge is strongest"; the weighted criteria below are how the launch region was scored, and they stay in force for choosing every later cluster (Wave 3 below). The ICP (6.1), tier prices (4.2), the sample tenant Greenleaf Grounds Co. (Columbus, Ohio) and the Canada scope ([V1]) do not change.
 
 **Weighted criteria:**
 
@@ -749,15 +749,15 @@ A score of 70 or more marks the account as ICP for routing to inside sales. Scor
 |---|---|---|---|
 | Mid-Atlantic Piedmont and Coastal Plain (DC, Baltimore, Northern Virginia, Richmond) | USDA zones roughly 7a-8a | MANTS (Baltimore, January) | Wave 3 candidate. Affluent suburbs, strong design-build, snow-adjacent |
 | Great Lakes and Ohio Valley (Columbus, Cleveland-Akron, Detroit-Ann Arbor-Toledo, Grand Rapids, Chicago suburbs, Milwaukee-Madison) | Zones roughly 5a-6b (2023 map), lake-moderated pockets | CENTS (Columbus, January), Mid-Am (Chicago, January), Great Lakes Trade Expo (Michigan, January), iLandscape (Illinois, February) | **Selected: the launch region (Wave 1 [MVP]).** Long planning season, strong snow upsell. Wave 2 adds Cincinnati-Dayton, Indianapolis, Western New York (Buffalo-Rochester) and Erie/Pittsburgh |
-| Southern Ontario Golden Horseshoe (Toronto, Hamilton, Kitchener-Waterloo) | Canadian zones roughly 5-7 | Landscape Ontario Congress (Toronto, January) | **Wave 2 [V1]**, with the Canada launch. CAD pricing, strong association, inherits Great Lakes profiles |
+| Southern Ontario Golden Horseshoe (Toronto, Hamilton, Kitchener-Waterloo) | Canadian zones roughly 5-7 | Landscape Ontario Congress (Toronto, January) | **Wave 2 [V1]**, with Canadian support. CAD pricing, strong association, inherits Great Lakes profiles |
 | North Texas Blackland Prairie (Dallas-Fort Worth) | Zones roughly 8a-8b | TNLA-affiliated events (verify) | Wave 3 candidate. Year-round season, irrigation-heavy, water restrictions |
 | Front Range Colorado (Denver, Boulder, Colorado Springs) | Zones roughly 5b-6a, semi-arid | ProGreen EXPO (Denver, February) | Wave 3 candidate. Xeriscape, water-wise design demand |
 | Pacific Northwest (Portland, Seattle) | Zones roughly 8a-8b, maritime | Farwest Show (Portland, August; verify) | Wave 3 candidate. Plant-savvy clientele, strong nursery industry |
 
 **Decision and expansion path:**
 
-- **Wave 1 [MVP]: the Great Lakes launch region.** The six Regions above, with the Plant KB at "excellent" quality (curated palettes for every common use: foundation, pollinator, shade, rain garden, screening, deer-resistant, xeric) before launch. All 5 field-alpha Companies and all 20 Season 0 design partners are in Wave 1 Regions (roughly 6-8 in Chicagoland and Southeast Wisconsin, 6-8 in Ohio and 4-6 in Michigan; 6.10 step 2), so beta evidence comes from the market we launch into. The Founding Customer program (4.6), the ICP scorecard (6.1) and the regional shows (6.5) all point at Wave 1. Snow Lite ships with it because the beta and GA run through the region's snow season (4.5).
-- **Wave 2 [V1]: extend within the region and across the border.** The Southern Ontario Golden Horseshoe ships with Canada as already planned (the Canada release in [24](24-roadmap-feature-catalog.md)), inheriting Great Lakes profiles, plus Cincinnati-Dayton, Indianapolis, Western New York (Buffalo-Rochester) and Erie/Pittsburgh. Wave 2 opens when Gate 1 passes (6.11).
+- **Wave 1 [MVP]: the Great Lakes launch region.** The six Regions above, with the Plant KB at "excellent" quality (curated palettes for every common use: foundation, pollinator, shade, rain garden, screening, deer-resistant, salt-tolerant parkway (xeric deferred to Wave 3)) before launch. All 20 design partners are in Wave 1 Regions (roughly 6-8 in Chicagoland and Southeast Wisconsin, 6-8 in Ohio and 4-6 in Michigan; 6.10 step 2), so early product evidence comes from the market we sell into. The Founding Customer program (4.6), the ICP scorecard (6.1) and the regional shows (6.5) all point at Wave 1. Snow Lite ships with it because owners in the region evaluate, switch and onboard during the snow season (4.5).
+- **Wave 2 [V1]: extend within the region and across the border.** The Southern Ontario Golden Horseshoe ships with Canadian support (the Canada scope in [24](24-roadmap-feature-catalog.md)), inheriting Great Lakes profiles, plus Cincinnati-Dayton, Indianapolis, Western New York (Buffalo-Rochester) and Erie/Pittsburgh. Wave 2 opens when Wave 1 meets its traction signals (6.11), not on a date.
 - **Wave 3 [V2]: the second US cluster.** Chosen later, based on traction in the launch region, by scoring the remaining candidates (Mid-Atlantic Piedmont, Front Range, North Texas, Pacific Northwest) with the weighted criteria above. Whether an arid-West cluster should also be scored for its turf-water deadlines is [01](01-market-landscape.md) open question Q11.
 
 Other Regions launch with "good" coverage (validated taxonomy and traits, coarser region profiles) and a visible coverage badge, so we never over-promise. Self-serve signups from outside the launch region are welcome at every stage; sales capacity, shows and design-partner work stay in the open waves.
@@ -798,10 +798,10 @@ Full battlecards live in the sales enablement wiki and are refreshed quarterly a
 
 ### 6.5 Channels
 
-| Channel | Tactics | Target share of new logos (Y2, first-touch, estimate; column sums to 100%) | CAC band (estimate) | Priority |
+| Channel | Tactics | Target share of new logos (steady-state mix, first-touch, estimate; column sums to 100%) | CAC band (estimate) | Priority |
 |---|---|---|---|---|
-| **Content and SEO** | (1) **Programmatic, curated Plant Finder pages** by Region and use ("Deer-resistant shrubs for zone 6b clay soil in Central Ohio", "Salt-tolerant perennials for Chicago parkways"), built from the Plant KB with curator review. Thin pages are blocked by a quality gate: minimum 8 curated plants, a curator note, photos. (2) Pricing and estimating guides ("How to price mulch per cubic yard in 2027", "Paver patio cost calculator"). (3) Free tools: mulch/stone calculators, mowing price calculator, profit-margin calculator. (4) Comparison and switching pages | 22% | Low ($300-$900) | [MVP] |
-| **Homeowner app (Rootline Home)** | Homeowners invite their contractor ("Send this design to my landscaper"). Contractors receiving a design import are offered a trial | 2% (10% by Y3) | Very low | [V1] |
+| **Content and SEO** | (1) **Programmatic, curated Plant Finder pages** by Region and use ("Deer-resistant shrubs for zone 6b clay soil in Central Ohio", "Salt-tolerant perennials for Chicago parkways"), built from the Plant KB with curator review. Thin pages are blocked by a quality gate: minimum 8 curated plants, a curator note, photos. (2) Pricing and estimating guides ("How to price mulch per cubic yard this season", "Paver patio cost calculator"). (3) Free tools: mulch/stone calculators, mowing price calculator, profit-margin calculator. (4) Comparison and switching pages | 22% | Low ($300-$900) | [MVP] |
+| **Homeowner app (Rootline Home)** | Homeowners invite their contractor ("Send this design to my landscaper"). Contractors receiving a design import are offered a trial | 2% (rising to about 10% as Rootline Home scales) | Very low | [V1] |
 | **YouTube and creators** | Sponsor lawn/landscape business channels (business-ops, design-build, Spanish-language channels). "Build a business on Rootline" series with real Companies. Affiliate program | 12% | Medium ($800-$1,500) | [MVP] |
 | **Trade shows** | Great Lakes launch-region shows first: Mid-Am (Chicago), CENTS (Columbus), Great Lakes Trade Expo (Michigan) and iLandscape (Illinois), all verify dates; Landscape Ontario Congress (Toronto) with the Ontario wave (Wave 2); then Equip Exposition (Louisville, KY, typically October; verify dates), state association shows, and the anchor show of the Wave 3 cluster (MANTS, ProGreen EXPO or another, per 6.2). Booth demo: "Bring a photo of a client's yard, leave with a mockup and proposal." Speaking slots on pricing and margins | 12% | Medium-high ($1,500-$4,000) | [MVP] Great Lakes shows, [V1] Ontario and national |
 | **Facebook groups and communities** | Founder and team participate as helpful practitioners in owner-run lawn and landscape business groups, Reddit (r/landscaping, r/lawncare) and LawnSite. Share free tools, never spam. Host a Rootline community (forum + monthly live Q&A) | 5% | Low | [MVP] |
@@ -817,17 +817,18 @@ Landscaping software buying is seasonal. Owners evaluate and switch in the off-s
 
 | Months | Owner's reality | Buying behavior | Rootline GTM focus | Onboarding/CS load |
 |---|---|---|---|---|
-| **Oct** | Fall cleanups, aeration/overseeding, irrigation winterizations, budgeting for next year | Starting to look, Equip Exposition | Equip Exposition, "next-season" webinars, price-lock offers, Snow Lite site-list setup for snow Companies, snow module launches (from V1) | Low |
+| **Oct** | Fall cleanups, aeration/overseeding, irrigation winterizations, budgeting for next year | Starting to look, Equip Exposition | Equip Exposition, "next-season" webinars, price-lock offers, Snow Lite site-list setup for snow Companies, Snow & Ice add-on promotion ([V1]) | Low |
 | **Nov-Dec** | Leaf cleanups, holiday lighting, snow prep, year-end books | **Shortlist and trials begin**. Year-end tax planning (annual prepay attractive before year end; owners should consult their tax advisor) | Winter trials (30 days), annual prepay promotion, migration slots booking, CPA channel (year-end close) | Rising |
 | **Jan-Feb** | Planning, hiring, design season for spring installs, trade shows, snow events | **Peak buying and switching** | Mid-Am, CENTS, Great Lakes Trade Expo, iLandscape (Wave 1); LO Congress from the Ontario wave. Switching campaigns. Spring-Ready deadline Feb 15 | **Peak**: migration concierge at max capacity |
 | **Mar-Apr** | Spring cleanups, irrigation start-ups, mowing starts, crews hired | Last-minute buyers, mostly go-live | Go-live support, crew app training (EN/ES), Rootline Home homeowner campaigns start | **Peak** go-live |
 | **May-Aug** | Full production: weekly mowing, installs, fertilizer rounds | Low new buying, high usage | Expansion: add-ons, AI credits, Match leads, designer seats. Content production. Homeowner app peak | Steady, support-heavy |
 | **Sep** | Overseeding, fall install push, renewals of maintenance agreements | Evaluation starts for some | Agreement-renewal features marketing, case studies | Medium |
 
+<a id="612-gtm-team-and-capacity-plan-base-case-estimates"></a>
 Operational implications:
-- **Staff onboarding for Q1:** contract and train seasonal onboarding specialists (e.g., experienced office managers from landscape firms) for Jan-Apr. Target capacity: 2x the steady-state number of concurrent migrations.
-- **Cash:** annual prepay concentrated in Nov-Feb makes Rootline's cash flow strong in winter. Model spring burn accordingly.
-- **Release calendar:** avoid major UX changes to the crew app between Apr 1 and Sep 30 ("field freeze"). Ship big crew-facing changes in the off-season with training.
+- **Onboarding peak (Jan-Apr):** concurrent migrations run at about 2x the rest of the year. The self-serve importers, the AI mapping assistant (6.8) and the public migration-slot calendar (section 16, idea 18) must carry that peak without lowering migration quality.
+- **Cash:** annual prepay concentrated in Nov-Feb makes Rootline's cash flow strongest in winter, while spring go-live support costs peak Feb-Apr.
+- **Crew-app change window:** avoid major UX changes to the crew app between Apr 1 and Sep 30 ("field freeze"). Ship big crew-facing changes in the off-season with training.
 
 ### 6.7 Sales motion: free trial plus inside sales
 
@@ -865,7 +866,6 @@ flowchart LR
 | Pro / > 20 field users / commercial | AE with solutions engineer | Demo within 3 business days |
 | Enterprise / franchise | Enterprise AE (V1+) | Discovery within 1 week |
 
-**Sales team design (proposed):** AE quota at about $250k-$350k new ARR per year in Year 2 (estimate). SDR:AE ratio 1:2. Compensation 50/50 base/variable, paid on collected first-year ARR, with an accelerator for annual prepay. Commission clawback if the customer churns within 90 days.
 
 ### 6.8 Onboarding and customer success
 
@@ -909,71 +909,53 @@ flowchart LR
 
 | Step | Method | When | Decision it informs |
 |---|---|---|---|
-| 1 | Van Westendorp price-sensitivity survey + feature MaxDiff with 150+ landscape owners (association lists, show intercepts) | Before beta | Tier price ranges, which features anchor Grow vs Pro |
-| 2 | Design-partner pricing (20 Season 0 design partners, all in the Wave 1 Great Lakes Regions: roughly 6-8 Chicagoland and Southeast Wisconsin, 6-8 Ohio, 4-6 Michigan; founding pricing) with willingness-to-pay interviews at day 60 | Beta | Validate ARPA and add-on attach |
-| 3 | Live A/B test of pricing-page *presentation* (not different prices for the same plan to similar customers at the same time): annual vs monthly default, calculator placement | GA | Conversion |
-| 4 | Cohort-based price tests on **new** regions or seasons (e.g., Grow at $249 vs $279 annual in different launch windows) | V1 | Elasticity |
+| 1 | Van Westendorp price-sensitivity survey + feature MaxDiff with 150+ landscape owners (association lists, show intercepts) | Before [MVP] prices are published | Tier price ranges, which features anchor Grow vs Pro |
+| 2 | Design-partner pricing (20 design partners, all in the Wave 1 Great Lakes Regions: roughly 6-8 Chicagoland and Southeast Wisconsin, 6-8 Ohio, 4-6 Michigan; founding pricing) with willingness-to-pay interviews at day 60 | Design-partner stage | Validate ARPA and add-on attach |
+| 3 | Live A/B test of pricing-page *presentation* (not different prices for the same plan to similar customers at the same time): annual vs monthly default, calculator placement | From [MVP] | Conversion |
+| 4 | Cohort-based price tests on **new** regions or seasons (e.g., Grow at $249 vs $279 annual in different Regions or selling seasons) | [V1] | Elasticity |
 | 5 | AI credit consumption analysis: per-action cost vs credit price; credit-pack attach | Monthly | Credit prices, included allotments |
 | 6 | Win/loss interviews, 10 per month | Ongoing | Packaging fixes |
-| 7 | Pay-as-you-grow holdout test: offer it to a random half of eligible Starter trials in one launch window | V1 | Keep it only if Starter gross adds rise by about 4% or more (5.1.2) |
-| 8 | "2-minute bill test" in moderated usability sessions with 12 owners: can they predict their July and January bill from the pricing page alone? | Before GA, then after every packaging change | Pricing-page copy and calculator defaults (risk register, 14.6) |
+| 7 | Pay-as-you-grow holdout test: offer it to a random half of eligible Starter trials in one selling season | [V1] | Keep it only if Starter gross adds rise by about 4% or more (5.1.2) |
+| 8 | "2-minute bill test" in moderated usability sessions with 12 owners: can they predict their July and January bill from the pricing page alone? | Before the [MVP] pricing page ships, then after every packaging change | Pricing-page copy and calculator defaults (risk register, 14.6) |
 
-### 6.11 Launch sequence and stage gates
+<a id="611-launch-sequence-and-stage-gates"></a>
+### 6.11 Expansion sequence and traction signals
 
-The GTM expands only when the previous stage proves its numbers. Each gate is a decision for `platform_owner`, reviewed with the cohort dashboards in [19](19-platform-admin-portal.md).
+The GTM opens the next wave only when the current one proves its numbers, not on a calendar. Each step is a decision for `platform_owner`, reviewed with the cohort dashboards in [19](19-platform-admin-portal.md).
 
 ```mermaid
 flowchart LR
-  S0["Season 0: design-partner beta (20 Companies, Great Lakes Wave 1 Regions)"] --> G0{"Gate 0 met?"}
-  G0 -- "Yes" --> S1["Season 1: GA in the Great Lakes launch region (Founding 100, Snow Lite)"]
-  G0 -- "No" --> S0
-  S1 --> G1{"Gate 1 met?"}
-  G1 -- "Yes" --> S2["Season 2: Wave 2 (Ontario plus 4 Great Lakes Regions), partners, national shows, Match pilot"]
-  G1 -- "No" --> FIX["Fix packaging or onboarding, repeat Season 1 playbook"]
-  FIX --> S1
-  S2 --> G2{"Gate 2 met?"}
-  G2 -- "Yes" --> S3["Season 3: Wave 3 second US cluster (6.2 scoring), then US and Canada broad, commercial S4 push, Enterprise AE"]
-  G2 -- "No" --> S2
+  DP["Design partners (20 Companies, Great Lakes Wave 1 Regions)"] --> R0{"Ready to sell the MVP?"}
+  R0 -- "Yes" --> W1["Wave 1: Great Lakes launch region (Founding 100, Snow Lite)"]
+  R0 -- "No" --> DP
+  W1 --> R1{"Wave 1 signals met?"}
+  R1 -- "Yes" --> W2["Wave 2: Ontario plus 4 Great Lakes Regions, partners, national shows, Match pilot"]
+  R1 -- "No" --> FIX["Fix packaging or onboarding, repeat the Wave 1 playbook"]
+  FIX --> W1
+  W2 --> R2{"Wave 2 signals met?"}
+  R2 -- "Yes" --> W3["Wave 3: second US cluster (6.2 scoring), then US and Canada broad, commercial S4 push, Enterprise AE"]
+  R2 -- "No" --> W2
 ```
 
-| Gate | Pass criteria (all required; proposed) | If missed |
+| Step | Traction signals (all required; proposed) | If missed |
 |---|---|---|
-| **Gate 0** (leave beta) | 15 of 20 design partners live through one full month-end close. Median migration ≤ 21 days. Crew app crash-free sessions ≥ 99.5%. At least 8 partners would pay list price (day-60 interview). No P1 data-integrity bug open | Extend beta by one season. Do not launch into a spring with a broken migration |
-| **Gate 1** (expand regions) | ≥ 120 paying Companies in the Wave 1 Great Lakes Regions. Trial-to-paid ≥ 12% overall and ≥ 25% for ICP ≥ 70. Grow CAC payback ≤ 12 months on actual spend. 12-month logo retention forecast ≥ 80% for Grow. Design-led proposal share ≥ 30% | Stay in the Wave 1 Regions. Fix the weakest metric before adding a Region |
-| **Gate 2** (go broad) | Partner-sourced share of new ARR ≥ 15%. NRR ≥ 105% on the first full cohort. Plant KB "excellent" in at least 7 Regions (the six Wave 1 Regions plus Southern Ontario). Onboarding capacity proven at 2x steady state (6.6) | Add Regions one at a time instead of going broad; hold the Wave 3 cluster until the gate passes |
-
-### 6.12 GTM team and capacity plan (base case, estimates)
-
-The base case (7.7) only works if acquisition spend is staffed realistically. This table builds the Y1-Y3 go-to-market team from the gross-add targets and is the bottom-up source of the blended CAC used in 7.7. Loaded annual costs are estimates: AE $140k, SDR $85k, onboarding specialist $75k, seasonal onboarding specialist about $6.5k per month for 4 months, content/SEO or community lead $110k.
-
-| | Y1 | Y2 | Y3 |
-|---|---|---|---|
-| Gross new logos (from 7.7) | about 400 | about 1,170 | about 2,440 |
-| Sales-assisted share (Grow+ with ICP ≥ 70, about 45% of Grow+ deals) | about 30%, about 120 deals | about 29%, about 340 deals | about 29%, about 700 deals |
-| Account executives (about 50 closed deals per AE per year) | 2 + founder | 7 | 14 |
-| SDRs (1 per 2 AEs) | 1 | 4 | 7 |
-| Onboarding specialists, core + seasonal (Jan-Apr) | 3 + 3 | 6 + 7 | 12 + 14 |
-| CSMs: named (Pro and Enterprise) + pooled (Grow) | 1 + 0 | 3 + 2 | 8 + 5 |
-| Partner managers | founder | 2 | 4 |
-| Content, SEO, community and creator program | 2 | 4 | 6 |
-| Events, creators, paid, partner commissions, referral credits, tools | about $0.30M | about $0.68M | about $1.47M |
-| **Fully loaded acquisition spend (incl. onboarding, per the CAC definition in 7.1)** | **about $1.12M** | **about $3.07M** | **about $5.95M** |
-| **Implied blended CAC** | **about $2,800** | **about $2,620** | **about $2,440** |
-
-CSMs are post-sale and counted in COGS (7.3), not CAC; they are listed here so the hiring plan is in one place. Two consequences for the model: (1) Y1 is a founder-led, inefficient year, and acquisition spend exceeds recognized revenue; (2) blended CAC falls only as SEO, referrals, partners and the homeowner app take share from AEs and trade shows. If the channel mix in 6.5 does not shift that way by Y3, CAC stays near $2,600 and the base case needs about 6-13% more acquisition spend in Y3-Y5 (estimate).
+| **Ready to sell the [MVP]** (design partners to open sales in Wave 1) | 15 of 20 design partners live through one full month-end close. Median migration ≤ 21 days. Crew app crash-free sessions ≥ 99.5%. At least 8 partners would pay list price (day-60 interview). No P1 data-integrity bug open | Keep working with design partners only. Do not open sales into a spring with a broken migration |
+| **Open Wave 2** (expand regions) | ≥ 120 paying Companies in the Wave 1 Great Lakes Regions. Trial-to-paid ≥ 12% overall and ≥ 25% for ICP ≥ 70. Grow CAC payback ≤ 12 months on actual spend. 12-month logo retention forecast ≥ 80% for Grow. Design-led proposal share ≥ 30% | Stay in the Wave 1 Regions. Fix the weakest metric before adding a Region |
+| **Open Wave 3 and go broad** | Partner-sourced share of new ARR ≥ 15%. NRR ≥ 105% on the first full cohort. Plant KB "excellent" in at least 7 Regions (the six Wave 1 Regions plus Southern Ontario). Onboarding proven at 2x steady state (6.6) | Add Regions one at a time instead of going broad; hold the Wave 3 cluster until the signals are met |
 
 ---
 
-## 7. Unit economics and revenue scenarios
+<a id="7-unit-economics-and-revenue-scenarios"></a>
+## 7. Unit economics
 
-> Every number in this section is a **modeling assumption or an estimate**, chosen to be plausible for B2B SMB vertical SaaS and to make the model's logic explicit. None is a measured Rootline result. Replace with beta data as it arrives. The live model should be a spreadsheet owned by `platform_finance`, with this section as its specification.
+> Every number in this section is a **modeling assumption or an estimate**, chosen to be plausible for B2B SMB vertical SaaS and to make the model's logic explicit. None is a measured Rootline result. Replace with measured data from design partners and paying Companies as it arrives. The section works per account and per funnel step; it deliberately makes no year-by-year revenue projection, because those depend on build and sales timing that this proposal does not estimate. The live model should be a spreadsheet owned by `platform_finance`, with this section as its specification.
 
 ### 7.1 Model structure
 
 ```text
 MRR(t)            = Σ_companies [ base_plan + extra_office_seats + active_field_seat_overage
                                   + designer_seats + add_ons + usage_overage ]
-                    -- lead fees, data products, application fees and services are separate lines (7.7)
+                    -- lead fees, data products, application fees and services are separate lines (section 5)
 ARPA              = MRR / paying_companies
 Contracted ARR    = 12 x (base_plan + committed seats + add-ons)      -- excludes usage and field overage
 Reported ARR      = Contracted ARR + trailing-12-month usage and field-seat overage
@@ -989,16 +971,16 @@ NRR               = (starting MRR + expansion - contraction - churned MRR) / sta
 
 Because field seats are billed on active users, **MRR is seasonal**: field-seat overage rises from April to October and falls in winter. Board reporting therefore uses Contracted ARR as the headline, and Reported ARR uses a trailing-12-month average for overage, so a strong July does not inflate ARR.
 
-### 7.2 Revenue assumptions per tier (steady state, Year 2-3)
+### 7.2 Revenue assumptions per tier (steady state)
 
-| Tier | Base (blended monthly/annual) | Extra seats | Add-ons and usage | **ARPA / month** | Share of paying logos (Y3) |
+| Tier | Base (blended monthly/annual) | Extra seats | Add-ons and usage | **ARPA / month** | Share of paying logos (steady-state mix) |
 |---|---|---|---|---|---|
 | Starter | $72 | $10 (field overage, occasional office seat) | $13 (credit packs, SMS, Ledger Plus for some) | **$95** | 36% |
 | Grow | $262 | $35 (1 extra office seat avg; summer field overage) | $43 (designer seat, snow in season, SMS, credits, website for some) | **$340** | 45% |
 | Pro | $555 | $120 | $185 (3D, payroll, receptionist overage, website, premium success for some) | **$860** | 16% |
 | Enterprise | $2,200 | $400 | $600 | **$3,200** | 3% |
 
-Blended ARPA at the Y3 mix: 0.36 × 95 + 0.45 × 340 + 0.16 × 860 + 0.03 × 3,200 = 34.2 + 153 + 137.6 + 96 = **$420.8/mo**.
+Blended ARPA at the steady-state mix: 0.36 × 95 + 0.45 × 340 + 0.16 × 860 + 0.03 × 3,200 = 34.2 + 153 + 137.6 + 96 = **$420.8/mo**.
 
 ### 7.3 Cost to serve (COGS) per account per month (estimates)
 
@@ -1014,9 +996,9 @@ Blended ARPA at the Y3 mix: 0.36 × 95 + 0.45 × 340 + 0.16 × 860 + 0.03 × 3,2
 | Support and run-time CS (allocated) | $8 | $22 | $40 | $180 | Excludes pre-sale onboarding (counted in CAC) |
 | **Total COGS** | **$26.80** | **$90.50** | **$225** | **$850** | |
 | **ARPA** | $95 | $340 | $860 | $3,200 | |
-| **Gross margin** | **71.8%** | **73.4%** | **73.8%** | **73.4%** | Target blended ≥ 72% Y2, ≥ 77% Y5 |
+| **Gross margin** | **71.8%** | **73.4%** | **73.8%** | **73.4%** | Target blended ≥ 72%, ≥ 77% at scale |
 
-**Path from about 73% to 77%+ gross margin by Year 5:** route AI to the cheapest adequate model and cache shared context (price books, Region palettes). Run non-interactive AI (document extraction, nightly agents) through batch APIs. Self-host segmentation and depth models on GPUs once volume justifies it. Negotiate SMS, maps and parcel volume pricing. Deflect tier-1 support with the in-app copilot. Move photo originals to infrequent-access storage after 90 days.
+**Path from about 73% to 77%+ gross margin at scale:** route AI to the cheapest adequate model and cache shared context (price books, Region palettes). Run non-interactive AI (document extraction, nightly agents) through batch APIs. Self-host segmentation and depth models on GPUs once volume justifies it. Negotiate SMS, maps and parcel volume pricing. Deflect tier-1 support with the in-app copilot. Move photo originals to infrequent-access storage after 90 days.
 
 ### 7.4 AI cost model (per action, estimates)
 
@@ -1048,6 +1030,8 @@ Model prices used: Anthropic API list prices as of October 2026 (verify before u
 
 **Target CAC ceilings** (to keep payback ≤ 12 months): Starter ≤ $600 (self-serve only), Grow ≤ $2,500, Pro ≤ $7,500, Enterprise ≤ $25,000.
 
+**Read channel CAC fully loaded.** Per the CAC definition in 7.1, each channel's CAC must carry the sales and pre-go-live onboarding time it consumes, not only program spend; sales-assisted Grow+ deals from trade shows and outbound carry most of it. Blended CAC therefore falls only as SEO, referrals, partners and the homeowner app take share from AE-led deals and trade shows (the channel mix in 6.5).
+
 ### 7.6 Churn, LTV and payback by tier
 
 | Tier | ARPA | GM | Gross profit / mo | Monthly logo churn (assumption) | Lifetime (months, capped at 60) | LTV (no expansion) | Target CAC | LTV:CAC | Payback |
@@ -1061,82 +1045,41 @@ Interpretation:
 - **Starter only works self-serve.** Any sales touch on Starter breaks the economics. Starter's job is to feed Grow upgrades (target: 20% of Starter logos upgrade within 18 months).
 - **Grow is the engine.** Payback around 10 months with LTV:CAC around 6x leaves room to spend on trade shows and creators in the Great Lakes launch region.
 - **Seasonal churn must be measured on a 12-month basis.** Monthly churn spikes in Nov-Dec, offset by Winter Mode and annual prepay. Year-over-year cohort retention is the metric that matters.
-- **NRR targets:** 100% (Y1), 105% (Y2), 110% (Y3), 115% (Y4-5), driven by seats, designer seats, add-ons and tier upgrades.
+- **NRR targets:** 105% or more per 12-month cohort, and about 115% for mature cohorts where designer seats, add-ons and tier upgrades have been adopted.
 
-### 7.7 Revenue scenarios (Years 1-5 after MVP general availability)
+<a id="77-revenue-scenarios-years-1-5-after-mvp-general-availability"></a>
+### 7.7 What has to be true (drivers to validate)
 
-Years are counted from MVP general availability (see [24-roadmap-feature-catalog.md](24-roadmap-feature-catalog.md) for dates). Paying Companies are end-of-year counts. ARR = paying Companies × blended ARPA × 12 (subscription and usage only).
-
-**Base case**
-
-| | Y1 | Y2 | Y3 | Y4 | Y5 |
-|---|---|---|---|---|---|
-| Paying Companies (EOY) | 350 | 1,300 | 3,200 | 6,000 | 9,500 |
-| Blended ARPA / mo | $304 | $382 | $421 | $450 | $480 |
-| **Subscription + usage ARR** | **$1.28M** | **$5.96M** | **$16.17M** | **$32.40M** | **$54.72M** |
-| Rootline Match lead revenue (run-rate) | - | $0.15M | $0.80M | $1.80M | $2.80M |
-| Homeowner Plus subscriptions | - | - | $0.10M | $0.35M | $0.70M |
-| Data products (Plant API + Pulse) | - | - | $0.20M | $0.60M | $1.20M |
-| Pay-as-you-grow net effect (application fees minus the subscription discount; 5.1.2) | - | about $0.00M | -$0.02M | -$0.04M | -$0.06M |
-| Services (paid migrations, premium success, implementer marketplace) | $0.05M | $0.20M | $0.50M | $0.80M | $1.00M |
-| **Total run-rate revenue** | **$1.33M** | **$6.31M** | **$17.75M** | **$35.91M** | **$60.36M** |
-| Recognized revenue in the year (approx. average of opening and closing run-rate) | $0.67M | $3.82M | $12.03M | $26.83M | $48.14M |
-| Blended monthly logo churn (assumption) | 2.5% | 2.2% | 2.0% | 1.8% | 1.7% |
-| Approx. gross new logos needed | about 400 | about 1,170 | about 2,440 | about 3,790 | about 5,080 |
-| Blended CAC (built bottom-up in 6.12 for Y1-Y3) | $2,800 | $2,620 | $2,440 | $2,350 | $2,300 |
-| Implied acquisition spend (incl. onboarding) | $1.12M | $3.07M | $5.95M | $8.91M | $11.68M |
-| Acquisition spend as % of recognized revenue | about 167% | about 80% | about 49% | about 33% | about 24% |
-
-How the derived rows were computed: gross new logos ≈ net adds + (average paying Companies in year × blended monthly churn × 12). Example for Y3: average (1,300 + 3,200)/2 = 2,250; churned ≈ 2,250 × 2.0% × 12 = 540; gross adds ≈ 1,900 + 540 = 2,440. Lead revenue at Y5 assumes 60,000 accepted leads/year × $55 average × 85% net of refunds ≈ $2.8M; the homeowner funnel behind that number is in 5.3.4. Pay-as-you-grow at Y5 assumes 20% of Starter logos opt in (9,500 × 36% × 20% ≈ 684 Companies), each processing about $4,500/month online (below break-even, because of the switch-back nudge): fees ≈ $270/year against a $360/year discount, so the net is about -$90 × 684 ≈ -$0.06M. Subscription ARR is computed at list price, so the discount appears only on this line.
-
-**Corrections made in the November 2026 review.** An earlier draft booked $1.7M of pay-as-you-grow fees at Y5 by assuming opt-in Companies paid about $1,200/year in fees. That contradicts the plan's own switch-back nudge (a Company paying that much would be told to leave the plan), so it was replaced with the net line above. The same draft used a blended CAC of $1,500-$2,300 that was not derived from any staffing plan; a bottom-up build of the team needed to close and onboard the gross adds (6.12) costs more, so the CAC row now comes from that build. Net effect: Y5 total run-rate falls from about $62.1M to about $60.4M, and Y1-Y4 acquisition spend rises by about $0.5M-$0.9M per year. Subscription ARR is unchanged.
-
-**Conservative and aggressive cases**
-
-| | Y1 | Y2 | Y3 | Y4 | Y5 |
-|---|---|---|---|---|---|
-| Conservative: paying Companies | 150 | 600 | 1,500 | 2,700 | 4,200 |
-| Conservative: blended ARPA | $280 | $330 | $360 | $380 | $400 |
-| **Conservative: subscription ARR** | **$0.50M** | **$2.38M** | **$6.48M** | **$12.31M** | **$20.16M** |
-| Conservative: total incl. other lines (about 5-6% uplift from Y3) | $0.50M | $2.40M | $6.80M | $13.00M | $21.40M |
-| Aggressive: paying Companies | 600 | 2,500 | 6,000 | 11,500 | 18,000 |
-| Aggressive: blended ARPA | $320 | $400 | $440 | $480 | $520 |
-| **Aggressive: subscription ARR** | **$2.30M** | **$12.00M** | **$31.68M** | **$66.24M** | **$112.32M** |
-| Aggressive: total incl. other lines (about 10-12% uplift from Y3) | $2.35M | $12.50M | $34.85M | $73.50M | $125.80M |
-
-**What has to be true:**
+The business model rests on a small set of funnel and per-account drivers. Each has a conservative, base and aggressive value; the live model combines them with actual timing once there is data.
 
 | Driver | Conservative | Base | Aggressive |
 |---|---|---|---|
 | Beachhead win rate vs incumbents (sales-assisted) | 15% | 25% | 35% |
 | Trial to paid conversion (all trials) | 8% | 12% | 18% |
 | Share of logos on Grow or above | 50% | 64% | 70% |
-| Homeowner app contribution to new logos by Y3 | 3% | 10% | 20% |
-| Regions at "excellent" Plant KB quality by Y3 | 6 (Wave 1 only) | 8 (Wave 1, Southern Ontario and one more Wave 2 Region) | 15 (adds the Wave 3 cluster) |
-| Homeowners creating at least 1 mockup in Rootline Home in Y5 (5.3.4) | about 0.5M | about 1.3M | about 2.5M |
-| Starter logos on pay-as-you-grow at Y5 (net effect near zero in every case) | 10% | 20% | 30% |
-| Blended CAC at Y3 (6.12) | about $2,900 | about $2,440 | about $2,100 |
-| Geographic expansion | Great Lakes launch region + Ontario (Waves 1-2) | Waves 1-2, the Wave 3 US cluster, then US + Canada broad by Y3 | US + Canada by Y2, English-speaking international pilots by Y4 ([Moonshots](23-innovation-moonshots.md)) |
+| Blended ARPA at the steady-state mix (7.2) | about $360 | about $420 | about $440 |
+| Homeowner app share of new logos (steady state) | 3% | 10% | 20% |
+| Starter logos on pay-as-you-grow (net effect near zero in every case, 5.1.2) | 10% | 20% | 30% |
 
-TAM and SAM sizing (number of US and Canadian landscaping firms by employee band) belongs in [01-market-landscape.md](01-market-landscape.md) and must be built from official sources: US Census County Business Patterns for NAICS 561730 Landscaping Services, and Statistics Canada. Each scenario's Y5 logo count should be checked against that SAM before external use.
+TAM and SAM sizing (number of US and Canadian landscaping firms by employee band) belongs in [01-market-landscape.md](01-market-landscape.md) and must be built from official sources: US Census County Business Patterns for NAICS 561730 Landscaping Services, and Statistics Canada. Any logo target should be checked against that SAM before external use.
 
-### 7.8 Sensitivity analysis (base case, Y5; approximate)
+<a id="78-sensitivity-analysis-base-case-y5-approximate"></a>
+### 7.8 Sensitivity analysis (per account; approximate)
 
 | Change | Effect |
 |---|---|
-| Blended monthly churn +0.5 pt (all years) | Y5 paying Companies about 8,300 (approximation), subscription ARR about $47.8M (-13%) |
-| ARPA -15% (price pressure) | Subscription ARR $46.5M. Grow payback 11.9 months |
+| Monthly logo churn +0.5 pt | Grow lifetime falls from 60 (capped) to about 48 months: LTV about $11,800 (-21%), LTV:CAC about 4.7x. Payback is unchanged, which is why retention, not CAC, is the first lever to protect |
+| ARPA -15% (price pressure) | Grow payback 11.9 months at an unchanged 73% gross margin (about 12.6 months if COGS stay fixed) |
 | AI raw costs +50% | Gross margin about -1 to -2 pts (AI is about 2-4% of revenue at included-credit utilization). Mitigated by re-routing and repricing rules in 7.4 |
 | SMS all-in cost +30% (carrier fees) | Gross margin about -1.5 pts on Grow. Mitigation: adjust included segments for new subscribers, push in-app and portal messaging over SMS |
 | CAC +30% | Grow payback 13.1 months, Pro 15.3 months. Mitigation: shift mix to partners and SEO |
-| Pay-as-you-grow uptake doubles (40% of Starter logos) | Net revenue about -$0.06M more at Y5, still roughly neutral. The plan earns its place only through conversion: at base-case uptake it must lift Starter gross adds by about 4% (about 75 more Starter logos a year at Y5, each worth about $820/year in gross profit) to cover the discount, and by about 8% at doubled uptake. Measured by the holdout test in 6.10 step 7 |
+| Pay-as-you-grow uptake doubles (40% of Starter logos) | Each opt-in Company nets about -$90/year against annual Starter (5.1.2), so the plan earns its place only through conversion. One extra Starter logo a year (about $820/year in gross profit) covers the discount for about 9 opt-in Companies. Assuming yearly Starter gross adds are about half the Starter installed base, that is a lift in Starter gross adds of about 4% at 20% uptake and about 8-9% at doubled uptake. Measured by the holdout test in 6.10 step 7 |
 | Zero-markup pledge removed (hypothetical 0.5% fee on all volume) | Large revenue gain, but it gives up the key differentiator. **Not recommended** |
 
 ### 7.9 Operating model implications (summary)
 
-- **Gross margin:** 72-74% at Y2, 77%+ at Y5 (targets).
-- **Sales and marketing:** acquisition spend alone (7.7) exceeds recognized revenue in the founder-led Y1, is about 80% of recognized revenue in Y2 and about 50% in Y3, and falls to about 25% by Y5 as SEO, referrals, partners and the homeowner app scale. Total S&M including brand, community and partner programs runs about 5 points above those figures (targets). Investors should read Y1-Y2 as a funded build-out, not a steady state.
-- **R&D:** heavy in Y1-Y2 because of breadth (design studio, ledger, mobile offline, AI). Team plan in [24-roadmap-feature-catalog.md](24-roadmap-feature-catalog.md).
+- **Gross margin:** 72-74% once early cohorts are steady, 77%+ at scale (targets).
+- **Sales and marketing:** acquisition spend runs ahead of recognized revenue while the installed base is small, then falls as a share of revenue as SEO, referrals, partners and the homeowner app take share from trade shows and AE-led deals (7.5). Total S&M including brand, community and partner programs runs about 5 points above acquisition spend alone (target).
 - **Cash seasonality:** annual prepay is collected mostly Nov-Feb. Spring onboarding costs peak Feb-Apr. Plan cash with a winter-collections bias.
 
 ---
@@ -2164,18 +2107,18 @@ All platform actions in this module are audit-logged with actor, reason code, be
 | **AI and GPU cost volatility** | Medium | Medium | Multi-vendor AI Gateway. Cost governor. Credit repricing rules with notice |
 | **SMS cost and regulation changes** (10DLC fees, carrier surcharges) | Medium | Medium | Included allotments adjustable for new subscribers. Push and portal messaging first |
 | **Revenue foregone by zero-markup payments** | Certain | Medium | Accept by design. Opt-in pay-as-you-grow. Stronger retention from Ledger and portal |
-| **Seasonal cash and onboarding crunch** (Jan-Apr) | High | Medium | Annual prepay in winter. Seasonal onboarding staff. Spring-Ready capacity caps |
+| **Seasonal cash and onboarding crunch** (Jan-Apr) | High | Medium | Annual prepay in winter. Self-serve importers and AI mapping absorb the peak. Spring-Ready capacity caps and the public migration-slot calendar (section 16, idea 18) |
 | **Marketplace channel conflict**: Companies fear Rootline will market to their clients | Medium | High | Hard rule: Rootline never markets Rootline Home or Match to a Company's existing clients, and never uses a Company's client data for lead generation. Published in the terms |
 | **Distributor neutrality concerns** | Medium | Medium | Neutrality rule (5.4.2). Labeled sponsorships only |
 | **Platform dependency on Stripe policy and terms** | Low-medium | High | Restricted-key advanced path, abstraction in the payments module, monitor Connect changes ([08](08-payments-stripe.md)) |
 | **Pricing complexity confuses buyers** | Medium | Medium | "2-minute bill test": prospects must be able to compute their bill in under 2 minutes in usability tests. Calculator. In-app preview |
-| **Founder bandwidth as curator** | High | Medium | Hire `platform_curator` horticulturists per region early. Curator tooling in [12](12-plant-knowledge-base.md) |
+| **Founder bandwidth as curator** | High | Medium | Region curation owned by `platform_curator` horticulturists, not the founder alone, before a Region opens. Curator tooling in [12](12-plant-knowledge-base.md) |
 | **Plant image and content licensing for API** | Medium | Medium | `license_class` per field. Commission original photography. Exclude restricted content |
 | **Localization cost (ES now, FR-CA later)** | Medium | Low-medium | Translation memory, AI-assisted translation with human review |
 | **Incumbent consolidation and bundling**: Granum (LMN + SingleOps) and ServiceTitan (Aspire) bundle payments, measurement and estimating, and can cut price to defend accounts | Medium-high | Medium | Compete on what bundles cannot copy quickly (design + plants + Ledger). Time switching campaigns to their forced migrations (6.5). Keep portability as a promise they cannot match |
-| **CAC optimism**: the base case needs blended CAC to fall from about $2,800 (Y1) to about $2,300 (Y5) | Medium | High | Stage gates (6.11) release spend only after payback is proven. Channel mix reviewed quarterly against 6.5. Sensitivity in 7.8 |
+| **CAC optimism**: the unit economics assume blended CAC falls as low-cost channels (SEO, referrals, partners, homeowner app) take share from trade shows and AE-led deals | Medium | High | Traction signals (6.11) open new waves only after payback is proven on actual spend. Channel mix reviewed quarterly against 6.5. Sensitivity in 7.8 |
 | **Free homeowner app cost outruns lead revenue** | Medium | Medium | Render budgets, verification before cost and per-Region kill switch (5.3.4). Cost per accepted lead tracked weekly |
-| **Single launch region concentration**: one Great Lakes cluster ties Year-1 results to one regional economy, one winter and one set of shows | Medium | Medium | Six Wave 1 Regions across five states. Wave 2 (Ontario plus four Regions) at V1. Wave 3 cluster scored with 6.2 on measured traction. Retention and win rate reported by Region (15) |
+| **Single launch region concentration**: one Great Lakes cluster ties early results to one regional economy, one winter and one set of shows | Medium | Medium | Six Wave 1 Regions across five states. Wave 2 (Ontario plus four Regions) at V1. Wave 3 cluster scored with 6.2 on measured traction. Retention and win rate reported by Region (15) |
 | **Snow Lite sets expectations the MVP cannot meet**: commercial snow contractors sign up expecting the full module | Medium | Medium | Market Snow Lite as storm logs, per-push invoices and proof PDFs, not storm management. Full module and sealed proof packets named as V1 on the pricing page. ICP scoring (6.1) keeps sales on residential design-build-maintain firms |
 | **Pay-as-you-grow muddies the Zero-Markup message** | Medium | Medium | Opt-in only, cheaper-option default, holdout test (6.10 step 7), retire if it does not lift conversion (open question 17.2) |
 
@@ -2185,10 +2128,10 @@ All platform actions in this module are audit-logged with actor, reason code, be
 
 All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-reporting-analytics.md) and the operator dashboards in [19](19-platform-admin-portal.md). Targets are proposals.
 
-| Category | KPI | Definition | Target (Y2 unless noted) |
+| Category | KPI | Definition | Target (proposed) |
 |---|---|---|---|
-| Revenue | Contracted ARR | 12 × committed recurring (base + committed seats + add-ons) | Base case $5.96M subscription ARR at Y2 |
-| Revenue | NRR (12-mo cohort) | (start MRR + expansion - contraction - churn) / start MRR | ≥ 105% Y2, ≥ 115% Y4 |
+| Revenue | Contracted ARR | 12 × committed recurring (base + committed seats + add-ons) | Tracked monthly against the live model (section 7) |
+| Revenue | NRR (12-mo cohort) | (start MRR + expansion - contraction - churn) / start MRR | ≥ 105%; about 115% for mature cohorts |
 | Revenue | GRR (12-mo cohort) | (start MRR - contraction - churn) / start MRR | ≥ 85% Grow, ≥ 90% Pro |
 | Revenue | ARPA by tier | MRR / paying Companies | Within ±10% of section 7.2 |
 | Margin | Gross margin | (revenue - COGS) / revenue | ≥ 72% |
@@ -2215,12 +2158,12 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 | Marketplace | Lead acceptance rate | Accepted offers / offers | ≥ 60% |
 | Marketplace | Lead-to-win rate | Signed proposals / accepted leads | ≥ 20% install leads |
 | Marketplace | Dispute rate | Upheld disputes / accepted leads | ≤ 8% |
-| Partners | Partner-sourced new ARR | Share of new ARR with partner attribution | ≥ 15% by Y2, ≥ 25% by Y3 |
-| Data products | Data ARR | Plant API + Pulse | $0.2M Y3 base |
+| Partners | Partner-sourced new ARR | Share of new ARR with partner attribution | ≥ 15% (Wave 3 signal, 6.11), rising toward 25% as the program matures |
+| Data products | Data ARR | Plant API + Pulse | Tracked once external data products ship ([V2]) |
 | Trust | Billing ticket rate | Billing-related tickets per 100 paying Companies per month | ≤ 3 |
 | Trust | Pricing fairness score | Survey: "Rootline's pricing is fair and predictable" (1-5) | ≥ 4.3 |
-| Efficiency | Acquisition spend as % of recognized revenue | Fully loaded acquisition spend (incl. onboarding) / recognized revenue | About 80% Y2, about 50% Y3 (7.7) |
-| Efficiency | Blended CAC vs plan | Actual blended CAC / 7.7 row | Within ±10% |
+| Efficiency | Acquisition spend as % of recognized revenue | Fully loaded acquisition spend (incl. onboarding) / recognized revenue | Falling every quarter as the channel mix shifts (7.5, 7.9) |
+| Efficiency | Blended CAC vs plan | Actual blended CAC / CAC implied by the planned channel mix (6.5, 7.5) | Within ±10% |
 | Marketplace | Cost per accepted lead (Rootline Home) | Direct homeowner-app costs / accepted leads | ≤ $25 (5.3.4) |
 | Payments | Pay-as-you-grow conversion lift | Starter gross adds, test vs holdout | ≥ 4% or retire the plan |
 | AI | Credit price review coverage | Actions with a credit price reviewed against trailing 90-day raw cost in the last quarter | 100% |
@@ -2253,11 +2196,11 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 
 ## 17. Open questions
 
-1. ~~**Beachhead regions:** where is the founder's plant knowledge strongest? This sets the 2-3 MVP clusters (6.2) and the curator hiring plan.~~ **Resolved (founder decision):** the launch region is the Great Lakes, a single US cluster with six Wave 1 Regions at MVP, Wave 2 (Southern Ontario plus Cincinnati-Dayton, Indianapolis, Western New York and Erie/Pittsburgh) at V1, and a Wave 3 second US cluster chosen later on traction with the 6.2 scoring framework. Snow Lite ships at MVP in every tier as a consequence (4.5).
-2. **Pay-as-you-grow:** launch it at V1, or keep a strict zero-markup message with no exceptions? Does any application fee weaken the pledge? The corrected model (7.7) shows it is roughly revenue-neutral, so the only reason to keep it is a measured lift in Starter conversion (6.10 step 7). A related detail from [08](08-payments-stripe.md): with one rate for card and ACH, a $2,000 ACH payment carries a $10 Rootline fee while Stripe's own ACH fee is capped lower; should ACH carry a lower cap?
+1. ~~**Beachhead regions:** where is the founder's plant knowledge strongest? This sets the 2-3 MVP clusters (6.2).~~ **Resolved (founder decision):** the launch region is the Great Lakes, a single US cluster with six Wave 1 Regions at MVP, Wave 2 (Southern Ontario plus Cincinnati-Dayton, Indianapolis, Western New York and Erie/Pittsburgh) at V1, and a Wave 3 second US cluster chosen later on traction with the 6.2 scoring framework. Snow Lite ships at MVP in every tier as a consequence (4.5).
+2. **Pay-as-you-grow:** launch it at V1, or keep a strict zero-markup message with no exceptions? Does any application fee weaken the pledge? The per-account math in 5.1.2 shows it is roughly revenue-neutral, so the only reason to keep it is a measured lift in Starter conversion (6.10 step 7). A related detail from [08](08-payments-stripe.md): with one rate for card and ACH, a $2,000 ACH payment carries a $10 Rootline fee while Stripe's own ACH fee is capped lower; should ACH carry a lower cap?
 3. **Free plan:** should Rootline offer a permanently free tier for solo operators (to compete with free tools) or rely on the trial, Design Solo and Fundador programs?
 4. **Starter design taste:** should Starter include a few AI mockups per month (beyond the credit allotment) to create the "wow" moment that drives upgrades?
-5. **Canada and Quebec:** CAD price parity policy. Timing and legal requirements for French-language availability for Quebec customers (verify Charter of the French Language obligations for software sold in Quebec).
+5. **Canada and Quebec:** CAD price parity policy. Scope and legal requirements for French-language availability for Quebec customers (verify Charter of the French Language obligations for software sold in Quebec).
 6. **Payroll partner:** which embedded payroll provider, and the wholesale cost per employee that sets the add-on price?
 7. **Lead marketplace legal review:** state-by-state rules on contractor referral and success fees, contractor licensing verification, consent text.
 8. **Benchmarks:** antitrust counsel review of Pulse methodology before V1.
@@ -2268,11 +2211,11 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 13. **No-snow winter policy** for the Snow & Ice add-on: goodwill credit or not?
 14. **Tax footprint:** which US states and Canadian provinces need registration at launch for Rootline's own SaaS sales?
 15. **Competitor contract buyouts:** cap at 3 months of overlap, or offer full buyouts for Pro/Enterprise deals?
-16. **Market sizing inputs:** pull US Census CBP (NAICS 561730) and Statistics Canada counts by employee band into [01](01-market-landscape.md) to sanity-check Y5 logo targets in each scenario.
-17. **Homeowner funnel scale:** is about 1.3M homeowners creating a mockup in Y5 (5.3.4) plausible from SEO and shares alone, or does the base case need a paid homeowner budget well above $0.5M? Validate with Plant Finder traffic in the first two seasons in the Great Lakes launch region.
+16. **Market sizing inputs:** pull US Census CBP (NAICS 561730) and Statistics Canada counts by employee band into [01](01-market-landscape.md) to size the reachable market in each wave and sanity-check logo targets.
+17. **Homeowner funnel scale:** is the illustrative scale in 5.3.4 (about 1.3M homeowners creating a mockup in a year) reachable from SEO and shares alone, or does it need a paid homeowner budget well above $0.5M? Validate with Plant Finder traffic in the Great Lakes launch region.
 18. **10DLC fee absorption:** absorbing one-time registration fees on annual Grow/Pro (4.4) is cheap today. Revisit if carriers raise vetting fees or require annual re-vetting.
-19. **Granum and Xplor switching programs:** how aggressive should the switching credit be for Companies forced to re-onboard payments (full contract buyout vs the standard 3 months)? Decide before the first winter campaign.
-20. **Onboarding cost classification:** this doc counts pre-go-live onboarding in CAC (7.1, 6.12). Confirm with `platform_finance` and auditors whether paid migrations and onboarding should sit in COGS for reporting, which would move about 3 points of gross margin.
+19. **Granum and Xplor switching programs:** how aggressive should the switching credit be for Companies forced to re-onboard payments (full contract buyout vs the standard 3 months)? Needed before the first switching campaign (6.5).
+20. **Onboarding cost classification:** this doc counts pre-go-live onboarding in CAC (7.1). Confirm with `platform_finance` and auditors whether paid migrations and onboarding should sit in COGS for reporting, which would move about 3 points of gross margin.
 21. **Website visualizer subsidy:** should Rootline fund the first 500 widget credits a month for Grow tenants as a growth investment, since widget leads also feed Rootline Match (5.3)? The 4.4.1 default cap of 600 credits funds only about 15 visitors a month, so a subsidy would make the widget useful out of the box. Raised in [11](11-ai-design-mockups.md) open question 1, which names this doc as the owner.
 
 ---

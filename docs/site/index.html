@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rootline Product Vision</title>
-<meta name="description" content="Rootline product vision: one operating system for landscape companies, from first sketch to final ledger entry. The problem, ten bets, personas, the lead-to-ledger flow, module atlas, signature experiences, competition, business model, roadmap, moonshots and architecture.">
+<meta name="description" content="Rootline product vision: one operating system for landscape companies, from first sketch to final ledger entry. The problem, ten bets, personas, the lead-to-ledger flow, module atlas, signature experiences, competition, business model, product scope, moonshots and architecture.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/rootline.css">
@@ -312,9 +312,7 @@ table.matrix tfoot th[scope="row"] { font-family: var(--font-body); }
 .funnel .step { font-family: var(--font-mono); font-size: .7rem; color: var(--accent); font-weight: 600; }
 .econ { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
 
-/* 09 Roadmap */
-.road-frame { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 16px; box-shadow: var(--shadow-1); }
-.road-frame svg { display: block; width: 100%; height: auto; min-width: 940px; }
+/* 09 Product scope */
 .phases { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 .phase { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 14px 15px; border-top: 4px solid var(--primary); }
 .phase.v1 { border-top-color: var(--info-solid); } .phase.v2 { border-top-color: var(--warn-solid); } .phase.v3 { border-top-color: var(--accent); }
@@ -329,7 +327,6 @@ table.matrix tfoot th[scope="row"] { font-family: var(--font-body); }
 .days h4 { font-size: .95rem; margin: 2px 0 8px; }
 .days .d { font-family: var(--font-mono); font-size: .72rem; color: var(--accent); font-weight: 600; }
 .days ul { margin: 0; padding-left: 17px; font-size: .82rem; color: var(--text-2); display: grid; gap: 4px; }
-.team { margin-top: 12px; font-size: .86rem; color: var(--text-2); }
 
 /* 10 Moonshots */
 .moons { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
@@ -419,22 +416,6 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 .money { fill: none; stroke: var(--primary); stroke-width: 3.2; }
 .money.thin { stroke-width: 2; }
 .data { fill: none; stroke: var(--text-3); stroke-width: 1.5; stroke-dasharray: 5 4; }
-.rm-buy { fill: var(--surface-3); fill-opacity: .55; }
-.rm-axis { stroke: var(--border-strong); stroke-width: 1.2; }
-.rm-year { stroke: var(--border); stroke-width: 1; }
-.rm-tick { stroke: var(--border-strong); stroke-width: 1; }
-.rm-found { fill: var(--stone-200); stroke: var(--stone-450); }
-.rm-kb { fill: var(--moss-100); stroke: var(--moss-500); }
-.rm-kbph { fill: var(--moss-300); }
-.rm-mvp { fill: var(--moss-100); stroke: var(--moss-500); }
-.rm-mvp2 { fill: var(--moss-600); }
-.rm-v1 { fill: var(--sky-100); stroke: var(--sky-500); }
-.rm-v2 { fill: var(--marigold-100); stroke: var(--marigold-600); }
-.rm-betline { stroke: var(--clay-300); }
-.bet-hatch { stroke: var(--clay-100); stroke-width: 3; }
-.rm-v3 { fill: none; stroke: var(--clay-500); stroke-width: 3; }
-.rm-freeze { fill: var(--warn-bg); stroke: var(--warn-solid); }
-.rm-gate { stroke: var(--text-2); stroke-width: 1.2; stroke-dasharray: 4 3; }
 .aws { fill: none; stroke: var(--border-strong); stroke-width: 1.3; stroke-dasharray: 7 5; }
 .ab { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.1; }
 .ab.ai { fill: var(--ai-bg); stroke: var(--ai-solid); }
@@ -505,10 +486,10 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
       <dl class="hero-stats" aria-label="The proposal at a glance">
         <div><dt>0 of 17</dt><dd>competitors reviewed ship a built-in double-entry ledger</dd></div>
         <div><dt>747</dt><dd>features cataloged; 442 tagged for the MVP</dd></div>
-        <div><dt>~3,000</dt><dd>curated plants at launch across the six Great Lakes launch Regions</dd></div>
+        <div><dt>~3,000</dt><dd>curated plants in the MVP across the six Great Lakes launch Regions</dd></div>
         <div><dt>$249</dt><dd>a month for Grow, the plan built for the beachhead (annual)</dd></div>
         <div><dt>$0</dt><dd>payment markup by default; client money lands in the Company's own Stripe</dd></div>
-        <div><dt>Jan 2028</dt><dd>general availability, at the winter trade shows when owners buy</dd></div>
+        <div><dt>EN / ES</dt><dd>offline-first crew app, Spanish-first from the MVP, with Snow Lite in every plan</dd></div>
       </dl>
     </div>
     <figure class="hero-art">
@@ -840,7 +821,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
       <li><a href="#signature"><span>06</span>Signature experiences</a></li>
       <li><a href="#competition"><span>07</span>Competitive landscape</a></li>
       <li><a href="#business"><span>08</span>Business model</a></li>
-      <li><a href="#roadmap"><span>09</span>Roadmap</a></li>
+      <li><a href="#scope"><span>09</span>Product scope</a></li>
       <li><a href="#moonshots"><span>10</span>Moonshots</a></li>
       <li><a href="#architecture"><span>11</span>Architecture</a></li>
       <li><a href="#docs"><span>12</span>The documents</a></li>
@@ -1019,7 +1000,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
   <div class="wrap">
     <div class="sec-head">
       <div><span class="num">05 · THE MODULES</span><h2 id="atlas-h">Module atlas</h2></div>
-      <p>Twenty-two module specs, each with goals, flows, wireframes, data model, permissions, KPIs and open questions. Three headline features each. Tags follow 24-roadmap-feature-catalog.md, which wins any conflict: [MVP] first release, [V1] about 12 months later, [V2] 12-24 months, [V3] moonshot.</p>
+      <p>Twenty-two module specs, each with goals, flows, wireframes, data model, permissions, KPIs and open questions. Three headline features each. Tags follow 24-roadmap-feature-catalog.md, Product Scope and Master Feature Catalog, which wins any conflict: [MVP] first sellable release, [V1] next scope wave, [V2] later wave, [V3] moonshot or long-term.</p>
     </div>
     <div class="filter" role="group" aria-label="Highlight features by phase">
       <span>Highlight</span>
@@ -1055,7 +1036,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
         <div class="mod-h"><span class="dn">24</span><h3>The whole catalog: 747 features, deduplicated</h3></div>
         <div class="catbar" role="img" aria-label="747 features: 442 MVP, 255 V1, 46 V2, 4 V3"><span class="c-mvp" style="width:59.2%"></span><span class="c-v1" style="width:34.1%"></span><span class="c-v2" style="width:6.2%"></span><span class="c-v3" style="width:0.5%"></span></div>
         <div class="catlegend"><span><b>442</b> MVP</span><span><b>255</b> V1</span><span><b>46</b> V2</span><span><b>4</b> V3</span></div>
-        <p>Each feature has an ID, a tag, a primary persona and a link to its spec section. 01-market-landscape.md frames the market, and 24-roadmap-feature-catalog.md is the authority on scope and tags.</p>
+        <p>Each feature has an ID, a tag, a primary persona and a link to its spec section. 01-market-landscape.md frames the market, and 24-roadmap-feature-catalog.md, Product Scope and Master Feature Catalog, is the authority on scope and tags.</p>
         <span class="fn">24-roadmap-feature-catalog.md · 01-market-landscape.md</span>
       </li>
     </ul>
@@ -1482,104 +1463,45 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
       <div><span class="step">STEP 4 · THE COMPANY'S CRM</span><h4>A lead with a design attached</h4><p>Lead and Opportunity created, the property geocoded, and the homeowner's mockups and measurements imported as a draft Design. The estimator starts from a plan, not a blank page.</p></div>
     </div>
     <div class="econ">
-      <div class="kpi"><div class="label">Gross margin per tier</div><div class="value">72-74%</div><div class="delta up">path to 77% by Year 5</div></div>
-      <div class="kpi"><div class="label">Paying Companies, Y5</div><div class="value">~9,500</div><div class="delta">base case, estimate</div></div>
-      <div class="kpi"><div class="label">Subscription + usage ARR, Y5</div><div class="value">$54.7M</div><div class="delta">base case, estimate</div></div>
-      <div class="kpi"><div class="label">Total run-rate revenue, Y5</div><div class="value">$60.4M</div><div class="delta">incl. Match leads, estimate</div></div>
+      <div class="kpi"><div class="label">Blended gross margin</div><div class="value">72%+</div><div class="delta up">77%+ at scale, estimate</div></div>
+      <div class="kpi"><div class="label">CAC payback</div><div class="value">&le;12 mo</div><div class="delta">every self-serve and inside-sales segment, target</div></div>
+      <div class="kpi"><div class="label">Typical stack it replaces</div><div class="value">$1,000-1,500</div><div class="delta">a month before payment fees, estimate</div></div>
+      <div class="kpi"><div class="label">Bookkeeper, sub and client seats</div><div class="value">$0</div><div class="delta">free on every plan</div></div>
     </div>
   </div>
 </section>
 
-<!-- ======================================================= 09 ROADMAP -->
-<section class="section" id="roadmap" aria-labelledby="road-h">
+<!-- ======================================================= 09 SCOPE -->
+<section class="section" id="scope" aria-labelledby="scope-h">
   <div class="wrap">
     <div class="sec-head">
-      <div><span class="num">09 · ROADMAP</span><h2 id="road-h">Build in summer, sell in winter, go live in spring</h2></div>
-      <p>The launch region is the Great Lakes: six Wave 1 Regions from Columbus to Milwaukee, where the field alpha and all 20 design partners work, extended across the border into Ontario and into nearby US metros at V1. The plan follows the landscaping calendar: foundations now, a field alpha in peak season 2027, a Season 0 beta with 20 design partners that fall, and general availability at the January 2028 trade shows. Money and offline sync are on the critical path from month one. Dates are planning targets from 24-roadmap-feature-catalog.md.</p>
-    </div>
-    <div class="road-frame scroll-x">
-<svg viewBox="0 0 1200 372" role="img" aria-labelledby="rm-t rm-d">
-<title id="rm-t">Release plan from November 2026 to 2030</title>
-<desc id="rm-d">Foundations November 2026 to March 2027. Plant KB seed of 3,000 plants February to July 2027 and photography May to October 2027. MVP build February to December 2027, with a field alpha with 5 Companies May to July 2027 and the Season 0 beta with 20 design partners September to December 2027. General availability 10 January 2028. V1 ships in four trains: March, July and October 2028 and January 2029, with the full Snow and Ice module in October 2028; Snow Lite is in the MVP. V2 ships through 2029. Bets are explored from July 2028 and V3 starts in 2030. Gate reviews in December 2027, September 2028 and September 2029. Buying season runs November to February; crew-app changes freeze April to September.</desc>
-<defs><pattern id="p-bet" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" class="f-clay50"/><path d="M0 0V8" class="bet-hatch"/></pattern><marker id="ra" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="f-clay5"/></marker></defs>
-<rect x="150.0" y="44" width="100.0" height="290" class="rm-buy"/>
-<rect x="450.0" y="44" width="100.0" height="290" class="rm-buy"/>
-<rect x="750.0" y="44" width="100.0" height="290" class="rm-buy"/>
-<rect x="1050.0" y="44" width="50.0" height="290" class="rm-buy"/>
-<path d="M150,44 H1180" class="rm-axis"/>
-<path d="M200.0,36 V334" class="rm-year"/>
-<text x="205.0" y="32" class="t-13 tx t-b smono">2027</text>
-<path d="M500.0,36 V334" class="rm-year"/>
-<text x="505.0" y="32" class="t-13 tx t-b smono">2028</text>
-<path d="M800.0,36 V334" class="rm-year"/>
-<text x="805.0" y="32" class="t-13 tx t-b smono">2029</text>
-<path d="M1100.0,36 V334" class="rm-year"/>
-<text x="1105.0" y="32" class="t-13 tx t-b smono">2030</text>
-<path d="M275.0,40 V48" class="rm-tick"/>
-<path d="M350.0,40 V48" class="rm-tick"/>
-<path d="M425.0,40 V48" class="rm-tick"/>
-<path d="M575.0,40 V48" class="rm-tick"/>
-<path d="M650.0,40 V48" class="rm-tick"/>
-<path d="M725.0,40 V48" class="rm-tick"/>
-<path d="M875.0,40 V48" class="rm-tick"/>
-<path d="M950.0,40 V48" class="rm-tick"/>
-<path d="M1025.0,40 V48" class="rm-tick"/>
-<circle cx="155.0" cy="44" r="4" class="f-ember"/><text x="161.0" y="57" class="t-10 tx2">Today</text>
-<text x="16" y="80" class="t-12 tx t-b">Foundations</text>
-<text x="16" y="116" class="t-12 tx t-b">Plant KB</text>
-<text x="16" y="154" class="t-12 tx t-b">MVP · 442</text>
-<text x="16" y="200" class="t-12 tx t-b">V1 · 255</text>
-<text x="16" y="244" class="t-12 tx t-b">V2 · 46</text>
-<text x="16" y="284" class="t-12 tx t-b">V3 · 4 + bets</text>
-<text x="16" y="320" class="t-12 tx t-b">Calendar</text>
-<rect x="156.7" y="65.0" width="118.3" height="22" rx="5" class="rm-found"/>
-<text x="283.0" y="80" class="t-11 tx2">Hires, architecture spikes, ledger kernel</text>
-<rect x="225.0" y="98.0" width="137.5" height="16" rx="5" class="rm-kb"/><text x="232.0" y="110.0" class="t-11 tx t-b">Seed 3,000 plants</text>
-<rect x="300.0" y="117" width="136.7" height="7" rx="3" class="rm-kbph"/><text x="294.0" y="125" text-anchor="end" class="t-10 tx2">KB photography</text>
-<rect x="225.0" y="139.0" width="263.3" height="22" rx="5" class="rm-mvp"/><text x="232.0" y="154.0" class="t-11 tx t-b">MVP build</text>
-<rect x="307.5" y="139.0" width="66.7" height="22" rx="5" class="rm-mvp2"/><text x="314.5" y="154.0" class="t-11 t-onp t-b">Alpha · 5</text>
-<rect x="410.0" y="139.0" width="78.3" height="22" rx="5" class="rm-mvp2"/><text x="417.0" y="154.0" class="t-11 t-onp t-b">Beta · 20</text>
-<path d="M507.5,138 l12,12 -12,12 -12,-12z" class="f-primary"/>
-<text x="524.5" y="154" class="t-12 tx t-b">GA · 10 Jan 2028</text>
-<rect x="508.3" y="185.0" width="297.5" height="22" rx="5" class="rm-v1"/>
-<path d="M561.7,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="561.7" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.0</text>
-<path d="M661.7,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="661.7" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.1</text>
-<path d="M728.3,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="728.3" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.2</text>
-<path d="M805.8,188 l7,8 -7,8 -7,-8z" class="f-sky6"/><text x="805.8" y="179" text-anchor="middle" class="t-10 tx2 smono">V1.3</text>
-<rect x="806.7" y="229.0" width="293.3" height="22" rx="5" class="rm-v2"/>
-<path d="M861.7,232 l7,8 -7,8 -7,-8z" class="f-mari6"/><text x="861.7" y="223" text-anchor="middle" class="t-10 tx2 smono">V2.0</text>
-<path d="M961.7,232 l7,8 -7,8 -7,-8z" class="f-mari6"/><text x="961.7" y="223" text-anchor="middle" class="t-10 tx2 smono">V2.1</text>
-<path d="M1028.3,232 l7,8 -7,8 -7,-8z" class="f-mari6"/><text x="1028.3" y="223" text-anchor="middle" class="t-10 tx2 smono">V2.2</text>
-<rect x="650.0" y="269" width="450.0" height="22" rx="5" fill="url(#p-bet)" class="rm-betline"/>
-<text x="658.0" y="284" class="t-11 tx t-b">Bet exploration and prototypes</text>
-<path d="M1104.0,280 H1182" class="rm-v3" marker-end="url(#ra)"/><text x="1108.0" y="270" class="t-11 tx t-b">2030+</text>
-<rect x="275.0" y="307.0" width="149.2" height="18" rx="5" class="rm-freeze"/><text x="282.0" y="320.0" class="t-10 t-warn t-b">Crew-app freeze</text>
-<rect x="575.0" y="307.0" width="149.2" height="18" rx="5" class="rm-freeze"/><text x="582.0" y="320.0" class="t-10 t-warn t-b">Crew-app freeze</text>
-<rect x="875.0" y="307.0" width="149.2" height="18" rx="5" class="rm-freeze"/><text x="882.0" y="320.0" class="t-10 t-warn t-b">Crew-app freeze</text>
-<text x="154.0" y="320" class="t-10 tx3">Buying season (shaded)</text>
-<path d="M486.7,46 V340" class="rm-gate"/><text x="486.7" y="354" text-anchor="middle" class="t-10 tx2 t-b">Gate 0 · 15 Dec</text>
-<path d="M711.7,46 V340" class="rm-gate"/><text x="711.7" y="354" text-anchor="middle" class="t-10 tx2 t-b">Gate 1 · 15 Sep</text>
-<path d="M1011.7,46 V340" class="rm-gate"/><text x="1011.7" y="354" text-anchor="middle" class="t-10 tx2 t-b">Gate 2 · 15 Sep</text>
-</svg>
+      <div><span class="num">09 · PRODUCT SCOPE</span><h2 id="scope-h">A sellable MVP first, then waves of scope</h2></div>
+      <p>Scope is set by what the product must do, not by a calendar. 24-roadmap-feature-catalog.md, Product Scope and Master Feature Catalog, tags all 747 features into four tiers: [MVP] the first sellable release, [V1] the next scope wave, [V2] a later wave and [V3] moonshots and long-term bets. The MVP sells in the Great Lakes launch region, six Wave 1 Regions from Columbus to Milwaukee, and includes Snow Lite because Great Lakes crews plow in winter. Money and offline sync are in the MVP core, not deferred.</p>
     </div>
     <ul class="phases">
-      <li class="phase"><div class="phase-h"><b>MVP</b><span>442 features</span></div><p class="when">GA 10 Jan 2028, after Gate 0</p>
-        <ul><li>Design Studio 2D, region-aware picker, live takeoff</li><li>AI photo mockups with region-locked plants</li><li>Budget-based estimating; tiered proposals with e-sign and deposits</li><li>Dispatch board, recurrence, route sequencing</li><li>Offline EN/ES crew app with pesticide records</li><li>Snow Lite: storm visit logs, per-push invoices, PDF proof of service</li><li>Billing Engine with level pay; BYO Stripe with ACH and autopay</li><li>Double-entry GL, Plaid, job costing, QBO connector</li><li>Copilot, Approval Inbox, first agents; migration from Jobber, LMN, QBO</li></ul></li>
-      <li class="phase v1"><div class="phase-h"><b>V1</b><span>255 features</span></div><p class="when">Four trains, Mar 2028 to Jan 2029</p>
-        <ul><li>Multi-crew optimization and rain-day playbooks</li><li>Commercial portal, approval chains, retainage, AIA, WIP</li><li>AI layout generation, 3D, design assistant</li><li>Full Snow &amp; Ice with proof packets (Oct 2028)</li><li>Enterprise, SSO, QuickBooks Desktop and Xero</li><li>Ontario and Wave 2 Regions; Canada: CAD, PAD, GST/HST, data residency</li><li>Website, booking, AI receptionist; Rootline Home and Match pilot; MCP server</li></ul></li>
-      <li class="phase v2"><div class="phase-h"><b>V2</b><span>46 features</span></div><p class="when">Through 2029, Gate 2 in September</p>
-        <ul><li>Tree care; HOA board workflows</li><li>Dedicated database cells; franchise mode</li><li>Landscape Passport; smart irrigation assist</li><li>Drone capture, AR for homeowners, climate-adaptive planting, Plant Doctor</li><li>Plant API; embedded payroll GA; Autopilot L3 pilot</li></ul></li>
-      <li class="phase v3"><div class="phase-h"><b>V3</b><span>4 features + bets</span></div><p class="when">2030 and beyond, through stage gates</p>
-        <ul><li>Gaussian-splat 3D walkthroughs</li><li>Nursery Buying Network</li><li>Rootline Grounds for in-house teams; Rootline Global (UK, Australia, NZ)</li><li>Parametric insurance and an autonomous back office</li></ul></li>
+      <li class="phase"><div class="phase-h"><b>MVP</b><span>442 features</span></div><p class="when">The first sellable release</p>
+        <ul><li>Design Studio 2D, region-aware picker, live takeoff</li><li>AI photo mockups with region-locked plants</li><li>Plant KB: about 3,000 curated plants for the six Wave 1 Regions</li><li>Budget-based estimating; tiered proposals with e-sign and deposits</li><li>Dispatch board, recurrence, route sequencing</li><li>Offline EN/ES crew app with pesticide records</li><li>Snow Lite: storm visit logs, per-push invoices, PDF proof of service</li><li>Billing Engine with level pay; BYO Stripe with ACH and autopay</li><li>Double-entry GL, Plaid, job costing, QBO connector</li><li>Copilot, Approval Inbox, first agents; migration from Jobber, LMN, QBO</li><li>Starter, Grow and Pro with published AI credits and zero markup</li></ul></li>
+      <li class="phase v1"><div class="phase-h"><b>V1</b><span>255 features</span></div><p class="when">The next scope wave</p>
+        <ul><li>Multi-crew optimization and rain-day playbooks</li><li>Commercial portal, approval chains, retainage, AIA, WIP</li><li>AI layout generation, 3D, design assistant</li><li>Full Snow &amp; Ice: Storm Command Center and sealed proof packets</li><li>Enterprise, SSO, QuickBooks Desktop and Xero</li><li>Wave 2 Regions, Ontario included; Canada: CAD, PAD, GST/HST, data residency</li><li>Website, booking, AI receptionist; Rootline Home and Match pilot; MCP server</li></ul></li>
+      <li class="phase v2"><div class="phase-h"><b>V2</b><span>46 features</span></div><p class="when">A later wave</p>
+        <ul><li>Tree care; HOA board workflows</li><li>SCIM; franchise and multi-brand mode</li><li>Landscape Passport; Plant Exchange</li><li>Drone capture, AR for homeowners, climate-adaptive planting, Plant Doctor</li><li>Plant API; Autopilot back office</li><li>Wave 3: a second US cluster, chosen on traction</li></ul></li>
+      <li class="phase v3"><div class="phase-h"><b>V3</b><span>4 features + bets</span></div><p class="when">Moonshots and long-term bets</p>
+        <ul><li>Gaussian-splat 3D walkthroughs</li><li>Rootline Buying Network</li><li>Rootline Grounds for in-house teams; Rootline Global (UK, Australia, NZ)</li><li>Moonshot bets from 23-innovation-moonshots.md, each with kill criteria</li></ul></li>
     </ul>
-    <h3 class="sub" style="margin-top:28px">The first 90 days</h3>
-    <p class="src">Founder action plan, 9 November 2026 to 5 February 2027 (24-roadmap-feature-catalog.md section 10).</p>
+    <h3 class="sub" style="margin-top:28px">Launch Regions by scope tier</h3>
+    <p class="src">Rootline sells only where the Plant KB is rated Excellent. Waves from 12-plant-knowledge-base.md and 22-business-model-pricing-gtm.md; 2023 USDA zones are approximate, verify per Region.</p>
     <div class="days">
-      <div><span class="d">DAYS 1-30 · 9 NOV - 8 DEC</span><h4>Decide and hire</h4><ul><li>Publish the Great Lakes launch-region memo</li><li>Open searches: engineering lead, lead horticulturist, three founding engineers</li><li>File the Stripe Connect platform and Twilio 10DLC applications</li><li>Trademark search for "Rootline"; start 100 discovery interviews</li></ul></div>
-      <div><span class="d">DAYS 31-60 · 9 DEC - 7 JAN</span><h4>Prove the hard parts</h4><ul><li>Five spikes: sync engine, Cedar, pooling, 2D renderer, OR-Tools</li><li>Ledger kernel prototype enforcing invariants L1-L12</li><li>Benchmark image routes on a 50-photo golden set</li><li>Start the Plant KB seed; sign 10 design-partner letters</li></ul></div>
-      <div><span class="d">DAYS 61-90 · 8 JAN - 5 FEB</span><h4>Commit</h4><ul><li>Mid-Am, CENTS and the Great Lakes Trade Expo: 20 letters of intent</li><li>Demo the slice: lead to estimate to proposal to e-sign to deposit to journal entry</li><li>Freeze MVP scope on 1 Feb 2027</li><li>Book the field alpha with 5 Companies and Spanish-speaking crews</li></ul></div>
+      <div><span class="d">WAVE 1 · MVP</span><h4>The Great Lakes launch region</h4><ul><li>Central Ohio: Columbus, zones ~6a-6b</li><li>Northeast Ohio: Cleveland, Akron, ~5b-6b</li><li>Southeast Michigan and Toledo, ~6a-6b</li><li>West Michigan: Grand Rapids, Holland, Kalamazoo, ~5b-6b</li><li>Chicagoland and Northwest Indiana, ~5b-6b</li><li>Southeast Wisconsin: Milwaukee, Madison, ~5a-6a</li></ul></div>
+      <div><span class="d">WAVE 2 · V1</span><h4>Across the border and next door</h4><ul><li>Southern Ontario Golden Horseshoe, with Canadian billing, payments and data residency</li><li>Cincinnati-Dayton and Indianapolis</li><li>Western New York (Buffalo-Rochester)</li><li>Erie/Pittsburgh</li></ul></div>
+      <div><span class="d">WAVE 3 · V2</span><h4>A second US cluster, chosen on traction</h4><ul><li>Scored with the Region framework in 22-business-model-pricing-gtm.md</li><li>Candidates: Front Range Colorado, Mid-Atlantic Piedmont, North Texas, Pacific Northwest</li><li>Brings the xeric, succulent and fire-wise plant depth held back from the MVP seed</li></ul></div>
     </div>
-    <p class="team">Team, estimated: about 19 people by March 2027, 49 at GA, 95 at the end of 2028 and 153 at the end of 2029.</p>
+    <h3 class="sub" style="margin-top:28px">Open product decisions</h3>
+    <p class="src">Recommended defaults from the open decisions in 24-roadmap-feature-catalog.md. Each module doc keeps its own open questions.</p>
+    <div class="days">
+      <div><span class="d">PRICING AND PACKAGING</span><h4>Who gets what</h4><ul><li>No free plan: Starter and the winter trial cover the low end</li><li>Core portal in every plan; commercial approvals on higher tiers</li><li>Route sequencing on every tier; multi-crew optimization from Grow</li></ul></div>
+      <div><span class="d">PRODUCT AND UX</span><h4>How it behaves</h4><ul><li>One native app with crew and manager modes</li><li>Budget wizard optional; only discounts below the margin floor are blocked</li><li>Press-and-hold for irreversible crew actions, settled by glove tests</li></ul></div>
+      <div><span class="d">AI AND TRUST</span><h4>How far AI goes</h4><ul><li>Default autonomy: L3 only for payment reminders and visit-completion messages</li><li>Image route chosen on plant identity and house preservation</li><li>Fidelity grade visible to staff; badge and disclaimer for homeowners</li></ul></div>
+    </div>
   </div>
 </section>
 
@@ -1707,7 +1629,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
       <div class="card"><h3>Tenancy</h3><p>Shared schema with <code class="smono-i">tenant_id</code> on every table, forced row-level security, Cedar policies as defense in depth, and cross-tenant canaries in production.</p></div>
       <div class="card"><h3>Events and workflows</h3><p>A transactional outbox feeds SNS and SQS. Temporal runs deposits, season-long agreement billing, snow events, mockup generation and Stripe event processing.</p></div>
       <div class="card"><h3>Offline sync</h3><p>SQLite on the device and a bucket-based pull and push protocol Rootline owns. Field mutations are never refused for billing reasons.</p></div>
-      <div class="card"><h3>Trust and security</h3><p>PCI SAQ-A by design, SOC 2 Type I within 6 months of GA, a hash-chained audit log, and no training on customer data.</p></div>
+      <div class="card"><h3>Trust and security</h3><p>PCI SAQ-A by design, SOC 2 Type I scoped into the MVP and Type II into V1, a hash-chained audit log, and no training on customer data.</p></div>
     </div>
   </div>
 </section>
@@ -1717,7 +1639,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
   <div class="wrap">
     <div class="sec-head">
       <div><span class="num">12 · THE DOCUMENTS</span><h2 id="docs-h">Read the full proposal</h2></div>
-      <p>The proposal is 24 module docs and 4 research reports in the docs folder of the repository, plus this concept site. Start with README.md; when docs disagree, the owner doc for the topic wins and 24-roadmap-feature-catalog.md decides priority tags.</p>
+      <p>The proposal is 24 module docs and 4 research reports in the docs folder of the repository, plus this concept site. Start with README.md; when docs disagree, the owner doc for the topic wins and 24-roadmap-feature-catalog.md, Product Scope and Master Feature Catalog, decides priority tags.</p>
     </div>
     <div class="docs-grid">
 <div class="docgrp"><h3>Front door</h3><ul><li>README.md</li></ul></div>
@@ -1739,7 +1661,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <footer class="site-foot">
   <div class="wrap">
     <span>Rootline design proposal · November 2026. "Rootline" is a working name, pending a trademark search.</span>
-    <span>Greenleaf Grounds Co., its people, clients and prices are fictional sample data. Competitor facts are as of November 2026; verify before external use. All Rootline prices, costs and revenue figures are proposals or estimates.</span>
+    <span>Greenleaf Grounds Co., its people, clients and prices are fictional sample data. Competitor facts are as of November 2026; verify before external use. All Rootline prices and cost figures are proposals or estimates.</span>
   </div>
 </footer>
 

@@ -10,8 +10,8 @@
 - **Decision 3, deposits are liabilities:** a paid Deposit Request posts to 2150 Customer Deposits, not revenue, and is applied to invoices by a chosen method; installments and prepaid seasons post to 2200 Deferred Revenue and are recognized per completed visit ([4.11](#411-ledger-postings-per-billing-event-mvp)).
 - **Decision 4, tax per line:** every line carries a tax category and every Job a real-property treatment; a tax engine adapter (manual rates and Stripe Tax at MVP, Avalara at V1) does the rate math for US states and Canadian provinces, with evidence stored per invoice ([4.5](#45-sales-tax-and-indirect-tax-us-and-canada)).
 - **Decision 5, money moves elsewhere:** collection runs on the Company's own Stripe account through [08](08-payments-stripe.md); posting rules P1-P42 use the canonical chart and rule registry of [09](09-accounting-ledger-integrations.md), which wins any account-code conflict.
-- **MVP:** per-visit, batch, level billing with true-up, prepaid seasons, deposits, milestones, T&M, basic snow billing, agreement lifecycle, invoice approvals and Billing Runs, proof-of-service invoices, US/Canada sales tax, credit memos and write-offs, statements, late fees, dunning, collections workspace.
-- **Later:** [V1] percent-complete progress billing, retainage, AIA-style pay applications, full snow billing, consolidated portfolio billing, client-side AP approval, indexed escalators, payment plans, AI collections agent, credit limits, cross-currency, filing partners; [V2] e-invoicing networks.
+- **MVP:** per-visit, batch, level billing with true-up, prepaid seasons, deposits, milestones, T&M, basic snow billing (per-push and per-application lines generated from Snow Lite storm visit logs at Price Book rates, [4.2.10](#4210-event-based-snow-and-ice-billing-mvp-basic--v1-full)), agreement lifecycle, invoice approvals and Billing Runs, proof-of-service invoices, US/Canada sales tax, credit memos and write-offs, statements, late fees, dunning, collections workspace.
+- **Later:** [V1] percent-complete progress billing, retainage, AIA-style pay applications, full snow billing (storm events, depth tiers, caps and floors, with the `snow_ice` module), consolidated portfolio billing, client-side AP approval, indexed escalators, payment plans, AI collections agent, credit limits, cross-currency, filing partners; [V2] e-invoicing networks.
 - **Differentiators:** contract-native level billing with an automatic true-up, residential and commercial billing in one product, invoices that carry GPS-stamped proof of service, landscape-aware taxability, and ledger-exact postings at the moment of each event.
 - **Key cross-links:** proposals and deposits set in [03](03-crm-sales-estimating-proposals.md); visits from [04](04-scheduling-dispatch-routing.md) and [05](05-field-crew-mobile-app.md); portal pay and approvals in [06](06-customer-portal.md); permissions in [02](02-personas-roles-permissions.md); snow events in [14](14-service-line-modules.md).
 
@@ -310,9 +310,18 @@ The flagship residential and small-commercial maintenance model: "30 weekly mows
 
 #### 4.2.10 Event-based snow and ice billing [MVP basic / V1 full]
 
-Snow contracts are where landscaping billing gets genuinely complex, and where documentation protects companies in slip-and-fall claims.
+Snow contracts are where landscaping billing gets genuinely complex, and where documentation protects companies in slip-and-fall claims. Billing ships in two slices that match the snow module in [14](14-service-line-modules.md):
 
-- **Contract models** (one per site per season; [14](14-service-line-modules.md) covers operations):
+- **[MVP] basic: Snow Lite billing.** Basic snow billing is per-push and per-application invoice lines generated from Snow Lite storm visit logs ([14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp)). Rules:
+  - Each completed storm visit (`visit.completed`) turns its logged counts (pushes; salt or ice-melt applications; walks cleared) into Billable Items at the snow site's **Price Book rates**: one line per service type per visit, quantity = logged count, with the visit date, arrival and departure times and a link to the visit's timestamped GPS photos.
+  - Lines flow through the normal per-visit or on-cycle schedules (4.2.1, 4.2.2) and Billing Runs, post through P1 and carry tax category `snow_ice_removal` (4.5). The per-site PDF proof export from [14](14-service-line-modules.md#430-snow-lite-mvp) can be attached as the proof of service.
+  - The office can add or correct counts on a storm visit before billing (for example from a paper log); each change records who, when and why, and the line shows "entered by office".
+  - Seasonal fixed-fee clients keep billing through ordinary agreement installments (4.2.3); their storm visits are still logged and print as covered $0 lines on the next installment invoice, like any visit an agreement covers.
+  - Not in Snow Lite: Snow Event records, trigger evaluation, depth tiers, weather reference checks, `per_event` pricing, seasonal caps and floors, hybrid contracts and event appendices. The office decides which sites get storm visits, so a "plow at 2 inches" clause relies on the crew's judgment and notes.
+  - **Worked example, Snow Lite** (illustrative Price Book rates: push $95, lot salt application $120, sidewalk ice-melt application $45). A dental office lot gets two storm visits on Jan 14: at 2:10 a.m. the crew logs 1 push and 1 lot salt application, and at 9:40 a.m. 1 push, 1 lot salt application and 1 sidewalk ice-melt application. The per-visit invoices bill $95 + $120 = **$215** and $95 + $120 + $45 = **$260**, each with the visit times and GPS photos attached.
+- **[V1] full: storm-event billing with the `snow_ice` module.** Everything below (contract models with depth tiers, Snow Events, caps, floors, hybrid contracts and event appendices) ships with the full module ([14 section 4.3.8](14-service-line-modules.md#438-event-billing-automation-v1)). Flat-rate `per_push` and `per_application` lines without depth tiers are the MVP subset above.
+
+- **Contract models** [V1] (one per site per season; [14](14-service-line-modules.md) covers operations):
 
   | Model | How it bills | Example rate card (illustrative) |
   |---|---|---|
@@ -325,7 +334,7 @@ Snow contracts are where landscaping billing gets genuinely complex, and where d
   | `seasonal_with_floor` | Per-event billing with a guaranteed seasonal **minimum** (contractor's revenue certainty) trued up at season end. | Minimum $6,000 billed in March if events total less. |
   | `hybrid` | Seasonal fixed plowing + per-application salting (most common commercial structure). | |
 
-- **Rules**
+- **Rules** [V1]
   - A **Snow Event** record (start/end timestamps, observed snowfall by site from crew logs, reference snowfall from a weather data source; see [04](04-scheduling-dispatch-routing.md)) groups all Site Service Logs (arrival/departure time, service type, depth measured, salt quantity, photos, GPS track).
   - Billable Items are created per site service log by applying the site's rate card; the depth tier uses the **crew-measured depth** with the weather reference shown alongside, and discrepancies over 2" are flagged for review before billing.
   - **Caps**: when cumulative season billing reaches the cap, subsequent items are created as `covered` ($0) lines so the client still sees every service delivered; the invoice shows "Seasonal cap reached on Feb 9; services continue at no charge".
@@ -335,7 +344,7 @@ Snow contracts are where landscaping billing gets genuinely complex, and where d
   - **Trigger evaluation**: the trigger is tested per site per push using the crew-measured depth at arrival; a push below trigger is logged but creates a `covered` or `excluded` item (reason `below_trigger`) unless the contract says "service on any accumulation" (common for hospitals and senior-living sites, which also often specify zero-tolerance salting). Client instructions such as "do not plow the north lot before 5 a.m." are stored on the site and printed on the log.
   - **Salt by weight**: when salt is billed per ton, quantity comes from the spreader calibration and the crew's loaded/unloaded log (or a scale ticket), rounded to 0.1 ton; when billed per application, quantity is 1 regardless of tons, but tons are still captured for inventory ([13](13-operations-inventory-equipment.md)) and job costing.
   - **Subcontracted sites**: snow subs log through the crew app's restricted subcontractor mode ([05](05-field-crew-mobile-app.md) 4.22.4) or the subcontractor portal ([13](13-operations-inventory-equipment.md)); their logs create both the client Billable Item (at the client rate card) and the sub's payable (at the sub rate card, AP in [13](13-operations-inventory-equipment.md)), linked so margin per push is visible.
-- **Worked example: Oak Ridge Apartments, Jan 14-15 storm** (`hybrid`: seasonal plowing plus per-application salting; illustrative rates). Two pushes logged (4.5 in at 2:10 a.m. and 3 in at 9:40 a.m.), two lot salt applications at $195 and two sidewalk ice-melt applications at $85. Plowing is covered by the $11,800 seasonal fee, so the pushes print as covered $0 lines with times, depths and photos; salting bills $390 + $170 = **$560** for the event. Under a `per_push` contract with the rate card above, the same event would bill $410 (4-8 in tier) + $285 (2-4 in tier) + $560 = **$1,255**; under `seasonal_capped` with $14,180 already billed against a $14,500 cap, only $320 would bill and the remaining $935 would print as covered with the note "Seasonal cap reached Jan 15".
+- **Worked example [V1]: Oak Ridge Apartments, Jan 14-15 storm** (`hybrid`: seasonal plowing plus per-application salting; illustrative rates). Two pushes logged (4.5 in at 2:10 a.m. and 3 in at 9:40 a.m.), two lot salt applications at $195 and two sidewalk ice-melt applications at $85. Plowing is covered by the $11,800 seasonal fee, so the pushes print as covered $0 lines with times, depths and photos; salting bills $390 + $170 = **$560** for the event. Under a `per_push` contract with the rate card above, the same event would bill $410 (4-8 in tier) + $285 (2-4 in tier) + $560 = **$1,255**; under `seasonal_capped` with $14,180 already billed against a $14,500 cap, only $320 would bill and the remaining $935 would print as covered with the note "Seasonal cap reached Jan 15".
 
 > **Competitive edge: snow billing that understands storms.** Aspire, the commercial benchmark, is described as supporting per-push and per-event billing with events booked back into the contract, while generic FSM tools reportedly fall back to duplicated job templates and spreadsheets for per-inch pricing (section 2.1). Rootline goes further in three specific ways: (1) **depth-tiered rate cards** priced from crew-measured depth and reconciled against an independent weather reference, with discrepancies queued before anything is billed; (2) **seasonal caps and floors** that keep recording every service after the cap as a covered $0 line, so the client sees the full record and the floor true-up is automatic; (3) the invoice's **event appendix is generated from the same site service logs** that SIMA's documentation guidance describes as a legal shield in slip-and-fall claims ([SIMA in-season documentation](https://resources.sima.org/snow-and-ice-resource-center/effective-in-season-documentation)), so the bill and the evidence can never disagree. We have not verified whether Aspire supports caps, floors or depth tiers; treat that part of the comparison as open until checked ([R2](research/R2-landscape-specific-platforms.md)).
 
@@ -1023,7 +1032,16 @@ Steps of note: certified amount less than applied creates a carry-forward on tha
 
 ```mermaid
 flowchart TD
-    A["Storm forecast: snow event opened"] --> B["Crews dispatched at 2 inch trigger"]
+    S{"Full snow_ice module enabled?"}
+    S -->|"no: Snow Lite, MVP"| L1["Office creates storm visits for selected snow sites in priority order"]
+    L1 --> L2["Storm visit log: arrival, departure, pushes, applications, walks, GPS photos"]
+    L2 --> L3["Counts priced at the site's Price Book rates"]
+    L3 --> L4{"Seasonal fixed-fee client?"}
+    L4 -->|"yes"| L5["Covered zero-dollar lines on the next installment invoice"]
+    L4 -->|"no"| L6["Per-push and per-application billable items"]
+    L6 --> L7["Invoice per visit or on cycle, per-site PDF proof export attached"]
+    S -->|"yes: full module, V1"| A["Storm forecast: snow event opened"]
+    A --> B["Crews dispatched at 2 inch trigger"]
     B --> C["Site service logs: arrival, depth, pushes, salt tons, photos, GPS"]
     C --> D["Event closed by ops manager"]
     D --> E{"Depth vs weather reference within 2 inches?"}
@@ -1362,7 +1380,7 @@ All tables carry `tenant_id` (Company) with Postgres row-level security, `create
 | `pay_application` | id, project_id, number, period_from, period_to, status, retainage_pct_work, retainage_pct_stored, applied_amount, certified_amount, invoice_id | Pay apps. |
 | `sov_line` | id, project_id, item_no, description, scheduled_value, change_order_id, sort_order | Schedule of values. |
 | `pay_app_line` | id, pay_application_id, sov_line_id, previous_completed, this_period, stored_materials, certified_this_period, retainage | Continuation sheet rows. |
-| `snow_rate_card` | id, agreement_line_id, model, trigger_inches, tiers_json, application_rates_json, hourly_rates_json, seasonal_cap, seasonal_floor | Snow pricing. |
+| `snow_rate_card` | id, agreement_line_id, model, trigger_inches, tiers_json, application_rates_json, hourly_rates_json, seasonal_cap, seasonal_floor | Snow pricing for the full module [V1]; Snow Lite prices storm visit counts from the Price Book. |
 | `price_escalator` | id, type, value, index_series, floor_pct, ceiling_pct, rounding, timing | Escalation. |
 | `renewal` | id, agreement_id, new_agreement_id, notice_rule_code, notice_due_on, notice_sent_at, status | Renewal tracking. |
 | `einvoice_document` | id, invoice_id, format (ubl, peppol_bis, x12_810), payload_file_id, network, status | E-invoicing. |
@@ -1607,7 +1625,7 @@ Consumed events:
 | `timesheet.approved`, `material.used`, `equipment.usage_logged` | [15](15-team-hr-payroll.md), [13](13-operations-inventory-equipment.md) | T&M billable items |
 | `milestone.reached`, `phase.completed` | [04](04-scheduling-dispatch-routing.md) | Milestone invoices |
 | `project_phase.completed` | [14](14-service-line-modules.md) | Progress billing for design-build projects (percent complete per phase feeds milestone and SOV lines) |
-| `snow_event.closed` | [14](14-service-line-modules.md) | Snow billable items |
+| `snow_event.closed` | [14](14-service-line-modules.md) | Snow billable items for storm-event billing (full module [V1]); Snow Lite storm visits arrive as `visit.completed` [MVP] |
 | `payment.succeeded` / `.failed` / `.refunded`, `dispute.created` / `.closed`, `payout.paid` | [08](08-payments-stripe.md) | Allocations, dunning, ledger |
 | `payment.pending` (ACH/PAD in flight) / `payment.returned` (R01, NSF, PAD return) | [08](08-payments-stripe.md) | Pending badge and dunning pause; on return, reopen invoice (P34) and restart dunning at real age |
 | `payments.client.payment_hold` / `.payment_hold_released` | [08](08-payments-stripe.md) | Reconciled with this module's service-hold policy (4.3.8); one hold state per client, whichever module raised it |
@@ -1781,7 +1799,7 @@ Formal KPI definitions and metric keys live in [18](18-reporting-analytics.md), 
 | **Retainage aging** | Retainage receivable older than 60 days past substantial completion | Commercial cash | Trending to zero |
 | **Unbilled revenue days** | Unbilled receivables (1210 plus unbilled Billable Items) / average daily revenue | Work done but not yet billed | < 5 days for maintenance; project-specific for installs |
 | **Autopay failure rate** | Failed autopay attempts / autopay attempts (first attempt), and recovery rate after retries ([08](08-payments-stripe.md)) | Hidden churn and cash risk | Track by method (card vs ACH) |
-| **Cost to collect** | Office hours on collections (time tracking) + agency fees + AI credits / dollars collected past due | Collections efficiency | Falling after AI3 launch |
+| **Cost to collect** | Office hours on collections (time tracking) + agency fees + AI credits / dollars collected past due | Collections efficiency | Falling once AI3 is enabled |
 | **Pay app cycle time** | Days from period end to certified pay app, and certified to paid | Commercial cash speed | Company-specific baseline |
 | **Pre-bill dispute catch rate** | Issues raised in the pre-bill preview (section 13, idea 17) / all billing issues raised that cycle | Problems fixed before invoicing | Rising |
 

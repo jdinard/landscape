@@ -190,7 +190,7 @@ A Client has one or more Contacts. Each Contact with portal access has exactly o
 
 ## 4. Feature specification
 
-Each feature lists behaviors and rules an engineer can estimate against. Priority tags: [MVP] first sellable release, [V1] within about 12 months of MVP, [V2] 12-24 months, [V3] moonshot.
+Each feature lists behaviors and rules precise enough to build and test against. Scope tags: [MVP] first sellable release, [V1] next scope wave, [V2] later wave, [V3] moonshot / long-term. Tags are scope tiers, not dates; [24](24-roadmap-feature-catalog.md) is binding where docs differ.
 
 ### 4.1 White-label branding and domains
 
@@ -2087,7 +2087,7 @@ All AI runs through the AI Gateway ([17](17-ai-copilot-automation.md)), is meter
 
 Targets below are **internal design targets (estimates), not industry statistics**. Definitions are shared with [18](18-reporting-analytics.md).
 
-| KPI | Definition | Target (12 months after MVP) |
+| KPI | Definition | Target (product goal) |
 |-----|------------|------------------------------|
 | Portal reach | % of active Clients with a portal identity | > 90% |
 | Portal activity | % of active Clients with at least one portal or action-link session in the last 90 days | > 60% residential, > 75% commercial |

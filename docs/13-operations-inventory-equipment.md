@@ -7,11 +7,11 @@
 - **What it is:** the back of the house. Item master with landscape units (yards to tons, coverage at a depth), inventory by mode, purchasing and vendor price lists, receiving and AP matching, subcontractor compliance, equipment and fleet (PM, DVIR, cost per hour), yard load-outs, the chemical SDS library and warranties.
 - **Decision 1: the estimate is the demand signal.** Accepted Proposals and [Design Studio](10-design-studio.md) takeoffs become buy lists and POs with no retyping ([Estimating](03-crm-sales-estimating-proposals.md)); non-refundable special orders wait for `proposal.executed`.
 - **Decision 2: every movement is an append-only event, and the Ledger owns the posting rules.** Stock moves, receipts, bill matches and equipment usage post through the rules in [Ledger](09-accounting-ledger-integrations.md) section 4.3 (`inventory.IN*`, `ap.AP*`, `equipment.EQ1`). Vendor and client money never touches Rootline ([Payments](08-payments-stripe.md)).
-- **Decision 3: inventory is progressive.** Four modes per branch: Off and Light [MVP], Standard and Advanced [V1] (Standard moved to V1.0 once the Ledger is proven in production, per [Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6). Switching up needs an opening count; switching down archives detail and never loses history.
+- **Decision 3: inventory is progressive.** Four modes per branch: Off and Light [MVP], Standard and Advanced [V1] (Standard moved to [V1] so it follows the Ledger being proven in production, per [Product Scope](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6). Switching up needs an opening count; switching down archives detail and never loses history.
 - **Decision 4: equipment is a costed asset.** The published rate card (calculator [MVP], trailing-12-month actuals [V1]) is the only equipment rate Estimating can use, and usage posts to job cost with an over/under-recovery report.
 - **Decision 5: offline-first, scan-first field capture.** Every crew-app action is an idempotent event; DVIRs and signed lien waivers are immutable; load-out sheets are cached 48 hours ahead ([Crew app](05-field-crew-mobile-app.md), [Architecture](20-architecture-security.md)).
 - **MVP:** item master and UOM, Off and Light inventory modes, per-job buy lists and POs with budget-fit auto-approval, receiving, 2-way bill match, subcontractor COI/W-9 gate, asset registry, manual meters, rate calculator, DVIR with defect records and repair certification, load-out sheets and the offline SDS library (cut lines in [4.19](#419-release-slicing-and-cut-lines)).
-- **Later:** [V1] Standard inventory mode (perpetual, with GL posting) and PM schedules and work orders (both V1.0 per [Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 and #7), Advanced mode, purchasing workbench, 3-way match with AI extraction, Nursery Connect, holding-yard care, telematics, fuel cards, actuals-based rates, tools and kits, rentals, sub portal, lien waivers, warranties. [V2] punchout, EDI and distributor APIs, predictive maintenance. [V3] Buying Network, yard twin.
+- **Later:** [V1] Standard inventory mode (perpetual, with GL posting) and PM schedules and work orders (both moved to [V1] per [Product Scope](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 and #7), Advanced mode, purchasing workbench, 3-way match with AI extraction, Nursery Connect, holding-yard care, telematics, fuel cards, actuals-based rates, tools and kits, rentals, sub portal, lien waivers, warranties. [V2] punchout, EDI and distributor APIs, predictive maintenance. [V3] Buying Network, yard twin.
 - **Packaging ([Pricing](22-business-model-pricing-gtm.md) section 4.2.1):** Starter runs in Off mode (Price Book materials, receipts to jobs); Grow gets inventory and purchasing for one yard and up to 25 equipment assets; Pro and Enterprise get multi-location inventory and unlimited assets.
 - **Differentiators:** the design-to-dump-truck chain, plants as living inventory (holding-yard care, nursery guarantees and client plant warranties tied to the [Plant KB](12-plant-knowledge-base.md)), equipment cost per hour from real data, and subcontractor compliance that actually blocks.
 - **Key cross-links:** [Scheduling](04-scheduling-dispatch-routing.md) (resources, delivery gates, load-outs), [Service lines](14-service-line-modules.md) (chemicals, salt, plant warranties), [Team](15-team-hr-payroll.md) (certifications, mechanic time, tool charge-backs), [Reporting](18-reporting-analytics.md) (`equipment_cost_per_hour`, recovery KPIs), [Personas](02-personas-roles-permissions.md) (PO approval limits).
@@ -44,7 +44,7 @@ Running example used throughout: **Cedar & Stone Landscapes** (Columbus, Ohio), 
 
 ### 1.1 Goals
 
-| # | Goal | How we will know (target, 12 months after launch of the feature) |
+| # | Goal | How we will know (target, 12 months after the feature ships) |
 |---|------|------------------------------------------------------------------|
 | G1 | Turn sold work into buying automatically: an approved estimate or design takeoff produces a buy list with zero retyping. | 70% or more of material spend on install jobs flows through a Rootline PO (estimate). |
 | G2 | Capture true job cost for materials, equipment, subcontractors and disposal without accountant cleanup. | Job-cost variance between Rootline and the year-end CPA adjustment under 2% of job cost (estimate). |
@@ -210,7 +210,7 @@ The **Item** is the stockable or purchasable thing. The **Price Book** entry in 
 
 Rules:
 
-- Items are tenant-scoped. The platform curator maintains a **Master Material Catalog** (launch target: about 3,000 seeded items with densities, coverage rules and common UOMs) that tenants copy from; copied items keep a `master_item_id` so curator corrections can be offered as non-destructive updates [V1].
+- Items are tenant-scoped. The platform curator maintains a **Master Material Catalog** ([MVP] target: about 3,000 seeded items with densities, coverage rules and common UOMs) that tenants copy from; copied items keep a `master_item_id` so curator corrections can be offered as non-destructive updates [V1].
 - An Item can have **variants** (e.g., paver color, mulch color). Variants share costing rules but stock separately. [V1]
 - Plant items are always the pair (Plant KB `plant_id`, size spec). Two companies' "boxwood #3" map to the same canonical Plant, which powers availability and pricing intelligence in the [Plant KB](12-plant-knowledge-base.md). [MVP]
 - Size specs for plants follow nursery-trade conventions: container class (#1, #2, #3, #5, #7, #10, #15, #25 and larger), caliper for B&B shade trees, height for evergreens and multi-stems. The validation rules mirror the American Standard for Nursery Stock (ANSI Z60.1) conventions on how caliper and height are expressed (verify current edition) so that "2 in cal" means the same thing to estimator, nursery and client. [MVP]
@@ -296,7 +296,7 @@ A tenant (or a branch) chooses one mode; switching up never loses data, switchin
 | **Standard** [V1] | Design/build and maintenance firms with a yard | Perpetual inventory with moving-average cost, reservations, reorder points, cycle counts, holding yard, landed cost | Inventory asset; issues post to job cost; adjustments post to shrink |
 | **Advanced** [V1] | Multi-branch, chemical-heavy or nursery-heavy firms | Bins, lots and expiration, serial numbers, multi-branch transfers with in-transit, FIFO option, ABC counting, consignment, per-vendor match tolerances | As Standard, plus in-transit and consignment accounts |
 
-Standard was planned for MVP; it ships at V1.0 because perpetual inventory with GL posting depends on the built-in Ledger being proven in production ([Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6, using this module's own fallback in 4.19). At MVP a design/build firm with a yard runs Light: truck and yard quantities as memo, job-direct POs, receiving and issue to job, with purchases expensed to the job.
+Standard was planned for MVP; it ships at [V1] because perpetual inventory with GL posting depends on the built-in Ledger being proven in production ([Product Scope](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6, using this module's own fallback in 4.19). At MVP a design/build firm with a yard runs Light: truck and yard quantities as memo, job-direct POs, receiving and issue to job, with purchases expensed to the job.
 
 Mode-switch rules [MVP between Off and Light; switches to and from Standard from V1]:
 
@@ -711,7 +711,7 @@ Fields common to all: asset number, name, make, model, year, serial/VIN, status 
 
 #### 4.14.3 Preventive maintenance schedules [V1]
 
-PM schedules and maintenance work orders (4.14.4) ship at V1.0 ([Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #7). The asset registry, manual meters, DVIR with defect records and repair certification (4.14.10) and the rate calculator stay MVP, so an MVP tenant already has the meter history PM triggers need on day one of V1.
+PM schedules and maintenance work orders (4.14.4) ship at [V1] ([Product Scope](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #7). The asset registry, manual meters, DVIR with defect records and repair certification (4.14.10) and the rate calculator stay MVP, so an MVP tenant already has the meter history PM triggers need on day one of [V1].
 
 
 - **PM templates** per asset class or model with tasks, parts kits and labor estimates, triggered by hours, miles, calendar interval, season, or "whichever comes first". Templates are seeded with illustrative intervals and must be checked against the manufacturer's manual. Example template for a commercial zero-turn mower (illustrative):
@@ -988,9 +988,9 @@ Two separate relationships:
 
 ### 4.19 Release slicing and cut lines
 
-The MVP surface of this module is large, so the cut lines below are explicit. They feed the master catalog in [Roadmap](24-roadmap-feature-catalog.md), which wins if the two disagree.
+The MVP surface of this module is large, so the cut lines below are explicit. They feed the master feature catalog in [Product Scope](24-roadmap-feature-catalog.md), which wins if the two disagree.
 
-| Area | [MVP] (first sellable release) | [V1] | [V2] | [V3] |
+| Area | [MVP] (first sellable release) | [V1] (next scope wave) | [V2] (later wave) | [V3] (moonshot or long-term) |
 |---|---|---|---|---|
 | Item master and UOM | Item types, UOM and density conversions, coverage rules, Master Material Catalog copy, VIN decode | Variants, barcodes and labels, curator update offers | Pile scanner | |
 | Inventory | Modes Off and Light; locations; movements; moving average (memo); memo reservations; full counts; truck pars | Standard mode (perpetual inventory with GL posting, 24 section 4.6 #6); Advanced mode (bins, lots, FIFO, serials, in-transit), cycle counts, min/max, demand-aware reorder, landed cost | Pre-season buying planner, demand forecasting | Yard twin |
@@ -1003,7 +1003,7 @@ The MVP surface of this module is large, so the cut lines below are explicit. Th
 | Chemicals | Product master, SDS library offline, HazCom revision tracking, usage deduction by item from application records | Lot stock and lot-level usage deduction, RUP gate, storage inspections, container labels | Tier II inventory report | |
 | Warranties | | Warranty records, equipment claims, vendor guarantees, client plant warranties with reserve | | |
 
-**MVP risk call-out (resolved).** Standard (perpetual) inventory with GL posting was the riskiest MVP item, because it depends on the built-in [Ledger](09-accounting-ledger-integrations.md) being solid on day one. [Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 adopts this module's fallback: MVP ships Off and Light only (no inventory asset, purchases expensed to job), and Standard moves to V1.0. Reservations degrade gracefully to memo reservations against Light's memo quantities. Section 4.6 #7 likewise moves PM schedules and work orders to V1.0, keeping the registry, meters, DVIR and the rate calculator at MVP.
+**MVP risk call-out (resolved).** Standard (perpetual) inventory with GL posting was the riskiest MVP item, because it depends on the built-in [Ledger](09-accounting-ledger-integrations.md) being solid on day one. [Product Scope](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 adopts this module's fallback: MVP ships Off and Light only (no inventory asset, purchases expensed to job), and Standard moves to [V1]. Reservations degrade gracefully to memo reservations against Light's memo quantities. Section 4.6 #7 likewise moves PM schedules and work orders to [V1], keeping the registry, meters, DVIR and the rate calculator at MVP.
 
 ---
 
@@ -2159,7 +2159,7 @@ All AI calls go through the AI Gateway and are metered as AI credits ([AI copilo
 | Over-building CMMS depth | Medium | Medium | Scope to landscape needs; export to Fleetio-class tools for deeper needs |
 | Employee pushback on tracking | Medium | Medium | Transparency features, off-by-default safety scoring, focus on equipment not people |
 | Regulatory content goes stale (DOT thresholds, 1099 thresholds, HazCom dates, lien forms, quarantine zones) and a tenant relies on it | Medium | High | Every regulatory rule is dated platform data with a source URL, an owner (`platform_curator`), a review-by date and a "last verified" stamp in the UI; quarterly review job; in-product wording is "reminder and evidence", never "you are compliant" |
-| MVP scope too large (perpetual inventory plus purchasing plus fleet) | High | High | Cut lines in 4.19; Standard mode and PM/work orders already moved to V1.0 ([Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 and #7) |
+| MVP scope too large (perpetual inventory plus purchasing plus fleet) | High | High | Cut lines in 4.19; Standard mode and PM/work orders already moved to [V1] ([Product Scope](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 and #7) |
 
 ---
 
@@ -2201,7 +2201,7 @@ Definitions are shared with [Reporting and analytics](18-reporting-analytics.md)
 
 ### 12.2 Product KPIs (Rootline internal)
 
-| KPI | Target (12 months after module GA) |
+| KPI | Target (12 months after the module ships) |
 |---|---|
 | Tenants with at least one PO per week (of tenants with module enabled) | 60% |
 | Share of install estimates that generate a buy list used for purchasing | 70% |
@@ -2240,7 +2240,7 @@ Definitions are shared with [Reporting and analytics](18-reporting-analytics.md)
 
 ## 14. Open questions
 
-1. **Default inventory mode for new tenants.** At MVP every tenant starts in Off or Light. Once Standard ships at V1: Light for under 15 employees and Standard above, or ask during onboarding with a business-type questionnaire?
+1. **Default inventory mode for new tenants.** At MVP every tenant starts in Off or Light. Once Standard ships at [V1]: Light for under 15 employees and Standard above, or ask during onboarding with a business-type questionnaire?
 2. **Costing method.** Is moving average per branch sufficient for chemical-heavy lawn companies whose CPAs prefer FIFO, or should FIFO by lot be available in Standard mode?
 3. **Distributor partnerships.** Which of SiteOne, Ewing, Horizon and BFG will partner first, on what terms (API, punchout, EDI), and is there exclusivity with an incumbent (LMN's SiteOne partnership)?
 4. **EDI provider choice.** Build mappings on a managed EDI provider or partner with an integration platform; per-transaction cost vs volume?
@@ -2251,7 +2251,7 @@ Definitions are shared with [Reporting and analytics](18-reporting-analytics.md)
 9. **Lien waiver forms.** Build and maintain a jurisdiction library in-house with counsel, or license one?
 10. **Plant warranty data sharing.** What consent model lets anonymized plant failure data improve the Plant KB without exposing a tenant's install quality?
 11. **Fleetio-class integration.** Should we offer a two-way integration for large fleets that already run a dedicated fleet tool, and which system is the system of record for PM?
-12. **Canadian specifics.** Metric defaults, PCP numbers, provincial vehicle inspection rules and T4A handling need a Canadian advisor before launch in Canada.
+12. **Canadian specifics.** Metric defaults, PCP numbers, provincial vehicle inspection rules and T4A handling need a Canadian advisor before Canada support ships at [V1].
 13. **Regulatory content ownership.** Who on the platform side signs off on DOT thresholds, 1099 thresholds, lien waiver forms, HazCom dates and pest quarantine zones: `platform_curator` with outside counsel on retainer, or a licensed compliance-content provider? The answer drives the cost of the "dated platform data" mitigation in 11.3.
 14. **Rental house integrations.** Do the large national rental companies expose customer APIs for contracts, off-rent requests and rental telematics that a third-party platform can use, or is email parsing the durable path?
 15. **Fuel-tax worksheet liability.** Is a worksheet that estimates a federal credit "tax advice"? Default position: present it as a data export with gallons and evidence, and leave rates and eligibility to the CPA.
@@ -2324,4 +2324,4 @@ Verification note: items marked "verify" in the text are from secondary sources,
 - [R2 - Landscape-specific platforms](research/R2-landscape-specific-platforms.md): Aspire purchasing depth, SingleOps Premier-only POs and inventory, Real Green chemical records, competitor feature matrix.
 - [R1 - Field service platforms](research/R1-field-service-platforms.md): ServiceTitan suite scope (inventory, purchasing, Fleet Pro add-on), Jobber tier gating of job costing.
 
-Related Rootline documents: [Market landscape](01-market-landscape.md), [Personas and permissions](02-personas-roles-permissions.md), [Estimating](03-crm-sales-estimating-proposals.md), [Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md), [Customer Portal](06-customer-portal.md), [Invoicing](07-invoicing-billing-contracts.md), [Payments](08-payments-stripe.md), [Ledger](09-accounting-ledger-integrations.md), [Design Studio](10-design-studio.md), [AI design](11-ai-design-mockups.md), [Plant KB](12-plant-knowledge-base.md), [Service lines](14-service-line-modules.md), [Team and payroll](15-team-hr-payroll.md), [Marketing and comms](16-marketing-growth-communications.md), [AI copilot](17-ai-copilot-automation.md), [Reporting](18-reporting-analytics.md), [Platform Admin](19-platform-admin-portal.md), [Architecture](20-architecture-security.md), [UX](21-ux-design-system-sitemaps.md), [Business model](22-business-model-pricing-gtm.md), [Moonshots](23-innovation-moonshots.md), [Roadmap](24-roadmap-feature-catalog.md).
+Related Rootline documents: [Market landscape](01-market-landscape.md), [Personas and permissions](02-personas-roles-permissions.md), [Estimating](03-crm-sales-estimating-proposals.md), [Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md), [Customer Portal](06-customer-portal.md), [Invoicing](07-invoicing-billing-contracts.md), [Payments](08-payments-stripe.md), [Ledger](09-accounting-ledger-integrations.md), [Design Studio](10-design-studio.md), [AI design](11-ai-design-mockups.md), [Plant KB](12-plant-knowledge-base.md), [Service lines](14-service-line-modules.md), [Team and payroll](15-team-hr-payroll.md), [Marketing and comms](16-marketing-growth-communications.md), [AI copilot](17-ai-copilot-automation.md), [Reporting](18-reporting-analytics.md), [Platform Admin](19-platform-admin-portal.md), [Architecture](20-architecture-security.md), [UX](21-ux-design-system-sitemaps.md), [Business model](22-business-model-pricing-gtm.md), [Moonshots](23-innovation-moonshots.md), [Product scope and feature catalog](24-roadmap-feature-catalog.md).

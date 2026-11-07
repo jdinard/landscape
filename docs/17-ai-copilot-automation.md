@@ -43,7 +43,7 @@ Related documents: [Personas and RBAC](02-personas-roles-permissions.md), [CRM a
 
 ### 1.1 Goals
 
-| # | Goal | Measurable target (first 12 months after MVP, estimates) |
+| # | Goal | Measurable target (estimates, over a Company's first 12 months on Rootline) |
 |---|------|----------------------------------------------------------|
 | G1 | Make the office of a 5-to-50-person landscape company feel like it gained a full-time coordinator | 6+ office hours saved per company per week, measured by agent-completed tasks multiplied by benchmarked task minutes |
 | G2 | Answer any business question in plain English with **correct, cited** numbers | 98%+ of answers on the golden metrics set match the reporting module exactly (the release gate in section 4.11.4); 0 tolerance for invented numbers |
@@ -158,7 +158,7 @@ Anecdotal upside: one acquisition-entrepreneur case study claims an AI reception
 
 **Representative JTBD scenarios used throughout this doc**
 
-- *Maria, owner of a 22-person design-build and maintenance company in Columbus, Ohio (zone 6a).* She checks her phone at 6:10 a.m. in the truck and wants three decisions, not 40 notifications.
+- *Maria, owner of a 22-person design-build and maintenance company in Columbus, Ohio (zone 6b).* She checks her phone at 6:10 a.m. in the truck and wants three decisions, not 40 notifications.
 - *Luis, crew lead.* His English is functional but he prefers Spanish. Running a mower at about 90 dB, he wants to say "Zona tres, aspersor roto, cliente quiere presupuesto para mantillo" and have the office get a clean English ticket and a draft estimate.
 - *Dana, office manager.* She manages 412 weekly maintenance visits from April to November and dreads rain days.
 - *Priya, part-time external CPA.* She has 6 hours a month for this client and wants the bank feed 90% categorized before she logs in.
@@ -436,7 +436,7 @@ Limits (configurable by the platform operator): max 12 tool calls per turn, max 
 | "Who hasn't paid in 45 days?" | AR aging table filtered to over 45 days, with a "Chase all with Collections agent" action button | `invoices.aging` | T0 |
 | "Add a fall cleanup to every weekly-mow client in Westerville who had one last year" | Shows the matching clients (e.g., 47). Proposes creating 47 draft Work Orders or proposal add-ons priced from last year plus the Company's price increase rule. Shows a total. Requires confirmation; bulk actions over 25 records require typing the count to confirm. | `clients.search`, `jobs.list`, `proposals.create_addon_bulk` | T2 |
 | "How much mulch for a 120 by 4 foot bed at 3 inches?" | 120 × 4 × 0.25 ft = 120 cu ft ÷ 27 = **4.44 cu yd**, round up to 4.5 cu yd. Offers to add it to the open estimate at the Company's price per yard. Calculated by the `calc.volume` tool, not by the model. | `calc.volume`, `pricebook.search` | T0 |
-| "Which plants would do well in the Johnson front bed? Full sun, clay, deer pressure" | Uses the Property's Region (e.g., zone 6a, EPA ecoregion 55) and queries the Plant KB with traits. Returns plant cards with region performance ratings and, from V1, nursery availability, with "Add to design" actions (see [Plant KB](12-plant-knowledge-base.md)). | `plants.search`, `vendors.availability` | T0 |
+| "Which plants would do well in the Johnson front bed? Full sun, clay, deer pressure" | Uses the Property's Region (e.g., zone 6b, EPA ecoregion 55) and queries the Plant KB with traits. Returns plant cards with region performance ratings and, from V1, nursery availability, with "Add to design" actions (see [Plant KB](12-plant-knowledge-base.md)). | `plants.search`, `vendors.availability` | T0 |
 | "Why did the Garcia invoice go up?" | Explains the line-item differences between the two invoices, the agreement escalation clause (4% annual), and the extra visit on Oct 12. Offers to draft a reply to the client. | `invoices.compare`, `agreements.get` | T0 |
 | "Set it up so when a proposal is approved we create the job and ask for the deposit" | Drafts an automation from the recipe library, shows it in the builder preview, and asks for confirmation to publish (section 4.6.8). | `automations.draft_from_nl` | T2 |
 
@@ -1394,7 +1394,7 @@ flowchart TD
 4. The scope interpreter extracts: a 14×16 ft paver patio (Belgard Catalina, verify color with the client), a 3-ft seat wall, a 40-ft curved bed with 7 shrubs and perennials, 2 inches of mulch, 6 low-voltage path lights, and removal of the existing overgrown yews (4).
 5. The estimating engine prices each line. Base prep comes from patio area (224 sq ft × 6-inch base = 4.1 cu yd of #57 and 21A base, converted to tons by the price-book density factor). Labor uses the Company's paver production rate.
 6. The Copilot proposes **Good / Better / Best**: Good (patio only, $11,900), Better (patio plus bed and plants, $15,650), Best (adds seat wall and lighting, $21,400). The figures are illustrative.
-7. Plants come from the Plant KB filtered by Region (zone 6a) and conditions (part shade, from photo orientation and notes), with nursery availability.
+7. Plants come from the Plant KB filtered by Region (zone 6b) and conditions (part shade, from photo orientation and notes), with nursery availability.
 8. The draft Estimate and Proposal open in the editor with a "Needs your check" list: patio dimensions inferred from the photo, lighting transformer location unknown, HOA approval required? It is **never sent automatically.**
 
 ### 5.4 Flow: Spanish voice note to upsell opportunity [MVP]
@@ -1416,7 +1416,7 @@ sequenceDiagram
   F->>F: translate and summarize to English
   F->>F: extract issues: dead boxwoods, broken head zone 3
   F->>K: region-appropriate replacements
-  K-->>F: boxwood alternatives rated for zone 6a
+  K-->>F: boxwood alternatives rated for zone 6b
   F->>I: draft Opportunity plus client message
   I-->>OM: approval card with photo and transcript
   OM->>I: approve with edits
@@ -2383,7 +2383,7 @@ Items marked "verify" are from secondary sources or general knowledge and need f
 | Speed-to-lead | Median minutes from lead creation to first response (`lead_response_minutes_median`, defined in [Reporting](18-reporting-analytics.md) section 4.3.5) | Under 2 minutes in business hours |
 | AR days improvement | Change in `dso_countback` (the default DSO in [Reporting](18-reporting-analytics.md) section 4.3.2) after collections agent activation, against the same months of the prior year to avoid seasonal distortion | -5 days (estimate; validate) |
 | Bank categorization straight-through | Auto-accepted or accepted unedited ÷ total | 80% at 90 days |
-| AP straight-through | Bills approved unedited ÷ bills | 70% at V1 launch |
+| AP straight-through | Bills approved unedited ÷ bills | 70% at 90 days after AP agent activation |
 | Voice note share | Field notes by voice ÷ all field notes (Spanish-first crews) | 50% |
 | Automations per tenant | Active automations (Grow and Pro; Starter is capped at 5) | 10+ |
 | Recipe install rate | Tenants installing at least 3 recipes in their first 30 days | 70% |
@@ -2454,7 +2454,7 @@ Items marked "verify" are from secondary sources or general knowledge and need f
 6. **Pooled-learning incentives:** what do opt-in tenants get (benchmarks, credit discounts), and how do we prove de-identification sufficiency to a skeptical owner or CPA?
 7. **Photo QA labor relations:** should crews be able to see and contest QA scores in-app at V1, and should owners be able to disable individual-level QA views entirely?
 8. **Legal review list:** per-state collections rules for original creditors, bot-disclosure laws, employee-monitoring notices, mechanics-lien timelines, and pesticide notification registries. Who owns the policy-defaults table (platform operator vs. outside counsel), and how often is it updated?
-9. **MCP confirmation UX:** is out-of-band mobile confirmation acceptable to MCP users, or do we need richer in-protocol confirmation before V1 GA?
+9. **MCP confirmation UX:** is out-of-band mobile confirmation acceptable to MCP users, or do we need richer in-protocol confirmation before the MCP server ships at [V1]?
 10. **Ad hoc SQL:** do we allow LLM-generated SQL over the analytics replica at V1, or keep everything in the metrics catalog until V2?
 11. **Agent marketplace liability:** if a partner-published recipe causes harm (for example, an aggressive collections cadence), what are the review standards and liability terms?
 12. **Bring-your-own-model:** does BYO-LLM undermine our eval guarantees? Should it be restricted to specific model versions we have evaluated?

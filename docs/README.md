@@ -1,8 +1,8 @@
 # Rootline - Landscape Business Operating System: Product Design Proposal
 
-> **Rootline** (working name) is an all-in-one operating system for small and medium landscape companies. One system takes every job from first photo to to-scale design, priced proposal, crew schedule, paid invoice and closed books. A regional horticulturist's plant knowledge is built in, and client payments land in a Stripe account the Company owns. This page is the front door to the proposal: the thesis, the bets, who it serves, how the pieces fit, what ships first, how it makes money and how to read the rest.
+> **Rootline** (working name) is an all-in-one operating system for small and medium landscape companies. One system takes every job from first photo to to-scale design, priced proposal, crew schedule, paid invoice and closed books. A regional horticulturist's plant knowledge is built in, and client payments land in a Stripe account the Company owns. This page is the front door to the proposal: the thesis, the bets, who it serves, how the pieces fit, what is in scope for the MVP and after, how it makes money and how to read the rest.
 
-**Status:** design proposal, November 2026. Prices, targets and dates are proposals or labeled estimates. **Sample tenant** in examples and concept screens: Greenleaf Grounds Co. The journeys in [02](02-personas-roles-permissions.md) also use two reference Companies: Reyes Outdoor Living (residential design-build) and Summit Grounds Group (three-branch commercial with snow).
+**Status:** design proposal, November 2026. Prices and targets are proposals or labeled estimates. Scope is described by tier (MVP, V1, V2, V3), not by date. **Sample tenant** in examples and concept screens: Greenleaf Grounds Co. The journeys in [02](02-personas-roles-permissions.md) also use two reference Companies: Reyes Outdoor Living (residential design-build) and Summit Grounds Group (three-branch commercial with snow).
 
 ---
 
@@ -14,7 +14,7 @@
 4. [Product surface map](#4-product-surface-map)
 5. [Lead to cash to books](#5-lead-to-cash-to-books)
 6. [Module map](#6-module-map)
-7. [What is in MVP, at a glance](#7-what-is-in-mvp-at-a-glance)
+7. [Product scope at a glance](#7-product-scope-at-a-glance)
 8. [Business model in brief](#8-business-model-in-brief)
 9. [How to read this proposal](#9-how-to-read-this-proposal)
 10. [UI concept screens](#10-ui-concept-screens)
@@ -61,17 +61,17 @@ Eight forces converged in 2024-2026 ([01](01-market-landscape.md#8-why-now)):
 
 ### Why we win
 
-AI features are the easiest thing to copy and the least important part of the moat. The durable advantages compound ([01](01-market-landscape.md#103-moats-ranked-by-how-long-they-take-to-copy)):
+AI features are the easiest thing to copy and the least important part of the moat. The durable advantages compound ([01](01-market-landscape.md)):
 
-| Moat | Why it is hard to copy | Time for a funded incumbent [E] |
-|---|---|---|
-| Curated, cultivar-level Plant KB with Plant Region Profiles | Curators, licensed data and outcomes from real installs improve it every season | 3-5 years |
-| One geometry and record from parcel to plow plan to ledger | Incumbents would have to rebuild their data model | 2-4 years |
-| Ledger as the system of record | Years of books are the stickiest data a Company owns | 2-3 years, plus trust |
-| Owning nothing of the Company's money | Copying it means giving up a payments profit pool | Economically blocked |
-| Opt-in benchmarks and plant performance data | Needs ledger-grade data at scale with exact KPI definitions | 3+ years after scale |
+| Moat | Why it is hard to copy |
+|---|---|
+| Curated, cultivar-level Plant KB with Plant Region Profiles | Curators, licensed data and outcomes from real installs improve it every season |
+| One geometry and record from parcel to plow plan to ledger | Incumbents would have to rebuild their data model |
+| Ledger as the system of record | Years of books are the stickiest data a Company owns, and the ledger has to earn trust |
+| Owning nothing of the Company's money | Copying it means giving up a payments profit pool, so it is economically blocked |
+| Opt-in benchmarks and plant performance data | Needs ledger-grade data at scale with exact KPI definitions |
 
-The go-to-market is focused. The beachhead is the 5-40 person residential design-build-maintain firm: too complex for horizontal apps, too small for 90-day ERP implementations. Rootline launches in one region, the **Great Lakes**: six Wave 1 Regions across Ohio, Michigan, Chicagoland and Northwest Indiana, and Southeast Wisconsin, where the plant knowledge is seeded deepest. At V1 it extends that region across the border into Ontario's Golden Horseshoe and into nearby US metros. It sells into the November-March planning season and makes switching cheap with a free migration concierge ([22](22-business-model-pricing-gtm.md), [24](24-roadmap-feature-catalog.md#91-strategy-and-go-to-market)).
+The go-to-market is focused. The beachhead is the 5-40 person residential design-build-maintain firm: too complex for horizontal apps, too small for long ERP implementations. Rootline launches in one region, the **Great Lakes**: six Wave 1 Regions at MVP (Central Ohio, Northeast Ohio, Southeast Michigan and Toledo, West Michigan, Chicagoland and Northwest Indiana, and Southeast Wisconsin), where the plant knowledge is seeded deepest. Wave 2 at V1 extends that region across the border into Ontario's Golden Horseshoe and into nearby US metros. A second US cluster (Wave 3) is chosen later, based on traction. Rootline sells into the November-March planning season and makes switching cheap with a free migration concierge ([12](12-plant-knowledge-base.md), [22](22-business-model-pricing-gtm.md), [24](24-roadmap-feature-catalog.md)).
 
 ---
 
@@ -172,7 +172,7 @@ flowchart TB
   AI --> MODELS
 ```
 
-| Surface | Users | Launch |
+| Surface | Users | Scope |
 |---|---|---|
 | Company web app | All Company staff roles | [MVP] |
 | Rootline Crew app | `crew_lead`, `technician`, `subcontractor`; manager mode and shop kiosk in V1 | [MVP] |
@@ -250,7 +250,7 @@ flowchart TB
 | [21 - UX, Design System and Sitemaps](21-ux-design-system-sitemaps.md) | Surfaces and sitemaps, interaction patterns, brand, tokens, components, accessibility, localization, onboarding |
 | [22 - Business Model, Pricing and Go-to-Market](22-business-model-pricing-gtm.md) | Tiers, seats, meters, add-ons, payments stance, homeowner app and leads, partners, GTM, unit economics |
 | [23 - Innovation and Moonshots](23-innovation-moonshots.md) | 33 bets from digital twin to robotic mowers to fintech, MVP rails, stage gates, ranking and waves |
-| [24 - Roadmap and Feature Catalog](24-roadmap-feature-catalog.md) | Phased roadmap and full feature catalog; the authority on priority tags |
+| [24 - Product Scope and Master Feature Catalog](24-roadmap-feature-catalog.md) | Scope tiers (MVP, V1, V2, V3), the MVP scope definition and the full 747-feature catalog; the authority on priority tags |
 | [R1 - General field-service platforms](research/R1-field-service-platforms.md) | 13 horizontal field-service platforms, Jobber in depth |
 | [R2 - Landscape-industry-specific software](research/R2-landscape-specific-platforms.md) | Landscape suites, the four ownership camps, gaps and switching triggers |
 | [R3 - Design tools, AI mockup tech and plant data](research/R3-design-ai-plant-data.md) | Design software, AI visualization technology and costs, 40+ plant data sources with license verdicts |
@@ -258,27 +258,43 @@ flowchart TB
 
 ---
 
-## 7. What is in MVP, at a glance
+## 7. Product scope at a glance
 
-**[24 - Roadmap and Feature Catalog](24-roadmap-feature-catalog.md)** has the full roadmap, dates and per-feature tags, and wins wherever a module doc's tag differs. Tags: **[MVP]** first release; **[V1]** about 12 months after MVP; **[V2]** 12-24 months; **[V3]** moonshot. The MVP proves the beachhead promise in the Great Lakes launch region, from Columbus to Milwaukee: design, sell, schedule, do the work, get paid and close the books in one system. Because Great Lakes crews plow in winter, it also includes **Snow Lite**.
+**[24 - Product Scope and Master Feature Catalog](24-roadmap-feature-catalog.md)** defines the scope tiers and tags every feature, and wins wherever a module doc's tag differs. The tiers describe scope and order, not dates:
+
+| Tag | Scope tier | Features in the catalog |
+|---|---|---|
+| **[MVP]** | The first sellable release | 442 |
+| **[V1]** | The next scope wave | 255 |
+| **[V2]** | A later wave | 46 |
+| **[V3]** | Moonshot or long-term | 4, plus the bets in [23](23-innovation-moonshots.md) |
+
+Of 747 cataloged features, 442 are in the MVP. The MVP proves the beachhead promise in the Great Lakes launch region, from Columbus to Milwaukee: design, sell, schedule, do the work, get paid and close the books in one system. Because Great Lakes crews plow in winter, it also includes **Snow Lite**.
+
+### MVP and V1, by area
 
 | Area | In MVP | Next, in V1 |
 |---|---|---|
 | Access ([02](02-personas-roles-permissions.md)) | Role templates and scoped permissions; server-side field masking; consented support access; hash-chained audit log; seasonal hibernate and rehire | SSO; branches and divisions; HOA and commercial approval policies |
 | Sell and design ([03](03-crm-sales-estimating-proposals.md), [10](10-design-studio.md), [11](11-ai-design-mockups.md)) | Lead inbox; budget-based estimating with Price Book and kits; AI turf auto-measure from aerial imagery; Design Studio 2D with region-aware picker and live takeoff; AI photo mockups with region-locked plants; tiered proposals with e-sign and deposits | AI aerial measure of beds, hardscape and commercial classes; AI layout generation and design assistant; 3D, growth and season renders; RFP intake |
-| Plant KB ([12](12-plant-knowledge-base.md)) | About 3,000 seed plants for Wave 1 Regions; Plant Region Profiles; curation with daily releases; natural-language search; palettes; offline crew subset | Nursery availability; photo plant ID; public SEO plant pages |
+| Plant KB ([12](12-plant-knowledge-base.md)) | About 3,000 seed plants for the six Wave 1 Regions; Plant Region Profiles; curation with daily releases; natural-language search; palettes; offline crew subset | Wave 2 Regions (Southern Ontario Golden Horseshoe, Cincinnati-Dayton, Indianapolis, Western New York, Erie/Pittsburgh); nursery availability; photo plant ID; public SEO plant pages |
 | Schedule ([04](04-scheduling-dispatch-routing.md)) | Visit lifecycle; recurrence; dispatch board; route sequencing and insertion; weather alerts; live ETA notices | Multi-crew day and week optimization; rain-day playbooks; project Gantt |
 | Field ([05](05-field-crew-mobile-app.md)) | Offline EN/ES crew app; run sheet; crew time with signed clock-out attestations; pesticide records; Snow Lite storm visit log with GPS-stamped photos; signatures; cash and check custody; voice notes with translation | California meal and rest attestations; full snow event mode; AR/LiDAR measurement; plant install logging; scorecards |
 | Portal ([06](06-customer-portal.md)) | White-label passwordless portal; proposals with deposit; 2D plan and AI before/after; project tracker; invoices and autopay; requests and messages | Commercial approval chains; self-scheduling; 3D and seasonal views; homeowner funnel embed |
 | Bill and get paid ([07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md)) | Billing Engine (per visit, batched, level pay with true-up, prepaid seasons, deposits, milestones, T&M); per-line tax; dunning; per-push and per-application snow invoices from Snow Lite logs; Standard-style Stripe Connect with cards, ACH and autopay; zero markup | Retainage and AIA pay apps; storm-event snow billing with caps and floors; Avalara; restricted-key mode; Canadian PAD; surcharging; financing; Pay-as-you-grow |
 | Books ([09](09-accounting-ledger-integrations.md)) | Double-entry GL with posting rules and dimensions; Plaid feeds and reconciliation; job costing; deferred revenue; statements; QuickBooks Online connector and migration | WIP; fixed assets; QuickBooks Desktop; Xero; full Accountant Hub; multi-entity |
-| Operations and service lines ([13](13-operations-inventory-equipment.md), [14](14-service-line-modules.md)) | Buy lists from takeoffs; purchase orders; Off and Light inventory modes; asset registry and DVIR; equipment cost per hour; lawn/PHC programs; irrigation programs; installs with a hard 811 gate; Snow Lite on every plan (snow site list, storm visit logs, per-site PDF proof of service) | Standard (perpetual) inventory; PM schedules and work orders; purchasing workbench; telematics; full Snow & Ice module (Storm Command Center, eight pricing models, subcontractor plowers, sealed proof packets); tree care; lighting; smart controllers |
+| Operations and service lines ([13](13-operations-inventory-equipment.md), [14](14-service-line-modules.md)) | Buy lists from takeoffs; purchase orders; Off and Light inventory modes; asset registry and DVIR; equipment cost per hour; lawn/PHC programs; irrigation programs; installs with a hard 811 gate; Snow Lite on every plan (snow site list, storm visit logs, per-site PDF proof of service) | Standard (perpetual) inventory; PM schedules and work orders; purchasing workbench; telematics; full Snow & Ice module (Storm Command Center, eight pricing models, subcontractor plowers, sealed proof packets); lighting; smart controllers |
 | People ([15](15-team-hr-payroll.md)) | Employee records; credentials enforced at dispatch; timesheets; overtime rule packs (Federal plus the Great Lakes launch states); payroll export; OSHA logs | Other state and provincial rule packs; Spanish-first hiring; H-2B workspace; PTO accrual; certified payroll; embedded payroll pilot |
-| Grow ([16](16-marketing-growth-communications.md)) | Unified inbox; per-tenant 10DLC; consent ledger; lifecycle messages; lead ingest; review requests and NPS; basic campaigns; call tracking with missed-call text-back | Journey builder; win-back engine; neighborhood marketing; social posting; website builder, online booking and AI receptionist (V1.2 train) |
+| Grow ([16](16-marketing-growth-communications.md)) | Unified inbox; per-tenant 10DLC; consent ledger; lifecycle messages; lead ingest; review requests and NPS; basic campaigns; call tracking with missed-call text-back | Journey builder; win-back engine; neighborhood marketing; social posting; website builder, online booking and AI receptionist |
 | AI ([17](17-ai-copilot-automation.md)) | Action Layer; Copilot and command palette; Approval Inbox; owner briefing, inbox triage, lead follow-up and field-note agents; estimating agent drafts from notes, voice memos and photos; collections reminders; Automation Builder; evals and credit metering | Scheduling, bookkeeping and AP agents; aerial-measured estimate drafts; full collections agent; MCP server; predictive models |
 | Insight ([18](18-reporting-analytics.md)) | Owner, ops and sales dashboards; KPI Dictionary; job cost detail; report library | Report builder; cash and capacity forecasts; benchmarks beta |
 | Platform ([19](19-platform-admin-portal.md), [20](20-architecture-security.md), [21](21-ux-design-system-sitemaps.md)) | Operator console and migration center (CSV, Jobber, QuickBooks Online); RLS multi-tenancy, REST API core, offline sync, AI Gateway; design system, WCAG 2.2 AA, EN/ES, onboarding sandbox | Canadian data residency; OAuth app marketplace; partner portal; French-Canadian |
 | Commercial ([22](22-business-model-pricing-gtm.md)) | Starter, Grow, Pro; active field seats; published AI credits; Zero-Markup Pledge; Price Lock Promise; winter trial; migration concierge | Enterprise; Snow & Ice add-on; Winter Mode; Pay-as-you-grow; Rootline Home and Match |
+
+### V2 and V3
+
+- **[V2], a later wave:** the tree care module; HOA board meeting workflows; SCIM, franchise and multi-brand mode; cash-basis and tax-basis views, embedded bill pay and a Sage Intacct connector; the property digital twin, drone capture, AR "See it in your yard", climate-adaptive planting, Plant Doctor diagnosis and Landscape Passport transfer; the Plant API and data licensing; the Plant Exchange and Overflow marketplaces; the Autopilot back office; and the **Wave 3** second US cluster, chosen based on traction.
+- **[V3], moonshot or long-term:** Gaussian-splat 3D walkthroughs from phone video; the Rootline Buying Network for opt-in group purchasing; Rootline Grounds for in-house grounds teams and public agencies; and Rootline Global (UK, Australia, New Zealand).
 
 [23](23-innovation-moonshots.md#42-rails-what-mvp-and-v1-must-build-so-the-moonshots-stay-possible) adds 14 cheap "rails" MVP and V1 must build so the moonshots stay possible, such as stable object IDs in designs, plant instances, rich photo metadata and a consent ledger.
 
@@ -302,7 +318,7 @@ The full commercial spec is **[22 - Business Model, Pricing and Go-to-Market](22
 - **Zero payment markup by default.** Clients pay the Company through its own Stripe account and Rootline adds nothing. The opt-in Pay-as-you-grow plan [V1] is Starter at $39 plus a disclosed 0.5% application fee, capped at $10 per payment. Rootline's own subscriptions run on a separate platform Stripe account with Stripe Billing.
 - **New revenue lines** come from the same assets: Rootline Home and Rootline Match (design-ready homeowner leads), the Plant API, Rootline Pulse benchmarks (opt-in, k-anonymized), and partners such as distributors, nurseries, associations and CPAs.
 - **Go-to-market:** a winter-timed trial plus inside sales, a migration concierge with a Spring-Ready Guarantee, and a Price Lock Promise (24 months, then at most 7% a year).
-- **Unit economics (estimates):** about 72-74% gross margin per tier, with a path to 77% by Year 5. The base case reaches about 9,500 paying Companies, about $54.7M of subscription and usage ARR and about $60.4M of total run-rate revenue in Year 5.
+- **Unit economics (estimates):** blended gross margin of 72% or more, rising to 77% or more at scale, and CAC payback of 12 months or less in every self-serve and inside-sales segment. [22](22-business-model-pricing-gtm.md) models per-account economics only and makes no multi-year revenue projections.
 
 ---
 

@@ -177,7 +177,7 @@ Legend: **Y** = native (evidence found), **P** = partial or basic, **I** = via t
 
 ## 4. Feature specification
 
-Feature IDs use the prefix `DS-`. Each carries a priority tag: [MVP], [V1], [V2] or [V3]. Quantities and defaults marked "default" are tenant-configurable in **Settings, Design Studio, Defaults**. Where a default is an industry rule of thumb rather than a cited standard, it is labeled as such. Tenants should calibrate defaults to their region, suppliers and crews.
+Feature IDs use the prefix `DS-`. Each carries a scope tag: [MVP] (first sellable release), [V1] (next scope wave), [V2] (later wave) or [V3] (moonshot or long-term). Tags are scope tiers, not dates. Quantities and defaults marked "default" are tenant-configurable in **Settings, Design Studio, Defaults**. Where a default is an industry rule of thumb rather than a cited standard, it is labeled as such. Tenants should calibrate defaults to their region, suppliers and crews.
 
 ### 4.1 Property setup and the site model
 
@@ -1606,10 +1606,10 @@ Ideas the founder did not ask for, each a lever for retention, revenue or deligh
 3. **Parcel data costs and Canada.** [22](22-business-model-pricing-gtm.md) includes 100, 500 or 2,000 parcel lookups per month (Starter, Grow, Pro) and meters extra lookups at $0.10. Open: what are the actual per-lookup vendor costs at our projected volumes, and how good is Canadian parcel coverage?
 4. **Manufacturer data licensing.** Will paver, wall, irrigation and lighting manufacturers provide catalogs (dimensions, nozzle performance, photometrics, textures) under a license allowing in-app use? Is there a partnership or co-marketing model?
 5. **3D plant assets.** Do we build archetypes in-house, license a library, or generate them procedurally with AI assistance? What is the budget for the top 300 hero models?
-6. **Renderer choice.** Custom WebGL2 renderer vs a library (PixiJS for 2D, three.js vs Babylon.js for 3D). A 4-week spike against the performance targets should decide.
+6. **Renderer choice.** Custom WebGL2 renderer vs a library (PixiJS for 2D, three.js vs Babylon.js for 3D). A technical spike against the performance targets should decide.
 7. **iPad: web vs native.** Is Safari with Pencil events good enough for on-site sketching, or do we need a native canvas in the Expo app sooner than planned?
 8. **CRDT permissions model.** Is per-update server validation sufficient for layer-scoped subcontractor access, or do we need per-layer sub-documents?
-9. **Growth model data.** Does the KB have years-to-maturity and growth-rate data for enough plants to make the growth slider credible at launch? What is the fallback for missing data (category defaults)?
+9. **Growth model data.** Does the KB have years-to-maturity and growth-rate data for enough plants to make the growth slider credible when it ships at [V1]? What is the fallback for missing data (category defaults)?
 10. **Licensure guidance.** Should the platform maintain a jurisdiction table of landscape architecture practice exemptions, or leave it to tenants with a generic warning?
 11. **Accuracy SLA.** Do we publicly commit to a measurement accuracy statement, and how do we handle disputes?
 12. **Client self-design scope.** How much of the Studio do we expose to homeowners without cannibalizing the Company's design fee?

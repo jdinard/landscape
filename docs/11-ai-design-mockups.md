@@ -43,17 +43,17 @@
 
 ### 1.1 Goals
 
-| # | Goal | Measurable target (proposed; validate in beta) |
+| # | Goal | Measurable target (proposed; validate with design partners) |
 |---|------|-----------------------------------------------|
 | G1 | **Sell more design-build work.** Give every estimator a "wow" visual within the first site visit. | Proposals with an attached mockup win at a higher rate than matched proposals without one (measured by A/B holdout per tenant; target +10 percentage points, an estimate to be validated) |
 | G2 | **Measured, not imagined.** Mockups and AI layouts respect real dimensions the user entered or that we measured. | Median scale error on ground-plane distances of 10% or less with one user measurement; 5% or less with a calibration card or LiDAR |
 | G3 | **Plants that exist, survive and can be bought.** No rendered plant that is not in the property's regional palette. | 100% of AI-placed plants resolve to a KB Plant with a Plant Region Profile rating of 3/5 or higher for the property's Region; 0 hallucinated species in plan output |
 | G4 | **One loop: mockup <-> plan <-> plant list <-> estimate.** | 100% of plan-to-photo plant instances carry a Design object ID (the stable `object_id` from [10](10-design-studio.md)); an estimate delta appears within 3 s of a chat edit |
 | G5 | **Fast enough for the driveway.** An estimator can produce a restyle preview while standing with the homeowner. | Restyle preview (4 variants) p50 of 12 s or less, p95 of 25 s or less |
-| G6 | **A lead machine for Companies.** The white-label "Visualize your yard" widget converts website visitors into qualified leads with photos, dimensions, style and budget attached. | Widget visitor-to-lead conversion of 8% or more (estimate; benchmark in beta) |
+| G6 | **A lead machine for Companies.** The white-label "Visualize your yard" widget converts website visitors into qualified leads with photos, dimensions, style and budget attached. | Widget visitor-to-lead conversion of 8% or more (estimate; benchmark with design partners) |
 | G7 | **Honest by design.** Customers understand a mockup is an artist rendering. | 100% of AI images carry a visible badge and C2PA Content Credentials; fidelity score shown to pros on every render |
 | G8 | **Profitable AI.** AI costs stay inside the credit price. | Blended AI cost of goods 35% or less of AI credit revenue at the platform level |
-| G9 | **Bilingual and binational.** Imperial and metric, English and Spanish UI, US Regions at launch (Great Lakes first) and Canadian Regions from the Ontario launch. | All capture, dimension and chat flows pass i18n QA in en-US, es-US, en-CA |
+| G9 | **Bilingual and binational.** Imperial and metric, English and Spanish UI, US Great Lakes Regions at [MVP] and Canadian Regions (starting with the Southern Ontario Golden Horseshoe) at [V1]. | All capture, dimension and chat flows pass i18n QA in en-US, es-US, en-CA |
 | G10 | **Operator control.** The platform operator (platform_owner) can tune models, presets, palettes, prices and safety without a deploy. | Every model route, preset and credit price is a versioned config in the [Platform Admin](19-platform-admin-portal.md) console |
 
 ### 1.2 Non-goals
@@ -131,7 +131,7 @@ Legend: Y = yes, P = partial, N = not found in our research (as of November 2026
 | **Plants that are wrong, invented or will not survive.** | Penn State Extension's review of AI garden tools found Neighborbrite's emphasis was more on hardscape than plants, and it could not recognize most plants in a vegetable-garden redesign ([Penn State Extension](https://extension.psu.edu/ai-garden-design-intelligent-choices)). A 2026 guide warns AI tools regularly suggest plants that will not survive your zone ([Cognitive Future](https://cognitivefuture.ai/best-ai-tools-for-landscape-design/)). A Reddit commenter warned generic AI tools invent plants that make no sense for the weather (anecdotal) ([Reddit snapshot](https://reddit.sentinel-team.org/posts/1srelgp/snapshots/2026-04-24T23%3A03%3A08.204571Z)). | Closed-world plant selection from the regional KB, per-plant reference conditioning, label overlays, fidelity score (Section 4.4). |
 | **Not to scale.** | Roundups and vendors disclaim outputs as conceptual, not measurements ([Fast.io](https://www.fast.io/resources/best-ai-for-landscape-design-2026.md)). | Structured dimension form, reference objects, scale calibration with a confidence readout, plan-to-photo projection (4.1-4.3). |
 | **Paywalls before value; confusing billing.** | iScape review complaints ([AI Tools Bakery](https://aitoolsbakery.com/blog/iscape-review/)); Penn State reviewer could not filter to native plants without a monthly plan ([Penn State Extension](https://extension.psu.edu/ai-garden-design-intelligent-choices)). | Homeowners get free renders funded by the Company as lead generation; pros see the credit cost before every action. |
-| **AR instability on complex scenes.** | iScape crash complaints ([AI Tools Bakery](https://aitoolsbakery.com/blog/iscape-review/)). | Server-side rendering for heavy work; on-device AR limited to light overlays until V2. |
+| **AR instability on complex scenes.** | iScape crash complaints ([AI Tools Bakery](https://aitoolsbakery.com/blog/iscape-review/)). | Server-side rendering for heavy work; on-device AR limited to light overlays until [V2]. |
 | **Design is disconnected from pricing.** | Design is a 2.9-rated feature in landscape software ([Capterra](https://www.capterra.com/landscape-software/pricing-guide/)); FSM platforms rely on external CAD. | Plan-to-estimate sync; every rendered plant is a Price Book line. |
 | **Expectation gap after install** ("it looked fuller in the picture"). | A known pattern of design-build disputes; no published statistic found. | Growth-over-time renders that show install-day container sizes, a plant-age label on every image, and disclaimer text that names the plan as governing. |
 
@@ -187,7 +187,7 @@ Role keys follow [Personas, Roles and Permissions](02-personas-roles-permissions
 
 ## 4. Feature specification
 
-Feature IDs use the prefix `AIM-` (AI Mockups). Every feature carries a priority tag: [MVP], [V1], [V2] or [V3].
+Feature IDs use the prefix `AIM-` (AI Mockups). Every feature carries a scope tag: [MVP] (first sellable release), [V1] (next scope wave), [V2] (later wave) or [V3] (moonshot or long-term). Tags are scope tiers, not dates.
 
 ### 4.1 Capture and inputs
 
@@ -531,7 +531,7 @@ A chat (and push-to-talk voice, en/es) panel in the Design Studio and mockup vie
 - Voice mode in the field works offline for capture (audio stored) and executes on reconnect.
 - **Credits are quoted before work starts.** A turn that will trigger a re-render says so ("This will re-render the front bed: 8 credits. Go?") unless the user has turned on "auto re-render under 20 credits" for the session.
 
-**Intent catalog (what the assistant must handle at V1 GA; the eval set holds 50+ phrasings per intent in English and Spanish):**
+**Intent catalog (what the assistant must handle when it ships at [V1]; the eval set holds 50+ phrasings per intent in English and Spanish):**
 
 | Intent | Example utterance | Tools invoked | Notes |
 |---|---|---|---|
@@ -599,7 +599,7 @@ Each KB Plant can carry a **render pack**, curated by `platform_curator`:
 | Habit silhouette / proxy shape | 1 | Ellipsoid parameters or simple mesh for projection and occlusion |
 | Text descriptor for prompts | 1 | Short, visual ("upright vase form, blue-green needles, 3-4 ft") |
 
-Coverage strategy: the top 300 plants by usage across tenants in each country get full packs before V1 GA; the long tail renders via reference conditioning with a lower expected fidelity (the score reflects it).
+Coverage strategy: the top 300 plants by usage across tenants in each country get full packs before plan-to-photo ships at [V1]; the long tail renders via reference conditioning with a lower expected fidelity (the score reflects it).
 
 #### AIM-FID-03 Per-plant conditioning [MVP reference images, V1 adapters and LoRA]
 
@@ -1692,7 +1692,7 @@ Seeded determinism: preview sets reuse seeds per (photo, preset) so "regenerate"
 | Seasonal + growth set (8 images, 4 each) | 45 s | 90 s | Fills in progressively |
 | Splat walkthrough (V3) | 20 min | 45 min | Async notification |
 
-Targets are proposals; they gate GA for each mode and are monitored per route.
+Targets are proposals; each mode must meet them before it is offered to all tenants, and they are monitored per route.
 
 ### 8.6 Cost model and credit economics
 
@@ -1732,7 +1732,7 @@ Targets are proposals; they gate GA for each mode and are monitored per route.
 
 **Blended check against G8 (estimate).** Assume this mix of credits consumed: restyle sets 40%, widget preview sets 10%, refinements 10%, HD/4K 5%, plan-to-photo 10%, layouts 10%, chat 5%, seasonal/growth/night 10%. At a mid pack price of about $0.021 per credit, the weighted raw cost is about 18-19% of credit revenue. Adding about 10 points for reserved-GPU idle time in the off-season gives roughly 28-29%, inside the 35% G8 target. The two levers that most affect the result are the economy route's share of widget traffic and the Opus-escalation rate on layouts. Both appear on the AI ops dashboard ([19](19-platform-admin-portal.md)).
 
-**Homeowner widget economics (estimate, default `teaser_then_verify` gate).** Take 100 visitors who reach a teaser (one 24-credit preview set each, 2,400 credits). If 35% verify and run an average of 1.5 more sets (about 1,260 credits), and 20 download one HD image (400 credits), the total is about 4,060 credits, or about 41 per visitor. At the G6 target of 8% visitor-to-lead conversion, that is 8 leads for about 510 credits each, or **about $9-$13 of credits per lead** at pack prices. Provider cost is about $1.30 per lead. For comparison, [22](22-business-model-pricing-gtm.md) proposes $35-$60 for a small-install lead bought through Rootline Match. A 5,000-credit pack ($100) funds about 120 visitors, or roughly 10 leads at these assumptions, while the default 600-credit widget cap covers only about 15 visitors a month, so owners running campaigns raise it. Tenants see "cost per lead from the visualizer" in [Reporting](18-reporting-analytics.md) next to their other lead sources. Every input above is an assumption to be replaced by beta telemetry.
+**Homeowner widget economics (estimate, default `teaser_then_verify` gate).** Take 100 visitors who reach a teaser (one 24-credit preview set each, 2,400 credits). If 35% verify and run an average of 1.5 more sets (about 1,260 credits), and 20 download one HD image (400 credits), the total is about 4,060 credits, or about 41 per visitor. At the G6 target of 8% visitor-to-lead conversion, that is 8 leads for about 510 credits each, or **about $9-$13 of credits per lead** at pack prices. Provider cost is about $1.30 per lead. For comparison, [22](22-business-model-pricing-gtm.md) proposes $35-$60 for a small-install lead bought through Rootline Match. A 5,000-credit pack ($100) funds about 120 visitors, or roughly 10 leads at these assumptions, while the default 600-credit widget cap covers only about 15 visitors a month, so owners running campaigns raise it. Tenants see "cost per lead from the visualizer" in [Reporting](18-reporting-analytics.md) next to their other lead sources. Every input above is an assumption to be replaced by design-partner telemetry.
 
 **COGS guardrails:** the gateway enforces a per-route `max_raw_cost` per call. Following [22](22-business-model-pricing-gtm.md) 7.4, an alert goes to `platform_finance` and `platform_engineer` when an action's trailing 7-day median raw cost exceeds 45% of its credit revenue at the lowest pack price. The fix is a re-route (preferred, no tenant impact) or a re-price with 60 days' notice, and each action's credit price is held for at least 12 months.
 
@@ -1749,11 +1749,11 @@ Quality is measured continuously and before any route or model change.
 | Eval | Method | Target (proposed) |
 |---|---|---|
 | **Scale accuracy** | Compare calibrated distances against tape measures; and in plan-to-photo, measure rendered bed depth via the homography vs plan value | Median error 10% or less with one pin; 5% or less with card; 90th percentile 15% or less |
-| **Plant accuracy (identity)** | Blind identification by 3 horticulturists from crops of rendered plants (genus and species/cultivar group) vs intended plant; plus automated classifier agreement | Genus-level 85%+ and species-level 70%+ for render-ready top-300 plants in plan-to-photo (V1 GA gate) |
+| **Plant accuracy (identity)** | Blind identification by 3 horticulturists from crops of rendered plants (genus and species/cultivar group) vs intended plant; plus automated classifier agreement | Genus-level 85%+ and species-level 70%+ for render-ready top-300 plants in plan-to-photo (release gate for [V1] plan-to-photo) |
 | **Count and placement** | Detected vs planned instances | 95%+ instance recall, under 5% extra vegetation area |
 | **Structure preservation** | Pixel difference in protected masks | Under 0.5% changed pixels after compositing |
 | **Human preference** | Pairwise A/B (Bradley-Terry / Elo) by designers and a homeowner panel on realism, appeal and "matches the plan" | New route must not lose to incumbent at 95% confidence on "matches the plan" |
-| **Layout validity** | Validator pass rate; designer edit distance (share of plants changed before sending) | 100% hard-constraint pass; median 30% or fewer plants changed by V1 GA |
+| **Layout validity** | Validator pass rate; designer edit distance (share of plants changed before sending) | 100% hard-constraint pass; median 30% or fewer plants changed (release gate for [V1] layouts) |
 | **Site-rule compliance** | Synthetic test sites seeded with hydrants, driveway sight triangles, AC pads, Zone 0 houses and HOA-common-area turf; check every generated option and every assistant edit | 0 hard-rule violations; every warning cites its rule and source |
 | **Economy-route parity** | `restyle.economy` vs `restyle.preview` on the golden set: house preservation, plant identity, pairwise preference | Not worse than the incumbent at 95% confidence on preservation and identity before it serves any widget traffic |
 | **Latency and cost** | Per route | Within 8.5 and 8.6 targets |
@@ -2005,7 +2005,7 @@ The whole module is AI; this section lists the adjacent opportunities that compo
 | LLM planner produces plausible but bad designs | Medium | Medium | Solver enforces geometry; validator; designer review required; win/loss learning |
 | Over-promising AI to tenants | Medium | Medium | Honest marketing: "AI drafts, your designer decides"; transparent fidelity score |
 | Stale or wrong site rule packs (a water rule changes, a fire-zone map is redrawn) | Medium | High (commercial fines, failed HOA reviews) | Every rule carries a source citation, effective dates and an owner; quarterly curator review; `rule_pack.updated` re-validates drafts; rules are labeled "guidance, verify locally" in client-facing text, and Rootline never certifies compliance |
-| Widget cost per lead disappoints (low verification or conversion) | Medium | Medium | Gate modes, economy route for teasers, cost-per-lead reporting next to other sources, owner caps; tune defaults from beta telemetry |
+| Widget cost per lead disappoints (low verification or conversion) | Medium | Medium | Gate modes, economy route for teasers, cost-per-lead reporting next to other sources, owner caps; tune defaults from design-partner telemetry |
 | Cross-doc drift on credit prices | Medium | Low | Credit unit and list owned by [22](22-business-model-pricing-gtm.md); this doc only proposes action prices; `credits.quote` reads one catalog |
 
 ---
@@ -2020,8 +2020,8 @@ Definitions feed [Reporting and Analytics](18-reporting-analytics.md) and the pl
 |---|---|---|
 | Tenant AI design activation | Share of tenants with 10+ mockups in their first 30 days | 50% of design-build tenants |
 | Mockups per design-build Opportunity | Mockups created / Opportunities with a design | 4+ |
-| Attach rate | Proposals with at least one mockup / design-build proposals sent | 70% by V1 |
-| Layout adoption | Layout options selected as the base of a sent proposal / layouts generated | 35% by V1 + 6 months |
+| Attach rate | Proposals with at least one mockup / design-build proposals sent | 70% at [V1] |
+| Layout adoption | Layout options selected as the base of a sent proposal / layouts generated | 35% after six months of [V1] use |
 | Designer edit distance | Median share of AI-placed plants changed before sending | 30% or less |
 
 ### 12.2 Commercial impact
@@ -2041,7 +2041,7 @@ Definitions feed [Reporting and Analytics](18-reporting-analytics.md) and the pl
 
 | KPI | Definition | Target (proposed) |
 |---|---|---|
-| Fidelity grade distribution | Share of plan-to-photo renders graded A | 70%+ by V1 GA |
+| Fidelity grade distribution | Share of plan-to-photo renders graded A | 70%+ at [V1] |
 | Plant complaint rate | "Looks wrong" flags per 1,000 rendered plant instances | Under 5 |
 | Scale accuracy | Median error vs tape on golden set | 10% or less (1 pin), 5% or less (card) |
 | Regenerate rate | Share of preview sets followed by a regenerate with the same preset | Under 40% |
@@ -2092,18 +2092,18 @@ Definitions feed [Reporting and Analytics](18-reporting-analytics.md) and the pl
 
 1. **Widget subsidy (action prices resolved):** every action in 4.7 now uses the [22](22-business-model-pricing-gtm.md) 4.4.1 rate card. 22 adopted restyle "more like this" (20), design assistant chat turns (1/2), night renders (20/40) and a separate vendor 4K line (40, [V1]), and tags the website visualizer preview set and the HD final [MVP] and the 3D walkthrough [V3], matching this module's phasing. Still open: should Rootline subsidize the first 500 widget credits a month for Grow tenants as a growth investment, since widget leads also feed Rootline Match? (Owner: [22](22-business-model-pricing-gtm.md).)
 2. **Default image route:** benchmark Gemini image editing vs FLUX Kontext vs self-hosted pipelines on the golden set for plant identity and house preservation before MVP; decide whether MVP plan-to-photo should ship earlier using vendor editing with control images.
-3. **Render-pack production:** in-house photography vs grower partnerships vs AI-generated sprites curated by horticulturists. What mix gets 300 plants render-ready before V1, and at what cost?
+3. **Render-pack production:** in-house photography vs grower partnerships vs AI-generated sprites curated by horticulturists. What mix gets 300 plants render-ready before [V1], and at what cost?
 4. **Fidelity score visibility:** should homeowners see the fidelity grade, or is the badge plus disclaimer enough? Showing it is more honest but may confuse.
 5. **Training incentive:** bonus credits for data opt-in could be seen as pressure; legal and brand review needed.
 6. **Service-area gating for the widget:** does strict gating reduce lead volume too much for Companies in fringe areas? Option: allow out-of-area renders but tag the lead.
 7. **Rootline Home and Match channel conflict:** do Companies welcome a Rootline-branded consumer app that routes leads to up to 3 Companies, or see it as channel conflict with their own white-label widget? Pilot with opt-in tenants only; never route a visitor from a Company's own widget without that Company's setting.
 8. **On-device generation:** when will phone-class image models be good enough for offline restyle previews in the field? Revisit annually.
 9. **Copyright posture:** how strongly should we encourage Companies to register their human-authored plans, and should the board PDF include an authorship statement?
-10. **Liability language:** do we need jurisdiction-specific disclaimer text (for example Quebec French requirements) by launch?
+10. **Liability language:** do we need jurisdiction-specific disclaimer text (for example Quebec French requirements) before Canadian Regions ship at [V1]?
 11. **3D path:** invest in Gaussian splatting (V3) or in a stylized real-time 3D view from the Design Studio first? Depends on V2 customer research among $40k+ design-build tenants.
 12. **Exterior refresh (paint, trim, doors):** high demand from homeowners, but outside the landscape core and higher misuse risk. Partner, build, or skip?
-13. **Widget launch timing (tags resolved):** this doc ships the website widget at [MVP] (it is the same engine as the field restyle), while [06](06-customer-portal.md) 4.17 tags the portal-hosted visualizer [V1] with an MVP photo-quote form. [Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #14 adopts this doc's recommendation: the embeddable widget ships at MVP behind the `verify_first` gate for design partners, the portal-hosted visualizer at V1.1 and Rootline Home at V1.3. Still open: the quality bar and date for moving to `teaser_then_verify` as the default once economy-route quality passes the golden set.
-14. **Rule-pack liability:** how far should Rootline go in encoding statutes (turf bans, fire zones)? Recommendation: ship a small, cited default set, label it "guidance, verify locally", and let tenants add local rules. Counsel to review the wording before V1.
+13. **Widget scope tiers (tags resolved):** this doc ships the website widget at [MVP] (it is the same engine as the field restyle), while [06](06-customer-portal.md) 4.17 tags the portal-hosted visualizer [V1] with an MVP photo-quote form. [Product Scope](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #14 adopts this doc's recommendation: the embeddable widget ships at MVP behind the `verify_first` gate for design partners, the portal-hosted visualizer and Rootline Home at [V1]. Still open: the quality bar for moving to `teaser_then_verify` as the default once economy-route quality passes the golden set.
+14. **Rule-pack liability:** how far should Rootline go in encoding statutes (turf bans, fire zones)? Recommendation: ship a small, cited default set, label it "guidance, verify locally", and let tenants add local rules. Counsel to review the wording before [V1].
 15. **Interest-heatmap privacy:** is tracking which plants a client taps acceptable under the portal's privacy notice in all launch jurisdictions (CCPA/CPRA, PIPEDA)? Default off for Quebec until Law 25 review.
 
 ---

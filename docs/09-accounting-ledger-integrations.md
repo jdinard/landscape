@@ -16,7 +16,7 @@
 - **Differentiators:** books as a by-product of operations, estimate-to-actual job cost and WIP from the same data, overhead recovery against the Company Budget, a free Accountant Hub for CPAs, and the best-behaved QuickBooks sync in the category.
 - **Key cross-links:** billing events in [07](07-invoicing-billing-contracts.md); Stripe flows in [08](08-payments-stripe.md); POs and inventory in [13](13-operations-inventory-equipment.md); payroll in [15](15-team-hr-payroll.md); KPIs in [18](18-reporting-analytics.md); invariants and connector framework in [20](20-architecture-security.md).
 
-**Document status:** Design proposal v1.0 (2026-11-07). Owner: Money domain team (`ledger` and `integrations` modules). Related docs: [Personas and permissions](02-personas-roles-permissions.md), [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md), [Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md), [Customer portal](06-customer-portal.md), [Invoicing and billing](07-invoicing-billing-contracts.md), [Payments (BYO Stripe)](08-payments-stripe.md), [Operations, inventory and equipment](13-operations-inventory-equipment.md), [Service lines](14-service-line-modules.md), [Team, HR and payroll](15-team-hr-payroll.md), [AI copilot and automation](17-ai-copilot-automation.md), [Reporting and analytics](18-reporting-analytics.md), [Platform admin](19-platform-admin-portal.md), [Architecture and security](20-architecture-security.md), [UX and sitemaps](21-ux-design-system-sitemaps.md), [Pricing and GTM](22-business-model-pricing-gtm.md), [Moonshots](23-innovation-moonshots.md), [Roadmap](24-roadmap-feature-catalog.md).
+**Document status:** Design proposal v1.0 (2026-11-07). Modules: `ledger` and `integrations`. Related docs: [Personas and permissions](02-personas-roles-permissions.md), [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md), [Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md), [Customer portal](06-customer-portal.md), [Invoicing and billing](07-invoicing-billing-contracts.md), [Payments (BYO Stripe)](08-payments-stripe.md), [Operations, inventory and equipment](13-operations-inventory-equipment.md), [Service lines](14-service-line-modules.md), [Team, HR and payroll](15-team-hr-payroll.md), [AI copilot and automation](17-ai-copilot-automation.md), [Reporting and analytics](18-reporting-analytics.md), [Platform admin](19-platform-admin-portal.md), [Architecture and security](20-architecture-security.md), [UX and sitemaps](21-ux-design-system-sitemaps.md), [Pricing and GTM](22-business-model-pricing-gtm.md), [Moonshots](23-innovation-moonshots.md), [Roadmap](24-roadmap-feature-catalog.md).
 
 **Scope boundary.** This doc owns: the ledger engine and its accounting semantics, the Chart of Accounts and dimensions, the posting-rule registry (including the canonical account codes and role keys that [07](07-invoicing-billing-contracts.md) and [08](08-payments-stripe.md) use in their posting tables), AP and bill pay, 1099/T5018, the inventory, fixed asset, loan and payroll subledgers on the accounting side, banking and reconciliation, job costing, WIP and revenue recognition, budgets and overhead recovery tracking, financial statements, period close, the Accountant Hub workflows, year-end, multi-entity consolidation, accounting integrations and QuickBooks migration. It does **not** own: invoice generation, billing schedules, sales tax calculation, collections ([07](07-invoicing-billing-contracts.md)); Stripe money movement and dispute handling ([08](08-payments-stripe.md)); POs, receiving, stock movements and equipment operations ([13](13-operations-inventory-equipment.md)); payroll calculation and time capture ([15](15-team-hr-payroll.md), [05](05-field-crew-mobile-app.md)); management dashboards, KPI definitions and the semantic layer ([18](18-reporting-analytics.md)); the technical invariants L1-L12 and the connector framework ([20](20-architecture-security.md)). Where those meet the ledger we summarize and link.
 
@@ -64,7 +64,7 @@
 
 ### 1.1 Goals
 
-| # | Goal | Measure of success (first 12 months after MVP GA) |
+| # | Goal | Measure of success (product goal) |
 |---|------|---------------------------------------------------|
 | G1 | **Books as a by-product.** Every operational event with a financial effect posts a balanced entry automatically, with no re-keying. | 97%+ of journal lines in a typical tenant are system-posted; manual entries under 25 per month for a 20-person Company. |
 | G2 | **Correct by construction.** The ledger cannot be unbalanced, edited after posting, posted into a locked period or double-posted, and every subledger ties to its control account. | Zero unbalanced entries ever; zero unresolved subledger drift at any month-end ([20](20-architecture-security.md) L1-L12). |
@@ -73,14 +73,14 @@
 | G5 | **CPA-trusted.** Outside accountants get free delegated access, a multi-client hub, standard exports and an audit trail they would sign off on. | 300+ accounting firms active in the Hub; 60%+ of native-ledger tenants have an outside accountant connected. |
 | G6 | **Optional, honest integrations.** QuickBooks Online, Desktop and Xero are supported in clearly labeled modes; sync failures are per record, explained and fixable in one click. | Fewer than 2 unresolved sync errors per 1,000 synced objects at month-end; zero duplicate customers created by sync. |
 | G7 | **Painless migration.** A QuickBooks company moves to the native ledger with opening balances that tie to the cent. | Opening trial balance, AR aging and AP aging tie to the source on 100% of assisted migrations; median migration under 2 working days. |
-| G8 | **Replace a subscription.** Small Companies can drop QuickBooks entirely. | 35% of tenants under $2M revenue run native-only by month 12 (estimate to validate in pilots). |
+| G8 | **Replace a subscription.** Small Companies can drop QuickBooks entirely. | 35% of tenants under $2M revenue run native-only after their first year on Rootline (estimate to validate in pilots). |
 | G9 | **North American from day one.** US and Canada, USD and CAD, sales tax and GST/HST/QST, 1099 and T5018/T4A, GAAP and ASPE-friendly reporting. | Canadian pilot tenants close and file GST/HST from Rootline with no spreadsheet. |
 | G10 | **Explainable numbers.** Any number on any report drills to journal lines, then to the source document (visit, invoice, bill, time entry, payout) and the posting rule that created it. | 100% of system entries carry a source link and rule version. |
 
 ### 1.2 Non-goals
 
 - **Not a tax preparer.** Rootline produces tax-ready trial balances, depreciation schedules, 1099 files and sales tax reports; it does not prepare or file income tax returns.
-- **Not a payroll engine.** Gross-to-net, payroll tax filing and W-2/T4 issuance stay with the payroll provider ([15](15-team-hr-payroll.md)). Rootline imports the payroll journal and allocates labor cost. When [15](15-team-hr-payroll.md)'s embedded payroll option ships ([V1] pilot, [V2] GA), the licensed partner still computes, moves money and files; its journal posts through the same `payroll.PR1`-`PR3` rules, just without a file.
+- **Not a payroll engine.** Gross-to-net, payroll tax filing and W-2/T4 issuance stay with the payroll provider ([15](15-team-hr-payroll.md)). Rootline imports the payroll journal and allocates labor cost. When [15](15-team-hr-payroll.md)'s embedded payroll option ships ([V1] for a limited set of Companies, [V2] for all), the licensed partner still computes, moves money and files; its journal posts through the same `payroll.PR1`-`PR3` rules, just without a file.
 - **Not a bank or money transmitter.** Client money stays in the Company's Stripe account and bank ([08](08-payments-stripe.md)); vendor payments leave the Company's own bank, through the bank or a licensed payables partner. Rootline never holds funds.
 - **Not a full ERP for $100M roll-ups at launch.** Multi-entity consolidation is in scope; revenue sharing across franchise systems, statutory consolidation of foreign subsidiaries and IFRS reporting are not.
 - **Not an audit firm.** The audit trail and evidence locker make audits and reviews cheaper; they do not replace them.
@@ -160,7 +160,7 @@ No landscape or field-service product in our research keeps a real general ledge
 
 ## 3. Personas and jobs-to-be-done
 
-Role keys follow [02](02-personas-roles-permissions.md). Running examples: **Reyes Outdoor Living** (Charlotte, NC; residential design-build plus maintenance; about 22 people at peak) with outside CPA **Karen Liu** and part-time in-house bookkeeper **Beth**; **Summit Grounds Group** (Columbus, OH; commercial maintenance, snow and irrigation; three branches; two legal entities); and **Evergreen Edge Landscaping**, whose 2026 Company Budget is the worked example in [03](03-crm-sales-estimating-proposals.md) EST-01.
+Role keys follow [02](02-personas-roles-permissions.md). Running examples: **Reyes Outdoor Living** (Naperville, IL; residential design-build plus maintenance; about 22 people at peak) with outside CPA **Karen Liu** and part-time in-house bookkeeper **Beth**; **Summit Grounds Group** (Columbus, OH; commercial maintenance, snow and irrigation; three branches; two legal entities); and **Evergreen Edge Landscaping**, whose 2026 Company Budget is the worked example in [03](03-crm-sales-estimating-proposals.md) EST-01.
 
 | Persona (role key) | Jobs-to-be-done in this module | What "great" looks like |
 |---|---|---|
@@ -845,7 +845,7 @@ The registry below is the canonical list. Rule keys are namespaced by the module
 
 ### 4.4 Worked journal entries: one month at Reyes Outdoor Living
 
-Reyes Outdoor Living (Charlotte, NC) in May 2027. The Thompson backyard (paver patio and seat wall, $18,400 proposal, journey 4.1 in [02](02-personas-roles-permissions.md)) is mid-build; maintenance agreements are in full swing. Sales tax is omitted for clarity (handled in [07](07-invoicing-billing-contracts.md)); all amounts are illustrative. Payments-side entries reuse the numbers from [08](08-payments-stripe.md) 4.17.3 so the two documents agree.
+Reyes Outdoor Living (Naperville, IL) in May 2027. The Thompson backyard (paver patio and seat wall, $18,400 proposal, journey 4.1 in [02](02-personas-roles-permissions.md)) is mid-build; maintenance agreements are in full swing. Sales tax is omitted for clarity (handled in [07](07-invoicing-billing-contracts.md)); all amounts are illustrative. Payments-side entries reuse the numbers from [08](08-payments-stripe.md) 4.17.3 so the two documents agree.
 
 **E1 - May 3. 30% ACH deposit on the Thompson proposal** (`payments.charge`, `billing.P2`, `payments.fee`). ACH fee 0.8% capped at $5.00 (illustrative).
 
@@ -876,7 +876,7 @@ Reyes Outdoor Living (Charlotte, NC) in May 2027. The Thompson backyard (paver p
 | Account | Dimensions | Debit | Credit |
 |---|---|---:|---:|
 | 5230 Materials - Mulch, Soil and Compost | J-2291, Phase 3 Planting and Beds, Materials | 342.00 | |
-| 1315 Inventory - Mulch, Soil and Compost | Branch: Charlotte yard | | 342.00 |
+| 1315 Inventory - Mulch, Soil and Compost | Branch: Naperville yard | | 342.00 |
 
 **E5 - May 12. Crew timesheet approved** (`labor.LB1`). Four-person crew, 9.5 hours each on Phase 2 = 38 hours; average base wage $24.00 = $912.00; standard burden 28% = $255.36. Statistical account 9010 Billable Field Man-Hours +38.
 
@@ -973,7 +973,7 @@ Reyes Outdoor Living (Charlotte, NC) in May 2027. The Thompson backyard (paver p
 | Account | Dimensions | Debit | Credit |
 |---|---|---:|---:|
 | 2200 Deferred Revenue - Service Agreements | Per agreement (61 lines in detail) | 18,420.00 | |
-| 4100 Maintenance Revenue | Maintenance, Charlotte | | 18,420.00 |
+| 4100 Maintenance Revenue | Maintenance, Naperville | | 18,420.00 |
 
 **E16 - May 31. Monthly depreciation run, book basis** (`assets.FA2`). Includes the 60-inch zero-turn from [13](13-operations-inventory-equipment.md) 4.14.7 ($14,000 cost, $3,000 salvage, 4 years straight-line = $229.17 per month) and a compact track loader ($68,500 cost, $20,500 salvage, 6 years = $666.67 per month).
 
@@ -1334,7 +1334,7 @@ Rootline ships a default policy that a CPA can adjust per Company. The defaults 
 | Level-billed and prepaid agreements (mowing season, bed maintenance) | As occurrences are delivered; fixed-season lines ratably by a season curve | `billing.P4`-`P7` ([07](07-invoicing-billing-contracts.md) 4.2) |
 | Lawn care and PHC programs (5-step fertilizer and weed control) | Per application completed | `billing.P5` |
 | Snow seasonal (fixed-fee) contracts | Ratably over the contract season using a weighting curve or straight-line | `billing.P6`; discussed in snow bookkeeping guidance ([Beancount](https://beancount.io/blog/2026/06/03/snow-removal-plowing-ice-management-contractor-bookkeeping-asc-606-seasonal-deferred-revenue-per-push-trigger-section-179-plow-truck-salt-spreader-sima-asca-revenue-per-truck-hour-kpi-guide)) |
-| Snow per push or per application | At event completion | `billing.P1` (with month-end accrual of uninvoiced events) |
+| Snow per push or per application | At storm visit completion (Snow Lite [MVP]) or event completion (full snow module [V1]) | `billing.P1` (with month-end accrual of uninvoiced visits and events) |
 | Enhancements and small installs under the WIP threshold | At completion | `billing.P1`; simplification policy, default threshold $10,000 contract value or 30 days duration |
 | Design-build projects at or above the threshold | Over time, input method (cost-to-cost) by default | WIP schedule (4.8.3) |
 | Design fees | At delivery when the design is a distinct deliverable; otherwise combined with the build | Policy flag on the Price Book item |
@@ -1394,7 +1394,7 @@ Net effect on May install revenue: +$2,540 (earned $58,420 vs billed $55,880). T
 
 **Reports from the same data:** the surety-format WIP schedule that banks and bonding companies expect; the **closed-jobs schedule** for the year with gross profit fade or gain vs estimate; and **backlog** (contract value not yet earned: $25,380 in the example) for the owner's capacity planning.
 
-**WIP rules engineers must get right:**
+**WIP rules the ledger must get right:**
 
 - **Change orders.** Approved change orders raise both contract value and estimated cost on the WIP line in the period they are approved; pending change orders are excluded by default. A CPA can mark a pending change order "probable" with a note, which includes its revenue only to the extent of costs already incurred on it (no margin on unapproved work).
 - **Retainage.** Billed-to-date includes retainage billed (it is earned and billed, just not yet due), so retainage never shows up as an underbilling.
@@ -2462,7 +2462,7 @@ erDiagram
     }
 ```
 
-**Indexes and partitioning.** `journal_line` is partitioned by tenant cell and fiscal year (volume estimate in [20](20-architecture-security.md): about 250 million lines per year platform-wide by year 3) with composite indexes on `(tenant_id, account_id, entry_date)`, `(tenant_id, job_id)`, `(tenant_id, division_id, entry_date)`; `journal_entry` and `posted_source` carry the unique `(tenant_id, posting_key)` business key from L4; `bank_transaction` is unique on `(bank_account_id, provider_txn_id)`; `bill` is unique on `(tenant_id, vendor_id, vendor_invoice_no)`.
+**Indexes and partitioning.** `journal_line` is partitioned by tenant cell and fiscal year (volume estimate in [20](20-architecture-security.md): about 250 million lines per year platform-wide at the tenant scale modeled there) with composite indexes on `(tenant_id, account_id, entry_date)`, `(tenant_id, job_id)`, `(tenant_id, division_id, entry_date)`; `journal_entry` and `posted_source` carry the unique `(tenant_id, posting_key)` business key from L4; `bank_transaction` is unique on `(bank_account_id, provider_txn_id)`; `bill` is unique on `(tenant_id, vendor_id, vendor_invoice_no)`.
 
 ---
 
@@ -2671,7 +2671,7 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
 | CPAs refuse to trust a new GL | High | High | Free Hub, accountant-led onboarding, open exports, migration proofs, SOC 1, a landscape-CPA advisory board in the design-partner program, Mode B mirror as a bridge |
-| A ledger bug damages trust | Medium | Severe | DB invariants L1-L18, property-based tests, nightly proofs, shadow "dual-run" of the posting engine against a reference implementation during beta, integrity cases paged as incidents |
+| A ledger bug damages trust | Medium | Severe | DB invariants L1-L18, property-based tests, nightly proofs, shadow "dual-run" of each new posting-engine version against a reference implementation before it serves tenants, integrity cases paged as incidents |
 | Scope creep into a full construction ERP | High | Medium | Phasing in 4.0; certified payroll, AIA billing depth and job-cost accounting for union labor are explicitly out of MVP |
 | Intuit or Xero API terms and pricing change | Medium | Medium | Webhooks and CDC over polling, batching, mirror-summary option, native-first positioning; cost to serve tracked in [22](22-business-model-pricing-gtm.md) |
 | QuickBooks Desktop declines faster than expected | Medium | Low | Desktop support built thin (summary mirror); migration path to native |
@@ -2685,7 +2685,7 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 
 ## 12. Metrics and KPIs
 
-| Area | Metric | Target (12 months after MVP GA) |
+| Area | Metric | Target (product goal) |
 |---|---|---|
 | Adoption | Share of tenants in Mode A / B / C | 30% / 15% / 55% (estimate); native share rising each quarter |
 | Adoption | Tenants with bank feeds connected | 85% of Mode A and B tenants |

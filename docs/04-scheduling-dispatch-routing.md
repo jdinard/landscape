@@ -1755,7 +1755,7 @@ Behavior notes:
 +--------------------------------------------------------------------------------------------------------+
 | Pattern   (o) Weekly on route day  ( ) Bi-weekly A/B  ( ) Twice a month  ( ) Every N days              |
 |           ( ) Monthly  ( ) Count-limited  ( ) Seasonal segments (frequency profile)                    |
-| Season    Apr 1, 2027 -> Nov 15, 2027     [Use Region default: zone 6a Midwest]                        |
+| Season    Apr 1, 2027 -> Nov 15, 2027     [Use Region default: Central Ohio 6b]                        |
 | Day       Zone day: Tuesday (T-North)  [ ] Client insists on a specific day (off-zone, +7 min drive)   |
 | Segments  Apr 1-Jun 30 weekly | Jul 1-Aug 31 bi-weekly (B) | Sep 1-Oct 31 weekly | Nov 1-15 bi-weekly  |
 | Duration  0.75 crew-h budget   (learned trend 0.92 crew-h after 6 visits)  [Use learned for routing]   |
@@ -2724,7 +2724,7 @@ Definitions are shared with [18](18-reporting-analytics.md). Targets are Rootlin
 
 ## 14. Open questions
 
-1. **Matrix provider economics.** Google Routes vs Mapbox per region, and at what tenant size managed route-optimization APIs become cheaper than our own solver plus matrices. Needs a cost model with real 2027 pricing (verify).
+1. **Matrix provider economics.** Google Routes vs Mapbox per region, and at what tenant size managed route-optimization APIs become cheaper than our own solver plus matrices. Needs a cost model with current vendor pricing (verify).
 2. **Default for client time windows.** Should `between` windows be hard or soft by default? Soft gives better routes; hard gives better client promises. Proposal: soft for residential, hard for commercial.
 3. **Auto-apply for weather playbooks.** Is `auto` mode for residential mowing safe enough to offer in [V2], and what notice language protects Companies?
 4. **Growth-adaptive and fixed-price contracts.** Should `max_growth_skips` default to 0 for level-pay agreements to avoid under-delivery perceptions?

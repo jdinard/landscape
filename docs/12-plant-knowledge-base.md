@@ -15,11 +15,11 @@
 - **The plant thread:** KB -> Design Studio picker and validation ([10](10-design-studio.md)) -> region-locked Mockups and AI layouts ([11](11-ai-design-mockups.md)) -> Price Book lines on the Estimate and plant cards on the Proposal ([03](03-crm-sales-estimating-proposals.md)) -> crew install lists and plant ID ([05](05-field-crew-mobile-app.md)) -> as-built installed-plant list -> portal care guide and plant warranty ([06](06-customer-portal.md), [13](13-operations-inventory-equipment.md)).
 - **Differentiator and key links:** no field-service competitor has region-curated plant data, and design tools with plant libraries do not know the Region, the law or the price. Operator console in [19](19-platform-admin-portal.md), roles in [02](02-personas-roles-permissions.md), entities and events in [20](20-architecture-security.md).
 
-**Related docs:** [Personas and permissions](02-personas-roles-permissions.md) | [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md) | [Crew app](05-field-crew-mobile-app.md) | [Customer Portal](06-customer-portal.md) | [Design Studio](10-design-studio.md) | [AI design and mockups](11-ai-design-mockups.md) | [Operations, inventory and nurseries](13-operations-inventory-equipment.md) | [Service lines (PHC, tree care, irrigation)](14-service-line-modules.md) | [Marketing and SEO pages](16-marketing-growth-communications.md) | [AI copilot and automation](17-ai-copilot-automation.md) | [Reporting](18-reporting-analytics.md) | [Platform Admin console](19-platform-admin-portal.md) | [Architecture and security](20-architecture-security.md) | [UX and design system](21-ux-design-system-sitemaps.md) | [Business model and GTM](22-business-model-pricing-gtm.md) | [Moonshots](23-innovation-moonshots.md) | [Roadmap](24-roadmap-feature-catalog.md)
+**Related docs:** [Personas and permissions](02-personas-roles-permissions.md) | [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md) | [Crew app](05-field-crew-mobile-app.md) | [Customer Portal](06-customer-portal.md) | [Design Studio](10-design-studio.md) | [AI design and mockups](11-ai-design-mockups.md) | [Operations, inventory and nurseries](13-operations-inventory-equipment.md) | [Service lines (PHC, tree care, irrigation)](14-service-line-modules.md) | [Marketing and SEO pages](16-marketing-growth-communications.md) | [AI copilot and automation](17-ai-copilot-automation.md) | [Reporting](18-reporting-analytics.md) | [Platform Admin console](19-platform-admin-portal.md) | [Architecture and security](20-architecture-security.md) | [UX and design system](21-ux-design-system-sitemaps.md) | [Business model and GTM](22-business-model-pricing-gtm.md) | [Moonshots](23-innovation-moonshots.md) | [Product scope and feature catalog](24-roadmap-feature-catalog.md)
 
 **Conventions used in this document**
 
-- Requirement IDs look like `KB-TAX-03`. Each feature carries a priority tag: [MVP], [V1], [V2] or [V3].
+- Requirement IDs look like `KB-TAX-03`. Each feature carries a scope tag: [MVP] (first sellable release), [V1] (next scope wave), [V2] (later wave) or [V3] (moonshot or long-term). Tags are scope tiers, not dates.
 - Running examples: **Cedar & Stone Landscapes**, a fictional 38-person design-build-maintain Company in Columbus, Ohio (the same example used in [13](13-operations-inventory-equipment.md)); the curated Region **"Central Ohio"** inside the macro-region **"Great Lakes and Ohio Valley"**, Rootline's single US launch cluster (founder decision; KB-SEED-04 in [4.13](#413-seed-strategy-the-first-3000-plants-and-the-first-regions-kb-seed) and [22](22-business-model-pricing-gtm.md)); plus **"Golden Horseshoe, Ontario"** (a Wave 2 Region) and **"Colorado Front Range"** (a Wave 3 candidate, used only to illustrate a later, dry-climate Region) for contrast.
 - People in examples: **Dr. Priya** is the lead horticulturist (the `platform_curator` persona in [02](02-personas-roles-permissions.md)); **Maria Ortiz** is the senior regional curator for Great Lakes and Ohio Valley; **Miguel Hernández** is a Cedar & Stone `crew_lead` and **Luis Ramírez** a `technician` (the crew personas in [02](02-personas-roles-permissions.md)).
 - Plant facts used in examples (zones, ratings, prices, availability) are illustrative unless a source is cited. Legal and data facts that can change are marked "verify". Estimates are labeled as estimates.
@@ -34,15 +34,15 @@
 | # | Goal | Measure of success |
 |---|---|---|
 | G1 | **Right plant, right place, every time.** Every plant shown by default, placed by AI or validated in a design is checked against the property's Region, zones, sun, water and legal status. | 99% or better region-compliance on the plant-recommendation eval set (the release gate in [19](19-platform-admin-portal.md)); zero legally prohibited plants in sent proposals, evaluated at each plant's planned install date (KB-RGN-10) |
-| G2 | **Breadth.** Cover the plants North American landscape contractors actually buy. | 3,000 plants at Silver completeness or better at MVP launch; 6,000 by V1; 10,000+ by V2 (targets) |
+| G2 | **Breadth.** Cover the plants North American landscape contractors actually buy. | 3,000 plants at Silver completeness or better at [MVP]; 6,000 at [V1]; 10,000+ at [V2] (targets) |
 | G3 | **Regional depth where we sell.** The six Wave 1 Great Lakes Regions (the launch cluster, KB-SEED-04) are "excellent" at MVP: rated profiles and palettes for every common use. | 600 or more rated plants per Wave 1 Region; palettes for foundation, pollinator, shade, rain garden, screening, deer-resistant and salt-tolerant parkway uses (the coverage bar set in [22](22-business-model-pricing-gtm.md), with xeric palettes deferred to a dry-climate Wave 3 cluster) |
 | G4 | **Trust through provenance.** Every value can answer "who said so, based on what, when?" | 100% of critical traits carry at least one citation and a second-curator review; field-level provenance on 100% of values |
 | G5 | **Curation at scale.** A handful of curators can maintain thousands of plants across dozens of Regions. | Curator throughput doubled by AI enrichment (the KPI in [19](19-platform-admin-portal.md)); median review time per non-critical AI suggestion under 30 seconds |
 | G6 | **Search that understands landscapers.** Faceted, semantic and visual search that answers real questions. | p95 latency under 300 ms (faceted) and 1.5 s (natural language); zero-result rate under 3%; 40% or more of searches end in an "add" action |
 | G7 | **Licensed, beautiful media.** Seasonal photos and symbols that can be printed in proposals without legal risk. | Zero unlicensed assets served; takedowns complete within 24 hours; 95% or more of palette plants with licensed photos in launch (Wave 1) Regions |
 | G8 | **Fresh and lawful.** Regulatory status (invasive and noxious lists) is current. | Regulatory changes published within 72 hours of a curator learning of them, and before the legal effective date when known |
-| G9 | **A learning loop.** Real installs make the KB smarter. | Warranty replacement and plant-failure data (aggregated, k of 10 or more Companies) feed every Wave 1 Region's ratings by V1 |
-| G10 | **Buyable plants.** Designs specify plants that can actually be sourced. | By V1, 70% or more of plants specified in designs for Wave 1 Regions show availability from at least one vendor within 50 miles (target) |
+| G9 | **A learning loop.** Real installs make the KB smarter. | Warranty replacement and plant-failure data (aggregated, k of 10 or more Companies) feed every Wave 1 Region's ratings by [V1] |
+| G10 | **Buyable plants.** Designs specify plants that can actually be sourced. | By [V1], 70% or more of plants specified in designs for Wave 1 Regions show availability from at least one vendor within 50 miles (target) |
 
 ### 1.2 Non-goals
 
@@ -455,7 +455,7 @@ Example Site Context (illustrative values for a Cedar & Stone client in Upper Ar
 | `watch` or `advisory` (non-legal invasive council lists) | State invasive plant council lists | Warning with explanation and alternatives |
 | `none` | | No message |
 
-- **Jurisdiction levels loaded at MVP:** federal (USDA APHIS Federal Noxious Weed List under 7 CFR 360, rarely a landscape ornamental but checked; CFIA-regulated plants in Canada), every US state and Canadian province, and municipalities only where a Region at Excellent has a municipal ban or street-tree list: at MVP, inside the beachhead states Ohio, Michigan, Indiana, Illinois and Wisconsin, with Ontario added at V1.2 with the Canada launch (KB-SEED-01). USDA PLANTS' compiled state noxious status is a cross-check, never the authority, because it can lag state rule changes ([R3 section 4.6](research/R3-design-ai-plant-data.md); verify).
+- **Jurisdiction levels loaded at MVP:** federal (USDA APHIS Federal Noxious Weed List under 7 CFR 360, rarely a landscape ornamental but checked; CFIA-regulated plants in Canada), every US state and Canadian province, and municipalities only where a Region at Excellent has a municipal ban or street-tree list: at MVP, inside the beachhead states Ohio, Michigan, Indiana, Illinois and Wisconsin, with Ontario added at [V1] with Canada support (KB-SEED-01). USDA PLANTS' compiled state noxious status is a cross-check, never the authority, because it can lag state rule changes ([R3 section 4.6](research/R3-design-ai-plant-data.md); verify).
 - **Three statuses, never merged:** *legally prohibited* (hard stop), *legally restricted* (acknowledged override) and *ecologically invasive but legal* (warning with alternatives). Region-level invasiveness judgments, modeled on assessments such as UF/IFAS's per-zone conclusions for Florida (verify), live in the Plant Region Profile as reason code `invasive_tendency`, not in `regulatory_listing`.
 - **Alternatives:** each prohibited or advisory listing can carry curated "plant this instead" links, following the "Grow Me Instead" guides published by invasive-plant councils in Ontario and British Columbia (verify). The substitution engine (KB-SRCH-07) ranks those first.
 - Matching: a species listing applies to every cultivar and infraspecific taxon unless an exemption names it; a genus-level listing applies to all species (rare).
@@ -618,7 +618,7 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 - **Evaluation:** a golden set of 300 curator-verified plants; metrics per prompt version: acceptance rate, edit rate, error rate on critical traits (target under 1% before any rejection by the second reviewer), hallucinated-citation rate (target 0; every locator is fetched and the snippet string-matched).
 
 **KB-CUR-04 Curator review queue [MVP]**
-- **Priority score** = impact (count of tenant uses of the plant in the last 90 days, weighted 2x in Wave 1 Regions, and in Wave 2 Regions from V1) x severity (legal 5, critical trait 3, conflict 2, standard 1) x age factor.
+- **Priority score** = impact (count of tenant uses of the plant in the last 90 days, weighted 2x in Wave 1 Regions, and in Wave 2 Regions from [V1]) x severity (legal 5, critical trait 3, conflict 2, standard 1) x age factor.
 - Filters: Region, plant group, trait, source, author type (AI, import, tenant, curator), confidence band.
 - Keyboard-first: `A` accept, `E` edit and accept, `R` reject with reason (reasons feed prompt evaluation), `S` request second opinion, `J`/`K` next and previous, `Shift+A` bulk accept eligible items.
 - Side-by-side: current value, proposed value, source snippets with links, other sources' values, usage count.
@@ -1007,11 +1007,11 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 ### 4.13 Seed strategy: the first 3,000 plants and the first Regions (KB-SEED)
 
 **KB-SEED-01 Principles [MVP]**
-- **Breadth at "Good" for what contractors actually buy;** depth at "Excellent" in the six Wave 1 Great Lakes Regions (KB-SEED-04); **legal coverage complete on day one** for every state and province where a Company can sign up (state- and province-level prohibited and regulated lists). Advisory council lists, municipal bans and street-tree lists (KB-RGN-08), municipal rule packs as they ship (KB-RGN-11) and a second review of every legal list cover the beachhead jurisdictions: Ohio, Michigan, Indiana, Illinois and Wisconsin at MVP, and Ontario at V1.2 with the Canada launch.
+- **Breadth at "Good" for what contractors actually buy;** depth at "Excellent" in the six Wave 1 Great Lakes Regions (KB-SEED-04); **legal coverage complete on day one** for every state and province where a Company can sign up (state- and province-level prohibited and regulated lists). Advisory council lists, municipal bans and street-tree lists (KB-RGN-08), municipal rule packs as they ship (KB-RGN-11) and a second review of every legal list cover the beachhead jurisdictions: Ohio, Michigan, Indiana, Illinois and Wisconsin at [MVP], and Ontario at [V1] with Canada support.
 - **Seed for the Great Lakes first.** The 3,000-plant mix is weighted to what Wave 1 Companies plant and fight: deicing-salt tolerance, deer and rabbit browse, heavy clay and alkaline glacial till, zone 5 winters, snow and ice breakage, emerald ash borer replacement, Great Lakes-native and pollinator palettes, and rain gardens and bioswales on clay (KB-SEED-03). Xeric, succulent and fire-wise depth waits for a dry-climate Wave 3 cluster.
 
 **KB-SEED-02 Candidate list [MVP]**
-- Union of: (a) design-partner Companies' historical plant purchases and estimates (the 5 field-alpha Companies and 20 Season 0 beta design partners in [22](22-business-model-pricing-gtm.md) and [24](24-roadmap-feature-catalog.md), all in Wave 1 Regions, with consent); (b) wholesale availability lists from nurseries serving Wave 1 Regions (frequency of appearance across lists); (c) extension-recommended landscape plant lists for Ohio, Michigan, Indiana, Illinois and Wisconsin, plus street-tree, salt-tolerance and rain-garden lists from Great Lakes extension services, arboreta and stormwater agencies (verify terms per source); (d) USDA PLANTS natives with landscape use in the Wave 1 ecoregions (KB-SEED-04); (e) all regulated species in US states and Canadian provinces; (f) turfgrasses (cool-season first) and common bedding annuals.
+- Union of: (a) design-partner Companies' historical plant purchases and estimates (the design-partner Companies in [22](22-business-model-pricing-gtm.md), all in Wave 1 Regions, with consent); (b) wholesale availability lists from nurseries serving Wave 1 Regions (frequency of appearance across lists); (c) extension-recommended landscape plant lists for Ohio, Michigan, Indiana, Illinois and Wisconsin, plus street-tree, salt-tolerance and rain-garden lists from Great Lakes extension services, arboreta and stormwater agencies (verify terms per source); (d) USDA PLANTS natives with landscape use in the Wave 1 ecoregions (KB-SEED-04); (e) all regulated species in US states and Canadian provinces; (f) turfgrasses (cool-season first) and common bedding annuals.
 - Score = 0.4 contractor usage + 0.3 nursery frequency + 0.2 extension recommendation + 0.1 native-palette need; regulated species are must-include. Within each group, ties and the last 10% of slots go to plants that close a Great Lakes need target below.
 
 **KB-SEED-03 Composition targets (planning estimate) [MVP]**
@@ -1060,29 +1060,33 @@ Weighted for the Great Lakes launch: trees and sedges up, succulents and cacti d
 | Southeast Wisconsin | Milwaukee, Madison | 53 Southeastern Wisconsin Till Plains | 5a-6a | The coldest Wave 1 Region; sets the zone 5 hardiness floor for Great Lakes palettes |
 
 - Outside the six Regions, macro-region profiles for "Great Lakes and Ohio Valley" give Good coverage where Wave 1 profiles generalize; everywhere else starts at Basic (KB-RGN-09).
-- **Design partners.** The 5 field-alpha Companies and the 20 Season 0 beta design partners ([22](22-business-model-pricing-gtm.md), [24](24-roadmap-feature-catalog.md)) are all in Wave 1 Regions, so the candidate list, guest raters, search evaluations and early failure reports all come from Great Lakes work.
+- **Design partners.** The design-partner Companies ([22](22-business-model-pricing-gtm.md)) are all in Wave 1 Regions, so the candidate list, guest raters, search evaluations and early failure reports all come from Great Lakes work.
 - **Wave 2 [V1]: extend within the region and across the border.**
-  - **Southern Ontario Golden Horseshoe** (Toronto, Hamilton, Kitchener-Waterloo, Niagara) ships with the Canada launch at V1.2, at Excellent. It inherits Great Lakes and Ohio Valley profiles, then adds Ontario legal lists (KB-RGN-08) and Canadian hardiness zones (stored separately, never converted).
+  - **Southern Ontario Golden Horseshoe** (Toronto, Hamilton, Kitchener-Waterloo, Niagara) ships with Canada support at [V1], at Excellent. It inherits Great Lakes and Ohio Valley profiles, then adds Ontario legal lists (KB-RGN-08) and Canadian hardiness zones (stored separately, never converted).
   - **Cincinnati-Dayton**, **Indianapolis**, **Western New York** (Buffalo-Rochester) and **Erie/Pittsburgh** sit inside or beside the macro-region (verify boundaries), so they open at Good through inheritance and are raised to Excellent one Region at a time, as Region-level ratings, palettes and photos meet the KB-RGN-09 criteria.
 - **Wave 3 [V2]: the second US cluster,** chosen later, based on traction, with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. Front Range Colorado, Mid-Atlantic Piedmont, North Texas and the Pacific Northwest remain candidates. The xeric, succulent and fire-wise depth held back from the MVP seed (KB-SEED-03), and the evidence from that cluster's regional programs (KB-PRP-05), arrive with it.
 - **After the waves:** further curated Regions are added cluster by cluster. Until then, macro-region profiles and the Basic tier (zone, sun, water and legal checks) cover every other Property.
 
-**KB-SEED-05 Twenty-week seed plan (plus a prior growing season for photos) [MVP]**
+**KB-SEED-05 Seed plan: ordered steps and completion criteria [MVP]**
 
-| Weeks | Work | Exit criteria |
+The seed is built as an ordered sequence of steps. Steps can overlap, but each step's exit criteria must be met before the release candidate (step 8) is cut. Photography is the one step that cannot be compressed: summer bloom and fall color can only be shot in season, so it starts first and runs alongside the others.
+
+| Step | Work | Exit criteria |
 |---|---|---|
-| Prior summer and fall | Commission photography in the six Wave 1 Great Lakes Regions (summer bloom and fall color cannot be shot in a winter launch window). The shot list leads with Great Lakes-native and pollinator palette plants, ash-replacement and salt-tolerant street trees, and rain-garden plants | Seasonal shot list 60% covered for the top 600 plants |
-| 1-3 | Schema, trait dictionary, source and license registry, backbone load (WCVP/POWO, WFO, USDA PLANTS, ITIS IDs), Region layers | Backbone resolves 99% of candidate names |
-| 3-6 | Candidate list scored; 3,000 records created with names, kinds, native ranges and USDA PLANTS attributes; regulatory lists entered with second review | Legal coverage complete for all launch jurisdictions |
-| 5-11 | AI enrichment in batches of 250 plants; curator review; critical traits dual-reviewed | 100% of critical traits cited and dual-reviewed; Silver or better for 90% of records |
-| 8-14 | Rating sessions per Wave 1 Region (for example 8 sessions of 3 hours with 4 raters each); palettes for the 7 core uses | 600 or more rated plants per Wave 1 Region |
-| 10-16 | Open-license photo import; gap list; symbol mapping; render packs for the top 300 plants ([11](11-ai-design-mockups.md)) | 95% of palette plants with licensed photos |
-| 15-18 | QA: audit sample of 300 plants; evals (500 Region-correct recommendation queries); search eval on design-partner query logs | Audit error rate under 2% non-critical and 0 critical; eval region-compliance 99% or more; zero-result rate under 5% |
-| 18-20 | Release candidate; design-partner beta feedback; launch release | Founder sign-off |
+| 1. Seasonal photography (starts first, runs in parallel) | Commission photography in the six Wave 1 Great Lakes Regions (summer bloom and fall color can only be shot in season). The shot list leads with Great Lakes-native and pollinator palette plants, ash-replacement and salt-tolerant street trees, and rain-garden plants | Seasonal shot list 60% covered for the top 600 plants |
+| 2. Backbone | Schema, trait dictionary, source and license registry, backbone load (WCVP/POWO, WFO, USDA PLANTS, ITIS IDs), Region layers | Backbone resolves 99% of candidate names |
+| 3. Candidates and legal lists | Candidate list scored; 3,000 records created with names, kinds, native ranges and USDA PLANTS attributes; regulatory lists entered with second review | Legal coverage complete for all Wave 1 jurisdictions |
+| 4. Enrichment and review | AI enrichment in batches of 250 plants; curator review; critical traits dual-reviewed | 100% of critical traits cited and dual-reviewed; Silver or better for 90% of records |
+| 5. Region ratings and palettes | Rating sessions per Wave 1 Region (for example 8 sessions of 3 hours with 4 raters each); palettes for the 7 core uses | 600 or more rated plants per Wave 1 Region |
+| 6. Media and symbols | Open-license photo import; gap list; symbol mapping; render packs for the top 300 plants ([11](11-ai-design-mockups.md)) | 95% of palette plants with licensed photos |
+| 7. QA and evals | QA: audit sample of 300 plants; evals (500 Region-correct recommendation queries); search eval on design-partner query logs | Audit error rate under 2% non-critical and 0 critical; eval region-compliance 99% or more; zero-result rate under 5% |
+| 8. Release candidate | Release candidate; design-partner feedback; first KB release for [MVP] | Founder sign-off |
 
-**KB-SEED-06 Staffing and effort (estimates) [MVP]**
-- People: 1 lead horticulturist (senior curator, full-time); 2 regional contract curators per Wave 1 cluster (about half-time each); 1 data engineer; half an ML engineer; part-time licensing counsel.
-- Effort arithmetic (estimate): 3,000 plants x about 70 traits = about 210,000 values. If about 30% need individual review at about 120 values per curator-hour, that is about 525 curator-hours; dual review of about 24,000 critical values (8 per plant) at about 200 values per hour per reviewer adds about 240 hours (two reviewers x 120 hours); rating sessions add about 100 curator-hours per Region, or about 600 hours for 6 Wave 1 Regions. Total: about 1,365 curator-hours, roughly 8.5 curator-months at 160 productive hours per month. Capacity over 20 weeks is about 13-14 curator-months (1 full-time lead plus 4 half-time contract curators, about 3 FTE), leaving about 35% for imports, palettes, duplicates, photo gaps and rework. If the review share is 45% instead of 30%, the hours rise to about 1,630 and the slack shrinks to about 25%, so the plan has headroom but not much (all figures estimates).
+**KB-SEED-06 Curation quality bar and process [MVP]**
+- **Scope of review (estimate):** 3,000 plants x about 70 traits = about 210,000 values. AI enrichment (KB-CUR-03) drafts them with verified citations; curators review individually every value that is low-confidence, conflicting, uncited or outside the bulk-accept rule (non-critical traits only, confidence above 0.9, two agreeing sources; PA-073).
+- **Critical traits:** about 24,000 critical values (8 per plant) each get two independent curator reviews; no critical value publishes on a single review, and critical traits are never bulk-accepted.
+- **Region ratings:** every Wave 1 Region gets blind-then-reconcile rating sessions (KB-CUR-11) with at least 3 raters per published rating, and 5/5 ratings publish only with 2 or more local evidence items.
+- **Beyond trait review:** imports, palettes, duplicate resolution, photo gaps and rework are planned as first-class curation work, not squeezed in after review. If the share of values needing individual review runs higher than expected, the quality bar holds and the release candidate waits for the KB-SEED-07 gates; the bar is never lowered to make a release.
 - AI enrichment spend for the seed set is expected in the low thousands of US dollars of model usage (estimate; depends on model choice and retrieval volume), metered through the AI Gateway.
 
 **KB-SEED-07 Launch quality gates [MVP]**
@@ -2189,7 +2193,7 @@ erDiagram
 | WCVP/POWO and WFO exports | Accepted names, synonyms, distributions | Bulk download, diffed into change requests | Monthly | [MVP] |
 | GBIF API | Taxon keys, occurrence sanity checks | REST | On demand, cached | [MVP] |
 | USDA PLANTS, ITIS | Symbols, native status, noxious lists, TSNs | Bulk download | Quarterly | [MVP] |
-| Official regulatory sources (APHIS Federal Noxious Weed List, CFIA, state and provincial rules, municipal codes in the beachhead jurisdictions: OH, MI, IN, IL and WI, plus ON at V1.2) | Legal listings and rule packs | List watchers (content hash) plus curator verification | Weekly hash check; quarterly human re-verification | [MVP] watch list, [V1] automated watchers |
+| Official regulatory sources (APHIS Federal Noxious Weed List, CFIA, state and provincial rules, municipal codes in the beachhead jurisdictions: OH, MI, IN, IL and WI, plus ON at [V1]) | Legal listings and rule packs | List watchers (content hash) plus curator verification | Weekly hash check; quarterly human re-verification | [MVP] watch list, [V1] automated watchers |
 | Hardiness maps (USDA, NRCan), EPA and CEC ecoregions, Census TIGER, Statistics Canada boundaries | Region layers | GIS files loaded to PostGIS | On new edition | [MVP] |
 | NOAA and ECCC normals, NRCS SSURGO, USFS wildfire risk | Climate summaries, soil hints, fire defaults | GIS and tabular loads | Annual or on new edition | [V1], fire [V2] |
 | Google Sheets API | Curator imports and rating sessions | OAuth, read-only scope per sheet | On demand | [MVP] |
@@ -2376,8 +2380,8 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 
 | Category | Metric | Definition | Target |
 |---|---|---|---|
-| Coverage | Plants at Silver or better | Count of published plants with completeness of 75 or more | 3,000 at MVP; 6,000 at V1 |
-| Coverage | Region coverage tier | Regions at Excellent, Good, Basic | All 6 Wave 1 Great Lakes Regions Excellent at MVP; Golden Horseshoe Excellent at the Canada launch (V1); other Wave 2 Regions Good or better in V1 |
+| Coverage | Plants at Silver or better | Count of published plants with completeness of 75 or more | 3,000 at [MVP]; 6,000 at [V1] |
+| Coverage | Region coverage tier | Regions at Excellent, Good, Basic | All 6 Wave 1 Great Lakes Regions Excellent at [MVP]; Golden Horseshoe Excellent when Canada ships at [V1]; other Wave 2 Regions Good or better at [V1] |
 | Coverage | Profile coverage of used plants | Share of plant placements in a Region that have a published profile there | 95% or more in Excellent Regions |
 | Quality | Audit error rate | Errors found per 100 audited values (quarterly sample of 300 plants) | Under 2 non-critical; 0 critical |
 | Quality | Unresolved conflicts | Open conflicting candidates on selected traits | Under 1% of values |
@@ -2398,9 +2402,9 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 | Outcomes | Warranty cost share | `plant_warranty_cost_pct` from [18](18-reporting-analytics.md) for Companies using Region-validated designs vs not | Lower for validated designs |
 | Media | Licensed photo coverage | Palette plants with complete seasonal sets | 95% or more in launch (Wave 1) Regions |
 | Media | License incidents | Unlicensed assets served; takedowns over 24 hours | 0 |
-| Commercial | Availability coverage | Specified plants with availability from at least one vendor within 50 miles | 70% or more by V1 |
+| Commercial | Availability coverage | Specified plants with availability from at least one vendor within 50 miles | 70% or more by [V1] |
 | Commercial | Nursery match rate | Nursery list lines auto-matched to plant and size | 90% or more after mapping memory |
-| Growth | SEO plant page traffic and leads | Organic sessions and routed leads from plant pages | Tracked from V1; target set with [22](22-business-model-pricing-gtm.md) |
+| Growth | SEO plant page traffic and leads | Organic sessions and routed leads from plant pages | Tracked from [V1]; target set with [22](22-business-model-pricing-gtm.md) |
 | Adoption | Company palette adoption | Companies with a palette of 50 or more plants within 60 days | 60% or more of design-build Companies |
 | Evidence | Regional evidence depth | Share of published 5/5 ratings in Excellent Regions with 2 or more local evidence items | 100% (publishing rule); audited quarterly |
 | Data business | Plant API | Active licensees, calls per month, revenue, share of responses with zero `restricted` fields leaked | Targets set with [22](22-business-model-pricing-gtm.md); leakage 0 |
@@ -2436,21 +2440,21 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 
 ## 14. Open questions
 
-1. **Beachhead Regions (resolved, founder decision):** the launch region is the Great Lakes, a single US launch cluster in the macro-region "Great Lakes and Ohio Valley". Six Wave 1 Regions launch at Excellent [MVP], Wave 2 follows in V1, and the second US cluster (Wave 3, [V2]) is chosen later, based on traction, with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. The 3,000-plant mix is re-weighted for Great Lakes needs (KB-SEED-03, KB-SEED-04).
+1. **Beachhead Regions (resolved, founder decision):** the launch region is the Great Lakes, a single US launch cluster in the macro-region "Great Lakes and Ohio Valley". Six Wave 1 Regions launch at Excellent [MVP], Wave 2 follows at [V1], and the second US cluster (Wave 3, [V2]) is chosen later, based on traction, with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. The 3,000-plant mix is re-weighted for Great Lakes needs (KB-SEED-03, KB-SEED-04).
 2. **Data licenses:** which extension services, botanic gardens and brands will license data or photos, at what cost, and with what attribution? Counsel must confirm the facts-versus-expression policy and the source plan in 4.6.
 3. **WUCOLS and AHS heat zones:** what are the current terms for commercial use, and do we need written permission?
 4. **Backbone choice for display:** WCVP/POWO as primary with WFO cross-reference is assumed; does any partner (for example a Canadian data source) require a different backbone?
 5. **Rating scale publication:** should Region ratings be visible to Clients and the public (SEO) or stay professional-only? (Default here: visible, with client-safe notes.)
 6. **Brand partnerships:** how do we monetize brand programs (photos, GTINs, availability) without compromising the no-paid-placement policy?
-7. **Curator staffing model:** full-time staff vs a contract regional network from day one; compensation for guest raters and bounties.
+7. **Curator network model:** how much curation runs through the platform's core curators vs a contract regional network and guest raters, and how guest raters and bounty contributors are compensated (see idea 11 in section 13).
 8. **Toxicity data source:** license ASPCA or another veterinary source directly, or rely on facts with citation?
 9. **Public API pricing and terms:** who are the first licensees, and which fields can we redistribute?
 10. **Private plants at scale:** should private plants from many Companies that resolve to the same missing cultivar auto-create a curator task (and at what threshold)?
 11. **Regulatory exceptions:** what is the process and evidence for `platform_owner` exceptions (for example invasive-removal projects that temporarily list prohibited species)?
-12. **French-Canadian timing:** launch fr-CA common names with the Golden Horseshoe (V1) or wait for Quebec?
+12. **French-Canadian scope:** ship fr-CA common names with the Golden Horseshoe ([V1]) or wait for Quebec?
 13. **Plant ID provider:** build-only (KB photos plus a BioCLIP-class model) or keep a commercial fallback, given cost and terms?
-14. **"Sale" in supply-and-install work:** KB-RGN-10 treats a Proposal that supplies and installs a plant as a sale under sale-only bans. Counsel must confirm per beachhead jurisdiction (Ohio, Michigan, Indiana, Illinois and Wisconsin first; Ontario at V1.2), including whether a Client-supplied plant installed by the Company is covered.
-15. **Rule-pack scope at V1:** which water, turf and HOA-law rule packs ship first for the Wave 1 Regions (where municipal street-tree, parkway and stormwater rules may matter more than water budgets), and who maintains them: curators, a contracted regulatory researcher, or a partner such as an association?
+14. **"Sale" in supply-and-install work:** KB-RGN-10 treats a Proposal that supplies and installs a plant as a sale under sale-only bans. Counsel must confirm per beachhead jurisdiction (Ohio, Michigan, Indiana, Illinois and Wisconsin first; Ontario at [V1]), including whether a Client-supplied plant installed by the Company is covered.
+15. **Rule-pack scope at [V1]:** which water, turf and HOA-law rule packs ship first for the Wave 1 Regions (where municipal street-tree, parkway and stormwater rules may matter more than water budgets), and who maintains them: curators, a contracted regulatory researcher, or a partner such as an association?
 16. **Open plant-product code:** publish the plant-plus-size identifier openly to speed nursery adoption (section 13 idea 22), or keep it proprietary? Opening it helps the network effect but makes it easier for a competitor to map to Rootline's catalog.
 17. **Regional program partnerships:** which programs will co-brand (Great Lakes trial gardens and arboreta first, for example Chicago Botanic Garden plant evaluations; Plant Select, PHS Gold Medal or Great Plant Picks only if the Wave 3 cluster falls in their geography), at what cost, and does co-branding create any appearance of paid placement under KB-CUR-13?
 
