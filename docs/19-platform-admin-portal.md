@@ -162,7 +162,7 @@ Custom staff roles can be composed from granular platform permissions (for examp
 
 - **6:10 am, founder (`platform_owner`)** opens the Morning Brief on her phone: 41 trials started over the weekend (spring signup spike), 3 Companies moved to `past_due`, AI mockup spend is 18% above forecast because a Texas design-build Company generated 2,300 mockups in 48 hours, and one SEV3 incident overnight (QuickBooks Online sync backlog) is resolved. She taps "Review" on the AI anomaly.
 - **7:45 am, support (`platform_support`)** gets a chat from a crew lead whose app shows "sync pending" for 37 visits. Global search by phone number finds the tenant; the Tenant 360 shows the crew app version is three releases behind the minimum supported version. She sends the "force-update instructions" macro in Spanish. No data access needed.
-- **10:00 am, curator (`platform_curator`)** works the AI Enrichment Queue for the "Front Range, CO" Region: 60 proposed trait changes for xeric perennials, each with cited sources and confidence. She accepts 52, edits 6, rejects 2.
+- **10:00 am, curator (`platform_curator`)** works the AI Enrichment Queue for the "West Michigan" Region: 60 proposed trait changes, mostly deicing-salt tolerance for shrubs and grasses planted along drives and parking islands, each with cited sources and confidence. She accepts 52, edits 6, rejects 2.
 - **1:30 pm, engineer (`platform_engineer`)** rolls the new route-optimizer v2 flag from 10% to 25% of tenants in the Southeast, watching the "route minutes saved" and "dispatcher overrides" guardrail metrics.
 - **4:00 pm, finance (`platform_finance`)** reviews the dunning queue, grants a 14-day extension to a Company whose card was stolen, and approves partner commissions for March.
 
@@ -249,7 +249,7 @@ The lifecycle below is the **platform-level tenant state**. Timings and entitlem
 | `past_due` | Rootline subscription invoice unpaid, days 0-13 | `invoice.payment_failed` on Rootline's own Stripe Billing account | Nothing restricted; banners to `owner`, `office_manager` and the billing contact only (crew never see billing banners) | Paid -> `active`; day 14 unpaid -> `restricted` |
 | `restricted` | Still unpaid, days 14-29 | Dunning day 14 | New AI generations, new campaigns, adding seats or add-ons and new Rootline Match leads are blocked. Scheduling, crew app, invoicing, Customer Portal, **client payments**, Ledger and exports keep working | Paid -> `active`; day 30 unpaid -> `suspended` |
 | `suspended` | Access restricted for non-payment (days 30-59), risk or terms violation | Dunning day 30, risk enforcement, or staff action (two-person for non-billing reasons) | Office users read-only **except invoicing, payments and AR**; crew app read-only after the current visit (unsynced field data still uploads); Customer Portal stays up so clients can still **pay open invoices into the Company's own Stripe** (we never block a Company's revenue for our own collection); automations, campaigns and outbound marketing SMS paused; transactional receipts still send; exports allowed | Paid or resolved -> `active`; day 60 unpaid -> `churned` |
-| `winter_mode` | Seasonal pause ("Winter Mode", [22](22-business-model-pricing-gtm.md) 4.7), e.g., Dec-Feb for maintenance-only Companies with no snow work | Owner schedules Winter Mode (monthly plans only) [V1] | Base price 25% of plan list; 2 editable office users (others read-only); field app off except Snow module users; **invoicing, autopay, portal, client payments, Ledger, CRM read and inbox stay on**; no new proposals, designs or AI generation (included credits pause) | Resume (manual or scheduled date) -> `active`; auto-resume when 4 months in any rolling 12 are used |
+| `winter_mode` | Seasonal pause ("Winter Mode", [22](22-business-model-pricing-gtm.md) 4.7), e.g., Dec-Feb for maintenance-only Companies with no snow work | Owner schedules Winter Mode (monthly plans only) [V1] | Base price 25% of plan list; 2 editable office users (others read-only); field app off except Snow Lite and Snow module users (storm visit logging); **invoicing, autopay, portal, client payments, Ledger, CRM read and inbox stay on**; no new proposals, designs or AI generation (included credits pause) | Resume (manual or scheduled date) -> `active`; auto-resume when 4 months in any rolling 12 are used |
 | `pending_cancellation` | Cancel requested, runs to end of paid period | Owner cancels online (same number of steps as signup or fewer) | Full access until period end; exit survey; the cancel flow always offers Winter Mode (if eligible) and the Archive plan | Period end -> `churned`; owner reverses -> `active` |
 | `churned` | No longer a customer | Period end after cancel, day 60 of dunning, or termination | Login shows the export center only; data retained for a **90-day export window**. When reached through non-payment, the Customer Portal remains in **payments-only mode** until at least day 90 after the first failed Rootline payment ([08](08-payments-stripe.md) principle), then shows "Contact the Company to pay" | Reactivates within 90 days -> `active` (data intact); buys Archive plan -> `archive_plan` [V1]; day 90 -> `pending_deletion` |
 | `archive_plan` | Paid read-only records retention ($9/mo Archive plan, [22](22-business-model-pricing-gtm.md) 4.5) [V1] | Owner buys the Archive plan | Read-only invoices, Ledger, chemical application records and photos; no users except `owner` and `bookkeeper`; no portal, SMS, AI or automations | Reactivates -> `active`; Archive plan canceled or unpaid 30 days -> `pending_deletion` |
@@ -402,7 +402,7 @@ Rootline bills Companies through **its own** Stripe account (Stripe Billing), co
 > **Competitive edge - pricing that follows the season:** seat-capped plans (Jobber, Housecall Pro) and per-user pricing (SynkedUP, SingleOps add-on users) charge for the same users all year ([22](22-business-model-pricing-gtm.md)). Rootline bills field seats only in the months they work and offers Winter Mode, so a 25-person summer crew that shrinks to 4 in winter pays for 4 in winter. The operator side is what makes this credible: a seat ledger that support can explain line by line, so "why was I billed for 14 field seats in October?" is answered in one screen instead of an engineering ticket.
 
 **PA-032 Add-ons [MVP]**
-- Catalog per [22](22-business-model-pricing-gtm.md) section 4.5, for example: Design Studio seat, Design Studio 3D [V1], AI Receptionist [V1], Website + Online Booking [V1], Ledger Plus, Ledger Advanced [V1], QuickBooks Desktop connector [V1], Snow and Ice module, Tree Care module [V2], Advanced Marketing [V1], Premium aerial imagery (cost + 20% per pull) [V1], Sandbox tenant [V1], Premium Success [V1], Archive plan [V1]. Each add-on grants entitlements and can carry its own included usage.
+- Catalog per [22](22-business-model-pricing-gtm.md) section 4.5, for example: Design Studio seat, Design Studio 3D [V1], AI Receptionist [V1], Website + Online Booking [V1], Ledger Plus, Ledger Advanced [V1], QuickBooks Desktop connector [V1], Snow and Ice module [V1] (Snow Lite is a plan entitlement in every tier, not an add-on), Tree Care module [V2], Advanced Marketing [V1], Premium aerial imagery (cost + 20% per pull) [V1], Sandbox tenant [V1], Premium Success [V1], Archive plan [V1]. Each add-on grants entitlements and can carry its own included usage.
 - **Seasonal add-ons:** an add-on can declare a `billing_months_mask` ([22](22-business-model-pricing-gtm.md) 4.5; the Snow and Ice module is billed only November-March). The billing engine skips the line in other months without the tenant doing anything, and the console shows "dormant until Nov 1" rather than "canceled".
 - An add-on that a higher tier includes is removed automatically on upgrade with prorated credit; removing an add-on makes its data read-only, never deleted.
 
@@ -418,7 +418,7 @@ Rootline bills Companies through **its own** Stripe account (Stripe Billing), co
 
 **PA-034 Coupons, promotions and credits [MVP]**
 - Coupons (percent or amount; once, repeating N months, forever or "while subscribed"), promotion codes (partner-specific, campaign-specific, expiry, max redemptions, first-time only), account credits (goodwill, SLA credits, Spring-Ready Guarantee credits) applied to the next invoice.
-- Programs from [22](22-business-model-pricing-gtm.md) 4.8 configured as catalog promotions: Founding Customer (25% off base plan while subscribed, first 100 paying Companies in beachhead Regions, automatic), association member and Accountant Partner client (10% off base in year 1, via partner code), switching credit (up to 3 months free with proof of a competitor contract).
+- Programs from [22](22-business-model-pricing-gtm.md) 4.8 configured as catalog promotions: Founding Customer (25% off base plan while subscribed, first 100 paying Companies in the Great Lakes launch Regions, automatic), association member and Accountant Partner client (10% off base in year 1, via partner code), switching credit (up to 3 months free with proof of a competitor contract).
 - **Discount authority ladder:** `platform_support` may apply the switching credit (up to 3 months), goodwill account credits up to $250 or one month's base fee per grant (at most one grant per tenant per quarter) and usage or field-seat overage waivers up to $100 per period; `platform_finance` may grant credits up to $5,000 per grant ([22](22-business-model-pricing-gtm.md) section 12.2); sales-negotiated discounts up to 10% (rep) or 20% (sales lead) are recorded in the deal-desk record and applied by `platform_finance`; anything above 20%, or any discount without an expiry or "while subscribed" flag, requires `platform_owner`. All audited.
 - **Hard rules:** discounts never apply to usage meters (credits, SMS, minutes) except in Enterprise contracts; every discount is visible on the Company's invoice; no "secret" price without a recorded reason. "Coupon dependence" feeds the health score.
 
@@ -1431,7 +1431,7 @@ Route labels are tier aliases resolved by the AI Gateway ([20](20-architecture-s
 | Tenants   View: [ Trials ending in 7 days v ]  [+ Filter]  [Columns]   47 of 6,212 tenants   |
 +----------------------------------------------------------------------------------------------+
 | [ ] Name                 Plan  State  Health  Milestones  Region           Source  Ends      |
-| [ ] Blue Spruce Lawn     grow  trial  61 Y    4/6 +14d    Front Range CO   Jobber  Nov 10    |
+| [ ] Blue Spruce Lawn     grow  trial  61 Y    4/6 +14d    Grand Rapids MI  Jobber  Nov 10    |
 | [ ] Cardinal Outdoor     grow  trial  82 G    6/6         Columbus OH      CSV     Nov 11    |
 | [ ] Tres Hermanos Lawn   grow  trial  34 R    1/6         San Antonio TX   none    Nov 12    |
 |        why: Stripe not connected 9d; 0 crew logins; owner locale es-US [Assign ES CSM]       |
@@ -1449,23 +1449,23 @@ Route labels are tier aliases resolved by the AI Gateway ([20](20-architecture-s
 
 ```text
 +----------------------------------------------------------------------------------------------+
-| PLANT KB > Curator queue   Region: [ Front Range, CO (v7) v ]   Assigned to me: 60           |
+| PLANT KB > Curator queue   Region: [ West Michigan (v7) v ]   Assigned to me: 60             |
 +----------------------------------------------+-----------------------------------------------+
-| QUEUE  source: kb.enrich prompt v3.2         | Penstemon strictus (Rocky Mountain penstemon) |
-| [>] Penstemon strictus   drought  0.94       | Field: drought tolerance, Front Range         |
-| [ ] Agastache rupestris  deer     0.88       | Current: moderate    Proposed: high           |
-| [ ] Ratibida columnifera bloom    0.91       | Sources (2 agree):                            |
-| [!] Euphorbia myrsinites invasive 0.97       |  A  state extension xeriscape sheet           |
-|     critical trait: 2nd curator needed       |  B  regional native plant society list        |
-| [ ] Salvia nemorosa      height   0.83       | Tenant signals: 0 failure reports             |
+| QUEUE  source: kb.enrich prompt v3.2         | Aronia melanocarpa (black chokeberry)         |
+| [>] Aronia melanocarpa   salt     0.94       | Field: salt tolerance (soil), West Michigan   |
+| [ ] Rhus a. 'Gro-Low'    deer     0.88       | Current: moderate    Proposed: high           |
+| [ ] Calamagrostis 'K.F.' bloom    0.91       | Sources (2 agree):                            |
+| [!] Rosa rugosa          invasive 0.97       |  A  state extension road-salt plant list      |
+|     critical trait: 2nd curator needed       |  B  regional arboretum plant database         |
+| [ ] J. horizontalis      height   0.83       | Tenant signals: 0 failure reports             |
 | ...                                          | [Accept] [Edit + accept] [Reject]             |
 | Bulk accept: non-critical, conf > 0.9,       | [2nd opinion]   diff vs v6 [View]             |
 |   2+ agreeing sources  (31 eligible)         |                                               |
 +----------------------------------------------+-----------------------------------------------+
-| REGION BUILDER  Front Range, CO   draft v8 (published v7)                                    |
-| Layers: [x] USDA 2023 zones 5b-6b  [x] EPA Level III: High Plains  [x] Elev 4,800-6,500 ft   |
-|         [x] Counties: Larimer, Boulder, Jefferson, Denver, Arapahoe, Douglas  [ ] El Paso    |
-| Preview: 38 tenants | 21,406 Properties | 612 plants with profiles | overlap 'Pikes Peak' 4% |
+| REGION BUILDER  West Michigan   draft v8 (published v7)                                      |
+| Layers: [x] USDA 2023 zones 5b-6b  [x] EPA Level III: 56 S. Michigan/N. Indiana Drift Plains |
+|         [x] Counties: Kent, Ottawa, Allegan, Kalamazoo, Muskegon, Van Buren  [ ] Berrien     |
+| Preview: 38 tenants | 21,406 Properties | 612 plants w/ profiles | overlap 'SE Michigan' 3%  |
 | Republishing moves 1,212 Properties to this Region   [Preview diff]  [Submit for approval]   |
 +----------------------------------------------------------------------------------------------+
 ```
@@ -2263,7 +2263,7 @@ Guardrails: the Copilot never sees tenant content without an active grant; write
 | 25 | Global search used to stalk a person (insider) | Search over PII audited; anomaly flags; results redacted without grant |
 | 26 | Caller claims to be the owner, lost phone, wants the login email changed before Monday's routes | No PIN and no second-owner confirmation means no change (PA-061); agent offers the documentary path (PA-016) and a temporary read-only export to the verified billing email; attempt logged and the owner notified at the existing email |
 | 27 | Snow tenant is `suspended` when a 6-inch storm is forecast | Snow carve-out (PA-012) keeps dispatch and per-push logging for up to 72 hours per event; collection continues; CSM calls the owner before the storm |
-| 28 | Tenant in Winter Mode has the Snow module | Field app stays on for Snow-module users only; snow add-on billed Nov-Mar regardless of Winter Mode ([22](22-business-model-pricing-gtm.md)) |
+| 28 | Tenant in Winter Mode has the Snow module | Field app stays on for Snow Lite and Snow-module users only (storm visit logging); snow add-on billed Nov-Mar regardless of Winter Mode ([22](22-business-model-pricing-gtm.md)) |
 | 29 | Reseller goes out of business mid-season | Tenants are not suspended; 60-day notice and one-click move to direct billing at list price (PA-163); reseller arrears pursued separately |
 | 30 | Seat ledger counts a laid-off technician because a phone refreshed a token in November | Token refresh counts by rule (22 section 4.3); support removes the seat with reason `billing_adjustment` (PA-031); the crew app revokes tokens on deactivation so it cannot recur |
 | 31 | Tenant crosses a card-network dispute threshold after a bad spring of "service not rendered" disputes | Internal alerts fire well before network thresholds (PA-113); CSM coaches the Company on proof-of-service photos and GPS evidence; Rootline never responds to disputes for the tenant |

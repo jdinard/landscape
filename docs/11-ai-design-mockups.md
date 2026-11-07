@@ -53,7 +53,7 @@
 | G6 | **A lead machine for Companies.** The white-label "Visualize your yard" widget converts website visitors into qualified leads with photos, dimensions, style and budget attached. | Widget visitor-to-lead conversion of 8% or more (estimate; benchmark in beta) |
 | G7 | **Honest by design.** Customers understand a mockup is an artist rendering. | 100% of AI images carry a visible badge and C2PA Content Credentials; fidelity score shown to pros on every render |
 | G8 | **Profitable AI.** AI costs stay inside the credit price. | Blended AI cost of goods 35% or less of AI credit revenue at the platform level |
-| G9 | **Bilingual and binational.** Imperial and metric, English and Spanish UI, US and Canada regions at launch. | All capture, dimension and chat flows pass i18n QA in en-US, es-US, en-CA |
+| G9 | **Bilingual and binational.** Imperial and metric, English and Spanish UI, US Regions at launch (Great Lakes first) and Canadian Regions from the Ontario launch. | All capture, dimension and chat flows pass i18n QA in en-US, es-US, en-CA |
 | G10 | **Operator control.** The platform operator (platform_owner) can tune models, presets, palettes, prices and safety without a deploy. | Every model route, preset and credit price is a versioned config in the [Platform Admin](19-platform-admin-portal.md) console |
 
 ### 1.2 Non-goals
@@ -1268,7 +1268,7 @@ The screen a designer sees after "Generate layouts". Parsed constraints are conf
 
 ```text
 +---------------------------------------------------------------------------------------------+
-| Smith - Front yard  >  Generate layouts        Region: Ohio Valley 6a   Credits: 60 (quoted) |
+| Smith - Front yard  >  Generate layouts       Region: Central Ohio 6a   Credits: 60 (quoted) |
 +-------------------------------+-------------------------------------------------------------+
 | CONSTRAINTS (confirm)         |  OPTIONS                       stage: Pricing  [###### 90%] |
 |                               |  +-----------------+ +-----------------+ +-----------------+ |
@@ -2080,7 +2080,7 @@ Definitions feed [Reporting and Analytics](18-reporting-analytics.md) and the pl
 | **Grower partnership program** | Growers pay to supply certified render packs and availability feeds for their trademarked plants, improving fidelity and creating a revenue line. | [V2] |
 | **Live co-design session** | Designer and homeowner on a video call, both seeing the mockup update as the designer speaks. | [V2] |
 | **Digital-twin handoff** | The registered plan, photos and splat become the starting point for the property digital twin in [Innovation Moonshots](23-innovation-moonshots.md). | [V3] |
-| **Growth-curve calibration from maintenance photos (data moat)** | Rootline Companies photograph the same maintained beds every season. With consent, the platform registers those photos to the installed plan and measures how big each plant actually got, by Region, exposure and year. That turns the KB's generic "moderate growth" into measured curves ("'Little Lime' in Ohio Valley full sun: about 3.5 ft at year 3"), so growth renders and spacing get more honest every year. No consumer app or CAD vendor has this longitudinal ground truth. | [V2] |
+| **Growth-curve calibration from maintenance photos (data moat)** | Rootline Companies photograph the same maintained beds every season. With consent, the platform registers those photos to the installed plan and measures how big each plant actually got, by Region, exposure and year. That turns the KB's generic "moderate growth" into measured curves ("'Little Lime' in Central Ohio full sun: about 3.5 ft at year 3"), so growth renders and spacing get more honest every year. No consumer app or CAD vendor has this longitudinal ground truth. | [V2] |
 | **Substitution-ready proposals** | Nursery shortages cause change orders and angry calls. Each proposal lists pre-approved substitutes for every plant: same role, same or larger size, KB rating at least as high, and price within the line's tolerance. The client signs once, the crew can substitute without a Change Order, and the as-built list and plant passport update automatically. | [V1] |
 | **Wildfire-ready certificate pack** | In fire-prone Regions, a "defensible space" option renders the house with a compliant ember-resistant Zone 0 and Zone 1 plan, then produces a homeowner packet (before/after renders, plant list with fire-resistance notes, as-built photos) that can support insurer inspections and mitigation-discount programs where they exist (for example California's "Safer from Wildfires" framework; verify program rules). It sells a high-intent upgrade with a clear financial reason. | [V2] |
 | **Rain garden and downspout sizing mode** | The homeowner taps downspouts on the photo, and the roof area each one drains comes from the building footprint. The layout engine sizes a rain garden (area as a fraction of drainage area, by soil infiltration class, per extension guidance; varies by soil and depth) and fills it from the KB's wet-dry tolerant natives. It ties into municipal stormwater-credit programs where they exist. | [V2] |

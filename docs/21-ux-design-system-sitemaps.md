@@ -504,7 +504,7 @@ flowchart LR
 - **Solutions** `/solutions` [MVP] - by service line (lawn care and PHC, design-build, commercial maintenance, snow and ice, tree care, irrigation and lighting) and by size (solo/owner-operator, growing 5-25, multi-crew 25-150, multi-branch)
 - **Pricing** `/pricing` [MVP] - the Starter, Grow, Pro and Enterprise tiers; an AI credit explainer; payment fee transparency (the Company's own Stripe pricing, plus any opt-in Rootline application fee); and a "cost of your current stack" calculator (see [22](22-business-model-pricing-gtm.md)). Prices are shown, never "contact us" except for Enterprise
 - **Design my yard** `/design` [V1] - homeowner AI design funnel entry (see 5.7)
-- **Plant Finder** `/plants` [V1] - public, SEO-indexed subset of the KB: "What grows here" by ZIP, and "Best shrubs for Zone 6b clay soil in the Ohio Valley" landing pages generated from curated palettes ([12](12-plant-knowledge-base.md), [22](22-business-model-pricing-gtm.md)). Each page ends in "Design my yard with these plants" and "Find a pro near you" [V2]
+- **Plant Finder** `/plants` [V1] - public, SEO-indexed subset of the KB: "What grows here" by ZIP, and "Best shrubs for Zone 6 clay soil in Central Ohio" landing pages generated from curated palettes ([12](12-plant-knowledge-base.md), [22](22-business-model-pricing-gtm.md)). Each page ends in "Design my yard with these plants" and "Find a pro near you" [V2]
 - **Compare** `/compare/jobber`, `/compare/lmn`, `/compare/aspire`, `/compare/service-autopilot` [V1] - factual, dated comparison pages with a "last verified" stamp and a link to the vendor's own pricing page
 - **Switch** `/switch` [MVP] - migration guides and importers (Jobber, LMN, QuickBooks client lists, CSV), with what moves automatically and what does not
 - **Customers** `/customers` [V1] - case studies; **Resources** `/resources` [MVP] - blog, guides, free calculators (mulch and soil cubic yards, paver patio materials, fertilizer rate per 1,000 sq ft, snow route pricing), templates
@@ -1044,7 +1044,7 @@ Money is never encoded by red/green alone: negative amounts always show a minus 
 | OptionTierCards | Good/Better/Best proposal options with deltas and recommended badge | Portal, proposal editor | [MVP] |
 | ProposalSignatureBlock | Legal text, signature, initials, deposit pay | Portal | [MVP] |
 | PlantCard / PlantRow | Thumbnail, botanical + common name, size, region rating badge, sun/water icons, deer-resistance, native badge, availability | Web, portal, crew | [MVP] |
-| RegionRatingBadge | Curated performance rating for the Company's Region (e.g., "Recommended - Ohio Valley 6a"), tooltip with curator notes | All | [MVP] |
+| RegionRatingBadge | Curated performance rating for the Company's Region (e.g., "Recommended - Central Ohio 6a"), tooltip with curator notes | All | [MVP] |
 | PlantSymbol | Renders the plan symbol family with style params at scale | Studio, PDFs, portal | [MVP] |
 | DesignViewer | Pan/zoom 2D plan with layer toggles, plant schedule, measure tool; read-only for clients | Portal, web, crew | [MVP] |
 | MockupCompare | Before/after/options with "AI concept" label | Portal, web | [V1] |
@@ -1413,7 +1413,7 @@ Every list, board and panel has a designed empty state with: (1) a small line il
 
 ### 15.3 Sample data and the sandbox [MVP]
 
-- **"Greenleaf Grounds Co."**, a fictional mid-size landscape company, ships as a sample dataset (the same seed as the trial demo company in [22](22-business-model-pricing-gtm.md) 4.6 and the `standard` demo tenant in [19](19-platform-admin-portal.md) PA-019): 120 clients (102 residential, 18 commercial including an HOA with 3 properties), about 140 properties, 3 crews, a full 2026 season of weekly mowing rounds, a 5-step fertilizer program, a 600 sq ft paver patio project with change order, fall cleanups, one snow event with 2-inch trigger pushes, proposals in each state, invoices (paid, open, overdue), a month of ledger entries and a bank feed to reconcile.
+- **"Greenleaf Grounds Co."**, a fictional mid-size landscape company seeded in Columbus, Ohio (Central Ohio Region), ships as a sample dataset (the same seed as the trial demo company in [22](22-business-model-pricing-gtm.md) 4.6 and the `standard` demo tenant in [19](19-platform-admin-portal.md) PA-019): 120 clients (102 residential, 18 commercial including an HOA with 3 properties), about 140 properties, 3 crews, a full 2026 season of weekly mowing rounds, a 5-step fertilizer program, a 600 sq ft paver patio project with change order, fall cleanups, one snow event with 2-inch trigger pushes, proposals in each state, invoices (paid, open, overdue), a month of ledger entries and a bank feed to reconcile.
 - **Region-localized**: plants, weather, season dates and prices adapt to the tenant's Region, so a Phoenix company sees desert palettes and no snow; an Ottawa company sees Zone 5a palettes, metric toggles and HST.
 - **Isolation**: sample data lives in a linked **sandbox workspace**, never mixed with real records; a persistent banner says "Sample data - nothing here is real"; no real SMS, email or Stripe charges can be sent from the sandbox (test mode only).
 - **Uses**: exploration during trial, training new staff (sandbox reset per user [V1]), sales demos (`platform_support` can spin up demo tenants), screenshots for docs.
@@ -1751,14 +1751,14 @@ Key behaviors: this snapshot is from Nov 9, after the owner approved E-2290 from
 | [x] Base aerial |                                                              | Plant: 'Limelight'  |
 | [x] Existing    |      . . . . . . . . . . . . . . . . . .                     | Hydrangea paniculata|
 | [x] Hardscape   |     .   (o)    (o)    (o)     *       .                      | Region: Recommended |
-| [x] Beds        |    .  BED A  1,140 sq ft  mulch dbl shred .                  |  Ohio Valley 6a     |
+| [x] Beds        |    .  BED A  1,140 sq ft  mulch dbl shred .                  |  Central Ohio 6a    |
 | [x] Plants      |     .  {@}  {@}  ###  ###  ###        .                      | Size #5   Qty 12    |
 | [ ] Irrigation  |      . . . . . . . . . . . . . . . . . .                     | Mature 6-8 ft wide  |
 | [x] Lighting    |   ==== PAVER WALK 320 sq ft herringbone ====                 | Spacing 5 ft o.c.   |
 | [ ] Notes       |                       |<---- 42' 6" ---->|                   | Sun: full to part   |
 |-----------------|                                                              | [Swap from palette] |
 | Plant palette   |  [Maturity: Install | Yr 1 | Yr 5 | Mature]                  |---------------------|
-| Ohio Valley 6a  |                                                              | Takeoff (live)      |
+| Central Ohio 6a |                                                              | Takeoff (live)      |
 | Search ______   |  Copilot (seedling): "Fill Bed A with deer-                  |  Mulch    14.0 cu yd|
 | [HYD PAN] [SCH] |  resistant natives, max 3 ft" [Generate layout]              |  Pavers   320 sq ft |
 | [AME GRA] [ILE] |                                                              |  Plants   86 ea     |
@@ -1781,7 +1781,7 @@ Step 1 of 3: Photo and dimensions                     Step 2 of 3: Generating (a
 |  existing maple (keep?)  [x] Keep  [ ] Remove |     |  (seedling) Working on it:                    |
 |                                               |     |   [check] Reading depth and scale             |
 |  Scale reference:                             |     |   [check] Matching beds to your plan D-311 v3 |
-|   ( ) Use Design D-311 v3 (to scale)  *       |     |   [....] Choosing plants from Ohio Valley 6a  |
+|   ( ) Use Design D-311 v3 (to scale)  *       |     |   [....] Choosing plants from Central Ohio 6a |
 |   ( ) Enter a known length: garage door       |     |          palette (deer-resistant, native)     |
 |       = [ 16 ] ft                             |     |   [    ] Rendering 4 concepts                 |
 |                                               |     |                                               |
@@ -1875,7 +1875,7 @@ Key behaviors: one "Next step" card drives the visit; photography leads; the Com
 
 ```text
 +------------------------------------------------------------------------------------------------------+
-| ADMIN  Plant KB / Curation queue (214)  Region: Ohio Valley 6a  Source: nursery feed  [Mine]         |
+| ADMIN  Plant KB / Curation queue (214)  Region: Central Ohio 6a  Source: nursery feed  [Mine]        |
 +------------------------+-----------------------------------------------------------------------------+
 | Queue                  | Hydrangea paniculata 'Limelight'  PLT-04412  Status: In review              |
 | > 'Limelight' (update) | [Photos 6]  Symbol family: Deciduous shrub  [Preview symbol]                |
@@ -1887,7 +1887,7 @@ Key behaviors: one "Next step" card drives the visit; photography leads; the Com
 |                        | Deer resistance | Moderate          | High                    | [x]         |
 |                        | USDA zones      | 3-8               | 3-9                     | [ok]        |
 |                        |-----------------------------------------------------------------------------|
-|                        | Region profile: Ohio Valley 6a                                              |
+|                        | Region profile: Central Ohio 6a                                             |
 |                        |  Rating [Recommended v]  Confidence: High (12 tenants planted,              |
 |                        |  2 warranty claims per 340 installs)                                        |
 |                        |  Notes: "Tolerates clay; avoid hot west walls."                             |
@@ -1931,7 +1931,7 @@ Key behaviors: debits and credits must balance before Post; posted entries are i
 ```text
 +------------------------------------------------------------------------------------------------------+
 | CONSOLE  Tenants / Acme Landscapes LLC (tn_7Kq...)  Plan: Grow (annual)  Health 82 (up 4)            |
-| Columbus, OH | Region Ohio Valley 6a | 6 crews, 37 users | Since Mar 2026 | Data: US-East            |
+| Columbus, OH | Region Central Ohio 6a | 6 crews, 37 users | Since Mar 2026 | Data: US-East           |
 | [Impersonate (request consent)] [Add note] [Flags] [Billing] [...]            Owner: Dana H.         |
 +-------------------------------------------------------------+----------------------------------------+
 | Overview | Usage | Billing | AI | Payments | Users | Support| Flags | Audit | Danger zone            |
@@ -2764,7 +2764,7 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 1. **Brand name and identity:** is "Rootline" final? Trademark search and domain availability must be cleared before the brand studio engagement.
 2. **Typeface licensing for tenant pairs:** keep tenant fonts to a curated OFL list only, or allow tenant-uploaded licensed fonts on higher tiers (font licensing and rendering in PDFs/emails)?
 3. **Dark mode at MVP?** Recommendation is V1 for web; crew app ships field-sun at MVP and field-night at V1. Confirm with the Field Council.
-4. **Spanish register:** informal "tú" in the crew app vs. formal "usted"; validate with bilingual crews in two regions (Texas/Southwest and Mid-Atlantic) before freezing the glossary.
+4. **Spanish register:** informal "tú" in the crew app vs. formal "usted"; validate first with bilingual crews in the Great Lakes launch Regions (Chicagoland and Ohio), then with one Southwest panel before national rollout, and freeze the glossary only after both.
 5. **Single native app vs. two apps:** one "Rootline" app with crew and manager modes, or a separate "Rootline Office" app? One app simplifies distribution; two apps reduce cognitive load and permission prompts.
 6. **Translation management vendor:** Lokalise vs. Phrase vs. Crowdin, decided on glossary features, RN support and cost.
 7. **Platform-hosted homeowner funnel:** brand presence of Rootline vs. the matched Company in the platform-hosted flow, and how lead-routing fairness is explained to homeowners.
