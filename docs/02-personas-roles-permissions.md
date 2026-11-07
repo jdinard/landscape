@@ -2,6 +2,20 @@
 
 > Rootline is used by people with very different jobs and needs. A horticulturist curates plants for the whole platform. An owner checks margin at 10 pm. A Spanish-speaking H-2B crew member clocks in on a shared tablet at 6:45 am, a CPA closes the books for fourteen landscape companies, an HOA treasurer votes on a $12,400 entrance-bed renovation, and a homeowner pays a deposit from a text message. This document defines those people (personas), how each one moves through the business (end-to-end journeys), and the identity and access model that lets all of them share one system safely. The access model covers a `resource.action` permission taxonomy with `own / crew / branch / all` scopes, field-level masking of costs, margins and pay rates, role templates and custom roles, branches and multi-entity companies, delegated CPA access, client-contact permissions, platform staff permissions, consented support impersonation, authentication per persona, session and device policies, audit logging, and the seasonal hire/hibernate/rehire cycle that defines landscape labor, including safeguards for under-18 summer hires. Getting this right is a product feature, not plumbing. In this market, "my crew can see what I charge" and "my bookkeeper needs a paid seat" are common reasons owners outgrow their tools.
 
+**At a glance**
+
+- **What it is:** the people and access model. Five platform-staff personas, nine tenant role templates, the Client personas (homeowner, commercial property manager, HOA board), nine end-to-end journeys, and the identity, RBAC, authentication, audit and seasonal-workforce rules every module enforces. This doc is the canonical catalog of role keys and permission keys.
+- **Role keys:** platform `platform_owner`, `platform_support`, `platform_curator`, `platform_finance`, `platform_engineer`; tenant `owner`, `office_manager`, `estimator`, `designer`, `ops_manager`, `crew_lead`, `technician`, `bookkeeper`, `subcontractor`; Clients `client_residential` and `client_commercial`, whose Contacts hold the scopes `primary`, `co_owner`, `approver`, `billing`, `property_contact` or `viewer` (shared with [06](06-customer-portal.md)).
+- **Decision 1, one identity, many memberships:** a person has one login and memberships in Companies, Clients or the platform. Grants are `resource.action` keys with `own / crew / branch / all` scopes plus numeric approval limits ([5.2](#52-permission-taxonomy-resourceaction-mvp), [5.6](#56-approval-limits-thresholds-and-dual-control-mvp-dual-control-v1)).
+- **Decision 2, masking on the server:** field classes (`cost`, `margin`, `price`, `pay_rate`, `employee_pii`, `access_secret` and others) are masked in the API, offline sync, search, exports and AI, so a technician's phone never holds what the technician may not see ([5.4](#54-field-level-restrictions-field-classes-mvp)).
+- **Decision 3, seats follow permissions and seasons:** office, field (billed only when active), free bookkeeper, subcontractor, client and observer seats as priced in [22](22-business-model-pricing-gtm.md) 4.3; hibernated seasonal workers cost $0 and come back with their history ([5.18](#518-seasonal-workforce-lifecycle-onboarding-hibernation-rehire-offboarding-mvp)).
+- **Decision 4, consented support access:** platform staff reach tenant data only through owner-granted, time-boxed, audited impersonation or break-glass. Tenants' Client payments are out of reach by design because they live in each Company's own Stripe account ([5.13](#513-platform-staff-permissions-support-impersonation-and-break-glass-mvp)).
+- **Decision 5, authentication per persona:** passkeys or MFA for office roles, PINs or biometrics on crew devices, and passwordless action links and magic links for Clients, with step-up proof only for risky actions per the proof ladder in [06](06-customer-portal.md) 4.2.5 ([5.14](#514-authentication-per-persona-mvp-unless-tagged)).
+- **MVP:** role templates and clone-and-edit custom roles, field classes, approval limits, Client contact roles, MFA and passkeys for staff, crew-device PINs, consented support access, the hash-chained audit log, seasonal hibernate and rehire, and basic delegated CPA access.
+- **Later:** [V1] branches, dual control, SAML/OIDC SSO (Enterprise plan), Client passkeys, HOA and commercial approval policies, the Accountant Hub, the "View as" simulator, access reviews, minor-worker safeguards, yard kiosks and MDM; [V2] SCIM provisioning, just-in-time elevation, SIEM streaming, franchise rollups and Client SSO. Tags follow [24](24-roadmap-feature-catalog.md), which is binding where docs differ.
+- **Differentiators:** masking that survives offline, a free multi-company Accountant Hub, a support-access log the tenant can see, HOA quorum votes bound to a proposal version, and seasonal labor as a first-class lifecycle.
+- **Key cross-links:** enforcement architecture in [20](20-architecture-security.md); portal scopes and the proof ladder in [06](06-customer-portal.md); seat pricing in [22](22-business-model-pricing-gtm.md); payment permissions in [08](08-payments-stripe.md); the operator console in [19](19-platform-admin-portal.md).
+
 **Related docs:** [Market landscape](01-market-landscape.md) · [CRM, Sales and Proposals](03-crm-sales-estimating-proposals.md) · [Scheduling and Dispatch](04-scheduling-dispatch-routing.md) · [Field Crew App](05-field-crew-mobile-app.md) · [Customer Portal](06-customer-portal.md) · [Invoicing](07-invoicing-billing-contracts.md) · [Payments / Stripe](08-payments-stripe.md) · [Accounting and Ledger](09-accounting-ledger-integrations.md) · [Team, HR and Payroll](15-team-hr-payroll.md) · [AI Copilot](17-ai-copilot-automation.md) · [Platform Admin](19-platform-admin-portal.md) · [Architecture and Security](20-architecture-security.md) · [UX and Sitemaps](21-ux-design-system-sitemaps.md) · [Pricing and GTM](22-business-model-pricing-gtm.md)
 
 ---
@@ -31,7 +45,7 @@
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> Research note: competitor facts below come from vendor help centers, community forums and review sites found during research for this document (November 2026). Several help-center pages could only be read as search-result excerpts, so plan names, seat rules and permission lists should be treated as **"as of November 2026, verify"**.
+> Research note: competitor facts below come from vendor help centers, community forums and review sites (November 2026). Plan names, seat rules and permission lists should be treated as **"as of November 2026, verify"**.
 
 ### 2.1 How the field-service and landscape tools model users and access
 
@@ -49,7 +63,7 @@
 | **LawnPro** | Per-employee privilege levels; one level lets staff "complete and invoice" without seeing prices ([LawnPro - employee privileges](https://help.lawnprosoftware.com/knowledge-base/set-edit-employee-privileges/)) | | Shows real demand for "invoice without seeing prices" | Per-employee, not role-based |
 | **Copilot CRM** | All-in-one lawn/landscape platform with a separate "Field Force" crew app ([Copilot CRM - overview](https://help.copilotcrm.com/en/articles/12141481-what-is-copilot-crm), [Field Force app listing](https://apps.apple.com/ly/app/field-force-by-copilot-crm/id6745098752)) | Field Force app | Lawn-care focus | Permission details not publicly documented (research could not find them) |
 | **Real Green (WorkWave)** | Not publicly documented in sources found; reviews focus on other areas ([Capterra - RealGreen reviews](https://www.capterra.com/p/78106/Service-Assistant/reviews/?page=2)) | | Lawn/PHC depth | Unknown, so treat it as a discovery item for sales calls |
-| **Yardbook** | Free/low-cost tool aimed at small operators; permission granularity is minimal (based on product positioning; not verified in this research pass) | | Free | Not built for teams |
+| **Yardbook** | Free/low-cost tool aimed at small operators; permission granularity is minimal (based on product positioning; verify) | | Free | Not built for teams |
 
 ### 2.2 What users complain about (patterns)
 
@@ -71,7 +85,7 @@
 | Seats punish seasonality | **Hibernate** status at $0, billed by active field users per month (pricing in [22](22-business-model-pricing-gtm.md)) | [MVP] |
 | No branches or rigid business units | Org units (branches + divisions), multi-entity Ledgers, franchise rollups | [V1]/[V2] |
 | External CPA needs a paid seat or a QuickBooks copy | **Accountant Hub:** free delegated access for CPA firms across all their Rootline clients | [MVP] basic / [V1] hub |
-| Portal links are bearer tokens | Scoped document links plus step-up verification for money and contacts; contact-level roles; HOA quorum approvals | [MVP]/[V1] |
+| Portal links are bearer tokens | Scoped action links plus step-up proof for risky actions (saved-method payments, larger signatures, contact changes); contact-level roles; HOA quorum approvals | [MVP]/[V1] |
 | Support access is invisible | Consent-based, time-boxed, scoped impersonation with a tenant-visible access log | [MVP] |
 | Sessions outlive permission changes | Permission version stamps on every token, so revocation takes effect on the next request (under 1 second online) | [MVP] |
 | Migrations rebuild access by hand | **Access importer**: maps Jobber permission levels, LMN user types, Aspire roles and SingleOps roles to Rootline templates, imports crews and phone numbers, and sends invites in each worker's language (part of the migration concierge in [Platform Admin](19-platform-admin-portal.md)) | [V1] |
@@ -80,13 +94,13 @@
 
 > **Competitive edge - the CPA is a first-class citizen.** Most landscape FSMs treat the accountant as an afterthought who works in QuickBooks. Rootline's built-in Ledger ([Accounting](09-accounting-ledger-integrations.md)) plus a free, multi-company Accountant Hub turns the CPA from a "we use QuickBooks because my CPA does" objection into a referral channel ([GTM](22-business-model-pricing-gtm.md)).
 
-### 2.4 What this research could not confirm (sales-call discovery list)
+### 2.4 Open competitive questions (sales-call discovery list)
 
-The facts below shape positioning but were not confirmed in public documentation during this pass. Sales and the founder should collect them on demos and competitive-loss calls, then update this section.
+The facts below shape positioning but are not confirmed in public documentation. Sales and the founder should collect them on demos and competitive-loss calls, then update this section.
 
 | Question | Why it matters | Where we would win if the answer is "no" |
 |---|---|---|
-| Does Jobber, LMN or Aspire offer SAML SSO, SCIM or enforced MFA for all staff, and on which plans? | Mid-market commercial firms (Summit-size) and PE-backed buyers ask for SSO and access evidence | SSO and SCIM [V1] on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md)), MFA on by default for every office role at MVP |
+| Does Jobber, LMN or Aspire offer SAML SSO, SCIM or enforced MFA for all staff, and on which plans? | Mid-market commercial firms (Summit-size) and PE-backed buyers ask for SSO and access evidence | SSO [V1] and SCIM [V2] on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md), [Roadmap](24-roadmap-feature-catalog.md)), MFA on by default for every office role at MVP |
 | Can a tenant see when vendor support accessed their account? | Trust and SOC 2 evidence for commercial clients | Support access log and consent (5.13) |
 | Is there a customer-visible audit log of permission changes and exports? | Owners want to know who exported the Client list before a sales rep quit | Hash-chained audit log with saved alerts (5.17) |
 | How do Real Green, Copilot CRM and Yardbook model crew permissions? | Lawn-care switchers are a large segment | Field classes and crew windows (5.3, 5.4) |
@@ -627,8 +641,8 @@ journey
 ```
 
 Rules:
-1. **Document links** (Proposal, Invoice) open a **single-document view** without a full login: a signed, expiring token scoped to that one document. Signing, paying or viewing anything else requires a verified session (magic-link plus OTP, or passkey). See 5.14.
-2. **Step-up verification** is required to add or remove contacts, change notification destinations, or save a payment method.
+1. **Action links** (Proposal, Invoice, visit reminder) open an **action session scoped to one object** without a full login ([Customer Portal](06-customer-portal.md) 4.2.1). Viewing, choosing options, paying with a newly entered card or bank account, and signing at or below the step-up threshold need no extra proof. Signing above the threshold (default $10,000) or under a name that does not match the addressee, paying with a saved method, and viewing anything beyond the linked object require a one-time code to the on-file email or phone, a passkey or a full session (the proof ladder in [06](06-customer-portal.md) 4.2.5). See 5.14.
+2. **Step-up verification** is always required to add or remove contacts, change notification destinations, save or remove a payment method, change autopay, or export or transfer the Property Record.
 3. The **home sale transfer** (see section 14, Beyond the brief, item 1) lets the seller hand the Property's service history, plant list and irrigation map to the buyer as a new Client, with consent from both sides. [V2]
 
 ### 4.6 HOA board approval flow (Willow Creek HOA)
@@ -794,7 +808,7 @@ journey
 
 **Standard actions:** `read`, `create`, `update`, `delete` (soft delete/archive), `export`.
 
-**Domain actions** (only where defined for a resource): `assign`, `send`, `approve`, `approve_internal`, `sign`, `void`, `refund`, `post`, `reconcile`, `lock`, `unlock`, `complete`, `dispatch`, `optimize`, `collect`, `generate` (AI), `impersonate`, `merge`, `renew`.
+**Domain actions** (only where defined for a resource): `assign`, `send`, `approve`, `approve_internal`, `sign`, `void`, `refund`, `post`, `reconcile`, `lock`, `unlock`, `complete`, `dispatch`, `optimize`, `collect`, `generate` (AI), `impersonate`, `merge`, `renew`, `respond`, `publish`, plus the resource-specific actions named in the catalog below (for example `assign_role`, `grant`, `connect`, `run`, `record_offline_acceptance`, `write_off`, `configure`, `use`).
 
 **Resource catalog** (abbreviated; the full list is generated from code and shown in the role editor):
 
@@ -808,7 +822,7 @@ journey
 | Time and people | `time_entry`, `timesheet`, `employee`, `certification`, `training`, `payroll_export`, `expense` | `timesheet.approve`, `payroll_export.run` |
 | Billing | `invoice`, `payment`, `refund`, `credit_memo`, `statement`, `deposit`, `collections_case`, `dispute`, `payout` | `invoice.send`, `invoice.void`, `payment.collect`, `payment.refund`, `collections_case.write_off`, `dispute.respond` (evidence submitted to the Company's own Stripe account) |
 | Ledger | `ledger.account`, `ledger.journal_entry`, `ledger.period`, `bank_account`, `bank_reconciliation`, `bill`, `bill_payment`, `financial_report`, `tax_setting`, `accounting_sync` | `journal_entry.post`, `period.lock`, `period.unlock`, `bill_payment.approve` |
-| Marketing | `campaign`, `review`, `website`, `booking_page`, `referral` | `campaign.send`, `review.respond` |
+| Marketing | `campaign`, `review`, `website`, `booking_page`, `referral`, `consent`, `gift_certificate`, `marketplace_connection` (the full Growth sub-resource list and defaults are in [Marketing](16-marketing-growth-communications.md) section 9) | `campaign.send`, `review.respond`, `website.publish`, `referral.approve`, `consent.export` |
 | Reporting | `dashboard`, `report`, `report.schedule` | `report.export` |
 | AI | `copilot`, `ai_agent`, `ai_budget` | `copilot.use`, `ai_agent.configure`, `ai_agent.approve_action` |
 
@@ -832,6 +846,7 @@ journey
 | `payments.field.collect` | `payment.collect:crew` | [Payments](08-payments-stripe.md) |
 | `api_key:create` | `api_key.create` | [Architecture](20-architecture-security.md) |
 | scope `assigned` | scope `own` (assignment is one of the `own` resolvers in 5.3) | [Architecture](20-architecture-security.md) |
+| Growth namespaced keys such as `growth.campaigns.send`, `growth.site.publish`, `reputation.reviews.reply`, `comms.messages.send`, `growth.referrals.approve_reward` | `campaign.send`, `website.publish`, `review.respond`, `inbox.conversation.send`, `referral.approve` (and the other Marketing resources above) | [Marketing](16-marketing-growth-communications.md) |
 
 ### 5.3 Scopes: `own`, `crew`, `branch`, `all` [MVP; `branch` V1]
 
@@ -1059,7 +1074,7 @@ Client contacts are not staff. Their permissions are relationship-based: **conta
 - Primary contacts can invite contacts with roles up to their own (anti-escalation applies to clients too).
 - Company staff with `client.contact.update` can manage contacts on the Client's behalf. The Client sees a timeline entry "Reyes Outdoor Living added Mark Thompson as co-owner".
 - **Communication consent** (TCPA/CASL) is stored **per contact per channel** (SMS, email, voice) with source and timestamp ([Marketing](16-marketing-growth-communications.md)). Contact roles never override consent: a billing contact who opted out of SMS gets email only.
-- **De-provisioning:** when a contact is removed, open sessions are revoked, and outstanding document links addressed to that contact are invalidated.
+- **De-provisioning:** when a contact is removed, open sessions are revoked, and outstanding action links addressed to that contact are invalidated.
 - **Management companies** [V1]: an HOA is usually the Client (it pays), while a community manager at a management company serves many HOAs. One contact identity can hold roles on several Clients; the portal shows a Client switcher plus a combined approvals inbox across all of them. When an HOA changes management company, the old firm's contacts lose access on the effective date and the HOA keeps its full history ([Customer Portal](06-customer-portal.md)).
 - **New-contact approval** [V1]: a Company can require staff approval before a Client-invited contact becomes active (useful for commercial Clients with staff turnover).
 
@@ -1134,16 +1149,16 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 | `platform_*` | SSO through Rootline corporate IdP (OIDC) | FIDO2 hardware key or platform passkey, required | None | Separate realm; 8 h max session |
 | `owner`, `office_manager`, `bookkeeper` | Passkey (WebAuthn), email + password, or Google / Microsoft / Apple sign-in | **MFA required:** passkey or TOTP; SMS OTP only as fallback with a risk banner | Enforced SSO for tenants on SSO plans | Step-up for sensitive actions (5.16) |
 | `estimator`, `designer`, `ops_manager` | Same | MFA required by default (Company can relax to "recommended" only on the Starter plan, with a warning) | | MFA can never be relaxed for anyone holding `payment.refund`, any `ledger.*` write, `api_key.create` or `stripe_connection.*`, per [Architecture](20-architecture-security.md) |
-| Enterprise tenants (all staff) | **SAML 2.0 / OIDC SSO** with Okta, Microsoft Entra ID, Google Workspace, JumpCloud [V1]; **SCIM 2.0** provisioning and deprovisioning [V1], both on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md)) | IdP-enforced MFA | JIT provisioning with default role mapping by IdP group | Break-glass local owner account retained (hardware key) for IdP outages |
+| Enterprise tenants (all staff) | **SAML 2.0 / OIDC SSO** with Okta, Microsoft Entra ID, Google Workspace, JumpCloud [V1]; **SCIM 2.0** provisioning and deprovisioning [V2], both on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md)) | IdP-enforced MFA | JIT provisioning with default role mapping by IdP group | Break-glass local owner account retained (hardware key) for IdP outages |
 | `crew_lead`, `technician` (own phone) | Phone number + SMS/WhatsApp OTP (Twilio Verify) on first login, then a device-bound refresh token (30-day rolling, per [Architecture](20-architecture-security.md)) unlocked by **app PIN or device biometrics** | Re-OTP when the device changes, after 90 days, or on risk signals | Email magic link optional | Spanish UI by default if phone locale is ES |
 | `crew_lead`, `technician` (shared device) | **Personal PIN** (4-6 digits) on an enrolled crew device [MVP] or yard shop kiosk [V1] (5.15) | Optional photo capture at punch [V1]; NFC badge or QR badge [V1] | | PIN valid only on enrolled devices of the user's branch |
 | `subcontractor` | Single-order link for field work (no account); passkey or password for the full sub portal | **MFA required** for the full sub portal, per [Architecture](20-architecture-security.md) | Passkey satisfies MFA | 8 h idle on the full portal |
-| `client_residential` | **Magic link** (email or SMS) or one-time code | Step-up OTP for signing, paying, saving cards, managing contacts | Passkey [V1]; password optional [V1]; Sign in with Apple/Google [V1] | Document links (single-document scope) need no login to *view* |
+| `client_residential` | **Magic link** (email or SMS) or one-time code | Step-up per the proof ladder in [06](06-customer-portal.md) 4.2.5: a one-time code or passkey for signing above the threshold (default $10,000) or under a non-matching name, paying with a saved method, saving cards, changing autopay and managing contacts | Passkey [V1]; password optional [V1]; Sign in with Apple/Google [V1] | Action links (single-object scope) need no login to view, select options, pay with a new card or sign below the threshold |
 | `client_commercial` | Magic link + passkey recommended | Step-up for approvals over policy threshold (configurable) | Client SSO for large property management firms [V2] | |
 
 **Magic link specification:**
 - Token: 256-bit random, stored hashed, single-use.
-- TTL: 15 minutes for login links. Document links last 30 days, view-only, and are revocable.
+- TTL: 15 minutes for login links. Action links last until the linked object expires (proposals up to 60 days, invoices 90 days or until paid plus 30 days), are multi-use within that lifetime, carry only their action scope and are revocable ([06](06-customer-portal.md) 4.2.1).
 - Bound to the requesting browser via a nonce cookie when requested from the portal. Cross-device links fall back to a 6-digit code confirmation.
 - Rate limits: 5 requests per hour per identifier and 20 per IP.
 - Enumeration-safe responses ("If an account exists, we sent a link").
@@ -1165,7 +1180,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 - Clients: magic link is recovery.
 - Platform staff: recovery only via the corporate IdP.
 
-> **Competitive edge - no bearer links, no PIN at every login.** Jobber's own help center says anyone holding a Client Hub link sees what the client sees, and an Aspire reviewer describes a PIN at each portal login. Rootline splits the two needs. Viewing one document is instant from a scoped link, while money, signatures and contact changes need a 6-digit code or a passkey on the contact's own phone. A forwarded Crossroads email exposes one invoice, not 9 properties, and Jennifer never types a password.
+> **Competitive edge - no bearer links, no PIN at every login.** Jobber's own help center says anyone holding a Client Hub link sees what the client sees, and an Aspire reviewer describes a PIN at each portal login. Rootline splits the two needs. Acting on one document is instant from a scoped link, while saved-card payments, larger signatures and contact changes need a 6-digit code or a passkey on the contact's own phone. A forwarded Crossroads email exposes one invoice, not 9 properties, and Jennifer never types a password.
 
 ### 5.15 Shared devices, kiosk mode and device trust [MVP crew device; V1 yard kiosk and MDM]
 
@@ -1475,8 +1490,8 @@ sequenceDiagram
 
 ### 6.6 Client magic-link sign-in and step-up to sign a Proposal [MVP]
 
-1. Jennifer taps the Proposal link in an SMS. It opens a **document-scoped view** (no account needed to look).
-2. She taps "Approve Better option". Rootline requires a verified session, so it sends a 6-digit code to the phone number on her contact record (not to an arbitrary number).
+1. Jennifer taps the Proposal link in an SMS. It opens an **action session scoped to that proposal** (no account needed to look, choose options or comment).
+2. She taps "Approve Better option" and types her name. The proposal is above the Company's step-up threshold (default $10,000), so Rootline sends a 6-digit code to the phone number on her contact record, never to a number typed on the page ([Customer Portal](06-customer-portal.md) 4.2.5). Below the threshold, a typed name that matches the addressee signs without a code.
 3. With the code verified, she signs (typed or drawn signature, consent to electronic records, IP and timestamp captured) and is offered "Save a passkey for next time" [V1].
 4. The deposit payment uses Stripe Elements on the Company's connected account ([Payments](08-payments-stripe.md)).
 5. The portal session persists for 30 days on this device.
@@ -2056,10 +2071,10 @@ erDiagram
 | Twilio Verify (SMS, WhatsApp, voice OTP) | Crew and Client phone verification, step-up | 10DLC registration for the Company's sending numbers is handled in [Marketing](16-marketing-growth-communications.md). OTP traffic uses verification channels | [MVP] |
 | Twilio masked numbers (number pool or proxy pattern) | Masked calling and texting between crew/subs and Clients | Real numbers never reach field devices. Verify the current Twilio product for proxying | [V1] |
 | Postmark / SendGrid | Magic links, invites, security notices | Separate transactional stream for auth mail. Strict DMARC alignment on Company custom domains ([Customer Portal](06-customer-portal.md)) | [MVP] |
-| WebAuthn / passkeys (FIDO2) | Passwordless staff and Client login, platform hardware keys | W3C WebAuthn standard. Discoverable credentials. Attestation not required except for platform staff (allowlist of security key models) | [V1] (platform staff: [MVP]) |
+| WebAuthn / passkeys (FIDO2) | Passwordless staff and Client login, platform hardware keys | W3C WebAuthn standard. Discoverable credentials. Attestation not required except for platform staff (allowlist of security key models) | [MVP] for staff and platform users; [V1] for Clients |
 | Google, Microsoft and Apple sign-in (OIDC) | Social and business sign-in for staff and Clients | Link to an existing identity only by verified email | [MVP] staff / [V1] Clients |
 | Enterprise SSO (SAML 2.0, OIDC) | Okta, Microsoft Entra ID, Google Workspace, JumpCloud | Build-vs-buy: use an SSO/SCIM broker or open-source SAML bridge to reach market faster; decision recorded in [Architecture](20-architecture-security.md) | [V1] |
-| SCIM 2.0 (RFC 7644) | User and group provisioning and deprovisioning | Group-to-role mapping table per tenant; aligned with [Architecture](20-architecture-security.md) and [Pricing](22-business-model-pricing-gtm.md) | [V1] |
+| SCIM 2.0 (RFC 7644) | User and group provisioning and deprovisioning | Group-to-role mapping table per tenant; aligned with [Architecture](20-architecture-security.md) and [Pricing](22-business-model-pricing-gtm.md) | [V2] (per [24](24-roadmap-feature-catalog.md) section 4.6) |
 | Payroll providers (e.g. Gusto, ADP, Paychex, QuickBooks Payroll; Wagepoint and similar in Canada) | Onboarding handoff, employee sync, pay rates | Detail in [Team, HR and Payroll](15-team-hr-payroll.md) | [V1] |
 | MDM (Apple Business Manager, Jamf, Microsoft Intune, Android Enterprise) | Kiosk lockdown, managed app config, wipe | Optional for larger tenants; same priority as [Field Crew App](05-field-crew-mobile-app.md) | [V1] |
 | Stripe (Company-owned accounts) | Only `owner` can connect or disconnect. Payment roles map to charge, refund and payout visibility | Stripe dashboard access is the Company's own business. Rootline never creates Stripe dashboard users | [MVP] |
@@ -2073,7 +2088,7 @@ erDiagram
 | `POST /v1/users/{id}/hibernate`, `/reactivate`, `/deactivate` | Seasonal lifecycle | [V1] |
 | `GET/POST/PATCH /v1/roles` | Custom roles as code (export and import JSON) | [V1] |
 | `GET /v1/audit-events?since=` | Pull the audit log | [V1] |
-| `/scim/v2/Users`, `/scim/v2/Groups` | SCIM provisioning | [V1] |
+| `/scim/v2/Users`, `/scim/v2/Groups` | SCIM provisioning | [V2] |
 | `POST /v1/clients/{id}/contacts` with `contact_role` and `property_ids` | Manage Client contacts | [V1] |
 | API keys | Each key is bound to a **role** (default: a "Read-only integration" role), optional IP allowlist, expiry (max 1 year), last-used tracking. Keys can be created only by `owner` | [V1] |
 | OAuth apps (partner marketplace) | OAuth 2.0 authorization code + PKCE with scopes mapped to permissions. Consent screen lists data classes (e.g. "read Clients and Properties; never prices") | [V2] |
@@ -2153,7 +2168,7 @@ erDiagram
 | `client.merge` | X/a | X/a | - | - | - | - | - | - | - |
 | `client.contact` (contacts, consents) | RWD/a | RWD/a | RW/o | - | RW/b | - | - | RW/a billing contacts | - |
 | `site_assessment` | RWD/a | RW/a | RWD/o | RW/o | RW/b | W/c | - | - | - |
-| `inbox.conversation` | RWX/a | RWX/a | RWX/o | RWX/o | RWX/b | RWX/c masked | - | R/a billing | - |
+| `inbox.conversation` | RWX/a | RWX/a | RWX/o | RWX/o | RWX/b | RWX/c masked | - | R/a billing; RWX/o assigned billing threads | - |
 | `estimate` | RWD/a | RW/a | RWD/o + R/b | R/o | RW/b | - | - | R/a | - |
 | `proposal.send` | X/a | X/a | X/o | X/o cfg | X/b | - | - | - | - |
 | `proposal.approve_internal` | X/a | X/a <=lim | - | - | X/b <=lim | - | - | - | - |
@@ -2239,9 +2254,10 @@ erDiagram
 
 | Capability | owner | office_manager | estimator | designer | ops_manager | crew_lead | technician | bookkeeper | subcontractor |
 |---|---|---|---|---|---|---|---|---|---|
-| `campaign` | RWDX/a | RWDX/a | RW/o cfg | - | - | - | - | - | - |
+| `campaign` | RWDX/a | RWDX/a | RW/o cfg | RW/a drafts, no send | RWX/b | - | - | - | - |
 | `review.respond` | X/a | X/a | - | - | X/b | - | - | - | - |
-| `website`, `booking_page` | RWX/a | RWX/a | - | R/a portfolio | - | - | - | - | - |
+| `website`, `booking_page` | RWX/a | RWX/a | R/a booking rules | RW/a content and gallery, no publish | R/a | - | - | - | - |
+| `referral` (program and reward approval) | RWDX/a | RWX/a | - | - | - | - | - | R/a; X/a reward approval | - |
 | `dashboard` | RWD/a | RW/a | R/o | R/o | RW/b | R/c crew scorecard | R/o own scorecard | RW/a | - |
 | `report.export` | X/a | X/a | X/o | - | X/b | - | - | X/a | - |
 | `copilot.use` (answers limited to caller's grants) | X/a | X/a | X/o | X/o | X/b | X/c | X/c | X/a | - |
@@ -2297,6 +2313,7 @@ See the matrix in 5.11. Additional rules:
 | Security incidents | RWX | R | - | - | RWX |
 | Tenant announcements and in-app messages | RWX | RW | - | - | - |
 | Anonymized aggregate analytics and benchmarks | R | R | R plant usage | R | R |
+| Market intelligence: claims, battlecards, price observations, win/loss ([01](01-market-landscape.md) section 12.7) | RWX (publishes externally) | RW with the market-intel set | RW plant and Region claims only | RW prices and sizing workbook | R; RW switch kits |
 
 > **Competitive edge - support you can see.** We found no public documentation of a customer-visible support-access log at Jobber, LMN, Aspire or Housecall Pro (absence of evidence, so confirm on sales calls; see 2.4). Rootline makes support access an owner-granted, time-boxed, read-only-by-default grant with a visible log. That is a trust feature commercial clients and auditors care about, and it costs almost nothing to build if designed in from day one.
 
@@ -2334,7 +2351,7 @@ See the matrix in 5.11. Additional rules:
 | Shared family phone for two crew members | Supported via kiosk-style "switch user" on a personal device with per-user app PINs [V1] |
 | Client contact removed while holding pending approvals | Pending votes are voided. If quorum becomes impossible, the request moves to `Rejected` or the policy owner is asked to substitute an approver |
 | HOA board turnover | `term_end_date` expires approvers automatically; the community manager is prompted to add new board members. Historic votes keep the voter's name and role at the time |
-| Commercial client forwards a document link | Document links are view-only and scoped to one document; signing or paying requires OTP to the contact on record; the link can be revoked |
+| Commercial client forwards a document link | Action links are scoped to one object; signing above the threshold or under a different name, paying with a saved method or opening anything else requires a code sent to the contact on record ([06](06-customer-portal.md) 4.2.5), and the audit trail records the verified signer; the link can be revoked |
 | Subcontractor also works directly for the Client | Sub sees only orders from the Company; their own relationship with the Client happens outside Rootline (or in their own Rootline tenant) and never merges |
 | CPA firm loses a client mid-close | Revocation is immediate. The firm can request a time-boxed read-only extension from the owner to finish work papers |
 | Lost truck tablet with 7 days of offline data | Device revoked; data encrypted under a device key; key expires after the offline grace period; gate codes outside the visit window were never on the device |
@@ -2372,7 +2389,7 @@ See the matrix in 5.11. Additional rules:
 |---|---|---|---|
 | Permission model too complex for small owners | High | High (churn, everyone becomes admin) | Templates that "just work"; plain-language toggles ("Crew can see prices"); simulator; Copilot explainer; most Companies never open the role editor |
 | Leakage through a non-UI channel (export, notification, AI) | Medium | Severe | Single projection layer; CI tests asserting payload contents per role; red-team prompt suite; bug bounty [V1] |
-| Magic-link phishing against Clients | Medium | Medium | Branded custom domains with DMARC; links never request passwords; OTP step-up for money; user education copy |
+| Magic-link phishing against Clients | Medium | Medium | Branded custom domains with DMARC; links never request passwords; OTP step-up for saved-method payments, larger signatures and contact changes; user education copy |
 | Shared PIN abuse (buddy punching) | Medium | Medium (payroll cost) | Photo-at-punch option, geofence flags, PIN lockout, anomaly reports |
 | Support impersonation misuse | Low | Severe (trust) | Consent, time-boxing, read-only default, banner, tenant log, quarterly review of all sessions by platform_owner |
 | Owner lockout (lost phone and MFA) | Medium | High | Multiple factors encouraged at setup (passkey + TOTP), recovery codes, verified recovery with delay |
@@ -2422,7 +2439,7 @@ See the matrix in 5.11. Additional rules:
 11. **Lone-worker safety check-ins** [V2]. For irrigation techs and night snow operators working alone: timed check-ins with escalation to the crew lead, then the ops manager, then an emergency contact. Tied to the role and shift.
 12. **Succession and sale readiness** [V2]. A "data room" role for business sale due diligence: time-boxed, watermarked, read-only access for a buyer's analyst to financials and anonymized Client lists, with full access logging. This is relevant as private equity continues to consolidate the landscape industry (see [Market landscape](01-market-landscape.md)).
 
-The following ideas were added in review. Each closes a gap the founder did not ask about but owners will feel in their first season.
+Each idea below closes a gap the founder did not ask about but owners will feel in their first season.
 
 13. **Lockdown button for a suspected compromise** [V1]. One owner action (step-up required) freezes every sensitive capability tenant-wide: exports, refunds, role and user changes, vendor-banking changes, API key creation, new integrations and Automation edits. It also signs out every non-owner web session. Field work keeps running: crews still punch, complete Visits and take photos, because blocking the field would cost a day of revenue. Lockdown expires after 24 hours unless renewed, shows a red banner to all office users, and creates a security event that Rootline support can see (metadata only). It answers the most likely real incident for a small Company, a phished office manager, with something an owner can do from a truck in 10 seconds.
 14. **Client-facing mode (shoulder-surf shield)** [V1]. Estimators and designers present on iPads in driveways and kitchens. One tap, or opening the Proposal presenter view, drops cost, margin, internal notes and the Client's AR status from the session until the user unlocks with Face ID or PIN (enforcement in 5.4, item 9). It costs little to build because it reuses the projection layer, and it fixes a real embarrassment: a homeowner reading "materials $9,112, margin 48%" over the rep's shoulder.
@@ -2452,9 +2469,9 @@ The following ideas were added in review. Each closes a gap the founder did not 
 
 ## Sources
 
-Research for this document was done in November 2026. Web page fetching was unavailable in this research environment, so findings come from search-result excerpts of vendor documentation, community forums and review sites. Vendor facts are **as of November 2026, verify**. The web-search budget ran out before a planned check of H-2B program statistics, so this document cites the official DOL program page and makes no numeric claims about visa counts. Standards and statutes are cited from their official publishers.
+Sources were collected in November 2026 from vendor documentation, community forums, review sites, standards bodies and official publishers of statutes. Vendor facts are **as of November 2026, verify**. This document makes no numeric claims about H-2B visa counts and cites the official DOL program page instead. Consolidation and seat-pricing facts are drawn from the research reports ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and aligned with sibling docs ([05](05-field-crew-mobile-app.md), [06](06-customer-portal.md), [08](08-payments-stripe.md), [20](20-architecture-security.md), [22](22-business-model-pricing-gtm.md)).
 
-**Review pass (November 2026).** A second, editorial pass added consolidation facts and pricing-seat facts drawn from the repo's own research reports ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and from sibling docs ([05](05-field-crew-mobile-app.md), [06](06-customer-portal.md), [08](08-payments-stripe.md), [20](20-architecture-security.md), [22](22-business-model-pricing-gtm.md)) so this document agrees with them. During that pass the shared web-search budget was exhausted and outbound fetching was blocked, so the regulatory points added in review (NIST SP 800-63B revision 4 password lengths, FLSA retention periods, child-labor restrictions, the 2024 BIPA amendment, Colorado's biometric amendment, the CCPA employee-data exemption expiry and the H-2B hours guarantee) are cited to their official sources from background knowledge and each is marked "verify" in the text. Confirm them with counsel before they drive product copy.
+Verification note: items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. This applies in particular to the regulatory points (NIST SP 800-63B revision 4 password lengths, FLSA retention periods, child-labor restrictions, the 2024 BIPA amendment, Colorado's biometric amendment, the CCPA employee-data exemption expiry and the H-2B hours guarantee), which counsel must confirm before they drive product copy.
 
 **Competitors and vendor documentation**
 - Jobber - What are user permissions? https://help.getjobber.com/hc/en-us/articles/115009568687
@@ -2519,7 +2536,7 @@ Research for this document was done in November 2026. Web page fetching was unav
 - eCFR - 20 CFR Part 655, Subpart A (H-2B labor certification, including employer obligations and the hours guarantee; verify current text): https://www.ecfr.gov/current/title-20/chapter-V/part-655/subpart-A
 - eCFR - 29 CFR Part 516 (FLSA records to be kept by employers; retention periods): https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-B/part-516
 - U.S. Department of Labor - YouthRules (federal child-labor rules for workers under 18): https://www.youthrules.gov/
-- NIST SP 800-63B-4 Digital Identity Guidelines, Authentication and Authenticator Management (revision 4; could not be fetched during review, verify): https://pages.nist.gov/800-63-4/sp800-63b.html
+- NIST SP 800-63B-4 Digital Identity Guidelines, Authentication and Authenticator Management (revision 4; verify against the final text): https://pages.nist.gov/800-63-4/sp800-63b.html
 - Illinois General Assembly - SB 2979 (2024 BIPA amendment; verify bill status and text): https://www.ilga.gov/
 - Stripe - Connect webhooks and connected-account events (for external-account change alerts; verify event names for Standard accounts): https://docs.stripe.com/connect/webhooks
 - Stripe Connect documentation: https://docs.stripe.com/connect

@@ -2,6 +2,19 @@
 
 > Rootline enters a large, fragmented, seasonal and labor-constrained industry whose software has split into three camps that do not talk to each other: horizontal home-service apps (Jobber, Housecall Pro) that are easy but shallow, landscape ERPs and estimating suites (Aspire, LMN, SingleOps, Real Green, Service Autopilot) that are deep but dated, consolidating and payment-locked, and design tools (PRO Landscape+, DynaSCAPE, Vectorworks, consumer AI apps) that draw well but never price, schedule, bill or account for the work. Every one of them outsources the books to QuickBooks and nearly every one monetizes payments through an account the landscaper does not control. This document is the definitive market analysis for the Rootline proposal. It sizes and segments the market, defines the five business archetypes Rootline serves, maps 17 competitors against 53 capabilities, benchmarks pricing, ranks the top 15 user pain points with evidence, identifies the white space, maps the dated regulatory forces (turf-water deadlines, small-engine rules, pesticide rules, overtime reporting) that turn compliance into a buying trigger, explains why the window is open now, collects 45 ideas worth stealing (and how Rootline improves each), war-games the incumbents' likely responses, and closes with the positioning statement and messaging pillars the rest of the doc set uses. It also specifies the small "market intelligence" capability inside the Platform Admin console that keeps this analysis current after launch.
 
+**At a glance**
+
+- **What it is:** the market analysis every other doc builds on: market size and segments, the five business archetypes (A-E), a 17-competitor x 53-capability matrix, a pricing and total-cost benchmark, the top 15 pain points, white space, dated regulatory buying triggers, 45 steal-worthy ideas, an incumbent war-game, and the master positioning. It also specifies a small market-intelligence capability in the operator console ([section 12](#12-market-intelligence-capability-spec)).
+- **Decision 1, beachhead:** archetype C, the 10-40 person residential design-build-maintain firm (segment S2 in [22](22-business-model-pricing-gtm.md)), in two or three climate clusters. Archetypes A, B, D and E are served by the same product through packaging and modules, not separate builds ([section 3](#3-the-landscape-business-archetypes-rootline-serves)).
+- **Decision 2, category and positioning:** "the landscape business operating system", which runs the job from first photo to to-scale design to signed proposal to crew schedule to paid invoice to closed books, with a regional horticulturist's plant knowledge built in, on a payments account the Company owns ([section 11](#11-positioning-statement-and-messaging-pillars)).
+- **Decision 3, compete on the seams:** win where tools meet (design to estimate, plant intelligence in sales, a built-in ledger, Company-owned payments), not on feature parity with Jobber or Aspire. Three matrix rows have no competitor coverage at all ([section 4.5](#45-reading-the-matrix)).
+- **Decision 4, evidence discipline:** every number carries an evidence tag ([S], [S3P], [B] or [E]), every price is "as of Nov 2026, verify", and Appendix E lists what must be confirmed before any external use ([section 0](#0-how-to-read-this-document-evidence-levels-and-research-limits)).
+- **Key numbers (labeled):** US landscaping services revenue of roughly $150-$200B a year [B]; a bottom-up subscription pool of about $460M theoretical and $340M reachable at Rootline's prices [E]; a 12-person design-build firm spends about $1,000-$1,500 a month on its tool stack before payments margin [E].
+- **Prices benchmarked ([22](22-business-model-pricing-gtm.md) owns them):** Starter $69, Grow $249 and Pro $529 per month on annual billing ($79 / $289 / $599 monthly), Enterprise from $1,500 a month; AI credits included at 300 / 2,000 / 6,000 a month. Clients pay through each Company's own Stripe account with no Rootline markup by default.
+- **MVP vs later (capability targets; [24](24-roadmap-feature-catalog.md) is binding on tags):** MVP covers leads to proposals with production-rate estimating, Design Studio 2D, AI photo mockups and the website visualizer widget, the Plant KB, the offline crew app, the built-in ledger, Company-owned Stripe payments and the white-label portal. V1 adds online booking with instant quotes, the website builder, the AI receptionist, dimension-aware AI layouts, multi-crew route optimization, snow, retainage, QuickBooks Desktop and Enterprise. Tree care and full cross-tenant benchmarks (a beta ships at V1) are V2. In this doc's market-intelligence capability, the registry, claims ledger, switch-source capture, win/loss and Jobber/LMN switch kits are MVP; battlecards, price monitoring and public comparison pages are V1.
+- **Differentiators and moats:** one shared geometry from parcel to plow plan, a curated cultivar-level Plant KB with Region Profiles, a ledger that is the system of record, curated jurisdiction rule packs, and a zero-markup payments stance incumbents cannot copy without cutting their own revenue ([section 10.3](#103-moats-ranked-by-how-long-they-take-to-copy)).
+- **Key cross-links:** pricing, battlecards and GTM in [22](22-business-model-pricing-gtm.md); personas and role keys in [02](02-personas-roles-permissions.md); payments in [08](08-payments-stripe.md); ledger in [09](09-accounting-ledger-integrations.md); the raw evidence in [R1](research/R1-field-service-platforms.md)-[R4](research/R4-industry-payments-accounting.md).
+
 | Field | Value |
 |---|---|
 | Document | 01 - Market Landscape and Competitive Analysis |
@@ -44,16 +57,16 @@ This document follows the evidence convention of the research reports so a reade
 |---|---|---|
 | **[S]** | Sourced from a primary or credible source (vendor help center or press release, trade press, government page, review-site page), linked inline | Safe to quote with the link. Prices still carry "as of Nov 2026, verify" |
 | **[S3P]** | Sourced only from third-party pricing aggregators, affiliate comparisons or competitor-written pages, which often disagree | Directional only. Quote ranges and say "verify" |
-| **[B]** | Analyst background knowledge of public materials up to mid-2026, not re-verified in this research run | A hypothesis. Verify before investor or sales use (Appendix E) |
+| **[B]** | Analyst background knowledge of public materials up to mid-2026, not re-verified against a primary source | A hypothesis. Verify before investor or sales use (Appendix E) |
 | **[E]** | Analyst estimate, inference or worked illustration, with the reasoning shown | Labeled as an estimate. Never present as a measured statistic |
 
-**Research limits (read before quoting).** This document was written at the end of a large parallel research run. The run-wide web-search budget was exhausted before this document's own searches could execute, and direct fetches to `www.ibisworld.com` and `www.bls.gov` failed under the session's network allowlist. This analysis therefore **synthesizes the roughly 400 source citations retrieved by the four research reports and sibling module docs during the same run**, re-citing their exact links, and fills gaps with clearly tagged [B] and [E] material. Three consequences:
+**Evidence limits (read before quoting).** This analysis **synthesizes the roughly 400 source citations collected in the four research reports and the sibling module docs**, re-citing their exact links, and fills gaps with clearly tagged [B] and [E] material. Primary statistical sources (IBISWorld, BLS, Census) were not consulted directly. Three consequences:
 
 1. **Market-size headline numbers are ranges, not point estimates.** US landscaping-services revenue, establishment counts and Canadian counts are [B]. Section 2 builds a transparent bottom-up model that `platform_finance` must re-run against the Census County Business Patterns (NAICS 561730) and Statistics Canada counts before any external deck (Appendix E, item E1).
 2. **Competitor cells marked "?" are honest unknowns,** not absences. The many unknowns are themselves a finding: these vendors do not compete loudly enough on those dimensions for an analyst to be sure.
-3. **Reddit and LawnSite owner-forum quotes were mostly unreachable.** Complaint evidence comes from vendor communities (Jobber Community), help centers, Capterra, G2, GetApp, Software Advice, a few LawnSite threads, and trade press. Forum themes not backed by a link are tagged [B] and listed for verification.
+3. **Reddit and LawnSite owner-forum quotes are mostly not captured.** Complaint evidence comes from vendor communities (Jobber Community), help centers, Capterra, G2, GetApp, Software Advice, a few LawnSite threads, and trade press. Forum themes not backed by a link are tagged [B] and listed for verification.
 
-**Review pass (Nov 7, 2026).** A senior review re-checked this document against the brief and the sibling docs. New searches were again impossible: the run-wide search budget was exhausted, and `api.census.gov` was blocked by the same network allowlist as `bls.gov`, so the Census County Business Patterns pull (E1) remains open. The review verified the internal arithmetic (market model, coverage scores, TCO and processing examples), aligned offers and names with [22](22-business-model-pricing-gtm.md), re-ranked the pain points against a fully stated tie-break rule, corrected positioning-map placements that contradicted the text, added the regulatory forces in section 2.5 (re-citing primary links retrieved by sibling module research), and removed self-claims about Rootline that have not been measured yet.
+Verification note: items marked "verify", [B] or [S3P] are from secondary sources or general knowledge and need first-hand confirmation (Appendix E, starting with the Census County Business Patterns pull in E1) before build decisions or external use.
 
 Prices and plan names change several times a year in this category. Every price below is "as of Nov 2026, verify".
 
@@ -102,11 +115,11 @@ Prices and plan names change several times a year in this category. Every price 
 
 | Metric | Figure | Evidence | Use and caveats |
 |---|---|---|---|
-| US landscaping services revenue | Roughly $150-$200B per year (2024-2025 public summaries) | [B] IBISWorld public summaries (fetch blocked this run) | Includes lawn care, tree care and installation; definitions differ from Census. Quote only as a range |
+| US landscaping services revenue | Roughly $150-$200B per year (2024-2025 public summaries) | [B] IBISWorld public summaries (primary report not consulted) | Includes lawn care, tree care and installation; definitions differ from Census. Quote only as a range |
 | US businesses, all (including nonemployers) | Several hundred thousand | [B] Census Nonemployer Statistics and IBISWorld | Most are owner-operators with no payroll |
-| US employer establishments, NAICS 561730 | On the order of 100,000-130,000 | [B] Census County Business Patterns ([CBP program page](https://www.census.gov/programs-surveys/cbp.html), not opened this run) | The official base for the TAM model; pull by employee band before external use |
+| US employer establishments, NAICS 561730 | On the order of 100,000-130,000 | [B] Census County Business Patterns ([CBP program page](https://www.census.gov/programs-surveys/cbp.html); pull before use) | The official base for the TAM model; pull by employee band before external use |
 | Canada, NAICS 56173 Landscaping Services | Tens of thousands of establishments, overwhelmingly micro firms | [E]; financial benchmarks exist at [ISED](https://ised-isde.canada.ca/app/ixb/cis/performance/56173) [S] | Replace with Statistics Canada Canadian Business Counts |
-| Landscaping and groundskeeping workers (SOC 37-3011) | Roughly 0.9 million US wage-and-salary jobs; median wage in the high teens of dollars per hour | [B] BLS OEWS (fetch blocked this run) | Excludes owners and much seasonal or informal labor |
+| Landscaping and groundskeeping workers (SOC 37-3011) | Roughly 0.9 million US wage-and-salary jobs; median wage in the high teens of dollars per hour | [B] BLS OEWS (primary tables not consulted) | Excludes owners and much seasonal or informal labor |
 | Share of landscaping and groundskeeping workers who are Hispanic | About 44.5% (2024) | [S] [Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers) | Drives Spanish-first crew tools ([05](05-field-crew-mobile-app.md), [21](21-ux-design-system-sitemaps.md)) |
 | H-2B statutory cap | 66,000 visas per fiscal year, split into two halves | [S] [USCIS](https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-2b-non-agricultural-workers/cap-count-for-h-2b-nonimmigrants) | Landscaping is commonly reported as the largest H-2B occupation [B]; see [15](15-team-hr-payroll.md) |
 | Gross margin, $3M-$54M firms | About 53% of net revenue | [S] [Wilson 360 2024 via Lawn & Landscape](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark) | Larger, better-run firms; definitions vary ([18](18-reporting-analytics.md) KPI Dictionary) |
@@ -126,7 +139,7 @@ Rootline segments the market on four axes, because each changes what the product
 | **Service mix** | Maintenance; enhancements; design-build/install; lawn and plant health care; irrigation and lighting; tree care; snow and ice | Each line has its own pricing model, billing mode, compliance records and seasonality ([14](14-service-line-modules.md)) |
 | **Climate and season shape** | Northern with snow; northern without snow; southern year-round; arid West | Revenue curve, cash trough, snow module, xeric plant palettes, water budgets ([12](12-plant-knowledge-base.md)) |
 
-**Service-line mix by business model (estimate).** No verified survey mix was retrievable this run; Lawn & Landscape's State of the Industry and NALP publish annual figures that should replace this table [B].
+**Service-line mix by business model (estimate).** No verified survey mix is cited here; Lawn & Landscape's State of the Industry and NALP publish annual figures that should replace this table [B].
 
 | Business model | Maintenance | Enhancements | Design-build | Lawn and PHC | Irrigation and lighting | Snow and ice |
 |---|---|---|---|---|---|---|
@@ -256,7 +269,7 @@ flowchart LR
 
 ### 2.5 Regulatory and structural forces that reshape demand
 
-Software is rarely bought for its own sake in this industry; it is bought when something forces a change. The forces below are already in motion in the launch markets and each one creates a dated buying trigger. Evidence links were retrieved by sibling module research in this run; dates and scope must be re-verified before external use (Appendix E, items E17-E21). Nothing here is legal advice.
+Software is rarely bought for its own sake in this industry; it is bought when something forces a change. The forces below are already in motion in the launch markets and each one creates a dated buying trigger. Evidence links are re-cited from the sibling module docs; dates and scope must be re-verified before external use (Appendix E, items E17-E21). Nothing here is legal advice.
 
 | # | Force | What is changing | Evidence | Archetypes hit hardest | What it means for Rootline | Owner doc and priority |
 |---|---|---|---|---|---|---|
@@ -502,7 +515,7 @@ quadrantChart
 
 ### 4.4 MEGA feature matrix: 17 competitors x 53 capabilities
 
-**Legend.** ● full (native, documented, in at least one tier) · ◐ partial (add-on, higher tier only, partner integration, separate acquired product, workaround, or materially limited) · ○ not offered or no evidence found · ? not verified in this research run · a trailing * marks an analyst judgment that the research reports flagged as likely but unconfirmed. The Rootline column shows the target and first priority; module docs own the detail and [24](24-roadmap-feature-catalog.md) is the authority if tags differ.
+**Legend.** ● full (native, documented, in at least one tier) · ◐ partial (add-on, higher tier only, partner integration, separate acquired product, workaround, or materially limited) · ○ not offered or no evidence found · ? not verified · a trailing * marks an analyst judgment that the research reports flagged as likely but unconfirmed. The Rootline column shows the target and first priority; module docs own the detail and [24](24-roadmap-feature-catalog.md) is the authority if tags differ.
 
 | Code | Competitor | Evidence depth for this column |
 |---|---|---|
@@ -529,8 +542,8 @@ quadrantChart
 | Capability | JB | HCP | ST | WZ | GD | ASP | LMN | SO | SYN | AG | RG | SA | CP | YB | QIQ | PRO | YETI | Rootline |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1. Lead and opportunity pipeline | ● | ● | ● | ◐ | ? | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ●* | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 2. Online self-booking with live availability | ● | ● | ◐ | ● | ? | ? | ? | ◐ | ? | ◐ | ◐ | ? | ◐ | ? | ? | ○ | ○ | ● [MVP] [16](16-marketing-growth-communications.md) |
-| 3. Instant online quote from satellite-measured area | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ? | ○ | ● | ? | ? | ○ | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
+| 2. Online self-booking with live availability | ● | ● | ◐ | ● | ? | ? | ? | ◐ | ? | ◐ | ◐ | ? | ◐ | ? | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
+| 3. Instant online quote from satellite-measured area | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ? | ○ | ● | ? | ? | ○ | ? | ○ | ○ | ● [V1] (turf auto-measure for internal estimating at [MVP]) [16](16-marketing-growth-communications.md) |
 | 4. Production-rate estimating with budget-based overhead recovery (MORS/FLH/SORS) | ○ | ○ | ○ | ○ | ○ | ● | ● | ◐ | ● | ◐ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 5. Options, tiers and optional line items on proposals | ◐ | ● | ● | ? | ? | ◐ | ● | ● | ? | ● | ◐ | ◐ | ◐ | ◐ | ◐* | ◐ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ? | ? | ◐ | ◐ | ? | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
@@ -541,11 +554,11 @@ quadrantChart
 | Capability | JB | HCP | ST | WZ | GD | ASP | LMN | SO | SYN | AG | RG | SA | CP | YB | QIQ | PRO | YETI | Rootline |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 8. Native aerial or parcel measurement | ◐ | ○ | ○ | ○ | ○ | ◐ | ◐ | ◐ | ? | ● | ● | ? | ? | ○ | ◐* | ? | ◐ | ● [MVP] [10](10-design-studio.md) |
-| 9. AI takeoff from aerial imagery or construction plan sets | ○ | ○ | ○ | ○ | ○ | ◐ | ◐ | ○ | ○* | ○ | ○* | ○ | ○ | ○ | ? | ○ | ○ | ● [V1] [10](10-design-studio.md), [17](17-ai-copilot-automation.md) |
+| 9. AI takeoff from aerial imagery or construction plan sets | ○ | ○ | ○ | ○ | ○ | ◐ | ◐ | ○ | ○* | ○ | ○* | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] turf auto-measure, [V1] other classes and plan sets [03](03-crm-sales-estimating-proposals.md), [10](10-design-studio.md), [17](17-ai-copilot-automation.md) |
 | 10. To-scale 2D landscape design studio | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ○ | ○ | ○* | ● | ○ | ● [MVP] [10](10-design-studio.md) |
 | 11. 3D design and walkthrough | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ○ | ○ | ○ | ● | ○ | ● [V1] [10](10-design-studio.md) |
 | 12. AI photo mockups (restyle the client's own photo) | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ● | ○ | ● [MVP] [11](11-ai-design-mockups.md) |
-| 13. Dimension-aware AI layout constrained to region-valid plants | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [11](11-ai-design-mockups.md) |
+| 13. Dimension-aware AI layout constrained to region-valid plants | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [V1] [11](11-ai-design-mockups.md) |
 | 14. Region-aware plant knowledge base with curated ratings | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ◐ | ○ | ● [MVP] [12](12-plant-knowledge-base.md) |
 | 15. Design or takeoff live-linked to estimate, proposal and PO | ○ | ○ | ○ | ○ | ○ | ◐ | ◐ | ○ | ? | ◐ | ◐ | ○ | ○ | ○ | ? | ◐ | ○ | ● [MVP] [10](10-design-studio.md) |
 
@@ -556,14 +569,14 @@ quadrantChart
 | 16. Recurring visits and maintenance schedules | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ●* | ○ | ◐ | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
 | 17. Route optimization on road network (one crew, one day) | ◐ | ? | ◐ | ? | ● | ? | ? | ? | ? | ? | ● | ● | ? | ? | ? | ○ | ? | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
 | 18. Multi-crew VRP (capacity, skills, equipment, time windows) | ○ | ○ | ◐ | ○ | ◐ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [V1] [04](04-scheduling-dispatch-routing.md) |
-| 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [V1] [04](04-scheduling-dispatch-routing.md) |
+| 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] manual bulk moves, [V1] playbooks [04](04-scheduling-dispatch-routing.md) |
 | 20. Crew app with time, photos and checklists | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ◐* | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 21. Documented offline-first crew app | ◐ | ? | ? | ? | ? | ● | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 22. Spanish crew interface | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] [21](21-ux-design-system-sitemaps.md) |
 | 23. Live GPS crew tracking and geofenced clock-in | ● | ● | ◐ | ● | ● | ● | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
-| 24. Purchasing and POs generated from estimates | ○ | ? | ● | ? | ? | ● | ● | ◐ | ? | ? | ? | ? | ○ | ○ | ? | ○ | ? | ● [V1] [13](13-operations-inventory-equipment.md) |
-| 25. Inventory with field material usage | ○ | ? | ● | ? | ◐* | ● | ◐ | ◐ | ○* | ? | ◐ | ◐* | ○ | ○ | ? | ○ | ? | ● [V1] [13](13-operations-inventory-equipment.md) |
-| 26. Equipment and fleet maintenance with cost recovery | ○ | ? | ◐* | ? | ? | ● | ◐ | ○* | ? | ○* | ◐ | ○* | ○ | ○ | ? | ○ | ? | ● [V1] [13](13-operations-inventory-equipment.md) |
+| 24. Purchasing and POs generated from estimates | ○ | ? | ● | ? | ? | ● | ● | ◐ | ? | ? | ? | ? | ○ | ○ | ? | ○ | ? | ● [MVP] [13](13-operations-inventory-equipment.md) |
+| 25. Inventory with field material usage | ○ | ? | ● | ? | ◐* | ● | ◐ | ◐ | ○* | ? | ◐ | ◐* | ○ | ○ | ? | ○ | ? | ● [MVP] Off and Light modes, [V1] Standard and Advanced [13](13-operations-inventory-equipment.md) |
+| 26. Equipment and fleet maintenance with cost recovery | ○ | ? | ◐* | ? | ? | ● | ◐ | ○* | ? | ○* | ◐ | ○* | ○ | ○ | ? | ○ | ? | ● [MVP] registry, meters and cost per hour; [V1] PM, work orders and actuals-based rates [13](13-operations-inventory-equipment.md) |
 
 **D. Landscape service-line depth**
 
@@ -573,7 +586,7 @@ quadrantChart
 | 28. Pesticide application records (product, EPA reg. no., rate, weather, applicator) | ◐ | ◐ | ◐ | ○ | ● | ? | ○* | ◐* | ○ | ◐* | ● | ◐* | ◐* | ○ | ? | ○ | ○ | ● [MVP] [14](14-service-line-modules.md), [05](05-field-crew-mobile-app.md) |
 | 29. Snow event engine with per-push and per-event billing | ○ | ○ | ○ | ○ | ○ | ● | ◐* | ○ | ○ | ○ | ○* | ◐* | ◐* | ○ | ? | ○ | ● | ● [V1] [14](14-service-line-modules.md) |
 | 30. Snow proof-of-service packets (GPS, photos, verified weather) | ○ | ○ | ○ | ○ | ○ | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ● | ● [V1] [14](14-service-line-modules.md) |
-| 31. Tree inventory (GPS, species, DBH, QR tags) | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ● | ○ | ● | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [V1] [14](14-service-line-modules.md) |
+| 31. Tree inventory (GPS, species, DBH, QR tags) | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ● | ○ | ● | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [V2] [14](14-service-line-modules.md) |
 | 32. Site audits that become enhancement proposals | ○ | ○ | ○ | ○ | ○ | ◐ | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [V1] [14](14-service-line-modules.md) |
 
 **E. Billing, payments and accounting**
@@ -596,10 +609,10 @@ quadrantChart
 | 41. Customer portal: approve, pay, request work | ● | ● | ● | ● | ● | ● | ● | ● | ? | ● | ● | ● | ● | ◐ | ●* | ○ | ? | ● [MVP] [06](06-customer-portal.md) |
 | 42. Designs, mockups and plant cards in the portal | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [06](06-customer-portal.md) |
 | 43. Commercial multi-property approvals and spend limits | ◐ | ◐ | ● | ◐ | ◐ | ◐ | ○ | ○ | ○ | ○ | ◐ | ○ | ○ | ○ | ? | ○ | ? | ● [V1] [06](06-customer-portal.md) |
-| 44. White-label portal on the Company's own domain | ○ | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [V1] [06](06-customer-portal.md) |
-| 45. Review requests and marketing campaigns | ◐ | ● | ◐ | ? | ? | ◐ | ◐ | ◐ | ○ | ◐ | ● | ● | ◐ | ○ | ? | ○ | ○ | ● [MVP] reviews, [V1] campaigns [16](16-marketing-growth-communications.md) |
-| 46. Website builder | ◐ | ? | ○ | ? | ? | ○ | ○ | ○ | ○ | ○ | ● | ○* | ? | ○ | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
-| 47. AI receptionist for calls and texts | ◐ | ◐ | ◐ | ◐ | ? | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
+| 44. White-label portal on the Company's own domain | ○ | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] (Grow and up) [06](06-customer-portal.md) |
+| 45. Review requests and marketing campaigns | ◐ | ● | ◐ | ? | ? | ◐ | ◐ | ◐ | ○ | ◐ | ● | ● | ◐ | ○ | ? | ○ | ○ | ● [MVP] reviews and email/SMS campaigns, [V1] journey builder [16](16-marketing-growth-communications.md) |
+| 46. Website builder | ◐ | ? | ○ | ? | ? | ○ | ○ | ○ | ○ | ○ | ● | ○* | ? | ○ | ? | ○ | ○ | ● [V1] (add-on on Starter and Grow) [16](16-marketing-growth-communications.md) |
+| 47. AI receptionist for calls and texts | ◐ | ◐ | ◐ | ◐ | ? | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [V1] (call tracking and missed-call text-back at [MVP]) [16](16-marketing-growth-communications.md) |
 
 **G. Platform, AI and commercial model**
 
@@ -608,7 +621,7 @@ quadrantChart
 | 48. Generative AI copilot over company data | ● | ? | ● | ? | ? | ○ | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ◐ | ◐ | ? | ● [MVP] [17](17-ai-copilot-automation.md) |
 | 49. Branches and divisions as P&L centers | ○ | ? | ● | ? | ? | ● | ◐* | ○* | ○ | ○* | ◐* | ○* | ○ | ○ | ? | ○ | ? | ● [V1] [09](09-accounting-ledger-integrations.md) |
 | 50. Granular, composable custom roles | ◐ | ? | ● | ? | ? | ● | ◐ | ◐ | ◐ | ◐ | ? | ● | ? | ? | ? | ○ | ? | ● [MVP] [02](02-personas-roles-permissions.md) |
-| 51. Public API and webhooks | ● | ◐ | ● | ● | ? | ? | ○ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [V1] [20](20-architecture-security.md) |
+| 51. Public API and webhooks | ● | ◐ | ● | ● | ? | ? | ○ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] core objects, [V1] full surface [20](20-architecture-security.md) |
 | 52. Seasonal-friendly seats (unlimited or active-only field users) | ○ | ○ | ○ | ○ | ◐ | ● | ◐ | ○ | ○ | ○ | ◐ | ◐ | ? | ? | ? | ○ | ? | ● [MVP] [22](22-business-model-pricing-gtm.md) |
 | 53. Productized, AI-assisted migration from competitors | ? | ? | ○ | ? | ? | ○ | ○ | ? | ? | ? | ○ | ? | ? | ? | ● | ○ | ? | ● [MVP] [19](19-platform-admin-portal.md) |
 
@@ -643,7 +656,7 @@ quadrantChart
 4. **The "?" density is a finding.** Spanish crew interfaces, offline-first crew apps, white-label portals on custom domains and portable payment accounts are unverified for almost every vendor. If customer interviews confirm they are absent, they become marketing headlines; until then, Rootline claims only what it does, never what others lack.
 5. **The most complete incumbents (ServiceTitan core, Aspire) are enterprise-priced** and Aspire scores high only with add-ons (PropertyIntel) and partners. Coverage alone is not the competition; coverage **at SMB price with days-not-months onboarding** is.
 
-> **Competitive edge (matrix).** The most complete landscape product in the matrix, Aspire, covers about 23 of 53 capabilities, several through add-ons, at custom enterprise pricing with 90-day implementations. Jobber covers about 18 at SMB prices but none of the design, plant, ledger or landscape-estimating rows. Rootline's plan covers 52, with the 53rd (vendor-run payments) declined on purpose. The honest comparison is the MVP: Rootline's first sellable release targets **31 of the 53 rows** (every row tagged [MVP] in the Rootline column), which already exceeds the best incumbent score (ServiceTitan core at 24.5) and includes all five structural differentiators; the remaining 21 rows (multi-crew VRP, purchasing, snow, commercial approvals, QuickBooks Desktop, branches and others) arrive at [V1]. Sales must quote the MVP number until V1 ships.
+> **Competitive edge (matrix).** The most complete landscape product in the matrix, Aspire, covers about 23 of 53 capabilities, several through add-ons, at custom enterprise pricing with 90-day implementations. Jobber covers about 18 at SMB prices but none of the design, plant, ledger or landscape-estimating rows. Rootline's plan covers 52, with the 53rd (vendor-run payments) declined on purpose. The honest comparison is the MVP: Rootline's first sellable release covers **30 of the 53 rows in full and 6 more in part** (rows whose Rootline cell starts with [MVP]; tags follow [24](24-roadmap-feature-catalog.md)), about 33 on the same ● = 1, ◐ = 0.5 scale. That already exceeds the best incumbent score (ServiceTitan core at 24.5) and includes four of the five structural differentiators; dimension-aware AI layouts follow at [V1]. The remaining 15 rows (online booking and instant quotes, AI layouts, 3D, multi-crew VRP, financing, snow, retainage, commercial audits and approvals, the website builder, the AI receptionist, QuickBooks Desktop, branches and others) arrive at [V1], and tree inventory at [V2]. Sales must quote the MVP number until V1 ships.
 
 ### 4.6 Payments, accounting and AI: how competitors differ
 
@@ -788,7 +801,7 @@ Ranked by size of prize and how hard each is for incumbents to copy [E].
 |---|---|---|---|---|---|---|---|
 | 1 | **Design-to-install-to-books on one data model** | PRO Landscape+ (design to proposal); Aspire (estimate to job cost) | Design tools and ops tools come from different eras, companies and data models | Every design-build sale and every enhancement | 5 (requires a rebuild) | Design Studio + estimating + scheduling + ledger ([10](10-design-studio.md), [03](03-crm-sales-estimating-proposals.md), [09](09-accounting-ledger-integrations.md)) | [MVP] |
 | 2 | **Region-aware plant intelligence inside sales and design** | Calscape-style regional lists outside any business tool | Requires horticultural curation and licensing, not just software ([R3](research/R3-design-ai-plant-data.md)) | Every planting job; warranty cost reduction | 5 (years of curation) | Operator-curated Plant KB with Region Profiles ([12](12-plant-knowledge-base.md)) | [MVP] |
-| 3 | **AI mockups constrained by real dimensions and real plants** | PRO Landscape+ AI; consumer apps | Generic image models ignore scale and Region; image generation is cheap, the constraints are the moat ([R3](research/R3-design-ai-plant-data.md)) | Close rate on residential design-build | 4 | Dimension-aware layouts and closed-world rendering ([11](11-ai-design-mockups.md)) | [MVP] |
+| 3 | **AI mockups constrained by real dimensions and real plants** | PRO Landscape+ AI; consumer apps | Generic image models ignore scale and Region; image generation is cheap, the constraints are the moat ([R3](research/R3-design-ai-plant-data.md)) | Close rate on residential design-build | 4 | Dimension-aware layouts and closed-world rendering ([11](11-ai-design-mockups.md)) | [MVP] mockups, [V1] layouts |
 | 4 | **A vertical ERP with a real ledger at SMB price** | Aspire (stops at QuickBooks) | Accounting is hard and incumbents partner with Intuit | Bookkeeper hours, WIP accuracy, lender-ready financials, QBO subscription removed | 4 | Built-in GL ([09](09-accounting-ledger-integrations.md)) | [MVP] |
 | 5 | **Company-owned payments in vertical software** | None verified | Payments margin funds the incumbents | Trust, switching ease, 0.3-1.0 points of processing | 3 technically, 5 economically (they would give up their profit pool) | Bring-your-own Stripe ([08](08-payments-stripe.md)) | [MVP] |
 | 6 | **Twelve-month operations (green plus white) for mid-size firms** | Aspire snow module; Yeti | Snow tools and green tools are separate products; ERP modules priced for enterprise | Snow-belt firms, $1M-$20M revenue | 3 | Snow module on the shared model ([14](14-service-line-modules.md)) | [V1] |
@@ -866,7 +879,7 @@ Good ideas are everywhere in this market; they are just scattered across 20 prod
 |---|---|---|---|---|---|
 | 1 | One-click "Approve & Pay Deposit" with optional "request changes" | Jobber Client Hub ([help](https://help.getjobber.com/en/articles/what-do-your-clients-see-in-client-hub/)) [S] | The client approves a specific design option; deposits above a threshold default to ACH; non-refundable plant-order deposits carry the contract clause automatically | [MVP] | [03](03-crm-sales-estimating-proposals.md), [06](06-customer-portal.md) |
 | 2 | Optional line items the client can tick | Jobber Grow tier [S3P] | In every tier; ticking "add landscape lighting" re-renders the mockup at night and updates the deposit | [MVP] | [03](03-crm-sales-estimating-proposals.md) |
-| 3 | Online booking with price, duration and service radius | Jobber ([help](https://help.getjobber.com/en/articles/online-booking/)) [S] | Price computed from the Property's measured turf polygon, not a flat menu; booking checks crew capacity on the route day | [MVP] booking, [V1] measured pricing | [16](16-marketing-growth-communications.md) |
+| 3 | Online booking with price, duration and service radius | Jobber ([help](https://help.getjobber.com/en/articles/online-booking/)) [S] | Price computed from the Property's measured turf polygon, not a flat menu; booking checks crew capacity on the route day | [V1] | [16](16-marketing-growth-communications.md) |
 | 4 | Booking directly from Google Local Services Ads | Jobber ([LSA integration](https://getjobber.com/integrations/google-local-services-ads/)) [S] | Lead cost posted to the ledger so CAC by source is real, not estimated | [V1] | [16](16-marketing-growth-communications.md), [18](18-reporting-analytics.md) |
 | 5 | Voice interface in the mobile app | Jobber Voice ([Lawn & Landscape](https://www.lawnandlandscape.com/news/jobber-adds-new-ai-powered-features)) [S] | Bilingual voice that writes data: "Terminé, usé tres yardas de mulch" logs materials and closes the visit, offline-queued | [V1] | [05](05-field-crew-mobile-app.md) |
 | 6 | AI-drafted marketing campaigns | Jobber Campaign Generator [S] | Grounded in Property data: "aeration offer to lawns over 5,000 sq ft not aerated in 2 years, in zip codes on Tuesday routes" | [V1] | [16](16-marketing-growth-communications.md) |
@@ -876,7 +889,7 @@ Good ideas are everywhere in this market; they are just scattered across 20 prod
 | 10 | Pesticide usage tied to treatment routes | GorillaDesk, FieldRoutes, Real Green [B] | Record pre-filled from the visit: product, EPA registration number, rate, area from the polygon, live weather, applicator license check; state rule packs | [MVP] | [14](14-service-line-modules.md), [05](05-field-crew-mobile-app.md) |
 | 11 | Accounting fidelity as a reason to buy | FieldEdge two-way QuickBooks [B] | Ledger as system of record; for QuickBooks loyalists, Desktop via Web Connector, sub-customer per Property, per-record quarantine | [MVP] ledger, [V1] Desktop | [09](09-accounting-ledger-integrations.md) |
 | 12 | Good-better-best options with financing | Housecall Pro, ServiceTitan [B]; HCP Wisetack terms to 84 and 120 months ([HCP](https://www.housecallpro.com/resources/february-2026-product-updates/)) [S] | Each tier is a Design Option with its own mockup; financing shown only above a ticket threshold; a Canadian partner too (Wisetack via HCP is not available in Canada ([HCP help](https://help.housecallpro.com/en/articles/3836042-wisetack-consumer-financing-overview)) [S]) | [MVP] options, [V1] financing | [03](03-crm-sales-estimating-proposals.md), [08](08-payments-stripe.md) |
-| 13 | Unified inbox across SMS, email, social and web chat | Thryv [B] | Every thread attached to the Client and Property, with AI-drafted replies citing the visit history | [V1] | [16](16-marketing-growth-communications.md) |
+| 13 | Unified inbox across SMS, email, social and web chat | Thryv [B] | Every thread attached to the Client and Property, with AI-drafted replies citing the visit history | [MVP] SMS, email, web chat, calls and portal; [V1] social and marketplace threads | [16](16-marketing-growth-communications.md) |
 | 14 | Configurable workflows | Zuper [B] | Opinionated templates plus the automation builder; no raw schema editing that breaks upgrades | [MVP] templates, [V1] builder | [17](17-ai-copilot-automation.md) |
 | 15 | Branches and divisions as P&L centers, with branch-to-branch subcontract work | Aspire ([guide](https://guide.youraspire.com/docs/workflow-for-managing-branch-to-branch-subcontract-work)) [S] | Ledger dimensions with automatic inter-branch entries, so branch P&Ls tie to the books | [V1] | [09](09-accounting-ledger-integrations.md), [13](13-operations-inventory-equipment.md) |
 | 16 | Production kits so everyone bids at the same rates | Aspire ([Capterra review](https://www.capterra.com/p/161544/Aspire/reviews/7184990/)) [S] | Kits populated from the design takeoff, with variance alerts when an estimator overrides a rate | [MVP] | [03](03-crm-sales-estimating-proposals.md) |
@@ -890,12 +903,12 @@ Good ideas are everywhere in this market; they are just scattered across 20 prod
 | 24 | AI takeoffs from construction plan sets | LMN with Beam AI ([release note](https://support.golmn.com/hc/en-us/articles/46786137574683)) [S] | Native: plant schedule mapped to KB records with regional performance flags and alternates | [V1] | [11](11-ai-design-mockups.md), [17](17-ai-copilot-automation.md) |
 | 25 | Item-level approval, prepay and appointment confirmation in the portal | Arborgold ([portal](https://arborgold.com/customer-portal/)) [S] | Plus commercial approval chains with spend limits per approver | [MVP] item-level, [V1] chains | [06](06-customer-portal.md) |
 | 26 | Crew-app permissions per crew | Arborgold ([crew permissions](https://help.arborgold.com/en/articles/permissions-in-arborgold-crew)) [S] | Crew-level overrides layered on granular RBAC, without conflating employees and users | [V1] | [02](02-personas-roles-permissions.md) |
-| 27 | GPS tree inventory with QR tags and photos | Arborgold, SingleOps ([tree inventory](https://singleops.com/features/tree-inventory)) [S] | Every installed plant is a KB-linked instance on the Property map; "plant passport" QR tags feed warranty and performance data | [V1] | [12](12-plant-knowledge-base.md), [14](14-service-line-modules.md) |
+| 27 | GPS tree inventory with QR tags and photos | Arborgold, SingleOps ([tree inventory](https://singleops.com/features/tree-inventory)) [S] | Every installed plant is a KB-linked instance on the Property map; "plant passport" QR tags feed warranty and performance data | [V2] | [12](12-plant-knowledge-base.md), [14](14-service-line-modules.md) |
 | 28 | Visual proposals clients rave about | SingleOps ([case study](https://www.casestudies.com/company/singleops/case-study/chop-nashvilles-proposals-are-incredible)) [S] | Before/after mockup slider, to-scale plan, tap-a-plant cards with Region rating and care | [MVP] | [03](03-crm-sales-estimating-proposals.md), [11](11-ai-design-mockups.md) |
 | 29 | Level billing that re-spreads automatically when services change | Real Green ([billing](https://realgreen.com/features/landscape-billing-invoice-software)), LawnPro ([level billing](https://lawnprosoftware.com/features/level-billing)) [S] | Contract asset and deferred revenue posted correctly in the ledger, with true-ups at cancellation | [MVP] | [07](07-invoicing-billing-contracts.md), [09](09-accounting-ledger-integrations.md) |
 | 30 | Instant quotes from satellite measurement | Real Green Measurement Assistant ([Real Green](https://www.realgreen.com/measurement_assistant.html)), LawnStarter [S] | Under the Company's own brand, using the same polygon later used by the crew and the design | [V1] | [16](16-marketing-growth-communications.md) |
 | 31 | Portal address switcher for property managers | Real Green ([portal](https://realgreen.com/features/lawn-care-customer-portal)) [S] | A full portfolio dashboard: spend by site, open approvals, proof of service, consolidated statements | [V1] | [06](06-customer-portal.md) |
-| 32 | Drip, win-back and seasonal upsell sequences | Service Autopilot [S] | On by default with plain-language explanations; Copilot proposes new rules from outcomes | [MVP] | [17](17-ai-copilot-automation.md) |
+| 32 | Drip, win-back and seasonal upsell sequences | Service Autopilot [S] | On by default with plain-language explanations; Copilot proposes new rules from outcomes | [MVP] prebuilt journeys, [V1] win-back engine | [16](16-marketing-growth-communications.md), [17](17-ai-copilot-automation.md) |
 | 33 | Users holding several roles; "Allow invoicing" tied to price visibility | SynkedUP ([roles](https://help.synkedup.com/en/articles/14756763-how-user-roles-work-in-synkedup)) [S] | Composable granular permissions with field-level price masking | [MVP] | [02](02-personas-roles-permissions.md) |
 | 34 | Software paired with business coaching | SynkedUP [S] | Coach partner program with a consented multi-tenant KPI view | [V1] | [22](22-business-model-pricing-gtm.md) |
 | 35 | State-level SEO landing pages | Copilot CRM ([Ohio page](https://www.copilotcrm.com/lawn-care/ohio)) [S] | Tenant region pages generated from real service area and Plant KB content ("Best deer-resistant shrubs for Columbus") | [V1] | [16](16-marketing-growth-communications.md) |
@@ -926,7 +939,7 @@ Likelihood and impact are analyst judgments over a 24-month horizon from MVP lau
 | T2 | **ServiceTitan bundles Aspire with Atlas AI, PropertyIntel and payments, and moves down-market** with a lighter edition | Medium | High in S4, medium in S2 | 12-24 months | "Aspire Essentials" style packaging; self-serve trials; price cuts for small firms | Win on time-to-value (days, not 90 days), design-led residential selling, published prices and payments ownership. Keep commercial parity on the [V1] roadmap so the S4 door stays open |
 | T3 | **Granum converges LMN and SingleOps into one platform and adds design** through Attentive.ai, Beam AI or an acquisition | Medium-high | High | 12-24 months | Unified Granum product announcement; design-tool acquisition; LMN Pay portability changes | A convergence switch offer during the merger period (migration concierge plus the switching credit in [22](22-business-model-pricing-gtm.md) section 6.4, triggered by section 15 idea 6); LMN-budget importer at [MVP]; "the same budget math you trust, fewer steps, and a proposal that looks like the finished yard" (the step count is quoted only after design-partner pilots measure it, section 15 idea 15) |
 | T4 | **A design-tool vendor partners with an ops platform** (for example PRO Landscape+ with Jobber or LMN) | Medium | Medium | 6-18 months | Integration announcements at January trade shows (MANTS, CENTS, Landscape Ontario Congress) | A partner integration still leaves two price lists and two client records; Rootline demos the one-record loop and the Region-rated plant KB |
-| T5 | **AI-native low-end challengers** (QuoteIQ and new entrants) undercut on price with AI features | High | Medium | Now | Comparison pages against Rootline; free tiers; AI import tools | Do not race to the bottom; Starter at $79 is a floor, not a weapon. Differentiate on depth that cheap tools cannot fund: curation, ledger, compliance |
+| T5 | **AI-native low-end challengers** (QuoteIQ and new entrants) undercut on price with AI features | High | Medium | Now | Comparison pages against Rootline; free tiers; AI import tools | Do not race to the bottom; Starter ($69 a month on annual billing, $79 monthly) is a floor, not a weapon. Differentiate on depth that cheap tools cannot fund: curation, ledger, compliance |
 | T6 | **Incumbents copy the payments message**: portable Stripe accounts or "bring your own processor" options | Low-medium | Medium | 12-36 months | Changes to LMN Pay terms; Jobber allowing third-party processors as a first-class option | Welcome it publicly; it validates the stance. Rootline's moat is the coupled data model, not payments alone. Keep the Zero-Markup Pledge in the terms of service |
 | T7 | **Price war and switching subsidies**: discounts, free migrations, "ACH on us" style fee holidays | Medium | Medium | Any spring | Promotional pricing pages; switching credits aimed at Rootline | Respond with total-cost math and the seasonal bill, not matching discounts; migration concierge already free on annual plans |
 | T8 | **Intuit pushes QuickBooks into field service and project management**, or restricts third-party API access | Low-medium | Medium | 12-36 months | QuickBooks field-service features; App Partner Program metering changes [B] | The built-in ledger makes Rootline the hedge; keep QBO sync optional, budget API calls, offer CPAs free seats and standard exports |
@@ -1549,13 +1562,13 @@ Market-level metrics tell the founder whether the positioning is working; progra
 | Q1 | Can we complete 20 interviews per archetype (A-E) in the two candidate beachhead Regions before MVP scope freeze? | Validates the top 15 pain points and the willingness to switch | `platform_owner` | Before MVP scope freeze |
 | Q2 | Which Regions does the founder's plant knowledge cover best? | Beachhead choice depends on Plant KB quality ([22](22-business-model-pricing-gtm.md) 6.2) | `platform_owner`, `platform_curator` | Before curation starts |
 | Q3 | Is [22](22-business-model-pricing-gtm.md)'s Year-5 base case (about 12% of the theoretical pool) realistic, or should the base case be re-anchored to measured beachhead win rates? | Investor credibility | `platform_finance` | After 6 months of beta |
-| Q4 | Publish named comparison pages at launch, or wait until claims are verified in a follow-up research pass? | Legal and reputational exposure vs search traffic | `platform_owner` | Before marketing site launch |
+| Q4 | Publish named comparison pages at launch, or wait until claims are verified in a follow-up verification round? | Legal and reputational exposure vs search traffic | `platform_owner` | Before marketing site launch |
 | Q5 | After Jobber and LMN, which switch kit comes next: Service Autopilot (payments pain), SingleOps (Granum convergence) or Real Green (lawn programs)? | Importer roadmap | `platform_engineer`, `platform_support` (GTM) | MVP plus 3 months |
 | Q6 | Partner with a measurement vendor until native AI takeoff ships, or build only? | Time to parity on measurement | `platform_owner` | Before V1 planning |
 | Q7 | Is snow a [V1] commitment for snow-belt beachheads or a [V2] module? | Archetype E timing | `platform_owner` | Before V1 planning |
 | Q8 | Should Rootline offer a free Solo tier against Yardbook, or keep Starter as the floor? | Top-of-funnel economics vs support cost | `platform_owner`, `platform_finance` | Before pricing page |
 | Q9 | Should Rootline license review-site data for pain-point mining, or rely on its own interviews and win/loss? | Evidence quality vs cost | `platform_support` (GTM), `platform_owner` | V1 |
-| Q10 | Fund a verification research pass (search budget plus vendor domains allowlisted) to clear Appendix E? | Many matrix cells and prices are [B] or [S3P] | `platform_owner` | Before any investor deck |
+| Q10 | Fund a verification research effort (primary-source checks of vendor sites, Census and BLS) to clear Appendix E? | Many matrix cells and prices are [B] or [S3P] | `platform_owner` | Before any investor deck |
 | Q11 | Should one beachhead cluster sit in the arid West (California or Southern Nevada) to ride the 2027 nonfunctional-turf deadlines (section 2.5, R2), even if the founder's plant knowledge is deeper elsewhere? | A dated demand wave versus Plant KB quality, the top beachhead criterion in [22](22-business-model-pricing-gtm.md) section 6.2 | `platform_owner`, `platform_curator` | Before beachhead selection |
 | Q12 | Which Canadian launch Region comes first given Quebec's French-language gate (section 2.5, R8) and provincial cosmetic-pesticide rules (R3)? | Canadian rule packs and translations must be ready at launch | `platform_owner`, `platform_curator` | Before V1 planning |
 
@@ -1613,7 +1626,7 @@ Every item below must be confirmed before external use. Items consolidate the ch
 
 ## Sources
 
-All links below were retrieved by research agents during this research run (November 2026) and are cited inline above; this document re-cites them because its own searches were refused when the run-wide search budget ran out, and fetches to ibisworld.com and bls.gov were blocked by the network allowlist. Prices and plan names are time-sensitive: as of Nov 2026, verify. Items marked "not opened" are primary references named for verification only.
+All links below were collected in November 2026 by the research reports and sibling module docs and are cited inline above. Prices and plan names are time-sensitive: as of Nov 2026, verify. Items marked "primary reference" are named for verification only.
 
 **Industry, labor and market**
 - Lawn & Landscape, Wilson 360 2024 benchmark: https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark
@@ -1622,7 +1635,7 @@ All links below were retrieved by research agents during this research run (Nove
 - USCIS, H-2B cap count: https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-2b-non-agricultural-workers/cap-count-for-h-2b-nonimmigrants
 - DOL WHD, H-2B program: https://www.dol.gov/agencies/whd/immigration/h2b
 - ISED, financial performance data for NAICS 56173: https://ised-isde.canada.ca/app/ixb/cis/performance/56173
-- Census County Business Patterns program page (not opened): https://www.census.gov/programs-surveys/cbp.html
+- Census County Business Patterns program page (primary reference): https://www.census.gov/programs-surveys/cbp.html
 - Finviz, Aspire report on commercial landscapers and AI: https://finviz.com/news/401821/aspire-report-finds-commercial-landscapers-prioritizing-growth-as-businesses-navigate-operational-complexity
 - Weed Man, prepay and referral discounts: https://weedman.com/blog/prepay-and-referral-discounts
 - LawnPro, level billing: https://lawnprosoftware.com/features/level-billing
@@ -1772,7 +1785,7 @@ All links below were retrieved by research agents during this research run (Nove
 - AFS Law, Visa reduces its merchant surcharge cap to 3%: https://www.afslaw.com/perspectives/alerts/visa-reduces-its-merchant-surcharge-cap-3-effective-april-15-2023-merchants
 - LawPay, credit card surcharge rules by state: https://www.lawpay.com/about/blog/credit-card-surcharge-rules/
 
-**Regulation (section 2.5; links retrieved by sibling module research in this run)**
+**Regulation (section 2.5; links re-cited from sibling module docs)**
 - California Air Resources Board, Small Off-Road Engines (SORE): https://ww2.arb.ca.gov/our-work/programs/small-off-road-engines-sore
 - California Legislative Information, AB 1572 (nonfunctional turf): https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202320240AB1572
 - Congress.gov, H.R. 1, 119th Congress (One Big Beautiful Bill Act, Public Law 119-21): https://www.congress.gov/bill/119th-congress/house-bill/1
