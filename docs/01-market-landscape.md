@@ -877,3 +877,543 @@ Good ideas are everywhere in this market; they are just scattered across 20 prod
 **Also noted, not yet scheduled:** cinematic flyovers for pool and outdoor-living jobs (Structure Studios) [V2]-[V3]; irrigation hydraulics and watering schedules at Land F/X rigor ([Land F/X](https://www.landfx.com/irrigationfeatures)) [V1]; keystone-plant and wildlife-host scoring (NWF, Tallamy research, licensed) [V1]; free AI yard previews as a white-label lead magnet, validated by consumer demand [MVP] ([16](16-marketing-growth-communications.md)); the "ACH on us" promotion (Jobber) reframed as a permanent ACH incentive with a savings meter [V1] ([08](08-payments-stripe.md)).
 
 ---
+
+## 10. Competitive threats and how incumbents may respond
+
+### 10.1 Threat register
+
+Likelihood and impact are analyst judgments over a 24-month horizon from MVP launch [E]. "Signals" are what the market-intelligence capability (section 12) watches for.
+
+| # | Threat | Likelihood | Impact | Timeline | Early-warning signals | Rootline response |
+|---|---|---|---|---|---|---|
+| T1 | **Jobber goes deeper into landscaping**: measurement partner, AI photo mockups in quotes, a landscaping edition | High | High | 6-18 months | Jobber product updates mentioning design, measurement or plants; acquisitions of a design or measurement startup; landscaping-specific pricing | Compete on depth Jobber's 50-vertical model cannot justify: production-rate estimating, Region-rated plants, ledger, snow, chemicals. Lead every comparison with the integrated record, not with AI images |
+| T2 | **ServiceTitan bundles Aspire with Atlas AI, PropertyIntel and payments, and moves down-market** with a lighter edition | Medium | High in S4, medium in S2 | 12-24 months | "Aspire Essentials" style packaging; self-serve trials; price cuts for small firms | Win on time-to-value (days, not 90 days), design-led residential selling, published prices and payments ownership. Keep commercial parity on the [V1] roadmap so the S4 door stays open |
+| T3 | **Granum converges LMN and SingleOps into one platform and adds design** through Attentive.ai, Beam AI or an acquisition | Medium-high | High | 12-24 months | Unified Granum product announcement; design-tool acquisition; LMN Pay portability changes | Migration amnesty program during convergence; LMN-budget importer at [MVP]; "same numbers you trust, a third of the clicks, and a proposal that looks like the finished yard" |
+| T4 | **A design-tool vendor partners with an ops platform** (for example PRO Landscape+ with Jobber or LMN) | Medium | Medium | 6-18 months | Integration announcements at January trade shows (MANTS, CENTS, Landscape Ontario Congress) | A partner integration still leaves two price lists and two client records; Rootline demos the one-record loop and the Region-rated plant KB |
+| T5 | **AI-native low-end challengers** (QuoteIQ and new entrants) undercut on price with AI features | High | Medium | Now | Comparison pages against Rootline; free tiers; AI import tools | Do not race to the bottom; Starter at $79 is a floor, not a weapon. Differentiate on depth that cheap tools cannot fund: curation, ledger, compliance |
+| T6 | **Incumbents copy the payments message**: portable Stripe accounts or "bring your own processor" options | Low-medium | Medium | 12-36 months | Changes to LMN Pay terms; Jobber allowing third-party processors as a first-class option | Welcome it publicly; it validates the stance. Rootline's moat is the coupled data model, not payments alone. Keep the Zero-Markup Pledge in the terms of service |
+| T7 | **Price war and switching subsidies**: discounts, free migrations, "ACH on us" style fee holidays | Medium | Medium | Any spring | Promotional pricing pages; switching credits aimed at Rootline | Respond with total-cost math and the seasonal bill, not matching discounts; migration concierge already free on annual plans |
+| T8 | **Intuit pushes QuickBooks into field service and project management**, or restricts third-party API access | Low-medium | Medium | 12-36 months | QuickBooks field-service features; App Partner Program metering changes [B] | The built-in ledger makes Rootline the hedge; keep QBO sync optional, budget API calls, offer CPAs free seats and standard exports |
+| T9 | **A consumer AI design brand or Yardzen builds a contractor marketplace** and owns the homeowner | Medium | Medium | 12-24 months | Contractor-network launches; financing partnerships | Rootline Home routes homeowners to subscribing Companies with the design attached; the Company keeps the client ([22](22-business-model-pricing-gtm.md) section 5.3) |
+| T10 | **Stripe changes Connect economics or policies** for full-dashboard accounts | Low | High | Unknown | Stripe pricing and Connect docs changes | Provider abstraction in payments; restricted-key advanced path; Stripe partner relationship ([08](08-payments-stripe.md)) |
+| T11 | **Contractor roll-ups acquire Rootline customers** and move them to the parent's ERP | Medium | Medium in S4 | Ongoing | M&A announcements in beachhead Regions | Multi-entity ledger and branch dimensions so roll-ups can standardize on Rootline; target independents competing with roll-ups |
+| T12 | **Housing or construction downturn** cuts design-build demand | Medium | Medium | Cyclical | Housing starts, remodeling indices, deposit volumes in Rootline | Recurring maintenance, programs and snow keep tenants busy; Winter Mode and active-seat billing reduce churn pressure |
+
+```mermaid
+quadrantChart
+    title Threats by likelihood and impact over 24 months
+    x-axis Low likelihood --> High likelihood
+    y-axis Low impact --> High impact
+    quadrant-1 Plan for now
+    quadrant-2 Monitor closely
+    quadrant-3 Watch list
+    quadrant-4 Manage tactically
+    T1 Jobber deeper: [0.80, 0.82]
+    T2 ServiceTitan down market: [0.50, 0.72]
+    T3 Granum design: [0.65, 0.78]
+    T4 Design partnerships: [0.50, 0.50]
+    T5 AI native low end: [0.82, 0.45]
+    T6 BYO payments copied: [0.30, 0.48]
+    T7 Price war: [0.55, 0.42]
+    T8 Intuit moves: [0.32, 0.52]
+    T9 Consumer AI marketplace: [0.48, 0.46]
+    T10 Stripe policy: [0.15, 0.80]
+    T11 Rollup churn: [0.55, 0.36]
+    T12 Downturn: [0.45, 0.55]
+```
+
+### 10.2 How each incumbent is likely to respond to Rootline specifically
+
+| Incumbent | Likely first response | Likely second response | What they cannot easily do | Our counter |
+|---|---|---|---|---|
+| Jobber | Comparison page and switching credit aimed at Rootline; emphasize ecosystem and simplicity | Ship AI photo features in quotes; deepen landscaping templates | Build a curated plant KB, a ledger and production-rate estimating without complicating a 50-vertical product | Keep the spine as simple as Jobber's (Quick Quote mode); sell depth to the firms that have outgrown it |
+| Aspire / ServiceTitan | Ignore Rootline in S2; defend S4 accounts with bundle discounts | Lighter edition; Atlas features for landscapers | Cut a 90-day implementation to days without re-architecting; give up captive payments | Days-not-months migration with work-ticket history preserved; commercial parity at [V1] |
+| Granum (LMN, SingleOps) | Emphasize estimating heritage and education; lock in during LMN Pay re-onboarding | Add design via partners; unify products | Make LMN Pay accounts portable without losing payments revenue; build region-aware plant data | Free LMN import with budget and production-rate mapping; "your cards leave with you" message |
+| Service Autopilot / Real Green | Retention discounts; automation and program depth messaging | Cloud and UX refresh | Remove processor mandates (Xplor's model is payments-led) | Card re-collection campaign kit; program, round and chemical-history import |
+| PRO Landscape+ | Emphasize imaging quality and price | Partner with an ops platform | Become an ops platform with books | Show the loop from mockup to invoice; import their plant lists |
+
+### 10.3 Moats, ranked by how long they take to copy
+
+| Moat | Why it compounds | Time for a funded incumbent to copy [E] |
+|---|---|---|
+| **Curated cultivar-level Plant KB with Region Profiles** | Curators plus partner data plus tenant field-truth (warranty claims, replacements, survival) improve ratings every season; licensing and clean-room curation take years ([R3](research/R3-design-ai-plant-data.md) s5) | 3-5 years |
+| **One shared geometry and record from parcel to plow plan to ledger** | Every new module reuses it; incumbents would need to rebuild their data model | 2-4 years |
+| **Ledger as system of record** | Years of books history are the stickiest data a Company owns; CPAs build processes around it | 2-3 years to build; trust takes longer |
+| **Trust from owning nothing of the Company's money** | Competitors cannot copy without giving up their profit pool | Economically blocked |
+| **Cross-tenant benchmarks and plant performance network** | Needs ledger-grade data at scale with exact KPI definitions | 3+ years after scale |
+| **AI pipelines and model routing** | Commodity models; the conditioning data is the moat, not the generator | 6-18 months (least durable on its own) |
+
+> **Competitive edge (durability).** Rootline's AI features are the easiest thing to copy and the least important part of the moat. The durable advantages are the curated Plant KB, the shared geometry and ledger, and a payments stance incumbents cannot match without cutting their own revenue. Marketing should lead with outcomes those assets produce, and treat AI as the visible surface of them.
+
+---
+
+## 11. Positioning statement and messaging pillars
+
+[22](22-business-model-pricing-gtm.md) section 6.3 uses the beachhead version of this positioning for sales and pricing. This section is the master version for the whole doc set.
+
+### 11.1 Category
+
+**The landscape business operating system**, described in one line as "design-to-books software for landscape companies". Rootline does not position as a field-service app with landscaping features, nor as design software with a CRM. The category claim is that the whole job, from first photo to closed books, belongs in one system built for landscapes.
+
+### 11.2 Master positioning statement
+
+> **For** owner-led landscape companies with 5-100 people that design, install and maintain landscapes, **who** today juggle a field-service app, an estimating tool, a design tool, QuickBooks and a payments account they don't control, **Rootline is** the landscape business operating system **that** takes every job from first photo to to-scale design to signed proposal to crew schedule to paid invoice to closed books, with a regional horticulturist's plant knowledge built in. **Unlike** generalist home-service apps (Jobber, Housecall Pro), estimating-first landscape tools (LMN, SynkedUP, SingleOps), enterprise platforms (Aspire, Real Green) or design tools (PRO Landscape+), **Rootline** designs, sells, runs and accounts for the work in one system, at a published price, on a Stripe account the Company owns, with zero payment markup by default.
+
+**Short version (25 words).** Rootline runs a landscape company from first photo to closed books: designs clients can see, plants that thrive, crews that stay on schedule, books that close themselves.
+
+**Archetype variants.**
+
+| Archetype | One-line positioning |
+|---|---|
+| A. Solo | "Get paid on autopilot and look like a big company: branded booking, autopay and routes, for less than a tank of gas a month." |
+| B. Residential maintenance | "Routes that respect real roads, rain days in one click, compliant lawn-program records, and your own Stripe account." |
+| C. Design-build (beachhead) | "Draw it once, price it once, show the client their own yard, and know what the job really made." |
+| D. Commercial maintenance | "Aspire-grade contracts, job costing and commercial portals, live in days instead of a quarter." |
+| E. Multi-service with snow | "One system for twelve months: the same clients, crews and books for mowing in July and plowing in January." |
+
+### 11.3 Messaging pillars
+
+These match the five pillars in [22](22-business-model-pricing-gtm.md) section 6.3, with the proof points this analysis supports.
+
+| Pillar | Promise | Proof points (each traceable to a module spec) | Competitor contrast (sourced) | Primary personas |
+|---|---|---|---|---|
+| **1. Sell bigger jobs with designs clients can see** | Win the $25k patio and the $8k planting against two other bids | AI mockups of the client's own yard; dimension-aware layouts; plants rated for the Region; takeoffs that feed the estimate ([10](10-design-studio.md), [11](11-ai-design-mockups.md), [12](12-plant-knowledge-base.md)) | Aspire users ask for more photos in proposals ([Capterra](https://www.capterra.com/p/161544/Aspire/reviews/?page=3)); AI apps invent plants ([Penn State](https://extension.psu.edu/ai-garden-design-intelligent-choices)) | `owner`, `designer`, `estimator` |
+| **2. Run the whole business in one place** | Stop re-typing between five tools | CRM to estimating to scheduling to crew app to invoicing to ledger; one login, one bill | Jobber users trace areas in Google Maps and ask for separate design software ([Jobber help](https://help.getjobber.com/es/articles/how-to-measure-property-distance-and-size/), [Community](https://community.getjobber.com/discussions/operations-forum/looking-for-landscape-design-software--training/8084)) | `owner`, `office_manager` |
+| **3. Know your numbers** | Real job costing and books that close themselves | Built-in double-entry ledger, job costing, WIP, deferred revenue for prepaid programs, overhead recovery tracking, opt-in benchmarks ([09](09-accounting-ledger-integrations.md), [18](18-reporting-analytics.md)) | Jobber's QBO sync is one-way with no Desktop and client-wide error blocks ([Jobber](https://help.getjobber.com/es/articles/quickbooks-integration-faqs/)) | `owner`, `bookkeeper` |
+| **4. Fair and transparent** | No surprises in price, seats or fees | Published prices; active-only field seats; zero payment markup; your Stripe account; Price Lock Promise; free migration ([22](22-business-model-pricing-gtm.md), [08](08-payments-stripe.md)) | "No longer have a choice of processor" ([GetApp](https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/)); add-ons "add up fast" ([FieldCamp](https://fieldcamp.ai/reviews/jobber-reviews/)) | All |
+| **5. Crews love it** | Crews use it because it makes their day easier | Offline-first, Spanish and English, big buttons, routes, photos, own hours and pay ([05](05-field-crew-mobile-app.md)) | LMN crew-app crashes ([GetApp](https://www.getapp.com/industries-software/a/lmn/)); legacy Aspire app at 2.28 stars ([AppGoblin](https://appgoblin.info/apps/1392810365)) | `crew_lead`, `technician`, `ops_manager` |
+
+**Reasons to believe (the three demos every prospect sees).**
+
+1. **The 6-minute patio.** Trace a 400 sq ft patio on the aerial, pick pavers, watch base, edge restraint and polymeric sand quantities flow into a priced estimate with the Company's production rates, and show the client an AI mockup of their own backyard before leaving the driveway.
+2. **The rain day.** Tuesday is washed out: one click slides 140 visits across four crews, re-optimizes routes on real roads, and texts every client in English or Spanish.
+3. **The month-end that isn't.** Payouts from the Company's own Stripe account match bank lines automatically; deferred revenue on prepaid lawn programs releases per application; the P&L by service line is ready on the 1st.
+
+### 11.4 Messaging rules
+
+| Do | Don't |
+|---|---|
+| Lead with outcomes and real landscaping examples (mulch by the cubic yard, 2-inch push triggers, 5-step programs) | Lead with "AI" as the headline; it is a means, not the promise |
+| Say "your designer's power tool" | Claim AI replaces designers or estimators |
+| Cite sourced, dated facts on comparison pages ("as of Nov 2026") | Disparage competitors by name in ads or claim absences we have not verified |
+| Show the July bill and the January bill | Quote a single monthly price without seats and usage |
+| Label every AI image an artist rendering with plant age | Show AI renders as completed work |
+| Say "your Stripe account, your customers, your cards" | Imply Rootline holds or moves client money |
+
+**Competitor one-liners for sales (sourced claims only).**
+
+| Versus | One-liner |
+|---|---|
+| Jobber | "Everything you like about Jobber's simplicity, plus the design, estimating, plants and books a landscape company needs, on your own Stripe account." |
+| LMN | "The budget math you trust, a third of the clicks, a proposal that looks like the finished yard, and payments you can take with you." |
+| Aspire | "Commercial-grade contracts and job costing, live in days with published pricing." |
+| Service Autopilot / Real Green | "Your automations and programs, a modern app, and your choice of processor: your own." |
+| PRO Landscape+ | "Keep the beautiful pictures; now the plants are rated for your Region and the design becomes the estimate, the order and the invoice." |
+| QuickBooks | "Keep your CPA happy with real double-entry books, without syncing two systems." |
+
+---
+
+## 12. Market intelligence capability (spec)
+
+A market analysis is stale the week it is published; Jobber's 2026 prices already differ by $100+ a month across trackers ([Costbench](https://costbench.com/changelog/jobber-price-increase-2026-02-3/)) [S3P]. Rootline therefore treats competitive intelligence as a small, internal product inside the [Platform Admin console](19-platform-admin-portal.md), plus three tenant- and prospect-facing tools that turn it into acquisition. This section is written so an engineer can estimate it.
+
+### 12.1 Personas and jobs
+
+| Persona | Role key | Job in this capability |
+|---|---|---|
+| Founder / Platform Operator | `platform_owner` | Own the positioning; approve anything published externally; read win/loss and switch sources monthly |
+| GTM and support staff | `platform_support` with the `market_intel.*` permission set | Log claims and price observations; triage change alerts; maintain battlecards; run win/loss interviews |
+| Finance | `platform_finance` | Maintain the market sizing workbook and pricing observations used in the TCO calculator |
+| Engineering | `platform_engineer` | Maintain switch kits (importer templates per competitor export format); run the change monitor |
+| Curator | `platform_curator` | Supply plant and regional facts used in competitive claims (for example "no competitor rates plants per Region") |
+| Business Owner (prospect or tenant) | `owner` | Use the TCO calculator and Fee X-ray; declare previous tools at signup; receive a switch plan |
+
+### 12.2 Feature specification
+
+**MI-01 Competitor registry [MVP].** One record per competitor organization and product (for example Granum -> LMN, SingleOps, LMN Pay). Fields: name, aliases (used to recognize export files and signup answers), owner group, category (horizontal FSM, landscape ERP, design, point tool, accounting), segments served, status (`active`, `acquired`, `merged`, `sunset`), website, evidence depth (high, medium, low). Rules: merging two products keeps both ids as aliases; a `sunset` status triggers the rescue-program playbook (section 15, idea 9).
+
+**MI-02 Evidence ledger and claims [MVP].** Every competitive statement Rootline relies on is a `claim` with: text (max 280 characters), subject product, capability key (optional), evidence tag (`S`, `S3P`, `B`, `E`), one or more sources (URL, publisher, retrieved_at, short excerpt of 25 words or fewer, page-archive hash), author, verifier, `verify_by` date. Rules:
+- Default `verify_by`: 90 days for prices and plan names, 180 days for features, 365 days for corporate facts (ownership, deal dates).
+- A claim tagged `B` or `E` can never be published externally; only `S` claims (and `S3P` price ranges with a "verify" label) can reach public pages.
+- When `verify_by` passes, the claim moves to `stale`; stale claims are automatically removed from public comparison pages and flagged on battlecards within 24 hours.
+- Claims about absences ("Competitor X has no Y") require two independent sources or a dated product-documentation search log, and still render publicly as "we could not find documentation of Y as of <date>".
+- Edits are append-only with an audit trail (who, when, before, after).
+
+**MI-03 Capability matrix as data [MVP].** A catalog of capability keys (for example `cap.design.to_scale_2d`, `cap.money.native_gl`, `cap.payments.portable_account`), each with a definition and grouping. An `assessment` links product x capability to a rating (`full`, `partial`, `none`, `unknown`), a confidence flag (the `*` in section 4.4) and one or more claims. The matrix tables in this document are generated from this data; snapshots are versioned quarterly so changes over time are visible. Validation: a `full` or `partial` rating needs at least one non-stale claim; `none` needs an absence claim per MI-02.
+
+**MI-04 Pricing observations [V1].** Per product and plan: list price (monthly and annual), currency, included users, extra-user price, add-ons, one-time fees, source, observed_at. Rules: a change of more than 5% or a new plan name creates a `market.price.changed` event and a battlecard review task; observations older than 90 days display as "last seen <date>" in the TCO calculator.
+
+**MI-05 Change monitor [V1].** Watches a configured list of public URLs per product (pricing pages, release notes, help-center changelogs, press rooms, app-store listings). On change, stores the diff and an AI summary (via the AI Gateway, [17](17-ai-copilot-automation.md)) in a triage queue. Rules: public pages only; respects robots.txt and site terms; no login-gated pages, no accounts created under false pretenses, rate-limited to one fetch per URL per day. Summaries are drafts until an analyst converts them into claims.
+
+**MI-06 Battlecards [V1].** One per competitor, assembled from verified claims, pain points, steal-worthy ideas and win/loss reasons: where they win, where we win, trap-setting questions, switching offer, objection handling. Every bullet links to its claim. Rules: a battlecard with any stale claim shows a banner; publication requires `platform_owner` or a delegate; versions retained.
+
+**MI-07 Switch-source capture [MVP].** During signup and onboarding, the Company selects the tools it uses today from the registry, by category (field service, estimating, design, measurement, accounting, payments processor, snow, reviews, website), with "other" free text. Stored on the tenant. Drives: which importer and switch kit the onboarding wizard offers, the card re-collection campaign (when the previous processor is vendor-run), and reporting on win sources. Optional for the Company; never inferred from email or bank data.
+
+**MI-08 Win/loss records [MVP].** For every closed prospect opportunity in Rootline's own GTM CRM: outcome (`won`, `lost`, `no_decision`), competitor(s) involved, archetype, segment, reason codes (multi-select: price, missing feature named, ease of use, migration risk, payments, design, accounting, support, timing), free-text notes and, with consent, an interview summary. Quarterly review updates the pain-point ranking (section 6) and the roadmap ([24](24-roadmap-feature-catalog.md)).
+
+**MI-09 Public comparison pages [V1].** Generated only from publishable claims, each with an "as of" date and citation, a visible "report an inaccuracy" link that creates a review task with a 5-business-day SLA, and a legal-review gate before first publication. Pages never use competitor logos; product names appear in plain text for identification only.
+
+**MI-10 Total Cost of Tools calculator [V1].** Public page and in-app tool. The prospect picks current tools; the calculator pre-fills price ranges from MI-04 (marked "last seen <date>, edit if different"), asks for office and field headcount in July and January, card and ACH volume, and outputs monthly and annual totals today versus Rootline (using [22](22-business-model-pricing-gtm.md) prices), the July and January bills, and an estimated processing saving from ACH steering. Rules: always shows ranges, never a single "you will save" promise; the prospect can overwrite every competitor price; lead capture is optional and happens after results are shown.
+
+**MI-11 Processor Fee X-ray [V1].** The prospect uploads a monthly processing statement (PDF or CSV). Document AI extracts volume, transaction count, fees and effective rate, then compares with Stripe list pricing and an ACH-steered mix. Rules: explicit consent before upload; merchant ids, account numbers and cardholder data are redacted at extraction; source files deleted after 30 days unless the prospect becomes a tenant and opts to keep them; the result states that Stripe pricing is list pricing "as of <date>" and that the Company contracts with Stripe directly.
+
+**MI-12 Switch kits [MVP for Jobber and LMN; V1 for SingleOps, Service Autopilot, Real Green, Aspire, Yardbook, Copilot CRM].** Per competitor product: known export formats and field mappings, AI-assisted mapping for unknown columns, objects covered (clients, properties, contacts, price book, recurring schedules, open quotes, invoices, budgets and production rates, programs and rounds, chemical history, prepay balances), and post-import tasks (ledger opening balances, deferred revenue for prepaid programs, card re-collection campaign). Importers use the Company's own export files, or an API only where the competitor's terms allow customer-authorized access ([19](19-platform-admin-portal.md) open question). Dry run, diff review by `office_manager`, commit and rollback are mandatory steps.
+
+**MI-13 Market sizing workbook [MVP, pre-launch].** Pulls Census County Business Patterns and Statistics of US Businesses (NAICS 561730) and Statistics Canada counts (NAICS 56173) by employee band and geography; stores versioned assumptions (ARPA per band, reachability); recomputes the section 2.3 model and the beachhead Region scorecard ([22](22-business-model-pricing-gtm.md) section 6.2).
+
+**MI-14 Voice-of-customer repository [MVP].** Interview and call notes with consent flags, tagged to pain points, archetypes and personas; short quotes can be promoted into claims (with consent and anonymization). Feeds the quarterly re-ranking of section 6.
+
+### 12.3 Key flows
+
+**Flow 1: a competitor changes its pricing or product.**
+
+1. The change monitor detects a diff on a watched pricing page and stores it with an AI summary.
+2. GTM staff (`platform_support`) triage: dismiss, or convert to claims and price observations.
+3. A second person verifies the claim against the live page; status becomes `verified`.
+4. Affected matrix cells, battlecards, comparison pages and TCO defaults are flagged for review; `platform_owner` approves external changes.
+5. Sales receives a digest; if the change is a forced migration (for example a processor change), the switch-window playbook starts.
+
+```mermaid
+sequenceDiagram
+  participant Monitor
+  participant Gateway as AI Gateway
+  participant Analyst
+  participant Verifier
+  participant Owner
+  participant Sales
+  Monitor->>Monitor: Detect diff on watched public page
+  Monitor->>Gateway: Summarize diff
+  Gateway-->>Monitor: Draft summary
+  Monitor->>Analyst: Triage task with diff and summary
+  Analyst->>Analyst: Create claims and price observations
+  Analyst->>Verifier: Request verification
+  Verifier-->>Analyst: Verified with source and date
+  Analyst->>Owner: Approve battlecard and comparison page updates
+  Owner-->>Analyst: Approved
+  Analyst->>Sales: Digest and switch-window alert if relevant
+```
+
+**Flow 2: claim lifecycle.**
+
+```mermaid
+stateDiagram-v2
+  [*] --> Draft
+  Draft --> Sourced : source attached
+  Sourced --> Verified : second person confirms
+  Sourced --> Rejected : source does not support claim
+  Verified --> Published : owner approves external use
+  Verified --> InternalOnly : tagged B or E
+  Published --> Stale : verify_by date passes
+  InternalOnly --> Stale : verify_by date passes
+  Stale --> Verified : re-verified
+  Stale --> Retired : no longer true
+  Published --> Retired : inaccuracy confirmed
+  Rejected --> [*]
+  Retired --> [*]
+```
+
+**Flow 3: a prospect switches from a vendor-run payments platform.**
+
+1. The owner runs the TCO calculator and the Fee X-ray, sees the July and January bills and the ACH saving, and starts a trial.
+2. At signup the owner declares previous tools (MI-07): Service Autopilot plus QuickBooks Online plus Xplor processing.
+3. Onboarding offers the Service Autopilot switch kit and connects or creates the Company's Stripe account ([08](08-payments-stripe.md)).
+4. The import runs as a dry run; the `office_manager` reviews the diff; the import commits; ledger opening balances and prepay liabilities post ([09](09-accounting-ledger-integrations.md)).
+5. The card re-collection campaign goes out through the white-label portal with an ACH incentive; the autopay re-enrollment tracker shows progress by client.
+
+```mermaid
+flowchart TB
+  A["Owner runs TCO calculator and Fee X-ray"] --> B["Trial starts"]
+  B --> C["Declares previous tools at signup"]
+  C --> D{"Previous processor vendor-run?"}
+  D -->|"yes"| E["Plan card re-collection campaign"]
+  D -->|"no, own Stripe already"| F["Connect existing Stripe by OAuth"]
+  E --> G["Connect or create Company Stripe account"]
+  F --> H["Switch kit import: dry run"]
+  G --> H
+  H --> I["Office manager reviews diff"]
+  I --> J["Commit import and post opening balances"]
+  J --> K["Portal invites and autopay re-enrollment tracker"]
+  K --> L["First invoices collected on the Company's own account"]
+```
+
+### 12.4 Screens and wireframes
+
+| Screen | Surface | Users | Priority |
+|---|---|---|---|
+| Market Intel > Capability Matrix | Platform Admin | `platform_owner`, `platform_support` | [MVP] |
+| Market Intel > Claim detail and evidence | Platform Admin | Same | [MVP] |
+| Market Intel > Change triage queue | Platform Admin | `platform_support` | [V1] |
+| Market Intel > Battlecards | Platform Admin and sales view | Same | [V1] |
+| Market Intel > Win/loss and switch sources dashboard | Platform Admin | `platform_owner`, `platform_finance` | [MVP] |
+| Total Cost of Tools calculator | Public marketing site and tenant app | Prospects, `owner` | [V1] |
+| Processor Fee X-ray | Public marketing site | Prospects | [V1] |
+| "Where are you coming from?" switch step | Tenant onboarding | `owner`, `office_manager` | [MVP] |
+
+**Wireframe 1: Platform Admin, capability matrix.**
+
+```text
++--------------------------------------------------------------------------------------------+
+| Rootline Admin > Market Intel > Capability Matrix          Snapshot: 2026-Q4  [Compare v]  |
++--------------------------------------------------------------------------------------------+
+| Filter: Group [All v]  Segment [S2 design-build v]  Show: [x] stale  [x] unknown           |
++--------------------------------------------------------------------------------------------+
+| Capability                         | JB | LMN | ASP | SO | RG | SA | PRO | ... | Rootline   |
+|------------------------------------+----+-----+-----+----+----+----+-----+-----+------------|
+| Production-rate estimating (MORS)  | o  |  *  |  *  | ~  | o  | o  |  o  |     | * MVP      |
+| To-scale 2D design studio          | o  |  o  |  o  | o  | o  | o  |  *  |     | * MVP      |
+| Region-aware plant KB              | o  |  o  |  o  | o  | o  | o  |  ~  |     | * MVP      |
+| Company-owned processor account    | ~  |  o! |  ?  | ?  | ?  | o  |  -  |     | * MVP      |
+| QuickBooks Desktop sync            | o  |  *? |  ?  | *? | ?  | ?  |  -  |     | * V1       |
++--------------------------------------------------------------------------------------------+
+| Legend: * full  ~ partial  o none  ? unknown  ! stale claim (verify_by passed)             |
+| Cell click -> claim panel:                                                                 |
+|  "LMN Pay accounts are not Stripe accounts the contractor controls" [S, single opinion]    |
+|  Source: merchantcostconsulting.com (retrieved 2026-11-07)  verify_by 2027-02-05           |
+|  [Verify now] [Mark stale] [Open source] [History]                                         |
++--------------------------------------------------------------------------------------------+
+```
+
+**Wireframe 2: public Total Cost of Tools calculator.**
+
+```text
++------------------------------------------------------------------------------+
+| What does your software really cost?                                          |
++------------------------------------------------------------------------------+
+| 1. Your tools today                         | Your results (ranges, estimates) |
+|  Field service  [Jobber Grow     v] $199-299 |  Today      $ 860 - $ 990 / mo   |
+|  Extra users    [ 5 ] x $29                  |  Rootline   $ 393 / mo (Grow)    |
+|  Design tool    [PRO Landscape+  v] $90      |  ----------------------------    |
+|  Accounting     [QuickBooks Plus v] $115     |  July bill  today $990  RL $413  |
+|  Reviews/market [Marketing Suite v] $79      |  Jan bill   today $990  RL $393  |
+|  Website        [ other         v] $40       |                                  |
+| 2. Your crew    July: office [3] field [11]  |  Processing on your own Stripe   |
+|                 Jan:  office [3] field [ 4]  |  with ACH steering: save about   |
+| 3. Payments     Card volume/yr [$1,200,000]  |  $8,000 - $14,000 / yr           |
+|                 ACH volume/yr  [$  300,000]  |                                  |
+|  Prices last seen 2026-10; edit any number   |  [See the details] [Start trial] |
++------------------------------------------------------------------------------+
+| Competitor prices are third-party list prices as of the date shown. Verify.  |
++------------------------------------------------------------------------------+
+```
+
+**Wireframe 3: tenant onboarding switch step.**
+
+```text
++----------------------------------------------------------------------+
+| Welcome to Rootline. Where are you coming from?        Step 2 of 6   |
++----------------------------------------------------------------------+
+| Field service / scheduling: (o) Jobber  ( ) LMN  ( ) Service Autopilot|
+|                             ( ) Real Green  ( ) Aspire  ( ) Other ___ |
+| Accounting:                 (o) QuickBooks Online  ( ) Desktop  ( ) Xero|
+| Design:                     (o) PRO Landscape+  ( ) SketchUp  ( ) None |
+| Card payments today:        (o) Jobber Payments  ( ) My own Stripe     |
++----------------------------------------------------------------------+
+| Your switch plan                                                     |
+|  1. Export clients, properties, recurring visits from Jobber (guide) |
+|  2. Connect or create your Stripe account (about 10 minutes)         |
+|  3. Re-collect saved cards: 214 autopay clients -> portal campaign   |
+|     with optional ACH incentive                                      |
+|  4. Keep QuickBooks in sync, or switch to Rootline Ledger later      |
+|  [Start import dry run]                     [Skip, I'll do it later] |
++----------------------------------------------------------------------+
+```
+
+### 12.5 Data model
+
+```mermaid
+erDiagram
+  competitor ||--o{ competitor_product : offers
+  competitor_product ||--o{ capability_assessment : assessed_by
+  capability ||--o{ capability_assessment : rated_in
+  capability_assessment }o--o{ claim : supported_by
+  claim ||--o{ claim_source : cites
+  evidence_source ||--o{ claim_source : used_in
+  competitor_product ||--o{ price_observation : priced_at
+  competitor ||--o{ competitor_event : subject_of
+  competitor ||--o{ battlecard : described_by
+  battlecard }o--o{ claim : contains
+  pain_point ||--o{ pain_point_evidence : backed_by
+  claim ||--o{ pain_point_evidence : used_as
+  competitor_product ||--o{ switch_kit : migrated_by
+  tenant ||--o{ tenant_switch_source : declares
+  competitor_product ||--o{ tenant_switch_source : named_in
+  prospect_opportunity ||--o{ win_loss_record : closes_with
+  competitor ||--o{ win_loss_record : faced_in
+
+  competitor {
+    uuid id PK
+    text name
+    text owner_group
+    text category
+    text status
+    text evidence_depth
+    timestamptz updated_at
+  }
+  competitor_product {
+    uuid id PK
+    uuid competitor_id FK
+    text name
+    text aliases
+    text segments
+    text website
+  }
+  capability {
+    text key PK
+    text group_name
+    text definition
+    int sort_order
+  }
+  capability_assessment {
+    uuid id PK
+    uuid product_id FK
+    text capability_key FK
+    text rating
+    boolean analyst_judgment
+    date as_of
+    text snapshot_label
+  }
+  claim {
+    uuid id PK
+    uuid product_id FK
+    text body
+    text evidence_tag
+    text status
+    date verify_by
+    uuid author_id
+    uuid verifier_id
+    timestamptz verified_at
+  }
+  evidence_source {
+    uuid id PK
+    text url
+    text publisher
+    text source_type
+    timestamptz retrieved_at
+    text archive_hash
+  }
+  claim_source {
+    uuid claim_id FK
+    uuid source_id FK
+    text excerpt
+  }
+  price_observation {
+    uuid id PK
+    uuid product_id FK
+    text plan_name
+    numeric monthly_price
+    numeric annual_monthly_price
+    text currency
+    int included_users
+    numeric extra_user_price
+    date observed_at
+    uuid source_id FK
+  }
+  competitor_event {
+    uuid id PK
+    uuid competitor_id FK
+    text event_type
+    date event_date
+    text summary
+    uuid claim_id FK
+  }
+  battlecard {
+    uuid id PK
+    uuid competitor_id FK
+    int version
+    text status
+    uuid approved_by
+    timestamptz published_at
+  }
+  pain_point {
+    uuid id PK
+    text title
+    int score_evidence
+    int score_breadth
+    int score_money
+    int score_frequency
+    int rank
+  }
+  pain_point_evidence {
+    uuid pain_point_id FK
+    uuid claim_id FK
+  }
+  switch_kit {
+    uuid id PK
+    uuid product_id FK
+    text supported_objects
+    text export_formats
+    text priority_tag
+    text status
+  }
+  tenant {
+    uuid id PK
+    text name
+  }
+  tenant_switch_source {
+    uuid id PK
+    uuid tenant_id FK
+    uuid product_id FK
+    text tool_category
+    text other_text
+    timestamptz declared_at
+  }
+  prospect_opportunity {
+    uuid id PK
+    text archetype
+    text segment
+    text region_code
+  }
+  win_loss_record {
+    uuid id PK
+    uuid opportunity_id FK
+    uuid competitor_id FK
+    text outcome
+    text reason_codes
+    text notes
+    boolean interview_consent
+  }
+```
+
+**Notes.** All market-intel tables are platform-scoped (no `tenant_id` row-level security), except `tenant_switch_source`, which carries `tenant_id` and is readable by that tenant's `owner` and by platform roles under the access rules in [20](20-architecture-security.md). Claims and sources are append-only; corrections create new versions.
+
+### 12.6 Integrations, APIs and events
+
+| Direction | Item | Purpose | Priority |
+|---|---|---|---|
+| External | Census Bureau CBP and SUSB data (public API and files), Statistics Canada tables | Market sizing workbook (MI-13) | [MVP] |
+| External | AI Gateway ([20](20-architecture-security.md)) | Diff summaries, claim drafting, statement extraction, importer field mapping | [V1] |
+| External | Rootline's own Stripe Billing data | Switch-source cohorts versus retention and ARPA | [MVP] |
+| Emitted | `market.claim.verified`, `market.claim.stale`, `market.claim.published`, `market.claim.retired` | Re-render matrix, battlecards and public pages | [MVP] |
+| Emitted | `market.price.changed`, `market.competitor_event.recorded` | Sales digests; TCO defaults; switch-window playbooks | [V1] |
+| Emitted | `tenant.switch_source.recorded` | Onboarding picks the switch kit; analytics | [MVP] |
+| Emitted | `sales.win_loss.recorded` | Pain-point re-ranking; roadmap input | [MVP] |
+| Consumed | `tenant.created`, `tenant.import.completed`, `tenant.import.failed` | Importer success rate by source system | [MVP] |
+| Consumed | `subscription.canceled` with reason codes | Competitive churn by destination competitor | [MVP] |
+
+### 12.7 Permissions
+
+| Capability | `platform_owner` | `platform_support` (with market-intel set) | `platform_finance` | `platform_engineer` | `platform_curator` | Tenant `owner` |
+|---|---|---|---|---|---|---|
+| View capability matrix, claims, battlecards | Yes | Yes | Yes | Yes | Yes | No |
+| Create and edit claims, assessments | Yes | Yes | Prices only | No | Plant and Region claims only | No |
+| Verify a claim (second person) | Yes | Yes (not own claims) | Prices only (not own) | No | Plant claims only (not own) | No |
+| Publish to public comparison pages | Yes | No | No | No | No | No |
+| Edit price observations and TCO defaults | Yes | Yes | Yes | No | No | No |
+| Edit market sizing workbook | Yes | No | Yes | No | No | No |
+| Manage switch kits | Yes | Read | No | Yes | No | No |
+| View win/loss records | Yes | Yes | Aggregates only | No | No | No |
+| View switch-source analytics | Yes | Aggregates only | Aggregates only | Aggregates only | No | Own Company only |
+| Export market-intel data | Yes | No | No | No | No | No |
+
+### 12.8 AI opportunities in this capability
+
+| Opportunity | How it works | Guardrail | Priority |
+|---|---|---|---|
+| Change summarization | LLM summarizes page diffs into candidate claims | Drafts only; human verification required | [V1] |
+| Review mining for pain points | Cluster licensed or exported review text into themes, mapped to the pain-point catalog | Only data Rootline is licensed or permitted to process; no scraping against terms | [V2] |
+| Win/loss interview synthesis | Summarize consented interview transcripts into reason codes and quotes | Consent flag; anonymize before promotion to claims | [V1] |
+| Battlecard drafting | Assemble a draft from verified claims and win/loss reasons | Only verified claims; owner approval | [V1] |
+| Statement extraction (Fee X-ray) | Document understanding on processing statements | Redaction at extraction; 30-day deletion | [V1] |
+| Importer field mapping | Map unknown export columns to Rootline fields with confidence scores | Dry run and diff review mandatory | [MVP] |
+
+---

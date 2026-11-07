@@ -66,7 +66,7 @@
 
 Operator consoles are internal tools, so competitors rarely document them publicly. We therefore studied the parts that leak into the customer experience: **migration and onboarding, support access, billing behavior, API openness and messaging compliance**, plus the vendor platforms Rootline must operate on (Stripe Connect and Billing, Twilio A2P 10DLC, mailbox-provider sender rules).
 
-> **Research note:** web research for this doc was cut short by a shared search budget, and several vendor documentation hosts (Stripe docs, Twilio docs, Aspire's site) could not be fetched from the research environment. The editorial review pass hit the same limits (no further searches were possible, and docs.stripe.com was unreachable), so it cross-checked this doc against the project's own raw research ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and the sibling specs instead. Claims below are tied to retrieved sources; facts drawn from general industry or regulatory knowledge are labeled "verify" and listed separately in the Sources section.
+> **Verification note:** items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. Claims below are tied to cited sources, including the project's raw research ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and the sibling specs; facts drawn from general industry or regulatory knowledge are labeled "verify" and listed separately in the Sources section.
 
 ### 2.1 Onboarding and migration in the landscape/field-service market
 
@@ -99,7 +99,7 @@ Operator consoles are internal tools, so competitors rarely document them public
 
 ### 2.4 Regulatory and network changes the console must track
 
-These rules move every year and they land on the operator, not on the Company. Each row is drawn from general regulatory knowledge (the search budget was exhausted during review); treat every figure as **as of Nov 2026, verify with counsel or the official source** before it becomes a hard-coded threshold. The console stores each one as an effective-dated rule (PA-115, PA-135) so a change is a data edit, not a deploy.
+These rules move every year and they land on the operator, not on the Company. Each row is drawn from general regulatory knowledge; treat every figure as **as of Nov 2026, verify with counsel or the official source** before it becomes a hard-coded threshold. The console stores each one as an effective-dated rule (PA-115, PA-135) so a change is a data edit, not a deploy.
 
 | Rule set | What changed (verify) | Console feature that absorbs it |
 |----------|----------------------|---------------------------------|
@@ -2348,7 +2348,7 @@ Targets below are Rootline's internal goals, not industry benchmarks.
 14. **AI moderation for property photos:** what level of face/license-plate blurring is required by default, and does it affect mockup quality?
 15. **Free data hibernation (section 13, idea 20):** does storing a churned Company's client data for 12 months (opt-in) need explicit language in the Company's own privacy notice to its clients, and how does it interact with each province's and state's retention-minimization rules?
 
-**Resolved by sibling docs during review** (kept here so the history is visible):
+**Resolved by sibling docs** (kept here so the history is visible):
 - Standing read-only support consent for solo operators: yes, opt-in, with 90-day reconfirmation ([02](02-personas-roles-permissions.md) 5.13; PA-051).
 - Seasonal pause pricing: Winter Mode at 25% of plan list, monthly plans only, up to 4 months in a rolling 12 ([22](22-business-model-pricing-gtm.md) 4.7).
 - Field seat counting: a scheduled-only technician is not billable; activity means authentication, a clock-in, or being on the crew of a Visit that started or completed ([22](22-business-model-pricing-gtm.md) 4.3).
@@ -2358,7 +2358,7 @@ Targets below are Rootline's internal goals, not industry benchmarks.
 
 ## Sources
 
-Research note: the web search budget for this documentation run was exhausted early, and several vendor documentation hosts could not be fetched from the research environment. The sources below are those retrieved through search during this session; time-sensitive facts are marked "as of Nov 2026, verify" in the text.
+Verification note: items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. Time-sensitive facts are marked "as of Nov 2026, verify" in the text.
 
 **Competitors and market**
 - Jobber Help: [Import clients](https://help.getjobber.com/es/articles/import-clients/), [Import quotes](https://help.getjobber.com/en/articles/import-quotes/), [Import invoices](https://help.getjobber.com/es/articles/import-invoices/)
@@ -2404,12 +2404,12 @@ Research note: the web search budget for this documentation run was exhausted ea
 - [Resend: Gmail and Yahoo bulk sending requirements](https://www.resend.com/blog/gmail-and-yahoo-bulk-sending-requirements-for-2024)
 - [EasyDMARC: Google and Yahoo authentication requirements](https://easydmarc.com/blog/google-and-yahoo-new-email-authentication-requirements/)
 
-**Project research and sibling specs used during editorial review**
+**Project research and sibling specs**
 - [R1 - Field service platforms (raw research)](research/R1-field-service-platforms.md): Jobber developer platform and App Marketplace (background), ServiceTitan implementation patterns
 - [R2 - Landscape-specific platforms (raw research)](research/R2-landscape-specific-platforms.md): consolidation and switching windows, LMN Pay, Service Autopilot and Real Green complaints, implementation fees
 - Sibling specs reconciled for consistency: [02](02-personas-roles-permissions.md) (support access modes, break-glass, platform matrix), [08](08-payments-stripe.md) (connection methods, webhook endpoints, compliance rule tables, payments-only mode), [16](16-marketing-growth-communications.md) (10DLC subaccounts), [20](20-architecture-security.md) (cells, residency, lifecycle), [22](22-business-model-pricing-gtm.md) (tiers, seats, credits, discounts, trials, dunning, partners)
 
-**Reference standards cited from general knowledge (not re-fetched in this session; verify with counsel or the official text)**
+**Reference standards cited from general knowledge (verify with counsel or the official text)**
 - GDPR Article 12 response timelines: [gdpr-info.eu Art. 12](https://gdpr-info.eu/art-12-gdpr/)
 - CCPA/CPRA consumer request timelines: [California Attorney General CCPA page](https://oag.ca.gov/privacy/ccpa)
 - PIPEDA access request timelines: [Office of the Privacy Commissioner of Canada, PIPEDA](https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/)
@@ -2418,7 +2418,7 @@ Research note: the web search budget for this documentation run was exhausted ea
 - GDPR Article 33 breach notification to the supervisory authority: [gdpr-info.eu Art. 33](https://gdpr-info.eu/art-33-gdpr/)
 - PIPEDA breaches of security safeguards (reporting and 24-month record keeping): [Office of the Privacy Commissioner of Canada](https://www.priv.gc.ca/en/privacy-topics/business-privacy/breaches-and-safeguards/)
 - Quebec Law 25 confidentiality-incident register and notification: [Commission d'accès à l'information du Québec](https://www.cai.gouv.qc.ca/)
-- Canada's Anti-Spam Legislation (CASL): [CRTC: Canada's anti-spam legislation](https://crtc.gc.ca/eng/internet/anti.htm) (host could not be reached from the review environment; verify)
+- Canada's Anti-Spam Legislation (CASL): [CRTC: Canada's anti-spam legislation](https://crtc.gc.ca/eng/internet/anti.htm) (verify)
 - FCC TCPA revocation-of-consent rules (any reasonable means; 10 business days; "revoke all" provision delayed): [Federal Communications Commission](https://www.fcc.gov/) (verify current effective dates)
 - Microsoft Outlook.com requirements for senders above 5,000 messages per day (announced April 2025, enforced from May 2025): Microsoft Defender for Office 365 blog (verify)
 - Visa Acquirer Monitoring Program (VAMP, 2025) and Mastercard Excessive Chargeback Program thresholds: card-network rules as published by the networks and acquirers (verify current figures with Stripe and the networks)

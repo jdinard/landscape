@@ -8,9 +8,7 @@
 
 > **Legal posture (applies to the whole document).** Rootline is software, not a law firm, a PEO, an immigration agent or a payroll tax filer (until the embedded payroll option, and even then the licensed partner files). Every jurisdiction rule here is a starting configuration for legal review. The rules are marked "verify" where this document could not confirm current text. Rule packs ship versioned and reviewed by employment counsel before each season ([section 4.9](#49-pay-rules-engine-and-jurisdiction-policy-packs)), and the product says "this is not legal advice" wherever it shows a compliance hint.
 
-> **Research note (November 2026).** This module's research was limited. The shared web-search budget for this workflow run was used up before its own searches ran, and the session's network allowlist blocked direct fetches of government and vendor hosts (dol.gov, osha.gov, dir.ca.gov, docs.checkhq.com). The facts below therefore come from three places. First, research already captured and cited by sibling documents ([05](05-field-crew-mobile-app.md), [02](02-personas-roles-permissions.md), [18](18-reporting-analytics.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)). Second, primary regulations cited by section number. Third, general domain knowledge, which is labeled "verify". Competitor capabilities not confirmed in this session carry [B] (analyst belief, confirm in a hands-on teardown). Before this spec turns into tickets, the research backlog in [section 14](#14-open-questions) must close these gaps.
->
-> **Review pass (November 2026).** A senior review checked the document against the brief, recomputed every worked example and aligned the payroll posting flow with the ledger design in [09](09-accounting-ledger-integrations.md). It corrected the pay-explainer overtime math, the California FUTA credit reduction in the burden example and the pesticide license category used for the Sacramento reference Company. It also added items the first draft missed: the 2025 federal tax reporting of qualified overtime and tips (RULE-09), the H-2B January 1 filing crush and cap lottery (H2B-14), workers' compensation claim intake (SAFE-13), wildfire smoke (SAFE-14), California workplace violence plans and mandated harassment training (LMS-09), durable-workflow timers ([8.6](#86-durable-workflows-and-timers)), and two more wireframes. The reviewer could not run web searches either: the shared search budget was exhausted, and osha.gov, irs.gov and oui.doleta.gov were blocked by the network allowlist. Every fact the review added comes from primary-law knowledge and is marked "verify".
+> **Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build; competitor capabilities marked [B] are analyst belief to confirm in a hands-on teardown. Facts come from research cited elsewhere in this proposal ([05](05-field-crew-mobile-app.md), [02](02-personas-roles-permissions.md), [18](18-reporting-analytics.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)), primary regulations cited by section number, and general domain knowledge; the research backlog in [section 14](#14-open-questions) must close the open items before this spec turns into tickets.
 
 ---
 
@@ -94,7 +92,7 @@
 
 ### 2.2 What competitors ship in this module
 
-Legend: [S] sourced in this repo's research; [B] analyst belief to confirm in a hands-on teardown (see research note).
+Legend: [S] sourced in this repo's research; [B] analyst belief to confirm in a hands-on teardown (see the verification note at the top of this doc).
 
 | Product | Time and timesheets | Payroll connection | HR, hiring, training, safety | Notes |
 |---|---|---|---|---|
@@ -2233,7 +2231,7 @@ People KPI definitions (turnover, 90-day retention, TRIR, certification complian
 
 ## Sources
 
-Research note: live web research for this module was constrained. The shared search budget for this workflow run was used up, and government and vendor documentation hosts were blocked by the session's network allowlist. Sources below are either (a) captured by sibling research in this repository, (b) primary regulations and official program pages cited by section number, or (c) vendor developer portals named for integration planning. Statements marked "verify" or [B] need confirmation before engineering commitment.
+Verification note: sources below are either (a) research captured elsewhere in this repository, (b) primary regulations and official program pages cited by section number, or (c) vendor developer portals named for integration planning. Statements marked "verify" or [B] are from secondary sources or general knowledge and need first-hand confirmation before build.
 
 **Industry and labor market**
 - [Lawn & Landscape: Wilson 360 2024 landscape industry benchmark](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)
@@ -2295,7 +2293,7 @@ Research note: live web research for this module was constrained. The shared sea
 - [New York Civil Rights Law section 52-C (electronic monitoring notice)](https://www.nysenate.gov/legislation/laws/CVR/52-C)
 - [Ontario: Your guide to the Employment Standards Act, written policy on electronic monitoring](https://www.ontario.ca/document/your-guide-employment-standards-act-0/written-policy-electronic-monitoring)
 
-**Added in the November 2026 review (primary law and official pages; not fetched in this session because search was exhausted and government hosts were blocked; verify before relying on them)**
+**Primary law and official pages (verify before relying on them)**
 - [Congress.gov: H.R. 1, 119th Congress (One Big Beautiful Bill Act, Public Law 119-21)](https://www.congress.gov/bill/119th-congress/house-bill/1)
 - [U.S. DOL: FUTA credit reduction states](https://oui.doleta.gov/unemploy/futa_credit.asp)
 - [California Labor Code section 6401.9 (workplace violence prevention plan, SB 553)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=LAB&sectionNum=6401.9)

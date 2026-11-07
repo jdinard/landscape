@@ -71,7 +71,7 @@ Priority tags used throughout: **[MVP]** first sellable release, **[V1]** within
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> **Research note (November 2026).** The writing pass ran a limited set of web searches before the shared research budget ran out, and several vendor help sites (help.getjobber.com, help.servicetitan.com, w3.org, datausa.io) could not be fetched directly from the research environment. In the review pass the search budget was already exhausted and government hosts (for example ada.gov) were unreachable, so no new searches were run. Instead the reviewer added crew-app, AI and regulatory facts that the sibling research reports ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and module docs ([06](06-customer-portal.md), [16](16-marketing-growth-communications.md)) had already sourced, keeping their original citations. Locale formats were checked against Unicode CLDR 48 using the Node.js `Intl` APIs, and every contrast ratio in sections 7.2 and 8.3 was recomputed. Claims below are cited. Anything not verified is labeled as an observation to confirm in the hands-on competitive teardown scheduled in [section 24](#24-usability-testing-plan-and-design-ops). Broader competitor coverage lives in [01 - Market landscape](01-market-landscape.md) and the raw research reports in [research/](research/).
+> **Verification note (November 2026).** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. Several crew-app, AI and regulatory facts below come from the sibling research reports ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and module docs ([06](06-customer-portal.md), [16](16-marketing-growth-communications.md)), with their original citations. Locale formats were checked against Unicode CLDR 48 using the Node.js `Intl` APIs, and every contrast ratio in sections 7.2 and 8.3 was recomputed. Claims below are cited. Anything not verified is labeled as an observation to confirm in the hands-on competitive teardown scheduled in [section 24](#24-usability-testing-plan-and-design-ops). Broader competitor coverage lives in [01 - Market landscape](01-market-landscape.md) and the raw research reports in [research/](research/).
 
 ### 2.1 What competitors do in UX and IA
 
@@ -944,7 +944,7 @@ Three tiers, one source of truth:
 | `color.ai.fg` / `.bg` | Iris 600 / Iris 50 | `#B4AAF0` / `#25203F` | Iris 700 / Iris 50 (7.93:1) |
 | `color.money.in` / `.out` | Moss 700 / Stone 900 with minus sign | Moss 300 / Stone 100 | Moss 800 / black |
 
-Every text/background pair in this table was computed against WCAG 2 and passes AA. The tightest pairs are white text on the dark-theme danger button (Ember 500, 4.67:1) and white on a tenant-adjusted brand button such as `#3E7A22` (5.23:1). The review pass recomputed the table and changed the field-sun warning pair from Marigold 800 on Marigold 300 (5.30:1, below the field-sun 7:1 target) to Stone 950 on Marigold 300 (11.95:1). It also changed the field-sun AI pair from Iris 600 on Iris 50 (6.24:1) to a new Iris 700 `#463A9A` on Iris 50 (7.93:1). Every field-sun pair now clears 7:1.
+Every text/background pair in this table was computed against WCAG 2 and passes AA. The tightest pairs are white text on the dark-theme danger button (Ember 500, 4.67:1) and white on a tenant-adjusted brand button such as `#3E7A22` (5.23:1). Two field-sun pairs were adjusted to meet the 7:1 target: the warning pair moved from Marigold 800 on Marigold 300 (5.30:1, below the field-sun 7:1 target) to Stone 950 on Marigold 300 (11.95:1), and the AI pair moved from Iris 600 on Iris 50 (6.24:1) to a new Iris 700 `#463A9A` on Iris 50 (7.93:1). Every field-sun pair now clears 7:1.
 
 Money is never encoded by red/green alone: negative amounts always show a minus sign or parentheses (ledger convention, user setting) and credits/debits are labeled.
 
@@ -2756,7 +2756,7 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 6. **Translation management vendor:** Lokalise vs. Phrase vs. Crowdin, decided on glossary features, RN support and cost.
 7. **Platform-hosted homeowner funnel:** brand presence of Rootline vs. the matched Company in the platform-hosted flow, and how lead-routing fairness is explained to homeowners.
 8. **Compliance scope for accessibility:** which ACRs to publish first (office app vs. portal) and whether to target any AAA criteria for the crew app (e.g., 2.5.5 target size enhanced is already exceeded).
-9. **Competitive teardown gaps:** this pass could not verify several vendors' current UIs (research budget and site access limits). The Discovery-phase teardown must confirm or correct section 2 claims, especially for LMN, SingleOps, Real Green, Arborgold, Copilot CRM and SynkedUP.
+9. **Competitive teardown gaps:** several vendors' current UIs are not yet verified first-hand. The Discovery-phase teardown must confirm or correct section 2 claims, especially for LMN, SingleOps, Real Green, Arborgold, Copilot CRM and SynkedUP.
 10. **Quebec requirements:** confirm with counsel the current French-language obligations for software, contracts, invoices and portal content before marketing in Quebec.
 11. **Swipe vs hold for irreversible crew actions:** [05](05-field-crew-mobile-app.md) specifies swipe-to-confirm, and this doc requires a press-and-hold equivalent. Decide the default from glove-test data in the first prototype round, and update both docs to the winner.
 12. **Native system chrome:** adopt the OS's translucent tab bar and toolbars (more native, lower contrast in sun) or ship opaque custom bars in all themes (more consistent, slightly less native)? Recommendation: opaque in Outdoor mode, native elsewhere. Confirm with the sun test.
@@ -2780,7 +2780,7 @@ Market and competitor research (accessed November 2026; ratings and counts are t
 - [ServiceTitan Help: Use the Daily Dispatch Board](https://help.servicetitan.com/docs/use-the-daily-dispatch-board) and [ServiceTitan release hub: Jobs tray on the dispatch board](https://help.servicetitan.com/release-hub/docs/move-the-jobs-tray-onto-the-dispatch-board-to-speed-up-scheduling) - dispatch patterns
 - [DispatchCore docs: Dispatch board](https://www.dispatchcore.io/docs/dispatch-board) - drag-and-drop assignment behaviors
 
-Added in the review pass (November 2026). These sources were retrieved by the sibling research reports [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and by module docs [06](06-customer-portal.md) and [16](16-marketing-growth-communications.md). They were reused with their original citations and not re-fetched, because the search budget was exhausted and some hosts were unreachable; verify before external use:
+Sources carried over from the sibling research reports [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and module docs [06](06-customer-portal.md) and [16](16-marketing-growth-communications.md), with their original citations; verify before external use:
 - [Aspire guide: Aspire Mobile in the field](https://guide.youraspire.com/docs/aspire-mobile-in-the-field) - offline ticket completion, crew clock-in
 - [AppGoblin: Aspire Crew Mobile listing](https://appgoblin.info/apps/1392810365) - legacy app rating (verify)
 - [GetApp UK: Aspire reviews](https://www.getapp.co.uk/reviews/9108/aspire) and [Capterra: Aspire reviews p.3](https://www.capterra.com/p/161544/Aspire/reviews/?page=3) - "too many steps", ramp-up
@@ -2788,7 +2788,7 @@ Added in the review pass (November 2026). These sources were retrieved by the si
 - [LMN help: user permissions](https://intercom.help/lmn/en/articles/17699017-lmn-user-permissions) - legacy Crew Member seat limits
 - [PR Newswire: Jobber launches Copilot](https://prnewswire.com/news-releases/jobber-launches-copilot-the-first-of-several-ai-powered-products-aimed-at-making-home-service-business-ownership-simpler-than-ever-before-302264047.html), [destinationCRM: Jobber Receptionist](https://www.destinationcrm.com/Articles/CRM-News/CRM-Across-the-Wire/Jobber-Launches-Receptionist-171139.aspx), [Lawn & Landscape: Jobber AI features](https://www.lawnandlandscape.com/news/jobber-adds-new-ai-powered-features), [TechRadar: Jobber review](https://www.techradar.com/pro/software-services/jobber-crm-review) - Jobber AI surfaces and reception
 
-Regulation added in the review pass (reused from [06](06-customer-portal.md) and [16](16-marketing-growth-communications.md); verify):
+Regulation (reused from [06](06-customer-portal.md) and [16](16-marketing-growth-communications.md); verify):
 - [Nixon Peabody: FCC partially delays new TCPA consent revocation rules (April 2025)](https://www.nixonpeabody.com/insights/alerts/2025/04/11/fcc-partially-delays-new-tcpa-consent-revocation-rules)
 - [Mac Murray and Shuster: revoke-all rule delayed](https://mslawgroup.com/delayed-again-fcc-pushes-back-tcpas-revoke-all-rule-to-january-31-2027/)
 - [FCC 26-67 order](https://docs.fcc.gov/public/attachments/FCC-26-67A1.pdf)
@@ -2807,7 +2807,7 @@ Accessibility:
 - [Deque University: WCAG 2.2 updates](https://dequeuniversity.com/resources/wcag-2.2)
 - [PowerMapper: WCAG 2.2 published](https://www.powermapper.com/blog/wcag-2.2-released/)
 
-Canonical references (standards and documentation named in this spec; not re-fetched during this research pass, verify current versions):
+Canonical references (standards and documentation named in this spec; verify current versions):
 - [W3C: Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG22/)
 - [W3C Design Tokens Community Group format](https://www.designtokens.org/)
 - [Unicode CLDR](https://cldr.unicode.org/)

@@ -63,9 +63,7 @@ Running example used throughout: **Cedar & Stone Landscapes** (Columbus, Ohio), 
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> **Research note.** This pass ran 11 targeted web searches on competitor purchasing, inventory and equipment features, supplier integrations, telematics APIs, fuel card data and DOT rules. Several vendor help centers and regulator pages could not be fetched from the research environment, so rows below that rely on vendor marketing or general product knowledge are marked "verify" and should be confirmed in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md). All prices and plan names are as of November 2026 and must be verified.
->
-> **Review pass note (Nov 2026).** A senior review added DOT, tax, HazCom, CARB, recall, rental and fraud-control requirements. The shared web-search budget was already exhausted and regulator hosts (ecfr.gov, fmcsa.dot.gov) could not be reached from the review environment, so those additions rest on primary-source knowledge of the regulations and the official URLs listed under "Regulation and public data (added in review)" in [Sources](#sources). Every such fact is marked "verify" in the text and must be checked by counsel or the responsible platform role before launch.
+> **Verification note.** Items marked "verify" are from secondary sources, vendor marketing or general knowledge (including the DOT, tax, HazCom, CARB, recall, rental and fraud-control requirements) and need first-hand confirmation before build: competitor rows against [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md), regulatory facts against the official pages listed under "Regulation and public data" in [Sources](#sources), signed off by counsel or the responsible platform role before launch. All prices and plan names are as of November 2026.
 
 ### 2.1 What competitors do
 
@@ -86,7 +84,7 @@ Running example used throughout: **Cedar & Stone Landscapes** (Columbus, Ohio), 
 
 ### 2.2 What users complain about
 
-Evidence gathered in this pass (plus patterns to validate in customer interviews):
+Evidence gathered so far (plus patterns to validate in customer interviews):
 
 1. **"We have no inventory."** Jobber users explicitly cite missing inventory as their main pain point and resort to marketplace add-ons to track stock per truck or per job ([Jobber community](https://community.getjobber.com/discussions/operations-forum/inventory-management/4964)).
 2. **Inventory and purchasing are paywalled or bolted on.** SingleOps restricts POs and inventory to its top tier ([SingleOps POs](https://docs.singleops.com/hc/articles/43339572958491)); Aspire customers buy third-party AP automation for bills ([Vergo](https://www.getvergo.com/learn/best-ap-automation-software-for-landscape-companies-using-aspire)).
@@ -102,7 +100,7 @@ Patterns we expect to confirm in interviews (hypotheses, not evidence): crews le
 
 | Supplier type | Examples | How they sell to landscapers today | Integration reality |
 |---|---|---|---|
-| National multi-line distributors | SiteOne Landscape Supply, Ewing Irrigation and Landscape Supply, Horizon Distribution, BFG Supply | Branch counters, contractor accounts with negotiated pricing, phone/text orders, will-call pickup, delivery, online ordering portals | No public contractor-facing ordering API found for SiteOne in this pass; SiteOne requires EDI (X12 850 PO, 856 ASN, 810 invoice) from *its own suppliers* ([Stacksync, vendor claim](https://www.stacksync.com/edi/site-one/siteone-landscape-supply)), which proves EDI muscle exists in-house. LMN has a direct SiteOne ordering partnership ([LMN blog](https://golmn.com/blog/partner-in-spotlight-siteone-landscape-supply)). Expect partnership-based APIs, not open ones. |
+| National multi-line distributors | SiteOne Landscape Supply, Ewing Irrigation and Landscape Supply, Horizon Distribution, BFG Supply | Branch counters, contractor accounts with negotiated pricing, phone/text orders, will-call pickup, delivery, online ordering portals | No public contractor-facing ordering API found for SiteOne (verify); SiteOne requires EDI (X12 850 PO, 856 ASN, 810 invoice) from *its own suppliers* ([Stacksync, vendor claim](https://www.stacksync.com/edi/site-one/siteone-landscape-supply)), which proves EDI muscle exists in-house. LMN has a direct SiteOne ordering partnership ([LMN blog](https://golmn.com/blog/partner-in-spotlight-siteone-landscape-supply)). Expect partnership-based APIs, not open ones. |
 | Local and regional wholesale nurseries | Hundreds per metro | Weekly availability lists (PDF or Excel), phone/email orders, delivery or pickup, often a plant guarantee window | Essentially none. Email and spreadsheets. Biggest whitespace. |
 | Bulk material yards | Stone, soil, mulch yards; quarries | Priced per cubic yard or per ton; delivery charge per load; scale tickets | Paper scale tickets; some yards text photos. |
 | Hardscape manufacturers via dealers | Paver and wall-block brands | Through dealers; priced per sq ft, per face sq ft, per pallet | Dealer price sheets (PDF, CSV). |
@@ -2206,13 +2204,13 @@ Definitions are shared with [Reporting and analytics](18-reporting-analytics.md)
 13. **Regulatory content ownership.** Who on the platform side signs off on DOT thresholds, 1099 thresholds, lien waiver forms, HazCom dates and pest quarantine zones: `platform_curator` with outside counsel on retainer, or a licensed compliance-content provider? The answer drives the cost of the "dated platform data" mitigation in 11.3.
 14. **Rental house integrations.** Do the large national rental companies expose customer APIs for contracts, off-rent requests and rental telematics that a third-party platform can use, or is email parsing the durable path?
 15. **Fuel-tax worksheet liability.** Is a worksheet that estimates a federal credit "tax advice"? Default position: present it as a data export with gallons and evidence, and leave rates and eligibility to the CPA.
-16. **Research follow-up.** Several competitor capabilities in section 2 are marked "verify"; a follow-up research pass (help centers and demos for ServiceTitan, Service Autopilot, Real Green, Arborgold, SynkedUP, Copilot CRM, Yardbook) and customer interviews on yard and holding-yard pain are needed before final prioritization.
+16. **Research follow-up.** Several competitor capabilities in section 2 are marked "verify"; follow-up research (help centers and demos for ServiceTitan, Service Autopilot, Real Green, Arborgold, SynkedUP, Copilot CRM, Yardbook) and customer interviews on yard and holding-yard pain are needed before final prioritization.
 
 ---
 
 ## Sources
 
-Research for this document was limited to the searches listed here; facts marked "verify" in the text are from general domain knowledge or vendor marketing and need confirmation. Prices and plan names are as of November 2026, verify.
+Verification note: items marked "verify" in the text are from secondary sources, vendor marketing or general domain knowledge and need first-hand confirmation before build. Prices and plan names are as of November 2026, verify.
 
 **Competitors and user feedback**
 
@@ -2258,7 +2256,7 @@ Research for this document was limited to the searches listed here; facts marked
 - eCFR, 49 CFR 396.11 Driver vehicle inspection reports: <https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-396/section-396.11>
 - FMCSA guidance, section 396.11 end-of-day written report: <https://www.fmcsa.dot.gov/safety/question-25-section-39611-requires-driver-completion-each-days-work-prepare-written-report>
 
-**Regulation and public data (added in review; official pages, not fetched in this pass because of network limits; verify)**
+**Regulation and public data (official pages; verify)**
 
 - eCFR, 49 CFR 396.17 Periodic inspection: <https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-396/section-396.17>
 - eCFR, 49 CFR 383.91 Commercial motor vehicle groups (CDL classes): <https://www.ecfr.gov/current/title-49/section-383.91>
@@ -2270,7 +2268,7 @@ Research for this document was limited to the searches listed here; facts marked
 - NHTSA, vPIC vehicle API (VIN decoding): <https://vpic.nhtsa.dot.gov/api/>
 - NHTSA, datasets and APIs (recalls): <https://www.nhtsa.gov/nhtsa-datasets-and-apis>
 
-**Internal research reports used in review**
+**Internal research reports**
 
 - [R2 - Landscape-specific platforms](research/R2-landscape-specific-platforms.md): Aspire purchasing depth, SingleOps Premier-only POs and inventory, Real Green chemical records, competitor feature matrix.
 - [R1 - Field service platforms](research/R1-field-service-platforms.md): ServiceTitan suite scope (inventory, purchasing, Fleet Pro add-on), Jobber tier gating of job costing.
