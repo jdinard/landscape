@@ -1775,7 +1775,7 @@ All tables carry `tenant_id` with Postgres row-level security ([20](20-architect
 | `dispute_evidence_item` | Packet contents | `dispute_id`, `kind`, `source_record_type`, `source_record_id`, `stripe_field`, `file_id`, `included` |
 | `balance_entry` | Canonical balance transaction | `provider_balance_txn_id`, `category`, `amount_minor`, `fee_minor`, `net_minor`, `currency`, `exchange_rate`, `source_object_id`, `payout_id`, `available_on`, `journal_entry_id` |
 | `payout` | Provider payout | `provider_payout_id`, `amount_minor`, `currency`, `arrival_date`, `status`, `bank_feed_txn_id`, `reconciled_at` |
-| `payment_plan` / `payment_plan_installment` | Installment schedules | `invoice_id` or `proposal_id`, `plan_type`, `installment_no`, `due_on`, `amount_minor`, `trigger` (date, milestone), `status`, `payment_attempt_id` |
+| `payment_plan` / `payment_plan_installment` | Installment schedules (shared with [07](07-invoicing-billing-contracts.md), which creates past-due collections plans) | `invoice_id` or `proposal_id`, `plan_type` (milestone, calendar, collections), `installment_no`, `due_on`, `amount_minor`, `trigger` (date, milestone), `status`, `payment_attempt_id` |
 | `tip_allocation` | Tip split | `payment_id`, `visit_id`, `employee_id`, `amount_minor`, `method` (hours, equal, manual), `payroll_export_id` |
 | `pay_link` | Signed links/QR | `token_hash`, `target_type`, `target_id`, `expires_at`, `last_opened_at`, `open_count` |
 | `surcharge_rule_set` (platform-level) | Versioned compliance rules | `jurisdiction`, `rule_type`, `max_rate_bps`, `effective_from`, `effective_to`, `source_url`, `approved_by` |

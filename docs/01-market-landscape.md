@@ -1474,6 +1474,8 @@ Market-level metrics tell the founder whether the positioning is working; progra
 | Claim freshness | Published claims within `verify_by` / all published claims | 100% (stale claims auto-hidden) | Legal safety and credibility |
 | Matrix unknown rate | "?" cells / all competitor cells in the matrix | Fall from about 30% today to ≤ 10% within 6 months of launch | Better evidence for product and sales decisions |
 | Win/loss coverage | Closed opportunities with a reason code / all closed | ≥ 90% | Without reasons, win rates explain nothing |
+| Proof-bank backing | Public Rootline performance claims (speed, savings, close rate) backed by a dated proof-bank measurement / all such claims | 100% | Keeps marketing inside the messaging rules (section 11.4, section 15 idea 15) |
+| Regulatory trigger wins | New Companies whose first stated reason is a dated rule in section 2.5 (turf deadline, chemical rules, overtime reporting, equipment rules) | Tracked from launch; no target until a baseline exists | Tests whether compliance is a buying trigger, as section 2.5 claims |
 
 ---
 
@@ -1549,6 +1551,8 @@ Market-level metrics tell the founder whether the positioning is working; progra
 | Q8 | Should Rootline offer a free Solo tier against Yardbook, or keep Starter as the floor? | Top-of-funnel economics vs support cost | `platform_owner`, `platform_finance` | Before pricing page |
 | Q9 | Should Rootline license review-site data for pain-point mining, or rely on its own interviews and win/loss? | Evidence quality vs cost | `platform_support` (GTM), `platform_owner` | V1 |
 | Q10 | Fund a verification research pass (search budget plus vendor domains allowlisted) to clear Appendix E? | Many matrix cells and prices are [B] or [S3P] | `platform_owner` | Before any investor deck |
+| Q11 | Should one beachhead cluster sit in the arid West (California or Southern Nevada) to ride the 2027 nonfunctional-turf deadlines (section 2.5, R2), even if the founder's plant knowledge is deeper elsewhere? | A dated demand wave versus Plant KB quality, the top beachhead criterion in [22](22-business-model-pricing-gtm.md) section 6.2 | `platform_owner`, `platform_curator` | Before beachhead selection |
+| Q12 | Which Canadian launch Region comes first given Quebec's French-language gate (section 2.5, R8) and provincial cosmetic-pesticide rules (R3)? | Canadian rule packs and translations must be ready at launch | `platform_owner`, `platform_curator` | Before V1 planning |
 
 ---
 
@@ -1592,6 +1596,13 @@ Every item below must be confirmed before external use. Items consolidate the ch
 | E14 | Image-model prices and licenses (Gemini image, GPT Image, FLUX Kontext, SDXL, Qwen-Image) | Vendor pricing pages and model cards |
 | E15 | Direct Reddit (r/landscaping, r/lawncare) and LawnSite quotes for each pain point in section 6 | reddit.com, lawnsite.com |
 | E16 | Comparative-advertising and trademark rules for comparison pages in the US and Canada | Counsel |
+| E17 | California SORE scope and dates; local gas-blower ordinances in beachhead Regions | ww2.arb.ca.gov; municipal codes |
+| E18 | California AB 1572 phase-in dates by property class; Nevada AB 356 effective date and covered properties; utility turf-replacement rebate terms in target Regions | leginfo.legislature.ca.gov; Nevada Legislature; Southern Nevada Water Authority; local water districts |
+| E19 | New York neonicotinoid restrictions on turf and ornamentals; Canadian provincial cosmetic-pesticide rules | NY DEC; provincial ministries |
+| E20 | IRS reporting codes for qualified overtime; 1099-NEC/MISC threshold and indexing | irs.gov forms and instructions; payroll-provider guidance |
+| E21 | Immigration-enforcement effects on landscape labor in 2025-2026; FY2026 supplemental H-2B release; 2024 TFWP low-wage changes | Trade press (Lawn & Landscape, NALP), DHS and DOL rules, IRCC and ESDC notices |
+| E22 | Current Aspire implementation timelines (the 90-day figure comes from a 2020 case study) | Aspire customers in interviews; Aspire sales materials |
+| E23 | Positioning-map placements (section 4.3) after the matrix unknowns are resolved | Re-apply the placement rule in section 4.3 to the updated matrix |
 
 ---
 
@@ -1753,3 +1764,13 @@ All links below were retrieved by research agents during this research run (Nove
 - Stripe docs, application fees: https://docs.stripe.com/connect/application-fees
 - Stripe docs, OAuth: https://docs.stripe.com/connect/oauth
 - Dodo Payments, Stripe ACH fees (S3P): https://dodopayments.com/blogs/stripe-ach-fees/
+- AFS Law, Visa reduces its merchant surcharge cap to 3%: https://www.afslaw.com/perspectives/alerts/visa-reduces-its-merchant-surcharge-cap-3-effective-april-15-2023-merchants
+- LawPay, credit card surcharge rules by state: https://www.lawpay.com/about/blog/credit-card-surcharge-rules/
+
+**Regulation (section 2.5; links retrieved by sibling module research in this run)**
+- California Air Resources Board, Small Off-Road Engines (SORE): https://ww2.arb.ca.gov/our-work/programs/small-off-road-engines-sore
+- California Legislative Information, AB 1572 (nonfunctional turf): https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202320240AB1572
+- Congress.gov, H.R. 1, 119th Congress (One Big Beautiful Bill Act, Public Law 119-21): https://www.congress.gov/bill/119th-congress/house-bill/1
+- IRS, About Form 1099-NEC: https://www.irs.gov/forms-pubs/about-form-1099-nec
+- Twilio, A2P 10DLC ISV onboarding: https://www.twilio.com/docs/messaging/compliance/a2p-10dlc/onboarding-isv-api.md
+- LégisQuébec, Charter of the French Language: https://www.legisquebec.gouv.qc.ca/en/document/cs/C-11

@@ -989,7 +989,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 #### M-30 Neighborhood density engine ("Street Sweep")
 
-**Headline phase:** [V1] for density insights, [V2] for campaigns.
+**Headline phase:** [V1] for density insights and neighbor-rate pricing, [V2] for score-ranked targeting of digital campaigns. Route-aware neighbor campaigns (QR door hangers, neighbor postcards, EDDM, yard signs and holdout measurement) are already specified at [V1] in [16](16-marketing-growth-communications.md) section 4.15, and route-density pricing at [V1] in [03](03-crm-sales-estimating-proposals.md) and [04](04-scheduling-dispatch-routing.md); they are not repeated here. M-30 adds the marginal-profit parcel score that decides *which* neighbors those campaigns and prices target.
 
 **Problem.** Route density is the hidden profit lever in maintenance: a mowing stop next door costs a fraction of one across town. Companies know this but grow at random, through whoever calls.
 
@@ -999,7 +999,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 1. **Parcel scoring.** Uses parcel data (Regrid-class; [10](10-design-studio.md)), building footprints and AI turf estimates from imagery (aggregate area only; no personal data beyond what is publicly available for mailing). The score is `(price - marginal cost) / marginal minutes`, using the Company's own production rates.
 2. **Neighbor offers.** An optional discount when a new Client sits within N meters of an existing route stop on the same service day. The Company sets N and the discount.
-3. **Campaign compliance.** Mail and door hangers only. QR codes lead to the Company's instant-quote page ([16](16-marketing-growth-communications.md)). Existing Clients can opt in to a "neighbor referral" share link.
+3. **Campaign compliance.** Physical channels only (mail, door hangers, yard signs), exactly the channel rule in [16](16-marketing-growth-communications.md) section 4.15.1; no texts or calls to neighbors. QR codes lead to the Company's instant-quote page ([16](16-marketing-growth-communications.md)). Existing Clients can opt in to a "neighbor referral" share link.
 4. **No yard mockups of non-clients.** Rootline will not generate AI images of a neighbor's yard without that person's request. That would be creepy and probably unlawful in some places.
 
 **Builds on.** Routes and production rates ([04](04-scheduling-dispatch-routing.md), R-09), parcel data and footprints ([10](10-design-studio.md)), instant-quote pages ([16](16-marketing-growth-communications.md)). **Feeds back.** Denser routes, which improve robot (M-05) and pricing (M-22) economics.
@@ -1008,7 +1008,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Parcel and imagery licenses that permit this use (verify Regrid and imagery terms); campaign tools in [16](16-marketing-growth-communications.md).
 
-**Phasing.** [V1] parcel scoring on the route map and neighbor-rate pricing. [V2] campaign builder for mail and door hangers, and neighbor referral links.
+**Phasing.** [V1] parcel scoring on the route map and neighbor-rate pricing, feeding the target sets of the [V1] neighbor campaigns in [16](16-marketing-growth-communications.md) section 4.15. [V2] score-ranked privacy-safe geo-targeted digital ads ([16](16-marketing-growth-communications.md) section 4.15.1) and neighbor referral links.
 
 **Headline demo.** *The route map lights up 63 parcels within two minutes' drive of Tuesday's mowing route. A door-hanger campaign with a "Tuesday neighbor rate" signs 9 new weekly Clients, raising Tuesday route revenue per hour by 14% (illustrative).*
 

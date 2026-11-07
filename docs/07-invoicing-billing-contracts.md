@@ -1355,7 +1355,7 @@ All tables carry `tenant_id` (Company) with Postgres row-level security, `create
 | `dunning_policy` / `dunning_step` | id, name, segment; step: day_offset, channel, template_id, action (remind, fee, hold, task, agent) | Sequences. |
 | `collection_case` | id, client_id, status, stage, assigned_to, agent_enabled, dispute_reason, opened_at, closed_at | Collections. |
 | `promise_to_pay` | id, case_id, amount, promised_date, source (office, agent, portal), status | Promises. |
-| `payment_plan` / `payment_plan_installment` | id, client_id, total, installments, autopay_method_id, status; installment: due_date, amount, status | Plans. |
+| `payment_plan` / `payment_plan_installment` | id, client_id, total, installments, autopay_method_id, status (`current`, `broken`); installment: due_date, amount, status | One shared entity, defined in [08](08-payments-stripe.md) 7.1; this module creates collections plans for past-due balances (`plan_type = collections`, 4.9.4) alongside 08's milestone and calendar plans. |
 | `statement` | id, number, client_id, type, period_from, period_to, opening_balance, closing_balance, document_id | Snapshots. |
 | `purchase_order` | id, client_id, property_id, number, ceiling_amount, consumed_amount, valid_from, valid_to, allowed_service_lines | POs. |
 | `billing_group` | id, client_id, name, mode (per_property, consolidated, master_sub), bill_to_party_id, delivery_email | Portfolios. |
