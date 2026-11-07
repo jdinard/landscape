@@ -7,11 +7,11 @@
 - **What it is:** the back of the house. Item master with landscape units (yards to tons, coverage at a depth), inventory by mode, purchasing and vendor price lists, receiving and AP matching, subcontractor compliance, equipment and fleet (PM, DVIR, cost per hour), yard load-outs, the chemical SDS library and warranties.
 - **Decision 1: the estimate is the demand signal.** Accepted Proposals and [Design Studio](10-design-studio.md) takeoffs become buy lists and POs with no retyping ([Estimating](03-crm-sales-estimating-proposals.md)); non-refundable special orders wait for `proposal.executed`.
 - **Decision 2: every movement is an append-only event, and the Ledger owns the posting rules.** Stock moves, receipts, bill matches and equipment usage post through the rules in [Ledger](09-accounting-ledger-integrations.md) section 4.3 (`inventory.IN*`, `ap.AP*`, `equipment.EQ1`). Vendor and client money never touches Rootline ([Payments](08-payments-stripe.md)).
-- **Decision 3: inventory is progressive.** Four modes per branch: Off, Light and Standard [MVP], Advanced [V1]. Switching up needs an opening count; switching down archives detail and never loses history.
+- **Decision 3: inventory is progressive.** Four modes per branch: Off and Light [MVP], Standard and Advanced [V1] (Standard moved to V1.0 once the Ledger is proven in production, per [Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6). Switching up needs an opening count; switching down archives detail and never loses history.
 - **Decision 4: equipment is a costed asset.** The published rate card (calculator [MVP], trailing-12-month actuals [V1]) is the only equipment rate Estimating can use, and usage posts to job cost with an over/under-recovery report.
 - **Decision 5: offline-first, scan-first field capture.** Every crew-app action is an idempotent event; DVIRs and signed lien waivers are immutable; load-out sheets are cached 48 hours ahead ([Crew app](05-field-crew-mobile-app.md), [Architecture](20-architecture-security.md)).
-- **MVP:** item master and UOM, Off/Light/Standard modes, per-job buy lists and POs with budget-fit auto-approval, receiving, 2-way bill match, subcontractor COI/W-9 gate, asset registry, manual meters, PM, work orders, rate calculator, DVIR, load-out sheets and the offline SDS library (cut lines in [4.19](#419-release-slicing-and-cut-lines)).
-- **Later:** [V1] purchasing workbench, 3-way match with AI extraction, Nursery Connect, holding-yard care, telematics, fuel cards, actuals-based rates, tools and kits, rentals, sub portal, lien waivers, warranties. [V2] punchout, EDI and distributor APIs, predictive maintenance. [V3] Buying Network, yard twin.
+- **MVP:** item master and UOM, Off and Light inventory modes, per-job buy lists and POs with budget-fit auto-approval, receiving, 2-way bill match, subcontractor COI/W-9 gate, asset registry, manual meters, rate calculator, DVIR with defect records and repair certification, load-out sheets and the offline SDS library (cut lines in [4.19](#419-release-slicing-and-cut-lines)).
+- **Later:** [V1] Standard inventory mode (perpetual, with GL posting) and PM schedules and work orders (both V1.0 per [Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 and #7), Advanced mode, purchasing workbench, 3-way match with AI extraction, Nursery Connect, holding-yard care, telematics, fuel cards, actuals-based rates, tools and kits, rentals, sub portal, lien waivers, warranties. [V2] punchout, EDI and distributor APIs, predictive maintenance. [V3] Buying Network, yard twin.
 - **Packaging ([Pricing](22-business-model-pricing-gtm.md) section 4.2.1):** Starter runs in Off mode (Price Book materials, receipts to jobs); Grow gets inventory and purchasing for one yard and up to 25 equipment assets; Pro and Enterprise get multi-location inventory and unlimited assets.
 - **Differentiators:** the design-to-dump-truck chain, plants as living inventory (holding-yard care, nursery guarantees and client plant warranties tied to the [Plant KB](12-plant-knowledge-base.md)), equipment cost per hour from real data, and subcontractor compliance that actually blocks.
 - **Key cross-links:** [Scheduling](04-scheduling-dispatch-routing.md) (resources, delivery gates, load-outs), [Service lines](14-service-line-modules.md) (chemicals, salt, plant warranties), [Team](15-team-hr-payroll.md) (certifications, mechanic time, tool charge-backs), [Reporting](18-reporting-analytics.md) (`equipment_cost_per_hour`, recovery KPIs), [Personas](02-personas-roles-permissions.md) (PO approval limits).
@@ -129,7 +129,7 @@ Patterns we expect to confirm in interviews (hypotheses, not evidence): crews le
 3. **Plants as living inventory.** A holding yard with watering tasks driven by weather, plant loss tracking, nursery guarantees and client plant warranties connected to the [Plant Knowledge Base](12-plant-knowledge-base.md). No competitor found does this.
 4. **Equipment cost per hour from real data.** Telematics hours + fuel cards + repair work orders + depreciation from the ledger = an actual cost per hour that updates the estimating rates. LMN teaches the concept; we compute it.
 5. **Subcontractor compliance that actually blocks.** COI, W-9, license expiry tracking with a configurable hard block on assignment and payment, a sub portal and lien waivers.
-6. **Inventory scaled by mode, not paywalled behind a top plan.** Starter runs in Off mode (Price Book materials and receipts to jobs); Grow gets Light or Standard inventory and purchasing for one yard and up to 25 equipment assets; Pro and Enterprise get multi-location inventory, Advanced mode and unlimited assets ([Pricing](22-business-model-pricing-gtm.md) section 4.2.1 owns the packaging).
+6. **Inventory scaled by mode, not paywalled behind a top plan.** Starter runs in Off mode (Price Book materials and receipts to jobs); Grow gets Light inventory (Standard from V1) and purchasing for one yard and up to 25 equipment assets; Pro and Enterprise get multi-location inventory, Advanced mode and unlimited assets ([Pricing](22-business-model-pricing-gtm.md) section 4.2.1 owns the packaging).
 
 > **Competitive edge: Aspire.** Aspire's estimate-to-PO and job inventory are the bar for commercial landscape purchasing. Rootline matches that, then goes upstream (design takeoffs and AI layouts feed quantities), sideways (plants as living inventory, density-aware bulk materials, delivery pins on a satellite map), and downstream (3-way match into a built-in GL rather than relying on the accounting system's vendor list or a third-party AP add-on).
 
@@ -283,7 +283,9 @@ Each Item can carry a **coverage rule** used by Estimating, the Design Studio ta
 - Rootline prints QR labels for bins, bunkers, tool tags, asset tags and plant holding batches on standard label stock (2 x 1 in thermal, Avery sheets) and via Zebra-compatible ZPL [V1].
 - Bulk bunkers get a weather-proof QR sign; scanning it opens "issue from bunker" with the bucket-size quick picker (see 4.15.2).
 
-#### 4.1.6 Inventory modes [MVP]
+<a id="416-inventory-modes-mvp"></a>
+
+#### 4.1.6 Inventory modes [MVP Off and Light, V1 Standard and Advanced]
 
 A tenant (or a branch) chooses one mode; switching up never loses data, switching down archives detail.
 
@@ -291,10 +293,12 @@ A tenant (or a branch) chooses one mode; switching up never loses data, switchin
 |---|---|---|---|
 | **Off** [MVP] | Solo and lawn-only operators | Items as Price Book materials only; receipt capture to jobs; load-out lists from scheduled visits (no stock) | Purchases expensed to job or expense account |
 | **Light** [MVP] | 2-15 person companies | Locations (yard, trucks), job-direct POs, receive, issue to job, truck par lists, load-out sheets, tool checkout [V1] (4.14.12); on-hand quantities as memo | Purchases expensed; on-hand is memo only (no inventory asset) |
-| **Standard** [MVP] | Design/build and maintenance firms with a yard | Perpetual inventory with moving-average cost, reservations, reorder points, cycle counts, holding yard, landed cost | Inventory asset; issues post to job cost; adjustments post to shrink |
+| **Standard** [V1] | Design/build and maintenance firms with a yard | Perpetual inventory with moving-average cost, reservations, reorder points, cycle counts, holding yard, landed cost | Inventory asset; issues post to job cost; adjustments post to shrink |
 | **Advanced** [V1] | Multi-branch, chemical-heavy or nursery-heavy firms | Bins, lots and expiration, serial numbers, multi-branch transfers with in-transit, FIFO option, ABC counting, consignment, per-vendor match tolerances | As Standard, plus in-transit and consignment accounts |
 
-Mode-switch rules [MVP]:
+Standard was planned for MVP; it ships at V1.0 because perpetual inventory with GL posting depends on the built-in Ledger being proven in production ([Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6, using this module's own fallback in 4.19). At MVP a design/build firm with a yard runs Light: truck and yard quantities as memo, job-direct POs, receiving and issue to job, with purchases expensed to the job.
+
+Mode-switch rules [MVP between Off and Light; switches to and from Standard from V1]:
 
 - **Up from Off or Light to Standard** requires an **opening count** per location (full count, 4.5). Posting it creates one opening journal entry per branch: Dr Inventory, Cr the tenant-chosen offset (default "Inventory opening balance" equity-type clearing account, editable by `bookkeeper`), dated the cutover date. Before the count is posted, the branch stays in its old mode; there is no half-perpetual state.
 - **Cutover date must fall in an open accounting period** in the [Ledger](09-accounting-ledger-integrations.md). The recommended cutover is the first day of a month in the off-season (for most northern tenants, December to February) when yards are quietest.
@@ -359,7 +363,7 @@ Rules:
 
 #### 4.3.2 Costing [MVP]
 
-- **Moving weighted average per Item per Branch** is the default. Transfers within a branch do not change cost. Rationale: it is simple to explain to a landscaper and stable with partial receipts.
+- **Moving weighted average per Item per Branch** is the default. Transfers within a branch do not change cost. Rationale: it is simple to explain to a landscaper and stable with partial receipts. In Light mode (MVP) the average is a memo valuation for reports and estimates; it becomes the inventory asset value when a branch switches to Standard [V1].
 - **FIFO by lot** is available in Advanced mode for lot-tracked items (mainly chemicals) [V1].
 - **Specific identification** for serialized high-value items (specimen trees, controllers, transformers) [V1].
 - **Landed cost** [V1]: delivery fees, fuel surcharges and pallet deposits on a PO can be (a) charged straight to the job when the PO is job-direct, (b) allocated across lines by value, weight or quantity, or (c) expensed. Pallet deposits default to a "Pallet deposits receivable" account and are cleared when pallets are returned for credit.
@@ -370,6 +374,7 @@ Rules:
 - When a job is sold (`proposal.accepted` in [Estimating](03-crm-sales-estimating-proposals.md); non-refundable special orders wait for `proposal.executed`) and its buy list is sourced from stock, Rootline creates **soft reservations** against the branch's stock with a `need_by` date from the job schedule ([Scheduling](04-scheduling-dispatch-routing.md)).
 - `available = on_hand - reserved` at each location; reorder logic uses `projected = on_hand + on_order - reserved - forecast_demand`.
 - Reservations convert to **hard allocations** when the load-out for the visit is generated, and are consumed by the issue movement.
+- At MVP (Off and Light modes) reservations are **memo reservations** against Light's memo quantities; they carry the same `need_by` logic but post nothing. Stock reservations against a perpetual inventory asset arrive with Standard mode [V1].
 - Rescheduling a visit moves the reservation's `need_by`. Canceling a job releases reservations and asks what to do with job-direct POs not yet received (cancel, redirect to yard, keep).
 
 ### 4.4 Receiving
@@ -702,7 +707,12 @@ Fields common to all: asset number, name, make, model, year, serial/VIN, status 
 - Validation: readings must be monotonic per meter; a reading lower than the last requires a "meter replaced or reset" event with an offset; implausible jumps (more than 14 engine hours per calendar day, matching the crew-app prompt in [Crew app](05-field-crew-mobile-app.md) 4.13.2, or more than 800 miles per day; defaults) are flagged and excluded from PM triggers until confirmed.
 - Daily "hours estimate" for assets without telematics: if a mower is assigned to a crew with 7.5 clock hours on mowing visits, Rootline estimates engine hours using a utilization factor (default 70% for mowers, editable), clearly labelled "estimated" until a manual reading reconciles it.
 
-#### 4.14.3 Preventive maintenance schedules [MVP]
+<a id="4143-preventive-maintenance-schedules-mvp"></a>
+
+#### 4.14.3 Preventive maintenance schedules [V1]
+
+PM schedules and maintenance work orders (4.14.4) ship at V1.0 ([Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #7). The asset registry, manual meters, DVIR with defect records and repair certification (4.14.10) and the rate calculator stay MVP, so an MVP tenant already has the meter history PM triggers need on day one of V1.
+
 
 - **PM templates** per asset class or model with tasks, parts kits and labor estimates, triggered by hours, miles, calendar interval, season, or "whichever comes first". Templates are seeded with illustrative intervals and must be checked against the manufacturer's manual. Example template for a commercial zero-turn mower (illustrative):
 
@@ -721,7 +731,12 @@ Fields common to all: asset number, name, make, model, year, serial/VIN, status 
 - **PM board**: a weekly shop view of everything due, grouped by when the asset is off-route (Rootline knows the schedule, so it proposes servicing mowers on rain days or on the crew's lighter day).
 - **Rain-day shop planning** [V1]: when [Scheduling](04-scheduling-dispatch-routing.md) moves a route because of rain, the PM board suggests pulling that crew's due PMs into the gap.
 
-#### 4.14.4 Maintenance work orders and repair logs [MVP]
+<a id="4144-maintenance-work-orders-and-repair-logs-mvp"></a>
+
+#### 4.14.4 Maintenance work orders and repair logs [V1]
+
+At MVP, DVIR defects and crew problem reports are tracked as **defect records** on the asset (problem, photos, status, repair certification) per 4.14.10; when work orders ship, open defect records convert to `defect` work orders with their history.
+
 
 - Types: `pm`, `repair`, `inspection`, `defect` (from DVIR or crew report), `recall`, `warranty`.
 - Sources: PM due, DVIR defect, crew "report a problem" (photo, voice note auto-transcribed in Spanish or English, asset scan), telematics fault code (4.14.8), manual.
@@ -827,7 +842,7 @@ Landscape companies often run trucks and trailer combinations that cross federal
   - The regulation requires a written report at the end of each day's work for each vehicle operated, covering defects discovered by or reported to the driver ([FMCSA guidance](https://www.fmcsa.dot.gov/safety/question-25-section-39611-requires-driver-completion-each-days-work-prepare-written-report)). Since FMCSA's 2014 rule change, drivers of **property-carrying** CMVs (which is what landscape trucks are) do not have to prepare or submit a report when no defect was found or reported; passenger-carrying vehicles still must (verify current text of 396.11(a)). Rootline therefore makes the post-trip report **mandatory when a defect exists**, prompts a one-tap "no defects" post-trip for flagged vehicles as a tenant policy (default on, because insurers and plaintiffs' lawyers both ask for it), and leaves it optional for unflagged vehicles.
   - **Pre-trip** follows 396.13: before driving, the driver must be satisfied the vehicle is in safe condition, review the last DVIR, and sign it if defects were noted and the repair was certified (verify). The crew app shows the last DVIR and any certification before it allows "Start route" on a flagged vehicle ([Crew app](05-field-crew-mobile-app.md) 4.12.3 owns the capture UI).
   - Electronic DVIRs are permitted by the regulation ([eCFR 396.11](https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-396/section-396.11)); Rootline captures signature, timestamp, GPS and photos of each defect.
-  - Defects create a `defect` WO; safety-critical defects (brakes, lights, tires, coupling) set the asset to `down` and block assignment until a mechanic certifies the repair (or certifies that repair is unnecessary, which the rule allows) and the next driver acknowledges it at pre-trip.
+  - Defects create a **defect record** on the asset [MVP] (problem, photos, status, and the mechanic's repair certification with name and date), which becomes a `defect` WO once work orders ship [V1] (4.14.4); safety-critical defects (brakes, lights, tires, coupling) set the asset to `down` and block assignment until a mechanic certifies the repair (or certifies that repair is unnecessary, which the rule allows) and the next driver acknowledges it at pre-trip.
   - Retention: the federal minimum for the DVIR and its repair certification is 3 months from the report date (verify). Rootline applies the tenant's retention policy (default 1 year, aligned with the [Crew app](05-field-crew-mobile-app.md)) and refuses any policy shorter than the regulatory floor for flagged vehicles.
 - **Registrations and plates** [MVP]: expiry reminders at 60, 30 and 7 days for trucks and trailers.
 - **Annual inspections** [V1]: each CMV (including trailers that are part of a CMV combination) needs a periodic inspection at least once every 12 months under 396.17, with the inspection record kept for 14 months (verify). Rootline stores date, inspector and qualification, result and the report document; reminds at 30 and 7 days; and blocks assignment when overdue if the tenant enables it. States with their own periodic inspection programs can be accepted as equivalent per state setting.
@@ -978,17 +993,17 @@ The MVP surface of this module is large, so the cut lines below are explicit. Th
 | Area | [MVP] (first sellable release) | [V1] | [V2] | [V3] |
 |---|---|---|---|---|
 | Item master and UOM | Item types, UOM and density conversions, coverage rules, Master Material Catalog copy, VIN decode | Variants, barcodes and labels, curator update offers | Pile scanner | |
-| Inventory | Modes Off, Light, Standard; locations; movements; moving average; reservations; full counts; truck pars | Advanced mode (bins, lots, FIFO, serials, in-transit), cycle counts, min/max, demand-aware reorder, landed cost | Pre-season buying planner, demand forecasting | Yard twin |
+| Inventory | Modes Off and Light; locations; movements; moving average (memo); memo reservations; full counts; truck pars | Standard mode (perpetual inventory with GL posting, 24 section 4.6 #6); Advanced mode (bins, lots, FIFO, serials, in-transit), cycle counts, min/max, demand-aware reorder, landed cost | Pre-season buying planner, demand forecasting | Yard twin |
 | Holding yard | Holding location and receiving into it | Holding batches, weather-driven care tasks, health checks, substitution workflow | Smart-controller watering, AI plant health | |
 | Purchasing | Per-job buy lists, POs with budget-fit auto-approval, vendor confirmation link, commitments, CSV price lists, purchase tax treatment | Workbench and consolidation, blanket POs, RFQs, returns, price alerts, delivery scheduling with drop pins, Nursery Connect, AI PDF price lists | Punchout, EDI, distributor APIs | Buying Network |
 | AP | Bill intake, 2-way match, PO-less receipts, duplicate detection, call-back flag on bank changes | 3-way match with tolerances, AI extraction (A9 agent), vendor statements, dual control | EDI 810 invoices | |
 | Subcontractors | Profile, COI and W-9 upload, expiry reminders, compliance gate | SWOs, sub portal, AI COI reading, retainage, lien waivers, 1099 and T5018 totals | License lookups, TIN matching, sub scorecard, supplier waivers | |
-| Equipment | Registry, manual meters, PM schedules, work orders, rate calculator, DVIR, registration reminders | Telematics, fuel cards, actuals-based rates, usage to job cost, rentals, recalls, DOT engine, tools, batteries, losses, insurance sync, off-highway fuel report | Predictive maintenance, smart charging, BLE tags, OEM mixed-fleet | Resale marketplace, parts vending |
+| Equipment | Registry, manual meters, rate calculator, DVIR with defect records and repair certification, registration reminders | PM schedules and work orders (24 section 4.6 #7), telematics, fuel cards, actuals-based rates, usage to job cost, rentals, recalls, DOT engine, tools, batteries, losses, insurance sync, off-highway fuel report | Predictive maintenance, smart charging, BLE tags, OEM mixed-fleet | Resale marketplace, parts vending |
 | Yard | Load-out sheets | Staging, bunker issues, disposal tickets and manifests, kiosk | | |
 | Chemicals | Product master, SDS library offline, HazCom revision tracking, usage deduction by item from application records | Lot stock and lot-level usage deduction, RUP gate, storage inspections, container labels | Tier II inventory report | |
 | Warranties | | Warranty records, equipment claims, vendor guarantees, client plant warranties with reserve | | |
 
-**MVP risk call-out.** Standard (perpetual) inventory with GL posting is the riskiest MVP item, because it depends on the built-in [Ledger](09-accounting-ledger-integrations.md) being solid on day one. If the Ledger slips, the fallback is to ship MVP with Off and Light only (no inventory asset, purchases expensed to job) and move Standard to the first V1 release. The only other MVP item that leans on Standard is reservations, which degrade gracefully to memo reservations against Light's memo quantities.
+**MVP risk call-out (resolved).** Standard (perpetual) inventory with GL posting was the riskiest MVP item, because it depends on the built-in [Ledger](09-accounting-ledger-integrations.md) being solid on day one. [Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 adopts this module's fallback: MVP ships Off and Light only (no inventory asset, purchases expensed to job), and Standard moves to V1.0. Reservations degrade gracefully to memo reservations against Light's memo quantities. Section 4.6 #7 likewise moves PM schedules and work orders to V1.0, keeping the registry, meters, DVIR and the rate calculator at MVP.
 
 ---
 
@@ -1147,7 +1162,7 @@ sequenceDiagram
     participant Ops as OpsManager
     Driver->>App: Post-trip DVIR, brake light out, photo
     App->>RL: Sync DVIR with signature and GPS
-    RL->>RL: Create defect work order
+    RL->>RL: Create defect record (work order from V1)
     RL->>RL: Safety-critical so set Truck 12 down
     RL->>Ops: Truck 12 down, 2 visits affected tomorrow
     Ops->>RL: Assign Truck 9 as substitute on dispatch board
@@ -1297,8 +1312,8 @@ stateDiagram-v2
 | 14 | Subcontractor compliance dashboard | Web | `office_manager`, `owner` | [MVP] basic |
 | 15 | Sub work order and sub portal | Web, mobile web | `ops_manager`, `subcontractor` | [V1] |
 | 16 | Equipment registry (list, map, status) | Web | `ops_manager`, Shop Mechanic | [MVP] |
-| 17 | Asset detail (meters, PM, WOs, cost per hour, warranty, documents) | Web | `ops_manager`, `owner` | [MVP] |
-| 18 | PM board and shop work order queue | Web, shop kiosk | Shop Mechanic | [MVP] |
+| 17 | Asset detail (meters, PM, WOs, cost per hour, warranty, documents) | Web | `ops_manager`, `owner` | [MVP] meters, defects, rate, documents; [V1] PM, WOs, warranty |
+| 18 | PM board and shop work order queue | Web, shop kiosk | Shop Mechanic | [V1] |
 | 19 | Equipment rate cards and over/under recovery | Web | `owner`, `bookkeeper` | [MVP] calculator, [V1] actuals |
 | 20 | Telematics and fuel card connections | Web | `owner`, `ops_manager` | [V1] |
 | 21 | Fuel transactions and anomalies | Web | `ops_manager`, `bookkeeper` | [V1] |
@@ -1976,7 +1991,7 @@ Consumed events use the producer's registered name.
 | `visit.completed` ([Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md)), `material.used` ([Crew app](05-field-crew-mobile-app.md)) | Post material usage, equipment usage, returns |
 | `chemical_application.recorded` ([Crew app](05-field-crew-mobile-app.md); sealed by [Service lines](14-service-line-modules.md) 4.1.4) | Issue chemical concentrate by lot |
 | `snow_service_log.recorded` ([Service lines](14-service-line-modules.md)) | Issue salt and deicer from the depot or truck location |
-| `dvir.defect_reported`, `equipment.meter_recorded`, `equipment.reported_down` ([Crew app](05-field-crew-mobile-app.md)) | Open defect work orders, update meters and PM, set asset status `down` |
+| `dvir.defect_reported`, `equipment.meter_recorded`, `equipment.reported_down` ([Crew app](05-field-crew-mobile-app.md)) | Open a defect record (a defect work order from V1), update meters (and PM due dates from V1), set asset status `down` |
 | `weather.alert_raised` ([Scheduling](04-scheduling-dispatch-routing.md) weather service) | Recompute care tasks; rain-day PM suggestions |
 | `ledger.bill.received` ([Ledger](09-accounting-ledger-integrations.md)) | Run match engine |
 | `ledger.period.closed` ([Ledger](09-accounting-ledger-integrations.md)) | Block back-dated movements; force next-period posting |
@@ -2144,7 +2159,7 @@ All AI calls go through the AI Gateway and are metered as AI credits ([AI copilo
 | Over-building CMMS depth | Medium | Medium | Scope to landscape needs; export to Fleetio-class tools for deeper needs |
 | Employee pushback on tracking | Medium | Medium | Transparency features, off-by-default safety scoring, focus on equipment not people |
 | Regulatory content goes stale (DOT thresholds, 1099 thresholds, HazCom dates, lien forms, quarantine zones) and a tenant relies on it | Medium | High | Every regulatory rule is dated platform data with a source URL, an owner (`platform_curator`), a review-by date and a "last verified" stamp in the UI; quarterly review job; in-product wording is "reminder and evidence", never "you are compliant" |
-| MVP scope too large (perpetual inventory plus purchasing plus fleet) | High | High | Cut lines in 4.19; Standard mode is the first thing to slip to V1 if the Ledger is late |
+| MVP scope too large (perpetual inventory plus purchasing plus fleet) | High | High | Cut lines in 4.19; Standard mode and PM/work orders already moved to V1.0 ([Roadmap](24-roadmap-feature-catalog.md#46-cross-doc-tag-reconciliations) section 4.6 #6 and #7) |
 
 ---
 
@@ -2225,7 +2240,7 @@ Definitions are shared with [Reporting and analytics](18-reporting-analytics.md)
 
 ## 14. Open questions
 
-1. **Default inventory mode for new tenants.** Light for under 15 employees and Standard above, or ask during onboarding with a business-type questionnaire?
+1. **Default inventory mode for new tenants.** At MVP every tenant starts in Off or Light. Once Standard ships at V1: Light for under 15 employees and Standard above, or ask during onboarding with a business-type questionnaire?
 2. **Costing method.** Is moving average per branch sufficient for chemical-heavy lawn companies whose CPAs prefer FIFO, or should FIFO by lot be available in Standard mode?
 3. **Distributor partnerships.** Which of SiteOne, Ewing, Horizon and BFG will partner first, on what terms (API, punchout, EDI), and is there exclusivity with an incumbent (LMN's SiteOne partnership)?
 4. **EDI provider choice.** Build mappings on a managed EDI provider or partner with an integration platform; per-transaction cost vs volume?

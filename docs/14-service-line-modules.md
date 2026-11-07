@@ -353,7 +353,7 @@ Every completed application produces an immutable **Application Record**. Requir
 
 Rules:
 - **Rule packs** are curated per jurisdiction (state, province, and county or municipality where local ordinances exist) by `platform_curator`, versioned, with effective dates and a "last verified" date. Each pack declares: required record fields, retention period (e.g., two years for Maine commercial applicators per the [Maine BPC document](https://www.maine.gov/dacf/php/pesticides/documents2/bd_mtgs/Jun22/6-CA-Caribou-CC.pdf); other states differ), sign posting rules, registry rules, customer notice rules, reporting obligations (some states require annual use reports), and fertilizer blackout dates. Tenants cannot edit a platform pack but can add stricter Company rules.
-- Records are immutable from the applicator's signature in the crew app ([05](05-field-crew-mobile-app.md) 4.7.1). The record is the `chemical_application` entity, and the crew app emits `chemical_application.recorded` when the signed record reaches the server (entity and event names per the registry in [20](20-architecture-security.md)). On that event this module validates the record against the rule pack version it was captured under and seals it (status `sealed`, with a `record_hash`) no later than the Visit's close. Corrections create a new **record revision** (`chemical_application_revision`, emitted as `chemical_application.amended`) with reason, author and timestamp; the original remains visible in the audit trail. This matches how regulators expect corrections to be made (no silent edits).
+- Records are immutable from the applicator's signature in the crew app ([05](05-field-crew-mobile-app.md) 4.7.1). The record is the `chemical_application` entity (entity and event names per the registry in [20](20-architecture-security.md)). When the applicator-signed record reaches the server, this module validates it against the rule pack version it was captured under and seals it (status `sealed`, with a `record_hash`), no later than the Visit's close; `chemical_application.recorded` is emitted when the record is accepted and sealed. Corrections create a new **record revision** (`chemical_application_revision`, the amendment record of [05](05-field-crew-mobile-app.md) and [20](20-architecture-security.md), emitted as `chemical_application.amended`) with reason, author and timestamp; the original remains visible in the audit trail. This matches how regulators expect corrections to be made (no silent edits).
 - **Export formats:** state-specific CSV/PDF where agencies publish a format; a generic "regulator view" PDF per date range, applicator or product; annual use summaries by active ingredient.
 - **Federal note:** USDA's recordkeeping program for restricted-use pesticides applies to private (agricultural) applicators; commercial lawn applicators are generally governed by state rules (verify per state). Rootline's RUP handling therefore lives in state rule packs.
 
@@ -1454,8 +1454,8 @@ sequenceDiagram
     participant Ctrl as Controller
     participant Sched as Scheduler
     participant Client
-    Crew->>Compliance: Signed record (chemical_application.recorded)
-    Compliance->>Rules: Record validated and sealed
+    Crew->>Compliance: Signed application record
+    Compliance->>Rules: chemical_application.recorded (validated and sealed)
     Rules->>Ctrl: Suspend turf zones 1 4 5 for 24h
     Ctrl-->>Rules: Suspended
     Rules->>Compliance: Log hold on the record
@@ -1849,7 +1849,7 @@ erDiagram
 
 ### 7.2 Application Compliance Engine
 
-The application record is the `chemical_application` entity of the `field` module in [20](20-architecture-security.md), captured and signed in the crew app ([05](05-field-crew-mobile-app.md) section 7); its product lines are `chemical_application_product` (as in 05) and its corrections are `chemical_application_revision`. This module owns the compliance fields, guardrail evaluations, rule pack versions and sealing rules on it.
+The application record is the `chemical_application` entity of the `field` module in [20](20-architecture-security.md), captured and signed in the crew app ([05](05-field-crew-mobile-app.md) section 7); its product lines are `chemical_application_product` (as in 05) and its corrections are `chemical_application_revision` (the amendment records of 05 and 20). The earlier names `application_record`, `application_line` and `application_revision` remain registered aliases in the 20 schema registry. This module owns the compliance fields, guardrail evaluations, rule pack versions and sealing rules on it.
 
 ```mermaid
 erDiagram
@@ -2728,7 +2728,7 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 | `program_enrollment.created` / `.renewed` / `.canceled` | enrollment, billing mode, price | Billing, ledger (prepay liability), marketing |
 | `round_instance.window_opened` | round, region, count | Round Planner alerts, Copilot brief |
 | `round_instance.blocked` / `.unblocked` | reasons (notices, license) | Ops dashboard |
-| `chemical_application.recorded` (emitted by the crew app on the applicator's signature, [05](05-field-crew-mobile-app.md) 8.3; this module seals the record and drives these consumers) / `chemical_application.amended` | record id, jurisdiction, products, applicator | Compliance reports, client notice, inventory decrement, invoicing |
+| `chemical_application.recorded` / `chemical_application.amended` (`field` module events in the [20](20-architecture-security.md) registry, listed by [05](05-field-crew-mobile-app.md) 8.3; emitted when the applicator-signed record is accepted and sealed by this module's compliance engine) | record id, jurisdiction, products, applicator | Compliance reports, client notice, inventory decrement, invoicing |
 | `guardrail.overridden` | rule, inputs, actor, reason | Compliance dashboard, owner alert |
 | `registry_notice.sent` / `.failed` | channel, recipient, visit | Compliance log, retry |
 | `soil_test.results_ingested` | values, recommendation | Proposal automation |
@@ -2759,11 +2759,11 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 | Spelling elsewhere | Canonical event here | Where it appears |
 |---|---|---|
 | `round_instance.ready` | `round_instance.window_opened` or `round_instance.unblocked`, whichever leaves the instance `window_open` and unblocked | [04](04-scheduling-dispatch-routing.md) 8.4 |
-| `application_record.sealed`, `chemical_application.signed` (retired spellings) | `chemical_application.recorded`, the [20](20-architecture-security.md) registry name emitted by the crew app ([05](05-field-crew-mobile-app.md) 8.3); sealing is a status on the record (4.1.4), not a separate event | Earlier drafts of this doc and of [13](13-operations-inventory-equipment.md) 8.3 |
+| `application_record.sealed`, `chemical_application.signed` (retired spellings; `application_record.sealed` stays a registered alias in [20](20-architecture-security.md)) | `chemical_application.recorded`, the [20](20-architecture-security.md) registry name ([05](05-field-crew-mobile-app.md) 8.3); sealing is a status on the record (4.1.4), not a separate event | Earlier drafts of this doc and of [13](13-operations-inventory-equipment.md) 8.3 |
 
 ### 8.3 Events consumed
 
-`proposal.accepted` ([03](03-crm-sales-estimating-proposals.md); creates projects, enrollments, snow terms), `visit.completed` ([04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md); round instance and record sealing), `chemical_application.recorded` and `chemical_application.amended` ([05](05-field-crew-mobile-app.md); validate and seal the record), `invoice.paid` ([07](07-invoicing-billing-contracts.md); prepay balances, holiday deposit confirmations), `employee.certification_expiring` / `employee.certification_expired` ([15](15-team-hr-payroll.md); gates applicators, testers, assessors), `ops.stock.below_reorder` ([13](13-operations-inventory-equipment.md); salt, products), `weather.alert_raised` ([04](04-scheduling-dispatch-routing.md) weather service), `design.sold` and `design.as_built_published` ([10](10-design-studio.md); takeoffs for projects, as-built irrigation and lighting layers).
+`proposal.accepted` ([03](03-crm-sales-estimating-proposals.md); creates projects, enrollments, snow terms), `visit.completed` ([04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md); round instance and record sealing), the applicator-signed `chemical_application` record synced from the crew app ([05](05-field-crew-mobile-app.md) 4.7.1; validated and sealed here, which emits `chemical_application.recorded`), `invoice.paid` ([07](07-invoicing-billing-contracts.md); prepay balances, holiday deposit confirmations), `employee.certification_expiring` / `employee.certification_expired` ([15](15-team-hr-payroll.md); gates applicators, testers, assessors), `ops.stock.below_reorder` ([13](13-operations-inventory-equipment.md); salt, products), `weather.alert_raised` ([04](04-scheduling-dispatch-routing.md) weather service), `design.sold` and `design.as_built_published` ([10](10-design-studio.md); takeoffs for projects, as-built irrigation and lighting layers).
 
 ### 8.4 Public API and tenant webhooks [V1]
 

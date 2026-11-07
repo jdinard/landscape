@@ -55,7 +55,7 @@
 
 **Rows with more than one tag.** Many module features ship in slices ("basic [MVP], full [V1]"). The tag column holds the first slice; the description names the later slices in brackets. Where the later slice is a distinct deliverable, it has its own row.
 
-**Retagged rows.** When this plan changes a module doc's tag, the tag cell says so, for example `[V1] (doc: MVP)`. Section 4.6 lists every reconciliation and the reason.
+**Retagged rows.** When this plan changes a module doc's tag and the module doc has not yet adopted it, the tag cell says so, for example `[V1] (doc: MVP)`. The annotation is removed once the module doc carries the new tag. Section 4.6 lists every reconciliation and the reason.
 
 **Personas.** The Persona column uses the role keys from [02](02-personas-roles-permissions.md#57-role-templates-mvp): `platform_owner`, `platform_support`, `platform_curator`, `platform_finance`, `platform_engineer`; `owner`, `office_manager`, `estimator`, `designer`, `ops_manager`, `crew_lead`, `technician`, `bookkeeper`, `subcontractor`; `client_residential`, `client_commercial`. It names the person who gets the most value from the feature, not every user.
 
@@ -157,7 +157,7 @@ Two calendar facts shape module order. First, Plant KB photography needs a growi
 | 2.24 | [Innovation bets (moonshots)](#224-23---innovation-bets-moonshots) | [23](23-innovation-moonshots.md) | 34 | 1 | 8 | 23 | 2 |
 | | **Total** | | **744** | **439** | **255** | **46** | **4** |
 
-The MVP count is large because the MVP replaces a whole tool stack (1.1). Many rows are small (a policy, a template, a setting) and about a sixth of them are platform capabilities in docs 19-21. Section 3 groups the MVP rows into beta-critical, GA and cut-first sets. 16 rows are retagged from their module docs and marked `(doc: ...)`.
+The MVP count is large because the MVP replaces a whole tool stack (1.1). Many rows are small (a policy, a template, a setting) and about a sixth of them are platform capabilities in docs 19-21. Section 3 groups the MVP rows into beta-critical, GA and cut-first sets. 8 rows are still retagged from their module docs and marked `(doc: ...)`; the other reconciliations in 4.6 (for example 13's Standard inventory mode and PM, and 16's website, quoting, booking, referral and receptionist rows) are now carried by the module docs themselves.
 
 Columns: **ID** (catalog ID), **Feature**, **Description** (one line; bracketed tags name later slices), **Tag** (first slice; see section 0), **Persona** (primary role key), **Source** (module doc section that specifies it).
 
@@ -644,9 +644,9 @@ Owner doc: [13-operations-inventory-equipment.md](13-operations-inventory-equipm
 |---|---|---|---|---|---|
 | C13-001 | Item master with landscape units | Item types, UOM with density and coverage conversions (yards to tons, coverage at depth) | [MVP] | `ops_manager` | [13 §4.1.1](13-operations-inventory-equipment.md#411-item-types-mvp) |
 | C13-002 | Barcodes, labels and variants | Barcode labels and item variants for yard and truck stock | [V1] | `ops_manager` | [13 §4.1.5](13-operations-inventory-equipment.md#415-barcodes-and-labels-v1) |
-| C13-003 | Inventory modes Off and Light | Off (expense to job) and Light (memo quantities) for every tier | [MVP] | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp) |
-| C13-004 | Inventory mode Standard | Perpetual inventory with GL posting, moved after the ledger is proven in production (13's own fallback) | [V1] (doc: MVP) | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp) |
-| C13-005 | Inventory mode Advanced | Bins, lots, FIFO, serials and in-transit stock | [V1] | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp) |
+| C13-003 | Inventory modes Off and Light | Off (expense to job) and Light (memo quantities) for every tier | [MVP] | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp-off-and-light-v1-standard-and-advanced) |
+| C13-004 | Inventory mode Standard | Perpetual inventory with GL posting, moved after the ledger is proven in production (13's own fallback) | [V1] | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp-off-and-light-v1-standard-and-advanced) |
+| C13-005 | Inventory mode Advanced | Bins, lots, FIFO, serials and in-transit stock | [V1] | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp-off-and-light-v1-standard-and-advanced) |
 | C13-006 | Inventory locations | Yard, bulk bunkers, bins, trucks, job sites and holding yard | [MVP] | `ops_manager` | [13 §4.2.1](13-operations-inventory-equipment.md#421-location-hierarchy-mvp) |
 | C13-007 | Reservations and availability | Reserve stock to Jobs; memo reservations in Light mode | [MVP] | `ops_manager` | [13 §4.3.3](13-operations-inventory-equipment.md#433-reservations-and-availability-mvp) |
 | C13-008 | Receiving with delivery-ticket capture | Receive against PO with scale-ticket photo; AI ticket capture [V1] | [MVP] | `crew_lead` | [13 §4.4.1](13-operations-inventory-equipment.md#441-receive-against-po-mvp) |
@@ -666,7 +666,7 @@ Owner doc: [13-operations-inventory-equipment.md](13-operations-inventory-equipm
 | C13-022 | Sub work orders, portal, retainage and lien waivers | Sub work orders, sub portal, sub invoices with retainage and lien waivers | [V1] | `subcontractor` | [13 §4.13.2](13-operations-inventory-equipment.md#4132-scope-assignment-and-sub-work-orders-v1) |
 | C13-023 | Asset registry with QR tags | Assets, rigs and QR asset tags | [MVP] | `ops_manager` | [13 §4.14.1](13-operations-inventory-equipment.md#4141-asset-registry-mvp) |
 | C13-024 | Equipment meters | Manual meters with validation [MVP]; telematics hours [V1] | [MVP] | `technician` | [13 §4.14.2](13-operations-inventory-equipment.md#4142-meters-mvp-manual-v1-telematics) |
-| C13-025 | Preventive maintenance and work orders | PM schedules with rain-day shop planning, work orders, downtime and parts | [V1] (doc: MVP) | `ops_manager` | [13 §4.14.3](13-operations-inventory-equipment.md#4143-preventive-maintenance-schedules-mvp) |
+| C13-025 | Preventive maintenance and work orders | PM schedules with rain-day shop planning, work orders, downtime and parts | [V1] | `ops_manager` | [13 §4.14.3](13-operations-inventory-equipment.md#4143-preventive-maintenance-schedules-v1) |
 | C13-026 | Equipment cost per hour | Rate calculator [MVP] feeding estimates; trailing-12-month actuals and over/under recovery [V1] | [MVP] | `owner` | [13 §4.14.7](13-operations-inventory-equipment.md#4147-equipment-cost-per-hour-mvp-calculator-v1-actuals) |
 | C13-027 | Telematics integrations | Samsara, Geotab, Verizon Connect, OneStep GPS and Linxup | [V1] | `ops_manager` | [13 §4.14.8](13-operations-inventory-equipment.md#4148-telematics-integrations-v1) |
 | C13-028 | Fuel cards with anomaly rules | WEX and Corpay fuel data tagged to assets (rail R-10) | [V1] | `ops_manager` | [13 §4.14.9](13-operations-inventory-equipment.md#4149-fuel-cards-and-fuel-management-v1) |
@@ -768,14 +768,14 @@ Owner doc: [16-marketing-growth-communications.md](16-marketing-growth-communica
 
 | ID | Feature | Description | Tag | Persona | Source |
 |---|---|---|---|---|---|
-| C16-001 | Website builder and AI site generator | Landscape templates, AI site generator and SEO toolkit (22 packages it as an add-on) | [V1] (doc: MVP) | `owner` | [16 §4.1.1](16-marketing-growth-communications.md#411-landscape-templates-and-theme-system-mvp) |
+| C16-001 | Website builder and AI site generator | Landscape templates, AI site generator and SEO toolkit (22 packages it as an add-on) | [V1] | `owner` | [16 §4.1.1](16-marketing-growth-communications.md#411-landscape-templates-and-theme-system-v1) |
 | C16-002 | Custom domains and email DNS setup | SPF, DKIM and DMARC setup for sending domains | [MVP] | `owner` | [16 §4.1.7](16-marketing-growth-communications.md#417-hosting-custom-domains-and-email-dns-mvp) |
 | C16-003 | Service-area pages | Location pages with anti-doorway-page eligibility rules | [V1] | `owner` | [16 §4.1.3](16-marketing-growth-communications.md#413-service-area-pages-without-doorway-page-spam-v1) |
-| C16-004 | Project gallery from consented photos | Gallery on the tenant website from consented job photos with privacy redaction (ships with the website builder) | [V1] (doc: MVP) | `owner` | [16 §4.1.4](16-marketing-growth-communications.md#414-automatic-project-gallery-from-completed-jobs-with-consent-mvp-manual-v1-automatic) |
+| C16-004 | Project gallery from consented photos | Gallery on the tenant website from consented job photos with privacy redaction (ships with the website builder) | [V1] | `owner` | [16 §4.1.4](16-marketing-growth-communications.md#414-automatic-project-gallery-from-completed-jobs-with-consent-v1) |
 | C16-005 | Plant pages on tenant sites | KB plant pages with indexability and canonical strategy | [V1] | `owner` | [16 §4.1.5](16-marketing-growth-communications.md#415-plant-pages-from-the-plant-kb-v1) |
 | C16-006 | Lead forms, widgets and web chat | Form builder, embeddable widgets and human web chat; AI chat agent [V1] | [MVP] | `office_manager` | [16 §4.2.1](16-marketing-growth-communications.md#421-form-builder-mvp) |
-| C16-007 | Instant firm-price quoting | Confidence-gated firm prices with route-density pricing | [V1] (doc: MVP) | `client_residential` | [16 §4.3.3](16-marketing-growth-communications.md#433-pricing-rules-mvp) |
-| C16-008 | Online booking onto real route days | E-sign and card on file on the tenant's Stripe during booking | [V1] (doc: MVP) | `client_residential` | [16 §4.3.5](16-marketing-growth-communications.md#435-booking-flow-and-capacity-mvp) |
+| C16-007 | Instant firm-price quoting | Confidence-gated firm prices with route-density pricing | [V1] | `client_residential` | [16 §4.3.3](16-marketing-growth-communications.md#433-pricing-rules-v1) |
+| C16-008 | Online booking onto real route days | E-sign and card on file on the tenant's Stripe during booking | [V1] | `client_residential` | [16 §4.3.5](16-marketing-growth-communications.md#435-booking-flow-and-capacity-v1) |
 | C16-009 | Lead source taxonomy and attribution | First and last touch [MVP]; multi-touch and offline conversion upload [V1] | [MVP] | `owner` | [16 §4.5.1](16-marketing-growth-communications.md#451-source-taxonomy-mvp) |
 | C16-010 | Marketing ROI to job-costed margin | GL-tagged spend against job-costed margin; manual [MVP], automatic [V1] | [MVP] | `owner` | [16 §4.5.3](16-marketing-growth-communications.md#453-spend-capture-and-roi-mvp-manual-v1-automatic) |
 | C16-011 | Marketplace lead ingest | Email-parser ingest with dedupe [MVP]; native Google LSA and Angi APIs [V1]; Thumbtack when partner terms allow | [MVP] | `office_manager` | [16 §4.6](16-marketing-growth-communications.md#46-lead-marketplace-ingest-google-lsa-angi-thumbtack-and-others) |
@@ -788,12 +788,12 @@ Owner doc: [16-marketing-growth-communications.md](16-marketing-growth-communica
 | C16-018 | Win-back and next-best-offer engine | Churn-risk-driven win-back and upsell offers | [V1] | `owner` | [16 §4.11](16-marketing-growth-communications.md#411-win-back-and-upsell-engine-v1) |
 | C16-019 | Google review requests | No gating or incentives, with AI reply drafts | [MVP] | `office_manager` | [16 §4.12.1](16-marketing-growth-communications.md#4121-review-requests-mvp) |
 | C16-020 | NPS with closed-loop follow-up | NPS [MVP]; survey builder [V1] | [MVP] | `owner` | [16 §4.13](16-marketing-growth-communications.md#413-nps-and-surveys-mvp-nps-v1-survey-builder) |
-| C16-021 | Referral program with rewards | Fraud checks, credit memos and tax-threshold tracking (22 packages referrals at V1) | [V1] (doc: MVP) | `client_residential` | [16 §4.14](16-marketing-growth-communications.md#414-referral-program-with-rewards-mvp-basic-v1-full) |
+| C16-021 | Referral program with rewards | Fraud checks, credit memos and tax-threshold tracking (22 packages referrals at V1) | [V1] | `client_residential` | [16 §4.14](16-marketing-growth-communications.md#414-referral-program-with-rewards-v1) |
 | C16-022 | Route-aware neighborhood marketing | QR door hangers on the crew route map, EDDM postcards and holdout-measured lift | [V1] | `owner` | [16 §4.15.2](16-marketing-growth-communications.md#4152-qr-door-hangers-v1) |
 | C16-023 | Social auto-posting of before/afters | Approval queue before posting | [V1] | `office_manager` | [16 §4.16](16-marketing-growth-communications.md#416-social-auto-posting-of-beforeafters-v1) |
 | C16-024 | Unified inbox | SMS, email, chat, calls and portal [MVP]; Facebook/Instagram DMs and LSA messages [V1] | [MVP] | `office_manager` | [16 §4.17.1](16-marketing-growth-communications.md#4171-channels-mvp-core-channels-v1-social-and-marketplace-threads) |
 | C16-025 | Inbox assignment, SLAs and AI replies | Assignment rules, SLAs, suggested replies and translation | [MVP] | `office_manager` | [16 §4.17.2](16-marketing-growth-communications.md#4172-conversation-model-and-behaviors-mvp) |
-| C16-026 | AI receptionist | After-hours lead capture, then AI-first and overflow modes with address quoting in Spanish | [V1] (doc: MVP) | `office_manager` | [16 §4.18.1](16-marketing-growth-communications.md#4181-answering-modes-mvp-after-hours-v1-other-modes) |
+| C16-026 | AI receptionist | After-hours lead capture, then AI-first and overflow modes with address quoting in Spanish | [V1] | `office_manager` | [16 §4.18.1](16-marketing-growth-communications.md#4181-answering-modes-v1) |
 | C16-027 | Call tracking and missed-call text-back | Static numbers and DNI pool with missed-call text-back | [MVP] | `office_manager` | [16 §4.19](16-marketing-growth-communications.md#419-phone-system-and-call-tracking-mvp-basic-v1-full) |
 | C16-028 | Per-tenant 10DLC registration | Managed brand/campaign registration with an auto-generated SMS terms page | [MVP] | `owner` | [16 §4.20](16-marketing-growth-communications.md#420-10dlc-brand-and-campaign-registration-per-tenant-mvp) |
 | C16-029 | Consent ledger and opt-out handling | Evidence-backed consent, natural-language opt-out detection and strictest-rule quiet hours (rail R-06) | [MVP] | `office_manager` | [16 §4.21.1](16-marketing-growth-communications.md#4211-consent-ledger-mvp) |
@@ -1311,7 +1311,7 @@ flowchart LR
 
 ### 4.6 Cross-doc tag reconciliations
 
-Where module docs disagreed with each other, or where this plan moves scope to protect the GA date, the resolution below is binding. Rows marked "retag" carry `(doc: ...)` in the catalog.
+Where module docs disagreed with each other, or where this plan moves scope to protect the GA date, the resolution below is binding. Rows marked "retag" carry `(doc: ...)` in the catalog until the module doc adopts the new tag (13 now carries #6 and #7, and 16 carries #8, #9, #11 and #12).
 
 | # | Topic | Conflict | Resolution in this plan |
 |---|---|---|---|
