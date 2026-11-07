@@ -2,6 +2,20 @@
 
 > **Summary.** This module is the "back of the house" of a landscape company: the mulch bunkers, the nursery holding yard, the trailers of mowers, the shop, the fuel cards, the subcontractors and the vendors who deliver 20 tons of 57 stone to a driveway at 7 a.m. Today most small-to-medium landscapers run this side of the business on whiteboards, clipboards, a QuickBooks vendor list and memory. The result is predictable: materials are bought job-by-job at retail-ish prices, crews leave the yard missing a pallet of pavers, plants die in the holding yard, equipment breaks mid-season because nobody tracked hours, and estimators guess at equipment rates. Rootline Operations makes the **estimate the demand signal** (takeoffs from the [Design Studio](10-design-studio.md) and estimates from [Estimating](03-crm-sales-estimating-proposals.md) become buy lists and purchase orders), makes **every physical movement an accounting event** (stock moves post to the built-in [Ledger](09-accounting-ledger-integrations.md) and to job cost), and makes **equipment a costed, maintained, tracked asset** whose real cost per hour flows back into the next bid. It scales down to a two-truck lawn company that never wants to "do inventory" and up to a 150-person design/build/maintenance firm with three branches, a shop mechanic and a nursery yard.
 
+**At a glance**
+
+- **What it is:** the back of the house. Item master with landscape units (yards to tons, coverage at a depth), inventory by mode, purchasing and vendor price lists, receiving and AP matching, subcontractor compliance, equipment and fleet (PM, DVIR, cost per hour), yard load-outs, the chemical SDS library and warranties.
+- **Decision 1: the estimate is the demand signal.** Accepted Proposals and [Design Studio](10-design-studio.md) takeoffs become buy lists and POs with no retyping ([Estimating](03-crm-sales-estimating-proposals.md)); non-refundable special orders wait for `proposal.executed`.
+- **Decision 2: every movement is an append-only event, and the Ledger owns the posting rules.** Stock moves, receipts, bill matches and equipment usage post through the rules in [Ledger](09-accounting-ledger-integrations.md) section 4.3 (`inventory.IN*`, `ap.AP*`, `equipment.EQ1`). Vendor and client money never touches Rootline ([Payments](08-payments-stripe.md)).
+- **Decision 3: inventory is progressive.** Four modes per branch: Off, Light and Standard [MVP], Advanced [V1]. Switching up needs an opening count; switching down archives detail and never loses history.
+- **Decision 4: equipment is a costed asset.** The published rate card (calculator [MVP], trailing-12-month actuals [V1]) is the only equipment rate Estimating can use, and usage posts to job cost with an over/under-recovery report.
+- **Decision 5: offline-first, scan-first field capture.** Every crew-app action is an idempotent event; DVIRs and signed lien waivers are immutable; load-out sheets are cached 48 hours ahead ([Crew app](05-field-crew-mobile-app.md), [Architecture](20-architecture-security.md)).
+- **MVP:** item master and UOM, Off/Light/Standard modes, per-job buy lists and POs with budget-fit auto-approval, receiving, 2-way bill match, subcontractor COI/W-9 gate, asset registry, manual meters, PM, work orders, rate calculator, DVIR, load-out sheets and the offline SDS library (cut lines in [4.19](#419-release-slicing-and-cut-lines)).
+- **Later:** [V1] purchasing workbench, 3-way match with AI extraction, Nursery Connect, holding-yard care, telematics, fuel cards, actuals-based rates, tools and kits, rentals, sub portal, lien waivers, warranties. [V2] punchout, EDI and distributor APIs, predictive maintenance. [V3] Buying Network, yard twin.
+- **Packaging ([Pricing](22-business-model-pricing-gtm.md) section 4.2.1):** Starter runs in Off mode (Price Book materials, receipts to jobs); Grow gets inventory and purchasing for one yard and up to 25 equipment assets; Pro and Enterprise get multi-location inventory and unlimited assets.
+- **Differentiators:** the design-to-dump-truck chain, plants as living inventory (holding-yard care, nursery guarantees and client plant warranties tied to the [Plant KB](12-plant-knowledge-base.md)), equipment cost per hour from real data, and subcontractor compliance that actually blocks.
+- **Key cross-links:** [Scheduling](04-scheduling-dispatch-routing.md) (resources, delivery gates, load-outs), [Service lines](14-service-line-modules.md) (chemicals, salt, plant warranties), [Team](15-team-hr-payroll.md) (certifications, mechanic time, tool charge-backs), [Reporting](18-reporting-analytics.md) (`equipment_cost_per_hour`, recovery KPIs), [Personas](02-personas-roles-permissions.md) (PO approval limits).
+
 ---
 
 ## Table of contents
@@ -115,7 +129,7 @@ Patterns we expect to confirm in interviews (hypotheses, not evidence): crews le
 3. **Plants as living inventory.** A holding yard with watering tasks driven by weather, plant loss tracking, nursery guarantees and client plant warranties connected to the [Plant Knowledge Base](12-plant-knowledge-base.md). No competitor found does this.
 4. **Equipment cost per hour from real data.** Telematics hours + fuel cards + repair work orders + depreciation from the ledger = an actual cost per hour that updates the estimating rates. LMN teaches the concept; we compute it.
 5. **Subcontractor compliance that actually blocks.** COI, W-9, license expiry tracking with a configurable hard block on assignment and payment, a sub portal and lien waivers.
-6. **Inventory available at every tier, scaled by mode,** not paywalled behind a top plan (see [Pricing](22-business-model-pricing-gtm.md) for how module limits are packaged).
+6. **Inventory scaled by mode, not paywalled behind a top plan.** Starter runs in Off mode (Price Book materials and receipts to jobs); Grow gets Light or Standard inventory and purchasing for one yard and up to 25 equipment assets; Pro and Enterprise get multi-location inventory, Advanced mode and unlimited assets ([Pricing](22-business-model-pricing-gtm.md) section 4.2.1 owns the packaging).
 
 > **Competitive edge: Aspire.** Aspire's estimate-to-PO and job inventory are the bar for commercial landscape purchasing. Rootline matches that, then goes upstream (design takeoffs and AI layouts feed quantities), sideways (plants as living inventory, density-aware bulk materials, delivery pins on a satellite map), and downstream (3-way match into a built-in GL rather than relying on the accounting system's vendor list or a third-party AP add-on).
 
@@ -276,7 +290,7 @@ A tenant (or a branch) chooses one mode; switching up never loses data, switchin
 | Mode | Who it is for | What is on | Accounting |
 |---|---|---|---|
 | **Off** [MVP] | Solo and lawn-only operators | Items as Price Book materials only; receipt capture to jobs; load-out lists from scheduled visits (no stock) | Purchases expensed to job or expense account |
-| **Light** [MVP] | 2-15 person companies | Locations (yard, trucks), job-direct POs, receive, issue to job, truck par lists, load-out sheets, tool checkout; on-hand quantities as memo | Purchases expensed; on-hand is memo only (no inventory asset) |
+| **Light** [MVP] | 2-15 person companies | Locations (yard, trucks), job-direct POs, receive, issue to job, truck par lists, load-out sheets, tool checkout [V1] (4.14.12); on-hand quantities as memo | Purchases expensed; on-hand is memo only (no inventory asset) |
 | **Standard** [MVP] | Design/build and maintenance firms with a yard | Perpetual inventory with moving-average cost, reservations, reorder points, cycle counts, holding yard, landed cost | Inventory asset; issues post to job cost; adjustments post to shrink |
 | **Advanced** [V1] | Multi-branch, chemical-heavy or nursery-heavy firms | Bins, lots and expiration, serial numbers, multi-branch transfers with in-transit, FIFO option, ABC counting, consignment, per-vendor match tolerances | As Standard, plus in-transit and consignment accounts |
 
@@ -334,6 +348,8 @@ Rules:
 | `conversion` [V1] | item A to item B | Break a pallet into bags; mix custom soil blend | Value carried over |
 | `counter_sale` [V2] | location to customer | Selling mulch or plants to walk-ins (see Beyond the brief) | Dr COGS, Cr Inventory (sale handled by [Invoicing](07-invoicing-billing-contracts.md)) |
 
+The "Ledger effect" column is a summary. The posting rules, account numbers and dimensions are owned by [Ledger](09-accounting-ledger-integrations.md) section 4.3.3 (`inventory.IN1`-`IN10`, `ap.AP1`-`AP11`); if the two ever differ, 09 wins.
+
 Rules:
 
 - Movements are **append-only**. A wrong movement is reversed by a compensating movement with `reverses_movement_id`; the UI shows both struck through together. This is essential for offline sync (see 4.18).
@@ -351,10 +367,10 @@ Rules:
 
 #### 4.3.3 Reservations and availability [MVP]
 
-- When a job is sold (proposal signed in [Estimating](03-crm-sales-estimating-proposals.md)) and its buy list is sourced from stock, Rootline creates **soft reservations** against the branch's stock with a `need_by` date from the job schedule ([Scheduling](04-scheduling-dispatch-routing.md)).
+- When a job is sold (`proposal.accepted` in [Estimating](03-crm-sales-estimating-proposals.md); non-refundable special orders wait for `proposal.executed`) and its buy list is sourced from stock, Rootline creates **soft reservations** against the branch's stock with a `need_by` date from the job schedule ([Scheduling](04-scheduling-dispatch-routing.md)).
 - `available = on_hand - reserved` at each location; reorder logic uses `projected = on_hand + on_order - reserved - forecast_demand`.
 - Reservations convert to **hard allocations** when the load-out for the visit is generated, and are consumed by the issue movement.
-- Rescheduling a visit moves the reservation's `need_by`. Cancelling a job releases reservations and asks what to do with job-direct POs not yet received (cancel, redirect to yard, keep).
+- Rescheduling a visit moves the reservation's `need_by`. Canceling a job releases reservations and asks what to do with job-direct POs not yet received (cancel, redirect to yard, keep).
 
 ### 4.4 Receiving
 
@@ -618,7 +634,7 @@ Landscapers sub out concrete flatwork, electrical for lighting transformers, lar
 #### 4.13.2 Scope assignment and sub work orders [V1]
 
 - From a Job (phase or task) or a Visit, create a **Sub Work Order (SWO)** (the permission resource is `subcontract_order` in [Personas, roles and permissions](02-personas-roles-permissions.md); a subcontractor is a vendor with `vendor_type = subcontractor`, which that doc exposes as `is_subcontractor`): scope description, drawings/Design sheets attached, location, schedule window, pricing type (`lump_sum`, `unit_price` with quantities and unit rates, `time_and_materials` with not-to-exceed), retainage percent, required documents for this job (e.g., client-specific additional insured), and acceptance deadline.
-- SWO statuses: `draft`, `offered`, `accepted`, `declined`, `scheduled`, `in_progress`, `submitted_complete`, `approved`, `disputed`, `closed`, `cancelled`.
+- SWO statuses: `draft`, `offered`, `accepted`, `declined`, `scheduled`, `in_progress`, `submitted_complete`, `approved`, `disputed`, `closed`, `canceled`.
 - SWOs are commitments on the job (4.8.8) and appear on the [dispatch board](04-scheduling-dispatch-routing.md) as sub-held visits so the schedule is complete.
 - Change orders to an SWO follow the same pattern as client change orders: priced, approved by `ops_manager`, accepted by the sub.
 
@@ -683,7 +699,7 @@ Fields common to all: asset number, name, make, model, year, serial/VIN, status 
 
 - Meter types: `engine_hours`, `odometer`, `cycles`, `pto_hours` (where reported).
 - Sources: manual (crew app, shop kiosk), telematics (4.14.8), fuel card odometer prompts (4.14.9), work orders.
-- Validation: readings must be monotonic per meter; a reading lower than the last requires a "meter replaced or reset" event with an offset; implausible jumps (more than 24 engine hours per calendar day, or more than 800 miles per day, defaults) are flagged and excluded from PM triggers until confirmed.
+- Validation: readings must be monotonic per meter; a reading lower than the last requires a "meter replaced or reset" event with an offset; implausible jumps (more than 14 engine hours per calendar day, matching the crew-app prompt in [Crew app](05-field-crew-mobile-app.md) 4.13.2, or more than 800 miles per day; defaults) are flagged and excluded from PM triggers until confirmed.
 - Daily "hours estimate" for assets without telematics: if a mower is assigned to a crew with 7.5 clock hours on mowing visits, Rootline estimates engine hours using a utilization factor (default 70% for mowers, editable), clearly labelled "estimated" until a manual reading reconciles it.
 
 #### 4.14.3 Preventive maintenance schedules [MVP]
@@ -709,14 +725,14 @@ Fields common to all: asset number, name, make, model, year, serial/VIN, status 
 
 - Types: `pm`, `repair`, `inspection`, `defect` (from DVIR or crew report), `recall`, `warranty`.
 - Sources: PM due, DVIR defect, crew "report a problem" (photo, voice note auto-transcribed in Spanish or English, asset scan), telematics fault code (4.14.8), manual.
-- Fields: asset, problem, priority, status (`open`, `scheduled`, `in_progress`, `waiting_parts`, `waiting_vendor`, `completed`, `cancelled`), assigned mechanic or outside vendor, meter at service, labor lines (mechanic, hours, rate), parts lines (from shop inventory or purchased), outside vendor bill link, downtime start and end, root cause code, warranty flag and claim link (4.17.2).
+- Fields: asset, problem, priority, status (`open`, `scheduled`, `in_progress`, `waiting_parts`, `waiting_vendor`, `completed`, `canceled`), assigned mechanic or outside vendor, meter at service, labor lines (mechanic, hours, rate), parts lines (from shop inventory or purchased), outside vendor bill link, downtime start and end, root cause code, warranty flag and claim link (4.17.2).
 - **Downtime**: an asset is `down` from report to completion; downtime hours during scheduled work hours are tracked separately (they are what costs money).
 - **Loaner and substitution**: marking an asset down prompts the ops manager to assign a substitute from the pool for affected visits on the [dispatch board](04-scheduling-dispatch-routing.md), or to schedule a rental (non-stock PO with daily rate).
 - **Repair history** per asset: timeline of all WOs, costs, meter readings and photos. Exportable for resale ("service records available" adds resale value).
 
 #### 4.14.5 Mechanic time [V1]
 
-The shop mechanic clocks into WOs on the shop kiosk or crew app; time flows to payroll in [Team, HR and Payroll](15-team-hr-payroll.md) and to WO labor cost at the mechanic's burdened rate.
+The shop mechanic clocks into WOs on the shop kiosk or crew app. Punches are the same append-only events as crew time ([Crew app](05-field-crew-mobile-app.md) 4.5): shop work is a `shop` segment and field repairs an `equipment_repair` segment, each with the WO as cost object. Approved time flows to payroll in [Team, HR and Payroll](15-team-hr-payroll.md) and to WO labor cost at the mechanic's burdened rate (burden profile per [Team](15-team-hr-payroll.md) BURD-02).
 
 #### 4.14.6 Parts inventory [V1]
 
@@ -755,7 +771,7 @@ Rules:
 
 - **MVP**: the calculator with tenant inputs; the resulting rates publish to the Estimating equipment rates in [Estimating](03-crm-sales-estimating-proposals.md) (the estimator never types a mower rate again).
 - **V1 actuals**: Rootline recomputes the rate from actual data over a trailing 12 months: depreciation and insurance from the [Ledger](09-accounting-ledger-integrations.md) fixed asset register and expense accounts tagged to the asset; fuel from fuel card transactions and yard fuel issues (4.14.9); repairs from WOs (labor plus parts plus outside vendor bills); hours from meters. It shows **budgeted vs actual rate** and suggests a new rate at annual budget time; changes are versioned with effective dates so old estimates keep their rates.
-- **Usage to job cost** [V1]: equipment usage records are created per visit from the best available source, in this order: (1) telematics engine hours inside the job's geofence, (2) equipment assigned to the crew times the crew's on-site clock time times the class utilization factor, (3) manual entry by the crew lead. Each usage posts an internal charge: Dr Job cost - equipment, Cr Equipment cost recovery (a contra-expense). The **over/under-recovery report** compares recovered equipment cost to actual equipment cost in the GL by asset and class; persistent under-recovery means rates are too low or machines sit idle.
+- **Usage to job cost** [V1]: equipment usage records are created per visit from the best available source, in this order: (1) telematics engine hours inside the job's geofence, (2) equipment assigned to the crew times the crew's on-site clock time times the class utilization factor, (3) manual entry by the crew lead. Each usage posts an internal charge through [Ledger](09-accounting-ledger-integrations.md) rule `equipment.EQ1`: Dr 5310 Equipment Charged to Jobs (job dimension), Cr 5390 Equipment Cost Recovery (a contra-expense). The **over/under-recovery report** compares recovered equipment cost to actual equipment cost in the GL by asset and class; persistent under-recovery means rates are too low or machines sit idle.
 - Trucks are usually recovered per crew hour (the truck rides along all day) rather than per engine hour; the rate card supports `per_crew_hour`, `per_engine_hour`, `per_mile` and `per_day` bases.
 
 > **Competitive edge: LMN and SynkedUP.** Both teach landscapers to recover equipment cost in their budgets and estimates. Rootline closes the loop with actuals: the rate the estimator uses next spring is computed from this season's fuel cards, work orders, telematics hours and depreciation, and the over/under-recovery report shows whether bids actually paid for the iron.
@@ -872,7 +888,7 @@ Design/build and snow operations rent constantly: a mini excavator for a 3-day p
 
 The load-out sheet is the most-used yard document. One per crew per day.
 
-- **Generated** at a tenant-set time (default 2 p.m. the day before) from the next day's route in [Scheduling](04-scheduling-dispatch-routing.md); regenerated on changes until **locked** (default 5 a.m.), after which changes appear as highlighted "late adds".
+- **Generated** when the next day's route is published in [Scheduling](04-scheduling-dispatch-routing.md) (`route.published`; auto-publish default 3 p.m. tenant-local, 4.6.7 there), or at a tenant-set time for routes published manually; regenerated on changes (`route.changed_after_publish`) until **locked** (default 5 a.m.), after which changes appear as highlighted "late adds".
 - **Contents**, in route order:
   - Per visit: job-allocated materials (from buy list allocations and reservations), service-template materials (e.g., spring cleanup: 10 contractor bags; mulch refresh: cu yd from the Property's bed area at 2 in depth), plants (holding batch, size, quantity, stake QR), chemicals (product, quantity of concentrate, SDS link, required PPE).
   - Per crew: equipment (from the rig plus visit requirements such as "aerator" or "skid steer"), tools and kits, batteries (4.14.11), fuel check, disposal plan (which disposal site after which visit; 4.15.3).
@@ -911,7 +927,7 @@ A locked-down tablet mode for the yard and shop: receive deliveries, run staging
 - **Chemical product master** [MVP]: curated by `platform_curator` in [Platform Admin](19-platform-admin-portal.md): product name, registrant, US EPA registration number and Canadian PCP registration number where applicable, active ingredients and percentages, formulation, signal word, restricted-use flag, re-entry interval, required PPE, label sites (turf, ornamentals), storage requirements, label PDF. Tenants copy products into their Items; product-specific application rates and program logic live in [Service lines](14-service-line-modules.md).
 - **SDS library** [MVP]: master SDS documents (16-section GHS format) with revision dates and language versions (English, Spanish, French where available). Tenants can upload their own; superseded versions are retained with dates. All SDS for chemicals on a crew's truck are **cached offline** in the crew app, because OSHA's Hazard Communication Standard requires SDS to be readily accessible to employees during each work shift (29 CFR 1910.1200(g)(8); verify current text and state-plan variations).
 - **Chemical stock** [V1]: lot and expiration per receipt (Advanced mode); FIFO by lot; quantities by storage location and truck.
-- **Usage deduction** [V1]: application records captured in the crew app ([Crew app](05-field-crew-mobile-app.md), [Service lines](14-service-line-modules.md)) post `issue_to_job` for the concentrate used, by lot. Mixed-but-unused tank remainder is recorded as carried over (not returned to stock) and must be applied or disposed of per label.
+- **Usage deduction** [MVP by item, V1 by lot]: sealed application records captured in the crew app ([Crew app](05-field-crew-mobile-app.md), [Service lines](14-service-line-modules.md)) post `issue_to_job` for the concentrate used, by item and truck or storage location at MVP (Light and Standard modes; memo quantities in Light), and by lot once Advanced mode lot stock ships [V1]. Mixed-but-unused tank remainder is recorded as carried over (not returned to stock) and must be applied or disposed of per label.
 - **Restricted-use gate** [V1]: restricted-use products can only be issued to employees with a valid certified applicator credential (or recorded as under direct supervision where state rules allow), checked against certifications in [Team](15-team-hr-payroll.md).
 - **Storage compliance** [V1]: `chemical_storage` locations carry a monthly inspection checklist (locked, signage, spill kit stocked, fire extinguisher charged, secondary containment intact, no food or drink, ventilation) with photo evidence.
 - **Annual chemical inventory report** [V2]: maximum and average quantities by product and location, useful for fire department and emergency-planning filings when thresholds apply (federal EPCRA Tier II reporting thresholds and state rules vary; verify).
@@ -931,6 +947,8 @@ A generic warranty object attaches to an Asset, an installed plant line, a hards
 Opening a repair WO on an asset under warranty shows a banner with remaining coverage. The WO can be marked `warranty`, routed to the dealer as an outside vendor, and a **warranty claim** tracks claim number, parts and labor reimbursed, status (`submitted`, `approved`, `partially_approved`, `denied`, `paid`), and the credit posted.
 
 #### 4.17.3 Plant guarantees and client plant warranties [V1]
+
+Ownership: the Warranty Engine in [Service lines](14-service-line-modules.md) 4.5.7 owns client warranty terms, claim states, replacement rules and the reserve postings (`warranty.WR1` and `WR2` in [Ledger](09-accounting-ledger-integrations.md)); warranty terms and certificates ship with install projects at [MVP]. This module owns the vendor guarantee, replacement sourcing and the nursery pass-back, all [V1].
 
 Two separate relationships:
 
@@ -967,7 +985,7 @@ The MVP surface of this module is large, so the cut lines below are explicit. Th
 | Subcontractors | Profile, COI and W-9 upload, expiry reminders, compliance gate | SWOs, sub portal, AI COI reading, retainage, lien waivers, 1099 and T5018 totals | License lookups, TIN matching, sub scorecard, supplier waivers | |
 | Equipment | Registry, manual meters, PM schedules, work orders, rate calculator, DVIR, registration reminders | Telematics, fuel cards, actuals-based rates, usage to job cost, rentals, recalls, DOT engine, tools, batteries, losses, insurance sync, off-highway fuel report | Predictive maintenance, smart charging, BLE tags, OEM mixed-fleet | Resale marketplace, parts vending |
 | Yard | Load-out sheets | Staging, bunker issues, disposal tickets and manifests, kiosk | | |
-| Chemicals | Product master, SDS library offline, HazCom revision tracking | Lot stock, usage deduction, RUP gate, storage inspections, container labels | Tier II inventory report | |
+| Chemicals | Product master, SDS library offline, HazCom revision tracking, usage deduction by item from application records | Lot stock and lot-level usage deduction, RUP gate, storage inspections, container labels | Tier II inventory report | |
 | Warranties | | Warranty records, equipment claims, vendor guarantees, client plant warranties with reserve | | |
 
 **MVP risk call-out.** Standard (perpetual) inventory with GL posting is the riskiest MVP item, because it depends on the built-in [Ledger](09-accounting-ledger-integrations.md) being solid on day one. If the Ledger slips, the fallback is to ship MVP with Off and Light only (no inventory asset, purchases expensed to job) and move Standard to the first V1 release. The only other MVP item that leans on Standard is reservations, which degrade gracefully to memo reservations against Light's memo quantities.
@@ -1032,15 +1050,15 @@ stateDiagram-v2
     PartiallyReceived --> Received : all lines received or short-closed
     Acknowledged --> Received : full receipt
     Received --> Closed : all lines billed and matched
-    Draft --> Cancelled
-    Approved --> Cancelled
-    Sent --> Cancelled : before any receipt
-    Acknowledged --> Cancelled : before any receipt
+    Draft --> Canceled
+    Approved --> Canceled
+    Sent --> Canceled : before any receipt
+    Acknowledged --> Canceled : before any receipt
     Closed --> [*]
-    Cancelled --> [*]
+    Canceled --> [*]
 ```
 
-Rules: `OnHold` is a flag, not a state, so a held PO keeps its position in the lifecycle. A PO can be reopened from `Closed` only by `owner` or `bookkeeper` and only if the accounting period is open.
+Rules: stored status keys are snake_case (`draft`, `pending_approval`, `approved`, `sent`, `acknowledged`, `revised`, `partially_received`, `received`, `closed`, `canceled`); the "Materials available" scheduling gate in [Scheduling](04-scheduling-dispatch-routing.md) 4.1.2 reads `received` PO lines and `confirmed` deliveries. `OnHold` (`on_hold`) is a flag, not a state, so a held PO keeps its position in the lifecycle. A PO can be reopened from `Closed` only by `owner` or `bookkeeper` and only if the accounting period is open.
 
 ### 5.3 Three-way match
 
@@ -1068,7 +1086,7 @@ sequenceDiagram
 
 ### 5.4 Daily load-out
 
-1. At 2 p.m. Rootline generates tomorrow's load-out sheets from routes; the yard manager sees seven maintenance crews and two install crews on the load-out board.
+1. At 3 p.m. tomorrow's routes auto-publish and Rootline generates the load-out sheets from them; the yard manager sees seven maintenance crews and two install crews on the load-out board.
 2. Yard crew stages materials into lanes using the pick list (bin order); bunker issues are recorded by bucket count.
 3. Late changes (a rescheduled install) regenerate affected sheets until 5 a.m. lock.
 4. At 6:15 a.m. crew leads open the sheet in the crew app (offline-cached), check or scan lines, scan kits and batteries, and confirm. Shortages create purchase requests or transfers.
@@ -1077,7 +1095,7 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    A["Tomorrow's routes final enough at 2 pm"] --> B["Generate load-out per crew"]
+    A["Tomorrow's routes published at 3 pm"] --> B["Generate load-out per crew"]
     B --> C["Pick list by yard location"]
     C --> D["Stage in crew lanes"]
     D --> E{"Schedule changed before 5 am lock?"}
@@ -1495,6 +1513,8 @@ All tables carry `tenant_id` (row-level security per [Architecture](20-architect
 
 ### 7.1 Key entities
 
+These tables live in the `inventory` module of the [Architecture](20-architecture-security.md) module map. Its summary entity names map as follows: `equipment` is `asset` here, `item_stock` is `stock_balance` (the on-hand projection of `stock_movement`), `maintenance_record` is `maintenance_work_order`, and `purchase_order` and `vendor` keep their names.
+
 | Entity | Key fields | Notes |
 |---|---|---|
 | `item` | id, item_type, sku, name, base_uom, purchase_uom, sell_uom, density_lb_per_cuyd, density_source, coverage_rule, is_stocked, tracking (`none`, `lot`, `serial`), plant_id, size_spec (jsonb: container_class, caliper_in, height_ft, root_form), chemical_product_id, master_item_id, preferred_vendor_id, gl_inventory_account_id, gl_cost_account_id | Plant items unique on (tenant, plant_id, size_spec hash) |
@@ -1904,7 +1924,7 @@ Events go through the transactional outbox to the event bus ([Architecture](20-a
 | `ops.stock.below_reorder` | item, location, projected qty, suggested qty | Purchasing workbench, notifications |
 | `ops.stock.count_posted` | count id, variance value | Ledger, Reporting |
 | `ops.po.approved` / `ops.po.sent` / `ops.po.acknowledged` / `ops.po.revised` / `ops.po.closed` | po id, vendor, totals, job ids | Ledger (commitments), Scheduling (deliveries), Notifications |
-| `ops.delivery.scheduled` / `ops.delivery.delivered` / `ops.delivery.failed` | delivery id, window, property | Scheduling (dispatch dependencies), Customer Portal timeline, Comms |
+| `ops.delivery.scheduled` / `ops.delivery.status_changed` / `ops.delivery.delivered` / `ops.delivery.failed` | delivery id, status (`requested`, `confirmed`, `en_route`, `delivered`, `failed`, `rescheduled`), window, property | Scheduling (materials gate, dispatch dependencies), Customer Portal timeline, Comms |
 | `ops.receipt.posted` | receipt id, lines, rejected qty | Ledger (GRNI), Match engine, Holding yard |
 | `ops.bill.matched` / `ops.bill.match_exception` | bill id, variances, reason | Ledger AP, office tasks |
 | `ops.holding.task_due` / `ops.holding.task_missed` | task, batch, due_at | Notifications |
@@ -1913,11 +1933,13 @@ Events go through the transactional outbox to the event bus ([Architecture](20-a
 | `ops.swo.status_changed` | swo id, status | Scheduling, Job costing |
 | `ops.lien_waiver.signed` | waiver id, type, amount | Ledger (payment release) |
 | `ops.asset.status_changed` | asset, old and new status, reason | Scheduling (dispatch board substitution) |
+| `ops.asset.placed_in_service` / `ops.asset.disposed` | asset, cost or proceeds, date, financing reference | Ledger fixed asset register (`assets.FA1`, `FA3`) |
 | `ops.asset.meter_recorded` | asset, meter, value, source | PM engine, Cost per hour |
 | `ops.pm.due` / `ops.pm.overdue` | asset, schedule, due meter | Shop board, Notifications |
 | `ops.dvir.submitted` / `ops.dvir.defect_reported` | dvir id, defects, severity | Work orders, Safety reporting in Team |
 | `ops.equipment.usage_recorded` | asset, visit, qty, cost | Ledger job cost |
 | `ops.fuel.anomaly_detected` | transaction, rule codes | Owner and ops notifications |
+| `ops.tool.checked_out` / `ops.tool.checked_in` | asset or kit, holder, condition | Team onboarding and offboarding checklists |
 | `ops.tool.overdue` / `ops.tool.lost` | asset, holder | Yard manager, Team offboarding |
 | `ops.loadout.locked` / `ops.loadout.confirmed` | sheet, crew, shortages | Yard board, Purchasing |
 | `ops.disposal.recorded` | ticket, allocations, billable | Ledger job cost, Invoicing (billable fees) |
@@ -1928,26 +1950,40 @@ Events go through the transactional outbox to the event bus ([Architecture](20-a
 | `ops.asset.recall_found` | asset, source, campaign number | Shop board, owner notification |
 | `ops.dot.profile_changed` | asset or rig, is_cmv, CDL class | Scheduling (driver assignment checks), Team (driver qualification gaps) |
 
-**Name aliases.** Some sibling docs refer to these events by shorter names; the canonical names are the `ops.*` names above: `inventory.low_stock` in [Service lines](14-service-line-modules.md) is `ops.stock.below_reorder`, and `vendor.price_list_imported` in [Estimating](03-crm-sales-estimating-proposals.md) is `ops.vendor.price_list_imported`.
+**Name aliases.** The canonical names are the `ops.*` names above (the namespace [Ledger](09-accounting-ledger-integrations.md) consumes); they belong to the `inventory` module in the [Architecture](20-architecture-security.md) module map. Shorter spellings used elsewhere are registered as aliases on the bus:
+
+| Spelling elsewhere | Canonical event here | Where it appears |
+|---|---|---|
+| `vendor.price_list_imported` | `ops.vendor.price_list_imported` | [Estimating](03-crm-sales-estimating-proposals.md) |
+| `delivery.status_changed` | `ops.delivery.status_changed` | [Scheduling](04-scheduling-dispatch-routing.md) 8.4 |
+| `equipment.status_changed` | `ops.asset.status_changed` | [Scheduling](04-scheduling-dispatch-routing.md) 8.4 |
+| `asset.placed_in_service`, `asset.disposed` | `ops.asset.placed_in_service`, `ops.asset.disposed` | [Ledger](09-accounting-ledger-integrations.md) 8.2 |
+| `purchase_order.sent`, `purchase_order.received` | `ops.po.sent`, `ops.receipt.posted` | [Architecture](20-architecture-security.md) event catalog |
+| `equipment.maintenance_due` | `ops.pm.due` | [Architecture](20-architecture-security.md) event catalog |
 
 ### 8.3 Events consumed
 
+Consumed events use the producer's registered name.
+
 | Event (owner) | Reaction in this module |
 |---|---|
-| `sales.proposal.signed` ([Estimating](03-crm-sales-estimating-proposals.md)) | Create buy list, reservations, plant availability checks |
-| `sales.change_order.approved` | Adjust buy list; prompt PO revisions |
-| `design.takeoff.updated` ([Design Studio](10-design-studio.md)) | Recompute pending buy lines for unsold or change-order scopes |
-| `schedule.visit.scheduled` / `schedule.visit.rescheduled` ([Scheduling](04-scheduling-dispatch-routing.md)) | Move need-by dates, reservations and dependent deliveries; regenerate load-outs |
-| `schedule.route.published` | Generate load-out sheets; energy plans |
-| `field.visit.completed` ([Crew app](05-field-crew-mobile-app.md)) | Post material usage, equipment usage, returns |
-| `service.application.recorded` ([Service lines](14-service-line-modules.md)) | Issue chemical concentrate by lot |
-| `weather.forecast.updated` | Recompute care tasks; rain-day PM suggestions |
+| `proposal.accepted` ([Estimating](03-crm-sales-estimating-proposals.md)) | Create buy list, soft reservations and plant availability checks |
+| `proposal.executed` ([Estimating](03-crm-sales-estimating-proposals.md)), `design.sold` ([Design Studio](10-design-studio.md)) | Release held POs, including non-refundable special orders (deposit condition met) |
+| `change_order.approved` ([Estimating](03-crm-sales-estimating-proposals.md)) | Adjust buy list; prompt PO revisions |
+| `design.takeoff_updated` ([Design Studio](10-design-studio.md)) | Recompute pending buy lines for unsold or change-order scopes |
+| `visit.scheduled` / `visit.rescheduled` ([Scheduling](04-scheduling-dispatch-routing.md)) | Move need-by dates, reservations and dependent deliveries; regenerate load-outs |
+| `route.published` / `route.changed_after_publish` ([Scheduling](04-scheduling-dispatch-routing.md)) | Generate or regenerate load-out sheets; energy plans |
+| `visit.completed` ([Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md)), `material.used` ([Crew app](05-field-crew-mobile-app.md)) | Post material usage, equipment usage, returns |
+| `application_record.sealed` ([Service lines](14-service-line-modules.md)) | Issue chemical concentrate by lot |
+| `snow_service_log.recorded` ([Service lines](14-service-line-modules.md)) | Issue salt and deicer from the depot or truck location |
+| `dvir.defect_reported`, `equipment.meter_recorded`, `equipment.reported_down` ([Crew app](05-field-crew-mobile-app.md)) | Open defect work orders, update meters and PM, set asset status `down` |
+| `weather.alert_raised` ([Scheduling](04-scheduling-dispatch-routing.md) weather service) | Recompute care tasks; rain-day PM suggestions |
 | `ledger.bill.received` ([Ledger](09-accounting-ledger-integrations.md)) | Run match engine |
-| `ledger.period.closed` | Block back-dated movements; force next-period posting |
-| `ledger.bill_payment.cleared` ([Ledger](09-accounting-ledger-integrations.md)) | Request unconditional lien waiver; update sub portal remittance |
-| `team.employee.terminated` ([Team](15-team-hr-payroll.md)) | Outstanding tools, cards, batteries checklist |
-| `team.certification.expired` | Block RUP issue, heavy equipment assignment where required |
-| `portal.warranty_claim.submitted` ([Customer Portal](06-customer-portal.md)) | Open warranty claim |
+| `ledger.period.closed` ([Ledger](09-accounting-ledger-integrations.md)) | Block back-dated movements; force next-period posting |
+| `ledger.bill_payment.released` ([Ledger](09-accounting-ledger-integrations.md)) | Request the unconditional lien waiver once the payment's bank line is matched (`ledger.bank_transaction.matched`); update sub portal remittance |
+| `employee.terminated` / `offboarding.started` ([Team](15-team-hr-payroll.md)) | Outstanding tools, cards, batteries checklist |
+| `employee.certification_expired` ([Team](15-team-hr-payroll.md)) | Block RUP issue, heavy equipment assignment where required |
+| `warranty_claim.submitted` ([Customer Portal](06-customer-portal.md)) | Open warranty claim |
 
 ### 8.4 Public API and webhooks [V1]
 
@@ -2054,7 +2090,7 @@ All AI calls go through the AI Gateway and are metered as AI credits ([AI copilo
 | Plants delivered with the wrong cultivar tag | Receive as rejected or accept as substitute; substitution workflow if reserved for a signed job |
 | A crew uses 3 cu yd more mulch than estimated | Crew lead logs extra usage; job cost reflects it; if the agreement allows, an "additional materials" invoice line is suggested to the office ([Invoicing](07-invoicing-billing-contracts.md)) |
 | Partial pallet returns after install | Return movement at cost; restock value can be reduced (e.g., opened bags at 0%) with the difference to job cost |
-| Job cancelled after PO sent | Prompt per PO: cancel (vendor link notifies), redirect to yard stock, or keep for another job |
+| Job canceled after PO sent | Prompt per PO: cancel (vendor link notifies), redirect to yard stock, or keep for another job |
 | Offline count and online movement on the same bin | Snapshot counting nets movements recorded before the count line's `occurred_at` |
 | Negative truck stock after a busy day | Allowed; truck flagged for count; cost true-up at count |
 | Asset sold mid-year with open PMs | Disposition closes PMs and telematics link; fixed asset disposal in [Ledger](09-accounting-ledger-integrations.md); history retained |

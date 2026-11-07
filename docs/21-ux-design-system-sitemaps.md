@@ -2,6 +2,18 @@
 
 > Rootline is five products wearing one coat: an office command center, a glove-proof crew app, a white-label client portal, a power-user operator console, and a public marketing site with a homeowner AI design funnel. This document defines how all of them look, read, move and behave. It contains the information architecture and full sitemaps for every surface; navigation patterns (command palette, role-aware "Today" home, record pages with timelines, contextual side panels); design principles per surface; Rootline's brand direction with concrete color, type and icon tokens (including a custom landscape icon set and a plant plan symbol library for the [Design Studio](10-design-studio.md)); the component library inventory; data-visualization conventions; responsive rules; WCAG 2.2 AA accessibility; internationalization for English, Spanish and French-Canadian crews and clients; the new-Company onboarding wizard; empty states and sample data; notification design; microcopy voice and tone; eighteen hero-screen wireframes; and the usability testing and design-ops plan that keeps it all coherent as the product grows. UX is not decoration here: the market leaders are already split between "easy but shallow" (Jobber) and "deep but dated" (Service Autopilot, older Aspire screens), and Rootline's whole thesis - replace 5-10 tools with one - only works if one product can feel simple to a 19-year-old technician in July sun and powerful to a controller closing the books.
 
+**At a glance**
+
+- **What it is:** the UX system for Rootline's surfaces: the office web app, the "Rootline Crew" offline mobile app, the white-label Customer Portal, the Platform Admin console and the public marketing site with the homeowner AI design funnel. It covers sitemaps, navigation, brand, design tokens, components, accessibility, localization, onboarding, notifications, microcopy and hero wireframes.
+- **Decision - one shell for the office:** a left rail with nine destinations (Today, Inbox, Clients, Sales, Design, Schedule, Jobs, Money, Books) plus More, a role-aware Today home, record pages with activity timelines and a Cmd/Ctrl-K command palette. Modules a Company has not enabled are hidden, not greyed out.
+- **Decision - brand and tokens:** Stone neutrals carry the UI, Moss is the primary color, Clay, Marigold (warning and offline) and Sky (info and irrigation) are accents with jobs, Ember means danger, and **Iris is reserved exclusively for AI**. Fraunces for display, Inter for UI, JetBrains Mono for IDs and numerics. Tokens follow a three-tier W3C format with a CI contrast gate.
+- **Decision - a field-proof crew app:** the glove-and-sun standard (56 px minimum targets, 64 px primary actions, press-and-hold for irreversible steps), the `field-sun` "Outdoor mode" theme with every text pair at 7:1 or better, and offline state visible on every screen.
+- **Decision - accessibility and language are floors:** WCAG 2.2 AA on every surface; English and Spanish at MVP on the crew app and portal, French-Canadian at V1; three independent language settings (user UI, Company default, client communications).
+- **MVP:** office app, crew app, portal and admin console sitemaps, light and field-sun themes, white-label portal theming, the setup wizard with the "Greenleaf Grounds Co." sample dataset, notification center and preferences, the embeddable "Dream Yard Visualizer" homeowner widget, and 18 hero-screen wireframes.
+- **V1 and later:** dark and Night themes, manager mode and shop kiosk in the native app, presence and collaboration, design-system governance, a published Accessibility Conformance Report, and the full homeowner design funnel both embedded and platform-hosted (Rootline Home). V2 adds a native portal shell.
+- **Differentiators:** progressive depth (the same record page serves a 3-person lawn crew and a 120-person design-build firm), a landscape icon set and plant plan symbol library that runs from Design Studio to proposal, and AI output that is always previewable, attributable, editable and undoable.
+- **Cross-links:** roles in [02](02-personas-roles-permissions.md); console IA mirrors [19](19-platform-admin-portal.md) PA-001; domains, tenancy and data model in [20](20-architecture-security.md); AI behavior in [17](17-ai-copilot-automation.md); credit costs shown in the AI UX come from [22](22-business-model-pricing-gtm.md) section 4.4.1.
+
 **Related docs:** [Personas, roles and permissions](02-personas-roles-permissions.md) - [Architecture and security](20-architecture-security.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Platform admin](19-platform-admin-portal.md) - [Roadmap and feature catalog](24-roadmap-feature-catalog.md)
 
 ---
@@ -111,7 +123,7 @@ Synthesized from the review sources above and the field-workforce UX literature;
 | AI features are bolted on as a chat box. | **AI is ambient and object-aware:** Copilot lives in a side panel bound to the current record, and AI suggestions appear inline with a consistent visual signature (the Iris accent) and explicit apply/undo. |
 | Accounting UIs scare non-accountants; field UIs scare accountants. | **Two lenses on one ledger:** plain-language "money" views for owners, debit/credit precision for bookkeepers, switchable per user ([section 18.12](#1812-ledger-journal-entry)). |
 
-> **Competitive edge.** Jobber wins on approachability and loses on depth; Service Autopilot and Aspire win on depth and lose on approachability (ease-of-use scores of 3.8 and 4.1 on Capterra, as of 2026, verify). Rootline's design system is engineered to break that trade-off: density modes, progressive disclosure, a command palette for power users and a role-aware Today home for everyone else. In the field, Aspire is the one incumbent we found that documents offline ticket completion; LMN's crew apps draw "clunky" and crash complaints, and no incumbent was confirmed to ship a Spanish crew UI. Rootline's crew app is offline-first, Spanish at launch, and comes with a published glove-and-sun test protocol ([24.2](#242-field-test-protocols-mvp)) that buyers can watch us run. On AI, Jobber's Copilot is an advisor that works through its own entry point. Rootline's AI appears on the record being edited, as a draft the user previews, applies and can undo ([23.1](#231-ai-ux-conventions-apply-to-every-module-mvp)). In this research pass we found no landscape-vertical competitor advertising a keyboard-first command palette, a sunlight theme, or a plant-symbol system that runs from design through invoice (to be confirmed in the Discovery teardown).
+> **Competitive edge.** Jobber wins on approachability and loses on depth; Service Autopilot and Aspire win on depth and lose on approachability (ease-of-use scores of 3.8 and 4.1 on Capterra, as of 2026, verify). Rootline's design system is engineered to break that trade-off: density modes, progressive disclosure, a command palette for power users and a role-aware Today home for everyone else. In the field, Aspire is the one incumbent we found that documents offline ticket completion; LMN's crew apps draw "clunky" and crash complaints, and no incumbent was confirmed to ship a Spanish crew UI. Rootline's crew app is offline-first, Spanish at launch, and comes with a published glove-and-sun test protocol ([24.2](#242-field-test-protocols-mvp)) that buyers can watch us run. On AI, Jobber's Copilot is an advisor that works through its own entry point. Rootline's AI appears on the record being edited, as a draft the user previews, applies and can undo ([23.1](#231-ai-ux-conventions-apply-to-every-module-mvp)). In the research to date we found no landscape-vertical competitor advertising a keyboard-first command palette, a sunlight theme, or a plant-symbol system that runs from design through invoice (to be confirmed in the Discovery teardown).
 
 ---
 
@@ -161,7 +173,7 @@ Full persona definitions, journeys and RBAC live in [02 - Personas, roles and pe
 | **Crew mobile app** (field) | "Built for my hands and my truck." | Glove-friendly; sunlight-readable; offline state always visible; one primary action per screen; minimal typing; works one-handed; language follows the person. | Targets >= 56 x 56 px (64 px for primary actions); 12 px default gap between adjacent targets, with an 8 px hard floor (the [05](05-field-crew-mobile-app.md) minimum); body text >= 17 pt, key numbers >= 22 pt; no swipe-only actions. Swipe-to-confirm (used in [05](05-field-crew-mobile-app.md) for irreversible steps) always has a press-and-hold button (800 ms, with a visible fill) as its equal alternative; persistent sync chip in the header; field-sun theme auto-suggested when ambient light sensor reads very bright (Android) or user toggles; camera opens in <= 1 tap from a visit; voice-to-text on every free-text field; haptic confirm on clock-in and visit complete. |
 | **Company web app** (office) | "Dense but calm, fast as a spreadsheet." | High information density with strong hierarchy; keyboard-first; split views over page hops; consistent record anatomy; nothing more than two clicks from Today or Cmd-K. | Default "comfortable" density (row height 40 px) with "compact" (32 px) per user; body 14 px; side panel peeks instead of navigation for quick looks; every list supports saved views, column choice, bulk actions; INP < 200 ms on lists up to 5,000 rows (virtualized). |
 | **Customer Portal** (client) | "Trustworthy and delightful." | The Company's brand, not ours; zero training; one clear next step; generous whitespace; photography-led; money handled with bank-grade clarity. | Mobile-first (most sessions start from SMS/email); 16 px minimum body; "Next step" card at top; Powered-by-Rootline mark is small and optional on higher tiers; payment flows use Stripe Elements and show the Company's legal name, amount, currency and what happens next; every page reachable with no password via magic link plus optional passkey. |
-| **Platform Admin console** (operator) | "A cockpit: powerful, auditable, unafraid of data." | Information-dense tables; global search across tenants; every write is audited and reason-coded; dangerous actions are visually distinct; impersonation is unmistakable. | Persistent red-band banner during impersonation with tenant name, timer and "End session"; reason code required for every mutating action ([19](19-platform-admin-portal.md) PA-003); two-person approval dialogs show the diff, reason and blast radius ("affects 412 tenants"); diff previews before bulk changes to the plant KB; a pinned tenant context bar whenever a tenant is selected; production vs staging shown in the top bar (staging uses a striped Marigold band); `compact` density by default; keyboard everywhere. |
+| **Platform Admin console** (operator) | "A cockpit: powerful, auditable, unafraid of data." | Information-dense tables; global search across tenants; every write is audited and reason-coded; dangerous actions are visually distinct; impersonation is unmistakable. | Persistent Clay-band banner (`color.banner.impersonation`, deliberately not the Ember danger color) during impersonation with tenant name, timer and "End session"; reason code required for every mutating action ([19](19-platform-admin-portal.md) PA-003); two-person approval dialogs show the diff, reason and blast radius ("affects 412 tenants"); diff previews before bulk changes to the plant KB; a pinned tenant context bar whenever a tenant is selected; production vs staging shown in the top bar (staging uses a striped Marigold band); `compact` density by default; keyboard everywhere. |
 | **Public marketing site** | "Earthy, modern, confident." | Show real landscapes and real product; fast; SEO-first; honest pricing. | Lighthouse performance >= 90 on mobile; no autoplay audio; pricing page shows prices (no "contact us" except Enterprise). |
 | **Homeowner AI design funnel** | "Magic in two minutes, with no strings." | Value before the ask; respect for privacy; clear hand-off to a real local pro. | Mockup visible before contact info is requested (contact required only to save, refine or request a quote); explicit consent copy for SMS/email (TCPA); clear "AI concept, not a final design" labeling. |
 
@@ -184,7 +196,7 @@ Full persona definitions, journeys and RBAC live in [02 - Personas, roles and pe
 | Platform Admin console | `platform_*` roles | Next.js web, desktop; mobile-responsive for Home, Incidents, Approvals and the Tenant 360 summary | `console.rootline.app` (separate origin, never on a tenant domain; IP allow-list at MVP, identity-aware proxy at V1, per [19](19-platform-admin-portal.md)) | Staff SSO + WebAuthn security keys; step-up for sensitive actions | [MVP] |
 | Partner portal | `partner_admin`, `partner_member` (accountants, resellers) | Next.js web | `partners.rootline.app` ([19](19-platform-admin-portal.md)) | Partner SSO / passkey | [V1] |
 | Public marketing site | Prospects, homeowners, partners | Next.js static/ISR | `rootline.com` | None (trial sign-up) | [MVP] |
-| Homeowner AI design funnel | Homeowners | Responsive web, embeddable widget | `rootline.com/design` (platform-hosted, the web face of the free Rootline Home app in [11](11-ai-design-mockups.md) and [22](22-business-model-pricing-gtm.md)) and `{company-site}/design` (white-label embed) | Anonymous, then email/phone OTP to save | [V1] embed, [V2] platform-hosted network |
+| Homeowner AI design funnel | Homeowners | Responsive web, embeddable widget | `rootline.com/design` (platform-hosted, the web face of the free Rootline Home app in [11](11-ai-design-mockups.md) and [22](22-business-model-pricing-gtm.md)) and `{company-site}/design` (white-label embed) | Anonymous, then email/phone OTP to save | [MVP] embeddable "Dream Yard Visualizer" widget ([11](11-ai-design-mockups.md) AIM-AUD-01); [V1] full measure-and-quiz flow and platform-hosted Rootline Home with Rootline Match |
 | Tenant website (builder) | Company's prospects | Generated by Rootline site builder | Company custom domain or default `{company-slug}.rootline.site` | None | [V1] (spec in [16](16-marketing-growth-communications.md)) |
 
 Domain rule: `rootline.com` hosts Rootline-branded surfaces (marketing, the office app, the API). `rootline.app` hosts the console, tenant portals, mail and partner surfaces. `rootline.site` hosts tenant websites. Tenant-branded portal and website pages never load from `rootline.com`, so a client never sees our brand in the address bar unless the Company leaves the default domain in place.
@@ -279,8 +291,8 @@ Full sitemap with routes (`:id` are opaque IDs; human-readable numbers such as `
   - **Operations** `/ops` [V1]: inventory and yards, purchase orders, vendors, subcontractors, equipment and fleet, maintenance schedules, chemical inventory (spec in [13](13-operations-inventory-equipment.md))
   - **Team** `/team` [MVP]: people, crews, timesheets and approvals, payroll export, certifications and licenses (pesticide applicator), training, safety incidents, hiring [V1] (spec in [15](15-team-hr-payroll.md))
   - **Marketing** `/marketing` [V1]: website, online booking, campaigns, reviews, referrals, AI receptionist (spec in [16](16-marketing-growth-communications.md))
-  - **Reports** `/reports` [MVP]: dashboards, KPI library, report builder [V1], benchmarks [V2], forecasts [V1] (spec in [18](18-reporting-analytics.md))
-  - **Automations** `/automations` [V1]: rule list, builder, run history (spec in [17](17-ai-copilot-automation.md))
+  - **Reports** `/reports` [MVP]: dashboards, KPI library, report builder [V1], peer benchmarks [V1], 13-week forecasts [V1], scenario planner [V2] (spec in [18](18-reporting-analytics.md))
+  - **Automations** `/automations` [MVP]: rule list, builder, run history; recipe library and AI steps grow through [V1]-[V2] (spec in [17](17-ai-copilot-automation.md))
   - **Settings** `/settings` [MVP]: Company profile and locations; users, roles and permissions; service lines and modules; price book and production rates; taxes; payments (Stripe connection); accounting setup (chart-of-accounts template, sync); portal and branding; notifications and message templates; terminology and language; regions and plant preferences; integrations; data import/export; sample data sandbox; Rootline subscription and AI credits; security and audit log
 - **Global (top bar):** Company switcher (bookkeepers and multi-entity owners), Search / Command palette (Cmd-K / Ctrl-K), Create (+), Copilot panel, Notifications, Help (docs, chat, "what's new"), Profile (language, units, theme, density, shortcuts)
 
@@ -423,7 +435,7 @@ flowchart LR
 ```
 
 - **Home** `/` [MVP]: MRR/ARR movement, trials and activation funnel, churn-risk list with "why", incidents, AI spend vs forecast, queue depths, approvals waiting; Operator Morning Brief panel [V1]
-- **Tenants** `/tenants` [MVP]: directory with health bands and saved views ("Trials day 10-14 without Stripe", "Health < 50", "10DLC rejected"); **Tenant 360** `/tenants/:id` with tabs Overview, Usage, Billing, AI, Payments, Users, Support, Flags, Audit, Data and compliance, Danger zone (wireframe [18.13](#1813-platform-admin-tenant-360)); lifecycle dialogs (extend trial, pause, suspend, reactivate); Organizations and ownership transfers [V1]
+- **Tenants** `/tenants` [MVP]: directory with health bands and saved views ("Trials day 10-14 without Stripe", "Health < 50", "10DLC rejected"); **Tenant 360** `/tenants/:id` with tabs Overview, Usage, Billing, AI, Payments, Users, Support, Flags, Audit, Data and compliance, Danger zone (wireframe [18.13](#1813-platform-admin-tenant-360)); lifecycle dialogs (extend trial, suspend, reactivate; Winter Mode is scheduled by the tenant `owner`); Organizations and ownership transfers [V1]
 - **Migrations** `/migrations` [MVP]: projects board; project detail with mapping, validation, diff and reconcile
 - **Billing** `/billing` [MVP]: catalog (plans, add-ons, meters, credit rate card), subscriptions and invoices, dunning queue, coupons and credits, revenue dashboards, application-fee revenue (spec in [22](22-business-model-pricing-gtm.md))
 - **Entitlements and flags** `/flags` [MVP]: plan matrix and per-tenant overrides, feature flags with targeting and staged rollout, kill switches, beta programs [V1], release notes
@@ -436,7 +448,7 @@ flowchart LR
 - **Risk and trust** `/risk` [MVP]: review queue, enforcement actions with reason codes
 - **Compliance** `/compliance` [MVP]: audit log search, DSAR queue, retention policies, legal holds, subprocessors, SOC 2 evidence, accessibility conformance reports (ACR versions)
 - **Analytics** `/analytics` [MVP]: churn, cohorts, activation funnel, feature adoption, NPS, unit economics, UX friction radar [V1] ([27](#27-beyond-the-brief-extra-ideas))
-- **System health** `/health` [MVP]: services, queues, integrations, scheduled jobs, incidents and status page
+- **System health** `/health` [MVP]: services, queues, integrations, scheduled jobs, incidents and status page, the Integrity center (ledger, Stripe webhook and sync integrity; [20](20-architecture-security.md) 6.5), fleet and cell placement [V1]
 - **Partners** `/partners` [V1]: directory, commissions, payouts
 - **Staff and audit** `/staff` [MVP]: staff, roles, access reviews, approvals inbox (two-person requests), platform audit log, Admin API tokens [V1]
 - **Settings** `/settings` [MVP]: security, regions and data residency, Rootline-owned integration keys
@@ -504,8 +516,8 @@ flowchart LR
 
 Two deployments of one flow:
 
-1. **White-label embed** [V1] on a Company's website (builder block or script tag). Leads go to that Company only. Branding is the Company's.
-2. **Platform-hosted** `rootline.com/design` [V2]. The homeowner gets a concept and is matched with participating local Rootline Companies by service area, specialty and capacity (lead-routing rules and fees in [16](16-marketing-growth-communications.md) and [23](23-innovation-moonshots.md)).
+1. **White-label embed** on a Company's website (builder block or script tag). Leads go to that Company only. Branding is the Company's. The photo-based "Dream Yard Visualizer" widget ships at [MVP] ([11](11-ai-design-mockups.md) AIM-AUD-01); the full locate, measure and quiz flow below is [V1].
+2. **Platform-hosted** `rootline.com/design` [V1], the web face of Rootline Home. The homeowner gets a concept and is matched with participating local Rootline Companies by service area, specialty and capacity (Rootline Match qualification, routing rules and fees in [22](22-business-model-pricing-gtm.md) section 5.3; messaging consent in [16](16-marketing-growth-communications.md)).
 
 ```mermaid
 flowchart LR
@@ -595,7 +607,7 @@ Rules:
 - Left rail: 64 px collapsed (icons + tooltips), 232 px expanded; state remembered per user. Users can pin up to 3 items from "More" into the main rail.
 - Top bar: 56 px. The Create button opens a menu of the 8 most common creates for the user's role (Client, Lead, Estimate, Job, Visit, Invoice, Expense, Design), each with a shortcut.
 - Side panel: one at a time; content types are peek (read-only quick look of a linked record), details (filters, properties), Copilot, comments. Opening a second panel replaces the first with a back arrow to return.
-- A tenant-visible **environment banner** appears in sandbox mode ("Sample data - nothing here is real") and during platform-staff impersonation (red band, see 6.11).
+- A tenant-visible **environment banner** appears in sandbox mode ("Sample data - nothing here is real") and during platform-staff impersonation (Clay band, see 6.11).
 
 ### 6.2 Global search and command palette [MVP]
 
@@ -728,7 +740,7 @@ Single-key shortcuts are off when focus is in a text field and can be disabled p
 ### 6.11 Company switcher, multi-entity and impersonation [MVP]
 
 - **Company switcher** in the top-left for users with access to multiple tenants (external CPA `bookkeeper` serving 12 Companies; owners with two legal entities). Each Company shows its logo and a color chip so the active tenant is never ambiguous; switching reloads into that tenant's Today.
-- **Impersonation (platform staff)**: only with tenant consent or break-glass reason ([19](19-platform-admin-portal.md)). UI shows a persistent red band: "Viewing as Maria Lopez (office_manager) at Acme Landscapes - read-only - ends in 28:41 - End session". Write actions require separate elevated consent and are labeled in the tenant's audit log as "performed by Rootline Support on behalf of...".
+- **Impersonation (platform staff)**: only with tenant consent or break-glass reason ([19](19-platform-admin-portal.md)). UI shows a persistent Clay (terracotta-orange) band, token `color.banner.impersonation` (8.3), so it reads as "someone else is here" rather than as an error: "Viewing as Maria Lopez (office_manager) at Acme Landscapes - read-only - ends in 28:41 - End session". Write actions require separate elevated consent and are labeled in the tenant's audit log as "performed by Rootline Support on behalf of...".
 
 ### 6.12 Presence and collaboration [V1]
 
@@ -943,6 +955,7 @@ Three tiers, one source of truth:
 | `color.status.info` | Sky 700 on Sky 50 | Sky 100 on `#132836` | Sky 700 |
 | `color.ai.fg` / `.bg` | Iris 600 / Iris 50 | `#B4AAF0` / `#25203F` | Iris 700 / Iris 50 (7.93:1) |
 | `color.money.in` / `.out` | Moss 700 / Stone 900 with minus sign | Moss 300 / Stone 100 | Moss 800 / black |
+| `color.banner.impersonation` | White on Clay 600 (6.68:1) | Stone 950 on Clay 300 (8.57:1) | White on Clay 700 (9.16:1) |
 
 Every text/background pair in this table was computed against WCAG 2 and passes AA. The tightest pairs are white text on the dark-theme danger button (Ember 500, 4.67:1) and white on a tenant-adjusted brand button such as `#3E7A22` (5.23:1). Two field-sun pairs were adjusted to meet the 7:1 target: the warning pair moved from Marigold 800 on Marigold 300 (5.30:1, below the field-sun 7:1 target) to Stone 950 on Marigold 300 (11.95:1), and the AI pair moved from Iris 600 on Iris 50 (6.24:1) to a new Iris 700 `#463A9A` on Iris 50 (7.93:1). Every field-sun pair now clears 7:1.
 
@@ -1400,7 +1413,7 @@ Every list, board and panel has a designed empty state with: (1) a small line il
 
 ### 15.3 Sample data and the sandbox [MVP]
 
-- **"Greenleaf Grounds Co."**, a fictional mid-size landscape company, ships as a sample dataset: 40 clients (32 residential, 8 commercial including an HOA with 3 properties), 55 properties, 3 crews, a full 2026 season of weekly mowing rounds, a 5-step fertilizer program, a 600 sq ft paver patio project with change order, fall cleanups, one snow event with 2-inch trigger pushes, proposals in each state, invoices (paid, open, overdue), a month of ledger entries and a bank feed to reconcile.
+- **"Greenleaf Grounds Co."**, a fictional mid-size landscape company, ships as a sample dataset (the same seed as the trial demo company in [22](22-business-model-pricing-gtm.md) 4.6 and the `standard` demo tenant in [19](19-platform-admin-portal.md) PA-019): 120 clients (102 residential, 18 commercial including an HOA with 3 properties), about 140 properties, 3 crews, a full 2026 season of weekly mowing rounds, a 5-step fertilizer program, a 600 sq ft paver patio project with change order, fall cleanups, one snow event with 2-inch trigger pushes, proposals in each state, invoices (paid, open, overdue), a month of ledger entries and a bank feed to reconcile.
 - **Region-localized**: plants, weather, season dates and prices adapt to the tenant's Region, so a Phoenix company sees desert palettes and no snow; an Ottawa company sees Zone 5a palettes, metric toggles and HST.
 - **Isolation**: sample data lives in a linked **sandbox workspace**, never mixed with real records; a persistent banner says "Sample data - nothing here is real"; no real SMS, email or Stripe charges can be sent from the sandbox (test mode only).
 - **Uses**: exploration during trial, training new staff (sandbox reset per user [V1]), sales demos (`platform_support` can spin up demo tenants), screenshots for docs.
@@ -1770,28 +1783,28 @@ Step 1 of 3: Photo and dimensions                     Step 2 of 3: Generating (a
 |  Scale reference:                             |     |   [check] Matching beds to your plan D-311 v3 |
 |   ( ) Use Design D-311 v3 (to scale)  *       |     |   [....] Choosing plants from Ohio Valley 6a  |
 |   ( ) Enter a known length: garage door       |     |          palette (deer-resistant, native)     |
-|       = [ 16 ] ft                             |     |   [    ] Rendering 3 concepts                 |
+|       = [ 16 ] ft                             |     |   [    ] Rendering 4 concepts                 |
 |                                               |     |                                               |
-|  Style: [Native meadow v]  Season: [Summer v] |     |  Uses 3 AI credits. 412 left this month.      |
+|  Style: [Native meadow v]  Season: [Summer v] |     |  Uses 40 AI credits. 1,160 left this month.   |
 |  Plants: [x] From design  [ ] Let AI suggest  |     |  [Cancel]                                     |
-|  [ Generate 3 concepts  (3 credits) ]         |     +-----------------------------------------------+
+|  [ Generate 4 concepts  (40 credits) ]        |     +-----------------------------------------------+
 +-----------------------------------------------+
 
 Step 3 of 3: Review concepts
 +---------------------------------------------------------------------------------------------------+
-| [Before] [Concept A*] [Concept B] [Concept C]      View: (o) Side by side  ( ) Slider             |
+| [Before] [Concept A*] [Concept B] [Concept C] [Concept D]   View: (o) Side by side  ( ) Slider    |
 | +--------------------------------+ +--------------------------------+  Plants shown (from plan):  |
 | | BEFORE photo                   | | CONCEPT A ("AI concept")       |    12 HYD PAN  [i]          |
 | |                                | | hydrangeas, little bluestem,   |    24 SCH SCO  [i]          |
 | |                                | | serviceberry, brown mulch      |    3 AME GRA   [i]          |
 | +--------------------------------+ +--------------------------------+                             |
-| Refine: [Brush to edit area] "Make the bed edge curve more"  [Apply (1 credit)]                   |
+| Refine: [Brush to edit area] "Make the bed edge curve more"  [Apply (10 credits)]                 |
 | Plan sync: Concept A matches D-311 v3 (86/86 plants placed)  [Update plan from concept v]         |
 | [Add to proposal]  [Download]  [Discard]                                  Alt text: [Edit]        |
 +---------------------------------------------------------------------------------------------------+
 ```
 
-Key behaviors: dimensions come from a Design or a known reference length; plants are constrained to the plan or the regional palette; progress narrates real steps; credit cost shown before running; concepts labeled "AI concept"; plan-mockup sync status is explicit ([11](11-ai-design-mockups.md)).
+Key behaviors: dimensions come from a Design or a known reference length; plants are constrained to the plan or the regional palette; progress narrates real steps; credit cost shown before running (a 4-concept mockup set is 40 credits and a refinement 10, per the rate card in [22](22-business-model-pricing-gtm.md) 4.4.1); concepts labeled "AI concept"; plan-mockup sync status is explicit ([11](11-ai-design-mockups.md)).
 
 ### 18.9 Crew app: route and visit
 
@@ -1932,7 +1945,7 @@ Key behaviors: debits and credits must balance before Post; posted entries are i
 | AI credits  Used 840 / 2,000 (Grow)  Run-out proj. Nov 17   | Stripe Connect                         |
 |  [Grant 500 credits (reason required)]                      |  acct_1P...  Standard  Charges on      |
 | SaaS billing                                                |  Payouts on   Disputes 30 d: 1         |
-|  MRR $634 = $249 base + 5 office + 19 field seats           |  App fee 30 d: $0.00 (not opted in)    |
+|  MRR $634 = $249 + 5 extra office ($195) + 19 field ($190)  |  App fee 30 d: $0.00 (not opted in)    |
 |  Next invoice Dec 1   Card on file, current                 |                                        |
 | Accounting: Rootline Ledger + QuickBooks sync (one-way)     |----------------------------------------|
 |  Last sync 2 h ago  Errors 1 [View]                         | Impersonation log                      |
@@ -2491,7 +2504,7 @@ The activity timeline and notification engine consume domain events from all mod
 
 - `GET/PUT /v1/me/preferences`, `GET/POST /v1/saved-views`, `GET /v1/notifications`, `POST /v1/notifications/{id}/read` [MVP]
 - `GET/PUT /v1/branding` (tenant theme; validates contrast) [MVP]
-- Portal embed SDK for the homeowner funnel widget: `<script src="https://embed.rootline.com/design.js" data-company="acme">` with postMessage events (`rootline:design_started`, `rootline:lead_submitted`) for the tenant's own analytics [V1]
+- Portal embed SDK for the homeowner funnel widget: `<script src="https://embed.rootline.com/design.js" data-company="acme">` with postMessage events (`rootline:design_started`, `rootline:lead_submitted`) for the tenant's own analytics [MVP] (widget embed per [11](11-ai-design-mockups.md) AIM-AUD-01; full-funnel events [V1])
 
 ---
 
@@ -2515,7 +2528,7 @@ UX-level capabilities by role (full RBAC model in [02](02-personas-roles-permiss
 | Use command palette actions | Y | Y | Y | Y | Y | O | - | Y | - |
 | Use Copilot (within own permissions) | Y | Y | Y | Y | Y | Y | Y | Y | - |
 | Lock notification categories on for staff | Y | Y | - | - | Y (field/safety) | - | - | - | - |
-| Grant platform support impersonation consent | Y | Y | - | - | - | - | - | - | - |
+| Grant platform support impersonation consent | Y | Y (read-only scopes) | - | - | - | - | - | - | - |
 | Embed homeowner design funnel on website | Y | Y | - | Y | - | - | - | - | - |
 
 Clients: `client_residential` and `client_commercial` contacts can set their own language, notification preferences and consent; commercial admins can manage other contacts' portal access within their organization [V1].
@@ -2525,8 +2538,8 @@ Clients: `client_residential` and `client_commercial` contacts can set their own
 | Capability | platform_owner | platform_support | platform_curator | platform_finance | platform_engineer |
 |---|---|---|---|---|---|
 | View tenant 360 (PII masked) | Y | Y | - | Y (billing fields) | Y (technical fields) |
-| Impersonate with tenant consent (read-only) | Y | Y | - | - | Y (break-glass) |
-| Impersonate with write access | Y (with reason) | Y (with second approval) | - | - | - |
+| Impersonate with tenant consent (read-only) | Y | Y | - | - | Y (with grant; break-glass separately) |
+| Impersonate with write access | Y (owner's per-ticket `read_write` grant) | Y (owner's per-ticket `read_write` grant) | - | - | Y (owner's per-ticket `read_write` grant) |
 | Publish global templates, sample datasets, starter price books | Y | - | Y (plant palettes, symbol mapping) | - | - |
 | Edit plant symbol family mapping | Y | - | Y | - | - |
 | Publish in-app announcements | Y | Y | - | - | - |

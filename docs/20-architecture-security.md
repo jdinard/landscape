@@ -2,6 +2,18 @@
 
 > Rootline is one product for the whole landscape business: a Company's CRM, estimating, Design Studio, AI mockups, Plant Knowledge Base, scheduling, an offline crew app, client portal, invoicing, bring-your-own-Stripe payments and a real double-entry ledger. This document is the technical spine that makes that possible without turning into a fragile pile of microservices. It specifies a **TypeScript modular monolith on PostgreSQL (Aurora) with row-level-security multi-tenancy**, organized into explicit bounded contexts, surrounded by a few purpose-built satellite services: Python route optimization, GPU image jobs, media processing, and an AI Gateway. Around those sit a transactional outbox and event bus, durable Temporal workflows, an offline-first sync protocol for crews, a public REST API with signed webhooks, and a security and privacy program aimed at SOC 2 Type II, PCI DSS SAQ-A scope and US/Canadian privacy law from day one. Three things matter more than anything else here, because a landscaper will forgive a slow page but not these. A Company's data must never leak to another Company. Money must never be wrong, so the ledger has to balance on every commit. And a technician's completed work must never be lost because a backyard in a cul-de-sac had no signal.
 
+**At a glance**
+
+- **What it is:** the technical spine for every Rootline surface: a TypeScript modular monolith (Next.js web apps, a React Native (Expo) offline-first crew app) on Aurora PostgreSQL with PostGIS and pgvector, plus a few satellite services (Python/OR-Tools route optimizer, GPU image jobs, media pipeline, AI Gateway), all on AWS.
+- **Decision - tenancy:** shared schema with `tenant_id` on every tenant table, forced Postgres RLS and application policy checks (Cedar) as defense in depth. Tenants are grouped into cells; Canadian tenants run on a separate `prod-ca` stack [V1] and large Enterprise tenants can get a dedicated database cell [V2].
+- **Decision - events and workflows:** a transactional outbox feeding SNS/SQS at MVP (Amazon MSK at V1), and Temporal (Cloud) for durable workflows such as proposal deposits, season-long agreement billing, snow events, AI mockup generation, accounting sync and Stripe event processing.
+- **Decision - money:** bring-your-own Stripe through Connect direct charges on each Company's own account (restricted-key "advanced mode" as the secondary path), Rootline's SaaS billing on a separate Stripe account, PCI SAQ-A scope by design, and a built-in double-entry ledger whose invariants the database enforces.
+- **Decision - field durability:** SQLite on the device and a bucket-based pull/push sync protocol Rootline owns. Field mutations are never lost and never refused for billing reasons.
+- **Decision - AI:** one AI Gateway for every model call (Claude family for reasoning, image models chosen per task), with task routing, per-tenant budgets, 100% metering in AI credits and no training on customer data.
+- **MVP:** the monolith and satellites in `prod-us` (Ohio primary, Oregon DR), public REST API for core objects with OpenAPI 3.1 and signed webhooks, Postgres FTS + pgvector search, 99.9% core API availability, SOC 2 Type I within 6 months of GA. **V1:** Canadian stack, MSK, OpenSearch, OAuth apps and the MCP server, full API surface and daily quotas, SOC 2 Type II, 99.95% availability. **V2:** dedicated database cells and tenant moves; public GraphQL reconsidered.
+- **Differentiators:** zero cross-tenant exposure by design, an open API and event catalog with flat, published rate limits, offline depth that covers the whole visit (time, photos, chemical logs), and a vendor-continuity escrow export.
+- **Cross-links:** roles in [02](02-personas-roles-permissions.md); tenant lifecycle names in [19](19-platform-admin-portal.md) (enforced here in [4.4.7](#447-tenant-lifecycle-and-access-enforcement-mvp)); payments contracts in [08](08-payments-stripe.md); posting rules in [09](09-accounting-ledger-integrations.md); AI credits in [17](17-ai-copilot-automation.md) and [22](22-business-model-pricing-gtm.md); the canonical ERD in [section 7.2](#72-canonical-cross-domain-erd); decisions in [Appendix A](#appendix-a-architecture-decision-records-adrs).
+
 **Related docs:** [Personas and permissions](02-personas-roles-permissions.md) · [Scheduling and routing](04-scheduling-dispatch-routing.md) · [Crew mobile app](05-field-crew-mobile-app.md) · [Customer portal](06-customer-portal.md) · [Payments (BYO Stripe)](08-payments-stripe.md) · [Ledger and integrations](09-accounting-ledger-integrations.md) · [Design Studio](10-design-studio.md) · [AI mockups](11-ai-design-mockups.md) · [Plant KB](12-plant-knowledge-base.md) · [AI copilot and automation](17-ai-copilot-automation.md) · [Reporting and data platform](18-reporting-analytics.md) · [Platform admin console](19-platform-admin-portal.md) · [UX and sitemaps](21-ux-design-system-sitemaps.md) · [Business model](22-business-model-pricing-gtm.md) · [Roadmap](24-roadmap-feature-catalog.md)
 
 ---
@@ -317,7 +329,7 @@ Modules map to product domains and to Postgres schemas. A module **owns** its ta
 | `ai` | Copilot conversations, agent runs, tool registry, AI credit ledger, prompt registry | ai_conversation, agent_run, ai_usage_event, credit_balance | `ai.credit_threshold_reached` | [17](17-ai-copilot-automation.md) |
 | `integrations` | Connector framework, OAuth token vault, sync runs, external refs | integration_connection, sync_run, external_ref, sync_error | `integration.sync_failed` | Section 4.8 |
 | `reporting` | Read models, KPI materializations, report definitions, exports | report_definition, kpi_snapshot, export_job | `export.ready` | [18](18-reporting-analytics.md) |
-| `platform` (global) | Platform staff, Rootline's own SaaS catalog and subscriptions (plans, add-ons, meters, usage records), partners, homeowner marketplace, feature flags, support tickets, support access grants, DSAR cases | staff_user, plan, tenant_subscription, usage_record, partner, flag, support_case, support_access_grant, dsar_case | `subscription.changed`, `support_access.approved` | [19](19-platform-admin-portal.md), [22](22-business-model-pricing-gtm.md) |
+| `platform` (global) | Platform staff, Rootline's own SaaS catalog and subscriptions (plans, add-ons, meters, usage records), partners, homeowner marketplace, feature flags, support tickets, support access grants, DSAR cases | staff_user, plan, tenant_subscription, usage_record, partner, flag, support_case, support_access_grant, dsar_case | `subscription.plan_changed`, `support_access.approved` | [19](19-platform-admin-portal.md), [22](22-business-model-pricing-gtm.md) |
 | `audit` | Append-only audit trail, tamper-evident chains | audit_event | n/a (sink) | Section 4.24 |
 
 **Module rules (enforced in CI):**
@@ -989,9 +1001,9 @@ Architecture and product flows are in [Payments (Stripe)](08-payments-stripe.md)
 2. Insert into `payments.stripe_event(id PK, tenant_id, account, type, created, payload, received_at)` with `ON CONFLICT DO NOTHING`, then return `2xx`. The target is p99 < 200 ms, with a hard ceiling of 2 s and no business logic in the request path. Duplicates are expected and harmless.
 3. Signal the `StripeEventProcessor` workflow keyed per `(account, object_id)` (for example, per PaymentIntent or Dispute) for serialized handling. Per-tenant concurrency limits and fair queuing mean one tenant's backlog cannot starve others. Handler failures retry with exponential backoff for 24 h, then land in a DLQ with "replay" and "resync object" actions in the Platform Admin integrity center.
 4. Events can arrive **out of order**, so the processor **re-fetches the current object** from Stripe (on the connected account) for state-changing types instead of trusting the event snapshot. It then applies monotonic state transitions (`processing → succeeded` allowed, `succeeded → processing` ignored).
-5. Map to domain: `payment_intent.succeeded` / `charge.succeeded` → `payments.payment` + `payment_allocation` to invoices (by metadata `rootline_invoice_id`) → emit `payment.succeeded` → billing marks the invoice paid → ledger posts *Dr Stripe Clearing / Cr Accounts Receivable* and *Dr Merchant Fees / Cr Stripe Clearing* (fee from the balance transaction).
-6. `payout.paid` → ledger posts *Dr Bank / Cr Stripe Clearing*. The payout's balance transactions are reconciled to individual payments (see [09](09-accounting-ledger-integrations.md)).
-7. `charge.dispute.created` → `dispute` record, owner alert (SMS + email), evidence-due timer workflow. Ledger posts the disputed amount and fee to a "Disputes" holding account.
+5. Map to domain: `payment_intent.succeeded` / `charge.succeeded` → `payments.payment` + `payment_allocation` to invoices (by metadata `rootline_invoice_id`) → emit `payment.succeeded` → billing marks the invoice paid → ledger posts *Dr Stripe Clearing / Cr Accounts Receivable* and *Dr Merchant Fees / Cr Stripe Clearing* (fee from the balance transaction), per posting rules `payments.charge` and `payments.fee`, which [09](09-accounting-ledger-integrations.md) section 4.3.2 owns.
+6. `payout.paid` → ledger posts *Dr Bank / Cr Stripe Clearing* (`payments.payout`). The payout's balance transactions are reconciled to individual payments (see [09](09-accounting-ledger-integrations.md)).
+7. `charge.dispute.created` → `dispute` record, owner alert (SMS + email), evidence-due timer workflow. Ledger posts the disputed amount to Disputed Receivable and the dispute fee to Dispute Fees, both against Stripe Clearing (`payments.dispute` in [09](09-accounting-ledger-integrations.md) 4.3.2).
 8. `account.application.deauthorized` / `account.updated` (capabilities disabled) → mark `payment_account` disconnected or restricted, disable pay links, and alert the owner. Invoices fall back to "pay by check/ACH instructions".
 9. Restricted-key path: a `401` from Stripe marks the key as revoked and starts the same alert flow.
 10. A daily reconciliation job compares Stripe balance transactions (last 7 days) with ledger entries per tenant. Mismatches open an integrity case (L7). A reconnected account triggers a full resync from the moment of disconnection.
@@ -2501,7 +2513,7 @@ Full role definitions are in [02](02-personas-roles-permissions.md). The matrice
 |---|---|---|---|---|---|
 | Tenant directory, plans, suspension | F | R | S (view status) | - | S (billing status) |
 | Impersonate tenant (consent-gated) | C | C | C | - | - |
-| Break-glass access (one tenant, 30-120 min, two-person rule) | F (approver) | C (approved, time-boxed) | - | - | - |
+| Break-glass access (one tenant, 30-120 min, two-person rule) | F (approver) | C (approved, time-boxed) | C (request only; console break-glass, [19](19-platform-admin-portal.md) PA-053) | - | - |
 | JIT production DB access | C (approver) | C | - | - | - |
 | Cell placement and tenant moves | F | F (with owner approval of tenant) | - | - | - |
 | Feature flags and kill switches | F | F | R | S (KB flags) | - |
@@ -2510,7 +2522,7 @@ Full role definitions are in [02](02-personas-roles-permissions.md). The matrice
 | SaaS billing (Rootline's Stripe account) | F | - | R | - | F |
 | Webhook DLQ redrive, sync rejection tools | F | F | S | - | - |
 | Security tooling, KMS key policies | F (two-person rule) | C (two-person rule) | - | - | - |
-| DSAR case handling (Rootline as controller) | F | - | F | - | - |
+| DSAR case handling (Rootline as controller) | F | S (execution of deletion/export jobs) | F | - | - |
 | Audit evidence exports (SOC 2) | F | R | - | - | R |
 
 ---
@@ -2660,7 +2672,7 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | Q6 | Identity broker for SSO/SCIM: vendor vs self-hosted, given residency | Vendor broker / self-hosted SAML broker | Security lead | V1 |
 | Q7 | Observability vendor at projected span volume | Grafana Cloud / Datadog / self-hosted | Platform | MVP month 1 |
 | Q8 | Custom domains at scale for portals and websites: CloudFront multi-tenant features vs a dedicated managed-certificate edge | Spike both | Platform | MVP month 3 |
-| Q9 | Should the ledger be the default book of record for new tenants, or opt-in until V1 maturity? | Default / opt-in | Product + Money team | MVP GA |
+| Q9 | Should the ledger be the default book of record for new tenants, or opt-in until V1 maturity? | **Resolved:** the ledger engine runs for every tenant from MVP and the built-in GL is the default book of record (`ledger_mode = native`); QuickBooks or Xero as book of record (`external_sync`) is an onboarding choice per legal entity ([09](09-accounting-ledger-integrations.md) 4.17.1) | Product + Money team | MVP GA |
 | Q10 | GPU strategy break-even and vendor (serverless GPU vendors vs EKS) | Measure at 6 months post-MVP | AI lead | V1 |
 | Q11 | Policy engine: Cedar (WASM) performance at 1k decisions/s per task | Benchmark | Platform | MVP month 1 |
 | Q12 | Do we offer a public GraphQL API at V2 for partners building rich UIs? | REST-only / GraphQL read-only | API lead | V2 |

@@ -2,6 +2,20 @@
 
 > The Customer Portal is the part of Rootline that a landscape Company's **Clients** actually touch: homeowners, HOA boards, property managers and their spouses, tenants and billing contacts. It is a white-label, passwordless, mobile-first web experience (PWA first, native later) where a Client can approve a tiered proposal and pay the deposit in under two minutes, explore their to-scale design in 2D/3D with AI before/after mockups, follow a paver-patio install like a pizza tracker, see every mow, fertilizer application and irrigation repair with crew photos, pay or autopay invoices through the **Company's own Stripe account**, request work with photos, get a personalized watering schedule for the 40 perennials just planted, file a plant-warranty claim, and refer a neighbor. Commercial Clients get a portfolio view across dozens of Properties, multi-contact roles, budget- and PO-aware approval chains for enhancements, inspection and monthly service reports, and consolidated billing. Underneath it all sits the **Property Record**: a lifetime, client-owned record of the yard (plants, irrigation map, hardscape specs, warranties, service history) that outlives any single job. Competitors treat the portal as a bill-pay page with a quote-approve button. Rootline treats it as the Company's storefront, sales closer and retention engine, and the place where the Design Studio, AI mockups and Plant Knowledge Base become visible to the person paying.
 
+**At a glance**
+
+- **What it is:** the white-label, passwordless, mobile-first web portal (PWA first, native later) where `client_residential` and `client_commercial` Contacts approve and sign Proposals, pay deposits and invoices, explore their Design, follow projects and Visits, request work, care for new plants and claim warranties. Commercial Clients get a multi-property portfolio with approval chains.
+- **Decision 1 - "the link is the login for the action; a session is for browsing."** Scoped action links, magic links and SMS codes at [MVP], passkeys at [V1], with step-up proof only for risky actions (saved-method payments, autopay, contacts, Property Record transfer).
+- **Decision 2 - client money goes to the Company's own Stripe account.** Payments are direct charges on the Company's connected account per [08](08-payments-stripe.md); Rootline never holds client funds, and saved cards and ACH mandates stay with the Company if it leaves Rootline.
+- **Decision 3 - balances come from the built-in Ledger.** The portal reads the AR subledger of the double-entry Ledger in [09](09-accounting-ledger-integrations.md) (system of record; QuickBooks and Xero sync optional), so "paid" in the portal and "paid" in the books are the same number.
+- **Decision 4 - Contact scopes follow [02](02-personas-roles-permissions.md):** `primary`, `co_owner`, `approver`, `billing`, `property_contact` and `viewer`, each optionally narrowed to specific Properties.
+- **Decision 5 - curated transparency.** Visit dates, states and ETA windows come from [04](04-scheduling-dispatch-routing.md); crew photos and notes appear only when marked client-visible in the crew app ([05](05-field-crew-mobile-app.md)); application records show label-derived data under the rules in [14](14-service-line-modules.md); a crew's approximate position is shown only while en route to that Property.
+- **Packaging ([22](22-business-model-pricing-gtm.md)):** Starter gets a Rootline-branded portal; the white-label portal and custom domain start at Grow; the "Powered by Rootline" footer is removable on Pro; commercial approval workflows are limited on Grow (5 commercial Clients) and full on Pro and Enterprise.
+- **[MVP]:** proposal viewer with tiers, add-ons, e-sign, deposits and change orders; 2D design viewer with AI mockups and plant cards; project phase tracker with daily photos; upcoming Visits, "on the way" ETA notices, completion summaries and application records; invoices, statements, saved methods and autopay with Reg E notices; requests with photos; client skip, reschedule and vacation holds; messaging; preference center and consent; English and Spanish.
+- **[V1] and later:** passkeys, 3D and seasonal views, live truck map on the ETA page, AI request triage, self-scheduled add-ons, payment plans, financing and crew tips, warranty claims flow, commercial portfolio, approval chains, inspection and monthly reports, and the "Dream Yard Visualizer" lead magnet [V1]; HOA board voting, enterprise SSO and Property Record transfer [V2].
+- **Differentiators:** the Property Record (a lifetime, client-owned record of the yard), design and AI mockups visible to the person paying, commercial approvals with budgets and PO numbers, and Reg E-aware autopay on the Company's own Stripe account.
+- **Key cross-links:** Proposals in [03](03-crm-sales-estimating-proposals.md); schedule, ETA and the self-scheduling Availability API in [04](04-scheduling-dispatch-routing.md); invoicing and agreements in [07](07-invoicing-billing-contracts.md); payments in [08](08-payments-stripe.md); Ledger in [09](09-accounting-ledger-integrations.md); Design Studio, AI mockups and Plant KB in [10](10-design-studio.md), [11](11-ai-design-mockups.md) and [12](12-plant-knowledge-base.md); messages and consent in [16](16-marketing-growth-communications.md).
+
 **Related docs:** [Personas and RBAC](02-personas-roles-permissions.md) | [CRM, Estimating and Proposals](03-crm-sales-estimating-proposals.md) | [Scheduling and Routing](04-scheduling-dispatch-routing.md) | [Crew App](05-field-crew-mobile-app.md) | [Invoicing](07-invoicing-billing-contracts.md) | [Payments (Stripe)](08-payments-stripe.md) | [Ledger and Accounting](09-accounting-ledger-integrations.md) | [Design Studio](10-design-studio.md) | [AI Mockups](11-ai-design-mockups.md) | [Plant KB](12-plant-knowledge-base.md) | [Service Lines](14-service-line-modules.md) | [Team and Payroll](15-team-hr-payroll.md) | [Marketing and Comms](16-marketing-growth-communications.md) | [AI Copilot](17-ai-copilot-automation.md) | [Reporting](18-reporting-analytics.md) | [Platform Admin](19-platform-admin-portal.md) | [Architecture](20-architecture-security.md) | [UX and Design System](21-ux-design-system-sitemaps.md)
 
 ---
@@ -35,7 +49,7 @@
 | G1 | **Zero-friction access** | No passwords, ever. Every email/SMS carries a deep link that opens the exact proposal, invoice or visit, already authorized for that action. Login when needed is a magic link, SMS code or passkey. | [MVP] |
 | G2 | **Every money moment is self-serve** | Approve + sign + pay deposit in one flow; pay one or many invoices; save card/bank; autopay; payment plans; financing. All on the Company's own Stripe account. | [MVP] core, [V1] plans/financing |
 | G3 | **The design sells itself** | Clients explore the to-scale plan, 3D view, AI mockups (before/after, seasons, growth) and a plant list with KB photos and care info, then pick a tier. | [MVP] 2D + mockups, [V1] 3D/seasons |
-| G4 | **Radical transparency** | Next visit with crew ETA, live "on the way", project phase tracker, every visit logged with photos, notes and (where relevant) chemical application records. | [MVP] history, [V1] live ETA |
+| G4 | **Radical transparency** | Next visit with crew ETA, live "on the way", project phase tracker, every visit logged with photos, notes and (where relevant) chemical application records. | [MVP] history and "on the way" ETA, [V1] live truck map |
 | G5 | **Commercial-grade** | Portfolio dashboard across Properties, contact roles, approval chains with budgets and PO numbers, inspection reports, monthly service reports, consolidated billing. | [V1] (basic multi-property [MVP]) |
 | G6 | **Property Record** | A lifetime, client-owned record of the yard that can be exported, shared and (later) transferred at home sale. | [MVP] read view, [V1] export, [V2] transfer |
 | G7 | **Truly white-label** | Company logo, colors, custom domain, branded email sender domain and branded SMS. A Client should not need to know Rootline exists. | [MVP] subdomain + brand, [V1] custom domain hardening |
@@ -57,15 +71,15 @@
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> Research note: this section is based on 12 targeted web searches run on 2026-11-07 across vendor help centers, review sites and community forums. Direct page fetches were blocked in the research environment, so a few vendor portals (Aspire, SynkedUP, Yardbook) are described only at listing level and flagged for follow-up in [Open questions](#14-open-questions). Vendor claims are vendor claims; prices and plan names are "as of November 2026, verify".
+> Evidence basis: targeted web research (November 2026) across vendor help centers, review sites and community forums, plus market-structure and regulatory facts re-cited from [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [08](08-payments-stripe.md), [16](16-marketing-growth-communications.md) and [19](19-platform-admin-portal.md). A few vendor portals (Aspire, SynkedUP, Yardbook) are described at listing level only and flagged for follow-up in [Open questions](#14-open-questions). Vendor claims are vendor claims; prices and plan names are "as of November 2026, verify".
 >
-> Review pass (2026-11-07): a second verification pass could not run new searches (the shared search budget was exhausted and outbound fetches were blocked). Market-structure facts and regulatory points added in review are therefore taken from sources already gathered and cited in [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [08](08-payments-stripe.md), [16](16-marketing-growth-communications.md) and [19](19-platform-admin-portal.md), or are canonical statutes and rules cited from general knowledge and marked "verify".
+> Verification note: items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build.
 
 ### 2.1 What competitors ship today
 
 | Vendor | Portal name | What a client can do (as documented) | Notable limits |
 |--------|-------------|--------------------------------------|----------------|
-| **Jobber** | Client Hub | Approve quotes with a signature, check appointment details, pay invoices, print receipts, request more work; if a deposit is required the button becomes "Approve and Pay Deposit"; optional "Clients can request changes" toggle; cards can be stored ([Jobber Client Hub](https://getjobber.com/features/client-hub/), [What clients see](https://help.getjobber.com/en/articles/what-do-your-clients-see-in-client-hub/), [Quote approvals](https://help.getjobber.com/es/articles/quote-approvals/)) | Staff logged in as a delegate cannot make a payment or submit a work request; requests created internally do not show in Client Hub ([Jobber help](https://help.getjobber.com/en/articles/what-do-your-clients-see-in-client-hub/)). Online payment runs through Jobber Payments, with "a 3rd party payment integration" mentioned as an alternative whose scope we could not verify ([R1 summary](research/R1-field-service-platforms.md)). Jobber-branded, no multi-property approvals, no design viewing ([R1](research/R1-field-service-platforms.md)) |
+| **Jobber** | Client Hub | Approve quotes with a signature, check appointment details, pay invoices, print receipts, request more work; if a deposit is required the button becomes "Approve and Pay Deposit"; optional "Clients can request changes" toggle; cards can be stored ([Jobber Client Hub](https://getjobber.com/features/client-hub/), [What clients see](https://help.getjobber.com/en/articles/what-do-your-clients-see-in-client-hub/), [Quote approvals](https://help.getjobber.com/es/articles/quote-approvals/)) | Staff logged in as a delegate cannot make a payment or submit a work request; requests created internally do not show in Client Hub ([Jobber help](https://help.getjobber.com/en/articles/what-do-your-clients-see-in-client-hub/)). Online payment runs through Jobber Payments, with "a 3rd party payment integration" mentioned as an alternative whose scope is unconfirmed (verify; [R1 summary](research/R1-field-service-platforms.md)). Jobber-branded, no multi-property approvals, no design viewing ([R1](research/R1-field-service-platforms.md)) |
 | **LMN** | Customer Portal | Approve, reject, request change or comment on an estimate; e-sign by typing name (e-signature added in release 20.11); add payment methods, Pay Now, autopay under Profile; LMN Pay built in; contractor invites customer by email activation link ([LMN customer guide](https://support.golmn.com/hc/en-us/articles/42071271242779), [LMN 20.11 release](https://prnewswire.com/news-releases/lmn-releases-20-11-with-updates-to-customer-portal-estimating-301167182.html), [LMN Pay](https://golmn.com/lmn-pay)) | Fee claims differ between LMN pages and press releases (verify); no design visualization. LMN and SingleOps merged in November 2024 and operate as Granum; LMN Pay was relaunched "powered by Stripe" in March 2026, with Granum as the payments platform rather than the contractor owning its own account ([R2 timeline](research/R2-landscape-specific-platforms.md), [Green Industry Pros](https://www.greenindustrypros.com/business-management/software/product/22963124/granum-granum-launches-lmn-pay-experience)) |
 | **Aspire** | Client portal / self-service portal (listing level) | Listing sites name a Client Portal and Self Service Portal; Aspire's differentiator is property-centric records and profitability by property ([Software Advice Aspire profile](https://www.softwareadvice.com/landscaping/aspire-profile), [Aspire vs RealGreen](https://www.youraspire.com/comparison-hub/aspire-vs-realgreen)) | Public detail on what a property manager can do in the portal was not found; Capterra notes a PIN at each login ([Capterra review](https://www.capterra.com/p/161544/Aspire/reviews/7184520/)). Owned by ServiceTitan since 2021 ([TechCrunch](https://techcrunch.com/2021/06/30/servicetitan-acquires-aspire-to-move-into-landscaping-raises-200m-at-a-9-5b-valuation)), so its portal roadmap competes for attention with ServiceTitan's HVAC-first customer portal |
 | **SingleOps** | Client Portal | Book new services, view and approve proposals, accept payments; self-serve request forms; Tree Inventory launched March 2025 ([SingleOps](https://www.singleops.com), [CHOP Nashville case study](https://www.casestudies.com/company/singleops/case-study/chop-nashvilles-proposals-are-incredible), [Tree Inventory](https://singleops.com/features/tree-inventory)) | Tree inventory is internal-facing; no to-scale design viewer; now part of Granum with LMN ([R2](research/R2-landscape-specific-platforms.md)), so portal convergence between the two products is likely but unannounced (verify) |
@@ -191,26 +205,26 @@ Each feature lists behaviors and rules an engineer can estimate against. Priorit
 - Editable welcome message, support hours, emergency phone (for snow and irrigation leaks), footer links (terms, privacy, cancellation policy).
 - Custom content pages (FAQ, service area map, "What to expect on install day", warranty policy) [V1], authored with the same block editor as the website builder.
 
-#### 4.1.3 Domains [MVP subdomain and custom domain on paid tiers; V1 hardening]
-- **Default subdomain** on a Rootline-owned portal domain, e.g. `evergreenstone.rootline.app` (final domain decided in [20](20-architecture-security.md)). Slug rules: 3-40 chars, lowercase letters, digits, hyphens; reserved-word list (admin, api, www, support, billing, login, mail and brand names of large competitors); uniqueness enforced platform-wide; renames keep a 301 redirect for 12 months.
-- **Custom domain** (e.g. `portal.evergreenstone.com`) [MVP for paid tiers]: owner enters hostname, Rootline shows a CNAME target and a TXT ownership token; certificates issued and renewed automatically through a SaaS custom-hostname service (e.g. Cloudflare for SaaS custom hostnames). States: `pending_dns` -> `pending_validation` -> `active` -> `cert_renewal_failed` / `dns_broken`. Health check every 15 minutes; on failure, links in new emails fall back to the default subdomain and the owner gets an alert. Apex domains are not supported (CNAME required); `www` is discouraged because it belongs to the marketing site.
+#### 4.1.3 Domains [MVP subdomain, and custom domain on Grow and above; V1 hardening]
+- **Default subdomain** on a Rootline-owned portal domain, e.g. `greenleafgrounds.rootline.app` (final domain decided in [20](20-architecture-security.md)). Slug rules: 3-40 chars, lowercase letters, digits, hyphens; reserved-word list (admin, api, www, support, billing, login, mail and brand names of large competitors); uniqueness enforced platform-wide; renames keep a 301 redirect for 12 months.
+- **Custom domain** (e.g. `portal.greenleafgrounds.com`) [MVP on Grow, Pro and Enterprise; Starter uses the Rootline-branded portal on the default subdomain, per [22](22-business-model-pricing-gtm.md)]: owner enters hostname, Rootline shows a CNAME target and a TXT ownership token; certificates issued and renewed automatically through a SaaS custom-hostname service (e.g. Cloudflare for SaaS custom hostnames). States: `pending_dns` -> `pending_validation` -> `active` -> `cert_renewal_failed` / `dns_broken`. Health check every 15 minutes; on failure, links in new emails fall back to the default subdomain and the owner gets an alert. Apex domains are not supported (CNAME required); `www` is discouraged because it belongs to the marketing site.
 - All deep links in outbound messages use the Company's active portal hostname so the client never sees a Rootline URL.
-- [V1] hardening: multiple custom hostnames per Company (for example a separate `snow.evergreenstone.com` for a commercial snow brand), passkey related origins (4.2.4), certificate-expiry forecasting, and an automatic DNS diagnosis page that tells the owner in plain words which record is wrong.
+- [V1] hardening: multiple custom hostnames per Company (for example a separate `snow.greenleafgrounds.com` for a commercial snow brand), passkey related origins (4.2.4), certificate-expiry forecasting, and an automatic DNS diagnosis page that tells the owner in plain words which record is wrong.
 
 #### 4.1.4 Branded email [MVP]
-- Default sending address `"Evergreen & Stone" <notifications@mail.rootline.app>` with Reply-To routed into the unified inbox.
-- **Verified sender domain** [MVP]: owner adds DKIM and Return-Path records for `mail.evergreenstone.com`; once verified, mail is sent from `hello@evergreenstone.com` (or any address on that domain). DMARC alignment is checked and the owner is warned if their DMARC policy is `p=reject` and alignment fails.
+- Default sending address `"Greenleaf Grounds Co." <notifications@mail.rootline.app>` with Reply-To routed into the unified inbox.
+- **Verified sender domain** [MVP]: owner adds DKIM and Return-Path records for `mail.greenleafgrounds.com`; once verified, mail is sent from `hello@greenleafgrounds.com` (or any address on that domain). DMARC alignment is checked and the owner is warned if their DMARC policy is `p=reject` and alignment fails.
 - Transactional and marketing streams are separated (different message streams/IPs) so a marketing complaint spike cannot hurt invoice deliverability.
 - **Mailbox-provider sender rules:** Gmail and Yahoo require SPF, DKIM and DMARC authentication for bulk senders, one-click unsubscribe (RFC 8058 `List-Unsubscribe-Post`) on marketing mail, and spam complaint rates below 0.3% ([Gmail/Yahoo requirements summary](https://bird.com/docs/knowledge-base/deliverability/gmail-yahoo-requirements), as cited in [19](19-platform-admin-portal.md); verify current thresholds). Rootline therefore (a) will not verify a sender domain without a published DMARC record (`p=none` is enough to start; the setup wizard generates it), (b) adds one-click unsubscribe headers on the marketing stream only, never on invoices or sign-in mail, and (c) applies the tenant complaint-rate circuit breaker defined in [16](16-marketing-growth-communications.md) (marketing sends pause at 0.2% over a rolling 7 days), which protects proposal and invoice delivery.
 - Every template is branded (logo, colors, footer with physical address for marketing mail as CAN-SPAM requires) and available in the Client's language.
 
 #### 4.1.5 Branded SMS [MVP]
-- SMS is sent from a Company-specific number registered under the Company's own 10DLC brand and campaign (US) or appropriate Canadian sender, provisioned through [16](16-marketing-growth-communications.md). Messages start with the Company name ("Evergreen & Stone: Your crew is on the way, ETA 9:40-9:55.").
-- Short links use the Company's portal hostname (`portal.evergreenstone.com/v/8KQ2`), not a generic shortener, which also improves carrier filtering outcomes.
+- SMS is sent from a Company-specific number registered under the Company's own 10DLC brand and campaign (US) or appropriate Canadian sender, provisioned through [16](16-marketing-growth-communications.md). Messages start with the Company name ("Greenleaf Grounds: Your crew is on the way, ETA 9:40-10:10.").
+- Short links use the Company's portal hostname (`portal.greenleafgrounds.com/v/8KQ2`), not a generic shortener, which also improves carrier filtering outcomes.
 - Toll-free and short code options are out of scope for MVP.
 
 #### 4.1.6 "Powered by Rootline" [MVP shown, V1 removable]
-- A small footer badge on lower tiers (it doubles as the referral loop for other landscapers, see [22](22-business-model-pricing-gtm.md)). Removable on higher tiers. Never shown inside emails or SMS.
+- A small footer badge on Starter and Grow (it doubles as the referral loop for other landscapers, see [22](22-business-model-pricing-gtm.md)). Removable on Pro and Enterprise. Never shown inside emails or SMS.
 
 #### 4.1.7 Embeds [V1]
 - Drop-in script and iframe embeds for the Company's existing website: "Client login" button, "Pay an invoice" (lookup by invoice number + ZIP), "Request service", and the AI lead magnet ([4.17](#417-pre-client-lead-magnet-dream-yard-visualizer)).
@@ -249,7 +263,7 @@ Design principle: **the link is the login for the action; a session is for brows
 
 #### 4.2.4 Passkeys [V1]
 - After a Client's second full sign-in, offer "Sign in with Face ID / fingerprint next time" (WebAuthn passkey, discoverable credential, user verification required). Passkeys are scoped to the portal hostname (relying party ID), so a Company moving from the default subdomain to a custom domain must prompt clients to re-enroll; the system tracks credential RP IDs and shows a one-time re-enroll prompt.
-- **Avoiding re-enrollment with related origins** [V1]: WebAuthn Level 3 "Related Origin Requests" let a site use passkeys whose RP ID is a different domain, provided that domain publishes the allowed origins at `/.well-known/webauthn`. Rootline registers every portal passkey with the Company's default subdomain as RP ID (`evergreenstone.rootline.app`) and lists the active custom hostname(s) in that subdomain's well-known file, so a later move to `portal.evergreenstone.com` keeps existing passkeys working. Browsers without related-origin support fall back to the one-time re-enroll prompt above. Browser support is incomplete and changing (supported in recent Chromium and Safari releases as of 2025 per our background knowledge; verify before relying on it).
+- **Avoiding re-enrollment with related origins** [V1]: WebAuthn Level 3 "Related Origin Requests" let a site use passkeys whose RP ID is a different domain, provided that domain publishes the allowed origins at `/.well-known/webauthn`. Rootline registers every portal passkey with the Company's default subdomain as RP ID (`greenleafgrounds.rootline.app`) and lists the active custom hostname(s) in that subdomain's well-known file, so a later move to `portal.greenleafgrounds.com` keeps existing passkeys working. Browsers without related-origin support fall back to the one-time re-enroll prompt above. Browser support is incomplete and changing (supported in recent Chromium and Safari releases as of 2025 per our background knowledge; verify before relying on it).
 - Passkeys satisfy step-up (4.2.5) without an extra code.
 - Multiple passkeys per Contact; management page lists them with device names and last-used dates.
 
@@ -283,7 +297,7 @@ Design principle: **the link is the login for the action; a session is for brows
 - SAML 2.0 / OIDC with Microsoft Entra ID, Okta and Google Workspace for large management companies; just-in-time provisioning maps IdP groups to contact scopes per Property. Offered on the Company's top tier.
 
 #### 4.2.9 One person, many Companies [V2]
-- Identities are tenant-isolated by default: Dana's identity at Evergreen & Stone is unrelated to her identity at her pool company if both use Rootline. An opt-in "Rootline Wallet" (V2) would let a person link portal identities across Companies for one inbox and one Property Record view. It never reveals to one Company that the person uses another, and it is off by default for white-label reasons. See [Open questions](#14-open-questions).
+- Identities are tenant-isolated by default: Dana's identity at Greenleaf Grounds Co. is unrelated to her identity at her pool company if both use Rootline. An opt-in "Rootline Wallet" (V2) would let a person link portal identities across Companies for one inbox and one Property Record view. It never reveals to one Company that the person uses another, and it is off by default for white-label reasons. See [Open questions](#14-open-questions).
 
 > **Competitive edge - Jobber, LMN, Spraye:** LMN asks the contractor to invite the client and the client to activate an account; Spraye requires a password; Jobber users report that clients seen once every few years forget Client Hub exists. Rootline's action links make the first interaction a one-tap task with no account setup, and the step-up model means a homeowner paying a $186 mowing invoice never meets a login screen, while changing autopay still requires fresh proof.
 
@@ -298,7 +312,7 @@ The home screen is a ranked stack of cards for the selected Property (or for "Al
 | Action required: proposal expiring | Proposal name, tier summary, expiry countdown | 95 if expires within 72 h; else 70 | [MVP] |
 | Action required: change order, work blocked | CO number, price and day delta, photos, Review button | 99 while the crew is waiting | [MVP] |
 | Action required: approval pending (commercial) | Count and value of items awaiting this Contact's decision | 90 | [V1] |
-| Today: crew on the way | Live ETA window, crew lead first name and photo, map | 98 while en route | [V1] |
+| Today: crew on the way | Live ETA window, crew lead first name and photo; map with approximate truck position [V1] | 98 while en route | [MVP] |
 | Next visit | Date, service ("Weekly mow and trim", "Round 3: fertilizer + broadleaf weed control"), arrival window, access-note shortcut | 80 if within 3 days; else 60 | [MVP] |
 | Active project | Phase tracker with current phase and next milestone | 75 | [MVP] |
 | Open balance (not overdue) | Amount, due date, autopay status | 65 | [MVP] |
@@ -341,7 +355,7 @@ Proposal construction is owned by [03](03-crm-sales-estimating-proposals.md). Th
 
 #### 4.4.4 Questions, comments and change requests [MVP]
 - Section-level comments ("Could the walkway be 4 ft wide instead of 3?") create a thread visible to the estimator and designer. The proposal stays in `viewed` state.
-- "Request changes" moves the proposal to `changes_requested`, notifies the estimator, and locks signing until a new version is published. The client sees "Evergreen & Stone is revising your proposal" with an SLA hint configured by the Company.
+- "Request changes" moves the proposal to `changes_requested`, notifies the estimator, and locks signing until a new version is published. The client sees "Greenleaf Grounds is revising your proposal" with an SLA hint configured by the Company.
 
 #### 4.4.5 Proposal states [MVP]
 
@@ -505,10 +519,10 @@ Designs are authored in the [Design Studio (10)](10-design-studio.md); mockups c
 - Client-editable fields on each Property: gate code (stored encrypted, visible only to the assigned crew on the visit day), pets ("Dog in backyard Tue/Thu; please text before entering"), parking, "do not mow when the kids' party tent is up", irrigation controller location, preferred contact for on-site questions.
 - Changes notify the `ops_manager` and are shown to crews in the crew app ([05](05-field-crew-mobile-app.md)) with a "changed" badge on the next visit.
 
-#### 4.7.3 "On the way" and live ETA [V1]
-- When the crew lead taps "Start driving to next stop" (or geofence departure from the previous stop is detected), the Client receives "Your Evergreen & Stone crew is on the way, ETA 9:40-9:55" with a link.
-- The live page shows the ETA window, crew lead's first name and photo (optional), truck description, and a map with the truck's approximate position **only while en route to this Property** and only within the final 30 minutes; position is snapped and delayed by 60 seconds to protect crew privacy. Tracking stops on arrival.
-- ETA source: routing ETA from [04](04-scheduling-dispatch-routing.md), refreshed every 60 seconds.
+#### 4.7.3 "On the way" and live ETA [MVP; live truck map V1]
+- When the crew lead taps "Start driving to next stop" (or geofence departure from the previous stop is detected), the Visit moves to `en_route` ([04](04-scheduling-dispatch-routing.md) 4.1.3) and the Client receives "Your Greenleaf Grounds crew is on the way, ETA 9:40-10:10" with a link.
+- The live page [MVP] shows the ETA window (next stop +/- 15 minutes rounded to 5, per [04](04-scheduling-dispatch-routing.md) 4.10.4), crew lead's first name and photo (optional) and truck description; the link stays valid until arrival plus 30 minutes. From [V1] it adds a map with the truck's approximate position **only while en route to this Property** and only within the final 30 minutes; position is snapped and delayed by 60 seconds to protect crew privacy. Tracking stops on arrival.
+- ETA source: routing ETA from [04](04-scheduling-dispatch-routing.md) (`eta.updated`), refreshed every 60 seconds. A "running late" notice follows the trigger owned by 04 4.10.5 (ETA more than 15 minutes past the communicated window).
 - Companies can disable live maps and keep ETA-only notifications.
 
 #### 4.7.4 Visit completion summary [MVP]
@@ -587,11 +601,11 @@ Architecture, Stripe objects and money flows are specified in [08 - Payments (St
 - Same lender integration as 4.4.8, also available on large invoices.
 
 #### 4.9.6 Tips for the crew [V1]
-- Optional tip at payment for residential Visits and Projects (percent presets 10/15/20% or a fixed amount), shown only if the Company enables it, and never on commercial invoices. Tips post to **Tips Payable** (liability, account 2160 in [08](08-payments-stripe.md)), are excluded from the surcharge base and sales tax, and flow to payroll via [15](15-team-hr-payroll.md). Distribution defaults to a crew split by clocked hours on that Visit.
+- Optional tip at payment for residential Visits and Projects (percent presets 10/15/20%, or flat $10/$20/$50 on invoices under $150), shown only if the Company enables tips; per service line the default is on for residential maintenance and installs and off for commercial invoices ([08](08-payments-stripe.md) 4.13). Tips post to **Tips Payable** (liability, account 2160 in the chart of accounts of [09](09-accounting-ledger-integrations.md); rules in [08](08-payments-stripe.md) 4.13), are excluded from the surcharge base and sales tax, and flow to payroll via [15](15-team-hr-payroll.md). Distribution defaults to a crew split by clocked hours on that Visit.
 - **Tip ownership rules:** under the FLSA as amended in 2018, employers, managers and supervisors may not keep employees' tips (cited from general knowledge; verify). Owners and users holding `owner` or `ops_manager` roles are therefore excluded from tip splits by default. Deducting card processing fees from tips is hidden wherever the [08](08-payments-stripe.md) rules table forbids it (for example California). The receipt states: "100% of your tip goes to the crew."
 
 #### 4.9.7 Failed payments and recovery [MVP]
-- Failed autopay: Client is notified with a one-tap "Update payment method" action link; retries follow the schedule in [08](08-payments-stripe.md) (default: day 3 and day 7 for cards). For ACH, only insufficient-funds returns (R01, R09) are re-presented, at most twice within 180 days of the original entry under Nacha rules (verify current rules). Returns such as R02 (account closed), R07 (authorization revoked), R10 or R29 (unauthorized) are never retried: autopay on that method is suspended at once and the Client is asked for a new method.
+- Failed autopay: Client is notified with a one-tap "Update payment method" action link; retries follow the schedule in [08](08-payments-stripe.md) 4.15 (soft card declines: up to 4 retries over 14 days, on days 1, 3, 7 and 14; hard declines are never retried). For ACH, only insufficient-funds returns (R01, R09) are re-presented, at most twice within 180 days of the original entry under Nacha rules (verify current rules). Returns such as R02 (account closed), R07 (authorization revoked), R10 or R29 (unauthorized) are never retried: autopay on that method is suspended at once and the Client is asked for a new method.
 - Disputes and refunds are handled on the Company's Stripe account; the portal reflects refund status and amounts.
 
 #### 4.9.8 Pay without signing in [MVP]
@@ -602,19 +616,19 @@ Architecture, Stripe objects and money flows are specified in [08 - Payments (St
 Every number a Client sees in the portal must equal what the Company's books say. Competitor portals show balances from an operational database that syncs to QuickBooks after the fact, so "I paid, why does it say overdue?" is a common support call. In Rootline the built-in double-entry Ledger ([09](09-accounting-ledger-integrations.md)) is the system of record, and the portal reads the **AR subledger** directly.
 
 - **Single source:** open balance, aging, statement lines and credits come from the AR subledger projection (`portal_invoice_view`), never from a separate portal cache. A payment confirmed by Stripe updates the projection in the same outbox transaction that posts the journal entry.
-- **Postings from portal actions** (account codes from [08, 4.17](08-payments-stripe.md); final chart of accounts in [09](09-accounting-ledger-integrations.md)):
+- **Postings from portal actions** (account codes and posting rules from the canonical chart in [09](09-accounting-ledger-integrations.md) 4.2 and 4.3.2; [08](08-payments-stripe.md) 4.17 maps Stripe balance-transaction categories onto them):
 
 | Portal action | Ledger effect (on Stripe balance transaction) | What the Client sees |
 |---------------|-----------------------------------------------|----------------------|
 | Deposit paid at signing | Dr 1050 Stripe Clearing; Cr 2150 Customer Deposits. Applied to the first milestone invoice later: Dr 2150, Cr 1200 AR | "Deposit $4,995 received" on the project tracker and receipt |
-| Invoice paid (card) | Dr 1050; Cr 1200 AR. Fee lines: Dr 6150 Processing Fees, Cr 1050 | Invoice "Paid", receipt. Fees are never shown to the Client |
+| Invoice paid (card) | Dr 1050; Cr 1200 AR. Fee lines: Dr 6150 Merchant Fees, Cr 1050 | Invoice "Paid", receipt. Fees are never shown to the Client |
 | Invoice paid (ACH, processing) | No GL entry yet; subledger "pending payment" record | "Payment processing, usually 4 business days". The balance shows as pending, not overdue, and dunning pauses |
 | ACH succeeds / returns after success | Success: Dr 1050, Cr 1200. Return: Dr 1200, Cr 1050 | Return: "Your bank returned this payment (account closed)" and an update-method link |
-| Season prepay | Dr 1050; Cr deferred revenue (contract liability per [07](07-invoicing-billing-contracts.md)), released per Visit | Prepaid balance with a "used so far" meter on the program card |
+| Season prepay | Prepaid season invoice Dr 1200 AR, Cr 2200 Deferred Revenue - Service Agreements (contract liability per [07](07-invoicing-billing-contracts.md)); payment Dr 1050, Cr 1200; revenue released per completed Visit | Prepaid balance with a "used so far" meter on the program card |
 | Tip | Dr 1050; Cr 2160 Tips Payable | "100% of your tip goes to the crew" |
-| Surcharge (where legal) | Dr 1050; Cr 4910 Card Surcharge Income | Separate disclosed line before confirmation |
-| Overpayment or unallocated payment | Dr 1050; Cr 2180 Unapplied Client Credits | "Credit on account $35.00, applied to your next invoice" |
-| Referral reward or goodwill credit | Credit memo: Dr 4950 Sales Returns and Allowances; Cr 1200 or 2180 | Credit memo in Documents and on the next statement |
+| Surcharge (where legal) | Dr 1050; Cr 4950 Card Surcharge Income | Separate disclosed line before confirmation |
+| Overpayment or unallocated payment | Dr 1050; Cr 2180 Customer Credits and Unapplied Cash | "Credit on account $35.00, applied to your next invoice" |
+| Referral reward or goodwill credit | Credit memo: Dr 4910 Discounts and Allowances (reason code `referral` or `goodwill`); Cr 1200 or 2180 | Credit memo in Documents and on the next statement |
 | Refund | Paired with credit memo per [08](08-payments-stripe.md) | Refund status and expected arrival |
 
 - **External books mode:** some Companies keep QuickBooks Online/Desktop or Xero as their system of record and sync with Rootline ([09](09-accounting-ledger-integrations.md)). A check deposited and recorded in QuickBooks is imported back as an external payment before the portal stops showing the balance. If the sync is more than 15 minutes stale, balance cards show "Updated 9:42 am" and the dunning engine waits for the next successful sync before sending an overdue reminder. This stops the "I mailed a check last week" escalation.
@@ -641,10 +655,10 @@ Every number a Client sees in the portal must equal what the Company's books say
 - Slot selection uses capacity from [04](04-scheduling-dispatch-routing.md): only days where the relevant crew type has capacity in the Property's route zone, respecting lead time (e.g. 3 business days), blackout dates and seasonal windows (aeration offered Aug 20-Oct 15 for cool-season turf). Clients pick a day or a week, not a time, unless the service requires presence.
 - Booking creates a one-off Job and Visit, optionally charges a deposit or card-on-file authorization, and shows in the program view.
 
-#### 4.10.4 Skip, reschedule and vacation holds [V1]
-- Policy-driven: Company sets which services allow client skips (e.g. weekly mow), notice required (48 h), billing effect (no charge for skipped per-visit work; no effect on flat monthly contracts) and maximum skips per season.
-- Vacation hold: pause visits between dates; optional "mow the day before we return".
-- Reschedule requests for non-recurring visits pick from offered alternative slots.
+#### 4.10.4 Skip, reschedule and vacation holds [MVP]
+- Policy-driven, with the scheduling rules owned by [04](04-scheduling-dispatch-routing.md) 4.2.8: Company sets which services allow client skips (e.g. weekly mow), the cutoff (default 18:00 the day before service; later requests become an office task), billing effect (no charge for skipped per-visit work; no effect on flat monthly contracts) and maximum skips per season.
+- Vacation hold: pause visits between dates (a Property blackout; Visits inside it close as `skipped` with reason `client_pause`); optional "mow the day before we return".
+- Reschedule requests for non-recurring visits pick from slots offered by the Availability API in [04](04-scheduling-dispatch-routing.md) 4.13. Commercial Clients with approval workflows route the request to the approver Contact first. Requests emit `portal.skip_requested`, `portal.reschedule_requested` or `portal.pause_requested` (8.3).
 
 ### 4.11 Messaging
 
@@ -652,7 +666,7 @@ Every number a Client sees in the portal must equal what the Company's books say
 - One conversation space per Client, with threads contextually attached to a Property, Proposal, Job, Invoice or Request. Clients can start a general thread or reply in context.
 - **Bridged to SMS and email:** a staff reply is delivered to the portal and, according to the Contact's preferences, by SMS (from the Company's 10DLC number) or email (from the verified sender domain). Client replies by SMS or email thread back into the same conversation via reply-address tokens and phone-number matching. Staff work from the unified inbox in [16](16-marketing-growth-communications.md).
 - Attachments: photos, PDFs, video up to 100 MB (portal), MMS limits applied to SMS bridge (images resized; links for larger files).
-- Staff identity shown as first name + role ("Maria, Office"), with an optional avatar; Company can choose a shared "Evergreen & Stone Team" identity instead.
+- Staff identity shown as first name + role ("Maria, Office"), with an optional avatar; Company can choose a shared "Greenleaf Grounds Team" identity instead.
 
 #### 4.11.2 Expectations and hours [MVP]
 - Business hours with auto-reply outside hours, emergency contact path (e.g. irrigation main-line break, snow emergency), expected reply time.
@@ -662,7 +676,7 @@ Every number a Client sees in the portal must equal what the Company's books say
 - Messages are auto-translated between the Contact's language and the staff member's language with "translated, see original" toggle. Common in crews and offices that work in Spanish while clients write in English, and vice versa.
 
 #### 4.11.4 Read state and delivery status [V1]
-- Staff see delivered/read for portal messages and delivered/failed for SMS; clients see "Seen by Evergreen & Stone" only if the Company enables it.
+- Staff see delivered/read for portal messages and delivered/failed for SMS; clients see "Seen by Greenleaf Grounds" only if the Company enables it.
 
 ### 4.12 Plant care and warranties
 
@@ -847,7 +861,7 @@ stateDiagram-v2
 - Client-side view: contract value + approved enhancements + forecast for scheduled seasonal work vs budget per Property, with month-by-month projection. Helpful for HOA reserve and operating budget meetings.
 
 #### 4.16.10 Resident intake for HOAs and multifamily [V2]
-- Optional resident-facing request page per community (e.g. `portal.evergreenstone.com/r/desert-ridge`), where residents submit issues; the community manager triages and forwards approved items to the Company. Residents never see financials and do not become Contacts unless invited.
+- Optional resident-facing request page per community (e.g. `portal.greenleafgrounds.com/r/desert-ridge`), where residents submit issues; the community manager triages and forwards approved items to the Company. Residents never see financials and do not become Contacts unless invited.
 
 #### 4.16.11 Vendor compliance packet [V1]
 - One place for the commercial client to fetch the Company's current COI, W-9, licenses (e.g. pesticide business license), safety program summary and signed contract.
@@ -857,7 +871,7 @@ stateDiagram-v2
 Rendering and layout engines are specified in [11](11-ai-design-mockups.md); lead routing and campaigns in [16](16-marketing-growth-communications.md). The portal hosts the public experience on the Company's portal domain and website embeds.
 
 #### 4.17.1 Experience [V1; MVP offers a photo-based quote request form]
-1. Prospect lands on `portal.evergreenstone.com/visualize` (or the embed on the Company's site).
+1. Prospect lands on `portal.greenleafgrounds.com/visualize` (or the embed on the Company's site).
 2. Enters address; the system confirms the service area (Company-defined polygons or ZIP list). Out-of-area addresses get a polite message and optional waitlist.
 3. Uploads 1-5 photos of the area to redesign (guidance overlay: "Stand at the street, landscape orientation, include the whole bed").
 4. Enters **real dimensions** (e.g. "Front bed: 42 ft along the house, 8 ft deep") or traces the bed on the satellite view; the AI pipeline uses dimensions to scale plant counts and spacing. The UI warns when dimensions and photo perspective disagree badly ("Your photo suggests a bed closer to 25 ft long; please confirm").
@@ -931,7 +945,7 @@ Rendering and layout engines are specified in [11](11-ai-design-mockups.md); lea
 ### 5.1 Proposal to signed and deposit paid (residential, first portal contact)
 
 1. Estimator publishes a proposal with three tiers and two add-ons; the design viewer and two AI mockups are attached ([03](03-crm-sales-estimating-proposals.md), [11](11-ai-design-mockups.md)).
-2. Dana receives an email from `hello@evergreenstone.com` and an SMS from the Company's number with a link on `portal.evergreenstone.com`.
+2. Dana receives an email from `hello@greenleafgrounds.com` and an SMS from the Company's number with a link on `portal.greenleafgrounds.com`.
 3. She taps the link on her phone. GET renders a page; a POST exchanges the action token for an action session (no login screen).
 4. She scrolls the proposal, drags the before/after slider, taps a plant to read about it, toggles "Better", adds drip irrigation.
 5. The server recalculates totals and deposit; the sticky footer shows "Total $16,650, deposit today $4,995" (Better tier $14,800 plus drip $1,850, 30% deposit).
@@ -1212,7 +1226,7 @@ sequenceDiagram
 | P-11 | Change order approval | Project Clients | [MVP] |
 | P-12 | Visits: upcoming and history timeline | All Contacts | [MVP] |
 | P-13 | Visit summary detail (photos, applications, rating) | All Contacts | [MVP] |
-| P-14 | Live ETA ("on the way") | Residential Contacts | [V1] |
+| P-14 | Live ETA ("on the way") | Residential Contacts | [MVP] ETA page, [V1] truck map |
 | P-15 | Invoices and statements | `billing`, `primary` | [MVP] |
 | P-16 | Pay (one or many invoices) | `billing`, `primary`, guests | [MVP] |
 | P-17 | Payment methods and autopay | `billing`, `primary` | [MVP] |
@@ -1340,7 +1354,7 @@ Sign step (sheet over the proposal):
 +--------------------------------------+
 | [   Sign and pay $4,995   ]           |
 | Secured by Stripe. Paid to            |
-| Evergreen & Stone Landscapes LLC      |
+| Greenleaf Grounds Co.                 |
 +--------------------------------------+
 ```
 
@@ -1408,7 +1422,7 @@ Sign step (sheet over the proposal):
 
 ```text
 +------------------------------------------------------------------------------------+
-| Evergreen & Stone - Property Center     Sonoran Community Mgmt   Marcus R. (v)     |
+| Greenleaf Grounds Co. - Property Center Sonoran Community Mgmt   Marcus R. (v)     |
 +------------------------------------------------------------------------------------+
 | Approvals waiting: 4 ($27,310)  | Open requests: 9 | Visits on schedule (30d): 97%  |
 | Enhancement budget used: 61%    | Snow events: n/a | Open balance: $48,220          |
@@ -1845,9 +1859,10 @@ erDiagram
 | `change_order.approved` / `declined` | delta amount and days | Jobs, invoicing |
 | `approval.requested` / `approval.step_decided` / `approval.completed` | amounts, budget impact, PO | Proposals, notifications, budgets |
 | `payment_method.added` / `removed` | method type, last 4 | Payments, collections |
-| `autopay.enrolled` / `changed` / `cancelled` | scope, timing, cap | Invoicing ([07](07-invoicing-billing-contracts.md)) |
+| `autopay.enrolled` / `changed` / `cancelled` | scope, timing, cap | Invoicing ([07](07-invoicing-billing-contracts.md)); [08](08-payments-stripe.md) confirms the mandate and emits the authoritative `payments.autopay.enrolled` / `.disabled` |
 | `payment_plan.requested` / `activated` | schedule | Collections |
 | `service_request.submitted` | category, urgency, pin, attachments | CRM, dispatch, Copilot triage |
+| `portal.skip_requested` / `portal.reschedule_requested` / `portal.pause_requested` | visit or property, requested dates, reason, contact | Scheduling client-driven changes ([04](04-scheduling-dispatch-routing.md) 4.2.8) |
 | `visit.rated` | score, comment | Crew scorecards ([15](15-team-hr-payroll.md)), reviews |
 | `access_note.updated` | property, fields changed | Crew app ([05](05-field-crew-mobile-app.md)) |
 | `warranty_claim.submitted` / `decided` | registration, decision | Ops, scheduling |
@@ -1866,12 +1881,13 @@ erDiagram
 | `design.version_published` | [10](10-design-studio.md) | Compile viewer bundle; update design tab |
 | `mockup.generated` / `mockup.approved` | [11](11-ai-design-mockups.md) | Add to gallery (approved only) |
 | `plant.updated` | [12](12-plant-knowledge-base.md) | Refresh cached plant cards |
-| `visit.scheduled` / `rescheduled` / `en_route` / `arrived` / `completed` / `skipped` | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md) | Update visits, ETA, summaries, notifications |
+| `visit.scheduled` / `rescheduled` / `en_route` / `arrived` / `completed` / `partially_completed` / `skipped` / `canceled` | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md) | Update visits, ETA, summaries, notifications |
+| `eta.updated`, `weather.delay_declared` | [04](04-scheduling-dispatch-routing.md) | Live ETA page; weather notice card and banner |
 | `job.phase_changed` | [04](04-scheduling-dispatch-routing.md), [14](14-service-line-modules.md) | Advance project tracker |
 | `media.published_to_client` | [05](05-field-crew-mobile-app.md) | Add to project or visit feed |
-| `application.recorded` | [14](14-service-line-modules.md) | Application record and re-entry alert |
+| `chemical_application.recorded` | [05](05-field-crew-mobile-app.md) (record), with notice rules from [14](14-service-line-modules.md) | Application record and re-entry alert |
 | `invoice.issued` / `voided` / `statement.generated` | [07](07-invoicing-billing-contracts.md) | Invoice views; Reg E notice timing for autopay |
-| `payment.succeeded` / `failed` / `refunded` / `dispute.opened` | [08](08-payments-stripe.md) | Status updates, receipts, failed-payment prompts |
+| `payments.payment.succeeded` / `payments.payment.pending` / `payments.payment.returned` / `payments.attempt.failed` / `payments.refund.completed` / `payments.dispute.opened` | [08](08-payments-stripe.md) | Status updates, receipts, "payment processing" state, failed-payment prompts |
 | `project.completed` | [04](04-scheduling-dispatch-routing.md) | Create installed items, warranty registrations, care plan; review invite |
 | `inspection.published` / `service_report.published` | [14](14-service-line-modules.md) | Commercial reports |
 | `snow_event.closed` | [14](14-service-line-modules.md) | Snow log entry |
@@ -2133,13 +2149,13 @@ Targets below are **internal design targets (estimates), not industry statistics
 1. **Default portal domain.** What Rootline-owned domain hosts default subdomains (and should it avoid "Rootline" entirely for white-label purity, e.g. a neutral domain)? Decision needed with [20](20-architecture-security.md) and brand.
 2. **Cross-Company identity ("Rootline Wallet").** Do we ever link a person's identities across Companies? It helps homeowners and the moonshot homeowner network ([23](23-innovation-moonshots.md)) but conflicts with white-label expectations. Proposed: off by default, explicit opt-in, never visible to Companies.
 3. **Property Record retention after churn.** Proposed minimums: 24 months read-only access after a Client leaves a Company, 12 months after a Company leaves Rootline. Who pays storage, and is a paid "homeowner keep-forever" tier acceptable to Companies?
-4. **Portal included in all plans?** Competitors gate portal features behind higher tiers. Recommendation: core portal (proposals, pay, history, requests) in every plan; advanced modules (commercial approvals, custom domain without badge, visualizer credits) tiered. Confirm with [22](22-business-model-pricing-gtm.md).
+4. **Portal included in all plans? (packaging settled in [22](22-business-model-pricing-gtm.md))** The core portal (proposals, pay, history, requests) is in every plan, Rootline-branded on Starter; the white-label portal and custom domain start at Grow; the badge is removable on Pro; commercial multi-property approvals are limited to 5 commercial Clients on Grow and unlimited on Pro and Enterprise. Still open: how visualizer usage draws on each plan's AI credits (300 / 2,000 / 6,000 per month on Starter / Grow / Pro) and whether Companies want a separate lead-magnet credit cap by default.
 5. **Live crew location.** ETA-only by default, or live map by default? Crew privacy and labor-relations considerations vary by Company; proposal is ETA-only default with live map opt-in.
 6. **Accept on ACH initiation threshold.** Is $5,000 the right default for treating a processing ACH deposit as acceptance?
 7. **Financing partner.** Which consumer financing provider(s) for US and Canada, and do we need a fallback for Companies whose Stripe configuration is not compatible?
 8. **Warranty transferability on home sale.** Should plant warranties transfer to the buyer by default? Company policy setting with a recommended default.
 9. **Client edits to the Property Record.** How do we reconcile client-added notes and photos with Company-maintained facts (e.g., client says they removed a shrub)? Proposed: client additions are a separate layer that Companies can accept into the record.
-10. **Research gaps.** Aspire's, SynkedUP's and Yardbook's client portal specifics could not be verified in this research pass (fetch access and search budget were limited); a hands-on teardown (demo accounts or customer interviews) is recommended before finalizing the competitive matrix in [01](01-market-landscape.md).
+10. **Competitive gaps.** Aspire's, SynkedUP's and Yardbook's client portal specifics are described at listing level only (verify); a hands-on teardown (demo accounts or customer interviews) is recommended before finalizing the competitive matrix in [01](01-market-landscape.md).
 11. **Native app timing.** What PWA push adoption on iOS triggers the move to native wrappers?
 12. **Proof-ladder thresholds.** Is $10,000 the right default above which signing needs a code? Should commercial approvals have a lower default ($5,000 proposed)? And is a fuzzy name match between the typed signature and the addressed Contact strong enough below the threshold? Validate with counsel and with step-up abandonment data (Section 12).
 13. **Contact-scope defaults versus doc 02.** This doc now follows [02](02-personas-roles-permissions.md) (`property_contact`; `co_owner` cannot manage contacts; payment-method management off by default for `co_owner`). Doc 02's blanket "step-up OTP for paying" needs updating to the narrower rule in 4.2.5 (saved methods only).
@@ -2164,7 +2180,7 @@ Targets below are **internal design targets (estimates), not industry statistics
 - Copilot CRM - [Ohio lawn care page](https://www.copilotcrm.com/lawn-care/ohio); [Texas lawn care page](https://www.copilotcrm.com/lawn-care/texas); [What is Copilot CRM](https://help.copilotcrm.com/en/articles/12141481-what-is-copilot-crm)
 - Other portals - [Spraye portal overview](https://support.spraye.io/support/solutions/articles/47001227487-overview); [House of Yards: How do my clients log in](https://houseofyards.tawk.help/article/how-do-my-clients-login); [Zoho Invoice portal FAQ](https://www.zoho.com/en-fr/invoice/kb/portal/domain-portal.html); [CrewOps Pro: setting up the customer portal](https://crewopspro.tawk.help/article/communications-setting-up-the-customer-portal); [BillerGenie: customer portal troubleshooting](https://billergenie.helpjuice.com/customer-portal/customer-portal-troubleshooting)
 
-### Standards, regulations and vendor technical references (canonical documents cited from general knowledge; not re-fetched during this research pass, verify current versions)
+### Standards, regulations and vendor technical references (canonical documents cited from general knowledge; verify current versions)
 
 - W3C - [Web Content Accessibility Guidelines (WCAG) 2.2](https://www.w3.org/TR/WCAG22/); [Web Authentication (WebAuthn) Level 2](https://www.w3.org/TR/webauthn-2/)
 - Passkeys developer resource - [passkeys.dev](https://passkeys.dev/)
@@ -2179,7 +2195,7 @@ Targets below are **internal design targets (estimates), not industry statistics
 - Microsoft - [Safe Links in Microsoft Defender for Office 365](https://learn.microsoft.com/en-us/defender-office-365/safe-links-about)
 - WebKit - [Web Push for Web Apps on iOS and iPadOS](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/)
 
-### Added in review (2026-11-07)
+### Additional sources (re-cited from research reports and sibling documents)
 
 Sources already gathered and cited by other Rootline research and module docs, reused here:
 
@@ -2189,7 +2205,7 @@ Sources already gathered and cited by other Rootline research and module docs, r
 - TCPA revocation - [Nixon Peabody: FCC partially delays new TCPA consent revocation rules](https://www.nixonpeabody.com/insights/alerts/2025/04/11/fcc-partially-delays-new-tcpa-consent-revocation-rules); [Crowell: FCC adopts amendments to TCPA rules](https://www.crowell.com/en/insights/client-alerts/fcc-officially-adopts-amendments-to-tcpa-rules); [Mac Murray and Shuster on the revoke-all delay](https://mslawgroup.com/delayed-again-fcc-pushes-back-tcpas-revoke-all-rule-to-january-31-2027/); [FCC 26-67](https://docs.fcc.gov/public/attachments/FCC-26-67A1.pdf)
 - Email deliverability - [Bird: Gmail and Yahoo sender requirements](https://bird.com/docs/knowledge-base/deliverability/gmail-yahoo-requirements)
 
-Canonical rules cited from general knowledge in review (not fetched; verify current text before launch):
+Canonical rules cited from general knowledge (verify current text before launch):
 
 - Regulation E stop-payment right - [12 CFR 1005.10(c) (eCFR)](https://www.ecfr.gov/current/title-12/chapter-X/part-1005/subpart-A/section-1005.10)
 - Regulation Z creditor definition - [12 CFR 1026.2(a)(17) (eCFR)](https://www.ecfr.gov/current/title-12/chapter-X/part-1026/subpart-A/section-1026.2)

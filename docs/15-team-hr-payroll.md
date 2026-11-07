@@ -2,11 +2,25 @@
 
 > Labor is the biggest cost line in a landscape company and the hardest thing to manage. Benchmark studies put burdened direct labor at about 43% of net revenue for mid-size firms ([Lawn & Landscape, Wilson 360 2024 benchmark](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)). Headcount doubles or triples between February and May, much of the workforce prefers Spanish, and many companies depend on the H-2B visa program. Crews also run equipment that needs a license (pesticide applicator, CDL, backflow tester, ISA arborist). The Team module gives Rootline one people system for the whole lifecycle: recruit in Spanish from a phone, onboard with e-signatures, track H-2B milestones, enforce certifications in the schedule, train with bilingual micro-videos, approve timesheets, apply the right overtime and break rules for each state, compute piece-rate, production and commission pay, build certified payroll, export clean pay data to Gusto, ADP, Paychex or QuickBooks Payroll (embedded payroll comes later), keep the OSHA logs and workers' comp claim clocks, run heat and wildfire smoke plans, tag federally qualified overtime and tips for W-2 reporting, recognize good work and offboard cleanly. Because every hour is tied to a Visit, a Job and a cost code, the same data that pays people also costs jobs, prices estimates and forecasts hiring. No landscape-specific competitor runs this whole loop in one product.
 
+**At a glance**
+
+- **What it is:** one people system for a seasonal, bilingual, credential-heavy workforce: people records, Spanish-first hiring, onboarding, H-2B program support, credentials enforced in the schedule, training, time approval, jurisdiction pay rules, piece-rate, production and commission pay, certified payroll, payroll exports, safety and OSHA logs, recognition and offboarding.
+- **Decision 1: the crew app owns punches; this module owns approval, pay and exports.** Time is an append-only stream of punch events from [05](05-field-crew-mobile-app.md) (`shop`, `drive`, `job`, `meal_break`, `rest_break`, `training` segments). Timesheets are derived server-side, approved by the crew lead daily and by `ops_manager` or `office_manager` weekly, then locked.
+- **Decision 2: export first, embedded later.** MVP pushes clean pay data to Gusto, QuickBooks Online Payroll, ADP RUN and Paychex (API or file) plus a generic CSV. Embedded payroll through a licensed partner is a [V1] pilot and [V2] GA, and Rootline never holds wage funds.
+- **Decision 3: versioned jurisdiction policy packs.** Federal plus California, Washington, Oregon, Colorado and New York at MVP; all US states, DC and four provinces at V1. Packs compute overtime, meal and rest premiums and regular-rate true-ups, and every rule is a starting configuration for counsel review.
+- **Decision 4: one hour, three uses.** Every approved segment carries a Visit, Job and cost code, so payroll, job costing (posting rules `labor.LB1`-`LB3` and `payroll.PR1`-`PR5`, owned by [09](09-accounting-ledger-integrations.md)) and estimating labor rates ([03](03-crm-sales-estimating-proposals.md)) read the same data.
+- **Decision 5: credentials are enforced, not just stored.** Pesticide, CDL, backflow and arborist credentials gate scheduling ([04](04-scheduling-dispatch-routing.md)), chemical records ([05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md)) and restricted-use issue ([13](13-operations-inventory-equipment.md)), with an override-with-reason or a hard block per requirement.
+- **MVP:** people records and seasonal hibernation, credentials and scheduling enforcement, availability and time off, timesheet derivation, exceptions and approvals, MVP policy packs, burden profiles and burdened labor rates, pay period close, payroll exports and journal import (file), tips and FLSA qualified-overtime tagging, incident cases and OSHA 300/301/300A, California heat illness, announcements and offboarding.
+- **Later:** [V1] recruiting and Spanish-first mobile apply, H-2B workspace, LMS, piece-rate and production bonuses, prevailing wage and certified payroll, embedded payroll pilot, pay explainer, safety hub, performance and retention analytics. [V2] background checks, earned wage access, flight-risk check-ins, embedded payroll GA.
+- **Packaging ([22](22-business-model-pricing-gtm.md) 4.2.1):** team, timesheets, certifications and training on every plan (limited on Starter); payroll export on every plan; embedded payroll is an add-on.
+- **Differentiators:** time tied to Visits and cost codes, landscape pay rules generic payroll cannot compute (California meal premiums, piece-rate rest pay, bonus overtime true-ups), H-2B milestones and guarantees in the product, and credential enforcement at dispatch.
+- **Key cross-links:** [02](02-personas-roles-permissions.md) (roles, `timesheet.edit_max_hours`), [06](06-customer-portal.md) (ratings, tips), [08](08-payments-stripe.md) (tip allocation), [17](17-ai-copilot-automation.md) (A17 Timesheet Anomaly Agent), [18](18-reporting-analytics.md) (labor KPIs), [20](20-architecture-security.md) (`people` module).
+
 **Document status:** Design proposal v1.0 (2026-11-07). Owner: People and Time domain team (`people` module in [Architecture](20-architecture-security.md)).
 
 **Related docs:** [Personas and permissions](02-personas-roles-permissions.md) · [Estimating and commissions](03-crm-sales-estimating-proposals.md) · [Scheduling and dispatch](04-scheduling-dispatch-routing.md) · [Crew app (punches, attestations, safety capture)](05-field-crew-mobile-app.md) · [Customer portal (ratings, tips)](06-customer-portal.md) · [Invoicing (T&M, certified jobs)](07-invoicing-billing-contracts.md) · [Payments (tips)](08-payments-stripe.md) · [Ledger and job costing](09-accounting-ledger-integrations.md) · [Operations, equipment custody](13-operations-inventory-equipment.md) · [Service lines (chem, tree, snow)](14-service-line-modules.md) · [Marketing and inbox](16-marketing-growth-communications.md) · [AI copilot and agents](17-ai-copilot-automation.md) · [Reporting and KPIs](18-reporting-analytics.md) · [Platform admin](19-platform-admin-portal.md) · [Architecture and security](20-architecture-security.md) · [UX and sitemaps](21-ux-design-system-sitemaps.md) · [Pricing](22-business-model-pricing-gtm.md) · [Moonshots](23-innovation-moonshots.md) · [Roadmap](24-roadmap-feature-catalog.md)
 
-> **Legal posture (applies to the whole document).** Rootline is software, not a law firm, a PEO, an immigration agent or a payroll tax filer (until the embedded payroll option, and even then the licensed partner files). Every jurisdiction rule here is a starting configuration for legal review. The rules are marked "verify" where this document could not confirm current text. Rule packs ship versioned and reviewed by employment counsel before each season ([section 4.9](#49-pay-rules-engine-and-jurisdiction-policy-packs)), and the product says "this is not legal advice" wherever it shows a compliance hint.
+> **Legal posture (applies to the whole document).** Rootline is software, not a law firm, a PEO, an immigration agent or a payroll tax filer (until the embedded payroll option, and even then the licensed partner files). Every jurisdiction rule here is a starting configuration for legal review. Rules whose current text still needs first-hand confirmation are marked "verify". Rule packs ship versioned and reviewed by employment counsel before each season ([section 4.9](#49-pay-rules-engine-and-jurisdiction-policy-packs)), and the product says "this is not legal advice" wherever it shows a compliance hint.
 
 > **Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build; competitor capabilities marked [B] are analyst belief to confirm in a hands-on teardown. Facts come from research cited elsewhere in this proposal ([05](05-field-crew-mobile-app.md), [02](02-personas-roles-permissions.md), [18](18-reporting-analytics.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)), primary regulations cited by section number, and general domain knowledge; the research backlog in [section 14](#14-open-questions) must close the open items before this spec turns into tickets.
 
@@ -531,7 +545,7 @@ Punch capture is owned by the crew app ([05 section 4.5](05-field-crew-mobile-ap
 
 **TIME-06 Kiosk and shop clock [V1].** Wall tablet at the yard ([05](05-field-crew-mobile-app.md) kiosk mode) for clock-in by PIN with an optional photo (no face matching). Also shows announcements, daily crew assignments and safety talk sign-ins.
 
-**TIME-07 Shop, drive and job time policy [MVP].** Company settings define how shop and drive segments are paid (always paid by default) and costed (overhead, allocated to the next visit, or spread across the day's visits; [05](05-field-crew-mobile-app.md) and [09](09-accounting-ledger-integrations.md)). Prevailing wage jobs may require travel at a specific rate (rule per contract).
+**TIME-07 Shop, drive and job time policy [MVP].** Company settings define how shop and drive segments are paid (always paid by default; [05](05-field-crew-mobile-app.md) 4.5.1) and costed. Drive-time costing uses the scheduling setting `drive_cost_allocation` = `route_overhead` / `next_visit` / `pro_rata_onsite` (default `route_overhead` for maintenance and `next_visit` for projects; [04](04-scheduling-dispatch-routing.md) 4.10.3); shop, rain and training time posts as non-billable field time through [09](09-accounting-ledger-integrations.md) rule `labor.LB2`. Payroll always follows approved timesheet segments, never geofence actuals. Prevailing wage jobs may require travel at a specific rate (rule per contract).
 
 **TIME-08 Weekly timesheet acknowledgment and pay explainer [V1].** The employee sees a bilingual breakdown that uses the same method as RULE-02 (worked for a week of 46.5 hours, all overtime over 40 in the workweek): "Regular 40.0 h x $21.00 = $840.00; Overtime 6.5 h x $31.50 = $204.75; Bonus overtime adjustment 6.5 h x $0.30 = $1.95 (your production bonus raises your regular rate: $27.90 / 46.5 h = $0.60 per hour, so your regular rate is $21.60, and each overtime hour earns half of that $0.60 again); Production bonus $27.90; Meal premium 1 x $21.60 = $21.60; Tips $35.00 (from 3 clients). Total $1,131.20." Check: straight time $976.50 + bonus $27.90 + overtime premium 0.5 x $21.60 x 6.5 = $70.20 gives the same $1,074.60 before premium and tips. Paying the 6.5 hours at 1.5 x $21.60 = $32.40 on top of the full bonus would count the bonus twice on overtime hours, so the explainer never shows that line. The explainer also shows the week's federal "qualified overtime" premium ($70.20 here) as information, not tax advice (RULE-09). The employee can tap any line for an explanation in Spanish (Copilot, grounded in the rule pack text). Disputes route to the office. Wireframe in [6.8](#68-wireframe-pay-explainer-spanish-crew-app).
 
@@ -1538,6 +1552,8 @@ All tables live in the `people` domain module ([20](20-architecture-security.md)
 
 ### 7.1 Entity catalog
 
+These tables live in the `people` module of the [Architecture](20-architecture-security.md) module map. Its summary entity names map as follows: `certification` is `credential` here (employee licenses, certifications and subcontractor credentials share one model), `time_entry` is `time_segment` (derived from the punch events in [05](05-field-crew-mobile-app.md)), and `payroll_run_export` is `payroll_batch`; `employee`, `pay_rate` and `timesheet` keep their names.
+
 | Group | Entity | Purpose and key fields |
 |---|---|---|
 | People | `employee` | One per human per Company: names, preferred_language, mobile, status, worker_type, flsa_status, employment_class, home_branch_id, home_crew_id, manager_employee_id, position_id, labor_class_id, membership_id (nullable), provider_employee_ref |
@@ -1908,7 +1924,7 @@ The public API ([20](20-architecture-security.md)) exposes HR resources with gra
 | `training.assigned`, `training.completed`, `equipment_authorization.changed` | module, employee, equipment_class | Crew app, Dispatch |
 | `timesheet.submitted`, `timesheet.approved`, `timesheet.reopened`, `timesheet.corrected` | employee, workweek, hours by type | Ledger job costing ([09](09-accounting-ledger-integrations.md)), Invoicing T&M ([07](07-invoicing-billing-contracts.md)), Reporting ([18](18-reporting-analytics.md)) |
 | `pay_period.closed`, `payroll_batch.exported`, `payroll_batch.confirmed`, `payroll_batch.failed` | period, totals, provider | Ledger, Copilot alerts, Platform connector health ([19](19-platform-admin-portal.md)) |
-| `payroll_journal.imported` | totals by account | Ledger posting and burden true-up ([09](09-accounting-ledger-integrations.md)) |
+| `payroll_import.posted` | totals by account | Ledger posting (`payroll.PR1`-`PR5`) and burden true-up ([09](09-accounting-ledger-integrations.md)) |
 | `pto.requested`, `pto.approved`, `pto.denied`, `availability.changed` | employee, dates | Scheduling ([04](04-scheduling-dispatch-routing.md)) |
 | `applicant.applied`, `application.stage_changed`, `offer.accepted` | requisition, source | Recruiting analytics, inbox tagging ([16](16-marketing-growth-communications.md)) |
 | `h2b.milestone_due`, `h2b.guarantee_at_risk`, `h2b.abandonment_clock_started` | program, worker | Notifications, Copilot |
@@ -1921,6 +1937,14 @@ The public API ([20](20-architecture-security.md)) exposes HR resources with gra
 | `announcement.published`, `announcement.acknowledged` | targets | Crew app, kiosk |
 | `offboarding.started`, `offboarding.completed`, `final_pay.due` | deadlines | Payroll, Equipment, Access |
 
+**Name aliases.** Other docs use a few alternative spellings for these events; they are registered as aliases on the bus:
+
+| Spelling elsewhere | Canonical event here | Where it appears |
+|---|---|---|
+| `certification.expiring`, `certification.expired` | `employee.certification_expiring`, `employee.certification_expired` | [04](04-scheduling-dispatch-routing.md) 8.4 |
+| `employee.absence_reported` | `pto.approved` (planned leave, including sick time) and `availability.changed` (one-off unavailability) | [04](04-scheduling-dispatch-routing.md) 8.4 |
+| `time_entry.recorded` | `timesheet.approved` for postings; live segment changes are `time.segment_changed` from [05](05-field-crew-mobile-app.md) | [09](09-accounting-ledger-integrations.md) 8.2, [20](20-architecture-security.md) event catalog |
+
 ### 8.4 Events consumed
 
 | Event | Producer | Effect here |
@@ -1932,9 +1956,9 @@ The public API ([20](20-architecture-security.md)) exposes HR resources with gra
 | `visit.rated` | [06](06-customer-portal.md) | Kudos, quality gates for bonuses |
 | `commission.earned`, `commission.clawed_back` | [03](03-crm-sales-estimating-proposals.md) | Commission pay items |
 | `payments.tip.allocated` | [08](08-payments-stripe.md) | Tip pay items, Tips Payable clearing on journal import |
-| `asset.checked_out`, `asset.returned` | [13](13-operations-inventory-equipment.md) | Onboarding and offboarding checklist status |
+| `ops.tool.checked_out`, `ops.tool.checked_in`, `ops.tool.lost` | [13](13-operations-inventory-equipment.md) | Onboarding and offboarding checklist status |
 | `membership.*` | [02](02-personas-roles-permissions.md) | Employee status sync |
-| `job.created` with prevailing wage flag | [03](03-crm-sales-estimating-proposals.md) | Creates `pw_project` stub |
+| `job.created` with prevailing wage flag | [04](04-scheduling-dispatch-routing.md) (flag set on the Proposal in [03](03-crm-sales-estimating-proposals.md)) | Creates `pw_project` stub |
 | `crew.assignment_changed` | [04](04-scheduling-dispatch-routing.md) | Acting crew-lead detection for lead pay |
 
 ### 8.5 Outbound webhooks for tenants

@@ -2,6 +2,19 @@
 
 > The Plant Knowledge Base (KB) is the operator's crown jewel: a curated, region-aware, fully sourced database of thousands of landscape plants that every other part of Rootline trusts. It holds the taxonomy (family down to cultivar, trade names, patents and synonyms), traits (size, form, bloom, foliage, seasonal color), requirements (hardiness and heat zones, sun, water including WUCOLS, soil, pH, drainage, salt), characteristics (deer resistance, pollinator and host-plant value, native and invasive status by jurisdiction, toxicity, allergenicity, fire-wise, maintenance calendar, pests), commercial data (container sizes, cost bands, nursery availability) and licensed media (seasonal photos, 2D plan symbols, 3D archetypes, AI reference images). On top of the plant records sits a geospatial **Region** model that turns any address into a site context (USDA zone, ecoregion, county, metro, operator-drawn Region) and a **Plant Region Profile** layer where curators say, with evidence, how well each plant actually does there on a 1-5 scale. The KB is what keeps a designer from putting a zone 8 plant in a zone 5 bed, stops the AI from rendering a banned Callery pear in Columbus, tells the crew what that shrub is from a photo, writes the client's care guide, and powers SEO plant pages. Curating thousands of plants across dozens of Regions by hand is impossible, so this document also specifies the curation machine: bulk imports with diff preview, AI enrichment that drafts traits with citations and confidence scores, a review queue, field-level provenance, versioned releases, synonym merging against POWO/WFO, quality dashboards and regional rating sessions. No field-service competitor has any of this; design tools that have plant libraries do not know the region, the law or the price.
 
+**At a glance**
+
+- **What it is:** the operator-curated, region-aware database of landscape plants that every Rootline module trusts: taxonomy, traits with field-level provenance, legal status by jurisdiction, commercial data and licensed media, curated by `platform_curator` staff and shipped to tenants as versioned releases.
+- **Decision 1, Regions:** every Property resolves to a Site Context (hardiness zone, ecoregion, jurisdictions and the leaf operator-drawn Region in a country -> macro-region -> Region -> microregion hierarchy), recomputed when a Region is republished ([4.3](#43-region-model-and-geospatial-lookup-kb-rgn)).
+- **Decision 2, Plant Region Profiles:** curators rate each Plant 1-5 per Region with evidence, conditions and a `do_not_use` flag. Ratings drive Design Studio validation (1-2 warn, `do_not_use` is an error) and AI eligibility (3 or higher with conditions met) ([4.4](#44-plant-region-profiles-kb-prp)).
+- **Decision 3, law beats preference:** regulatory listings (invasive, noxious, sale and planting bans with effective dates) and jurisdiction rule packs override every rating, Plant Palette and tenant setting; no Company role can override a legal error.
+- **Decision 4, provenance and releases:** every value carries source, license, citation, method and confidence; AI enrichment (Claude family through the AI Gateway) drafts values with verified citations, critical traits need two human reviewers, and consumers pin a KB release so sold Designs keep the plant data they were sold with.
+- **Decision 5, one global KB plus a tenant layer:** Companies add notes, private plants, Company palettes, Price Book links and warranty policies on top of the shared KB without forking it ([4.10](#410-tenant-layer-kb-ten)).
+- **MVP:** a seed of about 3,000 plants and the first curated Regions, Site Context lookup, Plant Region Profiles, complete state and province legal lists, platform and Company Plant Palettes, the curation machine (imports with diff preview, review queue, releases), faceted and natural-language search, and the crew app's offline subset.
+- **Later:** heat zones, nursery availability feeds, field plant ID by photo, failure reports, self-serve AI enrichment, full rating sessions, SEO plant pages, water and HOA rule packs [V1]; fire rule packs and the partner Plant API [V2]; bulk data licensing [V3].
+- **The plant thread:** KB -> Design Studio picker and validation ([10](10-design-studio.md)) -> region-locked Mockups and AI layouts ([11](11-ai-design-mockups.md)) -> Price Book lines on the Estimate and plant cards on the Proposal ([03](03-crm-sales-estimating-proposals.md)) -> crew install lists and plant ID ([05](05-field-crew-mobile-app.md)) -> as-built installed-plant list -> portal care guide and plant warranty ([06](06-customer-portal.md), [13](13-operations-inventory-equipment.md)).
+- **Differentiator and key links:** no field-service competitor has region-curated plant data, and design tools with plant libraries do not know the Region, the law or the price. Operator console in [19](19-platform-admin-portal.md), roles in [02](02-personas-roles-permissions.md), entities and events in [20](20-architecture-security.md).
+
 **Related docs:** [Personas and permissions](02-personas-roles-permissions.md) | [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md) | [Crew app](05-field-crew-mobile-app.md) | [Customer Portal](06-customer-portal.md) | [Design Studio](10-design-studio.md) | [AI design and mockups](11-ai-design-mockups.md) | [Operations, inventory and nurseries](13-operations-inventory-equipment.md) | [Service lines (PHC, tree care, irrigation)](14-service-line-modules.md) | [Marketing and SEO pages](16-marketing-growth-communications.md) | [AI copilot and automation](17-ai-copilot-automation.md) | [Reporting](18-reporting-analytics.md) | [Platform Admin console](19-platform-admin-portal.md) | [Architecture and security](20-architecture-security.md) | [UX and design system](21-ux-design-system-sitemaps.md) | [Business model and GTM](22-business-model-pricing-gtm.md) | [Moonshots](23-innovation-moonshots.md) | [Roadmap](24-roadmap-feature-catalog.md)
 
 **Conventions used in this document**
@@ -45,7 +58,7 @@
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> **Research note.** The run-wide web-search budget was exhausted before this document's research began, and direct fetches to hosts outside the session's network allowlist failed (for example the USDA hardiness map site and Wikipedia). The editorial review pass (November 2026) hit the same limits: searches were refused and fetches to `mass.gov`, `ars.usda.gov` and `codes.ohio.gov` failed DNS under the allowlist. This section therefore relies on (a) sources already gathered and cited by sibling Rootline documents and research reports, especially [R2](research/R2-landscape-specific-platforms.md) and [R3](research/R3-design-ai-plant-data.md), and (b) domain knowledge of public plant-data sources, which is marked "verify". The review pass added competitor, regulatory and data-source rows from R2, R3 and [23](23-innovation-moonshots.md); those carry the same "verify" status as their source documents. See [Sources](#sources).
+> **Verification note.** Items marked "verify" are from secondary sources (sibling Rootline documents and the research reports [R2](research/R2-landscape-specific-platforms.md), [R3](research/R3-design-ai-plant-data.md) and [23](23-innovation-moonshots.md)) or domain knowledge of public plant-data sources and need first-hand confirmation before build. See [Sources](#sources).
 
 ### 2.1 What competitors do today
 
@@ -496,7 +509,7 @@ stateDiagram-v2
 
 **KB-RGN-11 Jurisdiction rule packs [V1 water and HOA, V2 fire]**
 
-Some jurisdictions regulate *how* plants are combined and where they go, not just *which* plants are allowed. The KB stores these as versioned, cited **rule packs** attached to jurisdictions; the Design Studio evaluates them ([10](10-design-studio.md)), and the KB supplies the plant attributes they need.
+Some jurisdictions regulate *how* plants are combined and where they go, not just *which* plants are allowed. The KB stores these as versioned, cited **rule packs** attached to jurisdictions; the Design Studio validator ([10](10-design-studio.md)), the AI layout solver and the design assistant ([11](11-ai-design-mockups.md) AIM-GEN-C2, which adds site-geometry packs such as hydrant and sight-triangle clearances) evaluate them through one rule interface, and the KB supplies the plant attributes they need. Packs ship through the KB release pipeline and emit `kb.rule_pack_published`.
 
 | Rule pack | What the KB contributes | Evaluated by | Priority |
 |---|---|---|---|
@@ -856,7 +869,7 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 | Golden Horseshoe Dry Shade | Shade garden, under maples | *Carex pensylvanica*, *Polystichum acrostichoides*, *Eurybia divaricata*, *Geranium maculatum*, *Diervilla lonicera* (shrub layer) | Root competition: plant small sizes (plugs, #1) and irrigate the first season |
 | Front Range Fire-Wise Foundation | Wildland-urban interface, 5-30 ft from structures | Low-growing, high-moisture perennials and groundcovers from a cited regional fire-resistant list | No plant is fireproof; maintenance (removing dead material) matters more than species; verify local guidance |
 
-**KB-PAL-05 Style resolution [MVP]**
+**KB-PAL-05 Style resolution [MVP for AI style presets; V1 for Studio templates]**
 - Design templates ([10](10-design-studio.md) DS-TMPL-03) and AI style presets ([11](11-ai-design-mockups.md)) reference palette **roles and tags**, not plants. At use time they resolve to the Property's Region palettes, filtered by bed sun class and validations. Resolution order: Company palette, then platform Region palette, then macro-region palette; if fewer than 5 eligible plants remain, the style is shown as "Adapted for your region" or hidden (the rule in [11](11-ai-design-mockups.md)).
 
 **KB-PAL-06 Company palettes [MVP]**
@@ -1608,7 +1621,7 @@ The KB lives in the `kb` domain module ([20](20-architecture-security.md)). Glob
 | Geography | `plant_native_range` | Native status by unit | `plant_id`, `unit_kind`, `unit_code`, `status`, `source_id` |
 | Profiles | `plant_region_profile` | Performance in a Region | `plant_id`, `region_id`, `rating`, `do_not_use`, `reason_codes`, `conditions`, `client_note`, `internal_note`, `cultivar_picks`, `confidence`, `curator_id`, `reviewer_id`, `last_reviewed_at`, `next_review_due`, `status` |
 | Profiles | `profile_trait_override`, `profile_evidence` | Regional trait values and evidence | override `trait_key`, `value_json`; evidence `kind`, `citation_id`, `supports`, `weight` |
-| Palettes | `palette`, `palette_member` | Platform palettes | `scope`, `region_ids`, `style_tags`, `uses`, `kind` (curated, smart, hybrid), `query_json`; member `plant_id`, `role`, `sub_zone`, `sun_classes`, `sort` |
+| Palettes | `plant_palette`, `palette_plant` | Platform Plant Palettes (the glossary's Plant Palette) | `scope`, `region_ids`, `style_tags`, `uses`, `kind` (curated, smart, hybrid), `query_json`; member `plant_id`, `role`, `sub_zone`, `sun_classes`, `sort` |
 | Media | `media_asset`, `plant_media` | Photos and assets | asset `storage_key`, `phash`, `license_id`, `attribution`, `allowed_uses`, `quality_score`; link `plant_id`, `role`, `season`, `region_id`, `is_hero` |
 | Media | `symbol_family`, `plant_symbol_map` | 2D symbol mapping | family `key`, `params_schema`; map `plant_id`, `family_key`, `params_json`, `custom_svg_key` |
 | Care and pests | `care_task_template`, `pest_disease`, `plant_pest_link` | Care calendars and pests | task `kind`, `phenophase`, `region_month_map`; pest `type`, `regions_pressure`; link `susceptibility` |
@@ -1811,9 +1824,9 @@ erDiagram
     jurisdiction ||--o{ jurisdiction_rule_pack : "enforces"
     plant ||--o{ regulatory_listing : "listed in"
     plant ||--o{ plant_native_range : "native in"
-    palette ||--o{ palette_member : "contains"
-    plant ||--o{ palette_member : "member of"
-    region ||--o{ palette : "scopes"
+    plant_palette ||--o{ palette_plant : "contains"
+    plant ||--o{ palette_plant : "member of"
+    region ||--o{ plant_palette : "scopes"
     nursery ||--o{ nursery_listing : "offers"
     plant ||--o{ nursery_listing : "listed as"
     plant ||--o{ region_availability : "aggregated in"
@@ -1918,7 +1931,7 @@ erDiagram
         text native_status
         uuid source_id FK
     }
-    palette {
+    plant_palette {
         uuid id PK
         text scope
         text name
@@ -1928,8 +1941,8 @@ erDiagram
         jsonb query_json
         text status
     }
-    palette_member {
-        uuid palette_id FK
+    palette_plant {
+        uuid plant_palette_id FK
         uuid plant_id FK
         text role
         text sub_zone
@@ -2158,12 +2171,12 @@ All events go through the transactional outbox ([20](20-architecture-security.md
 
 | Event | Payload (summary) | Main consumers |
 |---|---|---|
-| `kb.release_published` | release code, kind, counts, changed plant ids | Search indexer, caches, Design Studio availability badges, crew app bundle builder, tenant changelog |
+| `kb.release_published` | release code, kind, counts, changed plant ids | Search indexer, caches, Design Studio validation and availability badges ([10](10-design-studio.md)), mockup palette and render-pack caches ([11](11-ai-design-mockups.md)), crew app bundle builder, tenant changelog |
 | `kb.plant_merged` | from id, to id | Design, Price Book, palettes, warranties, reporting |
 | `kb.plant_deprecated` | plant id, reason | Design validations, Price Book, palettes |
 | `kb.regulatory_status_changed` | plant ids, jurisdiction, category, effective date | Tenant notifier, design validations, proposals, service programs |
 | `kb.regulatory_listing_enacted` | listing id, plant ids, jurisdiction, `sale_prohibited_from`, `planting_prohibited_from` | Tenant notifier (alerts at enactment, 90 days and 30 days before the effective date), scheduling slip guard ([04](04-scheduling-dispatch-routing.md)), proposals |
-| `kb.rule_pack_published` | jurisdiction, pack kind, version, effective date | Design Studio validations, water-budget worksheets |
+| `kb.rule_pack_published` | jurisdiction, pack kind, version, effective date | Design Studio validations, AI layout solver and design assistant ([11](11-ai-design-mockups.md)), water-budget worksheets |
 | `kb.region_published` | region id, version, Properties affected count | Site Context recompute job, reporting |
 | `kb.property_region_changed` | tenant id, property id, old and new Region and zone | CRM, Design Studio, portal care guides |
 | `kb.profile_updated` | plant id, region id, old and new rating | AI palette caches, SEO pages, Company alerts if a palette plant drops below 3 |
@@ -2178,9 +2191,9 @@ All events go through the transactional outbox ([20](20-architecture-security.md
 |---|---|
 | `property.geocoded` and `property.address_changed` (CRM, [03](03-crm-sales-estimating-proposals.md)) | Compute Site Context |
 | `design.version_published`, `design.plant_placed` ([10](10-design-studio.md)) | Usage counts for priority scoring and analytics |
-| `warranty.plant_replaced`, `warranty.claim_created` ([13](13-operations-inventory-equipment.md)) | Aggregate failure signals (k of 10 or more) for profile re-review triggers |
-| `vendor_availability.updated` ([13](13-operations-inventory-equipment.md)) | Update tenant availability views and, for opted-in vendors, global listings |
-| `install.as_built_completed` ([05](05-field-crew-mobile-app.md), [10](10-design-studio.md)) | Installed-plant registry links for care guides ([06](06-customer-portal.md)) |
+| `ops.warranty.claim_opened`, `ops.warranty.claim_resolved`, `ops.plant.lost` ([13](13-operations-inventory-equipment.md)) | Aggregate failure signals (k of 10 or more) for profile re-review triggers |
+| `ops.vendor.price_list_imported` (price and availability lists, [13](13-operations-inventory-equipment.md)) | Update tenant availability views and, for opted-in vendors, global listings |
+| `plant.installed` ([05](05-field-crew-mobile-app.md)) and `design.as_built_published` ([10](10-design-studio.md)) | Installed-plant registry links for care guides ([06](06-customer-portal.md)) and plant warranties ([13](13-operations-inventory-equipment.md)) |
 | `visit.rescheduled` ([04](04-scheduling-dispatch-routing.md)) | Re-run effective-date legal checks for install Visits that crossed a listing's effective date (KB-RGN-10) |
 | `proposal.signed` ([03](03-crm-sales-estimating-proposals.md)) | Snapshot the legal check date and pinned release on the sold plant list; watch for enacted listings that affect it |
 | `ai.eval_regression` ([19](19-platform-admin-portal.md)) | Block releases that depend on the affected prompt |
@@ -2207,7 +2220,7 @@ Legend: F full, R read, W write (draft), A approve, X execute, - none.
 | Draft plant and profile changes | F | W (scoped Regions and groups) | W | W | - | - | - |
 | Approve non-critical changes | A | - | A (not own) | A (not own) | - | - | - |
 | Second review of critical traits and legal listings | A | - | - | A (not own) | - | - | - |
-| Publish releases, hotfix releases | X | - | - | X | - | - | X (pipeline operation only) |
+| Publish releases, hotfix releases | X | - | - | X | - | - | Operates the pipeline; no publish decision ([02](02-personas-roles-permissions.md)) |
 | Region definitions and republish | F | - | W | A | - | - | - |
 | Regulatory listings | F | W | W | A | R | - | - |
 | Jurisdiction rule packs (KB-RGN-11) | F | W | W | A | R | - | - |
@@ -2255,7 +2268,7 @@ Notes: "P" defaults are set in the role templates in [02](02-personas-roles-perm
 
 ## 10. AI opportunities in this module
 
-AI makes curation at scale possible, but in the KB it **drafts and assists; humans publish**. All calls go through the AI Gateway with task routing, metering, evals and prompt versioning ([17](17-ai-copilot-automation.md), [19](19-platform-admin-portal.md)).
+AI makes curation at scale possible, but in the KB it **drafts and assists; humans publish**. All calls go through the AI Gateway with task routing, metering, evals and prompt versioning ([17](17-ai-copilot-automation.md), [19](19-platform-admin-portal.md)). Curation-side AI (enrichment, profile and palette drafting, media QA, regulatory and rule-pack drafting) is a platform cost; tenant-facing AI actions use AI credits only where the [22](22-business-model-pricing-gtm.md) rate card lists them (for example Copilot plant answers at 1 credit and plant palette recommendations at 3 credits).
 
 | # | Opportunity | What it does | Guardrails | Priority |
 |---|---|---|---|---|
@@ -2410,7 +2423,7 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 
 ## Sources
 
-**Research note.** The run-wide web-search budget (shared by all agents) was exhausted before this document's research began. Direct fetches to hosts outside this session's network allowlist also failed (for example `planthardiness.ars.usda.gov` and `en.wikipedia.org`). The November 2026 editorial review hit the same limits: searches were refused, and fetches to `mass.gov`, `ars.usda.gov` and `codes.ohio.gov` failed DNS under the allowlist. Those hosts would need to be allowed to verify further. This document therefore cites (1) sources already gathered and cited by sibling Rootline documents and research reports, and (2) canonical public references known to the authors that were **not fetched in this session**. Every fact drawn from group 2 is marked "verify" in the text, and facts the review pass took from sibling documents keep their source's "verify" status. A follow-up research pass should confirm current terms, editions, statutes and counts before engineering or legal decisions rely on them; the highest-priority checks are the Ohio and Pennsylvania Callery pear rules, the Massachusetts Prohibited Plant List entries, the Canadian zone range, WUCOLS and AHS commercial terms, and the nonfunctional-turf and Zone 0 rules in KB-RGN-11.
+**Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build, starting with the Ohio and Pennsylvania Callery pear rules, the Massachusetts Prohibited Plant List entries, the Canadian zone range, WUCOLS and AHS commercial terms, and the nonfunctional-turf and Zone 0 rules in KB-RGN-11. Sources below are grouped as sources cited by sibling Rootline documents and research reports, then canonical public references.
 
 **Competitors and user sentiment (cited by sibling Rootline documents)**
 
@@ -2426,10 +2439,10 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 - Segmentation models: [Segment Anything (arXiv 2304.02643)](https://arxiv.org/abs/2304.02643), [SAM 2 (arXiv 2408.00714)](https://arxiv.org/abs/2408.00714)
 - LMN and Beam AI plan-set takeoffs: [LMN release note (February 2026)](https://support.golmn.com/hc/en-us/articles/46786137574683); Attentive.ai partnership: [Attentive.ai](https://attentive.ai/blog/lmn-and-attentive-ai-announce-strategic-partnership)
 - Capterra landscape software pricing guide ("Landscape Design" feature rating 2.9, as cited in R3): [Capterra](https://www.capterra.com/landscape-software/pricing-guide/)
-- Rootline research report [R3 Design tools, AI and plant data](research/R3-design-ai-plant-data.md): design-tool plant libraries (2.2), plant data APIs (4.5), regulatory lists (4.6), toxicity (4.7), nursery availability and standards (4.8), licensing framework (4.9). R3 was itself written without live web access; its plant-source facts are domain knowledge marked "verify".
+- Rootline research report [R3 Design tools, AI and plant data](research/R3-design-ai-plant-data.md): design-tool plant libraries (2.2), plant data APIs (4.5), regulatory lists (4.6), toxicity (4.7), nursery availability and standards (4.8), licensing framework (4.9). R3's plant-source facts are domain knowledge marked "verify".
 - Regulatory and water/fire context compiled in [23 Innovation and moonshots](23-innovation-moonshots.md) section 2 (Nevada AB 356, California AB 1572, Colorado SB24-005, California PRC 4291 and AB 3074; all marked "verify" there)
 
-**Canonical references (not fetched in this session; verify current content, editions and terms)**
+**Canonical references (verify current content, editions and terms)**
 
 - USDA Plant Hardiness Zone Map: <https://planthardiness.ars.usda.gov/>
 - Natural Resources Canada, Plant Hardiness of Canada: <https://planthardiness.gc.ca/>

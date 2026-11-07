@@ -6,9 +6,7 @@
 
 **Document status:** Proposal v1.0, 2026-11-07. Priority tags: **[MVP]** first sellable release, **[V1]** within about 12 months of MVP, **[V2]** 12-24 months, **[V3]** moonshot, 2+ years. Most bets carry several tags: early "rails" ship at MVP or V1, and the full bet lands later. [24-roadmap-feature-catalog.md](24-roadmap-feature-catalog.md) is the authority if tags conflict.
 
-> **Research basis (as of Nov 2026).** This document reuses sources already gathered and checked in [research/R1](research/R1-field-service-platforms.md), [research/R2](research/R2-landscape-specific-platforms.md), [research/R3](research/R3-design-ai-plant-data.md), [research/R4](research/R4-industry-payments-accounting.md) and the sibling module docs (competitor AI, payments and financing, measurement vendors, smart-irrigation APIs, pesticide and heat rules, MCP). The live web-search budget for this writing session ran out before module-specific searches could be done, and several vendor and regulator hosts could not be reached from the research environment. So facts about robotics vendors, emissions and turf rules, drone policy, climate datasets and fintech regulation come from general industry and regulatory knowledge through mid-2026. Those facts are marked **"verify"** and have to be re-checked before anything is committed in a roadmap, pitch or contract. No statistics are invented. Figures we derived ourselves are labeled **estimate**.
-
-> **Review pass (November 2026).** A senior product review checked this document against the brief, the template and the sibling docs. It made these changes: added Toro (named in the brief but missing from the robotics card) and John Deere (now active in commercial mowing autonomy) to the robotics bet and to the competitor scan; resolved a phase conflict on working capital (M-16) with [07](07-invoicing-billing-contracts.md), [18](18-reporting-analytics.md) and [22](22-business-model-pricing-gtm.md); fixed the Rootline Home identity-linking and wallet phasing (M-13) and reconciled its routing window with [22](22-business-model-pricing-gtm.md) section 5.3.2; aligned heat-safe crews (M-31) with the heat-plan core already specified in [15](15-team-hr-payroll.md); added B2B payment and Ledger mirroring rules to the overflow marketplace (M-15) and royalty-basis rules to franchise mode (M-19); added antitrust specifics to predictive pricing (M-22); added a robot site-readiness survey and OEM telemetry rules (M-05) and first-slice rules for M-32 and M-33; added a headwinds table (drone hardware, algorithmic pricing, synthetic media, privacy) and sourced user complaints from R2-R4; added data entities and events for the new rules; added competitive-edge callouts for M-03, M-16 to M-18, M-19, M-20, M-22 and M-24; added two flows, three wireframes, permission keys for custom roles, pilot KPIs for all 33 bets, five more "Beyond the brief" ideas and a platform-operator scene in the 2031 narrative. The reviewer could not run new web searches either: the shared search budget was exhausted, and docs.stripe.com and ww2.arb.ca.gov were blocked by the network allowlist. Every fact the review added comes from the research reports and sibling docs (cited) or from general knowledge marked "verify".
+> **Research basis (as of Nov 2026).** This document reuses sources already gathered and checked in [research/R1](research/R1-field-service-platforms.md), [research/R2](research/R2-landscape-specific-platforms.md), [research/R3](research/R3-design-ai-plant-data.md), [research/R4](research/R4-industry-payments-accounting.md) and the sibling module docs (competitor AI, payments and financing, measurement vendors, smart-irrigation APIs, pesticide and heat rules, MCP). Facts about robotics vendors, emissions and turf rules, drone policy, climate datasets and fintech regulation come from general industry and regulatory knowledge through mid-2026. Verification note: items marked **"verify"** are from secondary sources or general knowledge and need first-hand confirmation before anything is committed in a build plan, roadmap, pitch or contract. No statistics are invented. Figures we derived ourselves are labeled **estimate**.
 
 ---
 
@@ -53,7 +51,7 @@
 2. **No hardware manufacturing.** Rootline orchestrates robots, sensors, drones and RTK receivers made by others. We may certify or resell partner kits ([V3]), but we will not design mowers or controllers.
 3. **No balance-sheet lending, no insurance carrier risk, no money transmission.** Fintech bets are built as referral marketplaces and data rails for licensed partners. Rootline never holds client funds, which is consistent with [08](08-payments-stripe.md).
 4. **No autonomous control of safety-critical actions without a human in the loop.** Examples are restricted-use pesticide prescriptions, robot operation in public spaces outside geofences, and irrigation changes that exceed water-budget or ordinance limits.
-5. **No cross-tenant data use without explicit opt-in.** Every network bet (benchmarks, marketplace, nursery exchange, Plant Performance Ledger) runs on opted-in, aggregated or explicitly shared data. Thresholds match [22](22-business-model-pricing-gtm.md) section 5.2.
+5. **No cross-tenant data use without explicit opt-in.** Every network bet (benchmarks, marketplace, nursery exchange, Plant Performance Ledger) runs on opted-in, aggregated or explicitly shared data. Thresholds and disclosure controls are owned by [18](18-reporting-analytics.md) section 4.11.4 and packaged in [22](22-business-model-pricing-gtm.md) section 5.2.
 6. **No consumer social network.** The homeowner network is a utility (records, care, requests, payments), not a feed.
 7. **No replacement of central-control irrigation systems** for golf and large campuses. Rootline coordinates with those systems; it does not replace them (consistent with [14](14-service-line-modules.md)).
 
@@ -63,7 +61,7 @@
 2. **Rails before rockets.** Ship the cheap data structures early: stable object IDs, geotags, consent records and device abstraction. These are the hard-to-retrofit parts.
 3. **The Company is the hero.** Every network feature strengthens the Company's relationship with its Clients. Nothing lets Rootline or another tenant poach a Client.
 4. **Neutral and explainable.** Plant, pricing and vendor recommendations are never for sale. Every AI recommendation shows its evidence.
-5. **Earn autonomy.** Automation climbs a trust ladder (suggest, then draft, then act with undo, then act on exceptions) based on measured accuracy per tenant and per task ([17](17-ai-copilot-automation.md)).
+5. **Earn autonomy.** Automation climbs a trust ladder (suggest, then draft and approve, then act and notify with an undo window, then act autonomously within budget, surfacing only exceptions) based on measured accuracy per tenant and per task, capped by each tool's risk tier ([17](17-ai-copilot-automation.md) sections 4.1.2 and 4.3).
 6. **Metered, not surprising.** Heavy compute (video, photogrammetry, 3D) uses AI credits, and the cost is estimated before the user commits ([22](22-business-model-pricing-gtm.md) section 4.4).
 7. **Kill fast.** Each bet has a readiness gate and a kill criterion. A moonshot portfolio without kills is a wish list.
 
@@ -234,7 +232,7 @@ flowchart LR
 **Data-rights rules for every bet (non-negotiable):**
 
 1. **Tenant data belongs to the Company.** Rootline processes it to serve that Company ([17](17-ai-copilot-automation.md) section on data use).
-2. **Cross-tenant use only by aggregation and opt-in.** The `owner` must opt in separately to (a) in-app benchmarks and (b) external aggregated products. Published cells need at least 10 contributing Companies, and no single Company may contribute more than 25% of a cell's weight. Plant-frequency signals need at least 20 Companies ([22](22-business-model-pricing-gtm.md) section 5.2).
+2. **Cross-tenant use only by aggregation and opt-in.** The `owner` must opt in separately to (a) in-app benchmarks and (b) external aggregated products. Published cells need at least 10 contributing Companies, no single Company may contribute more than 25% of a cell's weight (40% for the top two), and Companies under common ownership count as one contributor ([18](18-reporting-analytics.md) sections 4.11.2 and 4.11.4). Plant-frequency signals need at least 20 Companies ([22](22-business-model-pricing-gtm.md) section 5.2). Price and wage aggregates follow the stricter counsel-gated rules in [18](18-reporting-analytics.md) (n ≥ 15, metro or wider, at least 3 months old) and are never inputs to pricing suggestions.
 3. **Client data is never marketed across tenants.** Homeowner network features require the homeowner's own explicit opt-in, recorded with consent text version, timestamp and channel.
 4. **Partner data flows (lenders, insurers, utilities, nurseries) are per-purpose, per-recipient, revocable consents** stored in a single `data_share_grant` ledger (section 7) and visible to the `owner` in Settings > Data sharing.
 
@@ -300,7 +298,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 | M-19 | Franchise and multi-brand mode | I Ecosystem | [V1] | [V2] | Organization layer + Ledger | 7 | 4 | 3 | Per-location enterprise pricing |
 | M-20 | Voice-first crew assistant | H Intelligent ops | [V1] | [V2] | Action Layer + Spanish UX | 6 | 4 | 3 | Included; credits |
 | M-21 | Generative video walkthroughs | B | [V2] | [V3] | Design 3D + Plant growth | 5 | 3 | 3 | Credits |
-| M-22 | Predictive pricing | H | [V1] | [V2] | Production rates + win/loss + Pulse | 6 | 5 | 3 | Pro tier |
+| M-22 | Predictive pricing | H | [V1] | [V2] | Production rates + win/loss | 6 | 5 | 3 | Pro tier |
 | M-23 | Autopilot: the self-driving back office | H | [V1] | [V2]/[V3] | Action Layer + Ledger | 6 | 5 | 4 | Autopilot tier |
 | M-24 | App marketplace and MCP ecosystem | I | [V1] | [V2] | API parity + network | 7 | 4 | 3 | Rev share on paid apps |
 | M-25 | Rootline Academy and certifications | I | [V1] | [V2] | Content + skill graph | 8 | 3 | 2 | Paid certifications; retention |
@@ -1119,7 +1117,7 @@ Common guardrails for M-16 to M-18:
 
 #### M-20 Voice-first crew assistant ("Oye Rootline")
 
-**Headline phase:** [V2] for conversational hands-free use. A [V1] slice provides voice notes with translation and structured extraction ([05](05-field-crew-mobile-app.md), [17](17-ai-copilot-automation.md)).
+**Headline phase:** [V2] for offline, conversational hands-free use. The earlier slices are specified in the module docs and are not repeated here: voice notes with transcription and translation [MVP] ([05](05-field-crew-mobile-app.md) section 4.11), online push-to-talk commands with read-back [MVP] ([17](17-ai-copilot-automation.md) section 4.8), and the [V1] slice of expanded commands (chemical log, how-to) plus structured extraction from voice notes ([17](17-ai-copilot-automation.md) section 4.8, [05](05-field-crew-mobile-app.md) section 4.11.3).
 
 **Problem.** Crews wear gloves, run loud equipment, work in glare and often prefer Spanish. Tapping through forms is slow, so data is skipped: material usage, issues and upsell opportunities. Every missing note is lost revenue or a wrong job cost.
 
@@ -1140,7 +1138,7 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** On-device STT and intent models packaged for React Native; Bluetooth headset button handling; AI Gateway for cloud intents; a landscape glossary for translation (mulch, edging, aireación, poda).
 
-**Phasing.** [V1] voice notes with translation and structured extraction. [V2] push-to-talk assistant with the top 40 intents offline. [V3] proactive spoken prompts (next task, safety reminders) and smart-glasses support.
+**Phasing.** [MVP] voice notes, translation and online push-to-talk commands (module docs above). [V1] expanded commands and structured extraction. [V2] the offline assistant with the top 40 on-device intents and code-switching, matching "V2 on-device" in [17](17-ai-copilot-automation.md) section 4.8. [V3] proactive spoken prompts (next task, safety reminders) and smart-glasses support.
 
 **Headline demo.** *Wearing gloves next to a running blower, a technician presses his headset button: "Oye Rootline, terminé el césped, usamos una bolsa de semilla, y hay un árbol con ramas rotas sobre la entrada." The app marks mowing done, logs 1 bag of seed to the Visit, creates a "broken limb over driveway" issue with a photo prompt, and drafts an English upsell for the account manager: "Remove storm-damaged limb over driveway, est. $275."*
 
@@ -1150,19 +1148,19 @@ Common guardrails for M-16 to M-18:
 
 #### M-22 Predictive pricing
 
-**Headline phase:** [V2] for ML price recommendations. A [V1] slice offers rule-based guidance from the Company's own data.
+**Headline phase:** [V2] for ML price recommendations. A [V1] slice offers rule-based guidance from the Company's own data, specified in [17](17-ai-copilot-automation.md) section 4.7.3 and the route-density pricing of [03](03-crm-sales-estimating-proposals.md).
 
 **Problem.** Most landscape companies price by gut, by competitor rumor or by an old spreadsheet. Underpricing mowing by $5 a cut on 300 properties over 30 weeks is $45,000 a year (illustrative arithmetic). Overpricing install bids loses jobs without anyone knowing why. Annual price increases are applied flat across the board and trigger avoidable churn.
 
-**Concept.** A **Price Advisor** inside the Estimate and Service Agreement renewal flows. It recommends a price band and shows the predicted win probability and margin at each point, based on: the Company's own production rates and costs (true labor burden from the Ledger), property complexity from the twin (obstacles, slope, trim linear feet), route density (M-30), backlog and capacity, the Client's history and price sensitivity, seasonality, and lagged regional indices from Rootline Pulse ([22](22-business-model-pricing-gtm.md) section 5.2.2) where the Company opted in.
+**Concept.** A **Price Advisor** inside the Estimate and Service Agreement renewal flows. It recommends a price band and shows the predicted win probability and margin at each point, based on: the Company's own production rates and costs (true labor burden from the Ledger), property complexity from the twin (obstacles, slope, trim linear feet), route density (M-30), backlog and capacity, the Client's history and price sensitivity, and seasonality. Rootline Pulse price indices are not inputs (rule 3).
 
 **Behaviors and rules.**
 
 1. **Cost floor first.** The recommended band never falls below cost + the Company's minimum margin (configurable, default 15% gross margin on maintenance and 25% on install; editable).
 2. **Win model.** A per-tenant model (gradient-boosted or similar) trained on that Company's quotes with outcomes. When it has fewer than 150 decided quotes in a service category, it falls back to a pooled model trained on opted-in tenants' *anonymized features and outcomes*, never their prices directly, and labeled "learning from similar companies".
-3. **Antitrust guardrails.** Recommendations use the Company's own data plus *historic, aggregated, lagged* indices that meet the thresholds in section 4.1. Rootline never shows a Company competitors' current or planned prices, never recommends coordinated increases ("everyone is raising 8%") and never uses one tenant's pricing to set another tenant's prices. Counsel reviews the model design before launch. Algorithmic pricing is under active legal scrutiny: the DOJ's 2024 suit against RealPage targeted software that pooled competitors' nonpublic pricing data to recommend prices, and some states have since legislated on shared pricing algorithms (verify current status; see the headwinds table in section 2.3). Concretely:
-   - The pooled fallback model (rule 2) is trained on **features and won/lost outcomes**, never on price levels as targets, and it outputs a win-probability *curve* that is applied to the Company's own cost floor. It cannot output "the market price".
-   - No feature encodes any individual tenant's prices. The only external price signals are Pulse indices that are aggregated, threshold-gated (section 4.1) and at least 60 days old ([22](22-business-model-pricing-gtm.md) section 5.2.2).
+3. **Antitrust guardrails.** Recommendations use the Company's own data only. Pulse indices and any other cross-tenant price aggregates are never model inputs, matching [18](18-reporting-analytics.md) sections 4.11.7 and 11.2 (no pricing suggestion uses other Companies' non-public prices, or data derived from them). Where counsel has enabled in-app price benchmarks ([18](18-reporting-analytics.md) section 4.11.8), the estimator can view them in a separate panel; they never move the recommended band. Rootline never shows a Company competitors' current or planned prices, never recommends coordinated increases ("everyone is raising 8%") and never uses one tenant's pricing to set another tenant's prices. Counsel reviews the model design before launch. Algorithmic pricing is under active legal scrutiny: the DOJ's 2024 suit against RealPage targeted software that pooled competitors' nonpublic pricing data to recommend prices, and some states have since legislated on shared pricing algorithms (verify current status; see the headwinds table in section 2.3). Concretely:
+   - The pooled fallback model (rule 2) is trained on **features and won/lost outcomes**, never on price levels as targets or features, and it outputs a win-probability *curve* that is applied to the Company's own cost floor. It cannot output "the market price".
+   - No feature encodes another tenant's prices, individually or in aggregate. There are no external price signals in the model.
    - The renewal optimizer never uses other tenants' renewal increases.
    - Every model version gets a written antitrust review record, stored with `price_recommendation.model_version`.
 4. **Renewal optimizer.** At Service Agreement renewal, Rootline suggests per-Client increases (e.g., 3-9%) based on margin erosion, churn risk, tenure and service quality signals (complaints, skipped visits). It projects revenue retained versus churn risk and lets the owner set a portfolio-level target. Increases go out through the renewal flow ([03](03-crm-sales-estimating-proposals.md)).
@@ -1171,7 +1169,7 @@ Common guardrails for M-16 to M-18:
 
 **Readiness.** TRL 6 technically. Data volume per tenant and the antitrust design are the constraints.
 
-**Builds on.** Production rates (R-09), Ledger labor burden and job costs ([09](09-accounting-ledger-integrations.md)), twin complexity attributes (M-01), route density (M-30), quote outcomes ([03](03-crm-sales-estimating-proposals.md)), Pulse indices ([22](22-business-model-pricing-gtm.md)). **Feeds back.** Better margins, and win/loss labels that improve the models.
+**Builds on.** Production rates (R-09), Ledger labor burden and job costs ([09](09-accounting-ledger-integrations.md)), twin complexity attributes (M-01), route density (M-30), quote outcomes ([03](03-crm-sales-estimating-proposals.md)). **Feeds back.** Better margins, and win/loss labels that improve the models.
 
 **Dependencies.** Win/loss reason capture in the CRM ([03](03-crm-sales-estimating-proposals.md)); a feature store on the data platform ([18](18-reporting-analytics.md)); antitrust counsel sign-off; model monitoring.
 
@@ -1189,31 +1187,33 @@ Common guardrails for M-16 to M-18:
 
 **Problem.** A 25-person landscape company often carries 2-3 office staff (estimate) doing repetitive work: entering timesheets, sending invoices, chasing payments, matching bank lines, entering vendor bills, confirming tomorrow's visits, answering "when are you coming?" and rescheduling around rain. [17](17-ai-copilot-automation.md) introduces agents that draft this work for approval. Autopilot is the next step: **policies under which the system acts by itself, with an undo window and an audit trail, and humans handle only exceptions**.
 
-**Concept.** Each back-office domain gets an **Autopilot level**, borrowing the language of driving autonomy:
+**Concept.** Each back-office domain gets an **Autopilot level**. Autopilot reuses the L0-L4 autonomy scale and the T0-T4 risk tiers of [17](17-ai-copilot-automation.md) sections 4.1.2 and 4.3 rather than inventing new ones. What it adds is a **domain-level policy** that spans several agents and automations, exception routing, and stricter domain-level promotion gates:
 
-| Level | Name | Behavior | Example |
-|---|---|---|---|
-| L0 | Manual | No AI action | - |
-| L1 | Suggest | AI highlights items | "12 invoices ready to send" |
-| L2 | Draft | AI prepares; a human approves each item | Draft collection emails in the Approval Inbox |
-| L3 | Act with undo | AI acts within policy; daily digest; undo window | Send standard invoices as soon as Visits are verified; undo within 2 hours |
-| L4 | Exceptions only | AI runs the domain; humans see only exceptions and a weekly audit sample | Bank rec for recurring transactions; vendor bills matched to POs |
+| Level ([17](17-ai-copilot-automation.md) name) | Autopilot behavior | Example |
+|---|---|---|
+| L0 Off | No AI action | - |
+| L1 Suggest | AI highlights items | "12 invoices ready to send" |
+| L2 Draft and approve | AI prepares; a human approves each item | Draft collection emails in the Approval Inbox |
+| L3 Act and notify | AI acts within policy; activity feed and daily digest; outbound messages wait in the undo window of [17](17-ai-copilot-automation.md) section 4.1.2 (default 5 minutes, up to 60) | Send standard invoices as soon as Visits are verified |
+| L4 Autonomous within budget | AI runs the domain within hard limits; humans see only exceptions and a weekly audit sample | Bank-line matching and categorization for recurring transactions |
+
+**Tier caps still apply.** A domain level never exceeds the per-tool caps in [17](17-ai-copilot-automation.md) section 4.3. T3 actions (sending client messages, posting journal entries, creating bills, applying payments) top out at L3 with templates and caps; T4 actions (charging a saved card, refunds, closing an accounting period, payroll) stay with humans. Any L4 on a T3 action requires raising that cap in [17](17-ai-copilot-automation.md), which is a [V3] platform decision behind the eval gates of [17](17-ai-copilot-automation.md) section 4.11.4.
 
 **Domains and default policies (first slice):**
 
 | Domain | L3 policy (defaults, editable) | Exceptions routed to humans |
 |---|---|---|
 | Invoicing | Send per-visit and monthly invoices when every Visit on the invoice is verified and the total is within ±10% of the agreement price | New Client, disputed Visit, amounts outside band |
-| Collections | Reminder ladder at 3, 10 and 21 days overdue; card-on-file retry per the Client's autopay consent | Commercial Clients over $5,000, any Client tagged VIP, any reply that is not a payment confirmation |
+| Collections | Reminder ladder at 3, 10 and 21 days overdue (the R6 ladder in [17](17-ai-copilot-automation.md)); card-on-file retries stay on the deterministic autopay retry schedule in [08](08-payments-stripe.md), because charging a saved card is T4 for AI | Commercial Clients over $5,000, any Client tagged VIP, any reply that is not a payment confirmation |
 | Bank reconciliation | Auto-match when amount, date (±3 days) and counterparty match a known rule with ≥ 99% historical precision for this tenant | New counterparties, splits, transfers between own accounts on first occurrence |
-| AP | Enter and approve vendor bills that match a received PO within 2% and $500 | No PO, price variance, new vendor, duplicates |
+| AP | Enter vendor bills that match a received PO within 2% and $500 and post them within the T3 caps (L3; the match tolerances are owned by [13](13-operations-inventory-equipment.md) section 4.11) | No PO, price variance, new vendor, duplicates |
 | Scheduling | Weather reshuffle within the same week when rain probability is ≥ 70% and accumulation is ≥ 0.25 in. Client notifications follow consent preferences | Commercial Clients with fixed service windows, install Jobs |
 | Client communications | Answer status questions ("when is my next visit?") from schedule data | Complaints, cancellations, price questions, anything with negative sentiment |
 | Month-end close | Accruals for unbilled Visits, recurring journal entries, depreciation, WIP for open Projects | Any entry above a materiality threshold (default $2,500) |
 
 **Behaviors and rules.**
 
-1. **Trust ladder.** A domain can be promoted to L3 only after 200 L2 actions in that domain with ≥ 98% approved without edits over the last 60 days. L4 needs 1,000 L3 actions with an undo rate ≤ 0.5% and owner approval. Demotion is automatic if the rolling undo or complaint rate exceeds 2x the promotion threshold.
+1. **Trust ladder.** Per-agent graduation follows [17](17-ai-copilot-automation.md) section 4.4.4 (V1: at least 50 proposals in 30 days, 95% or more approved without edits, 98% for T3, recommended and never applied automatically). Promoting a whole **domain** is stricter: L3 only after 200 L2 actions in that domain with ≥ 98% approved without edits over the last 60 days, and L4 (where tier caps allow) only after 1,000 L3 actions with an undo rate ≤ 0.5% and owner approval. Demotion is automatic if the rolling undo or complaint rate exceeds 2x the promotion threshold, in addition to the demotion triggers in [17](17-ai-copilot-automation.md) section 4.4.4.
 2. **Budgets and blast radius.** Each policy has hard caps: maximum dollar value per action, maximum actions per hour, and the client segments it may touch. A global **pause** button stops all autopilot actions instantly, and so does any `owner` command.
 3. **Daily digest.** "Autopilot did 214 things today" grouped by domain, with sampled items for spot checks and one-tap undo inside each window.
 4. **Accountability.** Every action records the policy version, model version, inputs and confidence. The Ledger keeps the AI-authored flag on journal entries. Auditors can filter by author type.
@@ -1225,7 +1225,7 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** L2 agents proven in production ([17](17-ai-copilot-automation.md)); a versioned policy engine; undo support (compensating actions) in every tool; per-domain accuracy metrics; contract terms for autonomous actions (open question 13).
 
-**Phasing.** [V1] L1/L2 across domains (from [17](17-ai-copilot-automation.md)). [V2] L3 for invoicing, collections, bank rec and weather rescheduling. [V3] L4 for bank rec and AP, the Autopilot month-end close and owner sabbatical mode (section 13).
+**Phasing.** [V1] per-agent L1-L3 from [17](17-ai-copilot-automation.md) (agents at L2, recommended graduation and pre-approved templates). [V2] domain-level Autopilot policies at L3 for invoicing, collections, bank rec and weather rescheduling. [V3] L4 for bank rec (T2 matching and categorization) and, if the T3 cap is raised, for PO-matched AP bills; the Autopilot month-end close and owner sabbatical mode (section 13).
 
 **Headline demo.** *Monday 7 a.m. The owner's briefing reads: "Over the weekend Autopilot sent 186 invoices ($41,220), collected $18,900 from autopay, matched 312 bank lines, moved 22 Visits off Tuesday's rain to Wednesday and notified those Clients, and answered 47 'when are you coming' texts. 6 items need you." The office manager spends her morning on the six exceptions and on calling two new commercial prospects.*
 
@@ -1239,7 +1239,7 @@ Common guardrails for M-16 to M-18:
 
 #### M-24 App marketplace and MCP ecosystem
 
-**Headline phase:** [V2] for the marketplace. The public API and MCP server ship at [V1] ([17](17-ai-copilot-automation.md) section 4.10).
+**Headline phase:** [V2] for the marketplace. The rails ship earlier and are specified elsewhere: public API core objects and webhooks at [MVP], the full API surface, OAuth apps and the MCP server at [V1] ([17](17-ai-copilot-automation.md) section 4.10, [20](20-architecture-security.md) section 4.7).
 
 **Problem.** No vertical platform can build everything a landscape company needs: specialty estimating for pools, HOA-specific board portals, regional payroll quirks, OEM integrations, niche marketing. Closed platforms make customers wait. Open APIs without distribution do not get used.
 
@@ -1248,7 +1248,7 @@ Common guardrails for M-16 to M-18:
 **Behaviors and rules.**
 
 1. **App review.** Security review (OAuth scopes are least-privilege, data retention is declared, a penetration test summary is required for apps with write scopes), UX review for embedded surfaces, and a privacy policy. SLA: a decision within 10 business days.
-2. **Scopes.** They map to the RBAC permission taxonomy in [02](02-personas-roles-permissions.md) (e.g., `visits.read`, `invoices.write`). An app can never exceed the installing user's permissions, and cost and margin fields stay masked unless the installer has them.
+2. **Scopes.** OAuth scopes use the colon notation of [20](20-architecture-security.md) section 4.7.3 (e.g., `visits:read`, `invoices:write`), and a token's effective rights are the intersection of its scopes and the installing user's permission keys in [02](02-personas-roles-permissions.md). An app can never exceed the installing user's permissions, and cost and margin fields stay masked unless the installer has them.
 3. **Embedded extensions.** Slots: Property sidebar card, Estimate line-item action, Dispatch board panel, Crew app task action, Portal widget. They are sandboxed iframes or React Native mini-apps with a message bridge, and they cannot read the DOM.
 4. **External MCP servers.** The tenant admin enables them per server. Each tool is tagged with a risk tier at review time. Tool outputs are treated as untrusted content (prompt-injection defenses from [17](17-ai-copilot-automation.md)). Calls are logged with server, tool and arguments.
 5. **Monetization.** Free listings for free apps. Paid apps billed through Rootline's subscription billing with a proposed 80/20 split (developer/Rootline), or developers bill directly and pay a flat listing fee (proposed). The Company can buy without a separate vendor contract.
@@ -1261,7 +1261,7 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Developer portal and sandbox tenants; an app review team (security and UX); a UI extension framework for web and mobile; partner terms.
 
-**Phasing.** [V1] public API, webhooks and MCP server. [V2] marketplace with OAuth apps, external MCP servers and paid-app billing. [V3] embedded UI extensions in the crew app and portal, and a developer fund for landscape-specific apps.
+**Phasing.** [MVP] public API core objects and webhooks. [V1] full API surface, OAuth apps and the MCP server. [V2] marketplace listings for OAuth apps, external MCP servers, paid-app billing and the agent and recipe marketplace ([17](17-ai-copilot-automation.md) section 4.10.4). [V3] embedded UI extensions in the crew app and portal, and a developer fund for landscape-specific apps.
 
 **Headline demo.** *An owner types into Claude on her laptop: "Using Rootline, list every commercial property where we installed boxwood in the last 3 years, then use the distributor connector to price replacing 8 percent of them as a boxwood-blight allowance." (The distributor connector is hypothetical.) Two MCP servers, one permission model, and a draft Proposal batch waiting in her Approval Inbox.*
 
@@ -1287,7 +1287,7 @@ Common guardrails for M-16 to M-18:
    - **Franchisees on QuickBooks or Xero.** If a franchisee keeps its books outside the Rootline Ledger, the basis comes from Rootline invoices and payments (operational revenue), and the statement says so ("basis: Rootline invoices, not general ledger").
 3. **Data-sharing agreements.** Per category, as in [02](02-personas-roles-permissions.md): royalty-relevant revenue by default. Client-level access only under a signed and recorded agreement, and franchisees can see exactly what is shared.
 4. **Territories.** Polygons per franchisee. Leads from the franchisor's national website and Rootline Home are routed by territory. Out-of-territory work raises an alert.
-5. **Rollups and benchmarks.** System-wide KPIs (revenue per crew hour, close rate, retention) with a quartile view, so the franchisor's field coaches see who needs help.
+5. **Rollups and benchmarks.** System-wide KPIs from the KPI Dictionary in [18](18-reporting-analytics.md) (for example `rpmh`, `revenue_per_crew_day`, `close_rate_count` and `agreement_renewal_rate_value`) with a quartile view inside the Organization, so the franchisor's field coaches see who needs help.
 6. **Multi-brand.** One owner, two brands, two portals and price books, shared crews (with brand-appropriate uniforms flagged on Visits), intercompany billing and consolidated financial statements with eliminations ([09](09-accounting-ledger-integrations.md) multi-entity).
 7. **FDD support ([V3]).** With franchisee consent, aggregated financial performance data for the franchisor's Franchise Disclosure Document (Item 19). Counsel prepares it. Rootline supplies verified data, not representations.
 
@@ -1605,18 +1605,20 @@ stateDiagram-v2
 
 ### 5.8 Autopilot trust ladder per domain (M-23)
 
+Level names follow [17](17-ai-copilot-automation.md) section 4.1.2; the promotion gates are the domain-level gates of M-23, and per-tool tier caps still apply.
+
 ```mermaid
 stateDiagram-v2
     [*] --> L1_suggest
-    L1_suggest --> L2_draft: owner enables drafting
-    L2_draft --> L3_act_with_undo: 200 actions and 98 pct approved unedited
-    L3_act_with_undo --> L4_exceptions_only: 1000 actions and low undo rate and owner approval
-    L4_exceptions_only --> L3_act_with_undo: undo or complaint rate breach
-    L3_act_with_undo --> L2_draft: undo or complaint rate breach
-    L2_draft --> L1_suggest: owner downgrade
-    L3_act_with_undo --> paused: global pause
-    L4_exceptions_only --> paused: global pause
-    paused --> L2_draft: owner resumes at draft level
+    L1_suggest --> L2_draft_and_approve: owner enables drafting
+    L2_draft_and_approve --> L3_act_and_notify: 200 actions and 98 pct approved unedited
+    L3_act_and_notify --> L4_autonomous_within_budget: 1000 actions and low undo rate and owner approval
+    L4_autonomous_within_budget --> L3_act_and_notify: undo or complaint rate breach
+    L3_act_and_notify --> L2_draft_and_approve: undo or complaint rate breach
+    L2_draft_and_approve --> L1_suggest: owner downgrade
+    L3_act_and_notify --> paused: global pause
+    L4_autonomous_within_budget --> paused: global pause
+    paused --> L2_draft_and_approve: owner resumes at draft level
 ```
 
 ### 5.9 Nursery availability to plant reservation (M-14)
@@ -1801,11 +1803,11 @@ Validation rules: promotion requires the stage's exit evidence attached to the f
 | AUTOPILOT                                              [ PAUSE ALL AUTOPILOT ]            |
 +------------------------------------------------------------------------------------------+
 | Domain          Level             Last 30 days          Undo rate   Exceptions  Policy    |
-| Invoicing       L3 Act w/ undo    1,904 actions          0.3%        11 open     [Edit]    |
-| Collections     L3 Act w/ undo      612 reminders        0.0%         4 open     [Edit]    |
-| Bank rec        L4 Exceptions     2,288 matches          0.1%         7 open     [Edit]    |
+| Invoicing       L3 Act+notify     1,904 actions          0.3%        11 open     [Edit]    |
+| Collections     L3 Act+notify       612 reminders        0.0%         4 open     [Edit]    |
+| Bank rec        L4 Autonomous     2,288 matches          0.1%         7 open     [Edit]    |
 | AP bills        L2 Draft            143 drafts (97% ok)    -          2 open     [Promote?]|
-| Scheduling      L3 Act w/ undo       88 moves            1.1%         0 open     [Edit]    |
+| Scheduling      L3 Act+notify        88 moves            1.1%         0 open     [Edit]    |
 | Client replies  L2 Draft            390 drafts (94% ok)    -          9 open     [Edit]    |
 +------------------------------------------------------------------------------------------+
 | TODAY'S DIGEST  214 actions   6 need you                                                  |
@@ -2319,7 +2321,7 @@ erDiagram
 | Insurance | Licensed agency partners and carriers with quoting APIs (verify) | M-18 | Referral model first | [V2] |
 | Rebates and utilities | Utility rebate portals (form submission), utility APIs where offered, AMI meter data (rare) | M-10, M-07 | Browser-automation agent with human final review | [V1]/[V2] |
 | Nurseries | Nursery Partner API ([22](22-business-model-pricing-gtm.md)); emailed availability sheets | M-14 | Inbound email parsing; EDI where growers support it | [V1]/[V2] |
-| Ecosystem | Public REST/GraphQL API, webhooks, MCP server ([MCP specification](https://modelcontextprotocol.io/specification)) | M-24 | OAuth apps, scopes per [02](02-personas-roles-permissions.md) | [V1]/[V2] |
+| Ecosystem | Public REST API (OpenAPI 3.1; GraphQL is not planned, per [17](17-ai-copilot-automation.md) section 4.10.1), webhooks, MCP server ([MCP specification](https://modelcontextprotocol.io/specification)) | M-24 | OAuth apps with colon-notation scopes ([20](20-architecture-security.md) section 4.7.3) intersected with [02](02-personas-roles-permissions.md) permissions | [MVP]/[V1]/[V2] |
 
 ### 8.2 Domain events emitted
 
@@ -2779,7 +2781,7 @@ Nine robotic mowers finished the soccer complex, two office parks and an HOA's c
 
 ## Sources
 
-Sources reused from Rootline's research reports and sibling module docs (retrieved and cited there; dates as noted in those documents). Items marked "verify" in the body rely on general industry and regulatory knowledge through mid-2026 and must be re-checked; the live research budget for this session was exhausted (see the research basis note at the top).
+Sources reused from Rootline's research reports and sibling module docs (retrieved and cited there; dates as noted in those documents). Verification note: items marked "verify" in the body are from secondary sources or general industry and regulatory knowledge through mid-2026 and need first-hand confirmation before build.
 
 **Competitors and market**
 - [R1 - Field service platforms](research/R1-field-service-platforms.md), [R2 - Landscape-specific platforms](research/R2-landscape-specific-platforms.md), [R3 - Design, AI and plant data](research/R3-design-ai-plant-data.md) and [R4 - Industry, payments and accounting](research/R4-industry-payments-accounting.md) (Rootline research reports)
@@ -2823,7 +2825,7 @@ Sources reused from Rootline's research reports and sibling module docs (retriev
 - [Regrid parcel API](https://regrid.com/api)
 
 **Regulation, compliance and public data**
-- [CARB: Small Off-Road Engines (SORE) program](https://ww2.arb.ca.gov/our-work/programs/small-off-road-engines-sore) (verify current dates and figures; host was unreachable from the research environment during this session)
+- [CARB: Small Off-Road Engines (SORE) program](https://ww2.arb.ca.gov/our-work/programs/small-off-road-engines-sore) (verify current dates and figures)
 - [USDA Plant Hardiness Zone Map](https://planthardiness.ars.usda.gov/)
 - [US Department of Labor: H-2B program](https://www.dol.gov/agencies/whd/immigration/h2b)
 - [USCIS: H-2B cap count](https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-2b-non-agricultural-workers/cap-count-for-h-2b-nonimmigrants)
@@ -2832,6 +2834,4 @@ Sources reused from Rootline's research reports and sibling module docs (retriev
 - [Beyond Pesticides: state notification laws factsheet](https://beyondpesticides.org/assets/media/documents/lawn/factsheets/STATE%20NOTFICATION%20LAWS%20-%20LAWN.pdf)
 - [FCC Declaratory Ruling on AI-generated voices under the TCPA (FCC 24-17)](https://docs.fcc.gov/public/attachments/FCC-24-17A1.pdf)
 
-**To verify before use (named in the body from general knowledge; no live retrieval this session):** Husqvarna CEORA, EPOS and the Automower Connect API; Kress RTKn; Scythe M.52; Greenzie; Electric Sheep; Segway Navimow; Mammotion; Toro autonomy offerings; TinyMobileRobots and Turf Tank; California AB 1346, AB 1572, AB 3074 and PRC 4291; Nevada AB 356; Colorado SB24-005; California SB 253 and SB 261; EU CSRD; SoCal Water$mart and SNWA Water Smart Landscapes rebate terms; Philadelphia and Washington, DC stormwater credit programs; Safer from Wildfires and IBHS Wildfire Prepared Home; EPA WaterSense controller savings figures; EPA CO2 per gallon factors and eGRID; USDA SSURGO / Soil Data Access; NASA NEX-GDDP-CMIP6 and LOCA2; WUCOLS; i-Tree; Pl@ntNet and Kindwise APIs; EPA PPLS and PMRA label search; FAA Part 107 and Remote ID; Transport Canada drone rules; US policy on foreign-made drones; ARCore Geospatial API and ARKit location anchors; Google Veo, OpenAI Sora and Runway video models; C2PA; IEC/UL 60335-2-107; Illinois BIPA; FTC Green Guides; ECOA/Regulation B; CFPB Section 1071; state commercial financing disclosure laws; state insurance producer and anti-rebating rules; DOJ/FTC antitrust guidance on labor markets; NCCI class codes; Stripe Capital eligibility for connected accounts; NALP, ISA, Irrigation Association and QWEL certifications; RHS hardiness ratings; HomeBinder and Centriq; Toro Horizon360 and Toro autonomy products; John Deere's autonomous commercial mower (CES 2025); the FY2025 NDAA drone provision and any FCC Covered List action on foreign-made drones; DOJ v. RealPage and state laws on common pricing algorithms (including California's 2025 Cartwright Act amendment); Stripe PaymentMethod cloning for full-dashboard connected accounts and Stripe Link; leaf-blower rules in Washington, DC, Montgomery County (MD) and Evanston (IL); Washington, Oregon, Maryland and Nevada heat rules and federal OSHA heat rulemaking (cited in [15](15-team-hr-payroll.md)); EDDMapS reporting terms; National Wildlife Federation Certified Wildlife Habitat criteria; meadow establishment mowing guidance; pay-when-paid enforceability by state.
-
-**Hosts that could not be reached during the November 2026 review pass:** docs.stripe.com and ww2.arb.ca.gov (blocked by the network allowlist); the shared web-search budget was also exhausted. Allow these hosts or restore search budget to re-verify the items above.
+**To verify before use (named in the body from general knowledge):** Husqvarna CEORA, EPOS and the Automower Connect API; Kress RTKn; Scythe M.52; Greenzie; Electric Sheep; Segway Navimow; Mammotion; Toro autonomy offerings; TinyMobileRobots and Turf Tank; California AB 1346, AB 1572, AB 3074 and PRC 4291; Nevada AB 356; Colorado SB24-005; California SB 253 and SB 261; EU CSRD; SoCal Water$mart and SNWA Water Smart Landscapes rebate terms; Philadelphia and Washington, DC stormwater credit programs; Safer from Wildfires and IBHS Wildfire Prepared Home; EPA WaterSense controller savings figures; EPA CO2 per gallon factors and eGRID; USDA SSURGO / Soil Data Access; NASA NEX-GDDP-CMIP6 and LOCA2; WUCOLS; i-Tree; Pl@ntNet and Kindwise APIs; EPA PPLS and PMRA label search; FAA Part 107 and Remote ID; Transport Canada drone rules; US policy on foreign-made drones; ARCore Geospatial API and ARKit location anchors; Google Veo, OpenAI Sora and Runway video models; C2PA; IEC/UL 60335-2-107; Illinois BIPA; FTC Green Guides; ECOA/Regulation B; CFPB Section 1071; state commercial financing disclosure laws; state insurance producer and anti-rebating rules; DOJ/FTC antitrust guidance on labor markets; NCCI class codes; Stripe Capital eligibility for connected accounts; NALP, ISA, Irrigation Association and QWEL certifications; RHS hardiness ratings; HomeBinder and Centriq; Toro Horizon360 and Toro autonomy products; John Deere's autonomous commercial mower (CES 2025); the FY2025 NDAA drone provision and any FCC Covered List action on foreign-made drones; DOJ v. RealPage and state laws on common pricing algorithms (including California's 2025 Cartwright Act amendment); Stripe PaymentMethod cloning for full-dashboard connected accounts and Stripe Link; leaf-blower rules in Washington, DC, Montgomery County (MD) and Evanston (IL); Washington, Oregon, Maryland and Nevada heat rules and federal OSHA heat rulemaking (cited in [15](15-team-hr-payroll.md)); EDDMapS reporting terms; National Wildlife Federation Certified Wildlife Habitat criteria; meadow establishment mowing guidance; pay-when-paid enforceability by state.

@@ -2,6 +2,18 @@
 
 > The Operator Console is the cockpit the founder (role `platform_owner`) and a small platform staff use to run Rootline as a business: every Company (tenant), every subscription dollar, every feature flag, every plant in the Knowledge Base, every AI prompt, every SMS brand registration, every support session and every compliance obligation is visible and controllable from one place. It matters because Rootline's economics depend on **operator leverage**: a five-person platform team must be able to support thousands of landscape Companies through a brutal April spring rush, migrate them off Jobber, LMN and Service Autopilot during the winter, keep AI costs below what the AI credits earn, and pass a SOC 2 Type II audit, all without ever holding client funds or casually browsing tenant data. The design principle is **"glass box, not god mode"**: operators see health, metadata and aggregates by default; touching a tenant's actual data requires the tenant's consent (or a documented break-glass), a reason code, and a tamper-evident audit trail the tenant can read.
 
+**At a glance**
+
+- **What it is:** the internal Operator Console at `console.rootline.app` (plus a separate Partner Portal at V1) where `platform_owner`, `platform_support`, `platform_curator`, `platform_finance` and `platform_engineer` run tenants, SaaS billing, entitlements and flags, support, Plant KB curation, AI ops, comms, payments oversight, risk, compliance and system health.
+- **Decision - glass box, not god mode:** staff see metadata, health and aggregates by default. Opening tenant records needs a scoped, time-boxed Support Access Grant approved by the tenant (`read_only`, `read_write`, `billing_setup`, `ledger`, `migration`) or a two-person break-glass, and every session shows up in the tenant's own Support Access Log ([section 4.6](#46-support-console)).
+- **Decision - one tenant lifecycle:** `provisioning`, `trial`, `active`, `past_due` (days 0-13), `restricted` (14-29), `suspended` (30-59), `churned` (day 60), plus `winter_mode`, `pending_cancellation`, `archive_plan`, `pending_deletion` and `deleted` (PA-012). Client payments into the Company's own Stripe keep working in every state through `churned`.
+- **Decision - Rootline bills on its own Stripe account:** Stripe Billing on a platform account that is fully separate from Companies' connected accounts. Plan codes `starter`, `grow`, `pro`, `enterprise`, prices, active-field-seat rules and AI credit allotments (300 / 2,000 / 6,000 per month) come from [22](22-business-model-pricing-gtm.md). No console code path can move, refund or reveal a Company's client funds ([08](08-payments-stripe.md)).
+- **Decision - every write is audited and reason-coded:** a hash-chained audit log kept 7 years, two-person approval for destructive or high-blast-radius actions, and an Admin API behind every screen.
+- **MVP:** console shell, tenant directory and Tenant 360, lifecycle engine, rules-based health score, Migration Center (CSV, Jobber, QuickBooks Online) and white-glove queue, catalog, seats, credits and dunning, entitlements and flags, consented support access, Plant KB curator queue and Region builder, AI routing, prompts and cost, the 10DLC Registration Center, connected-account health, DSARs, legal holds and SOC 2 evidence capture.
+- **V1 and later:** Operator Morning Brief and Operator Copilot, seasonal health model, percentage rollouts with guardrails, partners and the Partner Portal, Canadian residency and cell tools, runbook actions and opt-in session replay. V2 adds reseller billing and dedicated-cell tenant moves.
+- **Differentiators:** migration as a product (live in days, not ~90-day implementations), season-aware health scores and dunning (Winter Mode offers, a snow carve-out), a tenant-visible support access log, and per-tenant AI margin tracking with kill switches.
+- **Cross-links:** RBAC and break-glass rules in [02](02-personas-roles-permissions.md) section 5.13; access enforcement per lifecycle state in [20](20-architecture-security.md) section 4.4.7; prices, dunning timings and catalog codes in [22](22-business-model-pricing-gtm.md); console IA and the Tenant 360 wireframe in [21](21-ux-design-system-sitemaps.md) sections 5.5 and 18.13.
+
 **Related docs:** [Personas and RBAC](02-personas-roles-permissions.md) - [Payments (bring-your-own Stripe)](08-payments-stripe.md) - [Ledger and integrations](09-accounting-ledger-integrations.md) - [Plant Knowledge Base](12-plant-knowledge-base.md) - [Marketing and comms](16-marketing-growth-communications.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Architecture and security](20-architecture-security.md) - [UX and sitemaps](21-ux-design-system-sitemaps.md) - [Business model and pricing](22-business-model-pricing-gtm.md) - [Roadmap](24-roadmap-feature-catalog.md)
 
 ---
@@ -256,7 +268,7 @@ The lifecycle below is the **platform-level tenant state**. Timings and entitlem
 | `pending_cancellation` | `cancel_pending` | Active |
 | `churned` | `canceled` | Offboarding |
 | `archive_plan` | `archive_plan` | Offboarding (records only) |
-| `pending_deletion`, `deleted` | `archived` (subscription closed) | Purged |
+| `pending_deletion`, `deleted` | `archived` (subscription closed) | Offboarding (`pending_deletion`), Purged (`deleted`) |
 
 Rules:
 - Every transition writes a `tenant_lifecycle_event` with actor, reason and source (system/staff/tenant).
@@ -399,7 +411,7 @@ Rootline bills Companies through **its own** Stripe account (Stripe Billing), co
 - **AI credits** are Rootline's universal AI currency ([17](17-ai-copilot-automation.md)). The console's **Credit Rate Card** holds the published price list from [22](22-business-model-pricing-gtm.md) 4.4.1 (proposed values: Copilot answer 1 credit, estimate or proposal draft 8, photo mockup set of 4 variants 40, mockup refinement 10, dimension-aware AI layout with 3 to-scale options 60, plant palette recommendation 3, document page 2), versioned and effective-dated. Rules enforced by the console: a published action price is held for at least 12 months; an increase needs 60 days' notice and two-person approval; the AI Gateway's `max_raw_cost` circuit breaker per action is configured alongside the price so margin alerts (PA-093) and pricing stay consistent.
 - **Credit ledger rules (from 22, enforced here):** included monthly credits are consumed first and expire at period end with no rollover; then purchased packs and promotional grants in FIFO order by expiry (packs expire 12 months after purchase; grants carry their own expiry). Starting an action places a **hold** for the quoted credits; success settles it, and a provider failure, safety refusal or timeout releases it in full. "Unusable" mockup or layout feedback within 10 minutes refunds 50% (max 10 per user per month). Trials get 500 credits with no top-up.
 - **No surprise AI overage.** At zero balance the tenant hits a soft stop with a one-click pack purchase (1,000 / 5,000 / 20,000 credits); the owner may enable **auto top-up** with a monthly ceiling (default at most 2 top-ups per month). Packs are one-time invoice items on Rootline's Stripe account. Enterprise contracts may use pooled credits.
-- **Metered overage for non-AI meters:** SMS ($0.02 per segment above allowance, hard cap at the owner's ceiling, default 3x included), voice minutes, campaign email, storage and parcel lookups aggregate hourly to Stripe meter events. Promotional AI grants are kept in Rootline's credit ledger; mirroring them as Stripe billing credits is an open question (section 14) because that Stripe feature was in public preview when researched (verify).
+- **Metered overage for non-AI meters:** SMS ($0.02 per segment above allowance, hard cap at the owner's ceiling, default 3x included), voice minutes, campaign email, storage and parcel lookups aggregate hourly to Stripe meter events. Promotional AI grants are kept in Rootline's credit ledger; mirroring them as Stripe billing credits is an open question (section 14) because that Stripe feature was in public preview as of Nov 2026 (verify).
 - **Reconciliation:** a daily job compares the usage and credit ledgers with Stripe's draft invoice line items. Any mismatch opens a `platform_finance` alert (22 rule 9); a mismatch that changes a billed amount **holds invoice finalization** (using Stripe's draft-invoice window after `invoice.created`) until finance resolves it.
 - Carrier fees for 10DLC brand and campaign registration are passed through as one-time items or absorbed by plan, per [22](22-business-model-pricing-gtm.md) (amounts as of Nov 2026, verify with Twilio).
 - Budget alerts: tenant-configurable per-user and per-role caps; alerts at 50/80/100% of included credits; operator alerts on anomalies (sections 4.9, 4.12).
@@ -407,7 +419,7 @@ Rootline bills Companies through **its own** Stripe account (Stripe Billing), co
 **PA-034 Coupons, promotions and credits [MVP]**
 - Coupons (percent or amount; once, repeating N months, forever or "while subscribed"), promotion codes (partner-specific, campaign-specific, expiry, max redemptions, first-time only), account credits (goodwill, SLA credits, Spring-Ready Guarantee credits) applied to the next invoice.
 - Programs from [22](22-business-model-pricing-gtm.md) 4.8 configured as catalog promotions: Founding Customer (25% off base plan while subscribed, first 100 paying Companies in beachhead Regions, automatic), association member and Accountant Partner client (10% off base in year 1, via partner code), switching credit (up to 3 months free with proof of a competitor contract).
-- **Discount authority ladder:** `platform_support` may apply the switching credit (up to 3 months) and goodwill account credits up to $200 per tenant per quarter; sales-negotiated discounts up to 10% (rep) or 20% (sales lead) are recorded in the deal-desk record and applied by `platform_finance`; anything above 20%, or any discount without an expiry or "while subscribed" flag, requires `platform_owner`. All audited.
+- **Discount authority ladder:** `platform_support` may apply the switching credit (up to 3 months), goodwill account credits up to $250 or one month's base fee per grant (at most one grant per tenant per quarter) and usage or field-seat overage waivers up to $100 per period; `platform_finance` may grant credits up to $5,000 per grant ([22](22-business-model-pricing-gtm.md) section 12.2); sales-negotiated discounts up to 10% (rep) or 20% (sales lead) are recorded in the deal-desk record and applied by `platform_finance`; anything above 20%, or any discount without an expiry or "while subscribed" flag, requires `platform_owner`. All audited.
 - **Hard rules:** discounts never apply to usage meters (credits, SMS, minutes) except in Enterprise contracts; every discount is visible on the Company's invoice; no "secret" price without a recorded reason. "Coupon dependence" feeds the health score.
 
 **PA-035 Trials [MVP]**
@@ -442,7 +454,7 @@ Entitlements answer **"has this tenant paid for it?"**; flags answer **"is this 
 - Entitlement types: `boolean` (feature on/off, e.g., `design_studio.3d`), `limit` (numeric cap, e.g., `seats.office = 5`, `properties.max = 2000`), `quota` (metered per period, e.g., `ai_credits.monthly = 2000` on Grow), `tier` (enumerated level, e.g., `support.level = priority`).
 - Resolution order: global default -> plan -> add-ons (additive) -> organization override -> tenant override (with expiry) -> kill switch (can only remove).
 - Downgrade behavior defined per entitlement: `hide`, `read_only` (default for data-bearing features, e.g., designs stay viewable but not editable), or `grace_days` (e.g., 30 days to export).
-- Every entitlement change emits `entitlement.changed` with tenant, key, old and new value; the tenant app subscribes to update UI without reload.
+- Every entitlement change emits `entitlements.changed` (event name per [22](22-business-model-pricing-gtm.md) section 11.3) with tenant, key, old and new value; the tenant app subscribes to update UI without reload.
 
 **PA-041 Feature flag service [MVP]**
 - Flag types: `release` (temporary, gate new code), `experiment` (A/B with variants and metrics), `ops` (operational toggles like "use fallback geocoder"), `kill_switch` (permanent safety valve), `permission` (beta access).
@@ -840,6 +852,7 @@ Definitions here are platform (operator) metrics; tenant-facing analytics live i
 **PA-152 Integration error console [MVP]**
 - Per integration (Stripe, QBO, QBD Web Connector, Xero, Plaid, Twilio, Postmark/SendGrid, Google/Mapbox routing, Regrid, USGS elevation, aerial imagery provider, AI providers, helpdesk): error rate, top error codes, affected tenants, quota usage vs limit, credential expiry (OAuth refresh failures).
 - Example: "QBO sync: 214 tenants, 37 with errors in last 24 h, top error 'Duplicate Name Exists' (customer name collision) - 22 tenants - [Open runbook]".
+- **Integrity center [MVP]:** the money-and-field-data view of System Health (ledger invariant checks and subledger drift cases, Stripe webhook dead-letter and unknown-account quarantine, crew sync rejections, accounting sync quarantines), metadata only; its checks and wireframe are specified in [20](20-architecture-security.md) section 6.5, and opening a tenant's records still requires a Support Access Grant.
 
 **PA-153 Status page [MVP]**
 - Public status page (hosted on independent infrastructure, e.g., a managed status page service) with components: Company web app, Crew app sync, Customer Portal, Payments (Rootline side), Notifications (SMS/email), Design Studio and AI, Integrations (QuickBooks, Xero), API.
@@ -905,7 +918,7 @@ Definitions here are platform (operator) metrics; tenant-facing analytics live i
 - Resources: tenants, lifecycle transitions, subscriptions (read, schedule changes), entitlements and overrides, flags, beta programs, support access grants (request only; never approve on the tenant's behalf), announcements, templates, prompts, model routes, kill switches, incidents, DSARs, legal holds, audit log (read), metrics.
 - Write calls require `reason_code` and `ticket_ref` fields; idempotency keys required for POST; rate limits per token; all calls audited identically to console actions.
 - **Config-as-code [V2]:** plans, entitlements, flags, prompts and templates exportable/importable as versioned YAML in a Git repo, applied via CI with plan/apply diffs (like infrastructure-as-code), giving reviewable history for platform configuration.
-- **Outbound platform webhooks** to internal tools (Slack channels, CRM, data warehouse): `tenant.lifecycle_changed`, `trial.started`, `subscription.changed`, `incident.declared`, `risk.enforcement_applied`, etc.
+- **Outbound platform webhooks** to internal tools (Slack channels, CRM, data warehouse): `tenant.lifecycle_changed`, `subscription.trial_started`, `subscription.plan_changed`, `subscription.status_changed`, `incident.declared`, `risk.enforcement_applied`, etc.
 
 ### 4.19 Operator Copilot
 
@@ -1243,7 +1256,7 @@ flowchart TD
 | 27 | Risk and Trust review queue and enforcement | support, owner | [MVP] |
 | 28 | Compliance: DSAR queue, retention policies, legal holds, subprocessors, SOC 2 evidence | owner, finance | [MVP] |
 | 29 | Platform analytics: churn, cohorts, activation funnel, feature adoption, NPS, unit economics | owner, finance | [MVP] |
-| 30 | System health: services, queues, integrations, scheduled jobs | engineer | [MVP] |
+| 30 | System health: services, queues, integrations, scheduled jobs, Integrity center ([20](20-architecture-security.md) 6.5) | engineer | [MVP] |
 | 31 | Incidents and status page management | engineer, support, owner | [MVP] |
 | 32 | Partners: directory, commissions, payouts | finance, owner | [V1] |
 | 33 | Staff, roles, access reviews, audit log | owner | [MVP] |
@@ -2062,8 +2075,8 @@ All events flow through the transactional outbox to the event bus ([20](20-archi
 | `tenant.provisioned` | tenant_id, plan, region, segment | Template seeding, analytics, CRM |
 | `tenant.lifecycle_changed` | tenant_id, from, to, reason_code, source | Entitlements, notifications, analytics, partner commissions |
 | `tenant.health_scored` | tenant_id, score, band, top_factors | CSM tasks, Morning Brief |
-| `subscription.changed` | tenant_id, items, interval, effective_at | Entitlements, revenue reporting |
-| `entitlement.changed` | tenant_id, key, old, new | Company app (live UI update), crew app sync |
+| `subscription.plan_changed` / `subscription.status_changed` (owned by [22](22-business-model-pricing-gtm.md) 11.3; the console emits them for staff-initiated changes) | tenant_id, items, interval, effective_at | Entitlements, revenue reporting |
+| `entitlements.changed` | tenant_id, key, old, new | Company app (live UI update), crew app sync |
 | `flag.changed` / `flag.rolled_back` | flag key, rule diff, actor | SDK streams, incident timeline |
 | `ai.kill_switch_changed` | scope, state, actor | AI Gateway, Copilot UI |
 | `ai.route_changed` / `prompt.deployed` | task, version | AI Gateway, eval tracking |
@@ -2125,7 +2138,7 @@ Legend: **F** full, **R** read, **Q** request (needs approval), **A** approve (s
 | Migration: map, validate, dry run | F | F | - | - | F |
 | Migration: commit / rollback | F | F (tenant-approved) | - | - | F |
 | Catalog and price changes | A | - | - | Q | - |
-| Coupons and credits | F | L (switching credit up to 3 mo; goodwill up to $200 per quarter) | - | L (catalog promotions; deal-desk discounts up to 20%; credits up to $1,000) | - |
+| Coupons and credits | F | L (switching credit up to 3 mo; goodwill up to $250 or 1 month base per grant, once per quarter) | - | L (catalog promotions; deal-desk discounts up to 20%; credits up to $5,000 per grant) | - |
 | Refund Rootline subscription charges | F | - | - | F (over $1,000 needs A) | - |
 | Revenue and unit-economics dashboards | F | - | - | F | R (cost only) |
 | Entitlement overrides | F | L (limits within plan +25%) | - | F | F |
@@ -2336,11 +2349,11 @@ Targets below are Rootline's internal goals, not industry benchmarks.
 
 1. **Jobber and other incumbents' API terms:** Jobber runs a public GraphQL developer platform and App Marketplace (background knowledge, see [R1](research/R1-field-service-platforms.md); verify). Can a Jobber customer authorize Rootline's migration app through it, or do the terms restrict competitor use? Until confirmed, importers rely on the customer's own export files.
 2. **Card-on-file portability:** what is the current Stripe process, eligibility and turnaround for copying saved payment methods from a vendor-controlled account (for example, an incumbent's embedded payments product) to a Company's own Stripe account, and will incumbents cooperate? (PA-023 case 2.)
-3. **Lifecycle timing across docs:** this doc and [22](22-business-model-pricing-gtm.md) use past_due 0-13 days, restricted 14-29, suspended 30-59, churned at 60, and a 60-day read-only `trial_expired`. [20](20-architecture-security.md) section 4.4.7 still shows suspension at day 21, offboarding after 60 days suspended and a 30-day expired trial. `platform_owner` should confirm 22's ladder as canonical and have 20 updated.
+3. **Lifecycle timing across docs (resolved; kept to preserve numbering):** this doc, [22](22-business-model-pricing-gtm.md) section 8.2 and [20](20-architecture-security.md) section 4.4.7 now share one ladder: `past_due` days 0-13, `restricted` 14-29, `suspended` 30-59, `churned` at day 60, and a 60-day read-only `trial_expired`. Future changes go through the versioned billing policy (ADR-019 in 20) so the three docs cannot drift again.
 4. **Breach notification commitment in the DPA:** commit to notifying affected Companies within 48 hours of confirming a breach (proposed in PA-136), within 72 hours, or "without undue delay" only? Enterprise and HOA-management buyers will ask for a number.
 5. **Reseller billing timing:** do any launch partners (franchisors, associations) actually need reseller billing before V2, or is a partner-paid coupon on direct billing enough?
 6. **Engineer break-glass SQL:** keep the audited bastion path from [02](02-personas-roles-permissions.md) indefinitely, or retire it once runbook coverage (PA-058) handles a target share (for example 95%) of repair tickets?
-7. **Billing credits on Stripe:** adopt Stripe billing credits (public preview at time of research) for promotional grants, or keep all credits in Rootline's ledger and bill only packs and non-AI overage?
+7. **Billing credits on Stripe:** adopt Stripe billing credits (in public preview as of Nov 2026; verify) for promotional grants, or keep all credits in Rootline's ledger and bill only packs and non-AI overage?
 8. **Canadian residency scope:** which tenants actually need Canadian data residency (Quebec public-sector contracts, large commercial clients), and which subprocessors (AI, maps) can honor it?
 9. **Helpdesk vendor:** Intercom vs Plain vs Zendesk for bilingual chat plus phone at MVP scale.
 10. **Session replay vendor and hosting:** self-hosted vs. vendor cloud given PII masking and residency.

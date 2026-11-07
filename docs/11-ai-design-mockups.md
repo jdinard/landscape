@@ -2,6 +2,19 @@
 
 > Rootline's AI design system turns a homeowner's phone photos and a handful of real measurements into (1) photoreal "after" mockups, (2) a to-scale landscape plan with plants drawn only from the operator-curated regional [Plant Knowledge Base](12-plant-knowledge-base.md), and (3) a priced estimate, all kept in sync. Consumer AI yard apps produce pretty pictures that are not to scale, show plants that cannot be bought or will not survive, and connect to nothing. Pro design tools such as PRO Landscape+ have added AI image tools, but they sit outside the system that prices, sells, schedules and invoices the work. Rootline's bet is that **the plan is the source of truth and the mockup is a view of the plan**. Every rendered shrub maps to a plan item, every plan item maps to a KB plant and a Price Book line, and every edit (whether typed into a chat, dragged on the photo or drawn in the [Design Studio](10-design-studio.md)) flows through to quantities and price. This module covers capture, scene understanding, six generation modes, site rule packs (water, wildfire, sight lines), the plant-fidelity system, bidirectional sync, the homeowner lead-magnet, the pro designer workflow, paid design packages collected through the Company's own Stripe account, and the AI architecture behind them: gateway, queue, GPUs, caching, model routing, cost, latency, evaluation, safety, IP, data rights and provenance.
 
+**At a glance**
+
+- **What it is:** the AI layer that turns phone photos plus a few real measurements into photoreal "after" mockups, to-scale AI layouts and a priced Estimate, for pros in the field and for homeowners through each Company's branded "Dream Yard Visualizer".
+- **Decision 1, the plan is the source of truth and the Mockup is a view of it:** every rendered plant maps to a Design object, a KB Plant and a Price Book line; edits from chat, the photo or the [Design Studio](10-design-studio.md) all go through the Design command bus, and a new Design Version (`design.version_published`) marks affected Mockups stale (section 4.5, AIM-SYNC-01 to AIM-SYNC-05).
+- **Decision 2, plant fidelity:** only plants from the Property's Region palette can be rendered (Plant Region Profile rating 3 or higher with conditions met, legal, not `do_not_use`, `render_ready`), backed by per-plant reference packs, labels linked to plan items, a fidelity score and an "Artist rendering" badge with C2PA provenance ([4.4](#44-the-plant-fidelity-system)).
+- **Decision 3, one AI Gateway:** Claude-family models plan and reason (layouts, HOA parsing, the design assistant); image models are chosen per task (hosted editors such as Gemini image and FLUX Kontext, self-hosted segmentation, depth and diffusion) behind versioned routes the operator tunes without a deploy ([8.2](#82-ai-gateway-and-model-routing), [17](17-ai-copilot-automation.md), [20](20-architecture-security.md)).
+- **Decision 4, credits from one rate card:** every action is quoted before it runs in the platform AI credit owned by [22](22-business-model-pricing-gtm.md) (photo mockup set 40, refinement 10, high-resolution render 20, plan-to-photo render 20, AI layout 60, seasonal or growth set 30, website visualizer preview set 24), and holds are released on failure ([4.7](#47-ai-credits-for-this-module-mvp)).
+- **Decision 5, money stays with the Company:** paid design packages are collected through the Company's own Stripe account (Connect direct charges) and post to the built-in Ledger; AI credits are billed by Rootline's separate platform Stripe Billing account ([08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md)).
+- **MVP:** guided capture and dimensions, scene understanding, Mode A photo restyle in the field, the homeowner website widget with a verification gate, region-locked palettes, labels and disclosure, credit metering.
+- **Later:** plan-to-photo, AI layout generation with site rule packs, the conversational design assistant, seasonal and growth sets, edit-on-photo sync, paid design packages and commercial board packs [V1]; physically based night lighting and curated jurisdiction packs [V2]; Gaussian-splat 3D walkthroughs [V3].
+- **Differentiators:** plants that exist, survive in the Region and carry the Company's price; output that becomes a to-scale Design and an Estimate, not a dead-end picture; a lead magnet that delivers leads with photos and dimensions into the same CRM.
+- **Key links:** [10](10-design-studio.md) Design Studio; [12](12-plant-knowledge-base.md) Plant KB (Regions, palettes, render packs, rule packs); [22](22-business-model-pricing-gtm.md) credit rate card; [03](03-crm-sales-estimating-proposals.md) Estimates and Proposals; [06](06-customer-portal.md) portal; [17](17-ai-copilot-automation.md) Copilot and AI Gateway; [19](19-platform-admin-portal.md) operator AI ops.
+
 **Related docs:** [Design Studio](10-design-studio.md) (to-scale plans, takeoffs) - [Plant Knowledge Base](12-plant-knowledge-base.md) (regions, palettes, reference images) - [CRM, Estimating and Proposals](03-crm-sales-estimating-proposals.md) - [Customer Portal](06-customer-portal.md) - [Invoicing](07-invoicing-billing-contracts.md) and [Payments](08-payments-stripe.md) (design fees, deposits) - [Ledger](09-accounting-ledger-integrations.md) - [Marketing and Growth](16-marketing-growth-communications.md) (website widget, leads) - [AI Copilot and Automation](17-ai-copilot-automation.md) (platform AI strategy, AI Gateway) - [Platform Admin](19-platform-admin-portal.md) (AI ops, credits) - [Architecture and Security](20-architecture-security.md) - [Business Model and Pricing](22-business-model-pricing-gtm.md) (AI credit pricing) - [Innovation Moonshots](23-innovation-moonshots.md) - raw research in [R3 - Design, AI and plant data](research/R3-design-ai-plant-data.md).
 
 ---
@@ -65,7 +78,7 @@
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> Research method: 12 targeted web searches in November 2026 across field-service platforms, pro landscape design software, consumer AI yard apps, image-model pricing and trade press. Several primary pages could not be fetched from the research environment, so some claims rely on search-result summaries; they are marked "verify" where it matters. Deeper raw notes: [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [R3](research/R3-design-ai-plant-data.md). A senior review pass (November 2026) could not run new web searches: the search quota was used up and several vendor hosts could not be reached. Facts added in review come from sibling docs and research reports that carry their own sources ([06](06-customer-portal.md), [10](10-design-studio.md), [22](22-business-model-pricing-gtm.md), [R2](research/R2-landscape-specific-platforms.md)) or from statute and code citations. Anything not re-checked in that pass is marked "verify".
+> Deeper raw notes: [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [R3](research/R3-design-ai-plant-data.md). Verification note: items marked "verify" are from secondary sources, sibling docs or general knowledge and need first-hand confirmation before build.
 
 ### 2.1 Four categories of tools, none of which closes the loop
 
@@ -75,7 +88,7 @@
 - **LMN** announced a strategic partnership with Attentive.ai for AI-powered mapping and measurement from aerial imagery ([Attentive.ai](https://attentive.ai/blog/lmn-and-attentive-ai-announce-strategic-partnership); [Landscape Management](https://www.landscapemanagement.net/lmn-and-attentive-partner-to-integrate-products/); [Landscape Ontario/Horttrades](https://horttrades.com/lmn-and-attentiveai-announce-strategic-partnership)). LMN and SingleOps merged in November 2024 and now operate as **Granum**. In March 2026 Granum relaunched LMN Pay "powered by Stripe", with Granum as the payments platform ([Green Industry Pros](https://www.greenindustrypros.com/business-management/software/product/22963124/granum-granum-launches-lmn-pay-experience); timeline in [R2](research/R2-landscape-specific-platforms.md)). We found no design visualization in the merged suite. A competitor (QuoteIQ) goes as far as claiming LMN has "zero AI features"; that is a rival's characterization, not a neutral finding ([QuoteIQ help center](https://intercom.help/quoteiq/en/articles/14462688-quoteiq-vs-lmn)).
 - **SynkedUP** focuses on estimating with production rates, overhead recovery and job costing ([SynkedUP estimating](https://synkedup.com/features/estimating/); [SynkedUP features](https://synkedup.com/features/)); listed pricing starts around $399 per user per month (as of November 2026, verify) ([GetApp](https://www.getapp.com/industries-software/a/synkedup/)). No design visualization found.
 - On Capterra's landscape software pricing guide, **"Landscape Design" is among the lowest-rated features at 2.9** ([Capterra](https://www.capterra.com/landscape-software/pricing-guide/); as of November 2026, verify the scale and what the rating measures). If the rating means what it appears to, design is the weak spot of this whole category.
-- Aspire, Service Autopilot, ServiceTitan, Housecall Pro, Real Green, Arborgold, Yardbook and Copilot CRM: no native AI photo mockups or dimension-aware AI layouts surfaced in our searches (as of November 2026, verify per vendor in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md)). Their design story is "integrate with a CAD tool" or "attach a PDF."
+- Aspire, Service Autopilot, ServiceTitan, Housecall Pro, Real Green, Arborgold, Yardbook and Copilot CRM: no native AI photo mockups or dimension-aware AI layouts appear in their public product materials (as of November 2026, verify per vendor in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md)). Their design story is "integrate with a CAD tool" or "attach a PDF."
 
 **B. Pro landscape design software** (PRO Landscape+, Realtime Landscaping, Structure Studios VizTerra, Vectorworks Landmark, SketchUp, DynaSCAPE, iScape). The most aggressive AI mover is **PRO Landscape+** (Drafix), which in 2025 added an **AI Outdoor Living Designer** (start from a customer photo, define the project area, generate outdoor-living concepts), an **AI Paver Tool**, **AI Eraser** (remove existing landscaping), **AI Cutout Tool** and the **Ask Wayne** help assistant ([Green Industry Pros](https://www.greenindustrypros.com/business-management/software/product/22961404/pro-landscape-pro-landscape-launches-aibased-designer-suite); [Lawn and Landscape](https://www.lawnandlandscape.com/pro-landscape-plus-releases-ai-outdoor-living-designer); [Lawn and Landscape, Aug 2025 update](https://www.lawnandlandscape.com/news/pro-landscape-updates-design-software-with-artificial-intelligence); [Turf Magazine](https://turfmagazine.com/ai-meets-design-prolandscape-unveils-next-gen-tools); [Turf, Dec 2025](https://turfmag.mydigitalpublication.com/december-2025/page-13)). A 2026 roundup describes its AI stylist as applying styles to masked regions of the photo ([Fast.io roundup](https://www.fast.io/resources/best-ai-for-landscape-design-2026.md)). These tools are excellent at pictures and CAD but are standalone: pricing, CRM, scheduling and accounting live elsewhere.
 
@@ -150,8 +163,8 @@ Role keys follow [Personas, Roles and Permissions](02-personas-roles-permissions
 | Business Owner (`owner`) | Win bigger jobs; control AI spend; protect the brand. | Win-rate lift visible in [Reporting](18-reporting-analytics.md); monthly credit caps; branded disclaimers. |
 | Sales Rep / Estimator (`estimator`) | Close on the first visit; turn a walk-around into an estimate fast. | Capture photos and 4 measurements, show a restyle in the driveway, convert to a priced draft the same day. |
 | Landscape Designer (`designer`) | Produce 2-3 credible concepts per property per day; avoid redrawing; present beautifully. | AI layout gives a 70%-done plan; plan-to-photo renders match the CAD; chat edits do the tedious parts. |
-| Office / Admin Manager (`office_manager`) | Triage widget leads; schedule site assessments; manage credits. | Leads arrive with photos, dimensions, style and budget; one click books the assessment. |
-| Operations / Account Manager (`ops_manager`) | Propose enhancements to maintenance clients (seasonal color, mulch refresh, bed renovation). | Quick restyles from the last site photo, sent through the portal as an upsell. |
+| Office / Admin Manager (`office_manager`) | Triage widget leads; schedule site assessments; watch credit usage. | Leads arrive with photos, dimensions, style and budget; one click books the assessment. |
+| Operations / Account Manager (`ops_manager`) | Propose enhancements to maintenance clients (seasonal color, mulch refresh, bed renovation). | Flagged properties from the weekly AI digest turn into restyles from the last site photo, sent through the portal as an upsell (generating needs `mockup.generate`, which [02](02-personas-roles-permissions.md) grants to estimators and designers by default and owners can grant to an `ops_manager`). |
 | Crew Lead (`crew_lead`) | Understand design intent on install day. | Mockup plus labeled plan on the crew app; "plant 3 of 7, Little Lime hydrangea, 4 ft o.c." |
 | Field Technician (`technician`) | Capture good photos when asked. | Guided capture with big buttons, Spanish UI, offline queueing ([Field app](05-field-crew-mobile-app.md)). |
 | Bookkeeper (`bookkeeper`) | Understand AI credit charges. | Credit usage report by user and Job; AI spend posts to the right expense account in the [Ledger](09-accounting-ledger-integrations.md). |
@@ -461,7 +474,7 @@ The planner **can only reference candidate IDs**. Any unknown ID fails schema va
 
 #### AIM-GEN-C2 Site rule packs: water, wildfire, sight lines and utilities [V1 framework and default rules; V2 curated jurisdiction packs]
 
-Layouts that look great but break a local rule cost a Company a redo, a fine or a failed HOA review. Rule packs are versioned, operator-curated sets of hard and soft constraints. They attach automatically by property location (Region, state or province, county, water utility, fire-hazard map) and by Client type (residential, commercial, HOA common area). The layout solver (Stage 1), the design assistant's `check_constraints` tool and the Design Studio validator ([10](10-design-studio.md)) all evaluate the same packs, so the AI cannot propose what the Studio would flag.
+Layouts that look great but break a local rule cost a Company a redo, a fine or a failed HOA review. Rule packs are versioned, operator-curated sets of hard and soft constraints, managed with the Plant KB: jurisdiction packs (water budgets, nonfunctional turf, defensible space, HOA lists) are specified in [12](12-plant-knowledge-base.md) KB-RGN-11 (`jurisdiction_rule_pack`), this section shows how the AI applies them and adds the site-geometry defaults such as hydrant, sight-triangle and utility clearances (`site_rule_pack`), and both kinds are published through the KB release pipeline and evaluated through one rule interface. They attach automatically by property location (Region, state or province, county, water utility, fire-hazard map) and by Client type (residential, commercial, HOA common area). The layout solver (Stage 1), the design assistant's `check_constraints` tool and the Design Studio validator ([10](10-design-studio.md)) all evaluate the same packs, so the AI cannot propose what the Studio would flag.
 
 | Rule (default pack) | Applies when | Constraint | Type | Priority |
 |---|---|---|---|---|
@@ -474,7 +487,7 @@ Layouts that look great but break a local rule cost a Company a redo, a fine or 
 | Municipal watering restrictions | Property's water utility has day or season rules | Prefer low-water plants; drip in new beds; the proposal shows the watering schedule the design needs | Soft | [V2] |
 | HOA architectural rules | Client is in an HOA with parsed rules (Stage 1) | Approved-list, height and front-yard-turf-percentage rules from the parsed document | Hard | [V1] |
 
-**Rules of rule packs.** Every pack has a source citation, an effective date, a jurisdiction polygon and a version. A rule change triggers `rule_pack.updated`, which re-validates open Design drafts (not sold versions). Tenants can add their own rules (for example "never plant Bradford pear") but cannot loosen operator-marked statutory rules; they can only add an override with a reason, which is logged and printed on the internal plan, never hidden. When rules conflict (a sight triangle against an HOA hedge requirement), the stricter height wins and the "why" panel explains it.
+**Rules of rule packs.** Every pack has a source citation, an effective date, a jurisdiction polygon and a version. A rule change is published through the KB release pipeline as `kb.rule_pack_published` ([12](12-plant-knowledge-base.md)), which re-validates open Design drafts (not sold versions). Tenants can add their own rules (for example "never plant Bradford pear") but cannot loosen operator-marked statutory rules; they can only add an override with a reason, which is logged and printed on the internal plan, never hidden. When rules conflict (a sight triangle against an HOA hedge requirement), the stricter height wins and the "why" panel explains it.
 
 > **Competitive edge:** consumer AI apps happily put a lawn on a Las Vegas HOA common area or a mulched juniper hedge against a house in a wildfire zone. Rootline's layouts arrive compliance-checked, which matters most to commercial and HOA clients (`client_commercial`) who face the fines.
 
@@ -505,7 +518,7 @@ A chat (and push-to-talk voice, en/es) panel in the Design Studio and mockup vie
 1. `select_objects` resolves "the bed" to the only bed in view (or asks "front foundation bed or the mailbox bed?").
 2. `resize_bed` offsets the lawn-side edge by 2 ft; the lawn polygon shrinks by the same area; the lawn mowing area on any Service Agreement is flagged for update.
 3. The assistant knows the KB marks boxwood (Buxus) as rarely browsed by deer in most regional profiles, so it checks before acting: "Boxwoods are already rated deer resistant in your Region. Do you want to replace them anyway (for example to avoid boxwood blight), or did you mean the arborvitae, which deer browse heavily?" This is the moment the assistant earns trust.
-4. After the user answers, `swap_plants` proposes 3 KB candidates in the same role (evergreen, 3-4 ft, formal habit, sun to part shade, region rating 4/5 or higher, deer browse rating "rarely" or "seldom"), each with price and availability. The user picks one, or says "you choose."
+4. After the user answers, `swap_plants` proposes 3 KB candidates in the same role (evergreen, 3-4 ft, formal habit, sun to part shade, region rating 4/5 or higher, `deer_resistance` A or B, "rarely damaged" or "seldom severely damaged" on the [12](12-plant-knowledge-base.md) scale), each with price and availability. The user picks one, or says "you choose."
 5. Solver re-places plants in the deeper bed (adds 2 more structure shrubs and one 5-plant perennial drift to keep coverage), the takeoff updates (mulch +0.6 cu yd, edging unchanged, plants +7), and `estimate_delta` reports "+$684 (Signature option)."
 6. `rerender` re-renders only the bed region of the mockup (about 10-15 s). The chat shows the before/after thumbnail inline.
 
@@ -516,7 +529,7 @@ A chat (and push-to-talk voice, en/es) panel in the Design Studio and mockup vie
 - It refuses to invent plants not in the KB; it may say "not in our Region list; ask your curator to add it" and offers to file a KB request ([12](12-plant-knowledge-base.md)).
 - Ambiguity threshold: if reference resolution confidence is under 0.8 or more than one object matches, it asks a clarifying question with thumbnails.
 - Voice mode in the field works offline for capture (audio stored) and executes on reconnect.
-- **Credits are quoted before work starts.** A turn that will trigger a re-render says so ("This will re-render the front bed: 10 credits. Go?") unless the user has turned on "auto re-render under 20 credits" for the session.
+- **Credits are quoted before work starts.** A turn that will trigger a re-render says so ("This will re-render the front bed: 8 credits. Go?") unless the user has turned on "auto re-render under 20 credits" for the session.
 
 **Intent catalog (what the assistant must handle at V1 GA; the eval set holds 50+ phrasings per intent in English and Spanish):**
 
@@ -566,8 +579,8 @@ flowchart LR
 
 #### AIM-FID-01 Region-locked palettes [MVP]
 
-- Every property resolves to a Region (platform-defined from USDA hardiness zone, EPA Level III/IV ecoregion, state/province, county/metro and climate data, curated by the operator; see [12](12-plant-knowledge-base.md)).
-- Eligible plants for AI use: KB Plants with a Plant Region Profile for that Region with rating 3/5 or higher (tenant can raise the threshold), not flagged invasive or regulated in that state/province, and with status `render_ready` (AIM-FID-02) for photoreal modes.
+- Every property resolves to a Region through its Site Context: the leaf operator-curated Region containing the Property, built from USDA or Canadian hardiness zone, EPA Level III/IV ecoregion, state/province, county/metro and climate layers, with a fallback to the macro-region ([12](12-plant-knowledge-base.md) KB-RGN-02 and KB-RGN-04).
+- Eligible plants for AI use: KB Plants with an effective Plant Region Profile for that Region rated 3/5 or higher (tenant can raise the threshold; rating-3 plants only where their profile conditions are met by the bed context), not flagged `do_not_use`, not invasive or regulated in that state/province, and with status `render_ready` (AIM-FID-02) for photoreal modes. This is the same rule as [12](12-plant-knowledge-base.md) KB-PRP-01.
 - Tenants can narrow further with their own **Company palette** ("plants we stock and warranty"), which is the default for pros. The homeowner widget uses the Company palette when one exists, else the operator's curated Plant Palette for the Region and style.
 - Free-text plant mentions are resolved by fuzzy and semantic search over the palette (pgvector embeddings of names, common names and traits). If the requested plant is not eligible, the user sees why ("Bird of paradise is not hardy in your Region (USDA 6b)") and the nearest eligible look-alikes.
 
@@ -653,7 +666,7 @@ flowchart LR
     TO --> ES["Estimate lines"]
     PL --> ES
     ES --> PR["Proposal option"]
-    DV -->|"design.version_created"| ST["Mark mockups stale"]
+    DV -->|"design.version_published"| ST["Mark mockups stale"]
     ST --> RR["Region re-render on request"]
     RR --> M
 ```
@@ -674,18 +687,18 @@ In restyle mockups (no plan), photo edits are pure image edits; a banner offers 
 
 #### AIM-SYNC-03 Staleness and targeted re-render [V1]
 
-- On `design.version_created`, mockups whose visible subset hash changed become **stale**: a yellow banner "Plan changed since this image was made" with a "Re-render changed areas (10 credits)" button. Stale mockups cannot be newly attached to a proposal.
+- On `design.version_published`, mockups whose visible subset hash changed become **stale**: a yellow banner "Plan changed since this image was made" with a "Re-render changed areas (8 credits)" button. Stale mockups cannot be newly attached to a proposal.
 - Region-level re-render: only instances whose plant, age, position or material changed are re-rendered, then harmonized at the boundary. Typical edit cost is 20-40% of a full render (estimate).
 
 #### AIM-SYNC-04 Estimate sync and proposal locking [V1]
 
 - Takeoff deltas flow to the Estimate as line changes (quantities, new SKUs) using the tenant's Price Book and production rates ([03](03-crm-sales-estimating-proposals.md)). Manual price overrides on lines are preserved; a conflict marker appears if the underlying quantity changed.
-- Design Versions are already immutable snapshots ([10](10-design-studio.md), states `draft` -> `in_review` -> `approved` -> `shared` -> `client_approved` -> `sold`). When a Proposal is **sent**, the proposal pins the exact Design Version, the mockup set and the estimate snapshot together. Edits after sending create a new Design Version. The proposal then shows "Revised design available" and must be re-sent; the client never sees a picture that does not match the plan they are signing. When the Proposal is **signed**, the version becomes `sold` and any later change routes through a **Change Order** ([03](03-crm-sales-estimating-proposals.md)), with a new mockup rendered only for the changed regions.
+- Design Versions are already immutable snapshots ([10](10-design-studio.md), states `draft` -> `in_review` -> `approved` -> `shared` -> `client_approved` -> `locked` -> `sold`). When a Proposal is **sent**, the proposal pins the exact Design Version, the mockup set and the estimate snapshot together. Edits after sending create a new Design Version. The proposal then shows "Revised design available" and must be re-sent; the client never sees a picture that does not match the plan they are signing. When the Proposal is **signed** (`proposal.signed`), the version becomes `locked`; when it is **executed** (`proposal.executed`, signature plus any required deposit, [03](03-crm-sales-estimating-proposals.md)), it becomes `sold`, and any later change routes through a **Change Order** ([03](03-crm-sales-estimating-proposals.md)), with a new mockup rendered only for the changed regions.
 - The signed proposal stores mockup hashes and C2PA manifests, so a later dispute can prove exactly what the client saw.
 
 #### AIM-SYNC-05 Downstream handoff [V1]
 
-On Job creation, the crew app receives the plan, the mockup with labels, and a per-bed planting sheet ([05](05-field-crew-mobile-app.md)). Purchasing receives the plant schedule as a draft PO ([13](13-operations-inventory-equipment.md)). Plant warranties ([14](14-service-line-modules.md)) reference the installed plant list, not the image.
+On Job creation, the crew app receives the plan, the mockup with labels, and a per-bed planting sheet ([05](05-field-crew-mobile-app.md)). Purchasing receives the plant schedule as a draft PO ([13](13-operations-inventory-equipment.md)). Plant warranties ([13](13-operations-inventory-equipment.md) 4.17) and the portal care guide ([06](06-customer-portal.md) 4.12.1) reference the installed plant list from the as-built ([10](10-design-studio.md) DS-CON-04), not the image.
 
 ### 4.6 Two audiences
 
@@ -705,7 +718,7 @@ A white-label widget, branded as the Company's "Dream Yard Visualizer" with the 
 
 **Rules**
 
-- **Credit policy** (tenant-configurable within operator limits): widget renders draw from the tenant's credit pool at the prices in 4.7. Widget spending has its own monthly cap, which defaults to 50% of the plan's included monthly credits (Grow: 1,000 of 2,000; Pro: 3,000 of 6,000, per [22](22-business-model-pricing-gtm.md)). Owners can raise the cap and fund it with packs. On Starter (300 included credits) the widget runs on purchased packs only, so it cannot quietly use up the credits the office relies on. Section 8.6 has the cost-per-lead math.
+- **Credit policy** (tenant-configurable within operator limits): widget renders draw from the Company's credit pool at the website visualizer preview set price in 4.7 (24 credits per set, per [22](22-business-model-pricing-gtm.md) 4.4.1). Widget spending has its own monthly cap, default 600 credits ([22](22-business-model-pricing-gtm.md)), which owners raise and fund with packs for spring campaigns. On Starter (300 included credits) the setup wizard recommends restricting the widget to purchased packs, so it cannot quietly use up the credits the office relies on. Section 8.6 has the cost-per-lead math.
 - **Abuse controls:** invisible bot check (Turnstile or reCAPTCHA class), per-IP and per-device rate limits, NSFW and non-landscape image refusal. The address must fall inside the Company's service-area polygon before any render. Out-of-area visitors get a polite message, consume no credits, and (when Rootline Match is live and the visitor consents) can be offered other Companies.
 - **Consent:** email and SMS opt-in checkboxes compliant with TCPA and CASL (separate, unchecked by default); one-time-code verification messages are transactional and do not count as marketing consent. Photo-use consent text: "[Company] and Rootline will use your photos to prepare your design." Training use is **off** for widget uploads unless the visitor explicitly opts in.
 - **Lead quality signals:** render count, favorites, budget band, address match, verified contact, response speed. These feed lead scoring in [03](03-crm-sales-estimating-proposals.md).
@@ -743,29 +756,30 @@ Many design-build Companies charge for design and credit the fee toward the inst
 
 ### 4.7 AI credits for this module [MVP]
 
-Credits are the platform-wide AI metering unit ([17](17-ai-copilot-automation.md)). The **credit unit, pack prices, plan allotments, expiry and refund rules are owned by [22](22-business-model-pricing-gtm.md) section 4.4** and are not redefined here. As of that doc: packs of 1,000 credits for $25, 5,000 for $100 and 20,000 for $340 (so **1 credit is about $0.017-$0.025**). Included credits are 300 (Starter), 2,000 (Grow) and 6,000 (Pro) per month, with no rollover of included credits. The price of an action is committed for at least 12 months, and changes need 60 days' notice. This section sets the credit price of each design action in that unit. Rows with "Yes" in the "In 22's list?" column match the published list in [22](22-business-model-pricing-gtm.md) 4.4.1; rows marked "New" are proposals for 22 to adopt. Costs are shown before every action, and owners set monthly caps and per-user and per-role limits.
+Credits are the platform-wide AI metering unit ([17](17-ai-copilot-automation.md)). The **credit unit, pack prices, plan allotments, expiry and refund rules are owned by [22](22-business-model-pricing-gtm.md) section 4.4** and are not redefined here. As of that doc: packs of 1,000 credits for $25, 5,000 for $100 and 20,000 for $340 (so **1 credit is about $0.017-$0.025**). Included credits are 300 (Starter), 2,000 (Grow) and 6,000 (Pro) per month, with no rollover of included credits. The price of an action is committed for at least 12 months, and changes need 60 days' notice. This section maps each design action to that rate card. Rows marked "Yes" use the published price in [22](22-business-model-pricing-gtm.md) 4.4.1, which wins any conflict; rows marked "New (proposed)" are proposals for 22 to adopt and are not billable until 22 lists them. Costs are shown before every action, and owners set monthly caps and per-user and per-role limits.
 
-| Action | Credits (proposed) | In 22's list? | Notes |
+| Action | Credits | In 22's list? | Notes |
 |---|---|---|---|
 | Scene analysis (per photo) | 0 | - | Bundled; cheap and needed for everything |
 | Plan overlay preview (Mode B lite) | 0 | - | Client-side render |
-| Restyle preview set (4 variants, about 1 MP) | 40 | Yes ("Photo mockup set") | Pro and verified-widget renders |
-| Widget teaser set (2 variants, preview route, large badge) | 10 | New | Anonymous widget visitors; economy route (8.2) |
-| Restyle "more like this" (2 variants) | 20 | New | |
-| Mockup refinement or region re-render after an edit | 10 | Yes ("Mockup refinement") | Inpaint one area, or re-render changed plan regions |
-| HD final (single image, 2-4 MP via upscale and detail pass) | 10 | Yes ("High-resolution render or upscale") | 22 tags this [V1]; this module needs it at [MVP] for the field restyle flow |
-| Presentation 4K re-render (vendor 4K tier) | 40 | New | Optional; print boards and large screens |
-| Plan-to-photo render (per photo, preview) | 40 | New | Same price as a restyle set, so pros never avoid the more accurate mode because of cost |
-| Plan-to-photo HD | 60 | New | |
+| Restyle preview set (4 variants, about 1 MP) | 40 | Yes ("Photo mockup set") | Pro restyles in the field and in the office |
+| Website visualizer preview set (widget: a 2-variant teaser for anonymous visitors, 4-variant sets after verification) | 24 | Yes ("Website visualizer preview set") | Drawn from the Company's pool under the widget cap (AIM-AUD-01); economy route first (8.2). 22 tags this row [V1]; this module ships the website widget at [MVP] |
+| Restyle "more like this" (2 variants) | 20 | New (proposed) | |
+| Mockup refinement (inpaint or edit one area) | 10 | Yes ("Mockup refinement") | |
+| Re-render of changed areas after a plan edit (plan-to-photo) | 8 | Yes (plan-to-photo re-render) | Targeted region re-render (AIM-SYNC-03) |
+| HD final (single image, 2-4 MP via upscale and detail pass) | 20 | Yes ("High-resolution render or upscale") | 22 tags this [V1]; this module needs it at [MVP] for the field restyle flow |
+| Presentation 4K re-render (vendor 4K tier) | 20 | Yes (same 2K-4K line) | Optional; print boards and large screens. The vendor 4K route can exceed the 22 7.4 cost guardrail at 20 credits, so the self-hosted upscale route is the default and open question 1 proposes a separate 4K line |
+| Plan-to-photo render (per photo, preview) | 20 | Yes ("Plan-to-photo render") | Cheaper than a restyle set, so pros never avoid the more accurate mode because of cost |
+| Plan-to-photo HD | 40 | Composite (plan-to-photo 20 + high-resolution render 20) | |
 | AI layout generation (3 options with overlay previews) | 60 | Yes ("Dimension-aware AI layout") | Includes LLM planning, HOA parsing, solver, validation and up to 2 repairs |
 | Plant palette recommendation for a bed | 3 | Yes | |
-| Design assistant chat turn | 1 (question or clarification), 2 (turn that commits a plan edit) | New (aligns with Copilot Q&A = 1) | Re-renders charged separately and quoted first |
-| Seasonal set (4 seasons) | 60 | New | |
-| Growth set (install day, 1, 3, 5 years) | 60 | New | |
-| Night mood (V1) / physically based night lighting (V2) | 20 / 40 | New | |
-| 3D splat walkthrough (V3) | 1,000 | New | Async; GPU-heavy |
+| Design assistant chat turn | 1 (question or clarification), 2 (turn that commits a plan edit) | New (proposed; aligns with Copilot Q&A = 1) | Re-renders charged separately and quoted first |
+| Seasonal set (4 seasons) | 30 | Yes ("Seasonal or growth-over-time set") | |
+| Growth set (install day, 1, 3, 5 years) | 30 | Yes ("Seasonal or growth-over-time set") | |
+| Night mood (V1) / physically based night lighting (V2) | 20 / 40 | New (proposed) | |
+| 3D splat walkthrough (V3) | 600 | Yes ("Immersive 3D walkthrough capture") | Async; GPU-heavy; quoted before run. 22 tags this row [V2]; this module phases it [V3] (AIM-GEN-F) |
 
-**Refunds and fairness** (rules from [22](22-business-model-pricing-gtm.md) 4.4.1, applied here): the hold is released in full on provider error, timeout, or a safety refusal not caused by the user's content, and when automatic QA retries are exhausted. If a user marks a mockup or layout "unusable" within 10 minutes with a reason code, 50% of its credits are refunded, up to 10 such refunds per user per month. The reason codes feed the eval set (8.7). Duplicate submissions within 10 s are deduplicated, not double charged.
+**Refunds and fairness** (rules from [22](22-business-model-pricing-gtm.md) 4.4.1, applied here): the hold is released in full on provider error, timeout or safety refusal, and when automatic QA retries are exhausted (repeated refusals of a user's uploads are handled by the abuse controls in 11.2, not by charging credits). If a user marks a mockup or layout "unusable" within 10 minutes with a reason code, 50% of its credits are refunded, up to 10 such refunds per user per month. The reason codes feed the eval set (8.7). Duplicate submissions within 10 s are deduplicated, not double charged.
 
 **Plan entitlements** (from the [22](22-business-model-pricing-gtm.md) feature matrix): restyle mockups on every plan (Starter within its limited credits); plan-to-photo and the design assistant need a Design Studio designer seat (included from Grow, an add-on on Starter); AI layout generation on Grow, Pro and Enterprise; 3D walkthroughs proposed for Pro and Enterprise when they ship.
 
@@ -805,7 +819,7 @@ Credits are the platform-wide AI metering unit ([17](17-ai-copilot-automation.md
 3. Chooses "Front yard"; the capture assistant guides 1-3 photos (or the visitor uploads existing ones).
 4. Answers 5 quick questions; optionally taps two points on the walkway and types "4 ft".
 5. Scene analysis runs (about 3-6 s); a mask preview appears ("we found your lawn and 2 beds") with a "fix" option.
-6. Picks a style. Under the default `teaser_then_verify` gate, 2 teaser variants appear within about 10 s (10 credits).
+6. Picks a style. Under the default `teaser_then_verify` gate, 2 teaser variants appear within about 10 s (one website visualizer preview set, 24 credits).
 7. To unlock full sets, the plant list, the price range and an HD download, the visitor verifies email or phone with a one-time code (consent checkboxes shown, unticked).
 8. Favorites a variant (optionally sends the "help me pick" link to a partner); taps "Get my design and quote"; picks preferred assessment windows or books a paid design consultation (AIM-AUD-04).
 9. A Lead is created with all artifacts; `office_manager` gets a notification; the visitor gets a branded email with their favorites and a portal link.
@@ -831,7 +845,7 @@ sequenceDiagram
     API-->>W: In area
     V->>W: Pick style preset
     W->>API: Request teaser set
-    API->>API: Resolve region palette, check widget cap, hold 10 credits
+    API->>API: Resolve region palette, check widget cap, hold 24 credits
     API->>Q: Enqueue 2 teaser variants
     Q->>GW: Image edit calls with plant references
     GW-->>Q: Images
@@ -840,7 +854,7 @@ sequenceDiagram
     V->>W: Enter email or phone
     W->>API: Send one-time code
     V->>W: Enter code and request full set
-    W->>API: Verified session, hold 40 credits, enqueue full set
+    W->>API: Verified session, hold 24 credits, enqueue full set
     API-->>W: Full set, plant list, price range
     V->>W: Favorite and request quote
     W->>API: Convert session to lead
@@ -908,7 +922,7 @@ sequenceDiagram
     REG-->>API: Pose and reprojection error
     API->>PRJ: Rasterize plan objects at plant age
     PRJ-->>API: Instance map, depth, edges, proxies
-    API->>Q: Enqueue render job and hold 40 credits
+    API->>Q: Enqueue render job and hold 20 credits
     Q->>GPU: Composite sprites then harmonize
     GPU-->>Q: Render
     Q->>QA: Score fidelity per region
@@ -1124,7 +1138,7 @@ stateDiagram-v2
 
 1. During a spring cleanup Visit, the `crew_lead` captures the standard "property photo" (already part of the visit checklist in [05](05-field-crew-mobile-app.md)).
 2. The `ops_manager`'s weekly AI digest ([17](17-ai-copilot-automation.md)) flags properties with thin beds, dead shrubs or bare mulch (vision model on visit photos).
-3. One click creates a "bed refresh" restyle and a pre-priced enhancement Proposal; sent through the portal.
+3. One click (by the `estimator`, or by an `ops_manager` who holds `mockup.generate`) creates a "bed refresh" restyle and a pre-priced enhancement Proposal; sent through the portal.
 4. Client accepts in the portal; it becomes a Work Order on the next maintenance Route ([04](04-scheduling-dispatch-routing.md)).
 
 ---
@@ -1138,7 +1152,7 @@ stateDiagram-v2
 | S1 | Guided capture | Crew app, mobile web, widget PWA | technician, crew_lead, estimator, prospect | [MVP] |
 | S2 | Dimensions and pins | Crew app, web, widget (lite) | estimator, designer, prospect | [MVP] |
 | S3 | Mask review and fix | Web, crew app, widget (lite) | estimator, designer | [MVP] |
-| S4 | Restyle studio (preset picker, variants grid) | Web, tablet | estimator, designer, ops_manager | [MVP] |
+| S4 | Restyle studio (preset picker, variants grid) | Web, tablet | estimator, designer, office_manager (ops_manager if granted) | [MVP] |
 | S5 | Visualizer widget (homeowner) | Embedded PWA on Company site | prospect | [MVP] |
 | S6 | Mockup viewer (labels, slider, fidelity) | Web, portal, tablet | all with access | [MVP] |
 | S7 | Plan-to-photo registration wizard | Web | designer | [V1] (manual MVP) |
@@ -1363,7 +1377,7 @@ All tables carry `tenant_id` and are protected by Postgres row-level security pe
 | `plan_registration` | Photo-to-plan transform | id, scene_analysis_id, design_id, correspondences (jsonb), transform, reprojection_error_m |
 | `mockup` | A rendered image (any mode) | id, tenant_id, mode, capture_photo_id, design_version_id (nullable), preset_version_id, plant_age_years, season, time_of_day, status, fidelity_score, fidelity_grade, is_stale, visible_subset_hash, s3_key, c2pa_manifest_id, created_by |
 | `mockup_region` | A labeled region in a mockup | id, mockup_id, mask_key, design_object_id (nullable), kb_plant_id (nullable), label, confidence, region_score, is_hallucination |
-| `render_job` | Queue unit | id, mockup_id, task, route_id, model_version, params (jsonb), seed, input_hash, status, attempts, credits_reserved, credits_charged, provider_cost_usd, latency_ms, error_code |
+| `mockup_job` | Queue unit | id, mockup_id, task, route_id, model_version, params (jsonb), seed, input_hash, status, attempts, credits_reserved, credits_charged, provider_cost_usd, latency_ms, error_code |
 | `style_preset` / `style_preset_version` | Platform or tenant preset | id, scope (platform or tenant), name, version, palette_query (jsonb), layout_rules (jsonb), prompt_fragments, negative_fragments, model_overrides, status |
 | `plant_render_pack` | Platform-owned per-plant render assets | id, kb_plant_id, status (draft, render_ready, suspended), reference_image_ids, sprite_keys, proxy_shape, descriptor_text, lora_id, license_summary |
 | `plant_lora` | Trained adapter | id, kb_plant_id, base_model, training_set_hash, eval_score, status, s3_key |
@@ -1372,11 +1386,11 @@ All tables carry `tenant_id` and are protected by Postgres row-level security pe
 | `design_chat_session` / `design_chat_turn` | Mode D conversation | session: id, design_id, user_id, locale; turn: id, session_id, role, content, tool_calls (jsonb), design_version_before, design_version_after, estimate_delta |
 | `fidelity_report` | Score breakdown | id, mockup_id, identity, count_placement, scale, preservation, hallucination, model_versions |
 | `provenance_manifest` | C2PA record | id, mockup_id, manifest_key, signer_cert_id, assertions (jsonb), watermark_id, created_at |
-| `ai_credit_entry` | Credit ledger row (owned by the platform credit ledger in [22](22-business-model-pricing-gtm.md); shown for linkage) | id, tenant_id, user_id, action_key, render_job_id, credits, entry_type (hold, settle, release, refund, grant), idempotency_key, balance_after |
+| `ai_credit_entry` | Credit ledger row (owned by the platform credit ledger in [22](22-business-model-pricing-gtm.md); shown for linkage) | id, tenant_id, user_id, action_key, mockup_job_id, credits, entry_type (hold, settle, release, refund, grant), idempotency_key, balance_after |
 | `visualizer_session` | Anonymous widget session | id, tenant_id, gate_mode (teaser_then_verify, verify_first, open), address_point, in_service_area, device_fingerprint_hash, ip_hash, credits_used, teaser_used, verified_contact_id, verified_at, lead_id, consent_flags, expires_at |
 | `visualizer_vote` | "Help me pick" partner votes | id, visualizer_session_id, voter_token_hash, mockup_id, vote (up, down), created_at |
 | `tenant_ai_policy` | Tenant AI settings for this module (one current row per tenant, versioned) | id, tenant_id, version, enabled_modes, monthly_cap_credits, role_caps (jsonb), widget_cap_credits, verification_gate, honest_mode, disclaimer_text, show_fidelity_to_clients, auto_rerender_limit, training_opt_in_level (none, improvements, full), updated_by, updated_at |
-| `site_rule_pack` / `site_rule` | Platform-owned rule packs (AIM-GEN-C2) | pack: id, code, version, jurisdiction_geom (PostGIS multipolygon), client_types, effective_from, effective_to, source_citation, status; rule: id, pack_id, rule_code, rule_type, params (jsonb), severity (hard, soft, advisory), tenant_overridable. Violations are written to `design_validation_issue` in [10](10-design-studio.md), not to a separate table |
+| `site_rule_pack` / `site_rule` | Platform-owned site-geometry rule packs (AIM-GEN-C2); jurisdiction packs are `jurisdiction_rule_pack` in [12](12-plant-knowledge-base.md) | pack: id, code, version, jurisdiction_geom (PostGIS multipolygon), client_types, effective_from, effective_to, source_citation, status; rule: id, pack_id, rule_code, rule_type, params (jsonb), severity (hard, soft, advisory), tenant_overridable. Violations are written to `design_validation_issue` in [10](10-design-studio.md), not to a separate table |
 | `data_use_consent` | Training and sharing consent | id, tenant_id, subject_type (tenant, client, prospect), subject_id, scope (training, marketing, network), granted, granted_at, revoked_at |
 | `eval_sample` | Golden-set item | id, scene_ref, ground_truth (jsonb), region_id, tags |
 
@@ -1398,7 +1412,7 @@ erDiagram
     CAPTURE_PHOTO ||--o{ MOCKUP : base_for
     STYLE_PRESET_VERSION ||--o{ MOCKUP : styles
     MOCKUP ||--|{ MOCKUP_REGION : has
-    MOCKUP ||--o{ RENDER_JOB : produced_by
+    MOCKUP ||--o{ MOCKUP_JOB : produced_by
     MOCKUP ||--o| FIDELITY_REPORT : scored_by
     MOCKUP ||--|| PROVENANCE_MANIFEST : stamped_with
     MOCKUP_REGION }o--o| DESIGN_OBJECT : links
@@ -1410,7 +1424,7 @@ erDiagram
     LAYOUT_OPTION ||--|| DESIGN_VERSION : drafts
     DESIGN ||--o{ DESIGN_CHAT_SESSION : discussed_in
     DESIGN_CHAT_SESSION ||--|{ DESIGN_CHAT_TURN : has
-    RENDER_JOB ||--o{ AI_CREDIT_ENTRY : charges
+    MOCKUP_JOB ||--o{ AI_CREDIT_ENTRY : charges
     VISUALIZER_SESSION ||--o| LEAD : converts_to
     VISUALIZER_SESSION ||--o{ VISUALIZER_VOTE : collects
     LAYOUT_REQUEST }o--o{ SITE_RULE_PACK : applies
@@ -1462,7 +1476,7 @@ erDiagram
         numeric confidence
         bool is_hallucination
     }
-    RENDER_JOB {
+    MOCKUP_JOB {
         uuid id PK
         uuid mockup_id FK
         text task
@@ -1622,8 +1636,8 @@ All model calls (LLM, image, vision, embeddings, self-hosted GPU) go through the
 | `scene.depth` | Self-hosted Depth Anything V2 metric or Depth Pro class | Alternative depth model | Commodity GPU inference |
 | `restyle.preview` | Google Gemini image editing (Flash tier) with multi-image references | FLUX.1 Kontext [pro] via BFL API; then self-hosted SDXL/FLUX inpaint + ControlNet | Low latency and cost, strong instruction following, accepts reference images |
 | `restyle.economy` | Self-hosted open-weight instruction-editing model with a permissive license (Qwen-Image-Edit class, released under Apache-2.0 as of 2025, verify) + SAM masks + reference images | `restyle.preview` | Widget teaser sets and `batch` renders at a fraction of vendor per-image prices; promoted only if it matches `restyle.preview` on the golden set for house preservation and plant identity |
-| `restyle.hd` | Self-hosted super-resolution of the chosen preview plus a low-strength detail pass (the 10-credit HD final) | Gemini image (higher-resolution tier) or FLUX Kontext [max] | Keeps the variant the user picked (no re-roll) and costs a few cents |
-| `restyle.4k` | Gemini image 4K tier or FLUX Kontext [max] | OpenAI image editing | Presentation 4K re-render (40 credits) |
+| `restyle.hd` | Self-hosted super-resolution of the chosen preview plus a low-strength detail pass (the 20-credit HD final) | Gemini image (higher-resolution tier) or FLUX Kontext [max] | Keeps the variant the user picked (no re-roll) and costs a few cents |
+| `restyle.4k` | Gemini image 4K tier or FLUX Kontext [max] | OpenAI image editing | Presentation 4K re-render (20 credits on the high-resolution line; see 4.7) |
 | `p2p.harmonize` | Self-hosted diffusion img2img with depth + edge ControlNet and IP-Adapter | Gemini image editing with control images as references | Needs pixel-level control of masks and IDs |
 | `p2p.generate` | Self-hosted ControlNet + IP-Adapter + regional prompts, per-plant LoRA | Vendor editing model | Identity control for plants without sprites |
 | `upscale` | Self-hosted super-resolution | Vendor upscaler | Cheap |
@@ -1653,7 +1667,7 @@ Model names are examples as of November 2026; the route registry stores exact mo
 | Cache | Key | Hit scenario | TTL |
 |---|---|---|---|
 | Scene analysis | sha256(photo) + pipeline version | Same photo used in many mockups | Until pipeline version changes |
-| Palette resolution | region_id + preset_version + company_palette_version + KB snapshot | Every widget render in a Region | Invalidated on `plant_region_profile.updated` |
+| Palette resolution | region_id + preset_version + company_palette_version + KB snapshot | Every widget render in a Region | Invalidated on `kb.release_published` or `kb.profile_updated` |
 | Render result | sha256(photo, masks, params, model version, seed, plant refs) | Double-clicks, repeated presets, presentation reloads | 90 days |
 | Region render | instance properties hash + neighborhood context hash | Targeted re-render after small plan edits | 30 days |
 | Plant reference embeddings | kb_plant_id + image ids | QA scoring | Until pack changes |
@@ -1700,23 +1714,25 @@ Targets are proposals; they gate GA for each mode and are monitored per route.
 | Action | Cost build-up (estimate) | Est. raw cost | Credits | Revenue at $0.017-$0.025 | Est. gross margin |
 |---|---|---|---|---|---|
 | Scene analysis | Seg + depth on GPU, about 1.5 GPU-seconds at $3/h | $0.002 | 0 | $0 | Bundled |
-| Widget teaser set (2 variants) | Economy route: 2 self-hosted edits at about 4-6 GPU-s each + QA $0.005 | about $0.01-0.02 (vendor fallback about $0.08) | 10 | $0.17-$0.25 | 88-96% (vendor fallback 51-68%) |
+| Website visualizer preview set: anonymous teaser (2 variants) | Economy route: 2 self-hosted edits at about 4-6 GPU-s each + QA $0.005 | about $0.01-0.02 (vendor fallback about $0.08) | 24 | $0.41-$0.60 | 95-98% (vendor fallback 80-87%) |
+| Website visualizer preview set: verified set (4 variants) | Economy route first; vendor route 4 x $0.039 + QA $0.01 when quality requires it | about $0.02-0.04 (vendor about $0.17) | 24 | $0.41-$0.60 | 90-97% (vendor 58-72%) |
 | Restyle preview set (4 variants) | 4 x $0.039 + QA (classifier + occasional VLM) $0.01 | about $0.17 | 40 | $0.68-$1.00 | 75-83% |
 | "More like this" (2 variants) | 2 x $0.039 + QA | about $0.09 | 20 | $0.34-$0.50 | 74-82% |
-| Refinement or region re-render | 1 masked edit $0.04-0.045 + QA, or self-hosted about $0.01 | about $0.01-0.05 | 10 | $0.17-$0.25 | 71-96% |
-| HD final | Self-hosted super-resolution + low-strength detail pass, about 5 GPU-s + QA | about $0.01 (vendor 2K fallback $0.10-0.13) | 10 | $0.17-$0.25 | about 94% (fallback 24-60%; fallback only during outages) |
-| Presentation 4K re-render | Vendor 4K tier $0.15-0.24 + QA $0.01 | about $0.16-0.25 | 40 | $0.68-$1.00 | 63-84% |
-| Plan-to-photo preview | Projection CPU + harmonize about 8 GPU-s ($0.007) + sprites + QA $0.02 + repair inpaint 30% of the time | about $0.04-0.10 | 40 | $0.68-$1.00 | 85-96% |
-| Plan-to-photo HD | Preview path at higher resolution + super-resolution | about $0.06-0.15 | 60 | $1.02-$1.50 | 85-96% |
+| Mockup refinement (inpaint one area) | 1 masked edit $0.04-0.045 + QA, or self-hosted about $0.01 | about $0.01-0.05 | 10 | $0.17-$0.25 | 71-96% |
+| HD final | Self-hosted super-resolution + low-strength detail pass, about 5 GPU-s + QA | about $0.01 (vendor 2K fallback $0.10-0.13) | 20 | $0.34-$0.50 | about 97% (fallback 62-80%; fallback only during outages) |
+| Presentation 4K re-render | Vendor 4K tier $0.15-0.24 + QA $0.01 | about $0.16-0.25 | 20 | $0.34-$0.50 | 26-68%. **Watch item:** above the 45% cost guardrail in [22](22-business-model-pricing-gtm.md) 7.4 at the lowest per-credit (largest-pack) price; default to the self-hosted upscale route and see open question 1 |
+| Plan-to-photo preview | Projection CPU + harmonize about 8 GPU-s ($0.007) + sprites + QA $0.02 + repair inpaint 30% of the time | about $0.04-0.10 | 20 | $0.34-$0.50 | 71-92% |
+| Plan-to-photo changed-area re-render | Region re-render of changed instances + boundary harmonize + QA | about $0.01-0.05 | 8 | $0.14-$0.20 | 63-95% |
+| Plan-to-photo HD | Preview path at higher resolution + super-resolution | about $0.06-0.15 | 40 (20 + 20) | $0.68-$1.00 | 78-94% |
 | AI layout (3 options) | Planner about 25K input (candidates, cached across repairs) + 6K output on the Sonnet tier, about $0.11; HOA parse $0.02; solver CPU $0.005; validation and 1 repair $0.05. Opus escalation on repeated failure brings the worst case to about $0.50 ([22](22-business-model-pricing-gtm.md) uses this conservative figure) | about $0.20 typical, $0.50 worst case | 60 | $1.02-$1.50 | 51-87% |
 | Chat turn | Single-step edits on the Haiku tier (about $0.002-0.005); multi-step edits on the Sonnet tier with about 10K cached context, 1K new input, 500-1,500 output and thinking tokens over 1-3 calls (about $0.015-0.04) | blended about $0.005-0.02 | 1 (question) / 2 (edit) | $0.017-$0.05 | about 0-70%. **Watch item:** if the median cost of an edit turn exceeds $0.015, raise edit turns to 3 credits (60 days' notice) or move more intents to the Haiku tier |
-| Seasonal or growth set (4 images) | 4 harmonize renders self-hosted + QA | about $0.06-0.15 | 60 | $1.02-$1.50 | 85-96% |
+| Seasonal or growth set (4 images) | 4 harmonize renders self-hosted + QA | about $0.06-0.15 | 30 | $0.51-$0.75 | 71-92% |
 | Night mood (V1) | 1 self-hosted relight render + QA | about $0.02-0.05 | 20 | $0.34-$0.50 | 85-96% |
-| Splat walkthrough (V3) | About 20-40 GPU-minutes training + insertion | about $1-3 | 1,000 | $17-$25 | 82-96% |
+| Splat walkthrough (V3) | About 20-40 GPU-minutes training + insertion | about $1-3 | 600 | $10.20-$15.00 | 71-93% |
 
-**Blended check against G8 (estimate).** Assume this mix of credits consumed: restyle sets 40%, teasers 10%, refinements 10%, HD/4K 5%, plan-to-photo 10%, layouts 10%, chat 5%, seasonal/growth/night 10%. At a mid pack price of about $0.021 per credit, the weighted raw cost is about 19% of credit revenue. Adding about 10 points for reserved-GPU idle time in the off-season gives roughly 29%, inside the 35% G8 target. The two levers that most affect the result are the economy route's share of widget traffic and the Opus-escalation rate on layouts. Both appear on the AI ops dashboard ([19](19-platform-admin-portal.md)).
+**Blended check against G8 (estimate).** Assume this mix of credits consumed: restyle sets 40%, widget preview sets 10%, refinements 10%, HD/4K 5%, plan-to-photo 10%, layouts 10%, chat 5%, seasonal/growth/night 10%. At a mid pack price of about $0.021 per credit, the weighted raw cost is about 18-19% of credit revenue. Adding about 10 points for reserved-GPU idle time in the off-season gives roughly 28-29%, inside the 35% G8 target. The two levers that most affect the result are the economy route's share of widget traffic and the Opus-escalation rate on layouts. Both appear on the AI ops dashboard ([19](19-platform-admin-portal.md)).
 
-**Homeowner widget economics (estimate, default `teaser_then_verify` gate).** Take 100 visitors who reach a teaser (10 credits each, 1,000 credits). If 35% verify and run an average of 1.5 full sets (2,100 credits), and 20 download one HD image (200 credits), the total is 3,300 credits, or about 33 per visitor. At the G6 target of 8% visitor-to-lead conversion, that is 8 leads for about 410 credits each, or **about $7-$10 of credits per lead** at pack prices. Provider cost is about $1.30 per lead. For comparison, [22](22-business-model-pricing-gtm.md) proposes $35-$60 for a small-install lead bought through Rootline Match. A 5,000-credit pack ($100) funds about 150 visitors, or roughly 12 leads at these assumptions. Tenants see "cost per lead from the visualizer" in [Reporting](18-reporting-analytics.md) next to their other lead sources. Every input above is an assumption to be replaced by beta telemetry.
+**Homeowner widget economics (estimate, default `teaser_then_verify` gate).** Take 100 visitors who reach a teaser (one 24-credit preview set each, 2,400 credits). If 35% verify and run an average of 1.5 more sets (about 1,260 credits), and 20 download one HD image (400 credits), the total is about 4,060 credits, or about 41 per visitor. At the G6 target of 8% visitor-to-lead conversion, that is 8 leads for about 510 credits each, or **about $9-$13 of credits per lead** at pack prices. Provider cost is about $1.30 per lead. For comparison, [22](22-business-model-pricing-gtm.md) proposes $35-$60 for a small-install lead bought through Rootline Match. A 5,000-credit pack ($100) funds about 120 visitors, or roughly 10 leads at these assumptions, while the default 600-credit widget cap covers only about 15 visitors a month, so owners running campaigns raise it. Tenants see "cost per lead from the visualizer" in [Reporting](18-reporting-analytics.md) next to their other lead sources. Every input above is an assumption to be replaced by beta telemetry.
 
 **COGS guardrails:** the gateway enforces a per-route `max_raw_cost` per call. Following [22](22-business-model-pricing-gtm.md) 7.4, an alert goes to `platform_finance` and `platform_engineer` when an action's trailing 7-day median raw cost exceeds 45% of its credit revenue at the lowest pack price. The fix is a re-route (preferred, no tenant impact) or a re-price with 60 days' notice, and each action's credit price is held for at least 12 months.
 
@@ -1770,7 +1786,7 @@ Published via the transactional outbox to the event bus ([20](20-architecture-se
 | `capture.photo_uploaded` | Photo stored | photo_id, quality_score | Scene service |
 | `scene.analyzed` | Analysis completed | scene_analysis_id, scale_confidence | UI, render workflows |
 | `mockup.render_requested` | Job enqueued (after `credits.hold` succeeds) | mockup_id, mode, credits_held, hold_id | AI ops, analytics |
-| `mockup.rendered` | Job succeeded | mockup_id, fidelity_grade, cost | CRM timeline, portal, notifications, analytics |
+| `mockup.generated` | Job succeeded | mockup_id, fidelity_grade, cost | CRM timeline, portal, notifications, analytics |
 | `mockup.failed` / `mockup.refused` | Job failed or blocked | reason_code, hold_id | Credit ledger (`credits.release`), support |
 | `mockup.marked_stale` | Plan changed | mockup_ids, design_version_id | UI banners |
 | `mockup.attached_to_proposal` | Attached | mockup_id, proposal_option_id | Proposals |
@@ -1783,9 +1799,9 @@ Published via the transactional outbox to the event bus ([20](20-architecture-se
 | (consumed from the credit ledger, not emitted here) `ai_credits.settled` / `ai_credits.released` / `ai_credits.low_balance` | Credit movements, per [22](22-business-model-pricing-gtm.md) 11.3 | action_key, credits, raw_cost_usd | AI ops margin dashboards, owner notifications |
 | `provenance.manifest_signed` | C2PA stamped | mockup_id, manifest_id | Audit |
 | `visualizer.session_verified` | Widget visitor verified a contact | session_id, channel, consent_flags | CRM (pre-lead), marketing attribution |
-| `rule_pack.updated` | Operator publishes a new rule pack version | pack_id, version, effective_from | Design Studio validator (re-validate open drafts), layout service caches |
+| `kb.rule_pack_published` (emitted by the KB release pipeline in [12](12-plant-knowledge-base.md); listed because site rule packs ride on it) | Operator publishes a new rule pack version | pack_id, version, effective_from | Design Studio validator (re-validate open drafts), layout service caches |
 
-**Consumed:** `design.version_created` and `takeoff.updated` (from [10](10-design-studio.md)); `proposal.sent`, `proposal.accepted`, `change_order.created` (from [03](03-crm-sales-estimating-proposals.md)); `plant.updated`, `plant_region_profile.updated`, `plant_palette.updated` (from [12](12-plant-knowledge-base.md)) to invalidate caches and re-check render readiness; `tenant.ai_policy_changed`, `ai_route.updated` (from [19](19-platform-admin-portal.md)); `privacy.deletion_requested` (from [20](20-architecture-security.md)).
+**Consumed:** `design.version_published` and `design.takeoff_updated` (from [10](10-design-studio.md)); `proposal.sent`, `proposal.accepted`, `change_order.created` (from [03](03-crm-sales-estimating-proposals.md)); `kb.release_published` (changed plants, palettes and render packs), `kb.profile_updated`, `kb.regulatory_status_changed` and `kb.media_taken_down` (from [12](12-plant-knowledge-base.md)) to invalidate caches and re-check render readiness; `tenant.ai_policy_changed`, `ai_route.updated` (from [19](19-platform-admin-portal.md)); `privacy.deletion_requested` (from [20](20-architecture-security.md)).
 
 ### 8.10 API surface (REST, versioned; GraphQL read models per [20](20-architecture-security.md))
 
@@ -1815,12 +1831,12 @@ Published via the transactional outbox to the event bus ([20](20-architecture-se
 
 ### 8.11 Outbound webhooks (tenant-configurable, see [20](20-architecture-security.md))
 
-`mockup.rendered`, `layout.generated`, `visualizer.session_converted` (useful for Companies piping leads into other tools). Payloads exclude raw images; they include signed, expiring URLs.
+`mockup.generated`, `layout.generated`, `visualizer.session_converted` (useful for Companies piping leads into other tools). Payloads exclude raw images; they include signed, expiring URLs.
 
 ---
 ## 9. Permissions
 
-Role keys per [02](02-personas-roles-permissions.md). Custom roles compose these capabilities. Legend: **F** full, **C** create and edit own, **V** view, **A** approve/override, **S** scoped (own Jobs or assigned Properties only), **-** none.
+Role keys per [02](02-personas-roles-permissions.md), whose master matrix sets the defaults (`mockup.generate` for `owner`, `office_manager`, `estimator` and `designer`; `design` read-only for `ops_manager`). Custom roles compose these capabilities; "grantable" marks a capability an `owner` commonly adds to an `ops_manager` per user or through a custom role (for example an account manager who sells enhancements, 5.9). Legend: **F** full, **C** create and edit own, **V** view, **A** approve/override, **S** scoped (own Jobs or assigned Properties only), **-** none.
 
 ### 9.1 Tenant roles
 
@@ -1828,10 +1844,10 @@ Role keys per [02](02-personas-roles-permissions.md). Custom roles compose these
 |---|---|---|---|---|---|---|---|---|---|
 | Capture photos and dimensions | F | F | F | F | F | S | S | - | S |
 | Edit masks, pins, registration | F | C | C | F | C | S | - | - | - |
-| Create restyle mockups (Mode A) | F | C | C | F | C | - | - | - | - |
-| Plan-to-photo, seasonal, growth, night renders (B, E) | F | V | C | F | C | V (S) | - | - | V (S) |
-| Generate AI layouts (Mode C) | F | - | C | F | C | - | - | - | - |
-| Use design assistant to edit Designs (Mode D) | F | - | C | F | C | - | - | - | - |
+| Create restyle mockups (Mode A) | F | C | C | F | - (grantable) | - | - | - | - |
+| Plan-to-photo, seasonal, growth, night renders (B, E) | F | V | C | F | V | V (S) | - | - | V (S) |
+| Generate AI layouts (Mode C) | F | - | C | F | - | - | - | - | - |
+| Use design assistant to edit Designs (Mode D) | F | - | C | F | - | - | - | - | - |
 | Attach mockup to proposal | F | C | C | F | C | - | - | - | - |
 | Override fidelity grade C for proposal use | A | - | - | A | - | - | - | - | - |
 | Override a tenant-overridable site rule (reason logged; statutory rules cannot be overridden) | A | - | - | A | - | - | - | - | - |
@@ -2012,7 +2028,7 @@ Definitions feed [Reporting and Analytics](18-reporting-analytics.md) and the pl
 
 | KPI | Definition | Target (proposed) |
 |---|---|---|
-| Win-rate lift | Win rate of proposals with mockups minus matched proposals without (tenant-level holdout or matched cohorts by price band and Region) | +10 percentage points (estimate to validate) |
+| Win-rate lift | Win rate of proposals with mockups minus matched proposals without (tenant-level holdout or matched cohorts by price band and Region); builds on `design_led_close_rate` in [18](18-reporting-analytics.md) | +10 percentage points (estimate to validate) |
 | Time to proposal | Median hours from site assessment to proposal sent, design-build jobs | 50% reduction vs tenant baseline |
 | Widget conversion | Leads / unique widget visitors with at least one render | 8%+ |
 | Widget verification rate | Verified sessions / sessions that saw a teaser (default gate) | 30%+ (estimate; tune gate defaults on it) |
@@ -2074,7 +2090,7 @@ Definitions feed [Reporting and Analytics](18-reporting-analytics.md) and the pl
 
 ## 14. Open questions
 
-1. **Action prices and widget subsidy:** this doc proposes credit prices for 12 design actions that are not yet in [22](22-business-model-pricing-gtm.md)'s published list (4.7). Should 22 adopt them as is? Should Rootline subsidize the first 500 widget credits a month for Grow tenants as a growth investment, since widget leads also feed Rootline Match? (Owner: [22](22-business-model-pricing-gtm.md).)
+1. **Action prices and widget subsidy:** most actions in 4.7 now use the [22](22-business-model-pricing-gtm.md) rate card; four remain proposals (restyle "more like this", design assistant chat turns, night renders, and a separate vendor 4K line at about 40 credits because the vendor 4K route breaches the 7.4 cost guardrail at 20). Should 22 adopt them? Should 22 also move the website visualizer preview set and the HD final to [MVP] to match this module's phasing? And should Rootline subsidize the first 500 widget credits a month for Grow tenants as a growth investment, since widget leads also feed Rootline Match? (Owner: [22](22-business-model-pricing-gtm.md).)
 2. **Default image route:** benchmark Gemini image editing vs FLUX Kontext vs self-hosted pipelines on the golden set for plant identity and house preservation before MVP; decide whether MVP plan-to-photo should ship earlier using vendor editing with control images.
 3. **Render-pack production:** in-house photography vs grower partnerships vs AI-generated sprites curated by horticulturists. What mix gets 300 plants render-ready before V1, and at what cost?
 4. **Fidelity score visibility:** should homeowners see the fidelity grade, or is the badge plus disclaimer enough? Showing it is more honest but may confuse.
@@ -2094,7 +2110,7 @@ Definitions feed [Reporting and Analytics](18-reporting-analytics.md) and the pl
 
 ## Sources
 
-Research note: web searches were run in November 2026. Some primary pages could not be fetched from the research environment (network allowlist), so a few claims rely on search-result summaries of those pages; treat prices and plan names as "as of November 2026, verify". The review pass could not run new searches (quota exhausted, vendor hosts unreachable). Its additions are listed separately below and come from sibling docs, research reports or statute citations.
+Verification note: items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build; treat prices and plan names as "as of November 2026, verify". Sibling-doc and statute sources are listed separately below.
 
 **Field-service and landscape business platforms**
 
@@ -2122,7 +2138,7 @@ Research note: web searches were run in November 2026. Some primary pages could 
 - Reddit comment on AI tools inventing plants (anecdotal): [snapshot](https://reddit.sentinel-team.org/posts/1srelgp/snapshots/2026-04-24T23%3A03%3A08.204571Z)
 - Axios, May 2026: [DC newsletter](https://www.axios.com/newsletters/axios-dc-355cf110-4890-11f1-baa8-6fb008c498e3); [Outdoor Living Brief](https://www.axios.com/local/washington-dc/2026/05/08/landscape-design-ai); [How to vibe code your way to a better yard](https://www.axios.com/local/washington-dc/2026/05/08/ai-vibecode-yard-landscape)
 
-**Added in the November 2026 review (sibling-doc sources and statutes; not re-fetched in review)**
+**Sibling-doc sources and statutes (verify current text)**
 
 - Granum (LMN + SingleOps) and LMN Pay relaunch: [Green Industry Pros](https://www.greenindustrypros.com/business-management/software/product/22963124/granum-granum-launches-lmn-pay-experience) (via [06](06-customer-portal.md) and [R2](research/R2-landscape-specific-platforms.md))
 - Aspire PropertyIntel (Go iLawn + LandOne): [Landscape Management](https://www.landscapemanagement.net/aspire-software-launches-new-propertyintel-measuring-and-estimating-tool/); [IGIN](https://igin.com/article-8937-Aspire-Software-announces-intent-to-acquire-Go-iLawn-and-LandOne.html) (via [10](10-design-studio.md))

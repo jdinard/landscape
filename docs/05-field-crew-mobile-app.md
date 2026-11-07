@@ -2,6 +2,19 @@
 
 > The Rootline Crew app is the React Native (Expo), offline-first app that crews, crew leads and field estimators carry all day. It is where the plan from the office meets dirt, weather, dogs, locked gates and dead zones. It runs the crew's day: route, navigation handoff, property maps with zones and hazards, checklists, before/after photos, time (job vs drive vs shop, breaks, California meal/rest attestations), materials and plant usage, pesticide application records with auto-filled weather, signatures, Tap to Pay collections, upsell capture, voice notes translated between Spanish and English, safety (tailgate talks, JHA, DVIR, incidents, heat logs), equipment hours, crew chat and a crew-lead end-of-day report. Every hour, bag of mulch and photo recorded here flows straight into job costing ([09](09-accounting-ledger-integrations.md)), invoicing ([07](07-invoicing-billing-contracts.md)), payroll ([15](15-team-hr-payroll.md)) and the client portal ([06](06-customer-portal.md)). If the crew app is slow, confusing or loses data, every downstream number in the company is wrong. That is why this app gets the hardest engineering (a real sync engine) and the most careful UX (gloves, glare, Spanish-first, low-end Android).
 
+**At a glance**
+
+- **What it is:** the React Native (Expo), offline-first app that `technician`, `crew_lead` and field estimators use all day. It executes the Visits and Routes planned in [04](04-scheduling-dispatch-routing.md) and produces the field truth (time, photos, materials, chemical records, signatures, field payments) behind job costing, invoicing, payroll and the client portal.
+- **Decision 1 - offline is the normal state.** The UI reads only from local SQLite; every action is a local write plus a mutation in a priority lane, synced with the bucket protocol owned by [20](20-architecture-security.md) section 4.11 (ADR-008). Append-only records for punches, chemical records and signatures; state-machine merge for Visit status (`completed` beats an office `canceled` and opens a billing review); field-level last-writer-wins by HLC elsewhere. Nothing is silently discarded.
+- **Decision 2 - time is an append-only stream of punch events.** Segments are `shop`, `drive`, `job`, `meal_break`, `rest_break`, `training` and `equipment_repair`, with a one-tap crew-level punch and signed clock-out attestations. Timesheet derivation, pay rules and weekly approval belong to [15](15-team-hr-payroll.md).
+- **Decision 3 - Visit states are the canonical keys from [04](04-scheduling-dispatch-routing.md) 4.1.3.** The app runs the field subset (`dispatched` -> `en_route` -> `on_site` -> `in_progress` / `paused` -> `completed` / `partially_completed` / `skipped`) with the closed skip reason codes, and the server-computed verification status (4.4.5a) gates per-visit invoicing in [07](07-invoicing-billing-contracts.md).
+- **Decision 4 - field money lands in the Company's own Stripe account** as direct charges ([08](08-payments-stripe.md)); Rootline never holds client funds. Cash and checks follow the ledger posting rules in [09](09-accounting-ledger-integrations.md) (1065 Cash in Transit, then 1060 Undeposited Funds, then the bank).
+- **Decision 5 - "off the clock = invisible."** No location collection when clocked out or during unpaid meals; payroll-grade arrivals come from dual-path detection (OS geofences plus in-app GPS against the parcel polygon).
+- **[MVP]:** Today and route view, navigation handoff, visit workflow with checklists and before/after photos, crew and individual time with California meal/rest attestations, chemical application records with weather auto-fill, signatures, check/cash recording, text-to-pay and card on file, Spot it upsell capture, voice notes with EN/ES translation, safety (tailgate talks, DVIR, California heat procedures, incident reports), crew chat and announcements, the sync engine, Outdoor Mode and Spanish-first UX.
+- **[V1] and later:** Tap to Pay and Bluetooth readers, shop kiosk, MDM, manager mode, satellite offline map packs, non-California break and heat packs, multi-day install logs, JHA, lone-worker safety, "Pick up extra work" [V1]; in-app turn-by-turn and consented face verification [V2].
+- **Differentiators:** a full 10-hour day in a dead zone with zero lost records, UX for gloves, glare and a 3 GB Android, compliance produced as a side effect of the work (attestations, chemical records, heat logs), and tips split to the crew by clocked hours.
+- **Key cross-links:** schedule, Visit state machine and ETA in [04](04-scheduling-dispatch-routing.md); client-visible photos, notes and application records in [06](06-customer-portal.md); payments in [08](08-payments-stripe.md); posting rules in [09](09-accounting-ledger-integrations.md); program rounds and pesticide compliance in [14](14-service-line-modules.md); timesheets and pay in [15](15-team-hr-payroll.md); sync protocol and device security in [20](20-architecture-security.md); crew app sitemap in [21](21-ux-design-system-sitemaps.md).
+
 | Item | Value |
 |---|---|
 | Surface | iOS + Android crew app, phones and tablets (one codebase, Expo / React Native) |
@@ -37,7 +50,7 @@
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> Research basis (as of Nov 2026): targeted web research on competitor crew apps, app-store and review-site complaints, Stripe Terminal, California wage-and-hour law, Cal/OSHA heat rules and state pesticide recordkeeping, plus Android's platform documentation for geofencing behavior. SingleOps, ServiceTitan, Housecall Pro, Real Green, FMCSA DVIR details, iOS limits and non-California break and heat rules could not be re-verified against live sources for this module. Facts on those topics come from general industry and regulatory knowledge and are marked "verify". Deeper competitor teardowns are in [research/R1](research/R1-field-service-platforms.md) and [research/R2](research/R2-landscape-specific-platforms.md).
+> Research basis (as of Nov 2026): targeted web research on competitor crew apps, app-store and review-site complaints, Stripe Terminal, California wage-and-hour law, Cal/OSHA heat rules and state pesticide recordkeeping, plus Android's platform documentation for geofencing behavior. Facts on SingleOps, ServiceTitan, Housecall Pro, Real Green, FMCSA DVIR details, iOS limits and non-California break and heat rules come from general industry and regulatory knowledge and are marked "verify". Deeper competitor teardowns are in [research/R1](research/R1-field-service-platforms.md) and [research/R2](research/R2-landscape-specific-platforms.md).
 
 ### 2.1 What competitors ship in the field app
 
@@ -112,7 +125,7 @@
 
 ### 3.3 A day in the life (narrative used to test the design)
 
-Maria is a crew lead for "Green Valley Landscapes" in Sacramento in July. At 6:45 a.m. her phone shows a pre-shift high-heat alert (forecast 101 F). She opens the app at the shop: the Today view lists 14 maintenance visits, the loadout list says "2 cu yd mulch, 6 flats of annuals, 1 bag 16-4-8". She taps **Crew Clock In** and selects her three crew members; each confirms on her tablet with a PIN. Shop time starts. She runs the 5-minute heat-illness tailgate talk in Spanish (attendance signed on screen), completes the DVIR for Truck 12 (one defect: left marker light out, auto-creates a fleet work order), and taps **Start route**. The app hands off to Google Maps; drive time starts automatically. At the first property a geofence prompt asks "Arrived at 1452 Oak St?" - one tap, job time starts for the whole crew. The visit card shows a red "DOG: Bruno, friendly, may be in back yard" banner and gate code (tap to reveal). Before photos, mow, edge, blow; the checklist has a required "after" photo of the front lawn. Javier spots a broken rotor head in zone 3, taps **Spot it**, takes a photo; the AI suggests "Rotor head replacement (Hunter PGP)". The client has a $150 fix-it-now authorization on file in the portal, so Maria approves the repair on the spot and logs one rotor from truck stock by scanning its barcode. At 11:00 the app reminds the crew that their 5th hour ends at 11:45; at 11:30 Maria starts a 30-minute meal break for the crew; tracking pauses. At 3:30 p.m. the app prompts water and shade checks per the high-heat procedure. At 5:10 p.m. she reviews the crew's timesheets (one correction: Luis left at 4:30 for a doctor appointment), each member attests to breaks at clock-out, and she submits the end-of-day report that the AI drafted: 13 of 14 visits complete and 1 partial (irrigation part on order), 1 upsell lead, 1 fix-it-now repair, 2 cu yd mulch used, Truck 12 marker light defect, 0 incidents.
+Maria is a crew lead for "Greenleaf Grounds Co." in Sacramento in July. At 6:45 a.m. her phone shows a pre-shift high-heat alert (forecast 101 F). She opens the app at the shop: the Today view lists 14 maintenance visits, the loadout list says "2 cu yd mulch, 6 flats of annuals, 1 bag 16-4-8". She taps **Crew Clock In** and selects her three crew members; each confirms on her tablet with a PIN. Shop time starts. She runs the 5-minute heat-illness tailgate talk in Spanish (attendance signed on screen), completes the DVIR for Truck 12 (one defect: left marker light out, auto-creates a fleet work order), and taps **Start route**. The app hands off to Google Maps; drive time starts automatically. At the first property a geofence prompt asks "Arrived at 1452 Oak St?" - one tap, job time starts for the whole crew. The visit card shows a red "DOG: Bruno, friendly, may be in back yard" banner and gate code (tap to reveal). Before photos, mow, edge, blow; the checklist has a required "after" photo of the front lawn. Javier spots a broken rotor head in zone 3, taps **Spot it**, takes a photo; the AI suggests "Rotor head replacement (Hunter PGP)". The client has a $150 fix-it-now authorization on file in the portal, so Maria approves the repair on the spot and logs one rotor from truck stock by scanning its barcode. At 11:00 the app reminds the crew that their 5th hour ends at 11:45; at 11:30 Maria starts a 30-minute meal break for the crew; tracking pauses. At 3:30 p.m. the app prompts water and shade checks per the high-heat procedure. At 5:10 p.m. she reviews the crew's timesheets (one correction: Luis left at 4:30 for a doctor appointment), each member attests to breaks at clock-out, and she submits the end-of-day report that the AI drafted: 13 of 14 visits complete and 1 partial (irrigation part on order), 1 upsell lead, 1 fix-it-now repair, 2 cu yd mulch used, Truck 12 marker light defect, 0 incidents.
 
 ---
 
@@ -132,7 +145,7 @@ Priority tags: [MVP] first sellable release, [V1] within ~12 months of MVP, [V2]
 | `estimator` / `designer` | Manager mode [V1]. At [MVP], Today lists appointments and More holds **Capture** (site assessments, Field Design Mode, 4.16) | No crew clock unless the user is also assigned to a crew |
 | `subcontractor` [V1] | Today (assigned visits only), Messages, More | No Time tab (4.22.4) |
 
-Rules: a persistent **sync pill** (the `SyncStatusChip` component in [21](21-ux-design-system-sitemaps.md)) sits at the top of every screen: green "Synced", amber "12 waiting", red "Offline 3h 10m - 41 waiting". A persistent **clock pill** shows the current status ("On the clock - Job - 2:14") whenever the user is clocked in.
+Rules: a persistent **sync pill** (the `SyncStatusChip` component in [21](21-ux-design-system-sitemaps.md)) sits at the top of every screen, with the states and tokens defined in [21](21-ux-design-system-sitemaps.md) section 19.2: Moss check "Synced", Stone clock "12 to send", Marigold banner "Offline 3h 10m - 41 saved", Ember dot "1 needs you" for conflicts and Ember icon "1 failed" for errors. A persistent **clock pill** shows the current status ("On the clock - Job - 2:14") whenever the user is clocked in.
 
 **4.0.2 Device modes [MVP].**
 
@@ -144,7 +157,7 @@ Rules: a persistent **sync pill** (the `SyncStatusChip` component in [21](21-ux-
 
 Rules: PINs are unique per user within a Company, never 4 identical digits or sequences (1234, 0000), lockout after 5 failed attempts for 5 minutes, reset by `crew_lead` (own crew), `ops_manager` or `office_manager`. PIN verification works offline against Argon2id hashes with a per-device pepper ([02](02-personas-roles-permissions.md)). Hashes are cached only for the crew members assigned to the device (crew mode) or the branch's active employees (kiosk), refreshed on sync, and removed on termination or reassignment.
 
-**Offline session limit [MVP].** Per [02](02-personas-roles-permissions.md), a device can work offline for up to **7 days** without reaching the server. From day 5 the app warns: "Connect to Wi-Fi or cellular before Friday to keep working". After 7 days, new work is locked until the user re-authenticates. The lock never deletes unsynced data. It stays queued and syncs once the user re-authenticates. Two things stay available while locked. The emergency screen (4.12.6) always works. PIN-verified time punches also keep working, so a crew is never blocked from clocking in. Those punches are append-only and flagged `stale_session` for the approver. This exception to the [02](02-personas-roles-permissions.md) lock rule is proposed here and must be confirmed there.
+**Offline session limit [MVP].** Per [02](02-personas-roles-permissions.md), a device can work offline for up to **7 days** without reaching the server. From day 5 the app warns: "Connect to Wi-Fi or cellular before Friday to keep working". After 7 days, new work is locked until the user re-authenticates. The lock never deletes unsynced data. It stays queued and syncs once the user re-authenticates. Two things stay available while locked. The emergency screen (4.12.6) always works. PIN-verified time punches also keep working, so a crew is never blocked from clocking in. Those punches are append-only and flagged `stale_session` for the approver. This exception to the [02](02-personas-roles-permissions.md) lock rule is proposed here and must be confirmed there. The 7-day grace from [02](02-personas-roles-permissions.md) is the working limit; the 14-day device-key offline lease in [20](20-architecture-security.md) 4.11.1 is the cryptographic backstop behind it, and neither one ever deletes queued field work.
 
 **4.0.3 Outdoor Mode and themes [MVP].** Three themes: Standard, Outdoor (high contrast, bolder weights, larger type, no shadows used to convey state) and Night (dark, same contrast rules). Default for field roles is Outdoor. Auto Night between civil dusk and dawn at device location (optional). See section 4.19.
 
@@ -159,12 +172,12 @@ Rules: PINs are unique per user within a Company, never 4 identical digits or se
 Behaviors and rules:
 - Day selector: yesterday, today, next 7 days (the D-1 to D+7 `crew_day` bucket window in [20](20-architecture-security.md); cached offline per 4.21).
 - Header summary: visits (done/total), estimated finish time (from remaining budgeted hours + drive estimates), crew hours used vs budget for the day, weather now and next 6 hours (rain probability per hour, temperature, wind, heat index).
-- Status chips: Scheduled, En route, On site, In progress, Paused, Completed, Partial, Skipped, Cancelled (states owned by [04](04-scheduling-dispatch-routing.md); mobile substates in section 5.2).
+- Status chips show the canonical Visit states owned by [04](04-scheduling-dispatch-routing.md) 4.1.3 with field-friendly labels: `scheduled` ("Planned", a future day not yet published to the crew; read-only), `dispatched` ("Scheduled"), `en_route` ("En route"), `on_site` ("On site"), `in_progress` ("In progress"), `paused` ("Paused"), `completed` ("Completed"), `partially_completed` ("Partial"), `skipped` ("Skipped") and `canceled` ("Canceled"). The field subset of the state machine is shown in section 5.2.
 - A visit added, removed, or moved by dispatch while the user is on the screen animates in/out with a banner "Office added 1 visit: 22 Elm Ct (irrigation repair)". Changes to a visit already In progress are never applied silently; they show a review banner.
 - Rain/weather delay banner when dispatch triggers a weather reschedule ([04](04-scheduling-dispatch-routing.md)): "Rain day: today's route moved to Thursday. Clock in for shop work?"
 - Pull-to-refresh forces a sync; the list is always readable offline.
 
-**4.1.2 Route map [MVP].** Map with numbered pins, the planned polyline, crew current location (only while clocked in), and pins colored by status. Tap a pin for the visit card. Satellite toggle. Offline: vector base map and satellite tiles for the route corridor are pre-cached (section 4.21.3); if tiles are missing, the map degrades to pins on a blank grid with addresses (never a blank screen).
+**4.1.2 Route map [MVP].** Map with numbered pins, the planned polyline, crew current location (only while clocked in), and pins colored by status. Tap a pin for the visit card. Satellite toggle. Offline: the vector base map for the route corridor is pre-cached [MVP] and satellite tiles are added with offline map packs [V1] (section 4.21.3); if tiles are missing, the map degrades to pins on a blank grid with addresses (never a blank screen).
 
 **4.1.3 Route reorder by crew lead [MVP].** Drag-to-reorder (with large handles), or "Move to next". Rules: allowed only if Company setting `crew_can_reorder` is on (default on); visits with hard time windows or "must be first" flags show a warning when moved outside their window; reorders sync as a proposed sequence (conflict rules in 4.21.6); dispatch sees "Reordered by Maria (client had a party)" with optional reason.
 
@@ -250,7 +263,7 @@ Completion rules: required items must be answered before "Complete visit"; a cre
 
 **4.4.4 Notes [MVP].** Text or voice (section 4.11). Notes are typed: Internal, For client (appears in the visit summary sent to the client and in the portal), For next crew (pinned to the property for N visits).
 
-**4.4.5 Complete visit [MVP].** Validations: required checklist items, required photos, required chem record if any chem product was logged, required signature if the agreement requires sign-off. Outcome options: **Completed**; **Partially completed** (choose incomplete tasks, reason, and whether to auto-create a return visit); **Skipped** (reason code: rain, no access, dog loose, client cancelled on site, unsafe conditions, equipment failure, ran out of time, other). On completion:
+**4.4.5 Complete visit [MVP].** Validations: required checklist items, required photos, required chem record if any chem product was logged, required signature if the agreement requires sign-off. Outcome options: **Completed**; **Partially completed** (choose incomplete tasks, reason, and whether to auto-create a return visit); **Skipped** (reason code from the closed list in [04](04-scheduling-dispatch-routing.md) 4.1.3, shown with plain labels: `rain`, `weather_unsafe`, `no_access`, `dog_loose`, `vehicle_blocking`, `client_not_present`, `client_request` (client declined service on site), `no_growth`, `equipment_failure`, `ran_out_of_time`, `other` with required free text; `no_access`-type skips require a photo). On completion:
 - Visit summary is generated (tasks done, photos, notes for client, materials) and queued for client notification per Company template ([16](16-marketing-growth-communications.md)).
 - Billing triggers fire per the invoicing mode ([07](07-invoicing-billing-contracts.md)): per-visit invoice draft, usage accumulation for monthly billing, or none for fixed-fee agreements.
 - Job costing receives labor, materials and equipment usage ([09](09-accounting-ledger-integrations.md)).
@@ -264,7 +277,7 @@ Completion rules: required items must be answered before "Complete visit"; a cre
 | Location | Arrival or completion GPS fix inside the property geofence, or a geofence override reason recorded | "Arrived 420 m from property" with no reason |
 | Checklist | No required item skipped, or a crew-lead override with a reason code | Override "Client asked to skip back yard" |
 | Time | At least one job segment allocated to the visit | Visit completed with zero labor minutes (for example, completed from the truck) |
-| Conflicts | No open `billing_review` conflict (4.21.6) | Office cancelled while the crew completed offline |
+| Conflicts | No open `billing_review` conflict (4.21.6) | Office canceled while the crew completed offline |
 
 Unverified visits land in the office's exception queue with the failing checks listed. They are never silently invoiced or silently dropped. The crew sees nothing extra unless the office sends the visit back with a question.
 
@@ -493,31 +506,32 @@ Device and platform rules (as of Nov 2026, verify):
 - Apple requires merchant onboarding/education screens and acceptance of Tap to Pay terms by an account admin; Rootline shows these during Company payment setup ([08](08-payments-stripe.md)).
 
 Flow rules (see sequence diagram 5.5):
-- Connection tokens and the Terminal Location are created **on the Company's connected account** (direct charges); PaymentIntents are created server-side on the connected account with `card_present` and optional `application_fee_amount` per Rootline's pricing ([22](22-business-model-pricing-gtm.md)).
+- Connection tokens and the Terminal Location are created **on the Company's connected account** (direct charges); PaymentIntents are created server-side on the connected account with `card_present`; `application_fee_amount` is zero by default and set only for Companies on the opt-in pay-as-you-grow plan ([22](22-business-model-pricing-gtm.md)).
 - Device must be online at authorization time unless Stripe's offline-capable mode is supported for the device/reader and enabled by the Company (verify current Tap to Pay offline support; Stripe's offline mode historically targeted certain hardware readers). Offline fallback: "Send payment link" queued for SMS/email on sync, or record a check/cash.
 - Amount limits: Company-configurable max field charge (default $5,000) and per-day cap per user; amounts above require `owner`/`office_manager` approval in-app (push approval).
-- Tips: optional tip screen (off by default for B2B landscaping; useful for residential cleanups); tips are attributed to the crew and passed to payroll ([15](15-team-hr-payroll.md)).
+- Tips [V1, with [08](08-payments-stripe.md) 4.13]: optional client-facing tip screen, enabled per Company and service line (default on for residential maintenance and installs, off for commercial). Tips attach to the Visit, are split across the crew by clocked hours on that Visit by default (or equal split, or crew-lead decision within 24 hours), post to Tips Payable and flow to payroll ([15](15-team-hr-payroll.md)).
 - Surcharges follow the Company's surcharge program in [08](08-payments-stripe.md). Tap to Pay does not always reveal the card's funding type (credit or debit) before authorization, and when it cannot be determined, no surcharge is applied (fail-safe). The crew app never lets a crew member add a fee by hand.
 - Receipts: SMS/email receipt from the Company's branding; the invoice is marked paid on the `payment_intent.succeeded` webhook from the connected account, not on the device result alone (device result shows "Approved - posting").
 - Refunds are never initiated from the crew app; office only.
 
 **4.9.2 External reader [V1].** Support Stripe-certified Bluetooth readers (e.g., Stripe Reader M2) for iPads, unsupported phones, or offline-capable collection; same server flow.
 
-**4.9.3 Check and cash [MVP].** Record check (photo front/back, check number, amount, payer) or cash (amount, receipt sent). Creates a pending Payment in "Undeposited funds" with custody chain: collected by -> handed to office (counter-signed by `office_manager` in web app) -> deposited ([09](09-accounting-ledger-integrations.md) bank deposit). Cash over $X (default $500) requires a second-person witness signature. Mobile check deposit is not supported (the Company deposits at its bank).
+**4.9.3 Check and cash [MVP].** Record check (photo front/back, check number, amount, payer) or cash (amount, receipt sent). Creates a pending Payment held in **Cash in Transit** under the collecting crew lead, with custody chain: collected by -> handed to office (counted and counter-signed by `office_manager` in the web app, which moves it to Undeposited Funds) -> deposited ([09](09-accounting-ledger-integrations.md) bank deposit). Controls follow [08](08-payments-stripe.md) 4.20.2: a per-crew cash-on-hand limit (default $500) triggers a "drop cash at the office" prompt, check photos are required above $250 (configurable), and a single cash receipt above $500 also requires a second-person witness signature. Mobile check deposit is not supported (the Company deposits at its bank).
 
 **4.9.4 Payment link and card on file [MVP].** "Text payment link" sends the portal pay page ([06](06-customer-portal.md)). "Charge card on file" (if the client saved a payment method with authorization for future charges) is available to `crew_lead` only if the Company enables it and below the field charge cap.
 
 **4.9.5 Balance visibility [MVP].** Field roles see only the current invoice/visit amount and "past due" flag (not the client's full AR) unless `show_client_balance_in_field` is enabled.
 
-**4.9.6 How field money reaches the books [MVP].** The crew app records facts; the built-in ledger ([09](09-accounting-ledger-integrations.md)) posts journal entries from events, using the account map in [08](08-payments-stripe.md). Nothing is posted from the device result alone.
+**4.9.6 How field money reaches the books [MVP].** The crew app records facts; the built-in ledger ([09](09-accounting-ledger-integrations.md)) posts journal entries from events using its canonical chart of accounts and posting rules (09 section 4.3.2; [08](08-payments-stripe.md) 4.17 maps Stripe balance-transaction categories onto them). Nothing is posted from the device result alone.
 
-| Field event | When the ledger posts | Journal entry (account numbers from [08](08-payments-stripe.md)) |
+| Field event | When the ledger posts | Journal entry (account numbers and rule keys from [09](09-accounting-ledger-integrations.md)) |
 |---|---|---|
-| Tap to Pay $300.00 invoice + $40.00 tip | On the connected account's balance transaction (after `payment_intent.succeeded`) | Dr 1050 Stripe Clearing 340.00; Cr 1200 AR 300.00; Cr 2160 Tips Payable 40.00. Then fee: Dr 6150 Processing Fees, Cr 1050 |
-| Check $185.00 collected at the door | On `field_payment.recorded` | Dr 1060 Undeposited Funds 185.00; Cr 1200 AR 185.00 |
-| Cash $120.00 | On `field_payment.recorded` | Dr 1060 Undeposited Funds 120.00; Cr 1200 AR 120.00. Custody status follows the handoff chain |
-| Office deposits the day's checks and cash | On bank deposit in [09](09-accounting-ledger-integrations.md) | Dr 1010 Bank; Cr 1060 Undeposited Funds |
-| Check collected for an invoice already paid online | On sync | Dr 1060; Cr 2180 Unapplied Payments. The office refunds or applies it as a credit |
+| Tap to Pay $300.00 invoice + $40.00 tip | On the connected account's balance transaction (after `payment_intent.succeeded`) | `payments.charge`: Dr 1050 Stripe Clearing 340.00; Cr 1200 AR 300.00; Cr 2160 Tips Payable 40.00. Then `payments.fee`: Dr 6150 Merchant Fees, Cr 1050 |
+| Check $185.00 collected at the door | On `field_payment.recorded` | `payments.field_receipt`: Dr 1065 Cash in Transit (crew lead dimension) 185.00; Cr 1200 AR 185.00 |
+| Cash $120.00 | On `field_payment.recorded` | `payments.field_receipt`: Dr 1065 Cash in Transit 120.00; Cr 1200 AR 120.00. Custody status follows the handoff chain |
+| Office counts and counter-signs the crew lead's handover | On handover confirmation | `payments.handover`: Dr 1060 Undeposited Funds; Cr 1065 Cash in Transit. A count variance posts to cash over/short only with `owner` approval |
+| Office deposits the day's checks and cash | On bank deposit in [09](09-accounting-ledger-integrations.md) | `payments.bank_deposit`: Dr 1010 Operating Checking; Cr 1060 Undeposited Funds |
+| Check collected for an invoice already paid online | On sync | Dr 1065; Cr 2180 Customer Credits and Unapplied Cash. The office refunds or applies it as a credit |
 
 Tips payable is cleared when payroll ([15](15-team-hr-payroll.md)) pays tips to the crew through the Company's payroll provider. Rootline never pays employees directly.
 
@@ -757,7 +771,7 @@ This section specifies the client side of sync, what each device holds, and the 
 6. Idempotency everywhere: client-generated UUIDv7 identifiers for entities and mutations (time-ordered, per [20](20-architecture-security.md)); the server keys idempotency on `mutation_id`, so replays are safe.
 
 **4.21.2 Local storage [MVP].**
-- SQLite (via the Expo/React Native SQLite driver) with WAL mode; database encrypted at rest (SQLCipher-class encryption or OS data protection with keys in iOS Keychain / Android Keystore; final choice in [20](20-architecture-security.md)).
+- SQLite (via the Expo/React Native SQLite driver) with WAL mode; database encrypted at rest with SQLCipher, keyed from iOS Keychain / Android Keystore and wrapped by the server-issued device key under the offline lease (decision in [20](20-architecture-security.md) 4.11.1).
 - A reactive query layer (an in-house thin layer or an evaluated library such as WatermelonDB or a managed sync engine such as PowerSync; build-vs-buy decision recorded in [20](20-architecture-security.md)).
 - Blob store: photos, audio, signatures and SDS PDFs stored as files in the app sandbox, referenced by content hash (SHA-256).
 - Tables mirror server entities for the held buckets plus the protocol tables from [20](20-architecture-security.md) (`_mutation_queue`, `_bucket_checkpoint`, `_conflict`) and app-local tables (`_blob_upload_queue`, `_local_settings`, `_telemetry_buffer`).
@@ -772,7 +786,7 @@ This section specifies the client side of sync, what each device holds, and the 
 | Route | `crew_day:{crew_id}` | Visits, route stops, job summaries, scope lines, checklists, assigned tasks, notes | D-1 to D+7 | Live |
 | Property (for routed visits) | `property:{property_id}` | Property details, access points, geofence polygon, map layers (GeoJSON), pets/hazards, standing instructions, access secrets (encrypted; technicians get today only, enforced by a device-side expiry as well as bucket rules), last 3 visits' notes with after-photo thumbnails, chemical history (12 months), installed plants, irrigation zones | Properties referenced by a held `crew_day` bucket (2-20 KB each + thumbnails) | Live |
 | Client (minimal) | Carried inside `property:{property_id}` | Client display name, service contact first name and masked phone, notification preferences, chem sensitivities, fix-it-now authorization limit, current invoice amount and past-due flag | For properties in window | Live |
-| Map tiles | Not a sync bucket (map SDK offline region) | Vector base map + satellite tiles for the route corridor (2 km buffer) and properties (zoom up to ~20) | Today + tomorrow; cap ~150 MB, counted against the 1 GB media cache (verify map SDK tile-count limits) | Wi-Fi preferred, nightly; [MVP] basic vector, [V1] satellite packs (per [20](20-architecture-security.md)) |
+| Map tiles | Not a sync bucket (map SDK offline region) | Vector base map + satellite tiles for the route corridor (2 km buffer) and properties (zoom up to ~20) | Today + tomorrow; cap ~150 MB, counted against the 1 GB media cache (verify map SDK tile-count limits) | Wi-Fi preferred, nightly; [MVP] basic vector for the route corridor, [V1] satellite packs (offline map packs; [20](20-architecture-security.md) 4.11.1 currently tags all tile prefetch [V1] and should adopt this split) |
 | Weather | Derived, not a sync bucket | Hourly forecast for each route property for the window, plus 5-day history for heat-wave detection; current observations when online | Window | Hourly when online |
 
 Not cached: other crews' routes (except for `ops_manager`/`owner`, who get a summary scope), client financial history, other Clients, estimates/proposals (except for estimators' own appointments), payroll rates of other employees, full client contact details for technicians.
@@ -795,7 +809,7 @@ Not cached: other crews' routes (except for `ops_manager`/`owner`, who get a sum
 |---|---|---|---|
 | Time punch events | Member, crew lead, crew device | Append-only event union; derived timesheet recomputed server-side; device-clock skew > 5 min against the HLC flags the punch ([20](20-architecture-security.md)); duplicates: (a) same user and type within 60 s from different devices, or (b) a second `clock_in` (or second meal start) while the user already has an open segment. In both cases the earliest valid punch counts and the later one is marked `duplicate` (kept, visible to the approver, not counted); see flow 5.9 | Maria crew-punches Luis at 6:58 while Luis self-punches at 7:00 on his phone: both kept; Luis's 7:00 marked duplicate; timesheet uses 6:58; Luis sees "Clocked in by Maria at 6:58" |
 | Timesheet edits | Crew lead, member (proposal) | Superseding events with reason; if the office approved/edited the day after the client's base version, the client edit becomes a **proposed change** for office review | Crew lead edits yesterday's time offline after office already approved: proposal created, office notified |
-| Visit status | Crew lead, members | Server-validated state machine (5.2): transitions accepted if valid from the current server state; terminal field states (Completed/Partial/Skipped) dominate non-terminal ones; Completed vs Cancelled keeps **Completed** and opens a `billing_review` task for the office, per [20](20-architecture-security.md). The work record is always preserved | Office cancels Visit 7 at 10:05 (client called); the crew, offline, completes it at 10:20. The visit stays Completed with "Review: cancelled visit was performed", and ops decides to bill or credit |
+| Visit status | Crew lead, members | Server-validated state machine (5.2): transitions accepted if valid from the current server state; terminal field states (`completed`, `partially_completed`, `skipped`) dominate non-terminal ones; `completed` vs `canceled` keeps **`completed`** with `conflict = canceled_but_performed` and opens a `billing_review` task for the office, per [04](04-scheduling-dispatch-routing.md) 4.1.3 and [20](20-architecture-security.md). The work record is always preserved | Office cancels Visit 7 at 10:05 (client called); the crew, offline, completes it at 10:20. The visit stays `completed` with "Review: canceled visit was performed", and ops decides to bill or credit |
 | Visit assignment / date | Office only (server-authoritative); crew lead can propose | Server wins; local optimistic changes rolled back with explanation | Crew lead marks "move to tomorrow" offline; dispatch had already moved it to Friday: Friday stands, crew lead notified |
 | Route order | Crew lead (proposal), dispatch | Three-way merge: apply the crew lead's relative order to remaining (non-terminal) visits if dispatch didn't reorder since base; if both changed, dispatch order wins and crew lead's order is shown as a suggestion | |
 | Checklist answers | Any crew member on the visit | Field-level (per item) LWW by HLC; photo-required items union photos | Two members tick different items offline: both kept. Same item different answers: later HLC wins, earlier kept in history |
@@ -812,7 +826,7 @@ Not cached: other crews' routes (except for `ops_manager`/`owner`, who get a sum
 | Spot-it / issue reports | Anyone | Append-only; server-side dedupe suggestions (same property, category, within 50 m and 14 days) shown to the estimator, not auto-merged | |
 | Settings / templates | Office only | Server authoritative; read-only on device | |
 
-**4.21.7 Sync issues UX [MVP].** A "Needs attention" list in Sync details and for the crew lead's end-of-day: each issue has plain-language text in the user's language ("Office cancelled this visit before you completed it. Your photos and time are saved. The office will decide whether to bill."), and an action where the field can resolve it (e.g., re-enter a meter reading). Office-side issues appear in ops inbox ([04](04-scheduling-dispatch-routing.md)).
+**4.21.7 Sync issues UX [MVP].** A "Needs attention" list in Sync details and for the crew lead's end-of-day: each issue has plain-language text in the user's language ("Office canceled this visit before you completed it. Your photos and time are saved. The office will decide whether to bill."), and an action where the field can resolve it (e.g., re-enter a meter reading). Office-side issues appear in ops inbox ([04](04-scheduling-dispatch-routing.md)).
 
 **4.21.8 Multi-device and logout [MVP].** A user can be signed in on a personal phone and appear on a crew device simultaneously; mutations carry `device_id`. Logout with unsynced data is blocked (with "Sync now"); forced logout (termination) first attempts flush, then wipes local data (unsynced data on a terminated user's device is lost only if the device never reconnects; the office sees "Device X had 12 unsynced items at revocation").
 
@@ -834,7 +848,7 @@ Not cached: other crews' routes (except for `ops_manager`/`owner`, who get a sum
 
 **4.21.11 Local schema migrations [MVP].** Every native or OTA release that changes local tables ships forward-only migrations. They run before first render on a copy-on-write basis: SQLite transaction, then validation, then swap. They never drop `_mutation_queue` rows, and queued mutations keep the `schema_version` they were written with, which the server accepts within the N-2 window. If a migration fails, the app keeps the old schema, stays on the prior JS bundle (EAS Update rollback, 4.24.3) and reports the failure to `platform_engineer` telemetry.
 
-> **Competitive edge:** Jobber added offline support late; a 2026 third-party review says it still cannot edit existing records or capture signatures offline ([FieldCamp](https://fieldcamp.ai/reviews/jobber), verify). Aspire's crew app completes tickets offline, and stand-alone time clocks (Workyard, Lumber) punch offline but know nothing about visits, chem records or invoices. Rootline's sync is designed per entity: append-only where the law wants an immutable record (punches, chem logs, signatures), state-machine merge where money is at stake (completed vs cancelled), and LWW with history where speed matters (gate codes, checklists). The result is that a crew can run a full day in a dead zone, and the office receives a day it can bill, pay and defend.
+> **Competitive edge:** Jobber added offline support late; a 2026 third-party review says it still cannot edit existing records or capture signatures offline ([FieldCamp](https://fieldcamp.ai/reviews/jobber), verify). Aspire's crew app completes tickets offline, and stand-alone time clocks (Workyard, Lumber) punch offline but know nothing about visits, chem records or invoices. Rootline's sync is designed per entity: append-only where the law wants an immutable record (punches, chem logs, signatures), state-machine merge where money is at stake (completed vs canceled), and LWW with history where speed matters (gate codes, checklists). The result is that a crew can run a full day in a dead zone, and the office receives a day it can bill, pay and defend.
 
 ### 4.22 Security, MDM and BYOD
 
@@ -943,29 +957,30 @@ flowchart TD
 
 ### 5.2 Visit lifecycle (mobile view of the Visit state machine)
 
-Visit states are owned by [04](04-scheduling-dispatch-routing.md). The crew app adds the substates On site and Paused and enforces these transitions locally (server re-validates on sync).
+Visit states are owned by [04](04-scheduling-dispatch-routing.md) section 4.1.3 (canonical machine). The crew app executes Visits once they are `dispatched` (route published) and implements the field subset below with the same state keys; it enforces these transitions locally and the server re-validates on sync. `en_route`, `on_site` and `paused` roll up to `in_progress` in coarse reporting, as defined in 04.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Scheduled
-    Scheduled --> EnRoute : start drive
-    Scheduled --> Skipped : skip with reason
-    Scheduled --> Cancelled : office cancels
-    EnRoute --> OnSite : arrive confirmed
-    EnRoute --> Scheduled : abort drive
-    OnSite --> InProgress : start work
-    OnSite --> Skipped : no access or dog loose
-    InProgress --> Paused : leave site or pause
-    Paused --> InProgress : resume
-    InProgress --> Completed : all required items done
-    InProgress --> Partial : complete with incomplete tasks
-    Partial --> [*]
-    Completed --> [*]
-    Skipped --> [*]
-    Cancelled --> [*]
+    [*] --> dispatched
+    dispatched --> en_route : start drive
+    dispatched --> on_site : arrival without drive start
+    dispatched --> skipped : skip with reason
+    dispatched --> canceled : office cancels
+    en_route --> on_site : arrival confirmed
+    en_route --> dispatched : drive aborted
+    on_site --> in_progress : start work
+    on_site --> skipped : no access or dog loose
+    in_progress --> paused : leave site or pause
+    paused --> in_progress : resume
+    in_progress --> completed : all required items done
+    in_progress --> partially_completed : complete with open tasks
+    partially_completed --> [*]
+    completed --> [*]
+    skipped --> [*]
+    canceled --> [*]
 ```
 
-Rules: Completed and Partial require required checklist items, photos, chem records (if chem logged) and signatures (if required) unless crew lead override with reason; a Partial with "return needed" creates a follow-up visit proposal for dispatch; Cancelled can only originate from the office (or client portal), and if it arrives after an offline completion the conflict rule in 4.21.6 applies.
+Rules: `completed` and `partially_completed` require required checklist items, photos, chem records (if chem logged) and signatures (if required) unless crew lead override with reason; a `partially_completed` Visit with "return needed" creates a follow-up `unscheduled` Visit linked by `parent_visit_id` for dispatch ([04](04-scheduling-dispatch-routing.md) 4.1.3); `skipped` always carries a reason code from the closed list in 04; `canceled` can only originate from the office (or a client request through the portal), and if it arrives after an offline completion the conflict rule in 4.21.6 applies. Visits on days not yet published (D+2 to D+7 by default) are held on the device in `scheduled` and shown read-only as "Planned"; the office-side states `unscheduled` and `missed` never appear on the device, and `missed` is held as "Awaiting crew sync" while this crew has unsynced commands for that day ([04](04-scheduling-dispatch-routing.md) 4.1.3).
 
 ### 5.3 Individual time status
 
@@ -1218,7 +1233,7 @@ flowchart TD
 
 ```text
 +-------------------------------------------------+
-| [=] Today, Tue Jul 14        (o) 12 waiting     |  <- sync pill (amber)
+| [=] Today, Tue Jul 14        (o) 12 to send     |  <- sync pill (Pending, Stone)
 | ON THE CLOCK - DRIVE - 0:12   Crew: 4           |  <- clock pill
 +-------------------------------------------------+
 | !! HIGH HEAT 101F  Water + shade checks 2h      |
@@ -1404,7 +1419,7 @@ Notes: tiles show only the crew assigned to this device today, plus "Other" (sea
 | <  Collect payment            22 Elm Ct - Lee   |
 +-------------------------------------------------+
 | Invoice INV-10482  Fall cleanup     $300.00     |
-| Paid to: Green Valley Landscapes LLC            |  <- Company legal name
+| Paid to: Greenleaf Grounds Co.                  |  <- Company legal name
 |          (your company's Stripe account)        |
 +-------------------------------------------------+
 | AMOUNT                        [ $300.00   edit ]|
@@ -1684,7 +1699,7 @@ erDiagram
 
 | Endpoint | Purpose |
 |---|---|
-| `POST /sync/v1/push` | Batch of up to 100 mutations; returns per-mutation results (protocol in [20](20-architecture-security.md)) |
+| `POST /sync/v1/push` | Batches of up to 200 mutations or 256 KB, whichever comes first; returns per-mutation results (protocol in [20](20-architecture-security.md) 4.11.4) |
 | `POST /sync/v1/pull` | Bucket checkpoints in; ordered put/delete pages (up to 5 MB) out |
 | `POST /mobile/v1/blobs/initiate` / `POST /mobile/v1/blobs/complete` | Presigned multipart upload by content hash |
 | `POST /mobile/v1/devices/enroll` / `POST /mobile/v1/devices/{id}/revoke` | Device lifecycle |
@@ -1701,15 +1716,15 @@ All endpoints are tenant-scoped by token; the sync API is the only write path fo
 | Event | Consumers |
 |---|---|
 | `visit.en_route`, `visit.arrived`, `visit.started`, `visit.paused`, `visit.completed`, `visit.partially_completed`, `visit.skipped` | Scheduling [04](04-scheduling-dispatch-routing.md), client notifications [16](16-marketing-growth-communications.md), invoicing [07](07-invoicing-billing-contracts.md), portal timeline [06](06-customer-portal.md), analytics [18](18-reporting-analytics.md) |
-| `visit.conflict_detected` | Ops inbox [04](04-scheduling-dispatch-routing.md) |
+| `sync.conflict_detected` (emitted by the sync server when a field mutation conflicts, for example completed after cancel) | Ops inbox and needs-attention queue [04](04-scheduling-dispatch-routing.md) |
 | `time.punched`, `time.segment_changed`, `time.clocked_out`, `timesheet.crew_approved`, `attestation.signed`, `premium_pay.flagged` | Payroll [15](15-team-hr-payroll.md), job costing [09](09-accounting-ledger-integrations.md) |
-| `media.uploaded` | Portal galleries [06](06-customer-portal.md), AI photo QA [17](17-ai-copilot-automation.md) |
+| `media.uploaded`, `media.published_to_client` (a `client_visible` asset finished uploading, or an asset was marked client-visible) | Portal visit and project feeds [06](06-customer-portal.md), AI photo QA [17](17-ai-copilot-automation.md) |
 | `material.used`, `plant.installed` | Inventory [13](13-operations-inventory-equipment.md), job costing [09](09-accounting-ledger-integrations.md), warranties [14](14-service-line-modules.md) |
-| `chemical_application.signed`, `chemical_application.amended` | Compliance reports [14](14-service-line-modules.md), client notices [16](16-marketing-growth-communications.md) |
+| `chemical_application.recorded` (on applicator signature; name per the event registry in [20](20-architecture-security.md)), `chemical_application.amended` | Compliance reports [14](14-service-line-modules.md), client notices [16](16-marketing-growth-communications.md), portal application records [06](06-customer-portal.md) |
 | `signature.captured` | Contracts/change orders [03](03-crm-sales-estimating-proposals.md) |
 | `field_payment.recorded` (check/cash), `field_payment.card_initiated` | AR [07](07-invoicing-billing-contracts.md), ledger [09](09-accounting-ledger-integrations.md) |
 | `issue.reported` | CRM [03](03-crm-sales-estimating-proposals.md), scheduling (service requests), warranty [14](14-service-line-modules.md) |
-| `visit.verification_changed` | Invoicing exception queue [07](07-invoicing-billing-contracts.md) |
+| `visit.verified` (emitted by the Visit service in [04](04-scheduling-dispatch-routing.md) 8.3 when the 4.4.5a status flips to verified) | Per-visit invoicing and the exception queue [07](07-invoicing-billing-contracts.md) |
 | `field_expense.submitted`, `purchase_request.created` | AP and bank-feed matching [09](09-accounting-ledger-integrations.md), purchasing [13](13-operations-inventory-equipment.md) |
 | `dvir.submitted`, `dvir.defect_reported`, `equipment.meter_recorded`, `equipment.reported_down` | Fleet/maintenance [13](13-operations-inventory-equipment.md), dispatch availability [04](04-scheduling-dispatch-routing.md) |
 | `incident.reported`, `heat.procedure_activated`, `heat.check_logged`, `safety_meeting.held` | Safety/HR [15](15-team-hr-payroll.md), owner alerts |
@@ -1719,11 +1734,11 @@ All endpoints are tenant-scoped by token; the sync API is the only write path fo
 
 | Event | Effect in app |
 |---|---|
-| `visit.scheduled`, `visit.rescheduled`, `visit.cancelled`, `route.optimized`, `crew.assignment_changed` ([04](04-scheduling-dispatch-routing.md)) | Silent push nudge; pull; banners for changes affecting today |
-| `weather.alert` ([04](04-scheduling-dispatch-routing.md)) | Rain/heat/lightning banners and safety pushes |
+| `visit.dispatched`, `visit.rescheduled`, `visit.canceled`, `visit.assigned` / `visit.unassigned`, `route.published` / `route.changed_after_publish`, `crew.assignment_changed` ([04](04-scheduling-dispatch-routing.md)) | Silent push nudge; pull; banners for changes affecting today |
+| `weather.alert_raised`, `weather.delay_declared` ([04](04-scheduling-dispatch-routing.md)) | Rain/heat/lightning banners, rain-day banner and safety pushes |
 | `property.updated`, `client.preferences_updated` | Refresh property scope; highlight changed notes |
 | `price_book.updated`, `checklist_template.updated`, `policy_pack.updated` | Reference scope refresh |
-| `payment_intent.succeeded` / `payment_intent.payment_failed` (Stripe connected-account webhook via [08](08-payments-stripe.md)) | Mark invoice paid/failed on device |
+| `payments.payment.succeeded` / `payments.attempt.failed` ([08](08-payments-stripe.md), raised from the connected account's `payment_intent.*` webhooks) | Mark invoice paid/failed on device |
 | `employee.terminated`, `employee.certification_expired` ([15](15-team-hr-payroll.md)) | Revoke device sessions/PIN hashes; block chem steps |
 | `announcement.published` | Push + announcement feed |
 | `review.received` ([16](16-marketing-growth-communications.md)) | Crew kudos |
@@ -1820,9 +1835,9 @@ Guardrails: AI never submits time, attestations, chem records or payments; AI-tr
 | GPS spoofing apps | Mock-location flags; flagged punches, not blocked |
 | Two crews at the same property (maintenance + irrigation) | Each crew has its own Visit; geofence prompts show both visits if both are on the user's route |
 | Property with no parcel polygon (new subdivision) | Circle geofence on geocoded point; crew lead can drop a corrected pin (office approves) |
-| Client home and refuses service on site | Skip reason "Client cancelled on site" with optional client signature; billing per agreement terms ([07](07-invoicing-billing-contracts.md)) |
-| Partial completion due to rain mid-visit | Partial with "Rain" reason; dispatch rain workflow proposes return |
-| Chem applied, then visit cancelled by office | Chem record stands (legal record); conflict surfaced; billing decided by ops |
+| Client home and refuses service on site | Skip reason `client_request` ("Client declined on site") with optional client signature; billing per agreement terms ([07](07-invoicing-billing-contracts.md)) |
+| Partial completion due to rain mid-visit | `partially_completed` with reason `rain`; dispatch rain workflow proposes return |
+| Chem applied, then visit canceled by office | Chem record stands (legal record); conflict surfaced; billing decided by ops |
 | Applicator license expires mid-season | Chem steps blocked for that user from expiry date; crew lead sees roster gap warning 30 days before expiry |
 | Tap to Pay declined or device ineligible | Offer payment link or Bluetooth reader; never retry more than 3 times in a row on the same card |
 | Tap to Pay succeeded on device but webhook delayed | Device shows "Approved - posting"; invoice paid when webhook arrives; reconciliation job checks PaymentIntents without webhooks after 15 min ([08](08-payments-stripe.md)) |
@@ -1970,7 +1985,7 @@ Guardrails: AI never submits time, attestations, chem records or payments; AI-tr
 
 ## Sources
 
-Research for this module combined targeted web searches with direct reading of platform documentation; some vendor and government hosts (Stripe docs, Aspire docs, eCFR, California DIR Title 8) could not be fetched live during review. Facts drawn from general industry or regulatory knowledge without a live source are marked "verify" inline, and every time-sensitive fact (plan names, device lists, regulatory status) should be re-checked before it is quoted externally.
+Research for this module combined targeted web research with platform documentation. Verification note: items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build; every time-sensitive fact (plan names, device lists, regulatory status) should be re-checked before it is quoted externally.
 
 **Competitors and user feedback**
 - Jobber App Store listing: https://apps.apple.com/us/app/jobber/id1014146758

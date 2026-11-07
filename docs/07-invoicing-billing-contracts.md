@@ -2,6 +2,19 @@
 
 > Billing is where a landscape company either gets paid for the work it already did or quietly gives it away. Most companies still run billing from a mix of the scheduler, spreadsheets, QuickBooks and memory: a mowing visit that never made it onto an invoice, a fertilizer application that was skipped but still billed, a $48,000 commercial install whose 10% retainage nobody remembered to invoice 14 months later. This module defines Rootline's **Billing Engine**: one model that turns every billable event (a completed visit, an approved T&M ticket, a reached milestone, a 4-inch snow push, an approved change order) into a **Billable Item**, rolls Billable Items into Invoices according to a **Billing Schedule** (per-visit, batched, level monthly installments with true-up, prepaid seasons, milestones, progress, retainage, T&M, AIA-style pay applications, snow events), runs them through approval and **Billing Runs**, calculates sales tax correctly for US states and Canadian provinces, delivers branded invoices with proof-of-service attachments, collects through the Company's own Stripe account ([08](08-payments-stripe.md)), chases late payers with a guarded AI collections agent, and posts every event to the built-in double-entry ledger ([09](09-accounting-ledger-integrations.md)). It also owns the **Service Agreement** lifecycle (terms, scope, escalators, renewal, cancellation, proration, mid-season changes, skipped-visit credits) because in landscaping the contract *is* the billing plan.
 
+**At a glance**
+
+- **What it is:** the Billing Engine and the Service Agreement lifecycle. Every billable event becomes a Billable Item; Billing Schedules turn Billable Items into Invoices; Billing Runs batch, approve and send them; every event posts to the built-in ledger.
+- **Decision 1, one engine for every billing mode:** per-visit, batched, level monthly installments with season-end true-up, prepaid seasons, deposits, milestones, progress, retainage, T&M, AIA-style pay applications, snow per-push / per-event / seasonal with caps ([4.2](#42-invoice-generation-modes)).
+- **Decision 2, the contract is the billing plan:** Service Agreements carry terms, escalators, renewal, cancellation and proration rules, and a live earned-vs-billed-vs-paid meter that drives the true-up automatically ([4.3](#43-service-agreement-lifecycle-mvp-unless-tagged)).
+- **Decision 3, deposits are liabilities:** a paid Deposit Request posts to 2150 Customer Deposits, not revenue, and is applied to invoices by a chosen method; installments and prepaid seasons post to 2200 Deferred Revenue and are recognized per completed visit ([4.11](#411-ledger-postings-per-billing-event-mvp)).
+- **Decision 4, tax per line:** every line carries a tax category and every Job a real-property treatment; a tax engine adapter (manual rates and Stripe Tax at MVP, Avalara at V1) does the rate math for US states and Canadian provinces, with evidence stored per invoice ([4.5](#45-sales-tax-and-indirect-tax-us-and-canada)).
+- **Decision 5, money moves elsewhere:** collection runs on the Company's own Stripe account through [08](08-payments-stripe.md); posting rules P1-P42 use the canonical chart and rule registry of [09](09-accounting-ledger-integrations.md), which wins any account-code conflict.
+- **MVP:** per-visit, batch, level billing with true-up, prepaid seasons, deposits, milestones, T&M, basic snow billing, agreement lifecycle, invoice approvals and Billing Runs, proof-of-service invoices, US/Canada sales tax, credit memos and write-offs, statements, late fees, dunning, collections workspace.
+- **Later:** [V1] percent-complete progress billing, retainage, AIA-style pay applications, full snow billing, consolidated portfolio billing, client-side AP approval, indexed escalators, payment plans, AI collections agent, credit limits, cross-currency, filing partners; [V2] e-invoicing networks.
+- **Differentiators:** contract-native level billing with an automatic true-up, residential and commercial billing in one product, invoices that carry GPS-stamped proof of service, landscape-aware taxability, and ledger-exact postings at the moment of each event.
+- **Key cross-links:** proposals and deposits set in [03](03-crm-sales-estimating-proposals.md); visits from [04](04-scheduling-dispatch-routing.md) and [05](05-field-crew-mobile-app.md); portal pay and approvals in [06](06-customer-portal.md); permissions in [02](02-personas-roles-permissions.md); snow events in [14](14-service-line-modules.md).
+
 ---
 
 ## Table of contents
@@ -51,7 +64,7 @@
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> **Research note (November 2026).** Competitor capabilities below come from vendor help centers, vendor marketing pages and review sites surfaced during this research pass. Live fetching of several vendor sites was blocked in the research environment, so some claims rely on search-result excerpts of those pages; each is cited and anything time-sensitive is marked "verify". A senior review pass on 2026-11-07 corrected the snow comparison, added ownership changes (Aspire inside ServiceTitan, LMN and SingleOps merged as Granum) and Jobber's QuickBooks sync limits; in that pass the web-search budget was exhausted and direct fetches of primary sources were blocked by the research environment, so those additions reuse evidence already cited in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md). Broader competitive coverage is in [01 - Market landscape](01-market-landscape.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md) and [R4](research/R4-industry-payments-accounting.md).
+> **Research note (November 2026).** Competitor capabilities below come from vendor help centers, vendor marketing pages and review sites; some claims rely on search-result excerpts of the cited pages. Each is cited and anything time-sensitive is marked "verify". Broader competitive coverage is in [01 - Market landscape](01-market-landscape.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md) and [R4](research/R4-industry-payments-accounting.md).
 
 ### 2.1 What competitors do
 
@@ -250,7 +263,7 @@ The flagship residential and small-commercial maintenance model: "30 weekly mows
   - Deposit amount: % of proposal (default 30%), fixed amount, or "materials cost + X%". Minimums and maximums configurable. Some US states limit home-improvement deposits for consumer contracts (California's home improvement rules are a frequently cited example: 10% or $1,000, whichever is less, for contracts subject to them). Rootline ships a platform-maintained rule table that warns the estimator when a deposit exceeds a jurisdiction's cap for residential home-improvement work (verify per state; maintained by `platform_finance`).
   - **Application methods**: `apply_to_first_invoice`, `apply_pro_rata` (each progress invoice consumes deposit in proportion to its share of contract value), `apply_to_final_invoice` (common for "deposit holds your spot"), `manual`.
   - Deposit application appears as a negative line on the invoice ("Less deposit received Mar 3, DEP-1042: -$11,550.00") and reduces the amount due, not the taxable amount.
-  - Unapplied deposits on cancelled jobs: refund (full or less a cancellation fee and the cost of non-returnable special-order materials, if contracted; posting P35), or convert to client credit. Requires `owner` or `office_manager` approval.
+  - Unapplied deposits on cancelled jobs: refund (full or less a cancellation fee and the cost of non-returnable special-order materials, if contracted; posting P35), or convert to client credit. Requires `owner` approval, or `office_manager` within the refund limit ($500 per refund by default, [02](02-personas-roles-permissions.md) 5.6); the Stripe refund itself follows [08](08-payments-stripe.md) 4.16.
   - Design retainer rule: "credit design fee toward installation if install is signed within 90 days" creates an automatic credit line on the first install invoice.
 - **Canada**: under the GST/HST rules a deposit is generally not treated as consideration until it is applied to the supply, which matches the liability treatment; tax is charged when the deposit is applied (verify with the Company's accountant).
 
@@ -496,6 +509,7 @@ stateDiagram-v2
 ```
 
 - `Overdue`, `Viewed`, `Disputed` are **derived flags** stored for querying; payment status is computed from allocations ([08](08-payments-stripe.md)).
+- **Stored status vs UI state.** The `invoice.status` column uses the snake_case values of the entity model in [20](20-architecture-security.md) 7.4: `draft`, `pending_approval`, `approved`, `issued` (shown as **Sent**; the `invoice.issued` event fires on this transition), `partially_paid`, `paid`, `credited`, `written_off`, `void`. `Viewed`, `Overdue` and `Disputed` are flags, not statuses.
 - A `Sent` invoice can only be voided if no payment is allocated; otherwise a credit memo is required. Voids after the accounting period is closed post the reversal in the current open period ([09](09-accounting-ledger-integrations.md)).
 
 #### 4.4.2 Numbering [MVP]
@@ -569,7 +583,7 @@ Rules:
 
 #### 4.4.8 Client-side acceptance (commercial AP approval) [V1]
 
-- `client_commercial` users with the "Approver" contact flag can review invoices in the portal, approve, reject with reason, or request changes; multi-step approval chains on the client side (site manager -> regional manager) are configurable per client.
+- `client_commercial` contacts with the `approver` contact scope ([06](06-customer-portal.md) 3.3, with invoice visibility enabled) can review invoices in the portal, approve, reject with reason, or request changes; multi-step approval chains on the client side (site manager -> regional manager) are configurable per client.
 - Invoice shows `client_status`: `awaiting_client_approval`, `approved_by_client`, `rejected_by_client`. Payment terms clock can start at client approval if the contract says so (common in commercial "Net 30 from approved invoice").
 
 #### 4.4.9 PO numbers and ceilings [MVP]
@@ -852,9 +866,9 @@ Rules:
 
 ### 4.11 Ledger postings per billing event [MVP]
 
-Every billing event posts a balanced journal entry to the built-in ledger at the moment it happens (or as a daily summarized entry with full sub-ledger detail where volume is high). Codes below are the **canonical default chart of accounts** from [09 - 4.2.2](09-accounting-ledger-integrations.md), shown with their account roles; posting rules bind to roles, never to numbers, so a Company that renumbers its chart breaks nothing. (Earlier drafts of this doc used provisional codes such as 1100 AR and 2210 deferred revenue; [09 - 4.2.6](09-accounting-ledger-integrations.md) keeps that crosswalk, and this table now uses the canonical codes directly.) Revenue accounts are split by division (maintenance, enhancements, install, design, lawn and PHC, irrigation, snow, lighting, tree). Sales tax payable is sub-accounted per tax agency. Every journal line carries dimensions: `client_id`, `property_id`, `job_id`, `agreement_id`, `division` (service line), `branch_id`. In [09](09-accounting-ledger-integrations.md)'s rule registry these rules are namespaced `billing.P1` to `billing.P42`.
+Every billing event posts a balanced journal entry to the built-in ledger at the moment it happens (or as a daily summarized entry with full sub-ledger detail where volume is high). Codes below are the **canonical default chart of accounts** from [09 - 4.2.2](09-accounting-ledger-integrations.md), shown with their account roles; posting rules bind to roles, never to numbers, so a Company that renumbers its chart breaks nothing. ([09 - 4.2.6](09-accounting-ledger-integrations.md) keeps a crosswalk from the provisional codes used before the canonical chart existed, such as 1100 AR and 2210 deferred revenue, for anyone migrating prototypes or test fixtures built on them.) Revenue accounts are split by division (maintenance, enhancements, install, design, lawn and PHC, irrigation, snow, lighting, tree). Sales tax payable is sub-accounted per tax agency. Every journal line carries dimensions: `client_id`, `property_id`, `job_id`, `agreement_id`, `division` (service line), `branch_id`. In [09](09-accounting-ledger-integrations.md)'s rule registry these rules are namespaced `billing.P1` to `billing.P42`.
 
-Default accounts used by billing: `1010 Operating checking` (`bank:operating`), `1050/1051 Stripe clearing USD/CAD` (`stripe_clearing:{currency}`), `1060 Undeposited funds`, `1065 Cash in transit, crew-held`, `1075 Disputed payments receivable`, `1200 Accounts receivable` (`ar_control`), `1205 Retainage receivable`, `1210 Unbilled receivables - agreements (contract asset)`, `1220 Allowance for doubtful accounts`, `2101-2149 Sales tax payable by agency` (US states, counties, cities; Canadian PST agencies), `2125 GST/HST payable`, `2126 QST payable`, `2150 Customer deposits`, `2160 Tips payable`, `2170 Gift credit liability`, `2180 Customer credits and unapplied cash`, `2200 Deferred revenue - service agreements (contract liability)`, revenue `4100 Maintenance`, `4200 Enhancements`, `4300 Design-build and installation`, `4350 Design fees`, `4400 Lawn care and PHC`, `4500 Irrigation`, `4600 Snow and ice`, `4700 Lighting`, `4800 Tree care`, `4910 Discounts and allowances (contra-revenue)`, `4920 Payment method discounts`, `4930 Small balance adjustments`, `4950 Card surcharge income`, `6150 Merchant processing fees`, `6152 Rootline platform fees`, `6155 Dispute fees`, `6170 Bad debt expense`, `7200 Finance charge income`, `7500 Other income`, `7910 Realized FX gain/loss`. "Tax" in the table means 2101-2149 in the US and 2125/2126 (plus PST agency sub-accounts) in Canada.
+Default accounts used by billing: `1010 Operating checking` (`bank:operating`), `1050/1051 Stripe clearing USD/CAD` (`stripe_clearing:{currency}`), `1060 Undeposited funds`, `1065 Cash in transit, crew-held`, `1075 Disputed payments receivable`, `1200 Accounts receivable` (`ar_control`), `1205 Retainage receivable`, `1210 Unbilled receivables - agreements (contract asset)`, `1220 Allowance for doubtful accounts`, `2101-2149 Sales tax payable by agency` (US states, counties, cities; Canadian PST agencies), `2125 GST/HST payable`, `2126 QST payable`, `2150 Customer deposits`, `2160 Tips payable`, `2170 Gift credit liability`, `2180 Customer credits and unapplied cash`, `2190 Unclaimed property payable`, `2200 Deferred revenue - service agreements (contract liability)`, revenue `4100 Maintenance`, `4200 Enhancements`, `4300 Design-build and installation`, `4350 Design fees`, `4400 Lawn care and PHC`, `4500 Irrigation`, `4600 Snow and ice`, `4700 Lighting`, `4800 Tree care`, `4910 Discounts and allowances (contra-revenue)`, `4920 Payment method discounts`, `4930 Small balance adjustments`, `4950 Card surcharge income`, `6150 Merchant processing fees`, `6152 Rootline platform fees`, `6155 Dispute fees`, `6170 Bad debt expense`, `7200 Finance charge income`, `7500 Other income`, `7910 Realized FX gain/loss`. "Tax" in the table means 2101-2149 in the US and 2125/2126 (plus PST agency sub-accounts) in Canada.
 
 | # | Event (trigger) | Debit | Credit | Notes |
 |---|---|---|---|---|
@@ -887,7 +901,7 @@ Default accounts used by billing: `1010 Operating checking` (`bank:operating`), 
 | P27 | Chargeback won | 1050 Stripe clearing | 1075 Disputed payments receivable; 6155 (if Stripe returns the fee) | |
 | P28 | Chargeback lost | 1200 AR (invoice reopened for collection) or 6170 Bad debt expense | 1075 Disputed payments receivable | Company chooses. |
 | P29 | Gift credit sold / redeemed [V1] | Sold: 1050. Redeemed: 2170 | Sold: 2170. Redeemed: 1200 | Breakage only where gift-card law allows. |
-| P30 | Tip paid with an invoice payment | 1050 Stripe clearing | 2160 Tips payable | Cleared by payroll ([15](15-team-hr-payroll.md)); never revenue, never taxed, never surcharged. |
+| P30 | Tip paid with an invoice payment [V1] | 1050 Stripe clearing | 2160 Tips payable | Cleared by payroll ([15](15-team-hr-payroll.md)); never revenue, never taxed, never surcharged. |
 | P31 | Foreign-currency invoice paid [V1] | 1050/1051 (base-currency equivalent at payment rate) | 1200 AR (at invoice rate); 7910 Realized FX gain/loss (difference, debit or credit) | Revaluation of open foreign AR at period end in [09](09-accounting-ledger-integrations.md). |
 | P32 | Seasonal snow installment / recognition | Installment: 1200. Recognition: 2200 | Installment: 2200. Recognition: 4600 Snow and ice | Installment via P4; ratable recognition over the season months via P6. |
 | P33 | Offline payment recorded: check, cash, Interac e-Transfer, wire | 1060 Undeposited funds (office), 1065 Cash in transit (crew-collected, crew lead dimension) or 1010 (wire or e-Transfer straight to bank) | 1200 AR (allocated); 2180 (excess) | Bank deposit later posts Dr 1010, Cr 1060 and is matched in bank rec. |
@@ -899,7 +913,7 @@ Default accounts used by billing: `1010 Operating checking` (`bank:operating`), 
 | P39 | Payment-method discount (ACH incentive) applied [V1] | 4920 Payment method discounts | 1200 AR | Rules owned by [08](08-payments-stripe.md) 4.10. |
 | P40 | Late fee waived | 7200 Finance charge income | 1200 AR | Reversal of P20; a waiver in a later period posts in the current period. |
 | P41 | Design-fee credit on install conversion (4.2.5) | 4910 Discounts and allowances (reason `design_credit`) | 1200 AR | Posted with P1 of the first install invoice; the design fee already recognized in 4350 stays earned. |
-| P42 | Dormant credit escheated as unclaimed property [V1] | 2180 Customer credits | Unclaimed property payable (new role `unclaimed_property_payable`; code to be assigned in [09](09-accounting-ledger-integrations.md)) | Remittance to the state or province posts Dr payable, Cr 1010. |
+| P42 | Dormant credit escheated as unclaimed property [V1] | 2180 Customer credits | 2190 Unclaimed property payable (`unclaimed_property_payable`) | Remittance to the state or province posts Dr 2190, Cr 1010. |
 
 **Posting keys.** Each rule builds the deterministic business key required by [20](20-architecture-security.md) (L4 exactly-once posting): `invoice:{id}:issue`, `invoice:{id}:void`, `credit_memo:{id}:issue`, `agreement:{id}:recognize:{service_date}`, `agreement:{id}:reclass:{period}`, `late_fee:{id}:assess` and `:waive`, `write_off:{id}`, `deposit:{id}:apply:{invoice_id}`. Re-delivered or duplicated events therefore cannot double-post.
 
@@ -909,7 +923,7 @@ Default accounts used by billing: `1010 Operating checking` (`bank:operating`), 
 |---|---|---|---|---|
 | Jan 1 | Installment 1 of 12 issued, autopay charged | P4 | 1200 AR $228.33 | 2200 Deferred revenue $228.33 |
 | Jan 1 | Card payment succeeds | P14 | 1050 Stripe clearing $228.33 | 1200 AR $228.33 |
-| Jan 3 | Stripe fee on the payment | P15 | 6150 Merchant fees $6.92 | 1050 Stripe clearing $6.92 |
+| Jan 1 | Stripe fee on the payment (same balance transaction; posted with the payout on Jan 3 if the Company summarizes fees per payout, [08](08-payments-stripe.md) 4.17.2) | P15 | 6150 Merchant processing fees $6.92 | 1050 Stripe clearing $6.92 |
 | Jan 3 | Payout lands in the bank | P17 | 1010 Operating checking $221.41 | 1050 Stripe clearing $221.41 |
 | Apr 6 | First weekly mow completed | P5 | 2200 Deferred revenue $55.00 | 4100 Maintenance revenue $55.00 |
 | Apr | Spring cleanup and fertilizer round 1 completed | P5 | 2200 $412.00 | 4100 $340.00; 4400 Lawn and PHC revenue $72.00 |
@@ -1613,9 +1627,9 @@ Granular permissions compose into roles ([02](02-personas-roles-permissions.md))
 | Send / resend invoices | F | F | F | O | - | - | - | - | - | - | - | - | - | - |
 | Void invoices | F | A | A | - | - | - | - | - | - | - | - | - | - | - |
 | Run Billing Runs | F | F | F | - | - | - | - | - | - | - | - | - | - | - |
-| Issue credit memos | F | A (to limit) | C | C (O) | - | - | - | - | - | - | - | - | - | - |
-| Refunds | F | A (to limit) | C | - | - | - | - | - | - | request | request | - | - | - |
-| Write-offs | F | A (to limit) | C | - | - | - | - | - | - | - | - | - | - | - |
+| Issue credit memos | F | A (to limit) | F | C (O, to limit) | - | - | - | - | - | - | - | - | - | - |
+| Refunds | F | A (to limit) | A (to limit) | - | - | - | - | - | - | request | request | - | - | - |
+| Write-offs | F | A (to limit) | A (to limit) | - | - | - | - | - | - | - | - | - | - | - |
 | Waive late fees | F | F | F | O | - | - | - | - | - | - | - | - | - | - |
 | Configure late fee, dunning, credit and cancellation policies | F | C | V | - | - | - | - | - | - | - | - | - | defaults and legal tables | defaults and legal tables |
 | Configure tax engine, registrations, category mapping | F | V | F | - | - | - | - | - | - | - | - | - | platform mapping | platform mapping |
@@ -1625,9 +1639,9 @@ Granular permissions compose into roles ([02](02-personas-roles-permissions.md))
 | Renewal center and escalations | F | C | V | O | C | - | - | - | - | - | - | - | - | - |
 | Pay applications (prepare/submit) | F | F | V | C (O) | - | - | - | - | - | - | certify | - | - | - |
 | Collections workspace and AI agent settings | F | F | V | O | - | - | - | - | - | - | - | - | - | - |
-| Record field payments / T&M tickets | F | F | - | F | - | - | C | C (if granted) | - | sign | sign | - | - | - |
+| Record field payments / T&M tickets | F | F | F (office-received payments) | F | O (deposits on own Proposals) | - | C | C (if granted) | - | sign | sign | - | - | - |
 | Submit billable work (sub) | F | F | - | F | - | - | - | - | C (own) | - | - | - | - | - |
-| Approve invoices in portal (client AP) | - | - | - | - | - | - | - | - | - | - | A (if approver contact) | - | - | - |
+| Approve invoices in portal (client AP) | - | - | - | - | - | - | - | - | - | - | A (`approver` contact scope) | - | - | - |
 | View ledger postings for invoices | F | V | F | - | - | - | - | - | - | - | - | - | - | - |
 | Design fee invoices | F | F | V | - | V | C (own designs) | - | - | - | - | - | - | - | - |
 | Credit limits, risk tiers and credit holds | F | C (to limit) | V | request | - | - | - | - | - | - | - | - | - | - |
@@ -1636,12 +1650,12 @@ Granular permissions compose into roles ([02](02-personas-roles-permissions.md))
 | Platform rule tables (late-fee limits, renewal notices, deposit caps, cooling-off, tax mapping) | V | V | V | - | - | - | - | - | - | - | - | - | F | F |
 
 Rules:
-- "To limit" thresholds are per-user settings (e.g., office manager may approve credits up to $250 and write-offs up to $100).
+- "To limit" thresholds are role limits from [02](02-personas-roles-permissions.md) 5.6, adjustable per user: by default `office_manager` may issue credit memos up to $250, refunds up to $500 each ($2,000 per day) and write-offs up to $100; `bookkeeper` refunds up to $500 and write-offs up to $500; `ops_manager` credit memos up to $250. Above the limit the action becomes an approval request to `owner`.
 - Segregation of duties option [V1]: the user who creates a credit memo or write-off cannot approve it; the user who records a cash payment cannot void the invoice it paid.
 - Additional client contacts (spouse, tenant, billing contact) see only invoices for properties and documents they are scoped to; a tenant contact can see service details without seeing amounts if the owner contact chooses ([06](06-customer-portal.md)).
 - `platform_owner` can change platform defaults (tax mapping, legal tables, dunning template library) but never edits tenant invoices.
 - `platform_curator` and `platform_engineer` have no access to tenant billing data; engineers debug with redacted, aggregated telemetry or through the same audited support session as `platform_support`.
-- Custom roles ([02](02-personas-roles-permissions.md)) are composed from the same capability keys (e.g., `billing.invoice.approve`, `billing.credit_memo.create`, `billing.write_off.approve`, `billing.run.execute`, `billing.tax.configure`, `billing.agreement.cancel`), each with optional amount limits.
+- Custom roles ([02](02-personas-roles-permissions.md)) are composed from the canonical permission keys of 02 5.2 (e.g., `invoice.approve_internal`, `invoice.send`, `invoice.void`, `credit_memo.create`, `payment.refund`, `collections_case.write_off`, `tax_setting.update`, `service_agreement.update`), each with optional amount limits. Billing Runs and agreement cancellation need keys not yet in 02's catalog (proposed: `billing_run.post` and `service_agreement.cancel`).
 
 ---
 
@@ -1744,17 +1758,17 @@ All AI runs through the AI Gateway, is metered in AI credits, and follows the gu
 
 ## 12. Metrics and KPIs
 
-Formal KPI definitions live in [18](18-reporting-analytics.md); billing-specific definitions:
+Formal KPI definitions and metric keys live in [18](18-reporting-analytics.md), which wins any conflict; billing-specific definitions:
 
 | KPI | Definition | Why it matters | Illustrative target (design target, not benchmark) |
 |---|---|---|---|
-| **DSO** (days sales outstanding) | (Ending AR / revenue billed in period) x days in period | Cash speed | Company-specific; track trend vs pre-Rootline baseline. |
+| **DSO** (days sales outstanding) | Countback method by default (`dso_countback` in [18](18-reporting-analytics.md): subtract each prior month's billed revenue from ending AR until AR is exhausted), because the simple method distorts for seasonal businesses; the simple method `dso_simple` = (Ending AR / revenue billed in period) x days in period is shown for comparison | Cash speed | Company-specific; track trend vs pre-Rootline baseline. |
 | **CEI** (collection effectiveness index) | (Beginning AR + billed - ending total AR) / (beginning AR + billed - ending current AR) x 100 | Collections quality independent of growth | > 85% |
-| **Time to invoice** | Median hours from `visit.completed` (or milestone) to `invoice.sent` (per-visit modes) or days after cycle end (batch) | Leakage and cash speed | Per-visit < 24 h; batch < 2 days after cycle |
+| **Time to invoice** | Median hours from `visit.completed` (or milestone) to `invoice.issued` (per-visit modes) or days after cycle end (batch) | Leakage and cash speed | Per-visit < 24 h; batch < 2 days after cycle |
 | **Billing leakage rate** | Billable Items older than 1 cycle still `unbilled` / all Billable Items | Lost revenue | < 0.5% |
-| **Autopay penetration** | Active agreements with autopay / active agreements | Predictable cash | Rising season over season |
+| **Autopay penetration** | `autopay_penetration` in [18](18-reporting-analytics.md) (recurring clients on autopay / recurring clients); billing screens also show the agreement view (active agreements with autopay / active agreements) | Predictable cash | Rising season over season |
 | **On-time payment rate** | Invoices paid by due date / invoices due | Client behavior | > 80% residential |
-| **Bad debt %** | Write-offs / revenue (trailing 12 months) | Credit policy | < 1% |
+| **Bad debt %** | `bad_debt_pct` in [18](18-reporting-analytics.md): write-offs / billed revenue (trailing 12 months) | Credit policy | < 1% |
 | **Invoice correction rate** | Credit memos + voids (excluding true-ups and skip credits) per 100 invoices | Billing accuracy | < 2 |
 | **Dispute rate** | Disputed invoices + chargebacks / invoices | Trust | < 0.5% |
 | **Billing Run duration** | Run created -> all sent | Office efficiency | < 30 min for 300 invoices |
@@ -1808,7 +1822,7 @@ Formal KPI definitions live in [18](18-reporting-analytics.md); billing-specific
 6. **Legal rule tables ownership**: late-fee limits, renewal-notice rules, deposit caps and surcharge rules need a maintained legal database. Build in-house with counsel, or license from a compliance-data vendor?
 7. **Gapless numbering**: assign at approval (no gaps from drafts) is the plan; do any Canadian or US e-invoicing initiatives expected in our horizon require stricter sequencing?
 8. **AI agent voice calls**: are residential outbound AI collection calls worth the regulatory and brand risk, or do we restrict voice to commercial accounts permanently?
-9. **QuickBooks-first customers**: when a Company keeps QBO as its GL, do we still post to the built-in ledger in "shadow mode" (for job costing and agreement positions) and sync summarized entries? Coordinate with [09](09-accounting-ledger-integrations.md).
+9. **QuickBooks-first customers**: decided in [09](09-accounting-ledger-integrations.md) 4.17.1. When a Company keeps QBO, QuickBooks Desktop or Xero as its book of record (Mode C), the built-in ledger still posts every billing event as an operational subledger (job costing, agreement positions, deferred revenue) and invoices, credit memos and payments sync as documents. Remaining question for this module: should Mode C tenants see the earned-vs-billed agreement meter and true-up previews sourced from Rootline's subledger even when the CPA adjusts deferred revenue directly in QBO, and how is that drift surfaced?
 10. **Snow depth source of truth**: crew-measured depth vs weather-service depth when they disagree on a per-push contract; should contracts specify the source, and should Rootline offer a default clause?
 11. **Unclaimed property**: handle escheat reporting in-product (V2) or only report dormant credits and leave filing to the Company's accountant?
 12. **Cross-border Companies**: how much of non-resident GST/HST registration and US sales tax for Canadian Companies do we automate in V1?
@@ -1821,7 +1835,7 @@ Formal KPI definitions live in [18](18-reporting-analytics.md); billing-specific
 
 ## Sources
 
-Research note: sources below were found during this module's research pass (November 2026). Several vendor sites could not be fetched directly from the research environment, so a number of competitor statements rely on search-result excerpts of the cited pages; treat vendor capabilities, ratings and prices as "as of November 2026, verify". Regulatory references in sections 4.2-4.9 and 11 (Regulation Z, NY GOL 5-903, California Automatic Renewal Law and home-improvement deposit limits, the FTC negative-option rule litigation, Canada's Interest Act, GST/HST place-of-supply and small-supplier rules, state taxability examples) are drawn from general knowledge of these laws and were **not** re-verified against primary sources in this pass; each is marked "verify" in the text and must be confirmed by counsel before launch. The 2026-11-07 review pass added CRA input-tax-credit documentation tiers, the GST/HST tax-point rule, and the FTC cooling-off rule from general knowledge as well; all are marked "verify" because that pass could not run new searches (search budget exhausted, primary-source hosts blocked). Deeper research lives in [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md) and [R4](research/R4-industry-payments-accounting.md).
+Verification note: items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. Some competitor statements rely on search-result excerpts of the cited pages; treat vendor capabilities, ratings and prices as "as of November 2026, verify". Regulatory references in sections 4.2-4.9 and 11 (Regulation Z, NY GOL 5-903, California Automatic Renewal Law and home-improvement deposit limits, the FTC negative-option rule litigation, the FTC cooling-off rule, Canada's Interest Act, GST/HST place-of-supply, tax-point and small-supplier rules, CRA input-tax-credit documentation tiers, state taxability examples) are drawn from general knowledge of these laws, are marked "verify" in the text and must be confirmed by counsel before launch. Deeper research lives in [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md) and [R4](research/R4-industry-payments-accounting.md).
 
 Competitors and market:
 - Jobber Help Center, invoice reminders and batch invoicing: <https://help.getjobber.com/hc/en-us/articles/115009687088>
@@ -1861,7 +1875,7 @@ Competitors and market:
 - SIMA, effective in-season documentation: <https://resources.sima.org/snow-and-ice-resource-center/effective-in-season-documentation>
 - ContractorApps, best field service software for snow removal (competitor-written; treat with caution): <https://contractorapps.pages.dev/comparisons/best-field-service-software-snow-removal>
 
-Regulatory references (cited by sibling docs; not re-fetched in this pass):
+Regulatory references (cited in sibling docs):
 - Regulation Z creditor definition, 12 CFR 1026.2(a)(17), as cited in [06](06-customer-portal.md): <https://www.ecfr.gov/current/title-12/chapter-X/part-1026/subpart-A/section-1026.2>
 - Card surcharging caps and state rules, as tabulated with sources in [08](08-payments-stripe.md) 4.10.
 

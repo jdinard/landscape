@@ -2,6 +2,20 @@
 
 > Landscape companies do not sell "jobs"; they sell **service lines** with very different physics. A 5-round fertilizer program lives by soil temperature and state pesticide law. Irrigation lives by frost dates, zone maps and municipal backflow deadlines. Snow lives by storm events at 2 a.m., trigger depths and slip-and-fall lawsuits filed two years later. Tree work lives by ISA risk ratings, permits and crane picks. Design-build lives by phases, 811 tickets and plant warranties. Commercial maintenance lives by scope-of-work specs, quality audits and enhancement upsells. Generic field-service tools (Jobber, Housecall Pro) flatten all of this into "recurring visit + invoice", and niche tools (Real Green for lawn, Yeti for snow, Arborgold for trees) each own one slice, which forces multi-line companies to run 2-4 systems. Rootline's Service-Line Modules are a set of **toggleable, deeply specialized modules built on shared engines** (Program Engine, Application Compliance Engine, Property Asset Registry, Storm Event Engine, Inspection Engine, Project Engine, Warranty Engine) so that a Company can switch on exactly the lines it sells and get specialist-grade depth in each, while every line still flows through one CRM, one schedule, one crew app, one portal and one ledger.
 
+**At a glance**
+
+- **What it is:** toggleable, specialist-grade modules for each line a landscape company sells (lawn and PHC, irrigation and backflow, snow and ice, tree care, install projects, commercial grounds, landscape lighting, holiday lighting, mosquito and pest, seasonal campaigns), built on seven shared engines and flowing through one CRM, schedule, crew app, portal and ledger.
+- **Decision 1: a framework, not forks.** Each module is a manifest (settings, templates, rule packs, crew-app adapters, portal widgets) with toggle states and setup wizards. Turning a line off never deletes data and never silently disables a safety or compliance gate.
+- **Decision 2: compliance is a by-product of the work.** Versioned jurisdiction rule packs (pesticide records, sign posting, registries, backflow, one-call) are curated once by `platform_curator` for every tenant, and the compliant record is the only way to complete the Visit.
+- **Decision 3: this doc owns domain rules, not mechanics.** Jobs, Visits, routes and the Visit state machine are in [04](04-scheduling-dispatch-routing.md); capture UX in [05](05-field-crew-mobile-app.md); invoices in [07](07-invoicing-billing-contracts.md); posting rules in [09](09-accounting-ledger-integrations.md) (this module emits facts and never writes journal entries); materials, salt and subcontractor records in [13](13-operations-inventory-equipment.md); credentials in [15](15-team-hr-payroll.md).
+- **Decision 4: rounds become Visits only through the Round Planner.** Round instances (`planned` -> `window_open` -> `scheduled` -> `applied`) carry windows, notice gates and license requirements into the optimizer in [04](04-scheduling-dispatch-routing.md).
+- **Decision 5: snow is evidence-first.** The Storm Event Engine evaluates per-site triggers, bills eight pricing models against a named weather station of record and seals hash-manifested proof-of-service packets for slip-and-fall defense.
+- **MVP:** the framework, lawn and PHC programs with application records, irrigation (system inventory, seasonal services, repairs), install projects with an 811 gate that has no override, commercial grounds (SOW, audits, enhancement capture) and seasonal campaigns.
+- **Later:** [V1] snow and ice (first winter after MVP), backflow, smart irrigation, landscape lighting, holiday lighting, mosquito and pest, notification registries. [V2] tree care, advanced water budgets, automated storm creation. [V3] weather-indexed snow contracts.
+- **Packaging ([22](22-business-model-pricing-gtm.md) 4.2.1 and 4.5):** core lines on every plan. Snow and Ice is an add-on billed Nov-Mar only ($99/mo, $79/mo on annual plans) and included in Enterprise. Tree Care is a $59/mo add-on on Starter and Grow, included in Pro and Enterprise.
+- **Differentiators:** one platform for multi-line companies that today run 2-4 niche tools; cross-module rules (seeding-safe pre-emergents, rainfast irrigation holds, zone maps that protect heads during aeration); court-ready snow proof; the Company's own private-line as-builts shown at the dig gate.
+- **Key cross-links:** [06](06-customer-portal.md) (treatments log, snow service log, warranty claims), [12](12-plant-knowledge-base.md) (species, pests and Region profiles for PHC and trees), [17](17-ai-copilot-automation.md) (AI Gateway, agents), [18](18-reporting-analytics.md) (module KPIs), [02](02-personas-roles-permissions.md) (roles and field masking).
+
 **Related docs:** [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md) | [Scheduling, dispatch and routing](04-scheduling-dispatch-routing.md) | [Field crew mobile app](05-field-crew-mobile-app.md) | [Customer portal](06-customer-portal.md) | [Invoicing and billing](07-invoicing-billing-contracts.md) | [Payments](08-payments-stripe.md) | [Accounting and ledger](09-accounting-ledger-integrations.md) | [Design Studio](10-design-studio.md) | [AI design and mockups](11-ai-design-mockups.md) | [Plant Knowledge Base](12-plant-knowledge-base.md) | [Operations, inventory and equipment](13-operations-inventory-equipment.md) | [Team, HR and payroll](15-team-hr-payroll.md) | [Marketing and growth](16-marketing-growth-communications.md) | [AI copilot and automation](17-ai-copilot-automation.md) | [Reporting and analytics](18-reporting-analytics.md) | [Platform admin](19-platform-admin-portal.md) | [Architecture and security](20-architecture-security.md) | [Pricing and GTM](22-business-model-pricing-gtm.md) | [Moonshots](23-innovation-moonshots.md) | [Roadmap](24-roadmap-feature-catalog.md)
 
 **Scope boundary.** This doc owns the *domain rules* of each service line: what data exists, which rules gate scheduling, what compliance records must be produced, how each line is priced and billed. Generic mechanics live elsewhere and are only summarized here: the visit/route engine ([04](04-scheduling-dispatch-routing.md)), the mobile capture UX ([05](05-field-crew-mobile-app.md)), invoice generation and tax ([07](07-invoicing-billing-contracts.md)), revenue recognition and job costing ([09](09-accounting-ledger-integrations.md)), materials and subcontractor master data ([13](13-operations-inventory-equipment.md)), licenses and certifications of employees ([15](15-team-hr-payroll.md)).
@@ -55,7 +69,7 @@ The landscape software market splits along service lines:
 | Complaint pattern | Evidence | Rootline response |
 |---|---|---|
 | "I need two or three systems because my main tool doesn't do snow / lawn programs / trees." | Snow workarounds in generic tools ([Agiled](https://agiled.app/blog/best-client-management-software-for-snow-removal), [ContractorApps](https://contractorapps.pages.dev/comparisons/best-field-service-software-snow-removal)); audit bolt-ons sold "alongside" Aspire/LMN/Jobber ([SiteDNA](https://sitedna-marketing-site.pages.dev/)). | Toggleable modules on one data model (section 4.0). |
-| Support and migration pain with the lawn incumbent. | Capterra reviews of Real Green criticizing support and the cloud move ([Capterra](https://www.capterra.com/p/78106/Service-Assistant/reviews/?page=5)). | Guided program import (CSV + AI mapping) and in-app copilot support ([17](17-ai-copilot-automation.md)). |
+| Support and migration pain with the lawn incumbent. | Capterra reviews of Real Green criticizing support and the cloud move ([Capterra](https://www.capterra.com/p/78106/Service-Assistant/reviews/?page=5)). | Guided program import (CSV + AI mapping) and in-app Copilot support ([17](17-ai-copilot-automation.md)). |
 | Measuring large properties is slow. | LMN G2 review ([G2](https://www.g2.com/products/lmn)). | Measurements come from Design Studio, parcel data and AI takeoffs ([10](10-design-studio.md), [11](11-ai-design-mockups.md)); every module reads the same measured areas. |
 | Snow claims are lost for lack of documentation. | SIMA describes logs, checklists and archives as "a legal shield" ([SIMA in-season documentation](https://resources.sima.org/snow-and-ice-resource-center/effective-in-season-documentation)); a 2015 conference handout citing Zurich claims data reported that 73% of snow and ice claims settle for under USD 20k and attributes 50% to lack of verified or documented service ([NFMT 2015 handout](https://www.nfmt.com/handouts/orlando/2015/T5_2C.pdf), dated and secondhand, verify before external use). Vendors argue GPS alone is disputable ("might have just driven past the lot") and must be paired with photos and timestamps ([Aspire blog](https://www.youraspire.com/blog/prove-service-delivery-data-ends-disputes)). | Tamper-evident Proof-of-Service Packets combining GPS geofence, breadcrumbs, photos, weather and material logs (section 4.3). |
 | Pesticide records and notifications are manual. | State rules differ: e.g., Maine requires commercial applicators to keep application records for two years ([Maine BPC document](https://www.maine.gov/dacf/php/pesticides/documents2/bd_mtgs/Jun22/6-CA-Caribou-CC.pdf)); roughly 21-23 states plus DC have lawn notification laws using signs, registries or neighbor notice, and about 16 states run registries ([Beyond Pesticides factsheet](https://beyondpesticides.org/assets/media/documents/lawn/factsheets/STATE%20NOTFICATION%20LAWS%20-%20LAWN.pdf), [Mother Earth News](https://www.motherearthnews.com/sustainable-living/nature-and-environment/pesticide-application-signs-zm0z16jjzsor/); counts vary by source and date, verify per state). | Application Compliance Engine with platform-curated state rule packs (section 4.1.4). |
@@ -306,7 +320,7 @@ stateDiagram-v2
 Validation rules:
 - An instance cannot move to `scheduled` if any required compliance step is incomplete (registry notification not yet sent, minimum notice hours not elapsed, applicator license for the product category missing on the assigned crew).
 - `missed` instances raise an ops alert 7 days before window close (configurable) and appear in the Round Planner's "at risk" lane.
-- `skipped` requires a reason code (client request, gate locked, dog in yard, unsafe weather, other) and photo when "no access".
+- `skipped` requires a reason code from the closed Visit list in [04](04-scheduling-dispatch-routing.md) 4.1.3 (`client_request`, `no_access` such as a locked gate, `dog_loose`, `weather_unsafe`, `other`) and a photo for access reasons; the code drives the agreement outcome and credit policy in [07](07-invoicing-billing-contracts.md).
 
 #### 4.1.3 Product library, mixes and rates [MVP]
 
@@ -315,7 +329,7 @@ Validation rules:
 - **Mix recipes:** a Mix is a list of products with rate per 1,000 sq ft (or per acre, per gallon of carrier, per plant, per inch DBH). The rate engine computes, for each Visit: product quantity = rate x treated area / 1,000. For liquids it also computes total spray volume from carrier rate (e.g., 1 gal water per 1,000 sq ft) and tank loads.
 - **Load sheets [MVP]:** for a day's route, the crew app shows total product to load per truck (e.g., "Route 4, 38 lawns, 214,000 sq ft at 3.1 lb per 1,000 sq ft: 663 lb of 24-0-11 with prodiamine, about 13.3 bags of 50 lb; truck stock 9 bags, load 5 more"). Inventory is decremented on completion ([13](13-operations-inventory-equipment.md)).
 - **Measured area source of truth:** treated area comes from the Property's measured turf polygons (Design Studio, AI measurement, or manual). If the area changes by more than 10% vs the enrollment snapshot, the price change rule (absorb, reprice next season, reprice now with notice) is applied per Company policy.
-- **Restricted-ingredient substitution [V1]:** rule packs can restrict an active ingredient or class for a use site (turf, ornamentals) from an effective date. Example: New York's Birds and Bees Protection Act phases out many neonicotinoid uses on turf and ornamentals (verify the exact effective dates and exemptions in the pack). When such a rule takes effect, every Mix containing the ingredient is flagged for Properties in that jurisdiction, future Round Instances move to `blocked`, and the copilot proposes the template's alternate (for example, swapping an imidacloprid grub-preventive round for a chlorantraniliprole product, per label). Price impact of the substitute is shown before ops accepts.
+- **Restricted-ingredient substitution [V1]:** rule packs can restrict an active ingredient or class for a use site (turf, ornamentals) from an effective date. Example: New York's Birds and Bees Protection Act phases out many neonicotinoid uses on turf and ornamentals (verify the exact effective dates and exemptions in the pack). When such a rule takes effect, every Mix containing the ingredient is flagged for Properties in that jurisdiction, future Round Instances move to `blocked`, and Copilot proposes the template's alternate (for example, swapping an imidacloprid grub-preventive round for a chlorantraniliprole product, per label). Price impact of the substitute is shown before ops accepts.
 - **Equipment calibration records [V1]:** each spreader, sprayer and salt spreader in [13](13-operations-inventory-equipment.md) carries a calibration log (date, method such as catch-pan or tarp test, measured output per 1,000 sq ft or per minute, setting chart, technician). Calibration older than the Company interval (default 30 days in season for liquid rigs, estimate) shows amber on the load sheet; Application Records store the calibration ID used, which turns "the rate on the record" into a defensible number. Calibration drift (actual product used vs planned over the last 20 applications on that rig above 10%) prompts a recalibration task.
 
 #### 4.1.4 Application records and state compliance [MVP]
@@ -339,7 +353,7 @@ Every completed application produces an immutable **Application Record**. Requir
 
 Rules:
 - **Rule packs** are curated per jurisdiction (state, province, and county or municipality where local ordinances exist) by `platform_curator`, versioned, with effective dates and a "last verified" date. Each pack declares: required record fields, retention period (e.g., two years for Maine commercial applicators per the [Maine BPC document](https://www.maine.gov/dacf/php/pesticides/documents2/bd_mtgs/Jun22/6-CA-Caribou-CC.pdf); other states differ), sign posting rules, registry rules, customer notice rules, reporting obligations (some states require annual use reports), and fertilizer blackout dates. Tenants cannot edit a platform pack but can add stricter Company rules.
-- Records are append-only after the Visit is closed. Corrections create a new **record revision** with reason, author and timestamp; the original remains visible in the audit trail. This matches how regulators expect corrections to be made (no silent edits).
+- Records are immutable from the applicator's signature in the crew app ([05](05-field-crew-mobile-app.md) 4.7.1) and are sealed (`application_record.sealed`) when the Visit closes. Corrections create a new **record revision** with reason, author and timestamp; the original remains visible in the audit trail. This matches how regulators expect corrections to be made (no silent edits).
 - **Export formats:** state-specific CSV/PDF where agencies publish a format; a generic "regulator view" PDF per date range, applicator or product; annual use summaries by active ingredient.
 - **Federal note:** USDA's recordkeeping program for restricted-use pesticides applies to private (agricultural) applicators; commercial lawn applicators are generally governed by state rules (verify per state). Rootline's RUP handling therefore lives in state rule packs.
 
@@ -396,7 +410,7 @@ Spec:
 
 - Each product and mix carries guardrails: max wind (e.g., 10 mph for liquid broadcast), rain-free hours after application, min/max air temperature, soil temperature (for pre-emergents), "do not apply to frozen or saturated soil", heat-stress cutoffs for some herbicides.
 - **Planning-time check:** the Round Planner overlays hourly forecast for each route day; routes with expected violations are flagged amber (risk) or red (violation).
-- **Execution-time check:** when the crew starts a Visit, the app pulls current conditions for the location (weather API) and blocks liquid applications above the wind limit; the technician can switch to a granular alternative mix if the round template allows, or mark `weather_hold`.
+- **Execution-time check:** when the crew starts a Visit, the app pulls current conditions for the location (weather API) and blocks liquid applications above the label wind limit; the technician can switch to a granular alternative mix if the round template allows, or mark `weather_hold`. Label limits are hard blocks for every product (the label is the law). Company thresholds that are stricter than the label (for example a 10 mph Company default when the label allows more) can be overridden up to the label limit by `crew_lead` or `ops_manager` with a reason (`guardrail.overridden`).
 - Every guardrail evaluation (inputs, rule, outcome, override) is stored on the Application Record.
 
 #### 4.1.9 Program pricing, prepay, level-pay and renewals [MVP]
@@ -504,7 +518,7 @@ Spec:
 | Vendor | Integration surface (public info, verify before build) | Rootline use |
 |---|---|---|
 | Hunter Hydrawise | REST API and GraphQL API with OAuth 2.0; rate limits include 3 start/stop/suspend zone calls per 30 seconds and 30 calls per 5 minutes per user on the REST API ([Hunter](https://www.hunterirrigation.com/support/hydrawise-api-information)); Python client exposes controllers and zones ([pydrawise](https://pydrawise.readthedocs.io/en/latest/reference/)). | Read controllers, zones, schedules, run history, flow (where metered); start/stop/suspend zones; apply rain delays. |
-| Rachio | OAuth 2.0; devices, zones, schedule rules, flex schedules, webhooks for run and skip events; zone run durations 0-10,800 seconds ([rachiopy](https://rachiopy.readthedocs.io/en/latest/zone.html)); a secondary index lists a 3,500 requests/day per token limit ([API Evangelist index](https://raw.githubusercontent.com/api-evangelist/rachio/refs/heads/main/llms/rachio-llms.txt)), but the official developer docs could not be reached in this pass, so the polling budget must be set from the official figure at build time and the design must work webhook-first if the real limit is lower; future watering times are not directly exposed ([Rachio community](https://community.rachio.com/t/api-capability-for-weather-skips/23624)). | Webhook-driven run/skip ingestion, zone start for troubleshooting, schedule summary for client reports. |
+| Rachio | OAuth 2.0; devices, zones, schedule rules, flex schedules, webhooks for run and skip events; zone run durations 0-10,800 seconds ([rachiopy](https://rachiopy.readthedocs.io/en/latest/zone.html)); a secondary index lists a 3,500 requests/day per token limit ([API Evangelist index](https://raw.githubusercontent.com/api-evangelist/rachio/refs/heads/main/llms/rachio-llms.txt)) (secondary source; verify against the official developer docs), so the polling budget must be set from the official figure at build time and the design must work webhook-first if the real limit is lower; future watering times are not directly exposed ([Rachio community](https://community.rachio.com/t/api-capability-for-weather-skips/23624)). | Webhook-driven run/skip ingestion, zone start for troubleshooting, schedule summary for client reports. |
 | Rain Bird IQ4 | Third-party API for flow, alarms, events, run times and weather; requires the Owner role and company authorization for third-party API access, historically via a paid subscription ([Rain Bird](https://www.rainbird.com/professionals/iq4-product-development-update-new-bms-Integration)). | Commercial sites: alarm ingestion into repair tickets, run-time and flow reporting in monthly property reports. |
 | Weathermatic (SmartLink) | Commercial cellular smart controller platform; API availability not confirmed (verify, likely partnership-based). | Same as Rain Bird for commercial portfolios. |
 
@@ -608,7 +622,7 @@ Snow site maps are a typed layer on the Property map (shared with the Design Stu
 stateDiagram-v2
     [*] --> watch
     watch --> pretreat : "anti-icing window opens"
-    watch --> cancelled : "forecast drops below triggers"
+    watch --> canceled : "forecast drops below triggers"
     pretreat --> active : "precip begins"
     watch --> active : "precip begins"
     active --> cleanup : "precip ends"
@@ -618,7 +632,7 @@ stateDiagram-v2
     monitoring --> cleanup : "refreeze callout"
     closed --> billed : "event invoices approved"
     billed --> [*]
-    cancelled --> [*]
+    canceled --> [*]
 ```
 
 Rules:
@@ -829,8 +843,8 @@ Change order mechanics live in [03](03-crm-sales-estimating-proposals.md). Proje
 
 Every excavation in the US and Canada is governed by one-call ("call before you dig") laws; notice periods (commonly two to three business days), ticket validity and re-mark rules vary by state/province (verify per one-call center).
 
-- **Dig Ticket** entity: one-call center, ticket number, ticket type (normal, emergency, re-mark, update), request date/time, **legal start date/time** (computed from the one-call rule pack's wait period, business days and holidays), **expiration date** (per pack), work area description, white-lining required flag and photo, excavation methods, status (`requested`, `waiting`, `clear_to_dig`, `expired`, `cancelled`, `closed`), positive response per utility (marked, clear/no conflict, not yet responded), locate mark photos.
-- **Hard gate:** any task tagged `excavation` (planting trees, footing digs, irrigation trenching, lighting cable trenching, fence posts, post-hole augering) on a Visit cannot be started in the crew app unless a valid ticket covers the property and date. Override only by `owner` or `ops_manager` with reason; overrides are audited and reported.
+- **Dig Ticket** entity: one-call center, ticket number, ticket type (normal, emergency, re-mark, update), request date/time, **legal start date/time** (computed from the one-call rule pack's wait period, business days and holidays), **expiration date** (per pack), work area description, white-lining required flag and photo, excavation methods, status (`requested`, `waiting`, `clear_to_dig`, `expired`, `canceled`, `closed`), positive response per utility (marked, clear/no conflict, not yet responded), locate mark photos.
+- **Hard gate:** any task tagged `excavation` (planting trees, footing digs, irrigation trenching, lighting cable trenching, fence posts, post-hole augering) on a Visit cannot be started in the crew app unless a valid ticket covers the property and date. There is **no override**, matching the job-level "Dig ticket clear" scheduling gate in [04](04-scheduling-dispatch-routing.md) 4.1.2. When a utility has not responded by the legal start time, `owner` or `ops_manager` can record a **manual utility response** with evidence (a call log with the utility, or the one-call center's documented no-response procedure where the one-call pack allows it; verify per state); the ticket moves to `clear_to_dig` only if the pack permits, and every manual response is audited and reported.
 - **Depth threshold:** the one-call pack carries the jurisdiction's excavation definition (some exempt very shallow hand work such as planting annuals or bed edging, others do not; verify per state). Tasks are tagged `excavation` from the price book item (e.g., "Plant shrub 3-gal" yes, "Edge beds" per pack), so crews never decide the legal question on site.
 - **Gate evaluation offline:** the crew app caches each ticket's status, legal start and expiry with the day's route, so the gate works in dead zones; a ticket that expires while offline closes the gate at the expiry time on the device clock and re-checks on sync.
 
@@ -845,11 +859,11 @@ stateDiagram-v2
     clear_to_dig --> expired : "ticket life ends"
     clear_to_dig --> waiting : "marks destroyed, update requested"
     expired --> requested : "update or new ticket"
-    requested --> cancelled : "project cancelled"
-    waiting --> cancelled : "project cancelled"
+    requested --> canceled : "project canceled"
+    waiting --> canceled : "project canceled"
     clear_to_dig --> closed : "excavation complete"
     closed --> [*]
-    cancelled --> [*]
+    canceled --> [*]
 ```
 - **Expiry handling:** reminders before expiry; one-click "renew/update ticket" instructions; multi-week projects show ticket coverage on the Gantt.
 - **Positive response parsing [V1]:** one-call positive response emails are forwarded to a Company inbox address; AI extracts utility responses into the ticket ([17](17-ai-copilot-automation.md)). Direct one-call center integrations where APIs exist (V2, verify per center).
@@ -917,7 +931,7 @@ Commercial maintenance is won by bids against a scope of work, retained by quali
 
 - Annual contracts billed in 12 equal monthly installments (common in commercial maintenance) or per visit; enhancements billed separately on completion; consolidated portfolio invoices with per-property lines and PO numbers; credit for missed services per contract terms (automatic credit memo suggestions when a SOW-required visit is missed and not made up).
 - **SOW unit values:** every spec item carries a unit value per occurrence derived from its estimate (labor hours x billing rate + materials). Example: a USD 57,600 annual contract billed USD 4,800/month whose SOW includes 32 mowings valued at USD 640 each, 16 bed weedings at USD 380 and 3 shrub prunings at USD 1,450. These values drive three things: revenue recognition per completed occurrence ([09](09-accounting-ledger-integrations.md) `billing.P5`, with `billing.P7` reclassing earned-but-unbilled value to 1210 Unbilled Receivables in heavy months), missed-service credits, and per-property profitability.
-- **Missed-service credit rule [MVP]:** a SOW occurrence not completed by the end of its makeup window (default 7 days; rain delays extend it automatically) generates a credit memo suggestion equal to its unit value (USD 640 for a missed mowing in the example). The account manager approves, edits or rejects with a reason; approved credits post as `billing.P18` and appear on the monthly property report so the property manager sees them before asking.
+- **Missed-service credit rule [MVP]:** a SOW occurrence not completed by the end of its makeup window (default 7 days; rain delays extend it automatically) generates a credit memo suggestion equal to its unit value (USD 640 for a missed mowing in the example). The occurrence closes as `missed_company` in the agreement outcome mapping ([04](04-scheduling-dispatch-routing.md) 4.1.3, [07](07-invoicing-billing-contracts.md) 4.3.7). The account manager approves, edits or rejects with a reason; approved credits post as `billing.P18` and appear on the monthly property report so the property manager sees them before asking.
 - **PO ceilings:** a property with a PO ceiling warns at 80% consumed and blocks enhancement invoices that would exceed it until the client raises the PO in the portal.
 
 > **Competitive edge.** Aspire is the commercial incumbent (contract maintenance, opportunities, divisions as P&L centers), yet its customers, like LMN's, bolt on SiteDNA or SiteRecon for audits and enhancement capture ([SiteDNA](https://sitedna-marketing-site.pages.dev/), [SiteRecon](https://www.sourceforge.net/software/compare/LMN-vs-SiteRecon)). Rootline has the audit, the SOW, the zone geometry, the AI mockup and the approval workflow in the same object graph, so an issue pinned at 9:05 a.m. can be a priced, illustrated, PO-ready proposal by 9:15 a.m.
@@ -1134,7 +1148,7 @@ Dimensions on every line come from this module: division (one per service line b
 2. Entitlement check: if the plan lacks it, the owner can start a 30-day trial or add the add-on (billing on Rootline's own Stripe account).
 3. Setup wizard loads Region defaults (season dates, trigger depth, price book starter for the Region).
 4. Owner completes required steps; module moves `setup` -> `active`.
-5. Nav, crew forms, portal widgets, automations and reports appear; copilot learns the new tools.
+5. Nav, crew forms, portal widgets, automations and reports appear; Copilot learns the new tools.
 
 ```mermaid
 flowchart LR
@@ -1516,7 +1530,7 @@ sequenceDiagram
 +--------------------------------------------------------------------------------------+
 ```
 
-On Starter and Grow the same rows show the entitlement state instead: "Add-on USD 59/mo [Start 30-day trial]" for tree care, "Add-on, billed Nov-Mar [Add]" for snow, and limits such as "Commercial grounds: 5 of 5 commercial clients used [Upgrade]". Branch overrides appear only on plans with multi-branch ([22](22-business-model-pricing-gtm.md)).
+On Starter and Grow the same rows show the entitlement state instead: "Add-on USD 59/mo [Start 30-day trial]" for tree care (module trial per 4.0.3), "Add-on, billed Nov-Mar [Add]" for snow, and limits such as "Commercial grounds: 5 of 5 commercial clients used [Upgrade]". Branch overrides appear only on plans with multi-branch ([22](22-business-model-pricing-gtm.md)).
 
 ### 6.3 Wireframe: Round Planner (S3)
 
@@ -1709,12 +1723,12 @@ Behavior: the log works fully offline; the "Server" timestamp fills on sync. Fin
 |  [ Show on map ]                     |
 +--------------------------------------+
 | STATUS: BLOCKED - waiting on 1 utility|
-| [ Call office ]  [ Request override ]|
-|  Override: owner or ops_manager only |
+| [ Call office ] [ Log utility reply ]|
+|  Manual reply: owner or ops_manager  |
 +--------------------------------------+
 ```
 
-Behavior: the gate state is cached with the route so it works offline; a response arriving by email is AI-extracted into the ticket (V1) and unblocks the task on the next sync; an override requires a reason and is reported on the compliance dashboard.
+Behavior: the gate state is cached with the route so it works offline; a response arriving by email is AI-extracted into the ticket (V1) and unblocks the task on the next sync; a manually recorded utility response requires evidence and is reported on the compliance dashboard. The gate itself has no override.
 
 ### 6.10 Wireframe: Holiday lighting bin scanner (S25)
 
@@ -2709,8 +2723,8 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 | Event | Payload highlights | Typical consumers |
 |---|---|---|
 | `service_line.state_changed` | module_key, from, to, branch_id, actor | Billing entitlements, nav cache, analytics |
-| `program_enrollment.created` / `.renewed` / `.cancelled` | enrollment, billing mode, price | Billing, ledger (prepay liability), marketing |
-| `round_instance.window_opened` | round, region, count | Round Planner alerts, copilot brief |
+| `program_enrollment.created` / `.renewed` / `.canceled` | enrollment, billing mode, price | Billing, ledger (prepay liability), marketing |
+| `round_instance.window_opened` | round, region, count | Round Planner alerts, Copilot brief |
 | `round_instance.blocked` / `.unblocked` | reasons (notices, license) | Ops dashboard |
 | `application_record.sealed` | record id, jurisdiction, products, applicator | Compliance reports, client notice, inventory decrement, invoicing |
 | `guardrail.overridden` | rule, inputs, actor, reason | Compliance dashboard, owner alert |
@@ -2738,9 +2752,17 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 | `lighting_reading.out_of_range` | fixture or run, measured volts, target | Repair item, upgrade proposal draft |
 | `snow_season.readiness_changed` | sites missing items, ready flag | Owner dashboard, pre-season tasks |
 
+**Name aliases.** Other docs use a few alternative spellings for these events; they are registered as aliases on the bus:
+
+| Spelling elsewhere | Canonical event here | Where it appears |
+|---|---|---|
+| `round_instance.ready` | `round_instance.window_opened` or `round_instance.unblocked`, whichever leaves the instance `window_open` and unblocked | [04](04-scheduling-dispatch-routing.md) 8.4 |
+| `chemical_application.recorded` | `application_record.sealed` | [20](20-architecture-security.md) event catalog |
+| `chemical_application.signed` | Crew signature captured in [05](05-field-crew-mobile-app.md); sealing (`application_record.sealed`) follows server-side validation against the rule pack | [05](05-field-crew-mobile-app.md) 8.3 |
+
 ### 8.3 Events consumed
 
-`proposal.accepted` (creates projects, enrollments, snow terms), `visit.completed` (round instance and record sealing), `invoice.paid` (prepay balances, holiday deposit confirmations), `employee.certification_expiring` ([15](15-team-hr-payroll.md); gates applicators, testers, assessors), `inventory.low_stock` ([13](13-operations-inventory-equipment.md); salt, products), `weather.alert` (adapter), `design.version_approved` ([10](10-design-studio.md); as-builts, takeoffs).
+`proposal.accepted` ([03](03-crm-sales-estimating-proposals.md); creates projects, enrollments, snow terms), `visit.completed` ([04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md); round instance and record sealing), `chemical_application.signed` ([05](05-field-crew-mobile-app.md); starts record sealing), `invoice.paid` ([07](07-invoicing-billing-contracts.md); prepay balances, holiday deposit confirmations), `employee.certification_expiring` / `employee.certification_expired` ([15](15-team-hr-payroll.md); gates applicators, testers, assessors), `ops.stock.below_reorder` ([13](13-operations-inventory-equipment.md); salt, products), `weather.alert_raised` ([04](04-scheduling-dispatch-routing.md) weather service), `design.sold` and `design.as_built_published` ([10](10-design-studio.md); takeoffs for projects, as-built irrigation and lighting layers).
 
 ### 8.4 Public API and tenant webhooks [V1]
 
@@ -2777,7 +2799,7 @@ Legend: **F** full (create, edit, delete/void, configure), **E** edit/create, **
 | Tree inventory and assessments | - | E (species failure profiles) | V | F | V | E | V | E | E | O | - | O | P | P |
 | Issue risk reports | - | - | - | A | - | E (if TRAQ) | - | E (if TRAQ) | - | - | - | - | - | - |
 | Projects, phases, Gantt | - | - | V | F | E | E | E | F | E (assigned) | V (assigned) | V | O | P (timeline) | P (timeline) |
-| Dig tickets and override gate | - | E (one-call packs) | V | F (override) | E | - | - | F (override) | E (request) | V | - | V | - | - |
+| Dig tickets and manual utility responses (no gate override) | - | E (one-call packs) | V | F (manual response) | E | - | - | F (manual response) | E (request) | V | - | V | - | - |
 | Permits and inspections | - | - | V | F | E | E | E | E | V | - | - | - | P | P |
 | Punch list | - | - | - | F | E | E | E | F | E | E | - | O | E (add, sign off) | E (add, sign off) |
 | Warranty claims decide | - | - | V | F | E | V | V | A | V | - | V | - | E (file) | E (file) |
@@ -2804,6 +2826,8 @@ Rules:
 ## 10. AI opportunities in this module
 
 All AI runs through the provider-agnostic AI Gateway, is metered as AI credits, and proposes rather than silently acts on anything regulated ([17](17-ai-copilot-automation.md)).
+
+The AI-numbered rows below are this module's opportunities; agent runtime, autonomy tiers and credit metering are owned by [17](17-ai-copilot-automation.md). Three of its named agents act on this module's data: A15 Plant Warranty Agent [V1] (runs AI15), A16 Chemical Compliance Agent [V1] (checks application records against the rule pack fields) and A20 Snow Event Agent [V2] (turns the AI8 storm brief into staging and trigger-based dispatch, matching automated storm creation in 4.3.3).
 
 | # | Opportunity | Module | How it works | Guardrail | Priority |
 |---|---|---|---|---|---|
@@ -2945,7 +2969,7 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 | tree_care | High-risk backlog age | Days open for priority-1 prescriptions. |
 | install_projects | Schedule variance | Actual vs planned finish date per project. |
 | install_projects | Budget variance by phase | Actual vs estimated labor hours and material cost. |
-| install_projects | Dig gate overrides | Overrides per 100 excavation tasks. Target near zero. |
+| install_projects | Manual utility responses | Manually recorded utility responses per 100 excavation tasks (the gate has no override). Target near zero. |
 | install_projects | Warranty cost ratio | Warranty claim cost / install revenue; by species and crew. |
 | commercial_grounds | Average site score | Mean audit score; trend by property and crew. |
 | commercial_grounds | Corrective SLA | % corrective issues closed within SLA. |
