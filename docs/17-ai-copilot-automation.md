@@ -68,7 +68,7 @@ Related documents: [Personas and RBAC](02-personas-roles-permissions.md), [CRM a
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> Research note: this pass ran 11 targeted web searches. Direct page fetching was blocked in the research environment, so some vendor claims rely on search-result summaries of vendor pages, press releases, help centers and community forums. Every vendor fact below is "as of November 2026, verify" unless stated otherwise. Broader competitor coverage lives in [Market Landscape](01-market-landscape.md) and the research reports [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md).
+> Research note: the first pass ran 11 targeted web searches. Direct page fetching was blocked in the research environment, so some vendor claims rely on search-result summaries of vendor pages, press releases, help centers and community forums. A second review pass could not run new searches (the shared search budget was exhausted and the hosts were unreachable). It therefore added sourced findings from the sibling research reports [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md). Accounting-platform AI and regulatory updates added from prior knowledge are explicitly marked "not re-fetched, verify". Every vendor fact below is "as of November 2026, verify" unless stated otherwise. Broader competitor coverage lives in [Market Landscape](01-market-landscape.md).
 
 ### 2.1 What competitors ship
 
@@ -80,7 +80,11 @@ Related documents: [Personas and RBAC](02-personas-roles-permissions.md), [CRM a
 | **LMN** | Partnered with Attentive.ai in February 2025 for AI-powered site measurements and material calculations ([Attentive](https://attentive.ai/blog/lmn-and-attentive-ai-announce-strategic-partnership)). In February 2026 it shipped a **Beam AI integration**, with takeoffs from Beam AI automatically mapped into LMN, and opened an **AI crew notes** beta ([LMN release note 2.18.2026](https://support.golmn.com/hc/en-us/articles/46786137574683)). A competitor comparison characterizes LMN's estimating as budget-based and manual, with satellite measurement only via integration ([QuoteIQ, a competitor, so biased](https://myquoteiq.com/best-ai-estimating-software-landscaping-2026/)). | Estimating AI here comes through **partners**, so measurements live in another product. Rootline's estimating agent works natively on the Design, Takeoff and Price Book graph (see [Design Studio](10-design-studio.md)). |
 | **Housecall Pro** | Markets an "AI Team" of AI teammates. **CSR AI**, its 24/7 call-answering agent, is sold as an add-on with unpublished pricing. Third-party sources disagree on which AI teammates are bundled ([Stork.ai](https://www.stork.ai/en/housecall-pro-ai-team), [ContractorToolStack](https://contractortoolstack.com/software/housecall-pro/pricing/)). | Opaque AI pricing is a recurring frustration. Rootline publishes credit prices (see section 4.11.5). |
 | **SingleOps, Service Autopilot, Real Green (WorkWave)** | Our searches found rule-based automation and marketing automation (Service Autopilot "automatically invoices, routes, schedules"; Real Green has marketing automation and route optimization). We found no documented generative-AI copilot or agents for these three as of Nov 2026 ([Capterra comparison](https://www.capterra.com/compare/78106-176935/Service-Assistant-vs-SingleOps), [GetApp SingleOps](https://www.getapp.co.uk/software/115627/singleops)). | Classic "automation without intelligence". This is a migration opportunity: their rule libraries map cleanly onto our Automation Builder recipes. |
-| **Arborgold, Yardbook, Copilot CRM, SynkedUP** | Not covered by searches in this pass. See [R2](research/R2-landscape-specific-platforms.md) and [Market Landscape](01-market-landscape.md). | Assume they offer, at most, point AI features; verify before positioning claims. |
+| **Arborgold, Yardbook, Copilot CRM, SynkedUP** | R2 found no documented generative-AI features for Arborgold, Copilot CRM or SynkedUP (negative findings from vendor pages and help centers, not proof of absence). Yardbook is a free or low-cost tool for solo operators ([R2](research/R2-landscape-specific-platforms.md) sections 5.2, 6.2, 7.3 and 7.4). | Assume they offer, at most, point AI features; verify before positioning claims. SynkedUP's buyers pay for "profit certainty plus coaching", so the Copilot's "explain this price" and margin coaching is the angle there ([R2](research/R2-landscape-specific-platforms.md) section 5.2). |
+| **Workiz** (horizontal FSM) | **Jessica** ("Genius Answering") AI answering, reported at about $200/month and requiring the phone plan. A user review complains that the name and voice cannot be changed ([ServiceAgent](https://serviceagent.ai/blogs/workiz-pricing/), [Carly](https://www.usecarly.com/blog/workiz-ai/); third-party, verify) | A fixed AI persona is a real complaint. Rootline's persona name, voice and tone are per Company (section 4.9) |
+| **AI-native challengers** (QuoteIQ and peers) | QuoteIQ positions itself as AI-forward, publishes comparison pages against LMN and Jobber, and offers "AI Smart Import" to migrate data from any CRM ([QuoteIQ AI Smart Import](https://intercom.help/quoteiq/en/articles/14442924-ai-smart-import-migrate-your-data-from-any-crm-in-minutes), [R2](research/R2-landscape-specific-platforms.md) section 7.5) | The "AI-native" slot is contested at the low end, so "we have AI" is not a differentiator. Depth is: the ledger, the design, the plant KB and trust controls. AI-assisted migration is table stakes (section 4.6.9 and [Business Model](22-business-model-pricing-gtm.md) migration concierge) |
+| **Commercial bolt-ons** (Vergo, SiteDNA, SiteRecon) | Vergo sells AP automation specifically for Aspire bills. SiteDNA works "alongside your current tools like Aspire, LMN, Service Autopilot, and Jobber to capture site issues and drive enhancement sales" ([Vergo](https://www.getvergo.com/learn/best-ap-automation-software-for-landscape-companies-using-aspire), [SiteDNA](https://sitedna-marketing-site.pages.dev/), [R2](research/R2-landscape-specific-platforms.md) section 8.4) | A mid-size commercial firm can run 4-6 paid bolt-ons (R2 estimate). Our AP agent (A9) and field-note agent (A4) natively absorb two of them |
+| **Accounting platforms** (QuickBooks Online, Xero) | From prior knowledge, not re-fetched: Intuit began marketing "done-for-you" AI agents inside QuickBooks Online in 2025, including an accounting agent for transaction categorization and reconciliation and a payments agent for invoice reminders. Xero markets an AI assistant branded JAX ([QuickBooks](https://quickbooks.intuit.com/), [Xero](https://www.xero.com/); verify names, scope and plan availability) | Our bookkeeping, AP and collections agents (A5, A8, A9) compete with **accounting-native AI**, not only field-service AI. QuickBooks' agents see the books but not the field: no visits, crew time, photos, production rates or service agreements |
 | **Standalone AI receptionists** (Goodcall, Rosie, Avoca and others) | Third-party guides list Goodcall at roughly $59-$199/mo, Rosie at $49-$149/mo, and Avoca with usage-based pricing "typically $1,000-$5,000+ per month" for mid-to-large operators ([B2B Sales Tools guide](https://b2bsalestools-com.pages.dev/guides/best-ai-receptionist-home-services/); third-party estimates, verify). Jobber's community has threads about third-party "AI dispatchers" that book into Jobber ([Jobber community](https://community.getjobber.com/discussions/operations-forum/just-launched-in-the-app-marketplace-an-ai-dispatcher-that-books-right-into-your/15079)). | Landscapers already pay $50-$200/mo for **bolt-on** AI. That is budget we can capture natively, with better context (property, history, agreement, route density) than any bolt-on can see. |
 
 ### 2.2 What users complain about
@@ -93,7 +97,10 @@ From the Jobber community, the most vocal AI user base in our category:
 - **Accuracy disclaimers.** Vendors themselves warn that AI answers may be inaccurate ([ServiceTitan Atlas docs](https://help.servicetitan.com/docs/atlas)). An owner asking "am I profitable on installs?" cannot use an answer that might be wrong.
 - **Belief without daily use.** 43% believe in AI and 15% use it daily ([Aspire report](https://finviz.com/news/401821/aspire-report-finds-commercial-landscapers-prioritizing-growth-as-businesses-navigate-operational-complexity)).
 - **Estimating AI lives elsewhere.** Measurement AI arrives through partner integrations (Attentive, Beam AI, SiteRecon), so the measured takeoff and the price book live in different systems ([LMN release note](https://support.golmn.com/hc/en-us/articles/46786137574683)).
-- **Opaque add-on pricing** for AI voice agents ([ContractorToolStack](https://contractortoolstack.com/software/housecall-pro/pricing/)).
+- **Opaque add-on pricing** for AI voice agents ([ContractorToolStack](https://contractortoolstack.com/software/housecall-pro/pricing/)). Reviewers say add-ons such as an AI receptionist at $99/month and a marketing suite at $79/month "add up fast" ([FieldCamp review](https://fieldcamp.ai/reviews/jobber-reviews/), third-party).
+- **AI receptionists do not replace the office.** A TechRadar review of Jobber notes that the AI receptionist does not replace an office manager when a job goes sideways ([TechRadar](https://www.techradar.com/pro/software-services/jobber-crm-review)). This supports our position that agents should *prepare* work for people, not pretend to be them.
+- **Automation without intelligence stalls at "once configured".** Service Autopilot is known for automated drips, win-backs and seasonal upsells, but reviewers note that "once configured" carries a lot of weight, and invoice automation is described as generic with glitches after setup ([MowBoss review](https://mowbosshq.pages.dev/guides/service-autopilot-review), [Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/?page=3), [GetApp reviews](https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/)). The lesson for our builder is to ship recipes that are on by default and have the Copilot propose and explain rules in plain language (sections 4.6.6 and 4.6.8).
+- **Fixed personas.** A Workiz reviewer complains that the AI answering agent's name and voice cannot be changed ([Carly](https://www.usecarly.com/blog/workiz-ai/), third-party).
 
 Anecdotal upside: one acquisition-entrepreneur case study claims an AI receptionist recovered about $28k in missed jobs in its first month at a newly acquired landscaping company ([Searchfunder](https://searchfunder.com/post/eta-case-study-how-an-ai-receptionist-saved-28k-in-missed-jobs-during-the-first-month-after-acquiring-a-landscaping-company); self-reported anecdote, not a statistic). The demand is real.
 
@@ -112,6 +119,10 @@ Anecdotal upside: one acquisition-entrepreneur case study claims an AI reception
 
 > **Competitive edge: LMN + Attentive/Beam AI.** LMN's estimating AI arrives through partner integrations, so measurement and pricing live in separate products. Rootline's estimating agent measures from parcel, aerial and LiDAR data, drops the measurements straight into a native Design, generates a Takeoff, and prices it against the Company's own production rates. It is one system, with one audit trail and one place to fix mistakes.
 
+> **Competitive edge: QuickBooks and Xero AI agents.** Accounting-native agents can categorize a $1,240 SiteOne charge to "Materials". They cannot tell that it was the 26 yards of mulch delivered to the Delgado job on the day Crew 3 logged 9.5 hours there, because the visit, the crew time and the takeoff live in another system. Rootline's bookkeeping and AP agents code the same transaction to **job, phase and cost type** using the PO, the delivery the crew lead logged, and the estimate's material lines. The result is job costing that is right the day the bank line arrives, not after a month-end cleanup. Rootline also matches Stripe payouts against balance transactions it already posted from the Company's own connected account ([Architecture](20-architecture-security.md) section 4.19), which a generic bank-feed categorizer can only guess at.
+
+> **Competitive edge: the bolt-on economy.** A commercial firm on Aspire or LMN pays separately for AP automation (Vergo), site-issue capture (SiteDNA), measurement (SiteRecon, Attentive) and an AI receptionist. Each bolt-on has its own login, its own copy of the client list and no access to the others' data. Rootline's AP agent (A9), field-note agent (A4), estimating agent (A6) and receptionist (A23) share one Action Layer, one audit log and one credit meter. A field issue spotted by a crew becomes a priced enhancement proposal with photos in one approval tap, with no re-keying between products.
+
 ---
 
 ## 3. Personas and jobs-to-be-done
@@ -126,7 +137,7 @@ Anecdotal upside: one acquisition-entrepreneur case study claims an AI reception
 | Crew Lead / Foreman (`crew_lead`) | "Hands-free: what's next, log the mulch, note the broken head in zone 3, clock the crew out." | Voice assistant (English and Spanish), offline capture | MVP |
 | Field Technician / Crew Member (`technician`) | "Record a note in Spanish without typing." "How do I set this controller?" | Voice notes, how-to answers from SOPs and manuals | MVP |
 | Bookkeeper / Accountant (`bookkeeper`) | "Categorize the bank feed." "Match Stripe payouts to invoices." "Turn the nursery invoice PDFs into bills coded to jobs." | Bookkeeping agent, AP agent, Copilot finance answers | V1 |
-| Subcontractor (`subcontractor`) | "Where's my work order and what do I need to photograph?" | Limited Copilot (own work orders only) | V1 |
+| Subcontractor (`subcontractor`) | "Where's my work order and what do I need to photograph?" | No Copilot by default (doc 02 grants `copilot.use` to no subcontractor template). An owner can grant it through a custom role scoped to the subcontractor's own work orders; voice how-to and photo checklists come through the crew app | V1 (grantable) |
 | Residential client (`client_residential`) | "When's my next mow?" "Why is this invoice higher?" "Can you add a fall cleanup?" | Portal assistant (see [Customer Portal](06-customer-portal.md)) | V1 |
 | Commercial client (`client_commercial`) | "Show me all open work orders across my 14 properties and what's awaiting my approval." | Portal assistant with multi-property scope | V1 |
 | Platform Operator (`platform_owner`) | "Which models, prompts and agents are live, what do they cost us, and are they safe?" "Kill this agent fleet-wide now." | AI Ops console (see [Platform Admin](19-platform-admin-portal.md)) | MVP |
@@ -219,7 +230,17 @@ Every agent action type has an autonomy level, configured per Company. Levels ar
 | L3 | Act and notify | The agent executes within policy limits and notifies the owner of the action. Outbound messages wait in a 5-minute undo window (configurable 0-60 min) before sending | Activity feed plus undo |
 | L4 | Autonomous within budget | Same as L3 but summarized only in the daily digest, within hard limits (count per day, dollar amounts, recipients) | Digest line |
 
-Defaults: every agent ships at L2 except read-only agents (briefing, forecasting), which ship at L4 because they only *produce reports*.
+Defaults, by tier, so engineers implement one rule instead of 27 special cases:
+
+| Action tier (section 4.3) | Default level at agent install | Notes |
+|---------------------------|-------------------------------|-------|
+| T0 read and report-only agents (briefing, forecasting) | L4 | They only *produce reports* |
+| T1 drafts | L2 for agents whose drafts land in a shared queue (estimating, RFP, change orders); L4 where the draft is private to the requester | Drafts are harmless, but a flood of unreviewed drafts in a shared queue is noise. The catalog in section 4.5.1 lists per-agent exceptions such as A10 RFP at L1 |
+| T2 internal writes | L2 | Exception: A11 nursery availability rows, which only update internal reference data, ship at L3 |
+| T3 external or financial | L2 | Pre-approved templates can unlock L3 (section 4.3) |
+| T4 | L0 (navigate and pre-fill only) | Never raisable above L1 |
+
+When the catalog's "Default autonomy" column and this table disagree, the catalog wins for that agent and must state a reason.
 
 #### 4.1.3 Tool Registry: the one Action Layer [MVP]
 
@@ -282,6 +303,86 @@ All model calls go through the provider-agnostic **AI Gateway** described in [Ar
 - **Batch APIs** for nightly non-urgent jobs (categorization backfills, briefing pre-computation).
 - **Fallback** across providers and model tiers when a provider degrades.
 - **Kill switches** per model, per agent, per tenant, controlled from the [Platform Admin](19-platform-admin-portal.md) AI Ops console.
+
+#### 4.1.7 Runtime architecture [MVP]
+
+The diagram in 4.1.1 is the *logical* view. This is the *runtime* view engineers build against. It is consistent with the containers in [Architecture](20-architecture-security.md) sections 4.2, 4.9, 4.10 and 4.13. Everything here is part of the TypeScript modular monolith except the boxes marked Python.
+
+```mermaid
+flowchart LR
+  subgraph Clients
+    WEB["Company web app (Next.js)"]
+    CREW["Crew app (Expo, SQLite offline queue)"]
+    PORTAL["Customer Portal (PWA)"]
+    EXT["External AI clients via MCP and REST"]
+  end
+  subgraph Edge
+    APIGW["API layer: authN, principal context, rate limits"]
+    MCPS["MCP server (Streamable HTTP)"]
+  end
+  subgraph Monolith["Node modular monolith"]
+    ORCH["ai.copilot orchestrator (streaming, SSE)"]
+    TR["ai.tools Tool Registry and Policy engine"]
+    DOM["Domain modules: CRM, schedule, billing, ledger, design, ops"]
+    OUTBOX["Transactional outbox"]
+    TRIG["ai.triggers router: event to automation or agent"]
+  end
+  subgraph Durable["Temporal cluster"]
+    AGW["Agent run workflows"]
+    AUW["Automation workflows"]
+    BRF["Scheduled jobs: briefings, nightly scoring"]
+  end
+  subgraph Data
+    PG["PostgreSQL with RLS, PostGIS, pgvector"]
+    REDIS["Redis: sessions, locks, rate counters"]
+    S3["S3: audio, documents, photos"]
+  end
+  subgraph Py["Python services"]
+    ML["Prediction service"]
+    CV["Vision and segmentation"]
+    ORT["OR-Tools route optimizer"]
+  end
+  GW["AI Gateway: routing, redaction, metering, caching"]
+  PROV["Model providers: Claude tiers, STT, TTS, image"]
+  WEB --> APIGW
+  CREW --> APIGW
+  PORTAL --> APIGW
+  EXT --> MCPS
+  MCPS --> TR
+  APIGW --> ORCH
+  APIGW --> TR
+  ORCH --> TR
+  ORCH --> GW
+  TR --> DOM
+  DOM --> PG
+  DOM --> OUTBOX
+  OUTBOX --> TRIG
+  TRIG --> AGW
+  TRIG --> AUW
+  AGW --> TR
+  AUW --> TR
+  AGW --> GW
+  AUW --> GW
+  BRF --> TR
+  GW --> PROV
+  GW --> CV
+  TR --> ML
+  TR --> ORT
+  ORCH --> REDIS
+  DOM --> S3
+```
+
+**Runtime rules:**
+
+| Concern | Rule |
+|---------|------|
+| Where the Copilot runs | Synchronously in the monolith's API process, streaming over server-sent events. A Copilot turn that needs more than 90 seconds or any approval wait is **promoted to a Temporal workflow** (it becomes an agent-style run with a timeline), so a closed browser tab never loses work |
+| Where agents and automations run | Temporal workers in the same codebase, deployed as a separate worker pool so a spike in automation runs cannot starve interactive API latency |
+| Trigger fan-out | The `ai.triggers` router reads the outbox stream once per event and evaluates every active automation's trigger filter with an in-memory index keyed by `(tenant_id, event_type)`. Matching is O(matching automations), not O(all automations). Target: under 50 ms from outbox commit to workflow start at p95 |
+| Locks | Per-subject advisory locks in Redis (`lock:{tenant}:{subject_type}:{subject_id}`) back the Contact Arbiter (section 4.4.7) and `serialize_per_record` automations. Locks have a 30-second lease and are renewed by the holder |
+| Tool calls from Python | Python services never write domain tables. They return results to the Tool Registry, which writes through domain services. That keeps RLS, audit and events in one place |
+| Offline crew app | Voice and notes queue in SQLite and sync as intents (section 4.8). The AI pipeline starts from the `note.created` event after sync, never from the device |
+| Failure isolation | If the AI Gateway is down, the Tool Registry, domain modules, deterministic automations and the command palette's navigation keep working. Only AI steps pause or degrade (section 4.2.8) |
 
 ---
 
@@ -387,10 +488,10 @@ Every tool has a risk tier. The tier determines the maximum autonomy level and t
 | **T0 Read** | No side effects | Metrics, record reads, search, weather, calculations | Runs immediately | L4 / L4 |
 | **T1 Draft** | Creates drafts or proposals visible only internally; trivially deletable | Draft estimate, draft proposal, draft message, internal note, task for self, schedule proposal | Runs immediately; result opens for review | L4 / L4 |
 | **T2 Internal write** | Changes shared internal state; reversible | Apply schedule diff, assign crew, update job status, create job from approved proposal, tag clients, create internal tasks for others, categorize a bank transaction (unposted) | Inline confirm card | L2 / L4 |
-| **T3 External or financial** | Reaches a client, vendor or the outside world, or touches money or the books | Send email or SMS, send proposal, request deposit (payment link), post journal entry, create bill, apply payment, issue a credit memo up to a limit, publish a review reply, place a purchase order with a vendor | Confirm card with full preview. Bulk actions over 25 recipients require typing the count. Amounts over the Company threshold (default $2,500) require a second approver (`owner` or `office_manager`) | L2 / L3 (with constraints: approved templates only, amount caps, recipient caps per day) |
+| **T3 External or financial** | Reaches a client, vendor or the outside world, or touches money or the books | Send email or SMS, send proposal, request deposit (payment link), post journal entry, create bill, apply payment, issue a credit memo up to a limit, publish a review reply, place a purchase order with a vendor | Confirm card with full preview. Bulk actions over 25 recipients require typing the count. Amounts over the Company threshold (default $2,500) require a second approver: `owner` or `office_manager`, or `bookkeeper` for ledger and AP items (see section 9.1). The second approver must be a different person from the first | L2 / L3 (with constraints: approved templates only, amount caps, recipient caps per day) |
 | **T4 Prohibited for AI** | Irreversible, security-sensitive or legally binding on behalf of the Company | Charge a saved card, issue refunds, change Stripe connection, change bank or vendor remittance details, run payroll, close accounting periods, delete records in bulk, change user permissions, sign contracts on behalf of the Company, file tax returns, sign or submit pesticide application records on behalf of a licensed applicator (drafting and scheduling are fine) | AI can only navigate to the screen and pre-fill; the human completes it in the normal UI | L0 / L1 |
 
-**Pre-approved template rule [V1]:** an owner can approve a message template, such as the "Payment reminder, day 3" SMS. Sending *that exact template* with merge fields is then treated as T2 for autonomy purposes, which allows L3 or L4 for routine sends, with these constraints: quiet hours, opt-out checks, a per-recipient frequency cap (max 1 automated message per 48 h per client), and a daily cap (default 100).
+**Pre-approved template rule [V1]:** an owner can approve a message template, such as the "Payment reminder, day 3" SMS. Sending *that exact template* with merge fields is then treated as T2 for autonomy purposes, which allows L3 or L4 for routine sends, with these constraints: quiet hours, opt-out checks, a per-recipient frequency cap for that template family (max 1 per 48 h per client), the cross-source caps of the Contact Arbiter (section 4.4.7), and a daily cap per template (default 100).
 
 **Second-approver rule:** T3 actions above the money threshold, and any bulk external message over 100 recipients, require a second human. The Approval Inbox routes them, and the agent run waits.
 
@@ -463,13 +564,32 @@ The system recommends, and never automatically applies, raising autonomy when, f
 
 The owner sees a card: "Collections agent: 112 of 115 reminders approved without edits in 30 days. Allow it to send day-3 and day-10 reminders automatically (L3, 5-minute undo)?" Autonomy is **automatically demoted** to L2 on: two "wrong data" rejections in 7 days, any incident flagged by a user, a model or prompt version change that has not been re-evaluated for that tenant's data profile, or a kill switch.
 
-#### 4.4.5 Shadow mode [MVP]
+#### 4.4.5 Shadow mode [MVP] and policy replay [V1]
 
 New agents and new agent versions can run in **shadow mode**: they produce proposals that are logged and compared with what humans actually did, but nothing reaches users. Example: the collections agent's proposed reminders are compared against the office manager's real reminders for 2 weeks. Platform engineers use shadow mode for staged rollouts (see section 4.11.4). Owners can opt to "try it quietly first".
+
+**Policy replay [V1].** Shadow mode looks forward; replay looks back. Before raising an agent's autonomy or changing its policy (for example, moving the day-10 reminder to day 7, or lowering the collections scope to balances over $250), the owner can **replay the last 30, 60 or 90 days** of trigger events through the new policy against point-in-time snapshots. The replay report shows what the agent *would* have sent or changed, how many messages hit the Contact Arbiter caps, and how many of those clients paid anyway within 3 days. Rules: replay never calls write tools (all tools run in dry-run mode); it costs credits like any agent run, quoted before start; and it uses the event log and record versions, so it is only as deep as the tenant's history in Rootline.
 
 #### 4.4.6 Agent observability [MVP]
 
 Each run has a timeline: trigger, every tool call with its inputs and outputs (PII-masked for viewers without access), model and prompt versions, tokens and credits, the approval decision, and the resulting records. Owners see "What did my agents do this week?" (a counts, credits and outcomes dashboard). The platform operator sees fleet-wide health in the AI Ops console.
+
+#### 4.4.7 Contact Arbiter and multi-agent coordination [MVP]
+
+Several agents and automations can want to contact the same client on the same day. For example, Inbox Triage replies to a question, Collections sends a day-10 reminder, R4 sends an "on the way" text, and the Renewal agent drafts an offer. Without coordination that becomes four messages in six hours, which is the fastest way to lose an owner's trust. The **Contact Arbiter** is a deterministic service that every outbound client message passes through, whatever its source: agent, automation, Copilot bulk send or MCP.
+
+| Rule | Default (editable per Company) |
+|------|-------------------------------|
+| Message classes | `transactional_service` (on-the-way, visit summary, schedule change), `transactional_billing` (invoice, receipt, reminder), `conversational` (reply in an existing thread), `marketing` (campaigns, upsells, renewals, review requests) |
+| Daily cap per client across all automated sources | 3 messages. `transactional_service` and replies to a client's own message do not count toward it |
+| Marketing cap | 1 per 48 hours and 4 per 30 days per client. Suppressed entirely for 14 days after a complaint or while an invoice is in dispute |
+| Priority when caps collide | Human-sent > conversational reply > transactional_service > transactional_billing > marketing. A lower-priority message is deferred to the next allowed window, not dropped, unless it expires (for example, a "we're on the way" text that is 2 hours late is dropped) |
+| Bundling | Messages to the same client within 15 minutes are offered as a bundle ("Your visit is done, here's the report. Also, invoice 2291 is now 10 days past due") when both templates allow it |
+| Single conversation owner | Each client thread has one **owner** at a time: a human, or one agent. Other agents can propose messages in that thread only to the owner's Approval Inbox. Human activity in a thread makes the human the owner for 24 hours |
+| Consent and quiet hours | Checked at send time, not draft time: the consent ledger ([Marketing](16-marketing-growth-communications.md)), quiet hours in the recipient's time zone, and `do_not_auto_contact` tags |
+| Visibility | The client record shows a "Who can contact this client automatically" panel listing every active automation and agent with the client in scope, and the last 30 days of arbitration decisions (sent, deferred, bundled, suppressed) |
+
+The Arbiter is implemented as a tool wrapper around `messages.send*`, so no path can bypass it. Deferred and suppressed messages are logged with the reason, emit `message.deferred` or `message.suppressed`, and count toward the automation health score (section 13).
 
 ---
 
@@ -501,13 +621,14 @@ Each run has a timeline: trigger, every tool call with its inputs and outputs (P
 | A20 | **Snow Event** | Monitors storms, pre-staging, trigger dispatch at 2-inch accumulation, per-push tallies for billing | NWS forecast; plow-site sensors | L2 | V2 |
 | A21 | **Procurement** | Turns approved jobs into vendor POs grouped by vendor and delivery date, with availability checks | Job created; materials short | L2 | V1 |
 | A22 | **Portal Assistant** | Client-facing Q&A and requests inside the white-label portal | Client chat | L2 for requests; L4 for read answers | V1 (see [Customer Portal](06-customer-portal.md)) |
-| A23 | **AI Receptionist (voice and SMS)** | Answers calls and texts and books assessments | Inbound call or SMS | L2 to L3 | V1 (owned by [Marketing](16-marketing-growth-communications.md)) |
+| A23 | **AI Receptionist (voice and SMS)** | Answers calls and texts and books assessments | Inbound call or SMS | L2 to L3 | MVP (after-hours lead capture) / V1 (full) (owned by [Marketing](16-marketing-growth-communications.md); metered in receptionist minutes, not credits) |
 | A24 | **Design Assistant** | Dimension-aware layout and planting suggestions | Designer request | T1 | V1 (owned by [AI Design](11-ai-design-mockups.md)) |
 | A25 | **Hiring Assistant** | Drafts job posts, schedules interviews, summarizes applications. **No ranking or rejection** | Applicant received | L2 | V2 (see [Team and HR](15-team-hr-payroll.md)) |
 | A26 | **KB Curation (platform)** | Drafts Plant Region Profiles and dedupes taxonomy for curators | Curator queue | L1 (curator approves) | V1 (owned by [Plant KB](12-plant-knowledge-base.md)) |
 | A27 | **Support Agent (platform)** | Answers tenant support tickets from docs and tenant-consented diagnostics | Ticket created | L2 | V1 (owned by [Platform Admin](19-platform-admin-portal.md)) |
+| A28 | **Dispute Evidence** | Assembles a Stripe dispute evidence packet (signed proposal, GPS-stamped visit photos, completion notices, portal activity) per reason-code playbook, for human review and submission on the Company's own connected account | `charge.dispute.created` from the connected account | L2 (submission is T3; never auto-submitted) | MVP (owned by [Payments](08-payments-stripe.md) section 4.19) |
 
-The specifications below cover the agents this document owns (A1-A21, except A18 Review and Reputation, which is specified in [Marketing and Comms](16-marketing-growth-communications.md) on this runtime). Agents A22-A27 are owned by other documents and summarized and linked here.
+The specifications below cover the agents this document owns (A1-A21, except A18 Review and Reputation, which is specified in [Marketing and Comms](16-marketing-growth-communications.md) on this runtime). Agents A22-A28 are owned by other documents and summarized and linked here. They still run on this runtime and inherit its tiers, approval, Contact Arbiter, metering and audit rules.
 
 #### 4.5.2 A1 Daily Owner Briefing [MVP]
 
@@ -639,11 +760,14 @@ The specifications below cover the agents this document owns (A1-A21, except A18
 This agent works on the built-in ledger (see [Accounting](09-accounting-ledger-integrations.md)).
 
 1. **Bank transaction categorization.** It runs in three layers. First, deterministic rules (user rules plus vendor-to-account memory). Second, a per-tenant classifier trained on that tenant's categorized history. Third, an LLM fallback for novel merchants using the merchant string, amount, memo and vendor list. Output: account, vendor, class or service line, job (when determinable, for example "SiteOne Landscape Supply" on the day of the Delgado job delivery), and a confidence.
-2. **Reconciliation matching.** It matches bank lines to Rootline records. Stripe payouts are matched to the batch of charges, refunds and fees in that payout (one deposit = many invoices; Stripe fee lines are auto-split to a Merchant Fees account). Customer checks are matched to remote deposits. Vendor payments are matched to bills. It proposes one-to-many and many-to-one matches with explanations.
+2. **Reconciliation matching.** It matches bank lines to Rootline records. Customer checks are matched to remote deposits, and vendor payments are matched to bills. It proposes one-to-many and many-to-one matches with explanations.
+   - **Stripe payouts (bring-your-own Stripe).** The agent never re-splits fees. The payments webhook processor has already posted every charge (*Dr Stripe Clearing / Cr Accounts Receivable*), every Stripe fee (*Dr Merchant Fees / Cr Stripe Clearing*) and the payout itself (*Dr Bank / Cr Stripe Clearing* on `payout.paid`) from the Company's own connected account ([Architecture](20-architecture-security.md) section 4.19, [Payments](08-payments-stripe.md)). The agent's job is to **match the bank-feed deposit to that existing payout entry** by amount, arrival date and statement descriptor. That stops the most common small-business error, booking the deposit again as income. The match card explains the payout ("$8,412.37 = 41 charges $8,690.00 - 2 refunds $65.00 - Stripe fees $212.63"). If the Company opted into the pay-as-you-grow application fee ([Business Model](22-business-model-pricing-gtm.md)), that fee shows as its own line coded to a separate expense account, never netted silently. The restricted-key ("advanced") path produces the same balance-transaction data, so matching is identical.
+   - **Mismatches** (payout amount differs from the sum of posted balance transactions, or a payout has no bank line after 5 business days) open an integrity case for `bookkeeper` instead of a suggestion. The agent never "plugs" a difference to an expense account.
+   - **Rootline's own subscription charge** appears on the Company's card or bank feed with Rootline's descriptor. The agent matches it to the Rootline invoice (available in Settings > Plan & Billing) and codes it to Software Subscriptions with the receipt attached. Rootline's own Stripe account is a vendor relationship here and never touches Company client funds.
 3. **Anomaly detection.** Duplicate vendor charges, unusual amounts (3 or more standard deviations from that vendor's history), new payees, personal-looking expenses on the business card, and missing receipts over $75 (configurable).
 4. **Close assistant.** A month-end checklist (all accounts reconciled, AR and AP reviewed, WIP and percentage-of-completion entries drafted for long projects, depreciation entries proposed) with status tracking.
 
-**Rules:** categorizations stay in `suggested` state until accepted, or are auto-accepted at L3 only when a user-defined rule matched or classifier confidence is at least 0.97 on a vendor with 10 or more prior identical categorizations. Journal entries are always drafted (T3 to post). Posting into a **closed period is impossible** (T4). Every accepted suggestion records `categorized_by = agent | rule | user`.
+**Rules:** categorizations stay in `suggested` state until accepted. Accepting a categorization **posts a journal entry** (for example `ap.AP10` for a card line in [Accounting](09-accounting-ledger-integrations.md)), so acceptance is a T3 posting action. It is auto-accepted at L3 only through the tenant's explicit **auto-post policy** (doc 09 principle 10), and only when a user-defined rule matched, or classifier confidence is at least 0.97 on a vendor with 10 or more prior identical categorizations and the amount is under the auto-post ceiling (default $1,000). Other journal entries are always drafted (T3 to post). Posting into a **closed period is impossible** (T4). Every accepted suggestion records `categorized_by = agent | rule | user`, and an auto-posted entry can be reversed in one click from the AI Activity log (with a reversing entry, never a delete).
 
 #### 4.5.10 A9 AP Agent [V1]
 
@@ -671,7 +795,9 @@ This agent works on the built-in ledger (see [Accounting](09-accounting-ledger-i
 - **Estimate skeleton:** an Opportunity per bid plus a multi-property Estimate with lines pre-mapped to the price book; quantities pull from the site map or from the estimating agent's aerial measurement per property.
 - **Bid/no-bid scorecard [V2]:** fit with route density (drive-time from existing clients), crew capacity in-season, margin at the expected market price, payment-term risk, and historical win rate with this property manager.
 
-**Rule:** every extracted field carries its page and quote citation, and the UI shows the source paragraph on hover. Unsupported claims are not displayed.
+- **Plan-set takeoff [V2].** Commercial install bids often start from a general contractor's PDF plan set (planting plan, plant schedule, hardscape plan, irrigation plan) rather than a maintenance RFP. The parser extracts the **plant schedule table** (symbol or key, botanical name, common name, size such as #5 or 2.5-inch caliper B&B, quantity, spacing and remarks) and matches each row to the Plant KB. A vision pass counts symbols on the planting plan sheet and reconciles them against the schedule's quantities. For example: "Schedule says 42 *Ilex glabra* 'Shamrock' #5; counted 38 on sheet L-201; 4 may be on L-202 or a schedule error. Add an RFI?" Hardscape areas and linear edges are measured from the drawing scale bar and imported as a to-scale Design layer (see [Design Studio](10-design-studio.md)), so the takeoff feeds the Estimate directly. LMN reaches this through its Beam AI integration ([LMN release note](https://support.golmn.com/hc/en-us/articles/46786137574683)). Rootline does it on the same document pipeline and plant graph as everything else.
+
+**Rule:** every extracted field carries its page and quote citation, and the UI shows the source paragraph on hover. Unsupported claims are not displayed. For plan sets, citations are sheet number plus a highlighted region.
 
 #### 4.5.12 A11 Nursery Availability Parser [V1]
 
@@ -970,8 +1096,12 @@ Rootline exposes a remote **Model Context Protocol** server so tenants can conne
 | Aspect | Design |
 |--------|--------|
 | Transport | Remote MCP over Streamable HTTP at a tenant-agnostic endpoint (for example `mcp.rootline.com`); tenant resolved from the OAuth token |
-| Authorization | OAuth 2.1 per the MCP authorization specification (dynamic client registration where supported); the user consents to scopes on a Rootline consent screen; tokens are bound to user and tenant |
-| Tools | Generated from the Tool Registry, filtered by the user's permissions and granted scopes. Same names and schemas as internal tools (`schedule.propose_reschedule`, `metrics.query`) |
+| Authorization | OAuth 2.1 per the MCP authorization specification. Rootline's authorization server publishes protected-resource metadata and accepts both **Client ID Metadata Documents** and **dynamic client registration** for client identification (the 2025-11-25 spec revision prefers metadata documents; from prior knowledge, verify). Tokens are audience-bound to `mcp.rootline.com` with resource indicators, bound to user and tenant, expire after 1 hour, and use rotating refresh tokens. The user consents to scopes on a Rootline consent screen that names the client and shows its verified domain |
+| Tools | Generated from the Tool Registry, filtered by the user's permissions and granted scopes. Same names and schemas as internal tools (`schedule.propose_reschedule`, `metrics.query`). Each tool declares an `outputSchema` and returns `structuredContent`, so clients receive the same typed `ScheduleDiff` or `KpiCard` payload the web app renders |
+| Tool annotations | Risk tiers are mapped to MCP tool annotations as hints for the client's own confirmation UX: T0 sets `readOnlyHint: true`; T1 and T2 set `readOnlyHint: false, destructiveHint: false`; T3 sets `openWorldHint: true` (it reaches clients, vendors or money). `idempotentHint` mirrors the tool's idempotency key. Annotations are **hints only**: Rootline enforces tiers server-side whatever the client does with them |
+| In-protocol confirmation | Where the client supports MCP **elicitation**, a T2 or T3 call returns a confirmation request instead of a bare approval link. URL-mode elicitation opens Rootline's own hosted confirmation page, so the preview, the typed-count rule for bulk sends and step-up auth are rendered by Rootline, not by the third-party client (spec features from prior knowledge, verify current support per client) |
+| Long-running tools | Aerial measurement, RFP parsing and plan-set takeoff return a job handle at once and complete asynchronously (MCP task support where the client has it; otherwise a `jobs.get_status` polling tool and a push to the user's phone) |
+| Rich UI in the client [V2] | Where AI clients support interactive UI extensions to MCP (the "MCP Apps" extension; verify status), Rootline serves the `ScheduleDiff`, `ActionProposal` and `PlantCard` components as sandboxed UI resources. A rain reschedule then shows its diff and Confirm button inside Claude or ChatGPT, still confirmed against Rootline's server-side `proposal_id` |
 | Resources | Read-only resources for records (`rootline://clients/{id}`), reports, the Company Brain (selected sections) and documents |
 | Prompts | Curated prompt templates ("Weekly ops review", "Draft renewal letter") |
 | Risk tiers | T0-T1 tools execute directly. **T2-T3 tools return a proposal plus an approval link** and push a confirmation to the user's Rootline mobile app (out-of-band confirmation), unless the MCP client supports in-protocol user confirmation *and* the tenant enables it. T4 tools are never exposed |
@@ -1018,6 +1148,10 @@ Landscape businesses ingest a lot of untrusted text: lead forms, client emails, 
 7. **Inbound classifiers.** A lightweight injection and phishing classifier scores inbound content. High scores mark the item "suspicious" in the UI and exclude it from automation triggers until a human reviews it.
 8. **Document hygiene.** PDFs and images are rendered and OCR'd. Hidden text (white-on-white, zero-size fonts, off-page content, metadata fields) is detected and either stripped or flagged, because hidden-text injection in invoices and RFPs is a known technique.
 9. **Red-team suite.** A maintained corpus of injection attacks specific to our channels (fake vendor invoices with bank-change instructions, lead forms with instructions in the message field, RFPs with hidden directives, SMS with role-play attacks, multilingual attacks in Spanish). It runs in CI on every prompt or model change (section 4.11.4).
+10. **Tool supply chain [MVP rule, V2 connectors].** Rootline's own agents call only Rootline's signed Tool Registry. They do **not** connect to third-party MCP servers in MVP or V1, because a remote tool's description is itself untrusted text that can carry instructions ("tool poisoning") and can change after approval. When V2 adds external tool connectors (for example a distributor's ordering API exposed over MCP), each connector is pinned by a hash of its tool list and descriptions. Any change suspends the connector until `platform_engineer` re-reviews it. Connector tools always run in the tainted, narrow-tool context, and their outputs are treated as untrusted content.
+11. **Memory poisoning guard.** Untrusted content can never create or edit Company Brain items (section 4.1.5). A memory proposal that originates in a tainted turn ("this client says your policy is free replacements forever") is discarded, and memory items cite their source record.
+
+These layers map to the agent-specific risks catalogued by OWASP's GenAI Security Project, which since late 2025 also publishes guidance for agentic applications: goal hijack, tool misuse, identity and privilege abuse, and memory poisoning ([OWASP GenAI Security Project](https://genai.owasp.org/); from prior knowledge, verify current list names). The release gate in 4.11.4 tests one or more cases per mapped risk.
 
 ```mermaid
 flowchart LR
@@ -1045,7 +1179,8 @@ flowchart LR
 | Never-send list | `pii_sensitive` and `secret` classes; full card data never exists in Rootline at all (Stripe Elements, PCI SAQ-A scope; see [Payments](08-payments-stripe.md)) |
 | Logging | Prompts and completions are stored in the AI audit store with PII-class fields masked. Full-fidelity payloads are kept encrypted for 30 days (configurable 0-90) for debugging under tenant consent, then purged |
 | Vendor retention | Use model provider settings that disable training on API data, and request zero or minimal data retention where offered. Provider data-processing terms are tracked in the subprocessor list (see [Architecture](20-architecture-security.md)); verify current terms per provider |
-| Data residency | Canadian tenants are routed to in-country model endpoints where available. Otherwise cross-border AI processing is disclosed in the DPA and can be disabled per feature by the tenant (see [Architecture](20-architecture-security.md)). Coverage of Canadian endpoints per task class is an open question (section 14) |
+| Data residency | The gateway pins the provider's inference geography on every call (the Claude API's inference-geography control or a regional cloud endpoint) and records the geography actually used on the `ai_usage_event` as audit evidence ([Architecture](20-architecture-security.md) section 4.13). Whether a **Canadian** inference geography exists per model and task class is unverified (doc 20 Q15, and question 4 in section 14). Until it is confirmed, Canadian tenants' AI tasks run under the cross-border disclosure in the DPA ([Architecture](20-architecture-security.md) section 4.4.6), and the tenant can disable any AI feature per feature |
+| Retention-sensitive model tiers | Model tiers that require provider-side data retention (doc 20 notes this for the top "Fable" tier) are marked ineligible in the model registry for tasks that carry `financial`, `pii_contact` or employee data, unless the DPA analysis approves them. The router skips them for those task classes even when they would score higher |
 | Data subject requests | GDPR/CCPA/PIPEDA access and deletion requests cascade to AI conversations, audit payloads, embeddings (vector rows deleted by source record ID) and memory items |
 | Voice and photos | Audio retained 30 days by default; faces in photos are blurred in client-facing reels when not needed [V1]; no biometric identification of people, ever |
 
@@ -1090,6 +1225,12 @@ Each agent has a **model card and eval card** in the AI Ops console showing vers
 | AI photo mockup (per image) | See [AI Design](11-ai-design-mockups.md) | Image generation dominates cost |
 | MCP read and draft tool calls | 0 | The tenant's own model does the reasoning |
 | Deterministic automations (no AI steps) | 0 | Unlimited within rate limits |
+| Dispute evidence packet (A28) | 4 | Proposed. Document assembly plus a narrative draft; owned by [Payments](08-payments-stripe.md) |
+| Call or voicemail transcription and summary (human-answered calls) | 2 | Per the rate card |
+| AI receptionist call handling | Not credits | Its own published per-minute meter (`voice_ai_minutes`) that includes telephony, speech and LLM, per [Business Model](22-business-model-pricing-gtm.md). This supersedes the "credits per minute plus telephony" wording in [Marketing](16-marketing-growth-communications.md) |
+| Policy replay (section 4.4.5) | Quoted before run | Same basis as an agent task run (10-30 per 30 days replayed, estimate) |
+
+**Settlement rules** follow the credit ledger rules in [Business Model](22-business-model-pricing-gtm.md) section 4.4.1. Each action places a hold for its quoted credits. The hold is released in full on a provider failure, safety refusal or timeout, and a user-cancelled agent run settles only completed steps. Included credits do not roll over; purchased packs last 12 months. A grounding-check failure that suppresses a narrative (section 4.2.6) is charged at the read-only rate, never more.
 
 **Controls:**
 - **Visibility:** each Copilot answer and agent run shows its credits (small, gray, "2 credits"). Usage dashboards by user, agent, feature and day.
@@ -1101,7 +1242,7 @@ Each agent has a **model card and eval card** in the AI Ops console showing vers
 
 #### 4.11.6 Model routing in the AI Gateway [MVP]
 
-Routing is policy-driven per **task class**. Models are referenced by tier, and the concrete model IDs live in the gateway's model registry managed by `platform_engineer` (see [Architecture](20-architecture-security.md) section 4.13). Upgrades happen by config change behind an eval gate. Task classes group the gateway's named tasks: for example, `inbox.classify` maps to `classify_small`, `copilot.chat` and `proposal.write_scope` to `chat_tools`, `estimate.draft_from_notes` to `chat_tools` or `reason_deep` depending on scope size, and `receipt.extract` to `extract_document`.
+Routing is policy-driven per **task class**. Models are referenced by tier, and the concrete model IDs live in the gateway's model registry managed by `platform_engineer` (see [Architecture](20-architecture-security.md) section 4.13). Upgrades happen by config change behind an eval gate. The registry pins exact model IDs, never "latest" aliases, and each route also pins an **effort or reasoning level**. Classification and extraction run at low effort, which is the main cost lever after caching (doc 20 section 4.13). Task classes group the gateway's named tasks: for example, `inbox.classify` maps to `classify_small`, `copilot.chat` and `proposal.write_scope` to `chat_tools`, `estimate.draft_from_notes` to `chat_tools` or `reason_deep` depending on scope size, and `receipt.extract` to `extract_document`.
 
 | Task class | Default tier | Examples | Latency target (p95) | Fallback |
 |-----------|--------------|----------|---------------------|----------|
@@ -1132,7 +1273,7 @@ The policy is published in plain English in the Trust Center and enforced by con
 
 #### 4.11.8 Audit [MVP]
 
-Every AI-originated or AI-assisted action creates an immutable `ai_action` audit record: who (principal and on-behalf-of user), what (tool, arguments hash, before and after record versions), why (conversation turn or agent run and step, evidence references), approval (approver, timestamp, edits made), model route and prompt version, credits, and channel (web, mobile, voice, automation, API, MCP). Records are queryable in an **AI Activity** log per Company (filterable by agent, user, record and tier) and exportable for SOC 2 evidence. Every record created or modified by AI carries an "AI-assisted" badge with a link to its audit trail ("Why does this exist?").
+Every AI-originated or AI-assisted action creates an immutable `ai_action` audit record: who (principal and on-behalf-of user), what (tool, arguments hash, before and after record versions), why (conversation turn or agent run and step, evidence references), approval (approver, timestamp, edits made), model route and prompt version, credits, and channel (web, mobile, voice, automation, API, MCP). Retention follows the audit schedule in [Personas and Permissions](02-personas-roles-permissions.md) section 5.17: AI actions are kept **3 years** by default. When an AI action also falls into a longer category, the longer period wins. Examples are journal entry posting, credit memos and bill posting (financial, 7 years), and consent changes (life of the Client plus 7 years). The `ai_action` row is also referenced from the tenant's hash-chained audit stream, so tampering is detectable. Records are queryable in an **AI Activity** log per Company (filterable by agent, user, record and tier) and exportable for SOC 2 evidence. Every record created or modified by AI carries an "AI-assisted" badge with a link to its audit trail ("Why does this exist?").
 
 #### 4.11.9 Content safety and brand protection [MVP]
 
@@ -1781,7 +1922,7 @@ erDiagram
 
 ### 7.3 Data rules
 
-- `ai_action` and `automation_version` are **append-only** (no updates or deletes; corrections are new rows). They are retained for 7 years by default to align with financial-record retention, with payload references purged on the schedule in section 4.11.3.
+- `ai_action` and `automation_version` are **append-only** (no updates or deletes; corrections are new rows). `ai_action` rows follow the doc 02 audit retention schedule: 3 years by default, extended to 7 years (or longer) when the action belongs to a financial, access-control or consent category. A `retention_class` column is set at write time from the tool's `side_effects` and module. `automation_version` rows are kept for the life of the automation plus 3 years. Payload references are purged on the schedule in section 4.11.3.
 - `ai_proposal.record_versions` stores `{entity, id, version}` tuples used for the staleness check at execution.
 - `embedding_chunk` rows are deleted synchronously when the source record is deleted or its visibility changes. A nightly job re-indexes on visibility drift.
 - `credit_ledger_entry` is double-entry-like: every consume references an invocation, and balances are derived and periodically checkpointed. Overdraft beyond the budget is rejected at the gateway (pre-authorization reserves estimated credits; the actual amount settles after the call).
@@ -1909,7 +2050,7 @@ This document owns the AI *platform*. The table maps where each module applies i
 | [Crew App](05-field-crew-mobile-app.md) | Voice commands, field notes, photo QA prompts, how-to answers | A4, A12, voice | MVP-V2 |
 | [Customer Portal](06-customer-portal.md) | Portal assistant, "explain this invoice", request intake | A22 | V1 |
 | [Invoicing](07-invoicing-billing-contracts.md) | Collections, invoice explanations, dispute triage | A5 | MVP-V1 |
-| [Payments](08-payments-stripe.md) | Payout reconciliation, failed-payment recovery, dispute evidence assembly (draft only) | A8, R18 | V1 |
+| [Payments](08-payments-stripe.md) | Payout reconciliation, failed-payment recovery, dispute evidence assembly (human-reviewed before submission) | A8, A28, R18 | MVP (A28, R18) / V1 (A8) |
 | [Accounting](09-accounting-ledger-integrations.md) | Bank categorization, reconciliation, AP, close assistant, cash forecast | A8, A9 | V1 |
 | [Design Studio](10-design-studio.md) | Aerial-to-design drafts, takeoff checks | A6 (measure stage) | V1 |
 | [AI Design and Mockups](11-ai-design-mockups.md) | Mockups, dimension-aware layout generation, design assistant | A24 | MVP-V1 |

@@ -45,7 +45,7 @@ This report uses the same evidence tags as [R2](R2-landscape-specific-platforms.
 9. **The plant data landscape splits cleanly into "open and reusable" and "excellent but locked".** Public-domain or open data covers taxonomy (WCVP/POWO, WFO), US native status and distribution (USDA PLANTS), Canadian status (VASCAN), climate (2023 USDA Plant Hardiness Zone Map, NRCan zones, NOAA normals), ecoregions (EPA and CEC), soils (SSURGO) and occurrences (GBIF, iNaturalist, filtered by record-level license) [B]. The **horticultural judgment** a landscaper actually needs (garden performance, mature size in cultivation, deer resistance, maintenance, cultivar differences, design use) lives in copyrighted references: Missouri Botanical Garden Plant Finder, NC State Extension Gardener Plant Toolbox, Lady Bird Johnson Wildflower Center, Calscape, WUCOLS, NWF, Audubon, BONAP. None of them offers a public commercial API, and all need permission or a license for systematic reuse [B].
 10. **Cultivars are the biggest data gap.** Landscapers specify *Hydrangea paniculata* 'Limelight' or *Buxus* 'Green Velvet', not the species. Taxonomic backbones stop at species and infraspecific taxa. Cultivar and trademark data (for example 'Bobo', 'Little Lime', Endless Summer, Proven Winners and First Editions series) lives in grower catalogs and brand programs with their own copyrights and trademarks [B]. **Rootline's curated cultivar layer, linked to nursery availability, is the defensible asset**, and it has to be built by `platform_curator` staff with grower partnerships, not scraped.
 11. **Nursery availability is still emailed spreadsheets.** Distributors such as SiteOne integrate with landscape software only through partnerships (LMN's SiteOne ordering) ([Turf Magazine](https://turfmagazine.com/lmn-integrates-siteone-landscape-supply-in-2021-software/)) [S]. Local wholesale nurseries publish weekly PDF or Excel availability lists ([13](../13-operations-inventory-equipment.md) section 2) [S/B]. A parser that maps any availability list to Plant KB records is a real moat and a network effect: every tenant upload enriches regional availability signals.
-12. **Recommendation in one line:** build the Plant KB on open backbones (WCVP or WFO, USDA PLANTS, VASCAN, PHZM 2023, EPA and CEC ecoregions, SSURGO, GBIF CC0/CC BY records); **license or partner** for horticultural depth (a botanical-garden or extension partnership, WUCOLS for water use in the West, regional trial programs) and imagery; **curate in-house** what makes the product unique (cultivars, Plant Region Profiles, palettes, render-reference images, availability mapping). Never scrape the locked sources (section 6).
+12. **Recommendation in one line:** build the Plant KB on open backbones (WCVP or WFO, USDA PLANTS, VASCAN, PHZM 2023, EPA and CEC ecoregions, SSURGO, GBIF CC0/CC BY records); **license or partner** for horticultural depth (a botanical-garden or extension partnership, WUCOLS for water use in the West, regional trial programs) and imagery; **curate in-house** what makes the product unique (cultivars, Plant Region Profiles, palettes, render-reference images, availability mapping). Never scrape the locked sources (sections 5.3 and 6).
 
 ---
 
@@ -257,6 +257,10 @@ Errors reported at this seam include mismatched paver counts, wrong wall heights
 6. **Irrigation and lighting rigor** (Land F/X, Vectorworks) is a [V1] credibility feature for design-build firms that install systems.
 7. **Premium presentation** (Structure Studios) is a later-tier upsell for high-ticket outdoor living. Do not build cinematic 3D before the plan-to-estimate loop works.
 
+> **Competitive edge: vs PRO Landscape+, DynaSCAPE and Realtime Landscaping.** These are good drawing and imaging tools that stop at the file. A contractor pays for one of them (about $900 per year for PRO Landscape+ [S]) and then re-keys the plant list into LMN, Aspire or Jobber. In Rootline the plan is the same record as the client, Price Book, proposal, purchase order and job cost, and the plant library knows the Region. The design tool's subscription goes away, and so does the re-keying error rate.
+
+> **Competitive edge: vs Vectorworks Landmark and Land F/X.** They win on documentation depth for landscape architects, and Rootline should not try to out-CAD them. Rootline wins the 5-to-50-person design-build firm that has no trained CAD operator, needs a sellable plan in an afternoon, and wants the takeoff priced with its own production rates. For the projects where an architect is involved, Rootline imports their DWG and runs the job.
+
 ---
 
 ## 3. Part B: AI landscape and home visualization
@@ -449,7 +453,7 @@ Per-image API costs are now small relative to the value of a design-build sale. 
 ### 3.7 Provenance, disclosure and licensing
 
 - **Content credentials.** C2PA manifests ([C2PA specifications](https://c2pa.org/specifications/)) [S] record that an image was AI-edited. OpenAI attaches C2PA metadata to generated images, and Google embeds SynthID watermarks in Gemini image outputs [B]. Rootline should attach its own C2PA manifest (tenant, design version, model route) and show a visible "artist rendering" badge.
-- **Regulation.** The EU AI Act's Article 50 transparency obligations for AI-generated or manipulated images ([artificialintelligenceact.eu](https://artificialintelligenceact.eu/article/50/)) [S] apply from August 2026 [B]; they matter if Rootline ever serves EU tenants. In the US, presenting a rendering as completed work can be a deceptive advertising problem under FTC Act section 5 and state consumer-protection laws [B]. Keep AI images out of portfolio galleries unless clearly labeled.
+- **Regulation.** The EU AI Act's Article 50 transparency obligations for AI-generated or manipulated images ([artificialintelligenceact.eu](https://artificialintelligenceact.eu/article/50/)) [S] were scheduled to apply from August 2026, subject to any changes from the EU's 2025-2026 simplification proposals (verify current timing) [B]. They matter only if Rootline serves EU tenants; US + Canada launch markets are not directly affected. In the US, presenting a rendering as completed work can be a deceptive advertising problem under FTC Act section 5 and state consumer-protection laws [B]. Keep AI images out of portfolio galleries unless clearly labeled.
 - **Model licenses.** Keep a register of every model checkpoint with license, permitted use, attribution and territorial limits. Known traps [B]: FLUX [dev] family (non-commercial), Depth Anything V2 Base/Large/Giant (CC BY-NC), SAM 3 (custom license), HunyuanImage (territorial exclusions), ControlNet checkpoints trained on datasets with unclear terms.
 - **Photo rights.** Homeowner-uploaded photos may show neighbors' houses, people and license plates. Store them with tenant-scoped access, blur faces and plates in shared galleries, and require consent before any reuse for model training ([20](../20-architecture-security.md)).
 
@@ -461,6 +465,10 @@ Per-image API costs are now small relative to the value of a design-build sale. 
 4. **Be honest about scale.** Show a calibration confidence, use plan-to-photo projection for anything sold, and label renders with plant age.
 5. **Prefer permissive licenses for self-hosted paths** (Apache 2.0 SAM/SAM 2, IP-Adapter, Qwen-Image family; OpenRAIL++-M SDXL), and buy commercial licenses where a non-commercial model is clearly best.
 6. **Capture stack:** aerial plus parcel plus 3DEP for the lot, phone photos plus dimensions for mockups, LiDAR for close-range hardscape, video splats for premium walkthroughs. Do not use RoomPlan for yards.
+
+> **Competitive edge: vs consumer AI yard apps (Neighborbrite, ReimagineHome, Paintit.ai, HomeDesigns AI and the long tail).** They sell a picture to a homeowner and stop. Rootline renders a measured yard with plants the operator's curators rated for that Region, labels every plant, and hands the homeowner to a real local Company that can price and install the picture. The same model call that costs a consumer app a few cents becomes, in Rootline, a qualified lead worth hundreds of dollars to the tenant.
+
+> **Competitive edge: vs PRO Landscape+ AI.** PRO Landscape's 2025 AI tools edit photos well [S], but the plants in the photo are not tied to a regional rating, a price or a purchase order. Rootline's rendered plants are data: tap one to see its name, Region rating, toxicity and price, then approve the option with a deposit.
 
 ---
 
@@ -931,4 +939,183 @@ erDiagram
 5. **Regional advisory panels.** Paid panels of local horticulturists, extension agents and veteran designers review Region palettes twice a year (spring and fall).
 6. **Change propagation.** When a plant becomes prohibited or its rating drops, open Designs and Proposals that include it are flagged, and the Copilot suggests substitutes ranked by similarity ([17](../17-ai-copilot-automation.md)).
 
+> **Competitive edge: vs every design tool's plant library.** Vectorworks, Land F/X, PRO Landscape and Realtime ship large generic libraries and leave suitability to the designer; consumer apps generate plant names with no curation. No competitor found in this research combines cultivar-level records, per-Region performance ratings, legal status by jurisdiction, toxicity, water use and live nursery availability, and none has a feedback loop from installed outcomes. That combination, curated by `platform_curator` staff and partners, is the asset that compounds.
+
 ---
+
+## 5. Lessons for Rootline
+
+### 5.1 Strategic lessons
+
+1. **The integration is the product.** Design tools are good at drawing and bad at business; business tools are good at money and bad at design. Rootline's defensible position is the single record from measured site to region-valid plan to mockup to priced proposal to install to invoice ([10](../10-design-studio.md), [11](../11-ai-design-mockups.md), [03](../03-crm-sales-estimating-proposals.md)).
+2. **Region-aware plants are the wedge competitors cannot copy quickly.** Generating images is commodity. A curated cultivar layer with Plant Region Profiles, legal status by jurisdiction, toxicity, water use and availability takes years of curation plus tenant feedback loops. Start curating before MVP.
+3. **Be the honest AI.** Every competitor's AI image can mislead (wrong plants, wrong scale, ten-year-old plants on install day). Labels, plant-age badges, calibration confidence and C2PA credentials are cheap to build and become a trust brand with homeowners and HOA boards.
+4. **Use open data aggressively and copyrighted data respectfully.** The open stack (WCVP or WFO, USDA PLANTS, VASCAN, PHZM 2023, NRCan, EPA and CEC ecoregions, NOAA, Daymet, SSURGO, NAIP, 3DEP, filtered GBIF and iNaturalist) covers the skeleton for free. Horticultural judgment comes from people and partners.
+5. **Partnerships double as marketing.** "Region profiles reviewed with [botanical garden or extension partner]" and "Wildlife value from [NWF or Audubon]" carry authority with homeowners. Brand growers want their plants specified. Native plant societies want natives installed. Each partnership is also a distribution channel ([22](../22-business-model-pricing-gtm.md)).
+
+### 5.2 Product lessons by module
+
+| Module | Lesson | Priority |
+|---|---|---|
+| [10 Design Studio](../10-design-studio.md) | Estimator mode and designer mode on one engine; live takeoff priced against the Price Book | [MVP] |
+| [10 Design Studio](../10-design-studio.md) | Hand-drawn presentation theme, growth slider, season toggle | [MVP] theme; [V1] growth and seasons |
+| [10 Design Studio](../10-design-studio.md) | DWG/DXF and PDF underlays in; DWG/DXF, PDF, CSV and glTF out | [MVP] PDF; [V1] DWG/DXF |
+| [10 Design Studio](../10-design-studio.md) | Irrigation schedules and water budgets using WUCOLS-style plant factors (licensed) | [V1] |
+| [11 AI mockups](../11-ai-design-mockups.md) | Closed-world plant rendering from the KB, with per-plant reference images and labels | [MVP] |
+| [11 AI mockups](../11-ai-design-mockups.md) | Plan-to-photo projection with depth and segmentation control | [V1] |
+| [11 AI mockups](../11-ai-design-mockups.md) | Model routing behind the AI Gateway; quarterly golden-set benchmarks; license register | [MVP] |
+| [11 AI mockups](../11-ai-design-mockups.md) | Gaussian-splat walkthroughs for premium outdoor-living projects | [V3] (groundwork [V2]) |
+| [12 Plant KB](../12-plant-knowledge-base.md) | Layered KB with provenance and license per fact and image | [MVP] |
+| [12 Plant KB](../12-plant-knowledge-base.md) | Three-status regulatory model (prohibited, restricted, ecologically invasive) with effective dates | [MVP] |
+| [12 Plant KB](../12-plant-knowledge-base.md) | Computed climate envelopes from filtered occurrences to draft Region ratings | [V1] |
+| [12 Plant KB](../12-plant-knowledge-base.md) | Tenant field-truth signals (warranty claims, replacements) feeding Region ratings | [V1] |
+| [13 Operations](../13-operations-inventory-equipment.md) | Availability parser and Nursery Connect vendor portal mapped to KB cultivars and ANSI Z60.1 sizes | [V1] |
+| [06 Portal](../06-customer-portal.md) | Tap-a-plant cards, toxicity and pet warnings, frost alerts, plant ID | [V1] |
+| [16 Marketing](../16-marketing-growth-communications.md) | White-label AI yard visualizer as a lead magnet on the Company's site | [MVP] |
+| [19 Platform admin](../19-platform-admin-portal.md) | Source registry, license register, AI enrichment queue, two-reviewer critical claims | [MVP] |
+
+### 5.3 What not to do
+
+- Do not scrape Missouri Botanical Garden, NC State, the Wildflower Center, Calscape, WUCOLS, NWF, Audubon, BONAP, ASPCA or Rutgers. Partner or license.
+- Do not build on Trefle or Perenual as a foundation.
+- Do not use CC BY-NC data, images or models in the paid product (FLUX [dev] family without a commercial license, Depth Anything V2 Base and larger, iNaturalist default-licensed photos, non-commercial GBIF datasets).
+- Do not use RoomPlan for yards, and do not market phone measurements as survey-grade.
+- Do not display AI renders as photos of completed work.
+- Do not treat a USDA zone match as "suitable". Zone is necessary, not sufficient.
+
+---
+
+## 6. Recommendations: build, license, partner
+
+### 6.1 Prioritized plan
+
+| # | Recommendation | Type | Owner (role key) | Priority |
+|---|---|---|---|---|
+| 1 | Adopt **WCVP** (or WFO) as the primary taxonomic backbone, crosswalked to USDA PLANTS symbols, ITIS and VASCAN | Build on open data | `platform_engineer`, `platform_curator` | [MVP] |
+| 2 | Ingest **PHZM 2023** and **NRCan** grids, **EPA Level III/IV** and **CEC** ecoregions, **NOAA normals** (frost dates, heat days) into PostGIS; look up by property coordinates | Build on open data | `platform_engineer` | [MVP] |
+| 3 | Define the **source and license registry** and per-fact provenance before ingesting anything; refuse records with non-commercial licenses | Build | `platform_engineer`, `platform_owner` | [MVP] |
+| 4 | Write and have counsel approve the **clean-room curation policy**; train curators on it | Policy | `platform_owner` | [MVP] |
+| 5 | Curate a **launch set of about 1,500 species and cultivars** for launch Regions, seeded from tenant price books and purchase history, with Plant Region Profiles | Curate | `platform_curator` | [MVP] |
+| 6 | Build the **regulatory layer** (federal and state or provincial prohibited, restricted and invasive status with effective dates) and the **toxicity layer**, both with two-reviewer approval | Curate | `platform_curator` | [MVP] |
+| 7 | Pursue **one botanical-garden or extension partnership per launch Region** (for example a Midwest garden, a Southeast extension service and a western native plant society) for structured trait access and co-branding | Partner | `platform_owner` | [MVP] outreach; [V1] live |
+| 8 | **License WUCOLS** (or negotiate permission) before launching western water budgets | License | `platform_owner` | [V1] |
+| 9 | Ingest **GBIF CC0 and CC BY occurrences** to compute climate envelopes and ecoregion presence; use them to draft Region ratings for curators | Build on open data | `platform_engineer` | [V1] |
+| 10 | Build the **reference-image library** from iNaturalist open data (CC0 and CC BY), Wikimedia Commons and grower partners, with attribution and usage scope per image | Build plus partner | `platform_curator` | [MVP] core; [V1] scale |
+| 11 | Sign **brand-grower partnerships** for cultivar data, imagery and availability, starting with the brands most specified by launch tenants | Partner | `platform_owner` | [V1] |
+| 12 | Ship the **availability parser and Nursery Connect** portal; map lists to KB cultivars and ANSI Z60.1 sizes | Build | `platform_engineer` | [V1] |
+| 13 | Evaluate **BONAP** licensing if "native to your county" claims are a sales priority | License | `platform_owner` | [V1] decision |
+| 14 | Integrate a **plant-ID API** (Plant.id or Pl@ntNet) for site assessments and the portal | License | `platform_engineer` | [V1] |
+| 15 | Ingest **SSURGO** soils at property level; add Google Solar API or 3DEP-derived shade analysis | Build | `platform_engineer` | [V1] soils; [V2] shade |
+| 16 | Stand up the **AI image route benchmark** (Gemini image, GPT Image, FLUX Kontext, Qwen-Image-Edit, SDXL pipeline) on a landscape golden set with plant-identity and house-preservation metrics | Build | `platform_engineer` | [MVP] |
+| 17 | Maintain the **model license register**; buy commercial licenses where a non-commercial model is clearly best | Policy | `platform_engineer`, `platform_owner` | [MVP] |
+| 18 | Prototype **Gaussian-splat capture** with scale registration for premium design-build tenants | Research | `platform_engineer` | [V2] prototype; [V3] product |
+| 19 | Explore **anonymized regional plant price benchmarks** with tenant opt-in and minimum cohort sizes | Build | `platform_finance`, `platform_engineer` | [V2] |
+| 20 | Convene **regional advisory panels** to review palettes each spring and fall | Curate | `platform_curator` | [V1] |
+
+### 6.2 Build-versus-license summary
+
+```mermaid
+flowchart TB
+  Q1{"Is the data open and commercial-compatible?"} -->|"yes"| B1["Ingest on a schedule with provenance"]
+  Q1 -->|"per-record"| B2["Ingest only CC0 and CC BY records, store attribution"]
+  Q1 -->|"no"| Q2{"Is it core to differentiation?"}
+  Q2 -->|"yes"| B3["Partner or license, co-brand"]
+  Q2 -->|"no"| Q3{"Can curators record facts with citations?"}
+  Q3 -->|"yes"| B4["Clean-room curation, no copying"]
+  Q3 -->|"no"| B5["Skip, or link out to the source"]
+```
+
+### 6.3 Beyond the brief
+
+1. **"Grow Me Instead" substitution engine [V1].** When a client asks for a prohibited or invasive plant (burning bush, Callery pear), the Design Studio offers three regionally rated alternatives with similar form, color and size, priced from the Price Book. Canada's invasive species councils prove the concept; Rootline automates it.
+2. **Plant performance network [V2].** Anonymized, opt-in install outcomes across tenants (survival at 12 months by cultivar, Region and site conditions) become the most valuable horticultural dataset in North America. Publish an annual "Rootline Plant Performance Report" per Region for PR and partner goodwill.
+3. **Climate-shift alerts [V2].** When PHZM or NRCan maps are updated, or when a tenant's Region warms measurably in Daymet data, Rootline flags plants moving from "marginal" to "good" and the reverse, and suggests "climate-ready" palettes.
+4. **Wildlife and water scorecards in proposals [V1].** Each design option shows a native share, Lepidoptera-host score (with partner data), estimated water use and a fire-zone check. These win HOA and municipal approvals and differentiate premium proposals.
+5. **Extension partnership program [V1].** Fund extension content updates in exchange for structured data access, the way a sponsor funds a public garden; it is both data acquisition and brand.
+6. **"Plant passport" QR tags [V2].** Installed plants get a weatherproof tag linking to the client portal's plant card: care calendar, warranty status and toxicity notes. Crews scan it during maintenance to log condition, feeding the performance network.
+7. **Curator marketplace [V3].** Vetted regional horticulturists earn revenue share for maintaining Region palettes, as a scalable alternative to hiring curators in every metro.
+
+---
+
+## 7. Verification checklist and open questions
+
+### 7.1 Facts to verify before external use
+
+| # | Item | Why it matters | How to verify |
+|---|---|---|---|
+| 1 | Current prices and tiers for PRO Landscape+, DynaSCAPE, Vectorworks Landmark, Land F/X, SketchUp, Realtime Landscaping, Structure Studios, iScape | Competitive pricing claims in [01](../01-market-landscape.md) and [22](../22-business-model-pricing-gtm.md) | Vendor pricing pages and sales calls |
+| 2 | DynaSCAPE Manage status and DynaSCAPE ownership | Whether a design-to-estimate competitor exists | Vendor site, trade press |
+| 3 | Structure Studios and PRO Landscape estimating and integration capabilities | Section 2.4 matrix | Demos |
+| 4 | Current image-model prices and licenses (Gemini image tiers, GPT Image versions, FLUX.2 tiers and [klein] license, Qwen-Image-Edit license, SAM 3 license, Depth Pro and VGGT terms) | AI COGS and license register | Provider pricing pages and model cards |
+| 5 | Exact license text for WCVP/POWO, IPNI, WFO, VASCAN, Catalogue of Life, PRISM, CEC ecoregions | Ingestion compliance | Provider terms pages; counsel review |
+| 6 | WUCOLS terms and contact for a commercial license | Western water budgets | UC Agriculture and Natural Resources |
+| 7 | BONAP data license pricing | County nativity decision | BONAP |
+| 8 | iNaturalist API terms and the open dataset license fields | Image library compliance | iNaturalist developer pages; AWS open data registry |
+| 9 | State sale bans and effective dates (Callery pear, Japanese barberry, burning bush and others) in launch states and provinces | Regulatory layer accuracy | State agriculture department rules |
+| 10 | NRCan species range model coverage and license | Canadian climate envelopes | NRCan site |
+| 11 | Record counts claimed for NC State, MBG, WUCOLS, Wildflower Center | Investor and marketing copy | Source sites |
+| 12 | Map-tile and aerial-imagery terms on running segmentation over tiles | Legal basis for AI auto-trace | Mapbox, Google, Nearmap and EagleView agreements |
+| 13 | EU AI Act Article 50 timing (including any changes from EU simplification proposals in 2025-2026) | Only if EU expansion is planned | Official EU sources |
+
+### 7.2 Open questions
+
+1. **Primary backbone:** WCVP (Kew) or WFO? Both are open. WCVP has better native-distribution coding; WFO has a name-matching API. Decide before MVP schema freeze.
+2. **County-level nativity:** is it required for launch marketing ("native to Franklin County"), or is ecoregion-level nativity enough? This drives the BONAP decision.
+3. **Partner sequencing:** which botanical garden or extension partner first, and what does Rootline offer (funding, data back, co-branding, tenant referrals)?
+4. **Curator staffing model:** in-house horticulturists per Region versus contract regional experts versus a [V3] curator marketplace.
+5. **Image library policy:** what share of render-reference images must be partner or owned photography (versus CC BY community photos) for quality and legal comfort?
+6. **Model hosting:** how much of the AI pipeline to self-host on permissively licensed models versus vendor APIs, given price declines and data-retention terms?
+7. **Tenant data sharing:** what opt-in terms and minimum cohort sizes make plant performance and price benchmarks acceptable to tenants and compliant with privacy commitments ([20](../20-architecture-security.md))?
+
+---
+
+## Sources
+
+### Retrieved in this research run (by sibling agents; re-cited here)
+
+**Design tools and the design-to-estimate gap**
+
+- PRO Landscape+: [Capterra](https://www.capterra.com/p/126135/PRO-Landscape/), [Capterra reviews](https://www.capterra.com/p/126135/PRO-Landscape/reviews/), [Capterra UK](https://www.capterra.co.uk/software/126135/pro-landscape), [Software Advice](https://www.softwareadvice.com/landscaping/pro-landscape-profile), [GetApp](https://www.getapp.com/all-software/a/pro-landscape/)
+- PRO Landscape+ AI features: [Green Industry Pros, AI designer suite](https://www.greenindustrypros.com/business-management/software/product/22961404/pro-landscape-pro-landscape-launches-aibased-designer-suite), [Green Industry Pros, AI upgrade](https://www.greenindustrypros.com/design-installation/design/product/22945469/pro-landscape-pro-landscape-upgrades-design-software-with-ai), [Lawn and Landscape, AI Outdoor Living Designer](https://www.lawnandlandscape.com/pro-landscape-plus-releases-ai-outdoor-living-designer), [Lawn and Landscape, AI update](https://www.lawnandlandscape.com/news/pro-landscape-updates-design-software-with-artificial-intelligence), [Turf Magazine](https://turfmagazine.com/ai-meets-design-prolandscape-unveils-next-gen-tools)
+- Land F/X: [planting schedules](https://www.landfx.com/docs/planting/schedules.html), [irrigation schedules and reports](https://www.landfx.com/index.php/docs/irrigation/schedules-and-reports/196-irrigation-schedules-and-reports.html), [watering schedule](https://www.landfx.com/docs/irrigation/schedules-and-reports/1545-watering-schedule.html), [irrigation features](https://www.landfx.com/irrigationfeatures), [FitGap summary](https://us.fitgap.com/products/land-f-x)
+- Vectorworks Landmark: [Vectorworks help, automatic schedules](https://app-help.vectorworks.net/2015/NNA/eng/VW2015_Guide/Worksheets/Creating_Schedules_Automatically.htm), [Dyverse review](https://avaria.dyverse.com/best-landscape-architecture-software-expert-reviews-comparisons-2024), [G2 comparison](https://www.g2.com/compare/land-f-x-vs-vectorworks-landmark)
+- iScape: [AI Tools Bakery review](https://aitoolsbakery.com/blog/iscape-review/), [TapSmart review](https://www.tapsmart.com/apps/iscape-review/)
+- Category ratings and complaints: [Capterra landscape software pricing guide](https://www.capterra.com/landscape-software/pricing-guide/), [JackMacBiz blog (2026)](https://jackmacbiz.github.io/blog/2026-06-13-why-your-current-landscape-design-app-is-wasting-8-hours-per/), [garden.org forum](https://garden.org/thread/view/132802/software/), [Green Industry Pros, implementing design software](https://www.greenindustrypros.com/22738198)
+- Jobber measurement and design gap: [Jobber help, measuring properties](https://help.getjobber.com/es/articles/how-to-measure-property-distance-and-size/), [Jobber community, design software](https://community.getjobber.com/discussions/operations-forum/looking-for-landscape-design-software--training/8084)
+- Distributors and ordering: [Turf Magazine, LMN and SiteOne](https://turfmagazine.com/lmn-integrates-siteone-landscape-supply-in-2021-software/), [LMN blog, SiteOne partner](https://golmn.com/blog/partner-in-spotlight-siteone-landscape-supply)
+
+**AI apps, press and model pricing**
+
+- [Penn State Extension, AI garden design](https://extension.psu.edu/ai-garden-design-intelligent-choices)
+- [Fast.io, best AI tools for landscape design 2026](https://www.fast.io/resources/best-ai-for-landscape-design-2026.md); [Cognitive Future](https://cognitivefuture.ai/best-ai-tools-for-landscape-design/); [Genroom 2026 roundup](https://genroom.io/blog/best-ai-landscape-design-apps-2026); [Genroom, AI garden design tools](https://genroom.io/blog/ai-garden-design-tools)
+- Apps: [Gendo](https://gendo.ai/ai-landscape-design), [Renovate AI](https://renovateai.app/ai-landscape-design), [Visualizee](https://visualizee.ai/blog/ai-landscape-design), [Rendair](https://rendair.ai/blog/5-ways-use-ai-landscape-designer-rendair), [Hadaa (Google Play)](https://play.google.com/store/apps/details?id=app.hadaa.android), [Yard Studio (Product Hunt)](https://www.producthunt.com/p/yard-studio), [Neighborbrite (App Store)](https://apps.apple.com/app/id6742585344)
+- Anecdotal user report of invented plants: [Reddit snapshot](https://reddit.sentinel-team.org/posts/1srelgp/snapshots/2026-04-24T23%3A03%3A08.204571Z)
+- Press: [Axios, landscape design AI](https://www.axios.com/local/washington-dc/2026/05/08/landscape-design-ai), [Axios, vibe-code your yard](https://www.axios.com/local/washington-dc/2026/05/08/ai-vibecode-yard-landscape), [Axios DC newsletter](https://www.axios.com/newsletters/axios-dc-355cf110-4890-11f1-baa8-6fb008c498e3)
+- Model pricing (as of 2026, verify): [BenchLM, Nano Banana pricing](https://benchlm.ai/media-pricing/nano-banana), [MyArchitectAI, Nano Banana API pricing](https://www.myarchitectai.com/blog/nano-banana-api-pricing), [Black Forest Labs help](https://help.bfl.ai/articles/7424166364-wip-welcome-to-the-forest), [Puter FLUX API pricing](https://developer.puter.com/tutorials/flux-api-pricing/), [PricePerToken FLUX pricing](https://pricepertoken.com/flux-pricing)
+
+**Geospatial**
+
+- USGS 3DEP: [USGS elevation datasets FAQ](https://www.usgs.gov/faqs/what-types-elevation-datasets-are-available-what-formats-do-they-come-and-where-can-i-download), [USGS 1 m DEM (data.gov)](https://catalog-old.data.gov/dataset/usgs-1-meter-digital-elevation-model)
+- Regrid: [plan options](https://support.regrid.com/reference/plan-options), [using the parcel API](https://support.regrid.com/api/using-the-parcel-api), [Regrid API](https://regrid.com/api)
+
+**Papers and specifications**
+
+- SAM: [arXiv 2304.02643](https://arxiv.org/abs/2304.02643); SAM 2: [arXiv 2408.00714](https://arxiv.org/abs/2408.00714); Grounding DINO: [arXiv 2303.05499](https://arxiv.org/abs/2303.05499)
+- Depth Anything V2: [arXiv 2406.09414](https://arxiv.org/abs/2406.09414); Depth Pro: [arXiv 2410.02073](https://arxiv.org/abs/2410.02073)
+- ControlNet: [arXiv 2302.05543](https://arxiv.org/abs/2302.05543); IP-Adapter: [arXiv 2308.06721](https://arxiv.org/abs/2308.06721); LoRA: [arXiv 2106.09685](https://arxiv.org/abs/2106.09685); DreamBooth: [arXiv 2208.12242](https://arxiv.org/abs/2208.12242)
+- 3D Gaussian Splatting: [arXiv 2308.04079](https://arxiv.org/abs/2308.04079)
+- [C2PA specifications](https://c2pa.org/specifications/); [EU AI Act Article 50](https://artificialintelligenceact.eu/article/50/)
+
+### Primary references named in this report (not opened in this run; verification targets)
+
+These are the canonical homes of the products and datasets discussed above, listed from analyst knowledge so the verification pass in section 7 can start from the right pages. **They were not retrieved in this run** and are not cited as evidence for [S] facts.
+
+- Design tools: PRO Landscape (prolandscape.com), DynaSCAPE (dynascape.com), Vectorworks Landmark (vectorworks.net), Land F/X (landfx.com), SketchUp (sketchup.com), Realtime Landscaping (ideaspectrum.com), Structure Studios (structurestudios.com), iScape (iscapeit.com), Home Outside (homeoutside.com), Planner 5D (planner5d.com), GrowVeg (growveg.com), Lands Design (lands-design.com), Yardzen (yardzen.com)
+- AI apps and models: ReimagineHome (reimaginehome.ai), Paintit.ai (paintit.ai), HomeDesigns AI (homedesigns.ai), Google Gemini API pricing (ai.google.dev/gemini-api/docs/pricing), OpenAI image generation docs (platform.openai.com/docs/guides/image-generation), Black Forest Labs docs (docs.bfl.ai), FLUX.1 [dev] model card and license (huggingface.co/black-forest-labs/FLUX.1-dev), SDXL model card (huggingface.co/stabilityai/stable-diffusion-xl-base-1.0), Qwen-Image-Edit model card (huggingface.co/Qwen/Qwen-Image-Edit), Meta Segment Anything (ai.meta.com/sam2), Depth Anything V2 repository (github.com/DepthAnything/Depth-Anything-V2), Apple Depth Pro repository (github.com/apple/ml-depth-pro), Google SynthID (deepmind.google/technologies/synthid)
+- Capture and geospatial: Apple RoomPlan (developer.apple.com/augmented-reality/roomplan), ARKit (developer.apple.com/documentation/arkit), Polycam (poly.cam), Scaniverse (scaniverse.com), Hover (hover.to), Nearmap (nearmap.com), EagleView (eagleview.com), Google Solar API (developers.google.com/maps/documentation/solar), Google Photorealistic 3D Tiles (developers.google.com/maps/documentation/tile/3d-tiles), USDA NAIP (fsa.usda.gov, NAIP imagery program), Microsoft US Building Footprints (github.com/microsoft/USBuildingFootprints), Overture Maps (overturemaps.org)
+- Climate and site: USDA Plant Hardiness Zone Map (planthardiness.ars.usda.gov), PRISM PHZM GIS data (prism.oregonstate.edu/projects/plant_hardiness_zones.php), Canada's Plant Hardiness site (planthardiness.gc.ca), AHS Heat Zone Map (ahsgardening.org), EPA ecoregions (epa.gov/eco-research/ecoregions), CEC North American ecoregions (cec.org), NOAA US Climate Normals (ncei.noaa.gov/products/land-based-station/us-climate-normals), Daymet (daymet.ornl.gov), Web Soil Survey (websoilsurvey.nrcs.usda.gov), Soil Data Access (sdmdataaccess.nrcs.usda.gov)
+- Taxonomy and distribution: USDA PLANTS (plants.usda.gov), Plants of the World Online (powo.science.kew.org), IPNI (ipni.org), World Flora Online Plant List (wfoplantlist.org), ITIS (itis.gov), Catalogue of Life (catalogueoflife.org), GBIF (gbif.org; API docs at techdocs.gbif.org), iNaturalist developers (inaturalist.org/pages/developers; api.inaturalist.org/v1/docs), iNaturalist open data (github.com/inaturalist/inaturalist-open-data), BONAP (bonap.org), VASCAN (data.canadensys.net/vascan), NatureServe Explorer (explorer.natureserve.org)
+- Horticultural references: NC State Extension Gardener Plant Toolbox (plants.ces.ncsu.edu), Missouri Botanical Garden Plant Finder (missouribotanicalgarden.org), Tropicos (tropicos.org), Calscape (calscape.org), WUCOLS (ucanr.edu/sites/WUCOLS), Lady Bird Johnson Wildflower Center plant database (wildflower.org/plants), NWF Native Plant Finder (nativeplantfinder.nwf.org), Audubon native plants (audubon.org/native-plants), Xerces Society (xerces.org), Pollinator Partnership (pollinator.org), Plant Select (plantselect.org), Great Plant Picks (greatplantpicks.org), Mt. Cuba Center (mtcubacenter.org), SelecTree (selectree.calpoly.edu), i-Tree (itreetools.org), FEIS (fs.usda.gov/database/feis), Rutgers deer-resistance ratings (njaes.rutgers.edu/deer-resistant-plants)
+- Regulatory and safety: USDA APHIS noxious weeds (aphis.usda.gov), EDDMapS (eddmaps.org), Invasive Plant Atlas (invasiveplantatlas.org), UF/IFAS Assessment of Non-native Plants (assessment.ifas.ufl.edu), Ontario Invasive Plant Council "Grow Me Instead" (ontarioinvasiveplants.ca), ASPCA toxic and non-toxic plants (aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants)
+- Plant APIs and libraries: Trefle (trefle.io), Perenual API (perenual.com/docs/api), Plant.id by Kindwise (kindwise.com), Pl@ntNet API (my.plantnet.org), Horticopia (horticopia.com)
+- Standards: ANSI Z60.1 American Standard for Nursery Stock (americanhort.org), International Code of Nomenclature for Cultivated Plants (ishs.org)

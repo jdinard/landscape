@@ -2,7 +2,7 @@
 
 > The Design Studio is Rootline's browser-based, to-scale landscape planning tool, and the heart of the product's "design sells the job" thesis. A designer or estimator types a property address and within about a minute gets a geo-referenced site model: parcel boundary, aerial basemap, house footprint, LiDAR-derived contours and slope. They then draw beds, turf, hardscape, walls, water features, lighting and irrigation with CAD-grade precision. They place plants from the operator-curated, region-aware [Plant Knowledge Base](12-plant-knowledge-base.md), and every plant symbol is auto-sized to its mature spread and checked live against the site's sun, hardiness zone, deer pressure, hydrozone and setbacks. Every stroke drives a live takeoff priced against the Company's [Price Book](03-crm-sales-estimating-proposals.md): mulch in cubic yards, edging in linear feet, pavers plus base plus sand, plants by container size. The design pushes into an Estimate and Proposal with one click and stays linked. Then it can be rendered photoreal by the [AI mockup engine](11-ai-design-mockups.md), presented in the [Customer Portal](06-customer-portal.md), marked up by the client, phased over three seasons, exported as a PDF plan set or DWG, and handed to the crew as a construction set and, later, an as-built property map. No competitor ships this loop end to end in one system. This document specifies it.
 
-**Research note (Nov 2026).** This doc's research ran on web searches only. The environment blocked direct page fetches, and the shared search budget ran out partway through. Competitor statements below cite what search results and vendor listings showed. Anything marked "verify" should be confirmed against the vendor's current site or a trial before it appears in investor or sales material.
+**Research note (Nov 2026).** This doc's research ran on web searches only. The environment blocked direct page fetches, and the shared search budget ran out partway through. Competitor statements below cite what search results and vendor listings showed. A senior review pass (Nov 2026) could not run new searches either: the run-wide search quota was used up and code and vendor hosts did not resolve. Review additions therefore come from the sourced research reports [R2](research/R2-landscape-specific-platforms.md) and [R3](research/R3-design-ai-plant-data.md), which carry their own citations, and from sibling docs ([03](03-crm-sales-estimating-proposals.md), [11](11-ai-design-mockups.md), [12](12-plant-knowledge-base.md), [22](22-business-model-pricing-gtm.md)). Where R3 labels a fact as background knowledge rather than a sourced finding, this doc says "verify". Anything marked "verify" should be confirmed against the vendor's current site, the adopted code edition or a trial before it appears in investor or sales material.
 
 ---
 
@@ -76,10 +76,15 @@ What we found per competitor (as of Nov 2026, verify before external use):
 
 - **Aspire (a ServiceTitan company)** bought Go iLawn (online property measurement) and LandOne (cloud digital takeoff and design) and combined them into **PropertyIntel** ([IGIN](https://igin.com/article-8937-Aspire-Software-announces-intent-to-acquire-Go-iLawn-and-LandOne.html), [Landscape Management](https://www.landscapemanagement.net/aspire-software-launches-new-propertyintel-measuring-and-estimating-tool/), [Green Industry Pros](https://greenindustrypros.com/business-management/software/product/22684683/aspire-software-aspire-software-announces-launch-of-online-property-intelligence-tool-propertyintel)). Listings describe AI-powered measuring of property boundaries and features, slope visualization, point-and-click takeoff, drawing and annotation, and shape, circle, line and count tools. They also describe "PropertyIntel Complete", a done-for-you service that returns a measured takeoff for a submitted address, and one-click upload of takeoffs into Aspire ([Slashdot listing](https://slashdot.org/software/p/PropertyIntel/), [ZoftwareHub](https://zoftwarehub.com/en-sa/products/propertyintel/overview)). Go iLawn on its own was listed with assembly takeoff, slope routines and a 3D view ([SourceForge](https://www.sourceforge.net/software/product/Go-iLawn)). **This is the strongest incumbent in takeoff.** It is measurement-and-takeoff-first, not a plant-aware design tool.
 - **Jobber** has no native design canvas. Its help center documents two ways to measure: the **Deep Lawn** integration, which uses AI to measure lawns, homes, driveways and walkways and syncs the figures into Jobber, and a manual workaround of tracing in Google Maps and copying area into a custom field ([Jobber help](https://help.getjobber.com/es/articles/how-to-measure-property-distance-and-size/), [Jobber product updates](https://productupdates.getjobber.com/25949-virtually-measure-properties-and-automatically-import-data-into-jobber-with-deep-lawn)). Jobber's community has threads from users looking for separate landscape design software and training ([Jobber community](https://community.getjobber.com/discussions/operations-forum/looking-for-landscape-design-software--training/8084)).
-- **LMN** is estimating-centric (budget-based pricing is its signature). In 2025 it announced a partnership and planned integration with **Attentive.ai** for AI-driven mapping and takeoffs ([Attentive AI listing](https://www.sourceforge.net/software/product/Attentive-AI)). In other words, it partners for measurement rather than building design.
+- **LMN** is estimating-centric (budget-based pricing is its signature). It merged with SingleOps in Nov 2024, and the group now operates as Granum. In February 2025 it announced a strategic partnership with **Attentive.ai** for AI mapping, measurement and material calculations, and in February 2026 a release note described **Beam AI** takeoffs mapping automatically into LMN estimates ([Attentive.ai announcement](https://attentive.ai/blog/lmn-and-attentive-ai-announce-strategic-partnership), [Landscape Management](https://www.landscapemanagement.net/lmn-and-attentive-partner-to-integrate-products/), [LMN release note](https://support.golmn.com/hc/en-us/articles/46786137574683); compiled in [R2](research/R2-landscape-specific-platforms.md)). A G2 reviewer said measuring large commercial sites "would take literal days" before such tools ([G2](https://www.g2.com/products/lmn)). In other words, LMN partners for measurement rather than building design.
+- **SiteRecon** and **Attentive.ai** (Accelerate, Beam AI) sell AI-generated property maps and takeoffs from aerial imagery to commercial maintenance firms, alongside Aspire and LMN rather than replacing them ([SourceForge LMN vs SiteRecon](https://www.sourceforge.net/software/compare/LMN-vs-SiteRecon), [R2](research/R2-landscape-specific-platforms.md) section 8). They are the benchmark for DS-SITE-05 auto-trace accuracy and speed, and they stop at quantities.
 - **SynkedUP** markets quoting that is "automatically priced for profit" ([SynkedUP landscaping](https://synkedup.com/industry/landscaping/)). Third-party listings mention CAD and image-editing tools, but we found no vendor-confirmed description of a planting-design module ([Software Advice](https://www.softwareadvice.com/landscaping/synkedup-profile/), [Capterra](https://www.capterra.com/p/228695/SynkedUP/)). Verify in a demo.
 - **Arborgold** has a landscape measuring tool for tracing lawn, bed and sod areas and saving them as custom measures ([Arborgold help](https://help.arborgold.com/en/articles/4423488-landscape-measuring-tool-basics)).
-- **PRO Landscape+** (Drafix) lists landscape design, AI design tools, landscape CAD, 3D rendering, proposal generation, photo imaging, material takeoffs, a plant library and a mobile companion app, at about $90/month or $900/year ([Capterra](https://www.capterra.com/p/126135/PRO-Landscape/), [GetApp](https://www.getapp.com/all-software/a/pro-landscape/); as of Nov 2026, verify). Reviewers ask for "more native plants suited to their climate zone" and say plant symbols are hard to tell apart ([Capterra UK](https://www.capterra.co.uk/software/126135/pro-landscape), [Software Advice](https://www.softwareadvice.com/landscaping/pro-landscape-profile)). One calls it "meant for someone not a beginner at design" ([Capterra reviews](https://www.capterra.com/p/126135/PRO-Landscape/reviews/)). Ratings are based on small samples (about 3.6 to 3.7 from 8 or 9 reviews at the time of search).
+- **PRO Landscape+** (Drafix) lists landscape design, AI design tools, landscape CAD, 3D rendering, proposal generation, photo imaging, material takeoffs, a plant library and a mobile companion app, at about $90/month or $900/year ([Capterra](https://www.capterra.com/p/126135/PRO-Landscape/), [GetApp](https://www.getapp.com/all-software/a/pro-landscape/); as of Nov 2026, verify). Reviewers ask for "more native plants suited to their climate zone" and say plant symbols are hard to tell apart ([Capterra UK](https://www.capterra.co.uk/software/126135/pro-landscape), [Software Advice](https://www.softwareadvice.com/landscaping/pro-landscape-profile)). One calls it "meant for someone not a beginner at design" ([Capterra reviews](https://www.capterra.com/p/126135/PRO-Landscape/reviews/)). Ratings are based on small samples (about 3.6 to 3.7 from 8 or 9 reviews at the time of search). In 2025 it added an AI suite: AI Outdoor Living Designer (generate concepts from a customer photo), AI Paver Tool, AI Eraser, AI Cutout Tool and an "Ask Wayne" assistant ([Green Industry Pros](https://www.greenindustrypros.com/business-management/software/product/22961404/pro-landscape-pro-landscape-launches-aibased-designer-suite), [Lawn and Landscape](https://www.lawnandlandscape.com/news/pro-landscape-updates-design-software-with-artificial-intelligence)). Its proposal lives inside PRO Landscape, so client records, deposits, scheduling and invoicing stay in another system ([R3](research/R3-design-ai-plant-data.md) 2.4). **PRO Landscape+ is the incumbent Rootline displaces most directly in design-build shops**, and it now competes on AI imagery. Rootline therefore has to win on the regional plant KB and the closed money loop, not on imaging alone.
+- **DynaSCAPE** (Design, Color, and historically Manage for CRM and estimating) is a Canadian design suite known for **hand-drawn-looking** plans that clients read as "designed", with a following among design-build firms and horticulture colleges. Quantities historically flowed into DynaSCAPE Manage, so its estimating link only works if the firm runs that product too (background knowledge in [R3](research/R3-design-ai-plant-data.md) 2.2.2; current packaging and pricing not verified, verify). Lesson taken: the "Hand-drawn watercolor" symbol style (DS-SYMB-01) is a sales feature, not decoration.
+- **SketchUp plus plugins** (Skatter, Laubwerk, PlaceMaker, Profile Builder, Enscape or D5 for rendering) is how many design-build firms model hardscape, outdoor kitchens and pergolas in 3D. Quantities come only from plugins and manual export, and plants are rarely modeled as data (background knowledge in [R3](research/R3-design-ai-plant-data.md) 2.2.5, verify). Lesson taken: credible extruded hardscape in 3D and a DAE/GLB export so firms can keep SketchUp for one-off structures (DS-3D-06).
+- **Realtime Landscaping** (Plus, Pro, Architect, Photo tiers; Windows) is popular with small contractors for its low learning curve, 3D walkthroughs and a plant **growth-over-time** view. **Structure Studios VizTerra** sells cinematic 3D flyovers to high-ticket outdoor-living and pool builders. **iScape** offers phone AR and photo design (Pro around $29.99 per month, with reviewers citing AR crashes on complex designs; [AI Tools Bakery](https://aitoolsbakery.com/blog/iscape-review/), third-party, verify). None of the three links to a contractor's price book, CRM or invoicing ([R3](research/R3-design-ai-plant-data.md) 2.2.6-2.2.8 and 2.4; Realtime and VizTerra details are background knowledge, verify).
+- **Yardzen-style design services** sell homeowners remote 2D plans and 3D renderings at fixed package prices, with a referral to an installer ([R2](research/R2-landscape-specific-platforms.md) section 11; verify current packages). This shows that homeowners pay for visualized design, and that the install handoff is where value leaks. Rootline lets the installing Company capture the design fee itself (see [13 Beyond the brief](#13-beyond-the-brief-extra-ideas), item 19).
 - **Land F/X** offers automated plant schedules sortable by botanical or common name, irrigation schedules (including equipment not yet placed) and watering schedules ([Land F/X planting schedules](https://www.landfx.com/docs/planting/schedules.html), [Land F/X irrigation schedules](https://www.landfx.com/index.php/docs/irrigation/schedules-and-reports/196-irrigation-schedules-and-reports.html), [watering schedule](https://www.landfx.com/docs/irrigation/schedules-and-reports/1545-watering-schedule.html)). A third-party summary says its 3D visualization is less developed than dedicated visualization tools ([FitGap](https://us.fitgap.com/products/land-f-x)).
 - **Vectorworks Landmark** auto-generates schedules, including plant lists, irrigation plans and existing-tree reports ([Vectorworks help, 2015](https://app-help.vectorworks.net/2015/NNA/eng/VW2015_Guide/Worksheets/Creating_Schedules_Automatically.htm)). Reviews describe an extensive plant database covering thousands of species ([Dyverse review](https://avaria.dyverse.com/best-landscape-architecture-software-expert-reviews-comparisons-2024)).
 - **Housecall Pro, ServiceTitan core, Service Autopilot, Yardbook, Copilot CRM, Real Green.** Their public materials we reviewed focus on scheduling, CRM, billing and, in several cases, satellite measurement for lawn-size pricing. We found no to-scale planting-design module. ServiceTitan's landscape strategy runs through Aspire and PropertyIntel. Verify each with a current demo, because this space moves fast.
@@ -114,6 +119,9 @@ Legend: **Y** = native (evidence found), **P** = partial or basic, **I** = via t
 - **Learning curve.** CAD-grade tools are "meant for someone not a beginner" ([Capterra](https://www.capterra.com/p/126135/PRO-Landscape/reviews/)). A gardening-forum user says landscape design software has "taken a huge step backwards" compared with older tools ([garden.org](https://garden.org/thread/view/132802/software/)). Trade press advises budgeting real time and money for onboarding ([Green Industry Pros](https://www.greenindustrypros.com/22738198)).
 - **Measurement workarounds.** Jobber's own documented fallback is to trace in Google Maps and paste the number into a custom field ([Jobber help](https://help.getjobber.com/es/articles/how-to-measure-property-distance-and-size/)). Users hunt for separate design software in vendor communities ([Jobber community](https://community.getjobber.com/discussions/operations-forum/looking-for-landscape-design-software--training/8084)).
 - **Symbol and output quality.** Plant symbols are hard to tell apart ([Software Advice](https://www.softwareadvice.com/landscaping/pro-landscape-profile)), and 3D in pro CAD trails dedicated visualizers ([FitGap](https://us.fitgap.com/products/land-f-x)).
+- **Design is the weakest feature in the category.** On Capterra's landscape software pricing guide, "Landscape Design" is among the lowest-rated features at 2.9 ([Capterra pricing guide](https://www.capterra.com/landscape-software/pricing-guide/), via [R3](research/R3-design-ai-plant-data.md)). Buyers are saying the design they get today, where they get any, is poor.
+- **Desktop and Windows lock-in.** PRO Landscape+, DynaSCAPE and Realtime are Windows desktop products (background knowledge, verify), which does not fit a designer who works at the client's kitchen table on an iPad.
+- **Plant availability surprises.** The designer persona in [02](02-personas-roles-permissions.md) spends a June day resolving substitutions because the nursery is out of 3-gallon 'Little Lime' hydrangeas. No design tool we reviewed checks stock or proposes validated substitutes at order time (see DS-PLNT-06, DS-PLNT-12 and Beyond the brief item 20).
 
 ### 2.4 The gap we exploit
 
@@ -123,11 +131,13 @@ Legend: **Y** = native (evidence found), **P** = partial or basic, **I** = via t
 4. **Approachable but deep.** Estimator mode (trace and price) and designer mode (full plan sets) in the same tool.
 5. **Built for the field.** iPad offline sketching, LiDAR capture, AR plant preview, and the crew app's construction-set view (see [05](05-field-crew-mobile-app.md)).
 
-> **Competitive edge: vs Aspire PropertyIntel.** PropertyIntel is excellent at measuring what exists and turning it into takeoffs. Rootline's Design Studio measures too ([V1] AI auto-trace), but its center of gravity is designing what will exist. Plants come from a curated regional KB, each one validated for sun and zone, sized to maturity, and priced by container size. Our takeoff is a by-product of design, not a separate activity. And customers are not buying into an ERP-style suite aimed at larger commercial operators: a 6-person design-build shop gets this on its standard tier (see [22](22-business-model-pricing-gtm.md); verify current Aspire packaging before making price comparisons).
+> **Competitive edge: vs Aspire PropertyIntel.** PropertyIntel is excellent at measuring what exists and turning it into takeoffs. Rootline's Design Studio measures too ([V1] AI auto-trace), but its center of gravity is designing what will exist. Plants come from a curated regional KB, each one validated for sun and zone, sized to maturity, and priced by container size. Our takeoff is a by-product of design, not a separate activity. And customers are not buying into an ERP-style suite aimed at larger commercial operators: a 6-person design-build shop gets 2D design, takeoffs and AI mockups with one designer seat on the **Grow** plan, with 3D a per-seat add-on on Grow and included on Pro (see [22](22-business-model-pricing-gtm.md); verify current Aspire packaging before making price comparisons).
 
 > **Competitive edge: vs Jobber, Housecall Pro and ServiceTitan.** These platforms rely on third-party measurement (Deep Lawn) or manual Google Maps tracing for site quantities. None lets a salesperson draw a bed, drop in 14 'Limelight' hydrangeas, and watch the proposal total update. For a design-build company, that one interaction justifies switching.
 
-> **Competitive edge: vs PRO Landscape+, DynaSCAPE and Land F/X.** They are separate products with separate client lists and price lists. Rootline's design is the same record as the client, property, estimate, proposal, invoice and job cost. Our plant library is region-curated (we answer the "native plants for my zone" complaint directly), and our client experience (portal markup, presentation mode, mockups) is built in rather than exported as a PDF.
+> **Competitive edge: vs PRO Landscape+, DynaSCAPE and Land F/X.** They are separate products with separate client lists and price lists. Rootline's design is the same record as the client, property, estimate, proposal, invoice and job cost. Our plant library is region-curated (we answer the "native plants for my zone" complaint directly), and our client experience (portal markup, presentation mode, mockups) is built in rather than exported as a PDF. PRO Landscape+'s 2025 AI tools make attractive pictures, but a picture with no Price Book, no stock check and no zone validation still has to be re-keyed and re-checked. In Rootline the AI output is a set of editable, validated, priced design objects (DS-AI-01).
+
+> **Competitive edge: vs SketchUp, Realtime Landscaping and VizTerra.** These win on 3D emotion and, for SketchUp, on custom hardscape modeling. Rootline does not try to out-model SketchUp. It makes 3D a by-product of the 2D plan (extruded hardscape, archetype plants with a growth slider and seasons) that a non-modeler gets for free, and it exports DAE/GLB for firms that still want SketchUp for a one-off pavilion. A 3D model that cannot reprice itself when the client says "make the patio 2 ft deeper" is a rendering, not a sales tool.
 
 ---
 
@@ -163,9 +173,9 @@ A **Site Model** is the geo-referenced context for all Designs on a Property: bo
 |---|---|---|---|
 | DS-SITE-01 | **Address to site** | Uses the Property address (from CRM, see [03](03-crm-sales-estimating-proposals.md)), or a pin drop if the address does not geocode (rural lots, new subdivisions). Geocodes to lat/lon and sets the site origin at the parcel centroid. Kicks off async jobs for parcel, footprint, imagery and elevation. Shows progressive results: imagery in under 5 s, parcel in under 10 s, terrain later. | [MVP] |
 | DS-SITE-02 | **Parcel boundary** | Fetched from a parcel data vendor (Regrid primary; see [8](#8-integrations-apis-and-events)). Displayed as a dashed line labeled "Approximate parcel line, not a survey." Multi-parcel properties: user can merge adjacent parcels. Parcels with no geometry: user draws the boundary. Parcel attributes stored: APN, acreage, owner name (used only for CRM matching, never shown to clients), land use, year built where available. Lookups are cached per tenant and property and refreshed only on demand. | [MVP] |
-| DS-SITE-03 | **Basemap imagery** | Default satellite tiles from the tenant's configured map provider. Optional premium high-resolution aerial (Nearmap or EagleView class) with the capture date shown, metered as add-on credits. Imagery date is always visible in the corner: "Imagery: Apr 2025". A "use older capture" dropdown appears when the premium provider has history (great for seeing a lawn before a pool was built). Leaf-off imagery is preferred when available because beds are visible under deciduous canopy. | [MVP] standard; [V1] premium |
+| DS-SITE-03 | **Basemap imagery** | Default satellite tiles from the tenant's configured map provider. Optional premium high-resolution aerial (Nearmap or EagleView class) with the capture date shown, metered as add-on credits. Imagery date is always visible in the corner: "Imagery: Apr 2025". A "use older capture" dropdown appears when the premium provider has history (great for seeing a lawn before a pool was built). Leaf-off imagery is preferred when available because beds are visible under deciduous canopy. **License-clean layer:** USDA NAIP orthoimagery (public domain, leaf-on, 4-band with near-infrared, roughly 60 cm and in some recent state cycles 30 cm, refreshed every 2-3 years per state; background knowledge in [R3](research/R3-design-ai-plant-data.md) 3.3.6, verify per state) is fetched alongside the basemap. It is coarser than commercial tiles, but nobody's terms restrict deriving geometry from it, and its NIR band separates turf and planting beds from bare soil and mulch (NDVI). | [MVP] standard; [V1] premium and NAIP |
 | DS-SITE-04 | **House and structure footprints** | Pre-populated from building-footprint data (vendor matched footprints, or open footprint datasets as a fallback). Editable: user can square corners (90° snap), offset walls, add bump-outs and decks. House height and roof type (gable, hip, flat; ridge height) are entered or estimated from LiDAR (DS-SITE-07). Footprints drive shadows, foundation setbacks and 3D context. | [MVP] footprint; [V1] heights |
-| DS-SITE-05 | **AI auto-trace of existing features** | Segmentation of the basemap into turf, beds, hardscape, driveway, trees (canopy outlines), water and structures. Produces editable "existing conditions" objects with confidence scores. Low-confidence edges (under 0.6) are highlighted for review. Competitive parity with Deep Lawn, Attentive and PropertyIntel AI measure. Each run costs AI credits. Results stay "unverified" until a user accepts them per object or in bulk. Model details are in [11](11-ai-design-mockups.md). | [V1] |
+| DS-SITE-05 | **AI auto-trace of existing features** | Segmentation of the basemap into turf, beds, hardscape, driveway, trees (canopy outlines), water and structures. Produces editable "existing conditions" objects with confidence scores. Low-confidence edges (under 0.6) are highlighted for review. Competitive parity with Deep Lawn, Attentive and PropertyIntel AI measure. Each run costs AI credits. Results stay "unverified" until a user accepts them per object or in bulk. **Source rule:** segmentation runs only on imagery whose license permits derived geometry (NAIP, tenant-uploaded drone orthomosaics, or premium aerial with derivative rights). It never runs on tiles whose terms forbid it ([Open questions](#14-open-questions) item 1). Each accepted object records its source imagery and capture date, which is what the "measurement accuracy dispute" log in [11.3](#113-risks) relies on. Model details are in [11](11-ai-design-mockups.md). | [V1] |
 | DS-SITE-06 | **Terrain from elevation data** | Pulls a DEM for the parcel plus a 15 m buffer: USGS 3DEP 1 m lidar DEM where available, otherwise 1/3 arc-second (about 10 m) seamless DEM ([USGS](https://www.usgs.gov/faqs/what-types-elevation-datasets-are-available-what-formats-do-they-come-and-where-can-i-download), [data.gov 1 m DEM](https://catalog-old.data.gov/dataset/usgs-1-meter-digital-elevation-model)). Canada uses NRCan's high-resolution DEM products where available (verify coverage). Generates contours at 1 ft (or 0.25 m) intervals with 1 m data, or 5 ft (1 m) with 10 m data. **Resolution and source vintage are labeled on screen.** 10 m terrain shows "coarse terrain, verify on site." | [V1] |
 | DS-SITE-07 | **Slope and drainage analysis** | Slope heatmap with configurable classes (defaults: 0-2% flat, 2-5% gentle, 5-15% moderate, 15-33% steep, over 33% (3:1) "unsafe to mow with a ride-on, consider groundcover or terracing"). Flow arrows from D8 flow direction, sink (low spot) detection, and an elevation profile along any drawn line. Canopy height model from lidar first returns where point clouds are available ([V2]) to estimate existing tree and house heights for shading. | [V1] slope; [V2] canopy |
 | DS-SITE-08 | **Underlays with scale calibration** | Upload PDF (vector or raster), PNG/JPG, TIFF/GeoTIFF, DXF/DWG (DWG [V1]). **Two-point scale calibration:** user picks two points and types the known distance, for example "62 ft 4 in". **Georeferencing:** user pins 2 points (similarity transform) or 3 or more points (affine, with RMS residual displayed) to basemap features such as house corners. Opacity slider, clip to rectangle, lock. Validation: if the calibrated scale disagrees with the parcel-derived scale by more than 2%, show "Underlay scale differs from map by 3.4%. Check the calibration distance." Multi-page PDFs: pick the page; vector PDFs keep linework snappable. DXF/DWG layers are listed and can be toggled. Survey units: detect "US survey foot" vs international foot in georeferenced CAD and warn (the US survey foot was retired by NIST/NGS at the end of 2022; old surveys still use it). | [MVP] PDF and image; [V1] DXF/DWG, georeferencing |
@@ -186,6 +196,7 @@ A **Site Model** is the geo-referenced context for all Designs on a Property: bo
 | DS-MEAS-05 | **Volume** | Area times depth for fill or cut, or terrain-aware cut/fill between existing and proposed surfaces ([V2]). | [MVP] simple; [V2] terrain |
 | DS-MEAS-06 | **Measure to pricing** | Any measurement can be "promoted" to a takeoff line ("Spring cleanup: 3,200 sq ft beds") without becoming a design object. This is estimator mode in its simplest form, and covers maintenance bids: mowing area, trimming linear feet, bed area for mulch renewal. | [MVP] |
 | DS-MEAS-07 | **Measurement sets for maintenance** | Named, reusable measurement sets on the Property (Turf mowable area, Bed area, Hedge LF, Hard edge LF for edging). They feed Service Agreement pricing in [03](03-crm-sales-estimating-proposals.md) and production-rate budgeting in [14](14-service-line-modules.md). Versioned by season. | [MVP] |
+| DS-MEAS-08 | **Estimator mode (trace and price)** | A reduced skin of the same engine for `estimator` users and anyone who toggles it. It shows only Measure, Bed, Turf, Count and Promote-to-takeoff tools, hides layers, sheets, symbols and validation except VAL-TKO-01 and VAL-SITE-02, and opens with **scope recipes** that pair a measurement with Price Book items: "Spring cleanup and mulch" (bed area, depth 2 in for top-dress or 3 in for new, edging LF), "Sod install" (area, prep, pallets), "Aeration and overseeding" (turf area, seed rate from the turf species record), "Hedge trimming" (LF and average height), "Fall leaf cleanup" (turf plus bed area). Every recipe line becomes a takeoff line, so the same work later opens in designer mode with no re-entry. Switching to designer mode is one click and loses nothing. Target: first priced scope in under 10 minutes median ([KPIs](#12-metrics-and-kpis)). | [MVP] |
 
 ### 4.3 Drawing engine and core landscape objects
 
@@ -227,7 +238,7 @@ Hardscape objects carry **material** (from the Hardscape Material Catalog, which
 | DS-WATR-02 | **Pondless waterfalls, bubblers and fountains** | Basin volume, stream length, weir width, pump, plumbing run length. | [V1] |
 | DS-WATR-03 | **Dry creek beds** | Width, depth, river-rock sizes by percentage (for example 60% 2-4 in, 30% 4-8 in, 10% boulders), fabric. Tied to drainage analysis (DS-DRN). | [V1] |
 | DS-STRC-01 | **Structures** | Pergolas, arbors, pavilions, gazebos, sheds, playsets, outdoor kitchens (with counter linear feet and appliance cutouts), fire pits (round or square kits with inside and outside diameters), fireplaces, fences (style, height, post spacing default 8 ft, gate count), shade sails, raised planters. Each has a 2D symbol, a parametric 3D model (posts, beams, rafters spacing for pergolas) and an assembly link for pricing. | [MVP] symbols; [V1] parametric 3D |
-| DS-STRC-02 | **Fire safety clearances** | Fire pits and fireplaces get a clearance ring (default 10 ft from structures and overhanging branches; local codes vary, verify) and validation against overhead canopy at maturity (DS-VAL). | [V1] |
+| DS-STRC-02 | **Fire safety clearances** | Fire features get a clearance ring drawn to scale and checked by VAL-FIRE-02 against structures, fences, decks and **overhead canopy at the selected design year** (a fire pit that clears a young red maple at install may sit under its canopy by year 10). Defaults by fuel type, tenant-editable per jurisdiction: **wood-burning** fire pits and in-ground fire rings 25 ft from structures and combustibles, reflecting the International Fire Code's recreational-fire provision (IFC 307.4.2 in recent editions) where it is adopted; **portable wood-burning outdoor fireplaces** 15 ft (IFC 307.4.3); **gas** fire features use the manufacturer's listed clearances entered on the product, with a 10 ft fallback when none is entered. Code sections, editions and local amendments vary (many municipalities modify or exempt residential fire pits): verify locally. Overhead clearance to canopy default 10 ft above the burner. Output on exports: "Clearance per [jurisdiction setting]; verify with the local fire marshal." | [V1] |
 | DS-STRC-03 | **Pools and spas (reference only)** | Outline and coping for context, pool-barrier fence reminder, splash-zone planting guidance (no messy or thorny plants within 6 ft, default). We do not design pools. | [V1] |
 
 ### 4.6 Landscape lighting
@@ -287,7 +298,7 @@ Irrigation layouts also become the **zone map** used later by service techs for 
 
 | ID | Feature | Behaviors and rules | Priority |
 |---|---|---|---|
-| DS-PLNT-01 | **Context-aware plant picker** | Drawer with search (common name, botanical name, cultivar, trait such as "deer resistant red fall color 4 ft"). **Pre-filtered to the property's Region and hardiness zone** from the KB ([12](12-plant-knowledge-base.md)). When the cursor or selection is in a bed, the picker also filters to that bed's sun class (from sun study or a manual tag), hydrozone and soil. Each result card shows a photo, mature H x W, sun, water, zone range, Region performance rating (for example "Excellent in Ohio Valley"), deer rating, native status for the property's state or province, price per container size from the Price Book, and nursery availability ([V1]). "Company favorites" and "Operator palettes" tabs. | [MVP] |
+| DS-PLNT-01 | **Context-aware plant picker** | Drawer with search (common name, botanical name, cultivar, trait such as "deer resistant red fall color 4 ft"). **Pre-filtered to the property's Region and hardiness zone** from the KB ([12](12-plant-knowledge-base.md)). When the cursor or selection is in a bed, the picker also filters to that bed's sun class (from sun study or a manual tag), hydrozone and soil. Each result card shows a photo, mature H x W, sun, water, zone range, Region performance rating on the KB's 1-5 Plant Region Profile scale (for example "5 Top performer, Central Ohio"; ratings 1-2 and `do_not_use` plants are hidden from default search, per [12](12-plant-knowledge-base.md) KB-PRP-01), any profile conditions ("needs afternoon shade here"), deer rating (A-D), native status for the property's state or province, price per container size from the Price Book, and nursery availability ([V1]). "Company favorites" and "Operator palettes" tabs. | [MVP] |
 | DS-PLNT-02 | **Placement modes** | Single click; click-repeat (stays armed); **line or hedge** (count along a polyline at spacing: 30 ft hedge at 3 ft on center gives 11 plants with ends included); **massing / drift** (draw a freeform shape and choose a count or spacing; plants are placed with natural jitter and, by default, odd-number groupings of 3, 5 or 7 when count is small); **arc** placement; **grid** (orchard, formal). | [MVP] single, click-repeat, line; [V1] massing |
 | DS-PLNT-03 | **Symbols auto-sized to mature spread** | Symbol diameter = KB mature spread (midpoint of range by default; designer can choose min, mid or max) at the **design year** selected on the growth slider (DS-3D-03). At "install" the symbol shows install size by container. Label shows "at maturity" vs "at install." **Example:** Hydrangea paniculata 'Limelight', mature 6-8 ft wide, shows a 7 ft circle at maturity and about 1.5 ft at install from a #3 container. | [MVP] maturity; [V1] growth stages |
 | DS-PLNT-04 | **Fill-bed (groundcover and bedding)** | Select a bed (or draw a region) and choose plant, on-center spacing (12, 18 or 24 in presets or custom) and pattern (triangular default, or square). **Count formula** (area in sq ft, spacing s in ft): triangular = area / (s² x 0.866); square = area / s². Per square foot: 12 in triangular 1.155, 18 in 0.513, 24 in 0.289; square 1.0, 0.444 and 0.25. The tool also places actual plant points (not just a number), inset half-spacing from the edge, avoiding existing plants within their install radius plus half-spacing, around trees and boulders. Count = placed points (accurate for odd shapes), with formula count shown for comparison. **Example:** 180 sq ft of Pachysandra at 12 in triangular gives 208 by formula. Flats conversion: count / plants per flat (for example 18 per flat gives 12 flats), rounded up. | [MVP] |
@@ -299,20 +310,24 @@ Irrigation layouts also become the **zone map** used later by service techs for 
 | DS-PLNT-10 | **Seasonal interest and bloom succession** | A chart of months against plants in bloom, fall color or winter interest. Gaps highlighted ("No bloom July-August in front beds"). Suggestions from KB to fill gaps. | [V1] |
 | DS-PLNT-11 | **Palette-driven design** | Start a design from an operator Plant Palette (for example "Ohio Valley Pollinator Sun Palette") or a Company palette. Picker limits to palette plants plus "show all." Palette roles (backbone evergreen, accent shrub, seasonal color, groundcover, vertical, specimen) are used by templates and AI (see [4.19](#419-templates-and-style-kits)). | [MVP] |
 | DS-PLNT-12 | **Nursery availability and price** | Inline availability badges per size from vendor feeds and Price Book vendor costs ([12](12-plant-knowledge-base.md), [13](13-operations-inventory-equipment.md)): "In stock at Acme Nursery: #3 $18.50 (as of Nov 3)". Out-of-stock suggests sizes or substitutes. | [V1] |
+| DS-PLNT-13 | **Mixed and matrix planting** | Fill a bed with a **species mix** instead of one plant, the "landscape area" concept that Vectorworks Landmark users expect ([R3](research/R3-design-ai-plant-data.md) 2.2.3) and the way naturalistic meadow and pollinator beds are actually specified. The designer defines a mix by role and percentage (for example "Prairie matrix, part sun: 40% *Sporobolus heterolepis* at 18 in, 25% *Echinacea purpurea*, 20% *Rudbeckia fulgida*, 10% *Schizachyrium scoparium*, 5% *Liatris spicata* as emergent accents") and an overall density (plants per sq ft or average on-center spacing). Placement draws points with Poisson-disk sampling at the mix's spacing, assigns species by percentage with clustering rules (matrix species scattered, accents in drifts of 3-7), and keeps taller species away from the bed's front edge relative to the main viewing point. Count rule: total = area x density, split by percentage with largest-remainder rounding so species counts always sum to the total. The plant schedule lists each species, and the mix is saved as a reusable **Planting Mix** that can be added to a Company palette. Validation runs per species. | [V1] |
 
 ### 4.11 Live validation engine
 
-Validation runs incrementally in a web worker as the design changes. Issues appear as badges on objects, in a **Validation panel** (grouped by severity and category), and as a summary chip ("2 errors, 7 warnings"). Each rule has an ID, a severity, tenant-configurable thresholds and an "override with reason" action. Overrides are stored with user and time, and they are reported (see the warranty link in [13 Beyond the brief](#13-beyond-the-brief-extra-ideas)). **Errors block "Send to client" and "Mark sold"** until resolved or overridden by a user holding `design.override_errors` (default: `owner`, `designer` lead). Rules re-run when KB data changes (for example a plant is newly listed invasive in a state).
+Validation runs incrementally in a web worker as the design changes. Issues appear as badges on objects, in a **Validation panel** (grouped by severity and category), and as a summary chip ("2 errors, 7 warnings"). Each rule has an ID, a severity, tenant-configurable thresholds and an "override with reason" action. Overrides are stored with user and time, and they are reported (see the warranty link in [13 Beyond the brief](#13-beyond-the-brief-extra-ideas)). **Errors block "Send to client" and "Attach to Proposal"** until resolved or overridden by a user holding `design.override_errors` (default: `owner`, `designer` lead). (A design never becomes `sold` by a user action; see [5.3](#53-flow-c-design-version-lifecycle).) Pushing to an internal Estimate is allowed with open errors, so estimators can price while the designer fixes issues, but the Estimate shows an "open design errors" health-check item ([03](03-crm-sales-estimating-proposals.md) estimate health checks). Rules re-run when KB data changes (for example a plant is newly listed invasive in a state).
+
+**One rule engine, three callers.** The operator-curated **site rule packs** in [11](11-ai-design-mockups.md) (water, wildfire, sight lines; attached by jurisdiction and Client type) are evaluated by this same engine, and their violations are written to `design_validation_issue`. The AI layout solver, the AI design assistant's constraint check and the Studio validator therefore can never disagree about what is allowed.
 
 | Rule | Check | Default severity and threshold | Data source | Priority |
 |---|---|---|---|---|
 | VAL-ZONE-01 | Property hardiness zone colder than plant's coldest rated zone | 1 zone colder: warning; 2 or more colder: error. Microclimate override per bed (for example a protected south wall raised half a zone) | KB zones, property zone from Region (USDA 2023 map in the US; Canada's hardiness zones use a different methodology, stored separately) | [MVP] |
 | VAL-ZONE-02 | Property zone warmer than plant's warmest rated zone (chill or heat tolerance) | warning | KB | [MVP] |
 | VAL-SUN-01 | Plant sun requirement vs bed sun class | Full-sun plant in part shade or shade: warning; shade plant in full sun: warning (error if KB marks "scorches in full sun" for the Region) | KB plus sun study (DS-SUN) or manual bed tag | [MVP] manual; [V1] computed |
-| VAL-RGN-01 | Region performance rating | Rating "Poor" or "Not recommended" in Region: warning; "Fails" (curator flag): error | Plant Region Profile | [MVP] |
+| VAL-RGN-01 | Region performance rating | Rating 2 (Marginal) or 1 (Not recommended) in the property's Region: warning, and rating 2 adds a client-disclosure note to the proposal; curator flag `do_not_use`: error; `not_rated`: info "not yet rated here; zone fit only" | Plant Region Profile, 1-5 scale ([12](12-plant-knowledge-base.md) KB-PRP-01) | [MVP] |
+| VAL-RGN-02 | Region profile conditions | A rating-3 ("acceptable with conditions") plant whose machine-checkable conditions are not met by the bed context: `needs_afternoon_shade` on a bed whose computed afternoon sun (12:00-18:00) exceeds 3 h; `avoid_wet_sites` in a bed tagged wet or in a mapped sink (DS-SITE-07); `needs_supplemental_water` in a bed with no irrigation zone; `avoid_road_salt` (see VAL-SALT-01). Warning, naming the condition | Plant Region Profile conditions, sun study, drainage, irrigation layer | [V1] |
 | VAL-INV-01 | Invasive or prohibited in state or province | Listed invasive (advisory): warning; legally prohibited or noxious: error, and the plant is hidden from the picker by default | KB regulatory lists | [MVP] |
 | VAL-DEER-01 | Deer pressure | Property deer pressure High and plant deer rating "frequently damaged": warning | Property attribute (client or ops), KB deer rating on an A-D style scale | [V1] |
-| VAL-H2O-01 | Hydrozone mixing | A bed or irrigation zone combining plants whose water-use classes differ by 2 or more classes (for example very low with high): warning | KB water-use class (WUCOLS-style very low, low, moderate, high) | [V1] |
+| VAL-H2O-01 | Hydrozone mixing | A bed or irrigation zone combining plants whose water-use classes differ by 2 or more classes (for example very low with high): warning | KB `water_need` (very low, low, moderate, high) everywhere; WUCOLS class for the property's California WUCOLS region where licensed ([12](12-plant-knowledge-base.md)) | [V1] |
 | VAL-SPC-01 | Plant crowding or sparse spacing | See DS-PLNT-05 | Geometry plus KB spread | [MVP] |
 | VAL-FND-01 | Plant too close to foundation or wall at maturity | Center-to-wall distance under (mature spread / 2 + 1 ft): warning (rule of thumb; maintenance access and air flow) | Geometry plus footprint | [MVP] |
 | VAL-TREE-01 | Large tree near structures | Trees with mature height of 40 ft or more within 15 ft of a foundation, or 30 ft or more within 10 ft of hardscape: warning (defaults, estimate; tenant-tunable) | KB height plus geometry | [MVP] |
@@ -326,15 +341,20 @@ Validation runs incrementally in a web worker as the design changes. Issues appe
 | VAL-LITE-01 | Lighting rules | Transformer over 80% load; fixture voltage out of range | Lighting objects | [V1] |
 | VAL-TKO-01 | Unpriced objects | Any object that would produce takeoff quantities but has no Price Book mapping: warning ("3 objects not priced") | Takeoff rules | [MVP] |
 | VAL-SITE-02 | Outside parcel | Proposed objects outside the parcel boundary: warning ("Is this on the neighbor's lot?") | Geometry plus parcel | [MVP] |
+| VAL-SALT-01 | Road and walk salt exposure | In Regions flagged as de-icing Regions (snow belt; set by the operator per Region), plants within 6 ft of a driveway, public sidewalk or street edge (the "hell strip"), or inside a drawn snow-storage area, whose `salt_tolerance_soil` or `salt_tolerance_spray` is none or low: warning ("Boxwood within 4 ft of the salted driveway: salt spray burn likely"). Distance default 6 ft, tenant-editable | KB salt tolerance, geometry, snow-storage polygons | [V1] |
+| VAL-JUG-01 | Black walnut (juglone) | Juglone-sensitive plants (`juglone_tolerance` = sensitive, for example many rhododendrons, azaleas and tomatoes) placed inside the existing-tree drip line of a *Juglans nigra* in the Existing Trees layer, plus a 10 ft buffer (default; roots extend beyond the canopy): warning | KB juglone tolerance, existing tree species and canopy | [V1] |
+| VAL-EAVE-01 | Rain shadow under eaves | Plants with `water_need` moderate or high centered inside the roof overhang (footprint roof edge, default eave 18 in where not entered) or within 2 ft of the wall on a non-irrigated bed: warning ("Under the eave: no rainfall reaches this spot; add drip or choose a drier plant") | Footprint roof overhang, irrigation layer, KB water need | [V1] |
+| VAL-FIRE-02 | Fire feature clearance | Structures, decks, fences, wood mulch or canopy at the selected design year inside a fire feature's clearance ring (DS-STRC-02): warning; inside the ring at install year: error for wood-burning features | Geometry, KB mature size and growth, fire feature fuel type | [V1] |
+| VAL-SNOW-01 | Snow storage and plow damage | Shrubs, perennials or lighting fixtures inside a drawn snow-storage or plow-push area (from the snow plan, Beyond the brief item 12), or within 3 ft of a plowed edge: warning ("plants here get buried and crushed by the plow every winter") | Snow plan polygons, geometry | [V1] |
 
 ### 4.12 Sun and shade study
 
 | ID | Feature | Behaviors and rules | Priority |
 |---|---|---|---|
 | DS-SUN-01 | **Sun path and shadow at time** | Pick a date and time (or animate a day). Sun position is computed with a standard solar-position algorithm (NOAA/NREL-class, accurate to well under a degree) using the site lat/lon and its IANA time zone, with DST handled. Shadows are cast in 2D (projected) and 3D from house footprints with heights and roofs, structures, fences and walls, existing trees (canopy ellipsoids with height; leaf-on or leaf-off by season and deciduousness), and proposed trees at the selected design year. | [V1] |
-| DS-SUN-02 | **Sun-hours heatmap** | Direct sun hours per cell (default grid 0.5 m) averaged over a date range (default: Region's growing season from frost dates, or Apr 15-Sep 15), sampled every 15 min. Runs on the GPU (shadow mapping) or in a worker. **Classes** (defaults, configurable): Full sun 6 h or more, Part sun 4-6 h, Part shade 2-4 h, Shade under 2 h. Each bed receives a sun class by area-weighted majority, displayed as a chip ("Part shade, 3.4 h avg"). Feeds VAL-SUN-01 and the plant picker. | [V1] |
+| DS-SUN-02 | **Sun-hours heatmap** | Direct sun hours per cell (default grid 0.5 m) averaged over a date range (default: Region's growing season from frost dates, or Apr 15-Sep 15), sampled every 15 min. Runs on the GPU (shadow mapping) or in a worker. **Classes** (defaults, configurable): Full sun 6 h or more, Part sun 4-6 h, Part shade 2-4 h, Full shade under 2 h (the same four classes as the KB `sun` trait in [12](12-plant-knowledge-base.md)). Afternoon sun hours (12:00-18:00 solar) are stored separately because they drive scorch risk and VAL-RGN-02. Each bed receives a sun class by area-weighted majority, displayed as a chip ("Part shade, 3.4 h avg"). Feeds VAL-SUN-01 and the plant picker. | [V1] |
 | DS-SUN-03 | **Future shade** | "Shade in year 10": proposed trees at year-10 size cast shade, so the designer sees that the new red maple will shade the vegetable bed and the turf under it will thin. Generates a warning on turf areas that drop below 4 h of sun (default). | [V2] |
-| DS-SUN-04 | **Manual sun tags** | Without terrain or heights, designers tag beds manually (Full, Part, Shade) from site observation. Always available and overrides computed values, with a flag. | [MVP] |
+| DS-SUN-04 | **Manual sun tags** | Without terrain or heights, designers tag beds manually (Full sun, Part sun, Part shade, Full shade) from site observation. Always available and overrides computed values, with a flag. | [MVP] |
 | DS-SUN-05 | **Measured sun from the field** | Optional import of field sun observations (photos timestamped with compass heading from the crew app, or a sun-tracking survey [V3]) to calibrate the model. | [V3] |
 
 ### 4.13 3D view, growth slider and seasons
@@ -343,10 +363,10 @@ Validation runs incrementally in a web worker as the design changes. Issues appe
 |---|---|---|---|
 | DS-3D-01 | **3D view** | Toggle 2D/3D or split screen. Terrain mesh from DEM (or flat), house as extruded footprint with roof, hardscape extruded with thickness and elevations, walls with caps, steps, structures from parametric models, water with animated surface, lights. Orbit, pan, zoom, "walk" mode at eye height (5 ft 6 in default), saved camera views (used for mockups and presentations). | [V1] |
 | DS-3D-02 | **3D plant models** | About 150 to 250 parametric **plant archetypes** (our estimate of what covers the KB's forms; for example "upright vase deciduous shrub", "mounding grass", "columnar evergreen") parameterized per plant by KB height, spread, leaf color, bloom color and density, plus hero hand-made models for the top 300 plants by usage. LOD: high-poly near camera, mid, and billboard impostors at distance. GPU instancing so 2,000 plants hold frame rate on an iPad. | [V1] archetypes; [V2] hero models |
-| DS-3D-03 | **Growth time slider** | Stops: Install, Year 1, Year 3, Year 5, Year 10, Maturity. Size at time t: install size + (mature size - install size) x g(t / years to maturity), where g is a logistic curve parameterized by KB growth rate (slow, medium, fast) and years to maturity. Applies to 2D symbols, 3D models, shadows and spacing validation. Note on screen: "Growth is an estimate; actual growth varies with site and care." | [V1] |
+| DS-3D-03 | **Growth time slider** | Stops: Install, Year 1, Year 3, Year 5, Year 10, Maturity. Size at time t: install size + (mature size - install size) x g(t / years to maturity), where g is a logistic curve parameterized by the KB `growth_rate` (slow, moderate, fast) and `years_to_maturity` ([12](12-plant-knowledge-base.md)). When `years_to_maturity` is missing, a category default applies (for example perennials 3, shrubs 5-8, trees 20-40; estimates) and the symbol is marked "growth estimated from category". Applies to 2D symbols, 3D models, shadows and spacing validation. Note on screen: "Growth is an estimate; actual growth varies with site and care." | [V1] |
 | DS-3D-04 | **Season toggle** | Early spring, late spring, summer, fall, winter (also by month for the bloom calendar). Uses KB phenology: bloom color and months, foliage color by season, fall color, deciduous leaf drop, evergreen, winter interest (bark, berries, structure). Turf goes dormant-tan in winter for warm-season grasses in the South; snow cover option in the North. | [V1] |
 | DS-3D-05 | **Time of day and lighting** | Sun position from DS-SUN-01; night mode with landscape lights (DS-LITE-05). | [V1] day; [V2] night |
-| DS-3D-06 | **Export to AR and 3D formats** | GLB (Android, web) and USDZ (iOS AR Quick Look) for viewing the design in AR on the actual lawn ([V2]); video flythrough export (MP4, 1080p) rendered server-side for social and presentations ([V2]). | [V2] |
+| DS-3D-06 | **Export to AR and 3D formats** | GLB (Android, web) and USDZ (iOS AR Quick Look) for viewing the design in AR on the actual lawn ([V2]); COLLADA (DAE) and GLB of terrain, house massing and hardscape in real-world units for designers who model custom structures in SketchUp or render in Lumion, Twinmotion or D5 ([V2]); video flythrough export (MP4, 1080p) rendered server-side for social and presentations ([V2]). Exported plants carry their KB key as the object name, so a round-tripped model can be re-linked. | [V2] |
 | DS-3D-07 | **Photoreal handoff** | "Render this view" sends camera, depth and segmentation passes to the AI mockup engine, so the photoreal image matches the plan's geometry ([11](11-ai-design-mockups.md)). | [V1] |
 
 ### 4.14 Options, versions and phasing
@@ -378,6 +398,9 @@ A Takeoff Rule maps an object type plus properties to one or more Price Book ite
 | Edging: spade cut | Spade edge labor, per LF | `length_ft` | 1 LF |
 | Turf: sod | Sod per sq ft, pallets; prep labor | `area_sqft * 1.05`; pallets `ceil(sqft / pallet_sqft)` | Whole pallets |
 | Turf: seed | Seed per lb; starter fertilizer; straw | `area_sqft / 1000 * seed_rate_lb` | Whole bags |
+| Turf: topsoil under new sod or seed | Screened topsoil per cu yd; spreading labor | `area_sqft * topsoil_in / 324 * (1 + settle)`; 4 in default when "import topsoil" is on, settle 15% (estimate) | Up to 0.5 cu yd |
+| Berm or raised planting mound | Fill soil per cu yd; shaping labor | Drawn proposed surface ([V2]): exact volume between surfaces. Otherwise `area_sqft * peak_height_in / 12 * shape_factor / 27`; shape factor 0.5 (smooth mound, paraboloid-like; estimate), 0.33 for a cone-like mound | Up to 0.5 cu yd |
+| Dry creek or river rock area | Rock by size class per ton; fabric | `area_sqft * depth_in / 324 * tons_per_cuyd` per size-class percentage (DS-WATR-03); density from the Price Book item | Up to 0.5 ton |
 | Patio: pavers | Paver product per sq ft | `area_sqft * (1 + pattern_waste)`; running bond 5%, herringbone 10%, curved or circle 12% (defaults) | Whole pallets or sq ft per product rule |
 | Patio: base | Crushed aggregate per ton | `(area_sqft + overbuild_sqft) * base_in / 12 / 27 * compaction_factor * tons_per_cuyd`; 6 in, 1.25, 1.4 (defaults, estimate) | Up to 1 ton |
 | Patio: bedding sand | Concrete sand per cu yd | `area_sqft * sand_in / 324`; 1 in | Up to 0.5 cu yd |
@@ -411,18 +434,21 @@ A Takeoff Rule maps an object type plus properties to one or more Price Book ite
 - **Cost visibility:** users without `estimate.view_cost` see price only. Clients never see cost or margin.
 - **Per-option and per-phase totals** side by side.
 - **Budget guardrail:** if the client's stated budget (from Opportunity) is exceeded by over 10%, the price bar turns amber.
+- **One pricing engine.** The Studio does not price on its own. Its worker calls the same Estimate pricing package that [03](03-crm-sales-estimating-proposals.md) uses (`priceTakeoff(takeoffLines, priceBookSnapshot, estimateTemplate)`): production-rate labor hours, labor burden, equipment rates, overhead recovery and target margin. So the Studio total and the Estimate total for the same takeoff always match to the cent. If they ever differ, the cause is an estimator override, and the S6 sync review shows it.
+- **Offline pricing.** On the iPad offline (DS-MOB-02), totals use the cached Price Book snapshot and show "Prices as of Nov 3, offline". On reconnect, totals re-price against the live Price Book, and any change is flagged in the bar.
+- **Units at the boundary.** Takeoff quantities are in design units (sq ft, cu yd, LF, each). The Price Book item's selling unit (bag, pallet, ton, flat, piece) is applied by the item's conversion rule, so "6.22 cu yd" becomes "7 yards delivered" or "84 bags at 2 cu ft" depending on how the Company buys and sells mulch.
 
 #### 4.15.3 Push to Estimate and stay linked [MVP]
 
 1. "Create Estimate" (or "Update Estimate") generates estimate lines grouped by area or phase (configurable grouping: by area, by category, by phase). Each line keeps `source_design_object_ids`.
 2. Labor hours are computed by the Estimate engine from production rates ([03](03-crm-sales-estimating-proposals.md)). The Studio only supplies quantities.
 3. **Two-way link with protection:** when the design changes after an Estimate exists, the Estimate shows a banner "Design v5 changed 6 quantities. Review." with a diff (old qty, new qty, price delta). Estimators accept per line or all. **Manual overrides in the Estimate are preserved** and flagged as "override" so design changes do not silently clobber them.
-4. Locking: once a Proposal is signed, the linked design version is frozen (`sold`). Changes become a **Change Order** flow ([03](03-crm-sales-estimating-proposals.md)): fork the sold version, edit, push a delta estimate.
+4. Locking: when a Proposal is **sent**, it pins the exact design version, mockups and estimate snapshot; later edits create a new version and the proposal shows "Revised design available" ([11](11-ai-design-mockups.md)). On `proposal.signed` the pinned version is **locked** (no new versions can be attached to that proposal). On `proposal.executed` (signed and, where required, deposit paid, per the proposal state machine in [03](03-crm-sales-estimating-proposals.md)) it becomes `sold`. If the deposit never succeeds and the proposal expires, the lock is released. After `sold`, changes become a **Change Order** flow ([03](03-crm-sales-estimating-proposals.md)): fork the sold version, edit, push a delta estimate.
 5. Price Book changes (for example mulch cost rises in March) update live totals on open designs, but never on sent or sold proposals (those hold price snapshots).
 
 #### 4.15.4 Material ordering handoff [V1]
 
-After sale, takeoff quantities flow to purchase orders by vendor and delivery date in [13](13-operations-inventory-equipment.md), split by phase.
+After sale, takeoff quantities flow to purchase orders by vendor and delivery date in [13](13-operations-inventory-equipment.md), split by phase. The sold takeoff also becomes the **material budget baseline** for job costing: when vendor bills and inventory issues post to the Job in the built-in double-entry Ledger ([09](09-accounting-ledger-integrations.md)), estimate-vs-actual is computed per takeoff line ("base stone: 12 tons estimated, 14.5 tons billed, +21%"). That variance feeds the takeoff-accuracy KPI and tenant waste-factor calibration ([12](#12-metrics-and-kpis)). The Studio writes no journal entries itself.
 
 ### 4.16 Collaboration, review and client markup
 
@@ -655,7 +681,7 @@ sequenceDiagram
 6. "Create Estimate" builds Estimate lines with quantities from the takeoff. Production rates add labor ([03](03-crm-sales-estimating-proposals.md)).
 7. The Proposal is built with three options, the presentation deck and AI mockups ([11](11-ai-design-mockups.md)), and sent to the portal.
 8. The client chooses Option B, signs, and pays the deposit through the Company's own Stripe account ([08](08-payments-stripe.md)).
-9. The design version freezes as `sold` and becomes the construction set. Takeoff flows to purchase orders ([13](13-operations-inventory-equipment.md)). Phases map to Project phases ([04](04-scheduling-dispatch-routing.md)).
+9. When the proposal executes (signature plus deposit), the design version freezes as `sold` and becomes the construction set. Takeoff flows to purchase orders ([13](13-operations-inventory-equipment.md)). Phases map to Project phases ([04](04-scheduling-dispatch-routing.md)).
 
 ```mermaid
 flowchart LR
@@ -690,7 +716,9 @@ stateDiagram-v2
     SharedWithClient --> ClientChanges : client requests changes
     ClientChanges --> Draft : designer revises new version
     SharedWithClient --> ClientApproved : client approves option
-    ClientApproved --> Sold : proposal signed and deposit paid
+    ClientApproved --> Locked : proposal signed
+    Locked --> Sold : proposal executed, deposit paid if required
+    Locked --> ClientApproved : proposal expired unpaid
     Sold --> ChangeOrder : change order opened
     ChangeOrder --> Sold : change order signed
     Sold --> AsBuilt : job complete and as-built published
@@ -703,8 +731,9 @@ stateDiagram-v2
 Rules:
 
 - Only `Draft` and `ChangeOrder` working copies are editable. Every other state is an immutable snapshot.
+- State keys in storage are snake_case (`draft`, `in_review`, `approved`, `shared`, `client_changes`, `client_approved`, `locked`, `sold`, `change_order`, `as_built`, `archived`), matching the sequence [11](11-ai-design-mockups.md) relies on.
 - Transition to `SharedWithClient` requires zero unresolved errors (or overrides with reasons) and a filled title block.
-- `Sold` is set by the `proposal.signed` event, never manually, except by `owner` for imported legacy jobs.
+- `Locked` is set by `proposal.signed`. `Sold` is set by `proposal.executed` ([03](03-crm-sales-estimating-proposals.md)), never manually, except by `owner` for imported legacy jobs. Both are immutable.
 - `Archived` designs remain searchable and can be reopened. Their site models remain for the Property.
 
 ### 5.4 Flow D: Client markup loop
@@ -775,7 +804,7 @@ flowchart LR
 1. Mid-install, the client asks to extend the patio by 4 ft and add two lights.
 2. The `ops_manager` opens a Change Order from the Job. The Studio forks the `sold` version into a `ChangeOrder` working copy.
 3. The designer edits. The compare view shows "+64 sq ft pavers, +2 path lights, +36 ft 12 AWG wire, +$2,310".
-4. "Push delta to Change Order" creates delta estimate lines. The client signs the Change Order in the portal ([03](03-crm-sales-estimating-proposals.md)).
+4. "Push delta to Change Order" creates delta estimate lines. The client signs the Change Order in the portal ([03](03-crm-sales-estimating-proposals.md)), which emits `change_order.approved`.
 5. The new sold version replaces the construction set in the crew app. The crew sees a "Revised" badge with highlighted changes.
 
 ---
@@ -848,12 +877,12 @@ Behavior notes: the left toolbar collapses to icons, and keyboard shortcuts are 
 | Filters: [Native to OH] [Deer resistant] [Pollinator] [Evergreen] |
 | Tabs: (Region palette) (Company favorites) (All KB)                |
 +------------------------------------------------------------------+
-| [photo] Itea virginica 'Little Henry'          Excellent - Ohio V. |
+| [photo] Itea virginica 'Little Henry'    5 Top performer - C. Ohio |
 |         Sweetspire - 2-3' H x 3-4' W - Part sun ok - Native: E. US |
 |         Deer: B (seldom damaged)  Water: Moderate                 |
 |         #3 $24.00  #5 $36.00   In stock: Acme Nursery  [+ Place]  |
 +------------------------------------------------------------------+
-| [photo] Fothergilla gardenii                   Good - Ohio Valley  |
+| [photo] Fothergilla gardenii             4 Reliable - Central Ohio |
 |         Dwarf fothergilla - 2-3' H x 2-4' W - Native: SE US        |
 |         Deer: B   Water: Moderate   #3 $27.50       [+ Place]     |
 +------------------------------------------------------------------+
@@ -929,6 +958,45 @@ Plant ratings, prices and stock in this wireframe are illustrative example data,
 +------------------------------------------------------------+
 ```
 
+### 6.7 Wireframe: plan sheet L-3 Planting Plan, as exported (S15)
+
+ARCH D (24 x 36 in) landscape sheet. The viewport, plant schedule and title block are live objects in the sheet layout editor (DS-EXP-01). Once exported, the PDF is vector with PDF layers.
+
+```text
++--------------------------------------------------------------------------------------------+------------------+
+|  PLANTING PLAN                                                                              | [LOGO]           |
+|                                                                                             | Cedar & Stone    |
+|   N                                                                                         | Landscapes LLC   |
+|   ^      .................. approximate parcel line, not a survey ...................      | 1180 Elm St      |
+|          :                                                                            :    | Columbus OH      |
+|          :     +------------------- EXISTING HOUSE (FF 100.00) ----------------+      :    | (614) 555-0142   |
+|          :     |                                                               |      :    | OH Contractor    |
+|          :     +---------------------------------------------------------------+      :    |  Lic. 000000     |
+|          :   (3)BUX GV  (5)HYD LIM-------.   (24)NEP WL ~~~~~~~~                       :    |------------------|
+|          :    o o o      O  O  O  O  O    `--(208)PAC TER @12" tri                     :    | CLIENT           |
+|          :   ~~~~~~~~~~~~~~ steel edge ~~~~~~~~~~~~~~~                               :    | Henderson        |
+|          :               [ PATIO 16'x20' ]        (1)ACE RUB 2" cal B&B  @@@          :    | 418 Maple Ridge  |
+|          :                                                                            :    | Dr               |
+|          :........................................................................:    |------------------|
+|   0  5  10    20 ft   SCALE 1" = 10'-0"                                                 | SHEET  L-3       |
++---------------------------------------------------------------------------------------------| PLANTING PLAN    |
+| PLANT SCHEDULE                                                                              | Scale 1"=10'     |
+| KEY     QTY  BOTANICAL NAME                  COMMON NAME            SIZE      SPACING NATIVE| Date 2026-11-07  |
+| TREES                                                                                       | Drawn  JM        |
+| ACE RUB   1  Acer rubrum 'Red Sunset'         Red Sunset red maple   2" cal B&B  as shown  Y | Reviewed SK      |
+| SHRUBS                                                                                      |------------------|
+| BUX GV    3  Buxus 'Green Velvet'             Green Velvet boxwood   #3         36" oc   N | REVISIONS        |
+| HYD LIM   5  Hydrangea paniculata 'Limelight' Limelight hydrangea    #3         60" oc   N | 1 10/14 client   |
+| PERENNIALS AND GROUNDCOVERS                                                                 |   markup         |
+| NEP WL   24  Nepeta 'Walker's Low'            Walker's Low catmint   #1         24" oc   N | 2 11/02 Opt B    |
+| PAC TER 208  Pachysandra terminalis           Japanese pachysandra   flats/18  12" tri  N |------------------|
+| Notes: 3" dbl-shredded hardwood mulch all beds. Verify utilities with 811 before digging.   | Landscape Design |
+| Parcel lines approximate. Not a survey. Growth shown at maturity; actual growth varies.     | Not for permit   |
++---------------------------------------------------------------------------------------------+------------------+
+```
+
+Rules shown: plant keys are collision-safe (DS-PLNT-08), the native column is computed for the property's state, the title block wording is "Landscape Design" because no verified landscape-architect license is on the user's profile (DS-EXP-02), and the disclaimer lines are mandatory and cannot be deleted from the template. The plant names and license number are placeholders.
+
 ---
 
 ## 7. Data model
@@ -944,11 +1012,11 @@ The **live design geometry** lives in the CRDT document (RDD) per Design Option 
 | `measurement_set` | Named reusable measurements for pricing and maintenance | `property_id`, `name`, `season`, `items` (jsonb: label, measure, value, geometry ref) |
 | `design` | Container per Property and Opportunity | `property_id`, `opportunity_id`, `name`, `designer_id`, `style_kit_id`, `status` (derived from latest option and version), `units`, `created_from_template_id` |
 | `design_option` | Branch (A, B, C) with live CRDT doc | `design_id`, `label`, `name`, `doc_storage_key`, `doc_snapshot_seq`, `rdd_schema_version`, `proposal_option_id`, `forked_from_version_id`, `sort` |
-| `design_version` | Immutable snapshot | `design_option_id`, `number`, `name`, `state` (draft, in_review, approved, shared, client_changes, client_approved, sold, change_order, as_built, archived), `snapshot_key`, `site_model_version`, `takeoff_id`, `created_by`, `reason` |
+| `design_version` | Immutable snapshot | `design_option_id`, `number`, `name`, `state` (draft, in_review, approved, shared, client_changes, client_approved, locked, sold, change_order, as_built, archived), `snapshot_key`, `site_model_version`, `takeoff_id`, `created_by`, `reason` |
 | `design_layer` | Layer metadata (projection) | `design_option_id`, `key`, `name`, `color`, `visible_default`, `locked`, `print`, `include_in_takeoff`, `sort` |
 | `design_phase` | Phasing | `design_id`, `name`, `target_season`, `target_year`, `sequence`, `project_phase_id` |
 | `design_object` | Projection of every object | `design_version_id` (or head), `object_id` (ULID, stable), `type`, `layer_key`, `phase_id`, `status` (existing, proposed, remove, transplant), `geom` (PostGIS, site-local and WGS84), `area_sqft`, `length_ft`, `props` (jsonb), `price_book_item_id` |
-| `plant_placement` | Projection for plants (fast schedules and reports) | `design_object_id`, `plant_id`, `plant_region_profile_id`, `size_spec`, `qty`, `spacing_in`, `pattern`, `design_year_basis`, `override_reason` |
+| `plant_placement` | Projection for plants (fast schedules and reports) | `design_object_id`, `plant_id`, `plant_region_profile_id`, `size_spec`, `qty`, `spacing_in`, `pattern`, `planting_mix_id` (nullable), `design_year_basis`, `kb_release_id` (KB release pinned at send, per [12](12-plant-knowledge-base.md)), `override_reason` |
 | `takeoff` | Quantities snapshot for a version or head | `design_option_id`, `design_version_id`, `rule_set_version`, `computed_at`, `totals` (jsonb: price, cost, margin) |
 | `takeoff_line` | One quantity line | `takeoff_id`, `price_book_item_id`, `qty`, `unit`, `waste_pct`, `rounding`, `source_object_ids` (uuid array), `phase_id`, `override_qty`, `override_by` |
 | `takeoff_rule` | Mapping from object to item and formula | `object_type`, `match` (jsonb predicate on props), `price_book_item_id`, `formula`, `waste_pct`, `rounding`, `active`, `version` |
@@ -966,6 +1034,11 @@ The **live design geometry** lives in the CRDT document (RDD) per Design Option 
 | `irrigation_head` | Head projection | `zone_id`, `object_id`, `model`, `nozzle`, `arc_deg`, `radius_ft`, `gpm`, `psi` |
 | `lighting_transformer` | Transformer projection | `design_option_id`, `object_id`, `model`, `capacity_w`, `taps`, `connected_load_w`, `load_pct` |
 | `lighting_fixture` | Fixture projection | `transformer_id`, `run_id`, `object_id`, `model`, `watts`, `wire_ft_from_source`, `gauge_awg`, `calc_voltage` |
+| `design_share_link` | Tokenized external view link (DS-COLB-05) | `design_version_id`, `token_hash` (SHA-256; raw token shown once), `audience_label` (for example "Maple Ridge HOA ARC"), `layers_visible`, `watermark_text`, `expires_at`, `revoked_at`, `created_by`, `view_count`, `last_viewed_at` |
+| `design_share_view` | Access log for share links | `share_link_id`, `viewed_at`, `ip_hash`, `user_agent`, `pages_viewed` |
+| `design_review` | Internal review request (DS-COLB-03) | `design_version_id`, `requested_by`, `reviewer_ids`, `checklist` (jsonb: validation clean, schedule complete, margin within target, title block filled), `threshold_rule` (for example "price over $25,000"), `outcome` (approved, changes_requested), `decided_by`, `decided_at`, `comment` |
+| `as_built_change` | One field-reported deviation (DS-CON-04) | `sold_version_id`, `object_id`, `kind` (moved, substituted, added, removed, quantity_changed), `before` (jsonb), `after` (jsonb), `photo_keys`, `gps_point`, `gps_accuracy_m`, `reported_by`, `status` (pending, accepted, rejected), `reconciled_by`, `as_built_version_id` |
+| `planting_mix` | Reusable species mix (DS-PLNT-13) | `tenant_id` (null = platform), `name`, `density_per_sqft`, `components` (jsonb: plant_id, role, percent, spacing_in, cluster_rule), `region_id`, `sun_class` |
 
 ### 7.2 Entity-relationship diagram
 
@@ -1001,6 +1074,11 @@ erDiagram
     lighting_transformer ||--o{ lighting_fixture : "powers"
     design_template ||--o{ design : "seeds"
     site_model ||--o{ design_version : "context for"
+    design_version ||--o{ design_share_link : "shared via"
+    design_share_link ||--o{ design_share_view : "logs"
+    design_version ||--o{ design_review : "reviewed in"
+    design_version ||--o{ as_built_change : "deviations"
+    planting_mix ||--o{ plant_placement : "seeds"
 
     site_model {
         uuid id PK
@@ -1117,6 +1195,27 @@ erDiagram
         text override_reason
         uuid override_by FK
     }
+    design_share_link {
+        uuid id PK
+        uuid tenant_id FK
+        uuid design_version_id FK
+        text token_hash
+        text audience_label
+        timestamptz expires_at
+        timestamptz revoked_at
+        int view_count
+    }
+    as_built_change {
+        uuid id PK
+        uuid tenant_id FK
+        uuid sold_version_id FK
+        text object_id
+        text kind
+        jsonb before_state
+        jsonb after_state
+        numeric gps_accuracy_m
+        text status
+    }
     design_markup {
         uuid id PK
         uuid tenant_id FK
@@ -1151,6 +1250,10 @@ erDiagram
 | **Open building footprints** (open datasets as fallback) | Footprint when the vendor has none | Check license (some are ODbL, which has share-alike obligations for derived databases). | [MVP] |
 | **Premium aerial imagery** (Nearmap or EagleView class) | High-res, dated, leaf-off, historical captures | Per-lookup cost passed through as add-on credits ([22](22-business-model-pricing-gtm.md)). Coverage concentrated in metros. | [V1] |
 | **USGS 3DEP** | DEM (1 m where available; 1/3 arc-second fallback), elevation point query, WCS ([USGS FAQ](https://www.usgs.gov/faqs/what-types-elevation-datasets-are-available-what-formats-do-they-come-and-where-can-i-download), [3DEP products](https://www.usgs.gov/core-science-systems/ngp/3dep/about-3dep-products-services), [3DEP index](https://index.nationalmap.gov/arcgis/rest/services/3DEPElevationIndex/MapServer)) | Public, free. Vintage and resolution vary by project, and 1 m seamless coverage is incomplete. Show source and date. | [V1] |
+| **USDA NAIP orthoimagery** | License-clean imagery for AI auto-trace and NDVI turf and bed separation | Public domain; leaf-on; about 60 cm, coarser than commercial tiles; refresh about every 2-3 years per state (background knowledge in [R3](research/R3-design-ai-plant-data.md), verify) | [V1] |
+| **Google Solar API** (optional) | Digital surface model and annual sun flux as a cross-check for the sun-hours heatmap (DS-SUN-02) | Per-request pricing. Terms restrict use to the API's purpose, so legal must confirm landscape shade analysis qualifies before use (verify) | [V2] |
+| **Drone orthomosaics** (DroneDeploy or Pix4D-class GeoTIFF and DSM) | Current, high-resolution basemap and surface model for commercial and new-construction sites | Tenant-owned data, so no third-party license limits tracing | [V2] |
+| **One-call (811) centers** | Dig-area polygon export for locate tickets (Beyond the brief item 22) | State and provincial centers differ in electronic ticket and white-lining support (verify per center) | [V2] |
 | **Lidar point clouds** (public 3DEP point clouds) | Canopy height model, building heights | Heavy processing (Python worker, PDAL-class tooling). Cache derived rasters only. | [V2] |
 | **Canadian elevation** (NRCan high-resolution DEM products) | Terrain for Canadian sites | Verify coverage and license. | [V1] |
 | **Plant KB** (internal, [12](12-plant-knowledge-base.md)) | Plant search, traits, region profiles, palettes, phenology, growth, archetype mapping | In-process module calls. A Region-scoped KB subset is cached on the client. | [MVP] |
@@ -1181,7 +1284,7 @@ Events are published through the transactional outbox to the event bus ([20](20-
 | `design.client_markup_added` | Client markup saved | design_version_id, markup_ids, client_contact_id | Notifications, CRM |
 | `design.client_approved` | Client approves an option | design_version_id, option_id | Proposal workflow |
 | `design.validation_overridden` | Error or warning overridden | rule_code, object_ids, reason, user_id | Audit, warranty risk analytics |
-| `design.sold` | Version frozen as sold (from proposal.signed) | design_version_id, job_id | Ops, Purchasing, Scheduling |
+| `design.sold` | Version frozen as sold (from `proposal.executed`) | design_version_id, job_id | Ops, Purchasing, Scheduling |
 | `design.as_built_published` | As-built version published | design_version_id, property_id | Service lines (irrigation map, maintenance measurements), PHC |
 | `design.exported` | Export generated | design_version_id, format | Audit, usage metering |
 
@@ -1193,8 +1296,10 @@ Events are published through the transactional outbox to the event bus ([20](20-
 | `opportunity.site_assessment_scheduled` | Pre-cache the site model and KB subset for the assignee's iPad |
 | `price_book.item_changed` | Refresh live totals in open heads. Never touch shared or sold snapshots. |
 | `plant.updated` / `plant_region_profile.updated` / `plant.regulatory_status_changed` | Re-run validation on open heads and shared-but-unsold versions. Notify the designer if new errors appear. |
-| `proposal.signed` | Freeze the linked version as `sold` and emit `design.sold` |
-| `proposal.change_order_signed` | Promote the change-order version to `sold` |
+| `proposal.signed` | Lock the pinned version (state `locked`); block new versions on that proposal |
+| `proposal.executed` | Freeze the pinned version as `sold` and emit `design.sold` |
+| `proposal.expired` / `proposal.declined` | Release a lock if present; move the design to `archived` when the Opportunity is lost |
+| `change_order.approved` | Promote the change-order version to `sold`; the crew app shows the "Revised" construction set |
 | `job.completed` | Prompt as-built capture for `ops_manager` and `crew_lead` |
 | `mockup.generated` | Attach to design version, presentation deck and portal |
 
@@ -1218,7 +1323,7 @@ Webhooks (tenant-configurable): `design.shared_with_client`, `design.client_appr
 
 ## 9. Permissions
 
-Permissions are granular capabilities ([02](02-personas-roles-permissions.md)). Defaults per role are shown below, and tenants can compose custom roles from them. **Legend:** **F** = full; **E** = create and edit; **V** = view; **C** = view and comment or markup; **A** = approve; **S** = scoped (only assigned designs, or only shared layers); **P** = price only (no cost or margin); **-** = none.
+Permissions are granular capabilities ([02](02-personas-roles-permissions.md)). Defaults per role are shown below, and tenants can compose custom roles from them. [02](02-personas-roles-permissions.md) is the canonical permission catalog; the keys below are this module's spellings and are registered as aliases of the canonical keys (for example `design.view` = `design.read`, `design.edit` = `design.create` plus `design.update`, `estimate.view_cost` = `field.cost.read` on `estimate`). Crew roles see plan sheets for Jobs assigned to their Crew, read-only and price-free, per the crew scope in [02](02-personas-roles-permissions.md). **Legend:** **F** = full; **E** = create and edit; **V** = view; **C** = view and comment or markup; **A** = approve; **S** = scoped (only assigned designs, or only shared layers); **P** = price only (no cost or margin); **-** = none.
 
 ### 9.1 Tenant and client roles
 
@@ -1250,7 +1355,7 @@ Rules:
 
 - `client_residential` and `client_commercial` never see cost, margin, internal comments, validation overrides or unshared options. They see the shared version only, through the portal ([06](06-customer-portal.md)).
 - Additional client contacts (spouse, tenant, billing contact) inherit view and markup only if the primary contact or the Company grants it. Billing contacts default to no design access.
-- `subcontractor` access is per design and per layer, time-boxed (default: ends 30 days after job completion).
+- `subcontractor` access is per design and per layer, time-boxed (default: from assignment through 7 days after job completion, the crew-scope window in [02](02-personas-roles-permissions.md); configurable). Subcontractors see their PO amount, never the Company's sell price.
 - The estimator's premium imagery and AI credit caps are tenant-set monthly amounts (default: 50 premium lookups and 2,000 AI credits per user per month; estimate, tune with [22](22-business-model-pricing-gtm.md)).
 
 ### 9.2 Platform roles

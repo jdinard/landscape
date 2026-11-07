@@ -1,6 +1,6 @@
 # 21 - UX, Design System and Sitemaps
 
-> Rootline is five products wearing one coat: an office command center, a glove-proof crew app, a white-label client portal, a power-user operator console, and a public marketing site with a homeowner AI design funnel. This document defines how all of them look, read, move and behave. It contains the information architecture and full sitemaps for every surface; navigation patterns (command palette, role-aware "Today" home, record pages with timelines, contextual side panels); design principles per surface; Rootline's brand direction with concrete color, type and icon tokens (including a custom landscape icon set and a plant plan symbol library for the [Design Studio](10-design-studio.md)); the component library inventory; data-visualization conventions; responsive rules; WCAG 2.2 AA accessibility; internationalization for English, Spanish and French-Canadian crews and clients; the new-Company onboarding wizard; empty states and sample data; notification design; microcopy voice and tone; fifteen hero-screen wireframes; and the usability testing and design-ops plan that keeps it all coherent as the product grows. UX is not decoration here: the market leaders are already split between "easy but shallow" (Jobber) and "deep but dated" (Service Autopilot, older Aspire screens), and Rootline's whole thesis - replace 5-10 tools with one - only works if one product can feel simple to a 19-year-old technician in July sun and powerful to a controller closing the books.
+> Rootline is five products wearing one coat: an office command center, a glove-proof crew app, a white-label client portal, a power-user operator console, and a public marketing site with a homeowner AI design funnel. This document defines how all of them look, read, move and behave. It contains the information architecture and full sitemaps for every surface; navigation patterns (command palette, role-aware "Today" home, record pages with timelines, contextual side panels); design principles per surface; Rootline's brand direction with concrete color, type and icon tokens (including a custom landscape icon set and a plant plan symbol library for the [Design Studio](10-design-studio.md)); the component library inventory; data-visualization conventions; responsive rules; WCAG 2.2 AA accessibility; internationalization for English, Spanish and French-Canadian crews and clients; the new-Company onboarding wizard; empty states and sample data; notification design; microcopy voice and tone; eighteen hero-screen wireframes; and the usability testing and design-ops plan that keeps it all coherent as the product grows. UX is not decoration here: the market leaders are already split between "easy but shallow" (Jobber) and "deep but dated" (Service Autopilot, older Aspire screens), and Rootline's whole thesis - replace 5-10 tools with one - only works if one product can feel simple to a 19-year-old technician in July sun and powerful to a controller closing the books.
 
 **Related docs:** [Personas, roles and permissions](02-personas-roles-permissions.md) - [Architecture and security](20-architecture-security.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Platform admin](19-platform-admin-portal.md) - [Roadmap and feature catalog](24-roadmap-feature-catalog.md)
 
@@ -563,7 +563,7 @@ Visibility is driven by permissions ([02](02-personas-roles-permissions.md)); th
 | Automations | F | F | - | - | R | - | - | - | - |
 | Settings | F | F | - | - | R | - | - | R | - |
 
-Crew leads, technicians and subcontractors are expected to use the native app; their web access is limited by default and can be disabled per Company.
+Crew leads, technicians and subcontractors are expected to use the native app; their web access is limited by default and can be disabled per Company. On the web, a `subcontractor` gets the Subcontractor lite surface (5.3), not this rail: their "Schedule" and "Jobs" are their own work orders. The `bookkeeper` "Clients R" entry shows billing fields only (no site notes or gate codes), and `crew_lead` "Clients R" shows only clients on the crew's routes in the next 14 days.
 
 ---
 
@@ -1048,6 +1048,12 @@ Money is never encoded by red/green alone: negative amounts always show a minus 
 | UsageMeter (AI credits) | Remaining credits, projected run-out | Web, admin | [MVP] |
 | TenantHealthCard | Admin console tenant score | Admin | [MVP] |
 | CurationDiff | Side-by-side field diff with accept/reject per field | Admin | [MVP] |
+| PressAndHoldButton | Full-width primary action that commits after an 800 ms hold, with a visible fill, haptic tick at commit and a screen-reader "double-tap to confirm" equivalent. Default for irreversible crew actions | Crew app, kiosk | [MVP] |
+| ReconciliationMatchPanel | Bank line vs suggested match, with payout unpacking (gross, fees, net) and the resulting posting preview | Web | [MVP] |
+| ApprovalQueue / VoteTally | Commercial approvals list with per-approver limit, chain status and a tally that hides individual votes until close | Portal | [V1] |
+| BudgetBurnBar | Client budget bucket with approved, pending and "would leave" projection; text values always shown | Portal, web | [V1] |
+| IntegrationHealthStrip | Status dots per external dependency (Stripe, bank feed, accounting sync, SMS, maps) with plain-language degradation banners | Web shell | [MVP] |
+| ScopeGate | Wrapper that removes, rather than disables, UI the current contact scope or role cannot use, and renders the permission state from 15.1 for deep links | Portal, web | [MVP] |
 
 ### 9.5 Governance [V1]
 
@@ -1198,12 +1204,12 @@ Platform guidance sets 44 x 44 pt (Apple) and 48 x 48 dp (Material) minimum touc
 
 | Rule | Crew app standard |
 |---|---|
-| Touch target | >= 56 x 56 px all interactive; >= 64 px primary actions (Start, Complete, Clock in); >= 12 px spacing between adjacent targets |
+| Touch target | >= 56 x 56 px all interactive; >= 64 px primary actions (Start, Complete, Clock in); 12 px default spacing between adjacent targets, 8 px hard floor ([05](05-field-crew-mobile-app.md)) |
 | Gestures | No swipe-only or long-press-only actions; every gesture has a visible button; no pinch required (zoom buttons on maps and plans) |
 | Text | Body >= 17 pt; never thin weights (< 500 in field-sun); numbers that matter (time, stop count, gate code) >= 22 pt |
 | Contrast | field-sun theme targets >= 7:1 for body text, no shadows or gradients behind text |
 | Feedback | Haptic + sound (optional) + visual state change for clock-in/out, visit complete, photo captured |
-| Error tolerance | Destructive or irreversible actions (Complete visit, Submit timesheet) use press-and-confirm with a 5-second undo instead of a modal |
+| Error tolerance | Destructive or irreversible actions (Complete visit, Submit timesheet, Save chemical application) use press-and-hold (800 ms, visible fill) with a 5-second undo instead of a modal. Swipe-to-confirm ([05](05-field-crew-mobile-app.md)) is only offered alongside press-and-hold. Primary buttons commit on release, and spurious multi-touch from rain is ignored while a hold is in progress |
 | Input | Voice dictation on all text; photo-first reporting ("Snap the problem"); pickers instead of typing; big numeric keypads |
 | Cognitive load | One primary action per screen; consistent placement in the bottom thumb zone; progress always visible ("Stop 7 of 18") |
 | Language | Per-user language independent of Company default; icons paired with words, never icon-only for key actions |
@@ -1312,7 +1318,7 @@ A controlled glossary (maintained by the content designer with field-validated t
 | 2 | Services and price book | Pick starter kits per service line; answer 5 calibration questions ("How many cubic yards of mulch can a 3-person crew install per hour?", "Your loaded labor cost per hour?", "Target gross margin?") | Builds price book items, kits/assemblies and production rates; shows illustrative sample prices computed from the answers (e.g., "Weekly mowing, 8,000 sq ft lot: $52/visit") for a sanity check ([03](03-crm-sales-estimating-proposals.md)) | Yes (defaults applied) |
 | 3 | Import clients | Upload CSV/Excel, or connect QuickBooks Online / Jobber export / Google Contacts; LMN and Service Autopilot exports [V1] | AI-assisted column mapping with confidence; address validation and geocoding; duplicate detection (name + address + phone); preview of 10 rows; background import with a report; creates Properties; optional import of recurring services [V1] and open balances (as opening AR in the ledger) | Yes |
 | 4 | Connect Stripe | "Connect your Stripe account": connect an existing account (Stripe Connect OAuth) or create one through Stripe-hosted onboarding (Account Links), per [08](08-payments-stripe.md); choose payment methods (card, ACH, wallets; Canadian PAD for CA Companies) and payout schedule in Stripe. Companies that insist on restricted API keys use the "Advanced" link, which is hidden behind a disclosure, owner-only and explained | Explains in plain words that client money goes directly to the Company's Stripe account and that Rootline never holds it; verifies capabilities; sets statement descriptor; flags incomplete Stripe onboarding on the checklist ([08](08-payments-stripe.md)) | Yes ("Invoices can show check/ACH instructions until then") |
-| 4a | Turn on texting | Confirm the business legal name, EIN or BN, address, website and sample messages for the carrier registration form. Most of it is prefilled from steps 0-1, and the user reviews it in plain language ("Carriers need to know who is texting your clients") | Submits A2P 10DLC brand and campaign registration on the Company's Twilio subaccount ([16](16-marketing-growth-communications.md), [20](20-architecture-security.md)). Carrier review takes days, so the checklist row shows "In review", with the submitted date and what to expect. Email and push work immediately; client SMS turns on when approved; rejections come back with the carrier's reason and a fix-it form | Yes (SMS stays off until done) |
+| 4a | Turn on texting | US numbers use A2P 10DLC; Canadian Companies follow the path in [16](16-marketing-growth-communications.md). Confirm the business legal name, EIN or BN, address, website and sample messages for the carrier registration form. Most of it is prefilled from steps 0-1, and the user reviews it in plain language ("Carriers need to know who is texting your clients") | Submits A2P 10DLC brand and campaign registration on the Company's Twilio subaccount ([16](16-marketing-growth-communications.md), [20](20-architecture-security.md)). Carrier review takes days, so the checklist row shows "In review", with the submitted date and what to expect. Email and push work immediately; client SMS turns on when approved; rejections come back with the carrier's reason and a fix-it form | Yes (SMS stays off until done) |
 | 5 | Accounting setup | Choose: **Rootline Ledger as your books** (the built-in double-entry Ledger, shown in the nav as "Books") or **Sync to QuickBooks Online / Xero**; pick chart-of-accounts template (Design-build, Lawn and maintenance, Snow-heavy, General; US or Canada variants with GST/HST/PST/QST accounts); set books start date | Creates accounts, tax codes, default item -> income account mappings; for sync mode, runs OAuth and mapping wizard ([09](09-accounting-ledger-integrations.md)) | Yes |
 | 6 | Invite your team | Add people (name, mobile, role, language), group into crews with a crew lead and truck | Sends SMS invites in each person's language with app download link and one-tap sign-in; explains time and GPS policy to workers before first clock-in | Yes |
 | 7 | Brand your portal | Logo, color, font pair, hero photo; preview | Auto-corrects contrast; generates email/SMS templates with brand | Yes |
@@ -1437,6 +1443,19 @@ Routing rules:
 - Each item: icon (category), title (object + event), one-line detail, relative time, inline actions (Approve, Reply, View), and overflow (mute this record, notification settings).
 - AI-generated notifications (e.g., "Copilot drafted 9 reminder texts for overdue invoices") carry the Iris seedling-spark and open a review screen before anything is sent.
 
+**Push notification anatomy and platform mapping (native)** [MVP]
+
+| Rootline priority | iOS interruption level | Android channel importance | Lock-screen content |
+|---|---|---|---|
+| P1 Critical | Time Sensitive (breaks through Focus if the user allows it). We do not assume Apple's Critical Alerts entitlement, which needs Apple approval (verify). | High, with sound and vibration, own channel "Safety and urgent" | Category and action only ("Safety incident reported on Crew 3. Open to respond.") |
+| P2 Action needed | Active | High | Object type and number, no client PII ("Proposal PR-2281 needs approval") |
+| P3 FYI | Passive (no sound) | Default, batched | Generic ("3 updates in Rootline") |
+| P4 Digest | Not pushed | Not pushed | n/a |
+
+- **Lock-screen privacy:** push payloads never contain gate codes, alarm codes, client phone numbers, amounts over $0 or chemical details. The notification says what kind of thing happened, and the app shows the details after unlock. Gate codes appear only inside the visit, and only during the visit window ([02](02-personas-roles-permissions.md)).
+- **One channel per category on Android**, named in the user's language ("Ruta y horario", "Seguridad y urgentes"), so a technician can silence chat without silencing schedule changes.
+- **Crew off-the-clock rule:** after clock-out, only P1 and "tomorrow's schedule changed" are delivered, and the latter at most once per evening, batched at 6 pm local. This respects [16.1](#161-principles) and the electronic-monitoring and right-to-disconnect policies in [15](15-team-hr-payroll.md).
+
 ### 16.4 Preference center [MVP]
 
 - Matrix of categories (Sales, Schedule, Field, Money, Books, Design, AI, Team, System) x channels (in-app, push, email, SMS) with sensible role defaults; Company admins can lock certain notifications on (e.g., safety).
@@ -1447,6 +1466,8 @@ Routing rules:
 Spec and templates in [06](06-customer-portal.md) and [16](16-marketing-growth-communications.md); UX rules:
 - Transactional messages (visit reminder, "on the way" with ETA [V1], visit complete with photo, proposal ready, invoice, receipt, payment failed) are branded with the Company's name and sent in the Contact's language.
 - SMS requires recorded consent and honors STOP/HELP keywords (TCPA and 10DLC registration managed per Company in [16](16-marketing-growth-communications.md)); marketing messages are separate consent from transactional ones.
+- **Opt-out by any reasonable means:** the FCC's revocation rules, in effect since April 11, 2025, require honoring opt-outs made by any reasonable means within 10 business days. A 2026 FCC order adjusts the "revoke all" scope, and sources report different effective dates (as of Nov 2026, verify) ([Nixon Peabody](https://www.nixonpeabody.com/insights/alerts/2025/04/11/fcc-partially-delays-new-tcpa-consent-revocation-rules); [Mac Murray and Shuster](https://mslawgroup.com/delayed-again-fcc-pushes-back-tcpas-revoke-all-rule-to-january-31-2027/); [FCC 26-67](https://docs.fcc.gov/public/attachments/FCC-26-67A1.pdf)). UX consequences: a free-text reply such as "please stop texting me" or "ya no me manden mensajes" is treated as an opt-out, immediately in practice. The office sees a Marigold "Opted out of texts on Nov 3 (replied 'please stop')" chip on the Contact and in the composer, which disables SMS with an explanation and offers email instead. Re-subscribing is something the client does, never a staff toggle ([16](16-marketing-growth-communications.md), [06](06-customer-portal.md)).
+- **Cancel as easily as you enrolled:** service agreements and programs with autopay that a client enrolled in online get a visible "Cancel or change plan" path in the portal, with no more steps than enrolling took, as California's amended automatic renewal law requires from July 1, 2025 ([Cal. Bus. and Prof. Code 17600 et seq.](https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=BPC&division=7.&title=&part=3.&chapter=1.&article=9.); verify). Renewal notices are sent in the window the jurisdiction requires ([06](06-customer-portal.md), [07](07-invoicing-billing-contracts.md)). The cancel flow may offer one retention option ("Pause until spring") but never hides the cancel button, and it never asks "Are you sure you want to lose your beautiful lawn?" (see 1.2 Non-goals).
 - Each client notification links to the exact portal page (magic link) with the next step at the top.
 - Frequency caps: max 1 reminder per visit; max 3 dunning reminders per invoice cycle unless the Company configures otherwise.
 
@@ -1540,7 +1561,10 @@ Rootline sounds like **an experienced crew lead who is also great with numbers**
 | 18.14 | Setup checklist and wizard step | Web | owner | Section 14 | [MVP] |
 | 18.15 | Command palette | Web | all office roles | Section 6.2 | [MVP] |
 | 18.16 | Homeowner funnel: measure step | Public web | homeowner | Section 5.7, [11](11-ai-design-mockups.md) | [V1] |
-| - | Pipeline board, Invoice editor, Bank reconciliation, Timesheet approvals, Portal invoice pay, Notification center, Report builder, Automation builder | Various | Various | Module docs | [MVP]-[V1] |
+| 18.17 | Commercial portal: approvals workspace | Portal | client_commercial | [06](06-customer-portal.md) | [V1] |
+| 18.18 | Ledger: bank reconciliation | Web | bookkeeper, owner | [09](09-accounting-ledger-integrations.md) | [MVP] |
+| 18.19 | Crew app: chemical application log | Native | technician, crew_lead | [05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md) | [MVP] |
+| - | Pipeline board, Invoice editor, Timesheet approvals, Portal invoice pay, Notification center, Report builder, Automation builder | Various | Various | Module docs | [MVP]-[V1] |
 
 ### 18.2 Owner Today dashboard
 
@@ -1701,7 +1725,7 @@ Key behaviors: quantities flow from the Design takeoff and stay linked (a "desig
 +------------------------------------------------------------------------------------------------------+
 ```
 
-Key behaviors: this snapshot is from Nov 9, after the owner approved E-2290 from Today ([18.2](#182-owner-today-dashboard)) and the estimator sent PR-2290; on phones the option cards stack and the total/approve bar is sticky at the bottom; selecting an option updates the plan, plant list and total; line-item comments create a thread for the estimator; e-sign then deposit payment via Stripe Elements on the Company's connected account ([08](08-payments-stripe.md)); commercial clients see "Approve within your authority ($50,000)" or "Route to board" ([06](06-customer-portal.md)).
+Key behaviors: this snapshot is from Nov 9, after the owner approved E-2290 from Today ([18.2](#182-owner-today-dashboard)) and the estimator sent PR-2290; on phones the option cards stack and the total/approve bar is sticky at the bottom; selecting an option updates the plan, plant list and total; line-item comments create a thread for the estimator; e-sign then deposit payment via Stripe Elements on the Company's connected account ([08](08-payments-stripe.md)); a commercial approver sees their own limit ("Approve within your authority, up to $10,000"). Above that limit the button becomes "Send to board vote", and the item joins the approvals workspace in [18.17](#1817-commercial-portal-approvals-workspace) ([06](06-customer-portal.md)).
 
 ### 18.7 Design Studio
 
@@ -2001,6 +2025,92 @@ Key behaviors: the abbreviation "resched" matches the verb "Reschedule" through 
 
 Key behaviors: tracing and typing are equivalent (no drag required: tap points to place vertices); plausibility check against image scale ("32 ft looks longer than this house front, about 28 ft - double-check?"); no contact info requested before concepts are shown.
 
+### 18.17 Commercial portal: approvals workspace
+
+```text
++------------------------------------------------------------------------------------------------------+
+| [Acme Landscapes logo]  Ridgeview HOA (3 properties) v         Signed in: Karen Wu, Board Treasurer  |
+| Home | Approvals (3) | Properties | Schedule | Invoices | Documents | Reports | Messages             |
++------------------------------------------------------------------------------------------------------+
+| Approvals                                   Your approval limit: $10,000 per item (role: approver)   |
+|------------------------------------------------------------------------------------------------------|
+| Item                          Property        Amount    Status                    Action             |
+| PR-2290 Entrance renovation   Main entrance   $46,600   Board vote: 2 of 5 voted  [Review and vote]  |
+|                               (capital)                 3 yes votes needed                           |
+| CO-0117 Add 6 boulders        Main entrance    $1,480   Waiting on you            [Approve] [Ask]    |
+| WO-3381 Storm tree removal    Pond trail       $2,950   Waiting on you            [Approve] [Ask]    |
+|------------------------------------------------------------------------------------------------------|
+| Budgets                                                                                              |
+|  Operating extras 2026   $18,240 approved of $25,000  [=====================--------]  73% used      |
+|                          Pending operating items $4,430 -> would leave $2,330                        |
+|  Capital reserve 2027    PR-2290 $46,600 of $60,000 -> would leave $13,400                           |
+|------------------------------------------------------------------------------------------------------|
+| Recently decided                                                                                     |
+|  Oct 28  CO-0109 Irrigation controller upgrade   $2,240  Approved by Karen Wu                        |
+|  Oct 14  PR-2241 Fall color program              $3,900  Declined by Karen Wu (over budget)          |
+|------------------------------------------------------------------------------------------------------|
+| [Download approval log (PDF)]   [Export to board packet]          Questions? Jose Ramirez, Acme      |
++------------------------------------------------------------------------------------------------------+
+```
+
+Key behaviors [V1]: the approvals queue is the commercial client's home ([06](06-customer-portal.md)). Each item shows the approver's own dollar limit. Items above that limit route to the configured approval chain, here a 3-of-5 board vote, and the queue shows the tally without revealing how each member voted until the vote closes. Budgets are the client's own figures, entered once a year, kept separate by bucket (operating extras vs capital reserve), and checked against pending items before anyone approves ("would leave $2,330"). Approving needs one click plus an SMS or passkey confirmation for items over $5,000 (Company-configurable). Every decision lands in a downloadable approval log the treasurer can drop into a board packet. Declined items ask for an optional reason that goes to the estimator, and "Ask" opens a thread on the line item instead of a phone call. Keyboard: J/K moves through the queue and A approves, with the same confirmation.
+
+### 18.18 Ledger: bank reconciliation
+
+```text
++------------------------------------------------------------------------------------------------------+
+| Books / Banking / Operating checking ...4417   Statement Oct 1-31, 2026     [Finish reconciliation]  |
+| Statement ending $61,408.20   Cleared in Rootline $61,163.95   Difference $244.25 (!)  [Why?]        |
++----------------------------------------------------+-------------------------------------------------+
+| Bank feed (Plaid)     [To review 23] [Matched 412] | Selected: Oct 29 STRIPE PAYOUT +$5,812.40       |
+|----------------------------------------------------|-------------------------------------------------|
+| Date   Description               Amount  Suggest   | Suggested match (high confidence)               |
+| Oct 29 STRIPE PAYOUT ACME      5,812.40  Match 1   |  Stripe payout po_1Q... (Oct 29)                |
+| Oct 29 SITEONE LANDSCAPE 212  -1,184.62  Bill      |   31 client payments   $6,004.11                |
+| Oct 30 SHELL OIL 5741            -96.18  Rule      |   Stripe fees           -$191.71                |
+| Oct 30 CHECK 2231               -244.25  ?         |   Net                   $5,812.40 = bank        |
+| Oct 31 PAYROLL PROVIDER      -21,365.40  JE        |  Posts: Dr 1010 Operating checking              |
+| ...                                                |         Cr 1150 Stripe clearing                 |
+|                                                    |  [Match]  [Find other]  [Split]  [Exclude]      |
+|----------------------------------------------------|-------------------------------------------------|
+| J/K move  M match  S split  E exclude  / find      | Rule: SHELL OIL * -> 6120 Fuel, class Crew      |
++----------------------------------------------------+-------------------------------------------------+
+```
+
+Key behaviors [MVP core, V1 rules and AI suggestions]: split view with the bank feed on the left and the suggested match and its posting on the right, driven entirely by keyboard for the 50-transactions-in-20-minutes benchmark ([24.3](#243-office-and-client-benchmark-tasks)). Stripe payouts match the payout as a whole, not individual charges: the panel unpacks the payout into gross client payments and Stripe fees, and shows that net equals the bank line, so a bookkeeper never has to reverse-engineer a deposit. This works because charges are direct charges on the Company's own connected account ([08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md)). Suggestion labels are words, not colors: Match (existing record), Bill (open AP bill), Rule (saved rule), JE (create a journal entry), and ? for no suggestion. "Finish reconciliation" stays disabled until the difference is $0.00 or the remainder is explained (for example, an outstanding check carried forward), and the tooltip says which. Reconciled periods lock the matched lines, and unmatching asks for a reason. The owner's "Plain language" lens shows the same screen as "Money in the bank vs money in Rootline: $244.25 apart, probably check 2231."
+
+### 18.19 Crew app: chemical application log
+
+```text
++----------------------------------------+
+| < Visit      Chemical log  [Offline 2] |
+| Henderson, 1420 Maple St  Stop 3 of 14 |
+| Program: 5-step lawn, step 4 (fall)    |
+|----------------------------------------|
+| Product      [Broadleaf herbicide v]   |
+| EPA Reg. No. 0000-000 (from library)   |
+| Target       [x] Dandelion [x] Clover  |
+| Rate         1.5 fl oz / 1,000 sq ft   |
+| Area         8,240 sq ft (turf, plan)  |
+| Product used 12.4 fl oz  [Edit]        |
+|----------------------------------------|
+| Weather (auto, editable)               |
+| Wind 6 mph NW   Temp 58 F   Dry        |
+| Label max wind 10 mph   OK             |
+|----------------------------------------|
+| Applicator  Marco Diaz (PHC tech)      |
+| License  OH turf, valid to Mar 2027    |
+| Re-entry: keep off until dry           |
+| [x] Lawn marker flags placed (4)       |
+|----------------------------------------|
+| +---------------------------------+    |
+| |  HOLD TO SAVE APPLICATION       |    |
+| +---------------------------------+    |
++----------------------------------------+
+```
+
+Key behaviors [MVP for lawn and PHC tenants]: opened from the visit when a program step includes a regulated product. Product, EPA registration number, label rate and the label's maximum wind speed come from the Company's product library ([13](13-operations-inventory-equipment.md), [14](14-service-line-modules.md)). The area comes from the property's measured turf, so the technician confirms numbers instead of typing them. Weather is pre-filled from the device and the weather service and can be edited, with the source recorded. If wind exceeds the label maximum, the save button becomes "Can't apply now: wind 14 mph, label max 10 mph", with Skip and Reschedule choices; there is no override for a label limit. If the applicator's license is missing or expired for the product category, saving requires naming a licensed supervising applicator on site, or is blocked, per Company policy and the state rules in [14](14-service-line-modules.md). The record is append-only: a later correction creates an amendment that references the original ([20](20-architecture-security.md)). Re-entry text flows to the visit report in the client's language ([06](06-customer-portal.md)). Every field works offline, and the save uses press-and-hold, never swipe-only.
+
 ---
 
 ## 19. Key UX flows
@@ -2113,6 +2223,42 @@ flowchart LR
 4. Dispatcher deselects 2 visits (commercial clients who prefer wet-day mowing skipped), applies 12 moves.
 5. Undo toast and activity log entry; clients with "notify on reschedule" receive branded SMS in their language; crew apps update on next sync.
 
+
+### 19.6 Technician first run: from SMS invite to first clock-in [MVP]
+
+Most crew members meet Rootline on a personal Android phone with a prepaid plan, in Spanish, the morning they start. Target: invite tapped to clocked in, in under 3 minutes, with no email address and no password.
+
+1. The office adds Marco (mobile, role `technician`, language `es-US`, Crew 1) in the setup wizard or under Team ([15](15-team-hr-payroll.md)).
+2. Marco receives an SMS in Spanish: "Acme Landscapes te invitó a Rootline Crew. Instala la app: [link]. Tu código: 482913." The link opens the right store listing. A deferred deep link carries the invite through installation.
+3. On first launch the app is already in Spanish. If the deep link was lost, Marco enters the 6-digit code. He confirms his name and Company (photo of the Company logo, "¿Trabajas para Acme Landscapes?").
+4. He chooses a quick unlock (passkey or biometric, or a PIN where biometrics are unavailable) ([02](02-personas-roles-permissions.md)).
+5. A 4-card intro covers clock in, your route, photos, and working without signal, each one screen with a large illustration. It is skippable after the first card.
+6. Permission primers ask for location (only while clocked in, explained with the Company's GPS policy), camera and notifications. Each has a "Not now" that keeps the app usable.
+7. Today shows Crew 1's route, and the primary button reads "Marcar entrada". The first clock-in triggers a haptic confirmation and a one-line success: "Listo. Entrada 6:58 a.m."
+8. The office sees "Marco joined Crew 1" in the activity timeline, and the setup checklist's "Invite your team" row moves to "10 of 11 accepted".
+
+```mermaid
+flowchart TD
+  INV["Office adds Marco: role, crew, language es-US"] --> SMS["SMS invite in Spanish with install link and code"]
+  SMS --> INSTALL["Install from store with deferred deep link"]
+  INSTALL --> LINKED{"Invite carried through install?"}
+  LINKED -->|"Yes"| CONFIRM["Confirm name and Company"]
+  LINKED -->|"No"| CODE["Enter 6-digit code"]
+  CODE --> CONFIRM
+  CONFIRM --> UNLOCK["Set quick unlock: passkey, biometric or PIN"]
+  UNLOCK --> INTRO["4-card intro, skippable"]
+  INTRO --> PERMS["Permission primers: location, camera, notifications"]
+  PERMS --> TODAYC["Today route with Marcar entrada button"]
+  TODAYC --> CLOCK["First clock-in confirmed with haptic"]
+  CLOCK --> OFFICE["Office timeline: Marco joined Crew 1"]
+```
+
+Edge rules: an invite code expires after 7 days and can be resent by the crew lead. A second device signing in revokes the first after confirmation, unless the Company allows two devices. A crew member with no smartphone is enrolled for the shop kiosk only (5.3) and never gets an SMS app link.
+
+### 19.7 Season return: "Welcome back" for returning crew [V1]
+
+Landscape staffing is seasonal: accounts are hibernated in winter and reactivated in spring ([02](02-personas-roles-permissions.md), [15](15-team-hr-payroll.md)). When a hibernated technician is reactivated, the first launch shows a single "Welcome back" sheet in their language listing what changed since last season. Examples: a new crew lead, new safety talks to acknowledge (with a count), new checklist items for spring cleanups, and an app update summary. Their language, text size, Outdoor mode and glove settings are kept. Required acknowledgments (safety talks, updated GPS policy) block clock-in until done, and the sheet says so up front with an estimated time ("3 talks, about 6 minutes").
+
 ---
 
 ## 20. Data model
@@ -2200,6 +2346,7 @@ erDiagram
   }
   NOTIFICATION_PREFERENCE {
     uuid id PK
+    uuid tenant_id FK
     uuid user_id FK
     string category
     string channel
@@ -2272,6 +2419,7 @@ erDiagram
   }
   RECENT_ITEM {
     uuid id PK
+    uuid tenant_id FK
     uuid user_id FK
     string entity_type
     uuid entity_id
@@ -2279,6 +2427,7 @@ erDiagram
   }
   FEEDBACK_SUBMISSION {
     uuid id PK
+    uuid tenant_id FK
     uuid user_id FK
     string screen_key
     int rating
@@ -2290,6 +2439,8 @@ erDiagram
 
 Rules and validations:
 - `SAVED_VIEW.visibility` in {private, role, company}; company views require `views.manage_shared`.
+- `USER_PREFERENCE` is keyed to the person's identity, not to a tenant, so language, theme, density and text size follow an external CPA `bookkeeper` across the 12 Companies they serve. `NOTIFICATION_PREFERENCE`, `RECENT_ITEM` and `SAVED_VIEW` are tenant-scoped, so a recent-items list never mixes records from two Companies.
+- `RECENT_ITEM` keeps the last 30 per user per tenant (ring buffer). Entries for records the user later loses access to are filtered at read time, never shown as titles.
 - `TENANT_THEME.brand_button_hex` is computed server-side from `brand_hex` and must pass 4.5:1 against its foreground; writes failing the check are rejected with a suggested value.
 - `NOTIFICATION` rows are retained 90 days (configurable), then summarized; P1 notifications are retained per audit policy.
 - `IMPORT_JOB.rollback_until` = completion + 7 days; rollback blocked if dependent records exist.
@@ -2329,6 +2480,8 @@ Rules and validations:
 | `sandbox.created` / `.reset` | tenant_id, dataset_version | Admin |
 | `feedback.submitted` | screen_key, rating | Product research queue |
 | `ui.command_executed` | command_key, source (palette/shortcut/menu) | Ranking model, analytics (no free text stored) |
+| `ui.friction_signal` | signal_type (undo, error_shown, validation_failed, rage_click, wizard_abandoned), screen_key, message_key or action_key, tenant_id hashed for cross-tenant views | Admin UX friction radar (idea 27.16), design research queue; no free text, no record IDs |
+| `ui.permission_state_shown` | object_type, reason (role, scope, tenant), surface | Access-request routing, IA tuning (too many denials signal a nav or role-default problem) |
 
 ### 21.3 Events consumed
 
@@ -2433,7 +2586,7 @@ Participant recruitment includes Spanish-dominant technicians (interviewed by bi
 **Glove test**
 - Gloves: thin nitrile, leather work gloves, insulated winter gloves (snow crews), wet leather.
 - Devices: a current iPhone, a 3-year-old mid-range Android, a rugged Android.
-- Tasks (10): clock in crew, start next stop, check off 4 tasks, take 2 after photos, add voice note, report issue with photo, log a chemical application, complete visit, switch language, view offline queue.
+- Tasks (10): clock in crew, start next stop, check off 4 tasks, take 2 after photos, add voice note, report issue with photo, log a chemical application (18.19), complete visit, switch language, view offline queue. "Complete visit" runs twice in counterbalanced order, once with press-and-hold and once with swipe-to-confirm, to settle open question 28.11.
 - Pass criteria: task success >= 95%, mis-tap rate < 3% of taps, no task requires glove removal.
 
 **Sun test**
@@ -2461,6 +2614,9 @@ Participant recruitment includes Spanish-dominant technicians (interviewed by bi
 | client_residential | Review a proposal, choose an option, sign and pay deposit | < 4 min, >= 95% success, trust rating >= 4/5 |
 | client_commercial | Approve a change order within authority and download the COI | < 3 min |
 | platform_curator | Review and publish 20 plant updates from a nursery feed | < 25 min |
+| technician | From SMS invite to first clock-in on a personal Android phone, in Spanish (19.6) | < 3 min, no help |
+| subcontractor | Accept a work order, upload 4 completion photos and submit an invoice from a magic link | < 4 min |
+| bookkeeper (external CPA) | Switch between 3 client Companies and find each one's unreconciled bank lines | < 90 s, 0 wrong-tenant actions |
 
 Standard measures per round: task success, time on task, error count, SEQ (single ease question) per task, SUS per persona (target >= 80 office, >= 85 portal), and for crews a simplified, translated SUS read aloud.
 
@@ -2527,6 +2683,14 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 | Performance | Dispatch board with 6 crews x 3 days x 60 visits on an older laptop | Virtualization, canvas rendering of grid with accessible list mirror, performance budget gate |
 | Org risk | Design system bottleneck slows feature teams | Federated contribution model, clear ownership, 2-sprint SLA, "experimental" component tier |
 | Org risk | Over-customization fragments the product (custom fields, terminology, layouts) | Guardrails: company layouts per role, limits on custom fields per object (e.g., 50), terminology only for whitelisted terms |
+| Crew app | Swipe-to-confirm ([05](05-field-crew-mobile-app.md)) fails with wet or insulated gloves and is a single-gesture-only action | Press-and-hold button (800 ms, visible fill) is always offered next to the swipe. The glove test (24.2) measures both, and if press-and-hold wins we drop the swipe |
+| Crew app | Translucent OS chrome (iOS 26 and later) lowers contrast of text drawn over it in direct sun | Opaque surfaces under all text; opaque own bars in Outdoor mode; honor Reduce Transparency; re-run the sun test on each major OS release (11.3) |
+| Crew app | Worker declines notification permission and misses a route change | Persistent Today banner explaining what is missed; P1 and "tomorrow changed" fall back to SMS (staff consent captured at hire, [15](15-team-hr-payroll.md)); crew lead sees "Marco: notifications off" on the crew roster |
+| Locale | `es-US` numeric dates are day-first while `en-US` are month-first (CLDR) | Month-name dates everywhere in the crew app; numeric inputs echo the month name before saving (13.4) |
+| Consent | Client texts "please stop" in free text instead of STOP | Treated as an opt-out by any reasonable means; the composer disables SMS with the reason shown (16.5) |
+| Auto-renewal | Client enrolled online in a season-long program with autopay and wants out | "Cancel or change plan" in the portal with no more steps than enrollment; one optional retention offer; no confirm-shaming (16.5) |
+| Commercial | Approver's board term ended but the approver still has an open approval link | Link resolves to "Your approver access ended," with no amounts shown; the item is re-routed to the remaining chain (5.4, 18.17) |
+| Accessibility | Tenant uploads a scanned PDF (image only) as a proposal attachment | Upload flags "This PDF has no readable text for screen readers," offers OCR to make it tagged, and lists it as tenant content in the ACR |
 
 ---
 
@@ -2550,6 +2714,11 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 | Design system coverage | % of UI components from `@rootline/ui` (static analysis) | >= 90% | [V1] |
 | AI acceptance | % AI suggestions accepted or edited-then-accepted, per feature | Tracked; investigate < 30% | [MVP] |
 | Notification health | % P2 notifications actioned within 2 business hours; mute rate per category | >= 70%; mute rate < 10% | [V1] |
+| Stripe connected | % of trials with charges enabled on their connected account by day 7 | >= 50% | [MVP] |
+| Texting live | Median days from 10DLC submission to approval; % of trials with SMS live by day 10 | Track and improve; >= 60% by day 10 (estimate, carrier-dependent) | [MVP] |
+| Crew first-run time | Median time from SMS invite tap to first clock-in (19.6) | < 3 min | [MVP] |
+| Spanish parity | Task success and time-on-task for `es-US` crew participants vs `en-US` in each benchmark round | Within 5 percentage points and 10% time | [MVP] |
+| Portal scope errors | Support tickets where a contact saw, or could not see, something because of their scope (5.4) | Downward trend; 0 data-exposure incidents | [V1] |
 
 ---
 
@@ -2557,7 +2726,7 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 
 1. **Season Mode** [V1]: the whole UI subtly shifts with the landscaping calendar. Spring surfaces start-ups, cleanups and pre-emergent windows on Today; summer emphasizes route density and irrigation; fall puts cleanups, aeration/overseeding and renewals first; winter becomes snow ops and planning (with the field-night theme suggested for 3 am plow crews). Same IA, re-prioritized widgets and empty-state prompts.
 2. **"Crew Card" pride moments** [V1]: after a visit, the crew app shows the before/after pair and the client's reaction (if they left one in the portal). Recognition without surveillance; owners can share top transformations on the Company's social channels with one tap (with client permission).
-3. **Glove Mode toggle** [MVP]: a quick toggle in the crew app header that enlarges every target to 72 px and moves secondary actions into a single "More" sheet, for winter gloves and snow ops.
+3. **Winter glove size step** [MVP]: [05](05-field-crew-mobile-app.md) defines Glove mode (on by default for field roles: more touch slop, 300 ms double-tap debounce, no precision gestures). On top of it, a "Winter gloves" step enlarges every target to 72 px and moves secondary actions into a single "More" sheet, for insulated gloves on snow routes. It is suggested automatically on the first snow event of the season.
 4. **Pocket-safe lock** [V1]: a "truck lock" that prevents accidental taps while the phone is in a pocket or on the dash, unlocked by a deliberate press-and-hold on the sync chip.
 5. **Plant symbol "stamp" kit for clients** [V2]: homeowners in the portal can drag symbols onto their own plan to suggest ideas ("put a birdbath here"), which become comments for the designer.
 6. **Print-perfect crew install sheets** [MVP]: a single-page, high-contrast sheet per install day with numbered plant locations, quantities, and a QR code that opens the plan on the phone; laminated sheets survive rain better than phones.
@@ -2569,6 +2738,11 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 12. **Operator "god mode" palette** [MVP]: in the admin console, Cmd-K searches across all tenants, plants, regions, users, invoices and incidents with type-ahead, and offers actions like "grant 500 credits to Acme with reason".
 13. **Color-blind safe crew colors** [MVP]: crew identity colors on maps and boards come from the validated categorical palette plus a crew letter/number marker, so dispatchers with color-vision deficiency never rely on color alone.
 14. **Living style guide for tenants** [V2]: each Company gets an auto-generated brand page (logo usage, colors, fonts, photo style) they can share with sign makers and truck-wrap vendors.
+15. **Brand from your website in one click** [MVP]: in wizard steps 1 and 7, the owner pastes the Company's website URL, or snaps a photo of a truck wrap. Rootline extracts the logo, brand colors and closest curated font pair, applies the contrast auto-correction (7.7), and shows the portal, an invoice email and a proposal cover already branded. Branding takes 30 seconds instead of a designer's afternoon, and it is the first "wow" of the trial.
+16. **UX friction radar for the founder** [V1]: the admin console aggregates privacy-safe interaction signals across tenants: undo rate per action, error-message frequency by message key, validation failures per field, rage-clicks, abandoned wizard steps and "Explain this screen" requests. Each Monday it ranks the 10 worst friction points with the screens and tenant counts involved, so the founder and design leads fix what hurts most, not what is reported loudest. No client PII and no free text are used (21.2 `ui.*` events).
+17. **Integration health strip** [MVP]: the app shell's status area (bottom of the left rail, where "Sync ok" sits) shows a quiet dot per external dependency: Stripe, bank feed, QuickBooks/Xero sync, SMS carrier, maps. When one degrades, a one-line banner names the effect, not the vendor error ("Card payments are delayed. Stripe is having issues. Payments will retry automatically."), and links to the status page. Office staff stop filing tickets for outages that are not ours, and nobody wonders why the bank feed is stale.
+18. **Reply-to-confirm for clients** [V1]: visit reminders accept one-character replies in either language ("1 = confirm, 2 = reschedule", "1 = confirmar, 2 = cambiar"). The reply updates the visit and the dispatch board without a portal login. That suits older homeowners and flip phones, it is the most accessible confirmation channel there is, and it cuts the "call to confirm" load on the office in April.
+19. **"Show me how" micro-videos in the user's language** [V1]: every crew checklist item and every wizard step can carry a 10-20 s captioned clip recorded by the Company itself (an owner showing how they want beds edged) or by Rootline. Tribal knowledge becomes onboarding content, and Spanish-first crews get the standard shown rather than written.
 
 ---
 
@@ -2584,6 +2758,10 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 8. **Compliance scope for accessibility:** which ACRs to publish first (office app vs. portal) and whether to target any AAA criteria for the crew app (e.g., 2.5.5 target size enhanced is already exceeded).
 9. **Competitive teardown gaps:** this pass could not verify several vendors' current UIs (research budget and site access limits). The Discovery-phase teardown must confirm or correct section 2 claims, especially for LMN, SingleOps, Real Green, Arborgold, Copilot CRM and SynkedUP.
 10. **Quebec requirements:** confirm with counsel the current French-language obligations for software, contracts, invoices and portal content before marketing in Quebec.
+11. **Swipe vs hold for irreversible crew actions:** [05](05-field-crew-mobile-app.md) specifies swipe-to-confirm, and this doc requires a press-and-hold equivalent. Decide the default from glove-test data in the first prototype round, and update both docs to the winner.
+12. **Native system chrome:** adopt the OS's translucent tab bar and toolbars (more native, lower contrast in sun) or ship opaque custom bars in all themes (more consistent, slightly less native)? Recommendation: opaque in Outdoor mode, native elsewhere. Confirm with the sun test.
+13. **Commercial approval confirmation threshold:** what dollar amount should require step-up confirmation (SMS or passkey) for `approver` contacts? The default proposed in 18.17 is $5,000; validate with HOA treasurers and property managers.
+14. **Accessibility obligations of tenants' public-sector clients:** do municipal clients expect the tenant-branded portal and PDFs to meet WCAG 2.1 AA under the ADA Title II rule? If so, we should publish a tenant-facing ACR template for Companies to hand over in bids.
 
 ---
 
@@ -2601,6 +2779,21 @@ Market and competitor research (accessed November 2026; ratings and counts are t
 - [G2: LMN reviews](https://www.g2.com/products/lmn) - rating and review themes
 - [ServiceTitan Help: Use the Daily Dispatch Board](https://help.servicetitan.com/docs/use-the-daily-dispatch-board) and [ServiceTitan release hub: Jobs tray on the dispatch board](https://help.servicetitan.com/release-hub/docs/move-the-jobs-tray-onto-the-dispatch-board-to-speed-up-scheduling) - dispatch patterns
 - [DispatchCore docs: Dispatch board](https://www.dispatchcore.io/docs/dispatch-board) - drag-and-drop assignment behaviors
+
+Added in the review pass (November 2026). These sources were retrieved by the sibling research reports [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and by module docs [06](06-customer-portal.md) and [16](16-marketing-growth-communications.md). They were reused with their original citations and not re-fetched, because the search budget was exhausted and some hosts were unreachable; verify before external use:
+- [Aspire guide: Aspire Mobile in the field](https://guide.youraspire.com/docs/aspire-mobile-in-the-field) - offline ticket completion, crew clock-in
+- [AppGoblin: Aspire Crew Mobile listing](https://appgoblin.info/apps/1392810365) - legacy app rating (verify)
+- [GetApp UK: Aspire reviews](https://www.getapp.co.uk/reviews/9108/aspire) and [Capterra: Aspire reviews p.3](https://www.capterra.com/p/161544/Aspire/reviews/?page=3) - "too many steps", ramp-up
+- [Capterra: LMN reviews](https://www.capterra.com/p/142064/LMN/reviews/), [GetApp: LMN](https://www.getapp.com/industries-software/a/lmn/), [App Store: LMN Time](https://apps.apple.com/us/app/id1012359605) - crew app usability and update complaints
+- [LMN help: user permissions](https://intercom.help/lmn/en/articles/17699017-lmn-user-permissions) - legacy Crew Member seat limits
+- [PR Newswire: Jobber launches Copilot](https://prnewswire.com/news-releases/jobber-launches-copilot-the-first-of-several-ai-powered-products-aimed-at-making-home-service-business-ownership-simpler-than-ever-before-302264047.html), [destinationCRM: Jobber Receptionist](https://www.destinationcrm.com/Articles/CRM-News/CRM-Across-the-Wire/Jobber-Launches-Receptionist-171139.aspx), [Lawn & Landscape: Jobber AI features](https://www.lawnandlandscape.com/news/jobber-adds-new-ai-powered-features), [TechRadar: Jobber review](https://www.techradar.com/pro/software-services/jobber-crm-review) - Jobber AI surfaces and reception
+
+Regulation added in the review pass (reused from [06](06-customer-portal.md) and [16](16-marketing-growth-communications.md); verify):
+- [Nixon Peabody: FCC partially delays new TCPA consent revocation rules (April 2025)](https://www.nixonpeabody.com/insights/alerts/2025/04/11/fcc-partially-delays-new-tcpa-consent-revocation-rules)
+- [Mac Murray and Shuster: revoke-all rule delayed](https://mslawgroup.com/delayed-again-fcc-pushes-back-tcpas-revoke-all-rule-to-january-31-2027/)
+- [FCC 26-67 order](https://docs.fcc.gov/public/attachments/FCC-26-67A1.pdf)
+- [California automatic renewal law, Cal. Bus. and Prof. Code 17600 et seq.](https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=BPC&division=7.&title=&part=3.&chapter=1.&article=9.)
+- [Charter of the French Language (LegisQuebec)](https://www.legisquebec.gouv.qc.ca/en/document/cs/C-11)
 
 Workforce and field UX:
 - [Data USA: Landscaping and groundskeeping workers](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers) - 44.5% Hispanic share in 2024
@@ -2623,4 +2816,4 @@ Canonical references (standards and documentation named in this spec; not re-fet
 - [Stripe Elements Appearance API](https://docs.stripe.com/elements/appearance-api)
 - [Radix Primitives accessibility](https://www.radix-ui.com/primitives/docs/overview/accessibility)
 
-Computed for this document: WCAG 2 contrast ratios of the proposed UI tokens (section 7.2) and validation of the categorical chart palette against Rootline's light and dark chart surfaces (section 10.2) using a palette validator implementing lightness-band, chroma, CVD-separation (Machado-Oliveira-Fernandes simulation), normal-vision and contrast checks.
+Computed for this document: WCAG 2 contrast ratios of the proposed UI tokens (section 7.2) and validation of the categorical chart palette against Rootline's light and dark chart surfaces (section 10.2) using a palette validator implementing lightness-band, chroma, CVD-separation (Machado-Oliveira-Fernandes simulation), normal-vision and contrast checks. The review pass recomputed the section 7.2 and 8.3 contrast ratios independently (WCAG 2 relative-luminance formula), which led to the two field-sun token changes noted in 8.3. It also checked the 13.4 locale formats against Unicode CLDR 48 through Node.js 22 `Intl` (ICU 78.3).

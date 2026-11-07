@@ -774,46 +774,75 @@ The Billing Run is the office manager's month-end cockpit. It must handle 1,000+
 
 ### 4.11 Ledger postings per billing event [MVP]
 
-Every billing event posts a balanced journal entry to the built-in ledger at the moment it happens (or as a daily summarized entry with full sub-ledger detail where volume is high). Accounts below use the default chart of accounts from [09](09-accounting-ledger-integrations.md); numbers are illustrative. Revenue accounts are split by service line (maintenance, install, snow, irrigation, enhancements, tree, lighting, design). Sales tax payable is sub-accounted per tax agency. Every journal line carries dimensions: `client_id`, `property_id`, `job_id`, `agreement_id`, `service_line`, `branch_id`.
+Every billing event posts a balanced journal entry to the built-in ledger at the moment it happens (or as a daily summarized entry with full sub-ledger detail where volume is high). Codes below are the **canonical default chart of accounts** from [09 - 4.2.2](09-accounting-ledger-integrations.md), shown with their account roles; posting rules bind to roles, never to numbers, so a Company that renumbers its chart breaks nothing. (Earlier drafts of this doc used provisional codes such as 1100 AR and 2210 deferred revenue; [09 - 4.2.6](09-accounting-ledger-integrations.md) keeps that crosswalk, and this table now uses the canonical codes directly.) Revenue accounts are split by division (maintenance, enhancements, install, design, lawn and PHC, irrigation, snow, lighting, tree). Sales tax payable is sub-accounted per tax agency. Every journal line carries dimensions: `client_id`, `property_id`, `job_id`, `agreement_id`, `division` (service line), `branch_id`. In [09](09-accounting-ledger-integrations.md)'s rule registry these rules are namespaced `billing.P1` to `billing.P42`.
 
-Default account keys: `1000 Operating bank`, `1050 Stripe clearing`, `1100 Accounts receivable`, `1105 Retainage receivable`, `1110 Unbilled receivables (contract asset)`, `1120 Disputed payments`, `1190 Allowance for doubtful accounts`, `2100 Sales tax payable`, `2200 Customer deposits`, `2210 Deferred revenue - agreements (contract liability)`, `2220 Customer credits and unapplied cash`, `2230 Gift credit liability`, `2300 Tips payable`, `4xxx Revenue by service line`, `4900 Discounts and allowances (contra-revenue)`, `4910 Small balance adjustments`, `6100 Merchant fees`, `6200 Bad debt expense`, `7100 Realized FX gain/loss`, `7200 Finance charge income`.
+Default accounts used by billing: `1010 Operating checking` (`bank:operating`), `1050/1051 Stripe clearing USD/CAD` (`stripe_clearing:{currency}`), `1060 Undeposited funds`, `1065 Cash in transit, crew-held`, `1075 Disputed payments receivable`, `1200 Accounts receivable` (`ar_control`), `1205 Retainage receivable`, `1210 Unbilled receivables - agreements (contract asset)`, `1220 Allowance for doubtful accounts`, `2101-2149 Sales tax payable by agency` (US states, counties, cities; Canadian PST agencies), `2125 GST/HST payable`, `2126 QST payable`, `2150 Customer deposits`, `2160 Tips payable`, `2170 Gift credit liability`, `2180 Customer credits and unapplied cash`, `2200 Deferred revenue - service agreements (contract liability)`, revenue `4100 Maintenance`, `4200 Enhancements`, `4300 Design-build and installation`, `4350 Design fees`, `4400 Lawn care and PHC`, `4500 Irrigation`, `4600 Snow and ice`, `4700 Lighting`, `4800 Tree care`, `4910 Discounts and allowances (contra-revenue)`, `4920 Payment method discounts`, `4930 Small balance adjustments`, `4950 Card surcharge income`, `6150 Merchant processing fees`, `6152 Rootline platform fees`, `6155 Dispute fees`, `6170 Bad debt expense`, `7200 Finance charge income`, `7500 Other income`, `7910 Realized FX gain/loss`. "Tax" in the table means 2101-2149 in the US and 2125/2126 (plus PST agency sub-accounts) in Canada.
 
-| # | Event | Debit | Credit | Notes |
+| # | Event (trigger) | Debit | Credit | Notes |
 |---|---|---|---|---|
-| P1 | Standard invoice sent (per-visit, batch, T&M, milestone, snow per-push) | 1100 AR (total) | 4xxx Revenue (per line net of line discounts); 2100 Sales tax payable (per agency) | Covered ($0) lines post nothing. |
-| P2 | Deposit request paid | 1050 Stripe clearing | 2200 Customer deposits | Deposit request itself posts nothing. |
-| P3 | Deposit applied on an invoice | 2200 Customer deposits | 1100 AR | Posted with P1 of that invoice. |
-| P4 | Level-billing installment invoice sent | 1100 AR | 2210 Deferred revenue - agreements; 2100 Sales tax payable | Installments do not hit revenue. |
-| P5 | Agreement occurrence completed (per-visit-leveled line) | 2210 Deferred revenue | 4xxx Revenue (unit value) | Daily summarized entry with per-agreement dimensions. |
-| P6 | Fixed-season line month-end recognition | 2210 Deferred revenue | 4xxx Revenue (ratable or weighted share) | Uses season weight curve. |
-| P7 | Period-end presentation reclass for agreements in a client-behind position | 1110 Unbilled receivables | 2210 Deferred revenue | Auto-reversed on day 1 of next period. Per agreement, net position decides asset vs liability. |
-| P8 | Unbilled-revenue accrual for completed but not-yet-invoiced Billable Items (optional, accrual-basis Companies) | 1110 Unbilled receivables | 4xxx Revenue | Auto-reversed day 1; prevents revenue landing in the wrong month for monthly batch billing. |
-| P9 | Prepaid season invoice sent | 1100 AR (net of prepay discount) | 2210 Deferred revenue (net); 2100 Sales tax payable | Recognition via P5/P6 at discounted unit values (net presentation default; gross-with-contra optional: Dr 2210 + Dr 4900, Cr 4xxx at list). |
-| P10 | True-up invoice (client owes) | 1100 AR | 2210 Deferred revenue (clears to zero); 2100 if tax adjusts | Agreement position settles at zero. |
-| P11 | True-up credit (client owed) | 2210 Deferred revenue; 2100 Sales tax payable (tax portion) | 2220 Customer credits, or 1100 AR if applied to an open invoice | Refund then follows P16. |
-| P12 | Progress invoice with retainage withheld | 1100 AR (net due incl. tax); 1105 Retainage receivable (retainage) | 4xxx Revenue (gross earned this period); 2100 Sales tax payable | Tax on gross by default; "tax retainage at release" option moves the tax portion to the release invoice. Percentage-of-completion WIP adjustments (over/under billings) are posted by the WIP schedule in [09](09-accounting-ledger-integrations.md), not here. |
-| P13 | Retainage release invoice | 1100 AR | 1105 Retainage receivable | Plus 2100 if tax deferred to release. |
-| P14 | Payment received on Company Stripe (card/ACH) | 1050 Stripe clearing (gross) | 1100 AR (allocated); 2220 (any excess) | From `payment.succeeded` ([08](08-payments-stripe.md)). |
-| P15 | Stripe fees and optional Rootline application fee | 6100 Merchant fees | 1050 Stripe clearing | From Stripe balance transactions; posted at payout reconciliation. |
-| P16 | Refund | 2220 Customer credits (or 1100 AR if refunding against an invoice via credit memo) | 1050 Stripe clearing (or 1000 Bank for checks) | Credit memo (P18) precedes refunds of invoiced amounts. |
-| P17 | Stripe payout to bank | 1000 Operating bank | 1050 Stripe clearing | Matched in bank rec ([09](09-accounting-ledger-integrations.md)). |
-| P18 | Credit memo issued | 4xxx Revenue or 4900 Discounts and allowances (per reason code); 2100 Sales tax payable | 1100 AR (applied) or 2220 Customer credits (held) | Reason code drives account (goodwill -> 4900). |
-| P19 | Credit balance applied to invoice | 2220 Customer credits | 1100 AR | |
-| P20 | Late fee / finance charge assessed | 1100 AR | 7200 Finance charge income | Typically non-taxable; engine decides. Waiver reverses. |
-| P21 | Write-off, direct method | 6200 Bad debt expense (pre-tax); 2100 Sales tax payable (tax portion where bad-debt deduction is taken) | 1100 AR | Tax portion handling per jurisdiction setting. |
-| P22 | Write-off, allowance method | 1190 Allowance for doubtful accounts | 1100 AR | Allowance provisioning entries are in [09](09-accounting-ledger-integrations.md). |
-| P23 | Recovery of written-off invoice | 1100 AR | 6200 Bad debt expense (or 1190) | Then P14 for the cash. |
-| P24 | Small-balance auto write-off | 4910 Small balance adjustments | 1100 AR | Under threshold only. |
-| P25 | Invoice voided (no payments) | Exact reversal of the original entry | | Same period if open; otherwise current open period. |
-| P26 | Chargeback opened | 1120 Disputed payments; 6100 Merchant fees (dispute fee) | 1050 Stripe clearing | Detail in [08](08-payments-stripe.md). |
-| P27 | Chargeback won | 1050 Stripe clearing | 1120 Disputed payments | Fee reversal if Stripe returns it. |
-| P28 | Chargeback lost | 1100 AR (invoice reopened for collection) or 6200 Bad debt expense | 1120 Disputed payments | Company chooses. |
-| P29 | Gift credit sold / redeemed [V1] | 1050 / 2230 | 2230 / 1100 | Sold: Dr 1050 Cr 2230. Redeemed: Dr 2230 Cr 1100. |
-| P30 | Tip paid with invoice payment | 1050 Stripe clearing | 2300 Tips payable | Cleared by payroll ([15](15-team-hr-payroll.md)); not revenue. |
-| P31 | Foreign-currency invoice paid [V1] | 1050 (base-currency equivalent at payment rate) | 1100 AR (at invoice rate); 7100 Realized FX gain/loss (difference, debit or credit) | Revaluation of open foreign AR at period end in [09](09-accounting-ledger-integrations.md). |
-| P32 | Seasonal snow installment / recognition | 1100 AR / 2210 | 2210 / 4xxx Snow revenue | Installment via P4; ratable recognition over the season months via P6. |
+| P1 | Standard invoice issued: per-visit, batch, T&M, milestone, snow per-push (`invoice.issued`) | 1200 AR (total) | 4100-4800 revenue by division (per line, net of line discounts); tax per agency | Covered ($0) lines post nothing. |
+| P2 | Deposit request paid (`payment.succeeded` allocated to a `DEP-` document) | 1050 Stripe clearing (or 1060 for a check) | 2150 Customer deposits | The deposit request itself posts nothing. |
+| P3 | Deposit applied on an invoice | 2150 Customer deposits | 1200 AR | Posted with P1 of that invoice. |
+| P4 | Level-billing installment invoice issued | 1200 AR | 2200 Deferred revenue; tax | Installments never hit revenue. |
+| P5 | Agreement occurrence completed (per-visit-leveled or prepaid line) | 2200 Deferred revenue | 4100-4800 revenue (unit value) | Daily summarized entry with per-agreement detail. |
+| P6 | Fixed-season line month-end recognition | 2200 Deferred revenue | 4100-4800 revenue (ratable or weighted share) | Uses the season weight curve. |
+| P7 | Period-end presentation reclass for agreements in a client-behind position | 1210 Unbilled receivables | 2200 Deferred revenue | Auto-reversed on day 1 of next period. Per agreement, the net position decides asset vs liability. |
+| P8 | Unbilled-revenue accrual for completed but not-yet-invoiced Billable Items (optional, accrual-basis Companies) | 1210 Unbilled receivables | 4100-4800 revenue | Auto-reversed day 1; prevents revenue landing in the wrong month for monthly batch billing. |
+| P9 | Prepaid season invoice issued | 1200 AR (net of prepay discount) | 2200 Deferred revenue (net); tax | Recognition via P5/P6 at discounted unit values (net presentation default; gross-with-contra optional: Dr 2200 + Dr 4910, Cr 4xxx at list). |
+| P10 | True-up invoice (client owes) | 1200 AR | 2200 Deferred revenue (clears the agreement to zero); tax if it adjusts | Agreement position settles at zero. |
+| P11 | True-up credit (client is owed) | 2200 Deferred revenue; tax (tax portion) | 2180 Customer credits, or 1200 AR if applied to an open invoice | A refund then follows P16. |
+| P12 | Progress invoice with retainage withheld | 1200 AR (net due incl. tax); 1205 Retainage receivable (retainage) | 4300 revenue (gross earned this period); tax | Tax on gross by default; the "tax retainage at release" option moves the tax portion to the release invoice. Percentage-of-completion WIP adjustments (over/under billings) are posted by the WIP schedule in [09](09-accounting-ledger-integrations.md), not here. |
+| P13 | Retainage release invoice | 1200 AR | 1205 Retainage receivable | Plus tax if tax was deferred to release. |
+| P14 | Payment received on the Company's Stripe account, card or ACH/PAD | 1050/1051 Stripe clearing (gross) | 1200 AR (allocated); 2180 (any excess) | Executed by [08](08-payments-stripe.md)'s `payments.charge` rule from the Stripe balance transaction; listed here for completeness. |
+| P15 | Stripe fees and optional Rootline application fee | 6150 Merchant processing fees; 6152 Rootline platform fees | 1050 Stripe clearing | From Stripe balance transactions ([08](08-payments-stripe.md) 4.17). |
+| P16 | Refund of a credit balance or of an invoiced amount after its credit memo | 2180 Customer credits | 1050 Stripe clearing (or 1010 when a refund check clears) | Credit memo (P18) always precedes refunds of invoiced amounts ([08](08-payments-stripe.md) 4.16). Deposit refunds use P35. |
+| P17 | Stripe payout to bank | 1010 Operating checking | 1050 Stripe clearing | Matched in bank rec ([09](09-accounting-ledger-integrations.md)). |
+| P18 | Credit memo issued | 4100-4800 revenue or 4910 Discounts and allowances (per reason code); tax | 1200 AR (applied) or 2180 Customer credits (held) | Reason code drives the account (goodwill -> 4910). A `tax_correction` memo (late exemption certificate, rate error) posts tax lines only: Dr tax, Cr 1200 or 2180. |
+| P19 | Credit balance applied to an invoice | 2180 Customer credits | 1200 AR | |
+| P20 | Late fee / finance charge assessed | 1200 AR | 7200 Finance charge income | Typically non-taxable; the engine decides. |
+| P21 | Write-off, direct method | 6170 Bad debt expense (pre-tax); tax (tax portion where the bad-debt deduction is taken) | 1200 AR | Tax portion handling per jurisdiction setting. |
+| P22 | Write-off, allowance method | 1220 Allowance for doubtful accounts | 1200 AR | Allowance provisioning is rule `ar.AR1` in [09](09-accounting-ledger-integrations.md). |
+| P23 | Recovery of a written-off invoice | 1200 AR | 6170 Bad debt expense (or 1220); tax (if a bad-debt tax deduction had been taken, the liability is re-established) | Then P14 or P33 for the cash. |
+| P24 | Small-balance auto write-off | 4930 Small balance adjustments | 1200 AR | Under threshold only. |
+| P25 | Invoice voided (no payments) | Exact reversal of the original entry | | Same period if open; otherwise the current open period. |
+| P26 | Chargeback opened | 1075 Disputed payments receivable; 6155 Dispute fees | 1050 Stripe clearing | Detail in [08](08-payments-stripe.md). |
+| P27 | Chargeback won | 1050 Stripe clearing | 1075 Disputed payments receivable; 6155 (if Stripe returns the fee) | |
+| P28 | Chargeback lost | 1200 AR (invoice reopened for collection) or 6170 Bad debt expense | 1075 Disputed payments receivable | Company chooses. |
+| P29 | Gift credit sold / redeemed [V1] | Sold: 1050. Redeemed: 2170 | Sold: 2170. Redeemed: 1200 | Breakage only where gift-card law allows. |
+| P30 | Tip paid with an invoice payment | 1050 Stripe clearing | 2160 Tips payable | Cleared by payroll ([15](15-team-hr-payroll.md)); never revenue, never taxed, never surcharged. |
+| P31 | Foreign-currency invoice paid [V1] | 1050/1051 (base-currency equivalent at payment rate) | 1200 AR (at invoice rate); 7910 Realized FX gain/loss (difference, debit or credit) | Revaluation of open foreign AR at period end in [09](09-accounting-ledger-integrations.md). |
+| P32 | Seasonal snow installment / recognition | Installment: 1200. Recognition: 2200 | Installment: 2200. Recognition: 4600 Snow and ice | Installment via P4; ratable recognition over the season months via P6. |
+| P33 | Offline payment recorded: check, cash, Interac e-Transfer, wire | 1060 Undeposited funds (office), 1065 Cash in transit (crew-collected, crew lead dimension) or 1010 (wire or e-Transfer straight to bank) | 1200 AR (allocated); 2180 (excess) | Bank deposit later posts Dr 1010, Cr 1060 and is matched in bank rec. |
+| P34 | Payment returned after success: ACH R01/NSF, PAD return, bounced check | 1200 AR (invoice reopened) | 1050 Stripe clearing (or 1010 / 1060 for checks) | A returned-payment fee, only if disclosed in signed terms and lawful, is a separate P1 line to 7500 Other income. Allocation reverses; dunning restarts at the invoice's real age. |
+| P35 | Deposit refunded on a cancelled job | 2150 Customer deposits | 1050 Stripe clearing (or 1010) | Any contracted cancellation fee or non-returnable special-order material kept from the deposit posts Dr 2150, Cr 4300 (or 7500, Company setting) plus tax where the fee is taxable. |
+| P36 | Early-termination fee or discount clawback invoiced on cancellation | 1200 AR | Revenue of the agreement's division (or 7500, Company setting); tax per engine | Only when the fee is in signed terms (4.3.5). |
+| P37 | Unearned prepaid value forfeited at season close | 2200 Deferred revenue | 4100-4800 revenue (breakage) | Only when signed terms state forfeiture (4.2.4); otherwise P11 credit. |
+| P38 | Card surcharge collected [V1] | 1050 Stripe clearing | 4950 Card surcharge income; tax where the surcharge is taxable | Rules owned by [08](08-payments-stripe.md) 4.10. |
+| P39 | Payment-method discount (ACH incentive) applied [V1] | 4920 Payment method discounts | 1200 AR | Rules owned by [08](08-payments-stripe.md) 4.10. |
+| P40 | Late fee waived | 7200 Finance charge income | 1200 AR | Reversal of P20; a waiver in a later period posts in the current period. |
+| P41 | Design-fee credit on install conversion (4.2.5) | 4910 Discounts and allowances (reason `design_credit`) | 1200 AR | Posted with P1 of the first install invoice; the design fee already recognized in 4350 stays earned. |
+| P42 | Dormant credit escheated as unclaimed property [V1] | 2180 Customer credits | Unclaimed property payable (new role `unclaimed_property_payable`; code to be assigned in [09](09-accounting-ledger-integrations.md)) | Remittance to the state or province posts Dr payable, Cr 1010. |
 
-**Posting invariants** (enforced by the ledger service and tested with property-based tests): every entry balances in base currency; AR subledger = 1100 control; sum of agreement positions = 2210 - 1110 (after reclass); no posting to a closed period (auto-redirect to current period with original date retained as `service_date`); every entry references its source document and posting rule ID (P1-P32) for auditability.
+**Posting keys.** Each rule builds the deterministic business key required by [20](20-architecture-security.md) (L4 exactly-once posting): `invoice:{id}:issue`, `invoice:{id}:void`, `credit_memo:{id}:issue`, `agreement:{id}:recognize:{service_date}`, `agreement:{id}:reclass:{period}`, `late_fee:{id}:assess` and `:waive`, `write_off:{id}`, `deposit:{id}:apply:{invoice_id}`. Re-delivered or duplicated events therefore cannot double-post.
+
+**Worked example: the Hernandez agreement in the ledger** (Ontario variant shown last; card fee uses the illustrative 2.9% + $0.30 rate from [08](08-payments-stripe.md), real entries use the actual balance transaction):
+
+| Date | What happened | Rule | Debit | Credit |
+|---|---|---|---|---|
+| Jan 1 | Installment 1 of 12 issued, autopay charged | P4 | 1200 AR $228.33 | 2200 Deferred revenue $228.33 |
+| Jan 1 | Card payment succeeds | P14 | 1050 Stripe clearing $228.33 | 1200 AR $228.33 |
+| Jan 3 | Stripe fee on the payment | P15 | 6150 Merchant fees $6.92 | 1050 Stripe clearing $6.92 |
+| Jan 3 | Payout lands in the bank | P17 | 1010 Operating checking $221.41 | 1050 Stripe clearing $221.41 |
+| Apr 6 | First weekly mow completed | P5 | 2200 Deferred revenue $55.00 | 4100 Maintenance revenue $55.00 |
+| Apr | Spring cleanup and fertilizer round 1 completed | P5 | 2200 $412.00 | 4100 $340.00; 4400 Lawn and PHC revenue $72.00 |
+| Sep 30 | Month-end, base case with no skips: earned $2,058.00 vs billed $2,054.97 (company ahead $3.03) | P7 | 1210 Unbilled receivables $3.03 | 2200 Deferred revenue $3.03 (reverses Oct 1) |
+| Sep 30 | Same date with the two credited August drought skips: earned $1,948.00 vs billed $2,054.97 (client ahead $106.97) | none | | 2200 carries a $106.97 credit balance; no reclass |
+| Dec 1 | Final installment issued at the adjusted $118.37 | P4 | 1200 AR $118.37 | 2200 Deferred revenue $118.37 |
+| Dec 14 | Season close: earned $2,630.00 = billed $2,630.00 | none | | Agreement position and its 2200 balance are zero |
+
+If the same agreement belonged to an Ontario Company, each installment would also carry 13% HST: Dr 1200 $258.01, Cr 2200 $228.33, Cr 2125 GST/HST payable $29.68 (tax is due on each installment as it is invoiced; verify the place-of-supply and tax-point rules in 4.5.3).
+
+**Posting invariants** (enforced by the ledger service and tested with property-based tests): every entry balances in base currency; AR subledger = 1200 control; deposits by client = 2150; sum of agreement positions = 2200 - 1210 (after reclass); no posting to a closed period (auto-redirect to the current period with the original date retained as `service_date`); every entry references its source document and posting rule ID (P1-P42) for auditability.
 
 ---
 
@@ -1455,7 +1484,7 @@ All AI runs through the AI Gateway, is metered in AI credits, and follows the gu
 | Visit marked complete after its invoice was sent, then crew corrects quantity | Supplemental invoice or credit memo; never mutate sent invoice. |
 | Same property owned by a client who switched from per-visit to level billing mid-month | Close per-visit cycle at switch date; start schedule; no double billing (Billable Item can only be billed once). |
 | Agreement amended with a back-dated effective date | Allowed only within an open accounting period; recompute earned value; adjustments posted in the current period. |
-| Client pays an installment twice (autopay + manual) | Overpayment to credit balance (P14 excess to 2220); auto-apply to next installment unless client requests refund. |
+| Client pays an installment twice (autopay + manual) | Overpayment to credit balance (P14 excess to 2180); auto-apply to next installment unless client requests refund. |
 | Partial payment on a consolidated invoice for 12 properties | Allocation rule: client-specified (remittance), else oldest-first by property; AI12 helps. |
 | Stripe account disconnected or restricted mid-season | Autopay invoices switch to "send" mode; owner alerted; dunning paused for affected autopay clients for 7 days ([08](08-payments-stripe.md)). |
 | ACH payment returned (NSF) after invoice marked paid | Reopen invoice, reverse P14, optional returned-payment fee (where lawful and disclosed), notify. |

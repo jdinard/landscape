@@ -941,3 +941,164 @@ Reyes Outdoor Living (Charlotte, NC) in May 2027. The Thompson backyard (paver p
 
 **What these entries mean to Dana Reyes.** The Thompson job's May cost so far (E2-E6, E10) is visible by phase within seconds of each event; the deposit never touched revenue; the Stripe fee is an expense, not a short payment; the payroll entry reconciles field labor already charged to jobs with what Gusto actually paid; and the $550 overtime variance plus the $356 burden variance are visible instead of being buried inside job costs. At month end the WIP schedule ([4.8.3](#483-percentage-of-completion-and-the-wip-schedule-v1)) adjusts install revenue to percentage of completion.
 
+### 4.5 Subledgers
+
+Each subledger holds document-level detail and posts to a control account through the rules in 4.3. Nightly proofs assert subledger total = control balance per legal entity and currency (L7).
+
+| Subledger | Owner of documents | Control account(s) | Proof |
+|---|---|---|---|
+| Accounts receivable | Billing ([07](07-invoicing-billing-contracts.md)) | 1200, 1205, 2150, 2180 | Sum of client account positions by component |
+| Deferred revenue | Billing ([07](07-invoicing-billing-contracts.md)) | 2200, 1210 | Sum of agreement positions = 2200 - 1210 |
+| Stripe clearing | Payments ([08](08-payments-stripe.md)) | 1050, 1051, 1055 | Stripe-reported balance |
+| Accounts payable | Ledger (this doc) | 2000, 2010, 2020 | Open bills, retainage by sub, GRNI by receipt |
+| Inventory | Operations ([13](13-operations-inventory-equipment.md)) | 1310-1370 | Stock balance valuation by branch |
+| Fixed assets | Ledger (this doc), linked to equipment records in [13](13-operations-inventory-equipment.md) | 1510-1599 | Register cost and accumulated depreciation by class |
+| Loans | Ledger (this doc) | 2510-2650 | Principal per loan schedule and lender statement |
+| Payroll clearing | Ledger import of payroll provider journals | 2310, 2360, 2390 | 2360 zero after funding; 2390 zero after true-up |
+
+#### 4.5.1 Accounts receivable on the ledger side [MVP; allowance V1]
+
+Invoices, payments, credits, statements, write-offs and collections are specified in [07](07-invoicing-billing-contracts.md). The ledger adds:
+
+- **Daily AR tie-out** of the client account subledger to 1200 (and 1205, 2150, 2180). A mismatch blocks period lock (L16-style hard check) and names the client accounts involved.
+- **AR aging report** by due date (default) or invoice date, with buckets current, 1-30, 31-60, 61-90, over 90; filter by division, branch, client type (residential, commercial, HOA); retainage shown separately because a 10% retention on a commercial install is not "past due" until release conditions are met.
+- **Allowance for doubtful accounts** [V1]: aging-based percentages or a specific-identification list, posted by `ar.AR1` at month-end; the allowance method changes how write-offs post ([07](07-invoicing-billing-contracts.md) P21 vs P22).
+- **Customer deposits and credits schedule**: deposits held per open proposal or job, credits per client, oldest first; credits older than the state's dormancy period appear in the **unclaimed property** report with the client's last known state ([08](08-payments-stripe.md) compliance table).
+
+#### 4.5.2 Accounts payable: bills, approvals and bill pay
+
+Bill intake, AI extraction, duplicate detection and the 2-way/3-way match engine are specified in [13](13-operations-inventory-equipment.md) 4.11. The ledger owns the bill as an accounting document and everything after matching.
+
+**Bill lifecycle [MVP basic, V1 approvals]**
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: "captured (email, upload, sub portal)"
+    Draft --> NeedsCoding: "lines lack account or job"
+    NeedsCoding --> PendingApproval: "coded"
+    Draft --> PendingApproval: "auto-coded or PO-matched"
+    PendingApproval --> Approved: "approval policy satisfied"
+    PendingApproval --> NeedsCoding: "returned with comment"
+    Approved --> OnHold: "vendor compliance hold or dispute"
+    OnHold --> Approved: "hold released"
+    Approved --> Scheduled: "added to payment batch"
+    Scheduled --> PartiallyPaid: "partial payment released"
+    Scheduled --> Paid: "full payment released"
+    PartiallyPaid --> Paid: "remaining paid"
+    Approved --> Voided: "void (reversal posted)"
+    Paid --> [*]
+    Voided --> [*]
+```
+
+- A bill posts to the ledger (`ap.AP1`-`AP4`) when it reaches `Approved` in approval-enabled tenants, or on save in tenants without approvals (MVP default). Bills in `Draft`, `NeedsCoding` or `PendingApproval` at month-end appear on the close checklist as unrecorded liabilities with an "accrue" action.
+- **Header fields**: vendor, vendor invoice number (unique per vendor; duplicates blocked), bill date, accounting date, due date (from terms), terms (Net 30, 2/10 Net 30, due on receipt, EOM), currency, PO references, attachments, memo, 1099 box default, legal entity.
+- **Line fields**: account, amount, quantity and unit cost (for PO lines), tax (use tax flag; GST/HST/QST paid for ITCs), dimensions (division, branch, job, phase, cost type, asset for repairs), billable flag (re-bill to client as a T&M material line in [07](07-invoicing-billing-contracts.md)), 1099 box override.
+- **Approval policy** [V1]: rules evaluated in order, for example (illustrative defaults):
+
+| Condition | Approver(s) |
+|---|---|
+| PO-matched within tolerance | Auto-approved |
+| Job-coded lines | `ops_manager` of the job's branch, then `owner` if bill total over $5,000 |
+| Overhead lines (6xxx) over $1,000 | `owner` |
+| New vendor's first bill | `owner` plus `bookkeeper` |
+| Any bill over $25,000 | Two approvers, neither the creator |
+
+- **Vendor compliance holds**: an expired certificate of insurance, missing W-9 or missing lien waiver on a subcontractor ([13](13-operations-inventory-equipment.md) `ops.vendor.compliance_changed`, `ops.lien_waiver.signed`) puts its bills `OnHold` for payment (not for posting: the liability is real).
+- **Payment batches** [MVP record, V1 batches]: select bills by due date, vendor or job; Rootline proposes a batch that captures expiring early-pay discounts (2/10 Net 30 shown with its roughly 37% annualized return, per [13](13-operations-inventory-equipment.md)) and shows the batch's effect on the 13-week cash forecast (4.9.4). Approval by `owner` (or `bookkeeper` up to a limit, [02](02-personas-roles-permissions.md) `bill_payment.approve`).
+- **Payment methods:**
+
+| Method | How money moves | Priority |
+|---|---|---|
+| Record payment made outside Rootline | Check written by hand, bank bill pay, wire; bank feed match closes it | [MVP] |
+| Printed checks | Rootline prints MICR checks on blank check stock or pre-printed stock (laser, 3-per-page or check-on-top with stubs showing invoice numbers); check register with void tracking; signature image only below a threshold, two signature lines above | [V1] |
+| ACH via bank file | NACHA-format file generated for upload to the Company's bank portal; remittance advice emailed to vendors | [V1] |
+| Positive pay export | Issued-check file in the bank's format to block forged checks | [V1] |
+| Embedded bill pay | A licensed payables partner debits the Company's bank and pays vendors by ACH, check or virtual card; Rootline never holds funds | [V2] |
+
+- **Vendor banking security**: changes to vendor or subcontractor bank details require dual control and a call-back verification task with the phone number on file before the change (business email compromise is a known contractor risk, [02](02-personas-roles-permissions.md) 5.6); payments to a bank account changed in the last 10 days require `owner` approval.
+- **Vendor credits** (`ap.AP8`): from returns, nursery guarantee claims, pricing corrections; applied to open bills or refunded (refund matched from the bank feed).
+- **AP aging** by due date with buckets and a "discount expiring" column; **GRNI aging** (receipts without bills) from [13](13-operations-inventory-equipment.md) appears beside it because both are liabilities the CPA reviews together.
+
+> **Competitive edge.** Aspire reads its vendor list from the accounting system, and a third-party AP product is marketed specifically to process Aspire bills ([Aspire](https://www.youraspire.com/features/purchasing), [Vergo](https://www.getvergo.com/learn/best-ap-automation-software-for-landscape-companies-using-aspire)). Rootline owns vendors, POs, receipts, match, bill approval and payment in one place, so a subcontractor bill is coded to the job phase, held for a missing lien waiver and released with retainage tracked, without leaving the product.
+
+#### 4.5.3 1099-NEC, 1099-MISC, T5018 and T4A [V1]
+
+Landscapers pay many unincorporated subcontractors (mow-and-blow subs, snow plow subs, tree climbers, hardscape installers), so year-end information returns are a real January pain.
+
+**US (1099):**
+
+- **Vendor tax profile**: legal name, TIN (encrypted, last 4 shown), TIN type, entity classification from the W-9 (individual, single-member LLC, partnership, C or S corporation, LLC tax classification), exempt payee code, 1099 eligible flag, default box (NEC box 1 for services; MISC box 1 for rents, such as renting storage or yard space from an individual), state and state ID. W-9 collected through the sub portal ([13](13-operations-inventory-equipment.md) 4.13) with e-signature.
+- **Eligibility rules**: corporations are generally exempt except for attorneys' fees; payments for merchandise are excluded; **payments made by credit card, debit card or third-party payment network are excluded** because the payment settlement entity reports them on Form 1099-K (verify current IRS instructions). Rootline therefore counts only check, ACH and cash bill payments toward 1099 totals, by payment method, automatically.
+- **Thresholds**: $600 for payments made through 2025; the One Big Beautiful Bill Act raised the 1099-NEC and 1099-MISC threshold to $2,000 for payments made after December 31, 2025, with inflation indexing after 2026 (verify). Thresholds are stored as dated platform parameters so each tax year applies its own rule.
+- **Deadlines**: 1099-NEC to recipients and the IRS by January 31 (no automatic extension); 1099-MISC to recipients by January 31 and to the IRS by the end of February on paper or March 31 electronically (verify). The year-end checklist (4.14) starts in November with a "W-9 missing" campaign to vendors paid over the threshold.
+- **E-file**: electronic filing is required when a filer has 10 or more information returns in aggregate (verify). Rootline e-files through the IRS Information Returns Intake System (IRIS) application-to-application interface or through a certified filing partner at [V1] (build-vs-partner is open question 9), including the Combined Federal/State Filing program where available and direct state filing exports where a state requires it (verify per state).
+- **Recipient copies**: delivered electronically through the sub portal with the recipient's prior consent (the IRS requires affirmative consent for electronic statements; verify), otherwise printed for mailing.
+- **TIN matching** [V1]: bulk TIN matching through the IRS e-Services program (verify enrollment requirements) when the W-9 is received, so January surprises are eliminated.
+- **Backup withholding** [V2]: when a payee fails to provide a TIN, a 24% backup withholding is applied at payment (`2380 Backup Withholding Payable`), tracked for Form 945 (verify).
+- **Corrections**: corrected returns generated from the diff between filed and current totals.
+
+**Canada:**
+
+- **T5018** (Statement of Contract Payments): Companies whose primary business activity is construction report payments for construction services to subcontractors (reporting threshold $500 per year, return due within six months of the end of the chosen reporting period, calendar or fiscal; verify). Whether a landscaping Company's activities count as construction depends on the CRA definition and the Company's mix of hardscape and installation work (verify with the CRA T5018 guide; Rootline asks during onboarding and lets the CPA decide).
+- **T4A box 048** (fees for services) for payments to unincorporated individuals for services where T5018 does not apply (verify threshold and due date, generally the last day of February).
+- Filing via CRA XML (Internet file transfer) export [V1].
+
+#### 4.5.4 Inventory subledger [MVP]
+
+Physical operations (locations, movements, costing method, counts, reservations) are specified in [13](13-operations-inventory-equipment.md) 4.3. The ledger side:
+
+- **Valuation report** by branch, location type and inventory account at any date, with quantity, moving-average cost and extended value; ties to 1310-1370 nightly (drift alert, as specified in [13](13-operations-inventory-equipment.md)).
+- **GRNI** (2020) with aging and an "accrue or chase" action; GRNI older than 60 days flags a likely missing bill or a receipt error.
+- **Purchase price variance** (5270) by vendor and item; feeds vendor scorecards in [13](13-operations-inventory-equipment.md).
+- **End-of-season write-downs** [V1]: plants still in the holding yard in late season, overwintering risk, and expired chemicals are reviewed for lower-of-cost-or-net-realizable-value write-downs (Dr 5290 or 5280, Cr inventory) with a reason code and photo evidence; a "season-end inventory review" task is generated each October.
+- **Year-end physical count**: a count event tied to the fiscal year-end; variances post to 5280 in the year being closed (count date within the soft-closed period, approved by the CPA).
+- **Consignment** [V1]: consigned stock (a nursery's trees held in the Company's yard) is tracked in quantity only and never hits the balance sheet until issued, when `inventory.IN2`-style posting creates the liability.
+
+#### 4.5.5 Fixed assets and depreciation [V1]
+
+The **fixed asset register** is the accounting twin of the equipment record in [13](13-operations-inventory-equipment.md) 4.14 (`asset.ledger_fixed_asset_id`). An equipment record can exist without a fixed asset (a $400 backpack blower expensed under the capitalization threshold); every fixed asset that is equipment links to its equipment record.
+
+- **Capitalization policy**: tenant threshold (default $2,500 per item, aligned with the IRS de minimis safe harbor for taxpayers without an applicable financial statement; verify), with prompts when a bill line above the threshold is coded to an expense account ("This $8,950 stand-on spreader looks like equipment. Capitalize?").
+- **Multiple books per asset**:
+
+| Book | Purpose | Methods | Notes |
+|---|---|---|---|
+| `book` | GAAP/ASPE financial statements; posts to the GL | Straight-line; declining balance (150%/200%); **units of production by engine hours**; none (land) | Monthly runs post `assets.FA2` |
+| `federal_tax` | US income tax | MACRS GDS/ADS tables, half-year and mid-quarter conventions, Section 179 and bonus elections | Memo only; exported to tax prep |
+| `state_tax` | States that decouple from bonus depreciation | Same engine, state-specific rules | Memo only |
+| `cca` | Canadian capital cost allowance | Declining-balance classes (for example Class 10 at 30% for automotive equipment and Class 38 at 30% for power-operated earth-moving equipment such as skid steers and mini excavators; verify classes and rates), half-year rule and any accelerated incentive in force (verify) | Memo only; T2/T2125 schedules |
+
+- **Units of production for seasonal equipment.** A mower depreciated straight-line charges the same $229.17 in January as in May, which distorts monthly margins in a seasonal business. With the engine-hours method, the same mower ($11,000 depreciable base over 3,200 expected hours = $3.4375 per hour) charges about $488.13 in a 142-hour May and $0 in January. Hours come from telematics or meter readings in [13](13-operations-inventory-equipment.md). Owners choose per asset class; the year total is similar, the monthly picture is honest.
+- **Tax-book specifics worth automating** (all verify): under the One Big Beautiful Bill Act, 100% bonus depreciation applies to qualified property acquired after January 19, 2025, and the Section 179 limit rose to $2.5 million with a $4 million phase-out threshold; **the MACRS mid-quarter convention applies when more than 40% of a year's depreciable basis is placed in service in the fourth quarter**, which is exactly what happens when a snow contractor buys plows and spreaders in October-December. Rootline warns in September when Q4 purchases on order would trip the 40% test.
+- **Lifecycle**: `on_order` (deposits in 1599) -> `in_service` (depreciation starts per convention) -> `fully_depreciated` -> `disposed`. Placed-in-service date defaults from the equipment record's in-service date.
+- **Disposals** (`assets.FA3`, `FA4`): sale (proceeds, gain or loss), trade-in (treated as a sale plus a purchase; like-kind exchange treatment does not apply to equipment for US federal tax after 2017; verify), scrap, theft or casualty (insurance receivable, link to the loss ledger and police report in [13](13-operations-inventory-equipment.md)). Disposal stops depreciation per convention and archives the equipment record only after operations confirm.
+- **Depreciation run**: monthly, all books; the `book` run posts one entry with lines per asset class, division and branch (field assets to 5350, others to 6430). Re-runs are idempotent per period; changing a method or life prospectively posts nothing historical (change in estimate), while a correction of an error is a manual adjusting entry with approval.
+- **Reports**: register (cost, accumulated, net book value per book), depreciation schedule (projected by month for the budget), additions and disposals roll-forward, tax depreciation summary for the CPA.
+- **Leases** [V2]: operating and finance leases under ASC 842 for private companies (yard leases, leased trucks) with right-of-use assets and lease liabilities; ASPE tenants use their own lease rules (verify).
+
+#### 4.5.6 Loans and financing [V1]
+
+Equipment-heavy landscapers carry many notes: truck loans, dealer financing on mowers, a skid steer note, an SBA loan, a seasonal line of credit drawn in March and paid down by October.
+
+- **Loan record**: lender, type (term, equipment note, vehicle, SBA, line of credit, shareholder), legal entity, principal, rate (fixed or variable with index and margin), start date, term, payment frequency, **payment calendar** (standard monthly, or **seasonal skip-payment schedules** such as payments April-November only, which some equipment dealers offer; verify with lenders), balloon, collateral (linked assets), covenants.
+- **Amortization schedule** generated and versioned; variable-rate loans recalculate on rate change; extra principal payments re-amortize or shorten term per lender terms.
+- **Bank-feed matching**: a payment matching the scheduled amount within $1.00 auto-splits principal and interest (`loans.LN1`); a mismatch opens a review with the lender's statement attached.
+- **Lines of credit**: draws and repayments from bank lines; interest computed from the lender statement (actual) with an optional daily accrual estimate.
+- **Current portion reclass** (`loans.LN3`) for balance sheet presentation, auto-reversing.
+- **Covenant monitor** [V1]: debt service coverage ratio, current ratio, debt-to-equity, minimum tangible net worth computed monthly from the ledger with an amber warning one month before a breach is projected (beyond the brief: lenders look at these at renewal; owners rarely do until it is too late).
+- **Debt schedule report** for lenders and the CPA: balances, rates, maturities, collateral, payments next 12 months.
+
+#### 4.5.7 Payroll journal import and labor allocation [MVP file import, V1 APIs]
+
+Payroll calculation stays with the payroll provider ([15](15-team-hr-payroll.md)); Rootline sends approved hours out and brings the payroll journal back.
+
+- **Sources**: Gusto, ADP (RUN and Workforce Now), QuickBooks Payroll, Paychex, Paycor; Canadian providers such as Wagepoint, Payworks, ADP Canada and Ceridian Dayforce (verify current export formats and APIs per provider). MVP accepts each provider's standard payroll journal or general ledger export file; [V1] pulls via API where the provider offers one.
+- **Mapping**: provider pay items (regular, overtime, bonus, PTO, tips, reimbursement), employee and employer tax types, deductions and benefits map once to account roles; employees map to department (admin) or field (cleared against 2310 applied wages).
+- **Validation before posting**:
+  - Import gross equals the sum of its lines; net pay plus withholdings plus deductions equals gross; employer taxes recorded separately.
+  - For each field employee, paid regular hours vs approved time in Rootline within a tolerance (default 0.25 hours); mismatches list "paid but not clocked" and "clocked but not paid".
+  - Tips paid this run reconcile against 2160 Tips Payable allocations ([08](08-payments-stripe.md) Example 3).
+  - The funding amount matches the bank feed debits (or creates expected bank lines for matching).
+- **Posting**: `payroll.PR1`-`PR3` as in E13-E14. Field wage variance (overtime premium, bonuses, PTO paid in season) goes to 5190 by default; [V1] can **re-allocate variance to jobs pro rata to hours** in the pay period so job cost carries real overtime.
+- **QuickBooks Payroll in external mode**: payroll is already in QBO; Rootline does not import a journal for the book of record, but still needs labor cost for job costing, which it computes from approved time at standard burdened rates and reconciles to QBO payroll totals monthly (difference shown, not posted).
+

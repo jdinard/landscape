@@ -1,6 +1,6 @@
 # 02 - Personas, Journeys, Roles and Permissions
 
-> Rootline is used by people with very different jobs and needs. A horticulturist curates plants for the whole platform. An owner checks margin at 10 pm. A Spanish-speaking H-2B crew member clocks in on a shared tablet at 6:45 am, a CPA closes the books for fourteen landscape companies, an HOA treasurer votes on a $12,400 entrance-bed renovation, and a homeowner pays a deposit from a text message. This document defines those people (personas), how each one moves through the business (end-to-end journeys), and the identity and access model that lets all of them share one system safely. The access model covers a `resource.action` permission taxonomy with `own / crew / branch / all` scopes, field-level masking of costs, margins and pay rates, role templates and custom roles, branches and multi-entity companies, delegated CPA access, client-contact permissions, platform staff permissions, consented support impersonation, authentication per persona, session and device policies, audit logging, and the seasonal hire/hibernate/rehire cycle that defines landscape labor. Getting this right is a product feature, not plumbing. In this market, "my crew can see what I charge" and "my bookkeeper needs a paid seat" are common reasons owners outgrow their tools.
+> Rootline is used by people with very different jobs and needs. A horticulturist curates plants for the whole platform. An owner checks margin at 10 pm. A Spanish-speaking H-2B crew member clocks in on a shared tablet at 6:45 am, a CPA closes the books for fourteen landscape companies, an HOA treasurer votes on a $12,400 entrance-bed renovation, and a homeowner pays a deposit from a text message. This document defines those people (personas), how each one moves through the business (end-to-end journeys), and the identity and access model that lets all of them share one system safely. The access model covers a `resource.action` permission taxonomy with `own / crew / branch / all` scopes, field-level masking of costs, margins and pay rates, role templates and custom roles, branches and multi-entity companies, delegated CPA access, client-contact permissions, platform staff permissions, consented support impersonation, authentication per persona, session and device policies, audit logging, and the seasonal hire/hibernate/rehire cycle that defines landscape labor, including safeguards for under-18 summer hires. Getting this right is a product feature, not plumbing. In this market, "my crew can see what I charge" and "my bookkeeper needs a paid seat" are common reasons owners outgrow their tools.
 
 **Related docs:** [Market landscape](01-market-landscape.md) · [CRM, Sales and Proposals](03-crm-sales-estimating-proposals.md) · [Scheduling and Dispatch](04-scheduling-dispatch-routing.md) · [Field Crew App](05-field-crew-mobile-app.md) · [Customer Portal](06-customer-portal.md) · [Invoicing](07-invoicing-billing-contracts.md) · [Payments / Stripe](08-payments-stripe.md) · [Accounting and Ledger](09-accounting-ledger-integrations.md) · [Team, HR and Payroll](15-team-hr-payroll.md) · [AI Copilot](17-ai-copilot-automation.md) · [Platform Admin](19-platform-admin-portal.md) · [Architecture and Security](20-architecture-security.md) · [UX and Sitemaps](21-ux-design-system-sitemaps.md) · [Pricing and GTM](22-business-model-pricing-gtm.md)
 
@@ -614,7 +614,7 @@ journey
       Views Mockup slider before and after: 5: Client
       Verifies phone with one-time code to sign: 4: Client
     section Account
-      Creates passkey with Face ID - optional: 4: Client
+      Creates passkey with Face ID - optional in V1: 4: Client
       Adds spouse as co-owner contact: 4: Client
       Saves card on file through Stripe: 4: Client
     section Season
@@ -815,7 +815,7 @@ journey
 **Rules:**
 1. **Dependencies are explicit and auto-granted in the editor with a notice:** `X.update` implies `X.read`; `invoice.send` requires `invoice.read` and `field.price.read`; `payment.refund` requires `payment.read`. The editor refuses to save inconsistent roles; the API validates again.
 2. **Danger flags:** some permissions are marked `sensitive` and show a red badge plus a confirmation: `stripe_connection.*`, `bank_account.update`, `vendor.banking.update`, `data_export.run`, `user.assign_role`, `role.update`, `period.unlock`, `security_policy.update`, `support_access.grant`, `api_key.create`.
-3. **Owner-only permissions** cannot be granted to any other role: `stripe_connection.connect` / `disconnect` (covers both the Connect OAuth path and pasting restricted API keys on the advanced path, per [Payments](08-payments-stripe.md)), `rootline_subscription.cancel`, `company.delete`, `ownership.transfer`, and `security_policy.update` when SSO is enforced. Multiple users can hold `owner` (partners); see 5.18.6 for partner-dispute protections.
+3. **Owner-only permissions** cannot be granted to any other role: `stripe_connection.connect` / `disconnect` (covers both the Connect OAuth path and pasting restricted API keys on the advanced path, per [Payments](08-payments-stripe.md)), `rootline_subscription.cancel`, `company.delete`, `ownership.transfer`, `security.lockdown` (section 14, item 13), and `security_policy.update` when SSO is enforced. Multiple users can hold `owner` (partners); see 5.18.6 for partner-dispute protections.
 4. **Permission keys are stable API.** Renames ship as aliases for 2 major versions; tenants' custom roles are migrated automatically, and a changelog entry appears in the role editor.
 5. **This document is the canonical permission catalog.** Sibling docs sometimes use illustrative spellings. They map one-to-one, and the code generator registers them as aliases so nobody has to rename prose:
 
@@ -1133,7 +1133,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 |---|---|---|---|---|
 | `platform_*` | SSO through Rootline corporate IdP (OIDC) | FIDO2 hardware key or platform passkey, required | None | Separate realm; 8 h max session |
 | `owner`, `office_manager`, `bookkeeper` | Passkey (WebAuthn), email + password, or Google / Microsoft / Apple sign-in | **MFA required:** passkey or TOTP; SMS OTP only as fallback with a risk banner | Enforced SSO for tenants on SSO plans | Step-up for sensitive actions (5.16) |
-| `estimator`, `designer`, `ops_manager` | Same | MFA required by default (Company can relax to "recommended" only on the Starter plan, with a warning) | MFA can never be relaxed for anyone holding `payment.refund`, any `ledger.*` write, `api_key.create` or `stripe_connection.*`, per [Architecture](20-architecture-security.md) | |
+| `estimator`, `designer`, `ops_manager` | Same | MFA required by default (Company can relax to "recommended" only on the Starter plan, with a warning) | | MFA can never be relaxed for anyone holding `payment.refund`, any `ledger.*` write, `api_key.create` or `stripe_connection.*`, per [Architecture](20-architecture-security.md) |
 | Enterprise tenants (all staff) | **SAML 2.0 / OIDC SSO** with Okta, Microsoft Entra ID, Google Workspace, JumpCloud [V1]; **SCIM 2.0** provisioning and deprovisioning [V1], both on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md)) | IdP-enforced MFA | JIT provisioning with default role mapping by IdP group | Break-glass local owner account retained (hardware key) for IdP outages |
 | `crew_lead`, `technician` (own phone) | Phone number + SMS/WhatsApp OTP (Twilio Verify) on first login, then a device-bound refresh token (30-day rolling, per [Architecture](20-architecture-security.md)) unlocked by **app PIN or device biometrics** | Re-OTP when the device changes, after 90 days, or on risk signals | Email magic link optional | Spanish UI by default if phone locale is ES |
 | `crew_lead`, `technician` (shared device) | **Personal PIN** (4-6 digits) on an enrolled crew device [MVP] or yard shop kiosk [V1] (5.15) | Optional photo capture at punch [V1]; NFC badge or QR badge [V1] | | PIN valid only on enrolled devices of the user's branch |
@@ -1267,7 +1267,7 @@ stateDiagram-v2
    - invalid E.164 numbers;
    - returning workers matched by phone or name + DOB, who are offered **rehire** instead of a new record;
    - missing branch.
-3. Invites go out by **SMS in the worker's language** with a link to the crew app install and a 6-digit code, or the worker is set to **kiosk-only** (no personal device needed). A PIN is set at first kiosk use with supervisor confirmation.
+3. Invites go out by **SMS in the worker's language** with a link to the crew app install and a 6-digit code, or the worker is set to **shared-device only** (no personal device needed; they punch on the crew device or, from V1, the yard kiosk). A PIN is set at first use with supervisor confirmation.
 4. **Onboarding checklist per hire** [V1]:
    - e-sign handbook and safety policy acknowledgment (ES/EN);
    - emergency contact;
@@ -1430,7 +1430,7 @@ sequenceDiagram
     Audit->>Owner: Email summary of support session
 ```
 
-### 6.4 Kiosk clock-in on a shared tablet [MVP]
+### 6.4 PIN clock-in on a shared tablet [MVP on crew devices; V1 yard kiosk]
 
 ```mermaid
 sequenceDiagram
@@ -1504,9 +1504,12 @@ sequenceDiagram
 | Role impact diff and "View as" simulator | Company web | owner, office_manager | [V1] |
 | Security settings: MFA policy, SSO/SCIM, session policy, IP allowlist, support access, Lockdown | Company web | owner | [MVP] / [V1] / [V2] |
 | Audit log viewer and saved alerts | Company web | owner, bookkeeper | [MVP] / [V1] |
+| Access health score and one-click fixes (section 14, item 17) | Company web | owner | [V1] |
+| H-2B hours-guarantee tracker (section 14, item 15) | Company web | owner, office_manager, bookkeeper | [V1] |
+| Minor-worker restrictions setup (5.18.7) | Company web | owner, office_manager | [V1] |
 | Access review campaign | Company web | owner | [V1] |
-| Device management and kiosk enrollment | Company web + mobile | ops_manager, office_manager | [MVP] |
-| Kiosk home and PIN pad | Tablet | technician, crew_lead | [MVP] |
+| Device management and crew-device / kiosk enrollment | Company web + mobile | ops_manager, office_manager | [MVP] (kiosk [V1]) |
+| Shared-device home and PIN pad (crew device; yard kiosk) | Tablet | technician, crew_lead | [MVP] crew device / [V1] kiosk |
 | Crew app sign-in (phone OTP, app PIN) | Mobile | crew_lead, technician | [MVP] |
 | Client > People and permissions (staff side) | Company web | office_manager, estimator | [MVP] |
 | Client approval policy editor | Company web | office_manager | [V1] |
@@ -1569,7 +1572,7 @@ sequenceDiagram
 +-------------------------------------------------------------------------------------------+
 ```
 
-### 7.4 Wireframe: Kiosk PIN pad (shared truck or yard tablet) [MVP]
+### 7.4 Wireframe: PIN pad on a shared truck tablet or yard kiosk [MVP crew device; V1 kiosk]
 
 ```text
 +-----------------------------------------------+
@@ -2091,12 +2094,16 @@ erDiagram
 | `approval_request.created`, `.vote_cast`, `.approved`, `.rejected`, `.expired` | request_id, subject, version_hash, votes | Proposals ([CRM](03-crm-sales-estimating-proposals.md)), Scheduling |
 | `access.denied` (sampled) | principal, action, resource_type, reason | Product analytics (permission friction), anomaly detection |
 | `sensitive_field.revealed` | field_class, resource, principal | Audit, anomaly detection |
+| `security.lockdown_started`, `.ended` | tenant_id, initiated_by, scope, expires_at | Realtime gateway (session revocation), Automations (pause money and data outflows), platform security dashboard (metadata only) |
+| `employee.age_band_changed` | employee_id, old_band, new_band | Scheduling (re-check assignments), crew lead notification |
 
 **Consumed events:**
 - `employee.terminated` and `employee.season_ended` from HR (15) trigger revocation and hibernation.
 - `certification.expired` from HR suspends `chemical_application.create` for that person automatically.
 - `visit.scheduled` and `visit.completed` from Scheduling (04) recompute crew visibility windows and access-secret reveal windows.
 - `subscription.plan_changed` from SaaS billing (19) toggles SSO, SCIM and advanced audit entitlements.
+- `stripe.external_account_changed` from Payments (08), derived from Stripe's connected-account webhooks, raises the owner alert in 5.6.
+- `client_contact.removed` and `approval_policy.updated` from the Customer Portal (06) void pending votes and re-evaluate quorum.
 
 **Tenant webhooks** [V1]: `user.*`, `role.*` and `security.*` events can be delivered to the Company's endpoints (signed with HMAC-SHA256, retries with exponential backoff), e.g. to sync with their HRIS.
 
@@ -2337,7 +2344,7 @@ See the matrix in 5.11. Additional rules:
 | Estimator shows the Proposal on his iPad in the driveway | Client-facing mode (5.4, item 9) drops cost, margin and internal notes from the session until he unlocks with Face ID; the homeowner never sees "materials cost $9,112" |
 | Office manager's email is phished and the attacker logs in from a new device | MFA blocks the password alone. If a session is stolen, new-device step-up blocks exports, refunds over $500 and role changes. The owner can hit Lockdown (section 14, item 13) to freeze sensitive actions tenant-wide in one tap |
 | Someone changes the payout bank inside the Company's Stripe dashboard | Rootline cannot block it (the Company owns the Stripe account) but alerts every owner by push, email and SMS and holds a banner until an owner confirms (5.6) |
-| Payout bank change on Rootline's side is requested by a vendor email | Vendor banking changes need dual control and a call-back confirmation checklist; bill runs to that vendor within 10 days of a change need owner approval (5.6) |
+| A vendor emails "new bank details" for bill payments | Vendor banking changes need dual control and a call-back confirmation checklist; bill runs to that vendor within 10 days of a change need owner approval (5.6) |
 | A 15-year-old summer hire is put on a mowing Route | Assignment blocked: `power_mower` is restricted for `under_16`; the ops manager sees why and picks a blower-and-cleanup task list instead (5.18.7) |
 | HOA switches management companies mid-season | The old firm's contacts lose access on the effective date; pending votes they cast stay in the ballot record; the new community manager is invited as `primary` by the HOA or the Company (5.11) |
 | A sub forwards a single-order link to a friend | The link shows one Property's address and scope only; gate codes still require an on-site GPS check-in; the Company can revoke the link (5.12) |
@@ -2427,22 +2434,27 @@ The following ideas were added in review. Each closes a gap the founder did not 
 
 ## 15. Open questions
 
-1. **Seat model:** should crew leads count as full seats or field seats? Should field seats be billed per active user per month (recommended), and is kiosk-only usage free? To be decided with [Pricing and GTM](22-business-model-pricing-gtm.md).
+1. **Seat model (mostly settled by [Pricing](22-business-model-pricing-gtm.md) 4.3):** seat type follows permissions, crew leads are field seats, field seats bill only when active, and a worker who only punches on a shared device still counts as active. Still open: will owners accept that giving a crew lead a single estimating permission turns him into an office seat? The role editor's seat-consequence preview (5.7) makes this visible. Validate with 5 design-partner owners before launch.
 2. **Default for office_manager P&L access:** hidden by default (protects owners) or visible (common in small shops where the office manager is the bookkeeper)? Proposal: ask during onboarding with a one-question toggle.
 3. **Standing read-only support consent:** opt-in (privacy-first, slower support) or opt-out for Starter plans (faster support)? Proposal: opt-in, with a one-tap grant inside the chat widget.
-4. **Biometric options:** do we ever ship face matching for kiosks given BIPA exposure, or stop at photo capture? Proposal: photo capture only through V2; revisit with counsel.
+4. **Biometric options:** [Field Crew App](05-field-crew-mobile-app.md) lists a consented face-verification option at [V2] at the earliest, off by default. Do we ship it at all given BIPA and Colorado exposure, or stop at photo capture? Proposal: photo capture [V1]; face verification only after counsel review and only outside states with biometric statutes until the consent workflow is proven.
 5. **Franchise data sharing defaults:** what can a franchisor see without per-category consent (royalty-relevant revenue only)? Needs franchise attorney input.
 6. **Client SSO for large property management firms:** is SAML for Clients worth it at V2, or are passkeys enough?
 7. **Branch-restricted financials:** do multi-branch Companies need branch managers to see only their branch Ledger (true row-level security in the Ledger) or is reporting-level restriction enough? This affects the [Accounting](09-accounting-ledger-integrations.md) design.
 8. **WhatsApp OTP:** many H-2B workers rely on WhatsApp more than SMS. Should WhatsApp be the default OTP channel for Spanish-locale field users? Check Twilio channel pricing and deliverability (verify).
 9. **Data residency:** when do Canadian tenants (and Quebec Law 25) require in-country hosting, and is it a premium add-on?
-10. **Minimum age:** some seasonal workers are 16-17. Do we need age-gated restrictions (e.g. hazardous equipment checklists or hour limits under child labor rules) surfaced in roles? Coordinate with [Team, HR and Payroll](15-team-hr-payroll.md).
+10. **Minor workers:** now specified as a [V1] feature (5.18.7). Open: who maintains the default equipment-to-restriction mapping and the state hour rules (platform curation like the Plant KB, or Company-maintained with templates)? Proposal: platform-maintained defaults with a legal-review cadence, Company overrides audited.
+11. **Client passkeys at MVP?** WebAuthn ships at MVP for staff and platform users, so offering passkeys to Clients at MVP costs little. [Customer Portal](06-customer-portal.md) keeps them at [V1] to handle custom-domain relying-party IDs properly. Proposal: keep [V1] for Clients; revisit if commercial approvers ask.
+12. **Lockdown scope:** should Lockdown (section 14, item 13) also pause outbound Client messaging and Automations, or would that do more harm (missed rain-delay notices) than good? Proposal: pause only Automations that send money or data out (refunds, exports, webhooks), not notifications.
+13. **H-2B tracker liability:** does showing an hours-guarantee calculation create an implied compliance promise? Needs counsel; the default copy will say it is an aid that relies on the Company's own job-order terms.
 
 ---
 
 ## Sources
 
 Research for this document was done in November 2026. Web page fetching was unavailable in this research environment, so findings come from search-result excerpts of vendor documentation, community forums and review sites. Vendor facts are **as of November 2026, verify**. The web-search budget ran out before a planned check of H-2B program statistics, so this document cites the official DOL program page and makes no numeric claims about visa counts. Standards and statutes are cited from their official publishers.
+
+**Review pass (November 2026).** A second, editorial pass added consolidation facts and pricing-seat facts drawn from the repo's own research reports ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and from sibling docs ([05](05-field-crew-mobile-app.md), [06](06-customer-portal.md), [08](08-payments-stripe.md), [20](20-architecture-security.md), [22](22-business-model-pricing-gtm.md)) so this document agrees with them. During that pass the shared web-search budget was exhausted and outbound fetching was blocked, so the regulatory points added in review (NIST SP 800-63B revision 4 password lengths, FLSA retention periods, child-labor restrictions, the 2024 BIPA amendment, Colorado's biometric amendment, the CCPA employee-data exemption expiry and the H-2B hours guarantee) are cited to their official sources from background knowledge and each is marked "verify" in the text. Confirm them with counsel before they drive product copy.
 
 **Competitors and vendor documentation**
 - Jobber - What are user permissions? https://help.getjobber.com/hc/en-us/articles/115009568687
@@ -2487,6 +2499,12 @@ Research for this document was done in November 2026. Web page fetching was unav
 - Field Force by Copilot CRM (App Store): https://apps.apple.com/ly/app/field-force-by-copilot-crm/id6745098752
 - Capterra - RealGreen (Service Assistant) reviews: https://www.capterra.com/p/78106/Service-Assistant/reviews/?page=2
 
+**Internal research reports (this repo)**
+- R1 - Field service platforms: [research/R1-field-service-platforms.md](research/R1-field-service-platforms.md) (Jobber seat caps and extra-user pricing; ServiceTitan's 2021 acquisition of Aspire, citing [TechCrunch](https://techcrunch.com/2021/06/30/servicetitan-acquires-aspire-to-move-into-landscaping-raises-200m-at-a-9-5b-valuation))
+- R2 - Landscape-specific platforms: [research/R2-landscape-specific-platforms.md](research/R2-landscape-specific-platforms.md) (LMN and SingleOps merger under Granum; Xplor ownership of Service Autopilot; LMN legacy crew seat limits; Aspire portal PIN review)
+- Capterra - Aspire review mentioning a PIN at each portal login (via R2): https://www.capterra.com/p/161544/Aspire/reviews/7184520/
+- Green Industry Pros - Granum launches LMN Pay experience (via R2): https://www.greenindustrypros.com/business-management/software/product/22963124/granum-granum-launches-lmn-pay-experience
+
 **Market commentary (vendor or third-party; treat as claims)**
 - Fieldproxy - Why landscaping companies choose software with unlimited users: https://www.fieldproxy.ai/blog/11-reasons-landscaping-companies-choose-software-with-unlimited-users-d1-41
 - Hackceleration - Best landscaping business software 2026: https://hackceleration.com/labs/best/landscaping-business-software
@@ -2498,4 +2516,10 @@ Research for this document was done in November 2026. Web page fetching was unav
 - Illinois Biometric Information Privacy Act (740 ILCS 14): https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=3004&ChapterID=57
 - U.S. EPA - Certification standards for pesticide applicators: https://www.epa.gov/pesticide-worker-safety/certification-standards-pesticide-applicators
 - U.S. Department of Labor - H-2B program: https://www.dol.gov/agencies/whd/immigration/h2b
+- eCFR - 20 CFR Part 655, Subpart A (H-2B labor certification, including employer obligations and the hours guarantee; verify current text): https://www.ecfr.gov/current/title-20/chapter-V/part-655/subpart-A
+- eCFR - 29 CFR Part 516 (FLSA records to be kept by employers; retention periods): https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-B/part-516
+- U.S. Department of Labor - YouthRules (federal child-labor rules for workers under 18): https://www.youthrules.gov/
+- NIST SP 800-63B-4 Digital Identity Guidelines, Authentication and Authenticator Management (revision 4; could not be fetched during review, verify): https://pages.nist.gov/800-63-4/sp800-63b.html
+- Illinois General Assembly - SB 2979 (2024 BIPA amendment; verify bill status and text): https://www.ilga.gov/
+- Stripe - Connect webhooks and connected-account events (for external-account change alerts; verify event names for Standard accounts): https://docs.stripe.com/connect/webhooks
 - Stripe Connect documentation: https://docs.stripe.com/connect

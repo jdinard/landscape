@@ -753,3 +753,933 @@ Scope:
 
 > **Competitive edge:** Horizontal FSMs mostly bolt on a payroll provider [B]. Rootline's embedded option is fed by a landscape-aware rules engine. Piece-rate rest pay, regular-rate bonus true-ups, H-2B reimbursements and prevailing-wage differentials arrive at the partner already computed. Neither generic payroll nor generic FSM software can do that.
 
+### 4.15 Safety management
+
+Capture in the field (tailgate talks, JHAs, incident reports, heat checks, DVIRs) is owned by [05 section 4.12](05-field-crew-mobile-app.md). This module owns programs, case management, logs, analytics and exports.
+
+**SAFE-01 Safety program hub [V1].** Written programs with owner, version, review date and acknowledgment tracking. Templates (EN/ES; counsel and safety-professional review flagged): California Injury and Illness Prevention Program (IIPP, 8 CCR 3203; verify), Heat Illness Prevention Plan, Hazard Communication (with the SDS library linked to products in [14](14-service-line-modules.md)), Emergency Action Plan (yard), PPE hazard assessment per task, vehicle and trailer safety, chainsaw and chipper program, drug and alcohol policy (with a DOT section for CDL drivers). Annual review reminders.
+
+**SAFE-02 Incident case management [MVP].** Incident reports from the crew app ([05 section 4.12.4](05-field-crew-mobile-app.md)) arrive as `incident.reported`. Case workflow: `reported -> triaged -> investigating -> corrective_actions -> closed`. Investigation tools: timeline, photos, witness statements (voice, translated), root-cause prompts (5 whys with options such as equipment, training, procedure, environment, supervision), contributing factors. Corrective actions have owners and due dates (e.g., "Add slope warning to 14 Pine property notes", "Retrain Crew 5 on trailer backing", "Replace mower deflector"). Training assignments auto-create from corrective actions (LMS-04). Property-damage incidents can trigger the client communication and claim workflow in [06](06-customer-portal.md). Vehicle incidents link to the asset in [13](13-operations-inventory-equipment.md).
+
+**SAFE-03 OSHA recordability determination [MVP guided; V1 AI-suggested].** A guided decision tree based on 29 CFR 1904.4-1904.7 ([eCFR Part 1904](https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1904)):
+1. Is it work-related (presumption in the work environment, with listed exceptions)?
+2. Is it a new case?
+3. Does it meet general recording criteria: death, days away from work, restricted work or job transfer, medical treatment beyond first aid, loss of consciousness, or a significant injury or illness diagnosed by a licensed health care professional?
+
+The **first-aid list** (e.g., non-prescription medication at non-prescription strength, cleaning and bandaging wounds, hot or cold therapy, eye flushing, removal of splinters by simple means) is built in as a picker, so "ice pack and bandage" is clearly first aid and "stitches" is medical treatment. Day counting follows calendar days with the 180-day cap. **Privacy concern cases** (e.g., sexual assault, certain illnesses) hide the name on the log ("privacy case"). The safety admin makes the decision and records the rationale. AI may suggest a determination with cited rule text, but never decides ([10](#10-ai-opportunities-in-this-module)).
+
+**SAFE-04 OSHA 300, 301 and 300A [MVP].**
+- Log per **establishment** (each yard or branch that operates for a year or more is typically its own establishment; verify).
+- The Form 301-equivalent incident record must be completed within 7 calendar days of learning of a recordable case. A countdown appears on the case.
+- **300A annual summary** is generated in January with case totals, the **annual average number of employees** and **total hours worked by all employees** computed from Rootline payroll hours (a step owners usually estimate). The owner e-certifies as company executive. A reminder covers posting from **February 1 to April 30**.
+- **Electronic submission**: export in OSHA Injury Tracking Application CSV format for establishments that must submit (thresholds and industry lists changed in 2024; landscaping, NAICS 561730, is believed to be covered for 20-249 employee establishments, verify) by the March 2 deadline ([OSHA ITA](https://www.osha.gov/injuryreporting)).
+- **Severe injury reporting clock**: fatality within 8 hours, in-patient hospitalization, amputation or loss of an eye within 24 hours. The case shows a red countdown plus OSHA reporting instructions.
+- Employee access: employees and representatives may request copies of the 300 log. Rootline generates the copy with privacy cases masked and tracks the response deadline (end of next business day, verify).
+- Retention: 5 years after the end of the calendar year. Records are locked.
+- Partially exempt employers and small employers (10 or fewer employees all year) can turn logs off, with the reason saved (verify current partial exemption list).
+
+**SAFE-05 Heat illness prevention [MVP CA; V1 WA, OR, MD, NV and federal-ready].** Builds on the field workflow in [05 section 4.12.5](05-field-crew-mobile-app.md):
+- **Plan builder:** a written Heat Illness Prevention Plan in English and Spanish with Company-specific sections (water sources and quantities on trucks, shade method such as pop-up canopies on trailers, high-heat procedures, emergency response with each property's address, closest hospital lookup [V1], acclimatization method, training schedule). Exports as a signed PDF and is available offline in the crew app.
+- **Thresholds per jurisdiction pack** (verify all): California outdoor 3395 (shade at 80 F; high-heat procedures at 95 F for listed industries including landscaping); Washington outdoor heat exposure rule (WAC 296-62-095, with action levels starting at 80 F (lower for non-breathable clothing) and mandatory cool-down rest at higher levels); Oregon (OAR 437-002-0156, triggers based on heat index); Maryland heat stress standard (heat index based); Nevada heat illness requirements. If a federal OSHA heat rule is finalized, the pack updates (rulemaking status as of Nov 2026: verify) ([OSHA heat rulemaking](https://www.osha.gov/heat-exposure/rulemaking)).
+- **Acclimatization schedules:** new and returning workers get a ramp (a common reference is starting at no more than 20% of the usual exposure on day 1 and increasing by no more than 20% per day; verify the guidance referenced by each jurisdiction). Scheduling shows them on lighter tasks or shaded work where possible ([04](04-scheduling-dispatch-routing.md)).
+- **Heat-flex start times [V1]:** routes tagged as heat-flexible automatically shift earlier on forecast days above a threshold, with client notifications through [04](04-scheduling-dispatch-routing.md). Noise-ordinance windows per municipality are respected (e.g., no blowers before 8 a.m.).
+- **Training records:** annual heat training before exposure, for both employees and supervisors (supervisor content differs).
+- **Compliance report:** days at each heat level, procedures activated, checks logged, gaps.
+
+**SAFE-06 JHA and property hazards [V1].** JHA templates per task (tree removal, slope mowing, roadside work, paver cutting with silica controls, chemical mixing) completed in the crew app. Property hazard register (slopes over 3:1, overhead lines, wasp nests, aggressive dogs, pools) with photos, linked to the Property and shown on visit cards ([05](05-field-crew-mobile-app.md), [03](03-crm-sales-estimating-proposals.md) slope flag).
+
+**SAFE-07 Safety observations and anonymous hazard reports [V1].** Crew leads log positive and corrective observations ("Wearing chaps on saw work: 4/4"). Any employee can file an anonymous hazard report (no user ID stored; the server strips identifiers; photos are EXIF-stripped). Rootline shows an anti-retaliation notice explaining that employees have the right to report injuries and hazards without retaliation (29 CFR 1904.35 and OSH Act section 11(c); verify).
+
+**SAFE-08 Chemical safety [V1].** SDS library per product, PPE per label (from the product library in [14](14-service-line-modules.md)), mixing and loading logs, exposure incidents, and Hazard Communication training records. Applicator credential checks come from [CRED-05](#45-certifications-licenses-and-qualification-enforcement).
+
+**SAFE-09 Safety incentives that do not suppress reporting [V1].** Rewards attach only to **leading indicators**: near-miss reports, hazard fixes, observations, tailgate participation and training completion. Rootline will not offer "zero injuries" or "no recordables" rewards as a template, because incentive programs that discourage injury reporting can violate OSHA's anti-retaliation provisions (verify current OSHA interpretation). Cross-doc note: the crew-app safety streak in [05 section 4.15](05-field-crew-mobile-app.md) includes "zero recordable incidents". This module recommends that rewards tied to that streak use only its leading-indicator components ([14 open question](#14-open-questions)).
+
+**SAFE-10 Return-to-work and transitional duty [V2].** Work restrictions (no lifting over 20 lb, no ladder use) captured from provider notes the employee chooses to share. Transitional duty task list (yard organization, nursery watering, plant inventory counts, training content recording). Dispatch respects restrictions. Restricted days are counted automatically for the OSHA log.
+
+**SAFE-11 Insurance and loss-control packet [V1].** One-click export for workers' comp and liability insurers: programs, training completion, incident history, TRIR and DART, corrective actions closed, vehicle program, heat program. It supports renewal negotiations and experience-mod discussions. Optional insurer integrations [V2].
+
+**SAFE-12 Canada [V1].** Provincial workplace injury reporting (e.g., Ontario WSIB Form 7 within 3 days of learning of an injury that requires health care or lost time; WorkSafeBC employer reports; verify), joint health and safety committee or representative records where required, and WHMIS for chemical hazard communication.
+
+### 4.16 Performance, recognition and gamification
+
+**PERF-01 Reviews [V1].** Templates: 90-day new-hire review, end-of-season review for seasonal crew (5 minutes, mobile-first, used to decide rehire eligibility and raise), mid-season check, annual review for year-round staff. Competencies have behavioral anchors in English and Spanish ("Seguridad: usa EPP siempre sin recordatorio"). The **context panel** shows attendance and punctuality, scorecards ([05 section 4.15](05-field-crew-mobile-app.md)), training completion, credentials, kudos received and safety observations. This is context for the manager, never an automatic score. Self-review by voice in Spanish is transcribed. The employee acknowledges with e-signature and may add comments.
+
+**PERF-02 Goals [V1].** Individual and crew goals ("Get pesticide license by June 1", "Crew 3: 95% photo compliance in July") with progress tied to system data where possible.
+
+**PERF-03 Check-ins and 1:1s [V1].** New-hire check-ins at days 7, 30, 60 and 90 with scripted questions in the employee's language ("¿Tienes el equipo y la capacitación que necesitas?"). Early-tenure turnover is where seasonal companies lose the most.
+
+**PERF-04 Coaching and discipline [V1].** Documented coaching and progressive discipline with bilingual templates (verbal warning record, written warning, final warning). The employee acknowledges, or a witness acknowledges if the employee refuses. Records are visible to HR roles only. AI may help with neutral wording but never drafts discipline from GPS or productivity data on its own ([1.2](#12-non-goals)).
+
+**PERF-05 Career ladder and pay bands [V1].** Ladder steps per Company, from a template: Laborer I -> Laborer II -> Crew Member -> Specialist (Irrigation Tech, Applicator, Hardscape Installer) -> Crew Lead -> Foreman/Supervisor -> Account or Production Manager. Each step has requirements (seasons of tenure, credentials, LMS paths, practical sign-offs, scorecard thresholds) and a pay band. The employee sees "Next step: Crew Lead - 3 of 5 done (missing: First Aid/CPR, Lead a tailgate talk)". A promotion triggers the pay change workflow (HR-05) and credential and role updates.
+
+**PERF-06 Recognition and kudos [V1].** Peer-to-peer kudos tagged with Company values ("Safety first", "Above and beyond", "Team player"), manager shout-outs, client kudos from ratings and reviews ([06](06-customer-portal.md), [16](16-marketing-growth-communications.md)), birthdays and work anniversaries (opt-in), "Crew of the Month" with the photo posted on the kiosk and in announcements. Kudos feed the recognition analytics in RET-01.
+
+**PERF-07 Gamification [V1 basics per [05 section 4.15](05-field-crew-mobile-app.md); V2 seasons and rewards].** Badges and challenges defined in 05. V2 adds seasons (spring, summer and fall leagues between crews), a points wallet redeemable for rewards (Company swag store, gift cards via partner, extra paid hours off where lawful), and team goals ("All crews 100% heat checks in July = Company BBQ"). Guardrails from 05 are hard-coded: no ranking on speed alone, no reward for fewer breaks, safety never traded against productivity. Rewards with cash value go through payroll as taxable earnings where required (verify).
+
+**PERF-08 Pulse surveys and eNPS [V1].** Monthly 3-question pulse in English and Spanish by push/SMS ("How likely are you to recommend working here?", "Do you have what you need to do your job safely?", open comment by voice). Anonymous with a minimum group size of 5 for any breakdown. Results by branch, never by person.
+
+### 4.17 Announcements and crew communication
+
+**ANN-01 Announcements [MVP].** Compose once, target by branch, crew, role, employment class, language or individual. Channels: crew-app push, SMS (for people without the app), kiosk, in-app feed, email for office. Auto-translation with an optional "review translation" step (required for policy announcements). Read receipts and **acknowledgment-required** mode for policy changes, which logs who acknowledged when. Scheduling and expiry. Urgent safety and weather announcements bypass quiet hours. Attachments (PDF policy, video).
+
+**ANN-02 Off-hours messaging guard [V1].** Non-urgent messages to hourly non-exempt employees outside their shift are queued until the next shift start. Requests that imply work ("Can you check the Smith job photos tonight?") trigger a warning to the sender about off-the-clock work. Where jurisdictions require a disconnecting-from-work policy (Ontario for employers with 25+ employees; verify), Rootline provides the policy template and acknowledgment.
+
+**ANN-03 Crew chat governance [V1].** Crew chat is owned by [05 section 4.14](05-field-crew-mobile-app.md). This module sets HR policy: retention period, export for investigations (HR roles only, logged), moderation of reported messages, and harassment reporting from a message ("Report this message" goes to the HR inbox, not the crew lead).
+
+**ANN-04 Polls and quick surveys [V1].** "Which Saturday for the company cookout?", "Coming back next season?" ([02](02-personas-roles-permissions.md)), "Interested in snow shifts this winter?"
+
+**ANN-05 Company calendar [V1].** Holidays, paydays, training days, events, open enrollment. Synced to the self-service app.
+
+### 4.18 Employee self-service app
+
+The self-service experience lives inside the crew app for field staff (a "Me / Yo" tab) and in the web app for office staff. It works offline for read-only views and queues requests.
+
+| ID | Feature | Priority |
+|---|---|---|
+| ESS-01 | **Home:** today's schedule and crew, clock status, hours this week, next payday, PTO balance, to-dos (sign handbook v4, training due, license expiring), announcements | [MVP] |
+| ESS-02 | **My time:** daily and weekly hours by segment, approval status, weekly acknowledgment, dispute a day | [MVP] |
+| ESS-03 | **My pay:** "Today I earned" estimate ([05](05-field-crew-mobile-app.md)), pay explainer per period (TIME-08), pay stubs (provider link at V1, native with embedded payroll), year-end forms | [V1] |
+| ESS-04 | **Time off and availability:** request, see status, see balances and accrual history | [MVP] |
+| ESS-05 | **My documents and credentials:** signed documents, upload license photos (OCR in V1), expiry dates, CEU progress | [MVP] upload; [V1] full |
+| ESS-06 | **Training:** assigned lessons, offline downloads, quizzes, certificates | [V1] |
+| ESS-07 | **Profile:** phone, address, emergency contacts, sizes, language; changes requiring payroll update are pushed to the provider or routed for approval | [V1] |
+| ESS-08 | **Ask HR (Copilot):** answers grounded in the Company handbook, policies and the employee's own data ("¿Cuántas horas de vacaciones tengo?", "¿Por qué me pagaron overtime el jueves?"), in Spanish by voice; escalates to a human with one tap; never answers immigration-status or legal questions beyond pointing to the policy and a human | [V1] |
+| ESS-09 | **Open shifts and swaps:** sign up for Saturday cleanups, snow roster volunteer, swap a day with manager approval and qualification checks | [V2] |
+| ESS-10 | **Referrals:** share link, track referred applicants and bonus status | [V1] |
+| ESS-11 | **Kudos and recognition:** give and receive, badges | [V1] |
+| ESS-12 | **Career:** ladder step, requirements, learning path | [V1] |
+| ESS-13 | **Hibernated "My records":** hours history, tax forms, "coming back?" response ([02](02-personas-roles-permissions.md)) | [V1] |
+| ESS-14 | **Accessibility:** read-aloud for every screen, voice input, icon-first navigation for low literacy, large text, high-contrast outdoor theme | [MVP] |
+
+### 4.19 Retention analytics and workforce planning
+
+**RET-01 People dashboard [V1].** Headcount by status and branch; hires and separations by month; annualized turnover and 90-day retention (metric definitions owned by [18 section 4.3.9](18-reporting-analytics.md)); **season return rate** (hibernated workers who returned / hibernated workers invited); tenure distribution; overtime share of hours; PTO liability; certification compliance; training completion; TRIR and DART; kudos per person; pulse eNPS. Filters: branch, division, crew, manager, position, language, employment class, hire source.
+
+**RET-02 Quit-reason analytics [V1].** Exit survey and termination reason codes, with free-text themes clustered by AI (in English and Spanish) and reviewed by a human: "found year-round work", "pay", "commute", "manager", "heat or workload", "school". Linked to the Beyond-the-brief winter bridge ([13](#13-beyond-the-brief-extra-ideas)).
+
+**RET-03 Check-in suggestions (flight-risk signals) [V2].** Managers see "Suggested check-ins this week" with plain-language reasons from explainable signals: hours cut more than 20% for 3 weeks, no raise in 18 months while peers got one, sustained OT above 10 hours a week, pulse drop, crew change, no kudos in 60 days. Guardrails:
+- No protected characteristics or proxies (age, national origin, language, immigration status, family status, ZIP code as a proxy) are inputs.
+- Signals are shown only as suggestions to talk, never as scores attached to the employee record. They cannot trigger any adverse action or automation.
+- Companies can disable the feature. A fairness review across language groups runs before GA.
+
+**RET-04 Season Plan and workforce forecast [V1].** Demand: contracted recurring work hours by week (from Service Agreements and visit plans, [04](04-scheduling-dispatch-routing.md)), weighted pipeline from [03](03-crm-sales-estimating-proposals.md), and seasonal patterns (spring cleanups, mulch season, fall cleanups, leaf season, snow). Capacity: active employees x availability, plus expected returners (hibernated "coming back" responses x historic return rate), plus H-2B arrivals, minus planned PTO. Output: weekly gap by position and skill (e.g., "Need 2 more licensed applicators by April 20 for the pre-emergent round"), suggested requisitions, overtime-vs-hire trade-off ("Covering the May gap with OT costs $11,800 more than hiring 2 seasonal laborers", illustrative). Feeds the cash forecast in [18](18-reporting-analytics.md).
+
+**RET-05 Pay competitiveness [V2].** Compare Company rates to public wage data (BLS Occupational Employment and Wage Statistics for landscaping and groundskeeping workers by metro; verify data availability) and, opt-in, to anonymized Rootline benchmarks with k-anonymity (minimum 10 Companies per cell) ([18](18-reporting-analytics.md) benchmarking rules).
+
+**RET-06 Stay interviews [V1].** Prompts managers to hold structured stay conversations with top performers mid-season ("What would make you come back next year?"), with notes and follow-up tasks.
+
+### 4.20 Offboarding
+
+**OFF-01 Separation workflow [MVP].** Specified in [02 section 5.18.4](02-personas-roles-permissions.md) (access revocation, assignment removal, approvals reassignment). This module adds:
+- Reason codes: voluntary (other job, year-round work, moved, school, personal, no-call/no-show abandonment) and involuntary (attendance, performance, conduct, policy violation, end of season layoff, position eliminated). Eligible-for-rehire flag with a required note when "No".
+- **Seasonal layoff with expected recall** uses hibernation ([02 section 5.18.2](02-personas-roles-permissions.md)), not termination, but still generates the state separation notices that apply to layoffs (verify per state).
+
+**OFF-02 Offboarding checklist [MVP].**
+
+| Task | Rules |
+|---|---|
+| Equipment, keys, fuel card, uniforms, tablet return | From custody records in [13](13-operations-inventory-equipment.md). Outstanding items listed. No automatic deduction (ONB-05 guardrails) |
+| Final timesheet approval | Blocks final pay export |
+| Final pay export | Off-cycle option with jurisdiction deadline countdown (PAY-05) |
+| PTO payout | Per policy and state rules (California treats earned vacation as wages payable at separation; verify) |
+| Final commissions, bonuses, tips | Computed per plan; clawback rules from [03](03-crm-sales-estimating-proposals.md) |
+| Separation notices | State templates (e.g., California EDD notice to employees and written notice of change in employment relationship; New York Record of Employment; verify), benefits continuation notice handled by provider (verify) |
+| H-2B notices | H2B-09 |
+| Gate-code rotation prompt | [02](02-personas-roles-permissions.md) |
+| Exit survey | OFF-03 |
+| Reference policy | Company policy note (dates and title only, default) |
+
+**OFF-03 Exit survey [V1].** 5 questions plus voice comment in the employee's language, sent by SMS link on the last day. Optional anonymity.
+
+**OFF-04 Unemployment claim tracking [V1].** Log state UI claim notices, response deadlines and documents (separation reason, attendance records). Manual entry first. Automated responder services integration [V2].
+
+**OFF-05 Records retention and minimization [MVP].** Retention schedule per record type (configurable upward, never below legal minimums; all verify per jurisdiction):
+
+| Record | Default minimum retention |
+|---|---|
+| Payroll records (FLSA) | 3 years |
+| Time cards and wage-rate tables (FLSA) | 2 years (California: longer for some records; Rootline default 4 years) |
+| OSHA 300, 300A, 301 | 5 years after the year |
+| H-2B program records | 3 years after the labor certification period |
+| Pesticide application records | Per state (commonly 2-3 years; [14](14-service-line-modules.md)) |
+| Training and safety records | 5 years (Company policy default) |
+| Applicant records | 2 years (federal contractor rules may require more; verify) |
+| Personnel file after separation | 4 years default, then minimize |
+| I-9 | Held by payroll provider (3 years after hire or 1 year after separation, whichever is later; verify) |
+
+After retention ends, PII is minimized (SSN/SIN purged, address and DOB removed, name retained only where aggregate records require it) and the employee becomes `archived` ([02](02-personas-roles-permissions.md)).
+
+**OFF-06 Rehire and boomerang [V1].** "Not eligible" rehire flags show up during ATS duplicate detection with the note visible to HR roles only. Boomerang hires restore seniority per Company policy (HR-02).
+
+### 4.21 Multilingual and accessibility
+
+**I18N-01 Languages [MVP: en-US, es-US for crew app, self-service, applicant flow, onboarding documents, training and announcements; V1: office web app Spanish per [21](21-ux-design-system-sitemaps.md); V1-V2: fr-CA].** Quebec employment documents and communications are subject to the Charter of the French Language as amended by Bill 96 (verify), so Quebec tenants are gated until fr-CA ships. Additional languages for crews (for example Portuguese or Haitian Creole in some metros) are possible as AI-translated, human-reviewed content packs [V2] when demand is proven.
+
+**I18N-02 Translation workflow [MVP].** Translation memory per Company and platform glossary of landscape and HR terms (`platform_curator` maintains it; e.g., edging, string trimmer, pre-emergent, backflow, three-fourths guarantee). Machine translation is labeled until reviewed. Legal documents (offer letters, handbooks, policies, warnings) require human review before they can be sent and show which language version controls.
+
+**I18N-03 Units, currency and formats [MVP].** Piece-rate units in imperial or metric (per cubic yard or per cubic meter of mulch), USD or CAD, local date and number formats, 12/24-hour time by locale.
+
+**I18N-04 Low-literacy and accessibility [MVP].** Icon-first navigation, read-aloud on every screen, voice input for forms, short sentences (plain-language target: grade 6 reading level for crew-facing text), WCAG 2.2 AA ([21](21-ux-design-system-sitemaps.md)).
+
+### 4.22 Documents, e-signature and records
+
+**DOC-01 Template engine [V1].** Merge fields from employee, position, pay, schedule and Company. Templates include offer letter, pay change notice, wage notices (CA 2810.5, NY 195.1; verify), commission agreement, handbook acknowledgment, policy acknowledgment, PPE issuance receipt, equipment authorization, housing rules (H-2B), warning notices, separation letters, reference letter, employment verification letter.
+
+**DOC-02 E-signature [MVP for acknowledgments; V1 full].** See ONB-02. Bulk send ("all field staff sign Heat Plan 2027"), reminders, completion dashboards.
+
+**DOC-03 Legal hold [V1].** `owner` can place a legal hold on an employee, incident or date range, which suspends retention purges and edits. The hold is logged.
+
+**DOC-04 Employee data rights [V1].** Employee access and deletion requests where applicable (for example CCPA rights apply to California employee data; PIPEDA and provincial laws in Canada; verify), with exceptions for legally required records. Export in a readable format in the employee's language.
+
+---
+
+## 5. Key user flows
+
+### 5.1 Spring hiring: from requisition to first shift
+
+1. The Season Plan (RET-04) shows a gap of 9 laborers and 2 applicators by April 6. The owner approves requisitions (ATS-01).
+2. The office manager opens **Post job**. The AI drafts English and Spanish posts with the pay range, and the posting validator checks pay transparency, discriminatory language and fair-chance language (ATS-02). A bilingual staff member reviews the Spanish version.
+3. Publishing pushes the post to the careers page, Google for Jobs, Indeed and Facebook and generates the QR flyer and SMS keyword (ATS-03).
+4. Applicants apply on their phones in Spanish with voice answers (ATS-04). Each applicant gets an instant confirmation text.
+5. The pipeline board shows new applicants. Knock-out flags are highlighted but not auto-rejected unless the Company enabled objective auto-decline (ATS-05).
+6. The office texts interview slots, applicants reply with a number, and reminders go out (ATS-07).
+7. Structured interview with a rubric. An optional paid working interview creates a temporary time entry (ATS-08).
+8. Offer by SMS, e-signed. Background or MVR checks run after the conditional offer where used (ATS-09, ATS-10).
+9. Offer accepted: the Employee record is created, the onboarding checklist starts and the payroll-provider onboarding link is sent (ONB-01, ONB-03).
+10. Day 1: handbook and safety acknowledgments, heat training, monitoring notice, PPE and uniform issuance, buddy assignment. Credentials work from the start date ([02](02-personas-roles-permissions.md)).
+
+```mermaid
+flowchart LR
+    A["Season Plan gap detected"] --> B["Requisition approved"]
+    B --> C["AI drafts EN and ES post"]
+    C --> D{"Posting validator passes?"}
+    D -- "No" --> C
+    D -- "Yes" --> E["Publish: careers page, Indeed, Google, Facebook, QR flyer, SMS keyword"]
+    E --> F["Mobile apply in Spanish or English"]
+    F --> G["Pipeline board"]
+    G --> H["SMS interview slot booking"]
+    H --> I["Structured interview"]
+    I --> J{"Offer?"}
+    J -- "Not selected" --> K["Respectful SMS and talent pool"]
+    J -- "Yes" --> L["Offer e-signed on phone"]
+    L --> M["Employee record created"]
+    M --> N["Onboarding checklist and payroll provider link"]
+    N --> O["Day 1: acknowledgments, PPE issued, heat training"]
+    O --> P["First shift: crew app clock-in"]
+```
+
+### 5.2 Applicant lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> applied
+    applied --> contacted : first outreach
+    applied --> withdrawn : applicant opts out
+    contacted --> screening
+    contacted --> no_response : 7 days no reply
+    no_response --> contacted : re-engaged
+    screening --> interview_scheduled
+    screening --> not_selected
+    interview_scheduled --> interviewed
+    interview_scheduled --> no_show
+    no_show --> interview_scheduled : rebooked
+    interviewed --> offer_sent
+    interviewed --> not_selected
+    offer_sent --> offer_accepted
+    offer_sent --> offer_declined
+    offer_sent --> offer_expired : 3 days default
+    offer_accepted --> onboarding
+    onboarding --> hired : day 1 complete
+    not_selected --> talent_pool : consented
+    offer_declined --> talent_pool : consented
+    hired --> [*]
+    withdrawn --> [*]
+    talent_pool --> applied : re-applies next season
+```
+
+Rules: every transition logs actor and timestamp. `not_selected` sends the template message only after a human confirms. Records in `talent_pool` expire after the retention period (OFF-05).
+
+### 5.3 Time to pay: daily punches to the payroll journal
+
+1. Crew members punch in the crew app. Segments, breaks and attestations are captured offline and synced ([05](05-field-crew-mobile-app.md)).
+2. At end of day, the crew lead reviews and approves the crew's day (level 1).
+3. The server derives timesheets, evaluates the policy pack, and flags exceptions and premiums (TIME-01, TIME-02, RULE-04).
+4. Monday morning, the office manager or ops manager works the exception queue with AI-suggested fixes, then bulk-approves clean timesheets (level 2).
+5. Employees acknowledge their weekly hours in the self-service app (optional) and can dispute.
+6. The pay period close wizard computes pay items (OT with regular-rate inclusion, premiums, bonuses, piece-rate, tips, reimbursements), validates and previews (PAY-02).
+7. An authorized user approves and pushes to the payroll provider (PAY-03).
+8. The provider runs payroll and pays employees. Rootline imports the payroll journal and posts it to the Ledger, then trues up job costs (PAY-08).
+
+```mermaid
+sequenceDiagram
+    participant App as Crew app
+    participant Lead as Crew lead
+    participant Core as Rootline server
+    participant Office as Office manager
+    participant Prov as Payroll provider
+    participant GL as Ledger
+    App->>Core: punch events and attestations (offline sync)
+    Core->>Core: derive segments and evaluate policy pack
+    Lead->>Core: approve crew day (level 1)
+    Core->>Office: exception queue with suggested fixes
+    Office->>Core: resolve exceptions and approve week (level 2)
+    Core->>Core: compute pay items and regular rate
+    Core->>Office: preview totals and validations
+    Office->>Core: approve export
+    Core->>Prov: push hours and earnings (idempotent batch)
+    Prov-->>Core: accepted with batch status
+    Prov->>Prov: run payroll, taxes and direct deposit
+    Core->>Prov: fetch payroll journal
+    Prov-->>Core: register and journal
+    Core->>GL: post payroll journal entry
+    Core->>GL: job cost burden true-up
+```
+
+### 5.4 Timesheet lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> open
+    open --> submitted : week ends or crew lead submits
+    submitted --> lead_approved : crew lead approves
+    submitted --> needs_attention : blocking exception
+    needs_attention --> submitted : fixed with reason
+    lead_approved --> approved : office or ops approves
+    lead_approved --> needs_attention : reviewer rejects
+    approved --> locked : included in exported pay batch
+    approved --> needs_attention : reopened before export
+    locked --> corrected : post-export correction
+    corrected --> locked : adjustment exported next period
+    locked --> [*]
+```
+
+Rules: `locked` timesheets never change in place. Corrections create a `timesheet_correction` and an adjustment pay item in the next batch. Employee acknowledgment is a flag, not a state, so a dispute never blocks payroll. The dispute thread is resolved separately.
+
+### 5.5 Credential expiry and scheduling enforcement
+
+1. A credential record is uploaded and OCR extracts the fields. A manager verifies it, and it becomes `active`.
+2. Expiry alerts go out at 90, 60, 30, 14, 7 and 1 days (CRED-03).
+3. The dispatcher's future-conflict list shows scheduled Visits after the expiry date that need the credential (CRED-05).
+4. If the employee uploads a renewal, verification restores `active` and conflicts clear.
+5. If the credential expires, `employee.certification_expired` fires. The crew app blocks chemical steps ([05](05-field-crew-mobile-app.md)), dispatch blocks assignment per enforcement level, and restricted-use product issue is blocked ([13](13-operations-inventory-equipment.md)).
+
+```mermaid
+flowchart TD
+    A["Credential uploaded"] --> B["OCR extracts fields, employee confirms"]
+    B --> C{"Manager verifies?"}
+    C -- "No" --> D["Rejected with reason, employee notified"]
+    C -- "Yes" --> E["Status active"]
+    E --> F["Expiry alerts 90 to 1 days"]
+    F --> G{"Renewal uploaded and verified before expiry?"}
+    G -- "Yes" --> E
+    G -- "No" --> H["Status expired"]
+    H --> I["Dispatch: hard block or override with reason"]
+    H --> J["Crew app: chemical step blocked offline"]
+    H --> K["Inventory: restricted-use issue blocked"]
+    I --> L["Future-conflict list for dispatcher"]
+```
+
+### 5.6 H-2B season (illustrative timeline, date of need April 1, 2027)
+
+The dates below are defaults for illustration. Actual timing comes from the Company's agent and current DOL and USCIS processing (verify every season).
+
+```mermaid
+gantt
+    title H-2B season plan for a date of need of 2027-04-01 - illustrative
+    dateFormat YYYY-MM-DD
+    axisFormat %b %d
+    section Planning
+    Decide headcount and positions        :a1, 2026-10-26, 14d
+    Prevailing wage request filed         :a2, 2026-11-09, 1d
+    Prevailing wage determination wait    :a3, after a2, 50d
+    section DOL labor certification
+    Filing window 90 to 75 days before    :b1, 2027-01-01, 16d
+    Recruitment and report                :b2, 2027-01-20, 21d
+    Certification decision                :milestone, b3, 2027-02-19, 0d
+    section USCIS and consulate
+    I-129 petition processing             :c1, 2027-02-22, 21d
+    Consular interviews and visas         :c2, 2027-03-12, 16d
+    section Season
+    Arrival and first-week reimbursements :milestone, d1, 2027-04-01, 0d
+    Season work                           :d2, 2027-04-01, 2027-11-20
+    Guarantee checkpoint 1                :milestone, d3, 2027-06-24, 0d
+    Guarantee checkpoint 2                :milestone, d4, 2027-09-16, 0d
+    Departure and return reimbursement    :milestone, d5, 2027-11-20, 0d
+```
+
+Steps in Rootline:
+1. Clone last season's program (H2B-12) and set the date of need. The tracker generates milestones with owners (H2B-02).
+2. Invite the agent as an external collaborator. The agent updates milestone status and uploads documents.
+3. Build the worker roster: returning workers from last season are prefilled (H2B-03).
+4. Deliver the job order to each worker in their language and capture acknowledgment (H2B-04).
+5. Arrange housing and transport (H2B-10, H2B-11).
+6. On arrival: create Employee records via bulk rehire. Week-1 reimbursements and the minimum wage check are queued (H2B-05).
+7. During the season: the three-fourths guarantee tracker and wage-parity checks run continuously (H2B-06, H2B-07).
+8. At season end: return transport reimbursement, departure logging and season summary export (H2B-12).
+
+### 5.7 Incident to OSHA log
+
+```mermaid
+flowchart TD
+    A["Incident reported in crew app"] --> B{"Injury or illness?"}
+    B -- "No" --> C["Near miss or property or vehicle case"]
+    B -- "Yes" --> D{"Fatality, hospitalization, amputation or eye loss?"}
+    D -- "Yes" --> E["Severe injury clock: report to OSHA within 8 or 24 hours"]
+    D -- "No" --> F["Recordability wizard"]
+    E --> F
+    F --> G{"Work-related and new case?"}
+    G -- "No" --> H["Not recordable, rationale saved"]
+    G -- "Yes" --> I{"Beyond first aid, days away, restriction, LOC or significant diagnosis?"}
+    I -- "No" --> H
+    I -- "Yes" --> J["OSHA 300 entry and 301 record within 7 days"]
+    J --> K{"Privacy case?"}
+    K -- "Yes" --> L["Name masked on log"]
+    K -- "No" --> M["Name on log"]
+    L --> N["Days away and restricted counted from timesheets"]
+    M --> N
+    N --> O["Corrective actions and training assigned"]
+    O --> P["Year end: 300A with hours from payroll, owner certifies"]
+```
+
+### 5.8 Production bonus with regular-rate true-up
+
+1. Visits complete. Crew-app quantities and actual hours sync.
+2. The bonus engine computes each Visit's pool after adding required breaks to the budget (COMP-05).
+3. Quality gates evaluate QA score, photos and callbacks over a 7-day window. Pending amounts show in the crew's live tally.
+4. At period close, qualifying pools are distributed by hours to crew members.
+5. The rule engine includes the bonus in each member's regular rate for the workweeks earned and computes the OT premium on it (RULE-02, RULE-03).
+6. The pay items `BONUS_PROD` and `BONUS_OT_TRUEUP` export to payroll with an audit table. Crew members see the explanation in Spanish in their pay explainer.
+
+### 5.9 Time-off request
+
+1. A technician requests Friday off in the self-service app ("Viernes 16 de mayo, personal").
+2. Rootline checks the balance (or provider balance), blackout rules (statutory sick leave bypasses blackouts), and crew coverage for that day.
+3. The crew lead or ops manager gets a push with coverage impact and approves or denies with a reason.
+4. Approved time off removes the employee from Friday's crew in dispatch and notifies the dispatcher about the coverage gap ([04](04-scheduling-dispatch-routing.md)).
+5. At period close the PTO hours export as `PTO` or `SICK` earnings. The accrual ledger records the usage.
+
+### 5.10 Certified payroll week
+
+1. A prevailing wage Job (a school landscape renovation) has classifications loaded from the wage determination (PW-01).
+2. Crew leads tag segment classifications in the crew app (PW-02). The office fixes any gaps before approval.
+3. Pay computation applies base plus fringe obligations and creates `PW_DIFF` and fringe items (PW-03).
+4. After payroll runs, the register import supplies deductions and net pay (PAY-08).
+5. Rootline generates the WH-347-format report for the week, plus "no work" weeks, for e-signature by the authorized signer and submission to the prime contractor or agency portal (PW-04).
+
+### 5.11 Offboarding
+
+Access revocation and the sequence are specified in [02 section 5.18.4](02-personas-roles-permissions.md). This module adds the HR checklist (OFF-02): equipment return from custody records, final timesheet, final pay deadline countdown, PTO payout per policy, final commissions and tips, separation notices, H-2B notices if applicable, exit survey and records retention scheduling.
+
+---
+
+## 6. Screens and wireframes
+
+### 6.1 Screen inventory
+
+| # | Screen | Surface | Primary roles | Priority |
+|---|---|---|---|---|
+| T1 | People list and directory | Web | owner, office_manager, ops_manager | [MVP] |
+| T2 | Employee profile (tabs: Overview, Employment, Pay, Time, Credentials, Training, Documents, Safety, Performance, Equipment) | Web | owner, office_manager, ops_manager (limited) | [MVP] (tabs phase in V1) |
+| T3 | Bulk rehire / hibernate wizard | Web | office_manager | [MVP] |
+| T4 | Season Plan (workforce forecast) | Web | owner, ops_manager | [V1] |
+| T5 | Requisitions and job post builder | Web | owner, office_manager | [V1] |
+| T6 | Applicant pipeline board | Web, tablet | office_manager, ops_manager | [V1] |
+| T7 | Mobile apply flow | Public mobile web | Applicant | [V1] |
+| T8 | Interview kit and scorecard | Web, tablet | Interviewers | [V1] |
+| T9 | Onboarding tracker | Web | office_manager | [V1] (basic checklist [MVP]) |
+| T10 | H-2B workspace (tracker, roster, housing, transport) | Web | owner, office_manager, agent collaborator | [V1] |
+| T11 | Credentials and qualification matrix | Web | office_manager, ops_manager | [MVP] |
+| T12 | Training library, assignments and authoring | Web | office_manager, ops_manager, platform_curator | [V1] |
+| T13 | Timesheet approval board | Web | office_manager, ops_manager | [MVP] |
+| T14 | Timesheet detail (map, segments, audit trail) | Web | office_manager, ops_manager, crew_lead (own crew) | [MVP] |
+| T15 | Pay period close wizard | Web | owner, office_manager, bookkeeper | [MVP] |
+| T16 | Payroll connections and mappings | Web | owner, bookkeeper | [MVP] |
+| T17 | Pay rules and policy pack settings | Web | owner | [MVP] |
+| T18 | Compensation plans (piece, bonus, lead pay) | Web | owner | [V1] |
+| T19 | Prevailing wage projects and certified payroll | Web | owner, office_manager, bookkeeper | [V1] |
+| T20 | Burden profiles and burden reconciliation | Web | owner, bookkeeper | [MVP] profiles, [V1] reconciliation |
+| T21 | PTO policies and balances | Web | owner, office_manager | [MVP] requests, [V1] engine |
+| T22 | Safety: incidents, OSHA logs, 300A, programs, heat plan | Web | owner, office_manager, ops_manager | [MVP] |
+| T23 | Reviews, goals, career ladder | Web, app | owner, managers, employees | [V1] |
+| T24 | Announcements composer and acknowledgments | Web, app | owner, office_manager, ops_manager | [MVP] |
+| T25 | People dashboard and retention | Web | owner | [V1] |
+| T26 | Offboarding checklist | Web | office_manager | [MVP] |
+| T27 | Self-service: Home, My time, My pay, Time off, Docs, Training, Career, Ask HR | Crew app, web | All employees | [MVP]/[V1] per ESS table |
+| T28 | Kiosk: clock, sign-ins, announcements | Shop tablet | All field employees | [V1] |
+| P1 | Policy pack release console | Platform admin | platform_owner, platform_engineer | [MVP] |
+| P2 | Training library and credential catalog curation | Platform admin | platform_curator | [V1] |
+| P3 | Payroll connector health | Platform admin | platform_engineer, platform_support | [MVP] |
+
+### 6.2 Wireframe: Timesheet approval board
+
+```text
++--------------------------------------------------------------------------------------------------+
+| Team > Timesheets            Week: Sun Jul 12 - Sat Jul 18, 2026   Branch: Sacramento  [v]        |
+| Pay calendar: Weekly field   Cutoff: Mon 10:00 (in 1h 42m)        [ Approve all clean (38) ]     |
++--------------------------------------------------------------------------------------------------+
+| EXCEPTIONS (4)                                    | Filter: [All crews v] [Exceptions only (x)]   |
++---------------------------------------------------+----------------------------------------------+
+| ! Luis Hernandez  Crew 4   Tue Jul 14              | MISSING CLOCK-OUT                            |
+|   Clock-in 6:52  Last segment: job @ 88 Elm 14:51  | AI suggestion: 15:42 (left 88 Elm geofence   |
+|   [Map] [Segments]                                 | 15:31 + drive 11 min to yard, yard entry)     |
+|                                                    | [Accept 15:42] [Edit] [Ask crew lead]        |
++---------------------------------------------------+----------------------------------------------+
+| ! Ana Ruiz  Crew 2   Wed Jul 15                    | CA MEAL PREMIUM                              |
+|   Meal started 11:41 after 5h08m worked            | Attestation: "No pude - mucho trabajo"       |
+|   [Attestation] [Segments]                         | Premium: 1 h at regular rate ($21.45)        |
+|                                                    | [Acknowledge premium] [Add note]             |
++---------------------------------------------------+----------------------------------------------+
+| ! Marco Diaz  Crew 7 (acting lead)  Thu Jul 16     | 13.2 HOURS - DOUBLE TIME 1.2 h               |
+|   Storm cleanup, approved by ops                   | Rest gap before Fri shift: 9h10m (< 10h rule)|
+|                                                    | [Approve] [Add reason]                       |
++---------------------------------------------------+----------------------------------------------+
+| ! Pedro Soto  Crew 3   Fri Jul 17                  | JOB TIME WITHOUT VISIT (0.8 h)               |
+|                                                    | Near: 14 Pine (Mendez) unscheduled           |
+|                                                    | [Assign to visit...] [Mark overhead]         |
++---------------------------------------------------+----------------------------------------------+
+| CLEAN (38)  collapsed   Crew 1 (4)  Crew 2 (3)  Crew 3 (4) ...         [Expand]                   |
++--------------------------------------------------------------------------------------------------+
+| WEEK TOTALS   REG 1,512.0  OT 96.5  DT 1.2  MEAL PREM 3  REST PREM 0  PTO 24.0  SICK 8.0         |
+| Est. gross $41,780 (pay rates visible to owner/office)   vs last week +6%   Labor budget: 97%    |
++--------------------------------------------------------------------------------------------------+
+```
+
+Behaviors: keyboard shortcuts (J/K to move, A to accept a suggestion). Every accepted AI suggestion stores the evidence (geofence exit, visit completion) and the approver. Rows for employees in an H-2B program show a guarantee indicator. Crew leads see the same board limited to their crew and without pay amounts.
+
+### 6.3 Wireframe: Credentials and qualification matrix
+
+```text
++--------------------------------------------------------------------------------------------------+
+| Team > Credentials       Branch: Sacramento [v]   View: (o) Matrix  ( ) Expiring list  ( ) Gaps   |
++--------------------------------------------------------------------------------------------------+
+| Employee        | Driver Lic | CDL-B + Med | Pest. QAL 3A | Backflow | First Aid | Zero-turn | Saw |
+|-----------------|------------|-------------|--------------|----------|-----------|-----------|-----|
+| Ana Ruiz (L)    | OK 2029    | --          | OK Dec 2027  | --       | OK 2027   | AUTH      | --  |
+| Luis Hernandez  | OK 2028    | OK / 47d !  | EXP 12d !!   | --       | --        | AUTH      | AUTH|
+| Marco Diaz (L)  | OK 2027    | --          | Under supv.  | OK 2027  | OK 2026 ! | AUTH      | TRN |
+| Pedro Soto (17) | --         | --          | n/a (<18)    | --       | --        | TRN       | BLK |
+| Jose Luna H-2B  | OK 2027    | --          | --           | --       | OK 2027   | AUTH      | --  |
++--------------------------------------------------------------------------------------------------+
+| FUTURE CONFLICTS                                                                                  |
+|  !! Jul 30  3 pre-emergent visits on Crew 4 need QAL 3A; Luis expires Jul 29                      |
+|     [Reassign to Ana (Crew 2)]  [Request renewal proof]  [Override with reason...]                |
+|  !  Aug 12  Truck 9 + trailer (CMV) needs med card; Luis med card expires Aug 11                  |
++--------------------------------------------------------------------------------------------------+
+| Legend: OK active | ! expiring <60d | !! <14d | EXP expired | AUTH authorized | TRN in training |  |
+|         BLK blocked by law (minor) | Under supv. = may apply under licensed supervision (state)   |
++--------------------------------------------------------------------------------------------------+
+```
+
+### 6.4 Wireframe: Mobile apply in Spanish
+
+```text
++----------------------------------+   +----------------------------------+   +----------------------------------+
+| Green Valley Landscapes          |   | Pregunta 2 de 4                  |   | Listo, Jose!                     |
+| Trabajador de Paisajismo         |   |                                  |   |                                  |
+| $19 - $23 / hora                 |   | Tiene experiencia con podadoras  |   | Recibimos su solicitud para      |
+| Lun-Vie 7:00-3:30, abr-nov       |   | zero-turn?                       |   | Trabajador de Paisajismo.        |
+|                                  |   |                                  |   |                                  |
+| No necesita curriculum.          |   | [ Si, mas de 1 temporada ]       |   | Le enviaremos un texto para      |
+| Toma 3 minutos.                  |   | [ Si, menos de 1 temporada ]     |   | una entrevista, normalmente      |
+|                                  |   | [ No, pero quiero aprender ]     |   | en 1-2 dias.                     |
+| [ English ]  [ ESPANOL (x) ]     |   |                                  |   |                                  |
+|                                  |   | o responda con su voz:           |   | Quien le recomendo? (opcional)   |
+| Nombre: [ Jose Luna          ]   |   |       ( (  MIC  ) )  0:00/0:30   |   | [ Marco Diaz               ]     |
+| Celular:[ (916) 555-0142     ]   |   |                                  |   |                                  |
+| [ Enviar codigo por texto ]      |   | [ < Atras ]        [ Siguiente > ]|   | [ Ver el estado ]                |
++----------------------------------+   +----------------------------------+   +----------------------------------+
+```
+
+(Accents are omitted in the ASCII sketch. The product renders full Spanish orthography.)
+
+### 6.5 Wireframe: H-2B season workspace
+
+```text
++--------------------------------------------------------------------------------------------------+
+| Team > H-2B > 2027 Season (date of need Apr 1, 2027)   Agent: (external collaborator)  [Invite] |
+| Not legal advice. Confirm all filings and obligations with your attorney or agent.               |
++--------------------------------------------------------------------------------------------------+
+| [Tracker]  [Workers (14)]  [Housing]  [Transport]  [Reimbursements]  [Guarantee]  [Documents]     |
++--------------------------------------------------------------------------------------------------+
+| MILESTONE                                   OWNER     DUE         STATUS                          |
+| Prevailing wage determination received      Agent     Jan 05      DONE  Dec 28                   |
+| Labor certification filed (window Jan 1-16) Agent     Jan 02      DONE  Jan 02                   |
+| Recruitment report submitted                Agent     Feb 05      DONE                           |
+| Labor certification decision                DOL       Feb 19      WAITING  (amber: 6 days late)  |
+| I-129 petition filed                        Agent     Feb 26      NOT STARTED                     |
+| Consular appointments (14 workers)          Workers   Mar 12-28   3 of 14 booked                  |
+| Housing ready (2 units, 14 beds)            Office    Mar 25      Unit B lease unsigned  !        |
+| Arrival transport plan                      Office    Mar 28      Draft                           |
++--------------------------------------------------------------------------------------------------+
+| GUARANTEE (period 1, Apr 1 - Jun 23)   offered 0 / 360 h req.   | WAGE PARITY   0 conflicts      |
+| REIMBURSEMENTS queued: visa fees 14 x $___ (enter receipts)      | Corresponding employees: 6     |
++--------------------------------------------------------------------------------------------------+
+```
+
+### 6.6 Wireframe: Pay period close wizard
+
+```text
++--------------------------------------------------------------------------------------------------+
+| Payroll > Close period   Weekly field  Jul 12 - Jul 18   Pay date Fri Jul 24   Provider: Gusto   |
+| (1) Lock  >  (2) Compute  >  (3) Validate  >  [4] Preview  >  (5) Approve  >  (6) Push  >  (7) Post |
++--------------------------------------------------------------------------------------------------+
+| VALIDATION   OK 41   Warnings 2   Blocking 0                                                      |
+|  ! Jose Luna (H-2B): week-1 min wage check needs inbound travel reimbursement $186.40 [Added]     |
+|  ! Pedro Soto (17): 31.5 h this week, within youth limits for summer (verify) [OK]               |
++--------------------------------------------------------------------------------------------------+
+| EARNINGS SUMMARY          Hours      Amount       | BY DIVISION           Gross     vs forecast  |
+| REG                       1,512.0    $31,890.20   | Maintenance          $24,250    +2%         |
+| OT (reg. rate incl bonus)    96.5     $3,141.08   | Enhancements          $7,900    -4%         |
+| DT                            1.2        $52.18   | Installation          $6,860    +9%         |
+| MEAL_PREM / REST_PREM      3 / 0         $63.10   | Lawn care             $2,767    0%          |
+| BONUS_PROD                            $1,214.00   |                                            |
+| BONUS_OT_TRUEUP                          $48.37   | Tips payable cleared   $412.00              |
+| PIECE + NONPROD + RESTREC             $2,286.40   | Reimbursements         $918.60              |
+| PTO / SICK                 24.0 / 8.0   $672.00   |                                            |
+| COMM (2 estimators)                   $2,410.00   |                                            |
+| TOTAL GROSS (excl. reimb.)           $41,777.33  | [Download audit workbook]                   |
++--------------------------------------------------------------------------------------------------+
+| [ < Back ]                          Two-person approval required above $40,000   [ Approve > ] |
++--------------------------------------------------------------------------------------------------+
+```
+
+### 6.7 Wireframe: Self-service home (Spanish, crew app "Yo" tab)
+
+```text
++----------------------------------+
+| Hola, Ana                    [ES]|
+| Jueves 16 de julio               |
++----------------------------------+
+| HOY  Cuadrilla 2 (lider)         |
+| En turno: 6:48 - ahora  7h12m    |
+| Hoy gane (estimado): $168.40     |
+|   incluye bono producc. $9.00    |
++----------------------------------+
+| ESTA SEMANA   38.5 h  OT 0.0     |
+| Dia de pago: viernes 24 (8 dias) |
+| Vacaciones: 22.5 h  Enferm.: 31h |
++----------------------------------+
+| PENDIENTE                        |
+| [!] Firmar: Plan de calor 2026   |
+| [>] Leccion: Remolques (2 min)   |
+| [!] Licencia QAL vence en 140 d  |
++----------------------------------+
+| AVISOS                           |
+| Calor extremo manana: entrada    |
+| 5:30 a.m. Traigan agua extra.    |
+| [Leido]                          |
++----------------------------------+
+| [Hoy] [Tiempo] [Pago] [Pedir dia]|
+| [Aprender] [Pregunta a RH (mic)] |
++----------------------------------+
+```
+
+---
+
+## 7. Data model
+
+All tables live in the `people` domain module ([20](20-architecture-security.md)). Every table carries `tenant_id` (the Company) and is protected by Postgres row-level security. Restricted fields (SSN/SIN, DOB, driver's license number, immigration documents, medical notes, background-check results, bank details) use application-layer envelope encryption and are excluded from AI context by default ([20](20-architecture-security.md)). Time punches remain append-only events owned by the crew-app sync domain. `time_segment` and `timesheet` are derived projections that can be rebuilt.
+
+### 7.1 Entity catalog
+
+| Group | Entity | Purpose and key fields |
+|---|---|---|
+| People | `employee` | One per human per Company: names, preferred_language, mobile, status, worker_type, flsa_status, employment_class, home_branch_id, home_crew_id, manager_employee_id, position_id, labor_class_id, membership_id (nullable), provider_employee_ref |
+| | `employee_sensitive` | 1:1 Restricted record: dob, ssn_or_sin_enc, home_address_enc, dl_number_enc, medical_notes_enc |
+| | `employment` | Stints: start_date, end_date, separation_reason, rehire_eligible, employment_class, h2b_program_id |
+| | `position` | Catalog: title, default_labor_class_id, pay_band_min/max, required_credential_type_ids, required_training_ids |
+| | `pay_rate` | Effective-dated: employee_id, rate_type (default, work_type, differential, salary), work_type_key, amount, currency, effective_from/to, approved_by |
+| | `comp_plan` / `comp_plan_assignment` | Piece, production bonus, lead pay, commission link, on-call: plan_type, rules jsonb (versioned), effective dates |
+| Hiring | `requisition`, `job_post`, `job_post_channel` | Headcount request, bilingual post content, distribution status and source codes |
+| | `applicant`, `application`, `application_answer` | Person (dedupe by phone), application per requisition, answers with audio_url and transcript per language |
+| | `interview`, `interview_scorecard` | Slot, interviewers, rubric scores |
+| | `offer` | Terms snapshot, document_id, status, expires_at |
+| | `background_check` | Partner ref, status, adverse action steps (Restricted) |
+| | `referral` | Referrer employee, applicant, bonus milestones |
+| Onboarding and documents | `checklist_template`, `checklist_instance`, `checklist_task` | Onboarding and offboarding checklists |
+| | `document`, `document_signature` | Generated or uploaded documents, language, hash, signer, signed_at, controlling_language |
+| H-2B | `h2b_program` | Season record, date_of_need, end_date, case numbers, offered wages |
+| | `h2b_milestone` | Generated from template, owner, due, status |
+| | `h2b_worker_case` | Worker-level visa and travel data (Restricted) |
+| | `h2b_reimbursement` | Type, amount, due_by, paid_in_batch_id |
+| | `h2b_guarantee_period` | Period dates, hours_required, hours_offered, shortfall |
+| | `housing_unit`, `housing_assignment`, `transport_trip`, `transport_assignment` | Housing and transport boards |
+| Credentials and training | `credential_type` | Platform or Company catalog: authority, jurisdiction, categories, validity rules, ceu_rules |
+| | `credential` | Holder (employee or subcontractor org or Company), number_enc, categories, issued/expires, status, verified_by |
+| | `credential_requirement` | Rule: subject (service, equipment_class, task_type, job, crew_composition), credential_type, categories, enforcement_level, min_age |
+| | `training_module`, `training_lesson`, `quiz`, `quiz_question` | Content (versioned, multilingual) |
+| | `training_assignment`, `training_completion`, `quiz_attempt`, `skill_signoff` | Assignment and evidence |
+| | `equipment_authorization` | Employee x equipment class status |
+| Time and pay | `time_segment` | Derived: employee_id, start/end, segment_type, visit_id, job_id, cost_code, branch_id, division_id, work_location_id, pw_classification_id, piece_units, source |
+| | `timesheet` | Employee x workweek: state, approvals, exceptions_count, acknowledged_at |
+| | `timesheet_exception`, `timesheet_approval`, `timesheet_correction` | Exceptions, approvals by level, post-lock corrections |
+| | `policy_pack`, `policy_pack_version` | Jurisdiction rule bundles (platform-owned, versioned) |
+| | `pay_calendar`, `pay_period` | Calendars, workweek definition, cutoff |
+| | `pay_item` | Computed earning lines: employee_id, pay_period_id, workweek, earning_code, hours, rate, amount, work_location_id, regular_rate_included, source_ref |
+| | `payroll_batch`, `payroll_batch_line` | Export batch, idempotency_key, status, provider response |
+| | `payroll_connection` | Provider, auth (OAuth tokens encrypted), mappings |
+| | `earning_code_map`, `employee_provider_map` | Mappings |
+| | `payroll_journal_import` | Register totals, ledger_journal_entry_id |
+| | `pto_policy`, `pto_enrollment`, `pto_ledger_entry`, `time_off_request` | Leave policies, append-only balance ledger, requests |
+| | `availability_rule` | Recurring availability and exceptions |
+| | `pw_project`, `pw_classification`, `certified_payroll_report` | Prevailing wage |
+| | `burden_profile`, `burden_component`, `wc_class_code`, `service_wc_class_map` | Burden and workers' comp |
+| Safety | `safety_case` | Extends `incident` from [05](05-field-crew-mobile-app.md): recordable, classification, days_away, days_restricted, privacy_case, rationale, establishment_id |
+| | `osha_establishment`, `osha_annual_summary` | 300A data, certification |
+| | `corrective_action` | Owner, due, status |
+| | `safety_program`, `heat_plan` | Written programs, versions, acknowledgments |
+| | `safety_observation`, `hazard_report` | Observations, anonymous reports (no user ref) |
+| Engagement | `review_cycle`, `review`, `goal`, `career_ladder`, `ladder_step`, `ladder_progress` | Performance and career |
+| | `kudos`, `badge_award`, `pulse_survey`, `pulse_response` | Recognition and listening (responses stored without employee ref when anonymous) |
+| | `announcement`, `announcement_target`, `announcement_receipt` | Comms and acknowledgments |
+| | `offboarding_case` | Separation details, checklist_instance_id, final_pay_due_at |
+
+### 7.2 Entity relationship diagrams
+
+**Core people, time and pay**
+
+```mermaid
+erDiagram
+    company ||--o{ employee : employs
+    employee ||--|| employee_sensitive : has
+    employee ||--o{ employment : has_stints
+    employee ||--o{ pay_rate : paid_at
+    employee }o--|| position : holds
+    employee ||--o{ comp_plan_assignment : enrolled_in
+    comp_plan ||--o{ comp_plan_assignment : assigned
+    employee ||--o{ time_segment : works
+    employee ||--o{ timesheet : has
+    timesheet ||--o{ time_segment : groups
+    timesheet ||--o{ timesheet_exception : flags
+    timesheet ||--o{ timesheet_approval : approved_by
+    time_segment }o--o| visit : allocated_to
+    time_segment }o--o| pw_classification : classified_as
+    policy_pack ||--o{ policy_pack_version : versions
+    pay_calendar ||--o{ pay_period : defines
+    pay_period ||--o{ pay_item : contains
+    employee ||--o{ pay_item : earns
+    payroll_batch ||--o{ payroll_batch_line : includes
+    pay_item ||--o| payroll_batch_line : exported_as
+    payroll_connection ||--o{ payroll_batch : receives
+    payroll_batch ||--o| payroll_journal_import : reconciled_by
+    employee ||--o{ pto_ledger_entry : accrues
+    pto_policy ||--o{ pto_ledger_entry : governs
+    burden_profile ||--o{ burden_component : includes
+
+    employee {
+        uuid id PK
+        uuid tenant_id FK
+        string legal_first_name
+        string legal_last_name
+        string preferred_name
+        string preferred_language
+        string mobile_e164
+        string status
+        string flsa_status
+        string employment_class
+        uuid home_branch_id FK
+        uuid position_id FK
+        uuid labor_class_id FK
+        uuid membership_id FK
+        string provider_employee_ref
+    }
+    pay_rate {
+        uuid id PK
+        uuid employee_id FK
+        string rate_type
+        string work_type_key
+        decimal amount
+        string currency
+        date effective_from
+        date effective_to
+        uuid approved_by FK
+    }
+    time_segment {
+        uuid id PK
+        uuid employee_id FK
+        timestamp starts_at
+        timestamp ends_at
+        string segment_type
+        uuid visit_id FK
+        uuid job_id FK
+        uuid work_location_id FK
+        uuid pw_classification_id FK
+        decimal piece_units
+        string source
+    }
+    timesheet {
+        uuid id PK
+        uuid employee_id FK
+        date workweek_start
+        string state
+        int exception_count
+        timestamp acknowledged_at
+        uuid policy_pack_version_id FK
+    }
+    pay_item {
+        uuid id PK
+        uuid employee_id FK
+        uuid pay_period_id FK
+        date workweek_start
+        string earning_code
+        decimal hours
+        decimal rate
+        decimal amount
+        boolean regular_rate_included
+        uuid work_location_id FK
+        string source_ref
+    }
+    payroll_batch {
+        uuid id PK
+        uuid pay_period_id FK
+        uuid payroll_connection_id FK
+        string idempotency_key
+        string status
+        timestamp pushed_at
+        uuid approved_by FK
+    }
+    pto_ledger_entry {
+        uuid id PK
+        uuid employee_id FK
+        uuid pto_policy_id FK
+        string entry_type
+        decimal hours
+        date effective_date
+        uuid source_timesheet_id FK
+    }
+```
+
+**Hiring, credentials, H-2B and safety**
+
+```mermaid
+erDiagram
+    requisition ||--o{ job_post : advertised_by
+    requisition ||--o{ application : receives
+    applicant ||--o{ application : submits
+    application ||--o{ application_answer : contains
+    application ||--o{ interview : schedules
+    application ||--o| offer : results_in
+    offer ||--o| employee : creates
+    employee ||--o{ checklist_instance : onboards_with
+    checklist_instance ||--o{ checklist_task : contains
+    employee ||--o{ document_signature : signs
+    credential_type ||--o{ credential : typed_as
+    employee ||--o{ credential : holds
+    credential_type ||--o{ credential_requirement : required_by
+    employee ||--o{ training_completion : completes
+    training_module ||--o{ training_completion : evidenced_by
+    h2b_program ||--o{ h2b_milestone : tracks
+    h2b_program ||--o{ h2b_worker_case : covers
+    employee ||--o| h2b_worker_case : has
+    h2b_worker_case ||--o{ h2b_reimbursement : owed
+    h2b_program ||--o{ h2b_guarantee_period : measures
+    housing_unit ||--o{ housing_assignment : houses
+    employee ||--o{ housing_assignment : assigned
+    incident ||--o| safety_case : evaluated_as
+    osha_establishment ||--o{ safety_case : logs
+    safety_case ||--o{ corrective_action : drives
+    osha_establishment ||--o{ osha_annual_summary : summarizes
+
+    application {
+        uuid id PK
+        uuid requisition_id FK
+        uuid applicant_id FK
+        string language
+        string source_code
+        string stage
+        timestamp stage_changed_at
+    }
+    credential {
+        uuid id PK
+        uuid credential_type_id FK
+        string holder_type
+        uuid holder_id
+        string number_enc
+        string categories
+        date issued_on
+        date expires_on
+        string status
+        uuid verified_by FK
+    }
+    credential_requirement {
+        uuid id PK
+        uuid credential_type_id FK
+        string subject_type
+        uuid subject_id
+        string required_categories
+        string enforcement_level
+        int min_age
+    }
+    h2b_program {
+        uuid id PK
+        uuid tenant_id FK
+        date date_of_need
+        date end_date
+        int workers_requested
+        string dol_case_number
+        string uscis_receipt_number
+        string status
+    }
+    h2b_guarantee_period {
+        uuid id PK
+        uuid h2b_program_id FK
+        uuid employee_id FK
+        date period_start
+        date period_end
+        decimal hours_required
+        decimal hours_offered
+        decimal shortfall_hours
+    }
+    safety_case {
+        uuid id PK
+        uuid incident_id FK
+        uuid establishment_id FK
+        boolean recordable
+        string classification
+        int days_away
+        int days_restricted
+        boolean privacy_case
+        string rationale
+        uuid decided_by FK
+    }
+```
+
+### 7.3 Employee and employment state machine
+
+This extends the membership lifecycle in [02](02-personas-roles-permissions.md). Employee status and membership status are synchronized but distinct: an employee without a login still moves through these states.
+
+```mermaid
+stateDiagram-v2
+    [*] --> onboarding : offer accepted or manual add
+    onboarding --> active : start date reached and blocking tasks done
+    onboarding --> withdrawn : no-show before start
+    active --> on_leave : approved leave
+    on_leave --> active : return
+    active --> hibernated : seasonal layoff with recall
+    hibernated --> active : rehire
+    active --> terminated : separation
+    on_leave --> terminated : separation
+    hibernated --> terminated : not returning or recall window ends
+    terminated --> onboarding : rehire after separation
+    terminated --> archived : retention period ends and PII minimized
+    withdrawn --> archived
+    archived --> [*]
+```
+
+Rules:
+- `active` requires: start date reached, all checklist tasks marked "blocking for first shift" complete, and no hard-block credential gaps for the position's mandatory credentials.
+- `hibernated` keeps pay rates, credentials, training and PIN hash ([02 section 5.18.2](02-personas-roles-permissions.md)). No seat charge.
+- `terminated -> onboarding` (rehire after a real separation) creates a new `employment` stint and re-runs onboarding items whose validity lapsed (e.g., handbook version changed).
+- `archived` is terminal for PII. Statistical records remain with minimized identity.
+
+### 7.4 Key constraints and indexes
+
+- `employee`: unique (`tenant_id`, `mobile_e164`) where status not in (`terminated`, `archived`). Unique (`tenant_id`, `employee_number`).
+- `time_segment`: exclusion constraint preventing overlapping ranges per employee (`tstzrange(starts_at, ends_at)` with GiST). Conflicts from sync are recorded as exceptions, not inserted.
+- `pay_rate`: no overlapping effective ranges per (`employee_id`, `rate_type`, `work_type_key`).
+- `pay_item`: unique (`pay_period_id`, `employee_id`, `earning_code`, `workweek_start`, `work_location_id`, `source_ref`) to make recomputation idempotent.
+- `payroll_batch`: unique `idempotency_key`. A batch's content hash is stored to detect duplicate pushes.
+- `pto_ledger_entry`: append-only (no update or delete grants). Balance via materialized view refreshed at period close and on request.
+- `credential`: index on (`tenant_id`, `expires_on`, `status`) for the daily expiry job.
+- Retention jobs respect `legal_hold` flags on employee, case and document.
+
