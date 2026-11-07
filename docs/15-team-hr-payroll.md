@@ -792,7 +792,7 @@ Add H-2B program costs (fees, agent, transport, recruiting) amortized over a wor
 
 **PAY-05 Corrections and off-cycle [MVP].** After export, corrections create an adjustment batch for the next period. Final pay: termination triggers an off-cycle export option with jurisdiction timing guidance. For example, California requires final wages immediately at involuntary termination and within 72 hours for a quit without notice (verify). The UI shows the deadline countdown and a "not legal advice" note. Retro pay (late-approved raises) is computed per affected week, including regular-rate effects.
 
-**PAY-06 Multi-state and local work-location allocation [V1].** Hours and earnings per work location (state, county, municipality) for each employee. This feeds providers that support per-location wages and produces a report for those that do not. Relevant for crews crossing state lines (e.g., Kansas City metro, the New York-New Jersey area, Lake Tahoe) and for local income taxes based on work location (e.g., Ohio municipalities, Pennsylvania local earned income tax; verify rules).
+**PAY-06 Multi-state and local work-location allocation [V1].** Hours and earnings per work location (state, county, municipality) for each employee. This feeds providers that support per-location wages and produces a report for those that do not. Relevant for crews crossing state lines (e.g., Chicagoland and Northwest Indiana, Toledo and Southeast Michigan, Kansas City metro, the New York-New Jersey area, Lake Tahoe) and for local income taxes based on work location (e.g., Ohio municipalities, Pennsylvania local earned income tax; verify rules). Because the launch region includes both cases, segments already carry their work location at MVP (TIME-01) and the MVP export can include it; whether the full allocation report moves to MVP is open question 2.
 
 **PAY-07 Payroll data quality guardrails [MVP].** Never export an employee whose rate in Rootline differs from the provider's rate by more than $0.01 without confirmation (where the provider exposes rates). Block hours for a hibernated or terminated employee outside their final period. Flag any employee with more than 80 hours in a weekly period. Detect duplicate batches by content hash.
 
@@ -2201,7 +2201,7 @@ People KPI definitions (turnover, 90-day retention, TRIR, certification complian
 | ATS attach | Companies posting at least one job per season / Companies in the hiring tier |
 | Embedded payroll attach (V2) | Companies on embedded payroll / eligible Companies |
 | Time to first payroll export (new tenant) | Days from signup to first successful export |
-| W-2 reconciliation mismatches | Employees with a qualified-OT or tip mismatch vs provider data in January / employees paid | Trending to zero |
+| W-2 reconciliation mismatches | Employees with a qualified-OT or tip mismatch vs provider data in January / employees paid (target: trending to zero) |
 
 ---
 
@@ -2236,7 +2236,7 @@ People KPI definitions (turnover, 90-day retention, TRIR, certification complian
 ## 14. Open questions
 
 1. **Embedded payroll partner:** Check vs Gusto Embedded (or both) for the V1 pilot. What are the white-label depth, state and local coverage, piece-rate and CA premium earning support, Canadian roadmap, economics and liability terms? Decision needed by the start of V1 planning.
-2. **MVP policy pack list:** Federal plus OH, MI, IL, IN and WI at MVP, with CA, WA, OR, CO and NY at [V1], matches the Great Lakes launch region ([24](24-roadmap-feature-catalog.md) OD-52). Open: do design partners in Chicagoland need any Chicago or Cook County ordinance beyond minimum wage and paid leave at MVP, and should Pennsylvania, Kentucky, Minnesota, Ontario or BC move up for Companies that work across the launch states' borders?
+2. **MVP policy pack list:** Federal plus OH, MI, IL, IN and WI at MVP, with CA, WA, OR, CO and NY at [V1], matches the Great Lakes launch region ([24](24-roadmap-feature-catalog.md) OD-52). Open: do design partners in Chicagoland need any Chicago or Cook County ordinance beyond minimum wage and paid leave at MVP, should Ohio municipal and Illinois-Indiana work-location allocation (PAY-06) move to MVP, and should Pennsylvania, Kentucky, Minnesota, Ontario or BC move up for Companies that work across the launch states' borders?
 3. **Rule-pack legal review model:** Retained employment law firm with per-release sign-off, or a compliance-data vendor feed (minimum wages, sick leave laws) plus counsel review? What are the cost and liability allocation?
 4. **Workday definition defaults:** What default workday start minimizes surprises for snow crews (00:00 vs 06:00)?
 5. **Safety streak harmonization:** Should the crew-app "safety streak" ([05 section 4.15](05-field-crew-mobile-app.md)) drop "zero recordable incidents" as a component when tied to rewards (SAFE-09)?

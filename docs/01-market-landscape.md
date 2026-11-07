@@ -22,7 +22,7 @@
 | Owner | `platform_owner` (founder), with GTM staff |
 | Status | Proposal. Evidence-tagged; see section 0 before quoting any number externally |
 | Inputs | [R1 Field-service platforms](research/R1-field-service-platforms.md), [R2 Landscape-specific platforms](research/R2-landscape-specific-platforms.md), [R3 Design, AI and plant data](research/R3-design-ai-plant-data.md), [R4 Industry, payments and accounting](research/R4-industry-payments-accounting.md) (appendices A-D) |
-| Main consumers | [22 Business model, pricing and GTM](22-business-model-pricing-gtm.md), [24 Roadmap and feature catalog](24-roadmap-feature-catalog.md), every module spec (02-21), investors |
+| Main consumers | [22 Business model, pricing and GTM](22-business-model-pricing-gtm.md), [24 Product scope and feature catalog](24-roadmap-feature-catalog.md), every module spec (02-21), investors |
 
 ## Table of contents
 
@@ -1480,7 +1480,7 @@ Market-level metrics tell the founder whether the positioning is working; progra
 | Metric | Definition | Target | Why it matters |
 |---|---|---|---|
 | Win rate by competitor | Won / (won + lost) for opportunities where the competitor was named, per quarter | ≥ 35% vs Jobber, ≥ 30% vs LMN in the Wave 1 Great Lakes Regions | Tests the battlecards and pillars against real deals |
-| Switch-source mix | Share of new paying Companies by previous primary tool (MI-07) | Jobber and LMN together ≥ 50% of Year-1 logos | Confirms the switching windows in section 8 |
+| Switch-source mix | Share of new paying Companies by previous primary tool (MI-07) | Jobber and LMN together ≥ 50% of logos in the Wave 1 Regions | Confirms the switching windows in section 8 |
 | Beachhead share | Paying Companies in the Wave 1 Great Lakes Regions / ICP firms in those Regions (from MI-13) | ≥ 3% before broad expansion (Wave 3) | Tests the beachhead thesis before broad expansion |
 | Archetype mix | Share of paying Companies by archetype A-E | C ≥ 40% of Grow and Pro logos in the Wave 1 Regions | Ensures the product is not pulled toward the easiest buyers |
 | Time to first invoice for switchers | Days from trial start to first invoice paid on the Company's own Stripe account | Median ≤ 10 days | Answers the "it took forever to get running" pain (rank 5) |
