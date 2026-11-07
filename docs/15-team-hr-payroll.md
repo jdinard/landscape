@@ -1311,7 +1311,7 @@ Access revocation and the sequence are specified in [02 section 5.18.4](02-perso
 | Team > Timesheets            Week: Sun Jul 12 - Sat Jul 18, 2026   Branch: Sacramento  [v]       |
 | Pay calendar: Weekly field   Cutoff: Mon 10:00 (in 1h 42m)        [ Approve all clean (38) ]     |
 +--------------------------------------------------------------------------------------------------+
-| EXCEPTIONS (4)                                    | Filter: [All crews v] [Exceptions only (x)]   |
+| EXCEPTIONS (4)                                    | Filter: [All crews v] [Exceptions only (x)]  |
 +---------------------------------------------------+----------------------------------------------+
 | ! Luis Hernandez  Crew 4   Tue Jul 14             | MISSING CLOCK-OUT                            |
 |   Clock-in 6:52  Last segment: job @ 88 Elm 14:51 | AI suggestion: 15:42 (left 88 Elm geofence   |
@@ -1331,7 +1331,7 @@ Access revocation and the sequence are specified in [02 section 5.18.4](02-perso
 |                                                   | Near: 14 Pine (Mendez) unscheduled           |
 |                                                   | [Assign to visit...] [Mark overhead]         |
 +---------------------------------------------------+----------------------------------------------+
-| CLEAN (38)  collapsed   Crew 1 (4)  Crew 2 (3)  Crew 3 (4) ...         [Expand]                   |
+| CLEAN (38)  collapsed   Crew 1 (4)  Crew 2 (3)  Crew 3 (4) ...         [Expand]                  |
 +--------------------------------------------------------------------------------------------------+
 | WEEK TOTALS   REG 1,512.0  OT 96.5  DT 1.2  MEAL PREM 3  REST PREM 0  PTO 24.0  SICK 8.0         |
 | Est. gross $41,780 (pay rates visible to owner/office)   vs last week +6%   Labor budget: 97%    |
@@ -1346,21 +1346,21 @@ Behaviors: keyboard shortcuts (J/K to move, A to accept a suggestion). Every acc
 +--------------------------------------------------------------------------------------------------+
 | Team > Credentials       Branch: Sacramento [v]   View: (o) Matrix  ( ) Expiring list  ( ) Gaps  |
 +--------------------------------------------------------------------------------------------------+
-| Employee        | Driver Lic | CDL-B + Med | Pest. QAC B  | Backflow | First Aid | Zero-turn | Saw |
-|-----------------|------------|-------------|--------------|----------|-----------|-----------|-----|
-| Ana Ruiz (L)    | OK 2029    | --          | OK Dec 2027  | --       | OK 2027   | AUTH      | --  |
-| Luis Hernandez  | OK 2028    | OK / 47d !  | EXP 12d !!   | --       | --        | AUTH      | AUTH|
-| Marco Diaz (L)  | OK 2027    | --          | Under supv.  | OK 2027  | OK 2026 ! | AUTH      | TRN |
-| Pedro Soto (17) | --         | --          | n/a (<18)    | --       | --        | TRN       | BLK |
-| Jose Luna H-2B  | OK 2027    | --          | --           | --       | OK 2027   | AUTH      | --  |
+| Employee        | Driver Lic | CDL-B+Med  | Pest. QAC B | Backflow | First Aid | Zero-turn | Saw |
+|-----------------|------------|------------|-------------|----------|-----------|-----------|-----|
+| Ana Ruiz (L)    | OK 2029    | --         | OK Dec 2027 | --       | OK 2027   | AUTH      | --  |
+| Luis Hernandez  | OK 2028    | OK / 47d ! | EXP 12d !!  | --       | --        | AUTH      | AUTH|
+| Marco Diaz (L)  | OK 2027    | --         | Under supv. | OK 2027  | OK 2026 ! | AUTH      | TRN |
+| Pedro Soto (17) | --         | --         | n/a (<18)   | --       | --        | TRN       | BLK |
+| Jose Luna H-2B  | OK 2027    | --         | --          | --       | OK 2027   | AUTH      | --  |
 +--------------------------------------------------------------------------------------------------+
 | FUTURE CONFLICTS                                                                                 |
 |  !! Jul 30  3 weed-control visits on Crew 4 need QAC B; Luis expires Jul 29                      |
 |     [Reassign to Ana (Crew 2)]  [Request renewal proof]  [Override with reason...]               |
 |  !  Aug 12  Truck 9 + trailer (CMV) needs med card; Luis med card expires Aug 11                 |
 +--------------------------------------------------------------------------------------------------+
-| Legend: OK active | ! expiring <60d | !! <14d | EXP expired | AUTH authorized | TRN in training |  |
-|         BLK blocked by law (minor) | Under supv. = may apply under licensed supervision (state)   |
+| Legend: OK active | ! expiring <60d | !! <14d | EXP expired | AUTH authorized | TRN in training  |
+|         BLK blocked by law (minor) | Under supv. = may apply under licensed supervision (state)  |
 +--------------------------------------------------------------------------------------------------+
 ```
 
@@ -1380,7 +1380,7 @@ Behaviors: keyboard shortcuts (J/K to move, A to accept a suggestion). Every acc
 |                                  |   | o responda con su voz:           |   | Quien le recomendo? (opcional)   |
 | Nombre: [ Jose Luna          ]   |   |       ( (  MIC  ) )  0:00/0:30   |   | [ Marco Diaz               ]     |
 | Celular:[ (916) 555-0142     ]   |   |                                  |   |                                  |
-| [ Enviar codigo por texto ]      |   | [ < Atras ]        [ Siguiente > ]|   | [ Ver el estado ]                |
+| [ Enviar codigo por texto ]      |   | [ < Atras ]       [ Siguiente > ]|   | [ Ver el estado ]                |
 +----------------------------------+   +----------------------------------+   +----------------------------------+
 ```
 
@@ -1406,7 +1406,7 @@ Behaviors: keyboard shortcuts (J/K to move, A to accept a suggestion). Every acc
 | Arrival transport plan                      Office    Mar 28      Draft                          |
 +--------------------------------------------------------------------------------------------------+
 | GUARANTEE (period 1, Apr 1 - Jun 23)   offered 0 / 360 h req.   | WAGE PARITY   0 conflicts      |
-| REIMBURSEMENTS queued: visa fees 14 x $___ (enter receipts)      | Corresponding employees: 6     |
+| REIMBURSEMENTS queued: visa fees 14 x $___ (enter receipts)     | Corresponding employees: 6     |
 +--------------------------------------------------------------------------------------------------+
 ```
 
@@ -1415,7 +1415,7 @@ Behaviors: keyboard shortcuts (J/K to move, A to accept a suggestion). Every acc
 ```text
 +--------------------------------------------------------------------------------------------------+
 | Payroll > Close period   Weekly field  Jul 12 - Jul 18   Pay date Fri Jul 24   Provider: Gusto   |
-| (1) Lock  >  (2) Compute  >  (3) Validate  >  [4] Preview  >  (5) Approve  >  (6) Push  >  (7) Post |
+| (1) Lock > (2) Compute > (3) Validate > [4] Preview > (5) Approve > (6) Push > (7) Post          |
 +--------------------------------------------------------------------------------------------------+
 | VALIDATION   OK 41   Warnings 2   Info 1   Blocking 0                                            |
 |  ! Jose Luna (H-2B): week-1 min wage check needs inbound travel reimbursement $186.40 [Added]    |
@@ -1423,16 +1423,16 @@ Behaviors: keyboard shortcuts (J/K to move, A to accept a suggestion). Every acc
 |  i FLSA-qualified OT premium tagged for W-2: $968.10 of $1,047.03 (CA daily-only OT excluded)    |
 +--------------------------------------------------------------------------------------------------+
 | EARNINGS SUMMARY          Hours      Amount       | BY DIVISION           Gross     vs forecast  |
-| REG                       1,512.0    $31,890.20   | Maintenance          $24,250    +2%         |
-| OT (reg. rate incl bonus)    96.5     $3,141.08   | Enhancements          $7,900    -4%         |
-| DT                            1.2        $52.18   | Installation          $6,860    +9%         |
-| MEAL_PREM / REST_PREM      3 / 0         $63.10   | Lawn care             $2,767    0%          |
-| BONUS_PROD                            $1,214.00   |                                            |
-| BONUS_OT_TRUEUP                          $48.37   | Tips payable cleared   $412.00              |
-| PIECE + NONPROD + RESTREC             $2,286.40   | Reimbursements         $918.60              |
-| PTO / SICK                 24.0 / 8.0   $672.00   |                                            |
-| COMM (2 estimators)                   $2,410.00   |                                            |
-| TOTAL GROSS (excl. tips, reimb.)     $41,777.33  | [Download audit workbook]                   |
+| REG                       1,512.0    $31,890.20   | Maintenance          $24,250    +2%          |
+| OT (reg. rate incl bonus)    96.5     $3,141.08   | Enhancements          $7,900    -4%          |
+| DT                            1.2        $52.18   | Installation          $6,860    +9%          |
+| MEAL_PREM / REST_PREM      3 / 0         $63.10   | Lawn care             $2,767    0%           |
+| BONUS_PROD                            $1,214.00   |                                              |
+| BONUS_OT_TRUEUP                          $48.37   | Tips payable cleared   $412.00               |
+| PIECE + NONPROD + RESTREC             $2,286.40   | Reimbursements         $918.60               |
+| PTO / SICK                 24.0 / 8.0   $672.00   |                                              |
+| COMM (2 estimators)                   $2,410.00   |                                              |
+| TOTAL GROSS (excl. tips, reimb.)     $41,777.33   | [Download audit workbook]                    |
 +--------------------------------------------------------------------------------------------------+
 | [ < Back ]                          Two-person approval required above $40,000   [ Approve > ]   |
 +--------------------------------------------------------------------------------------------------+

@@ -364,6 +364,19 @@ Behaviors and rules:
 | `locked` | Nobody; system events redirect | Closed and reported months |
 
 - **Transitions:** `open -> soft_closed` (bookkeeper), `soft_closed -> locked` (bookkeeper or owner, after hard checks in 4.11), `locked -> soft_closed` (reopen: `owner` or `bookkeeper` with `period.unlock`, step-up auth, reason required; periods older than 90 days need dual control per [02](02-personas-roles-permissions.md) 5.6). Every reopen notifies the owner and the connected accountant firm and is listed on the next close checklist.
+- **Reopen authority (reconciling [20](20-architecture-security.md) L3 and [02](02-personas-roles-permissions.md) 5.10).** L3 says reopening requires `owner` plus step-up; [02](02-personas-roles-permissions.md) grants `period.unlock` to `owner` and `bookkeeper`, including delegated CPAs. Rule: the database invariant checks for an approved `approval_request` of type `period_reopen` in the transaction context. The default **reopen policy** routes a bookkeeper's request to the `owner` (flow 5.8). An owner may set "my accountant may reopen periods under 90 days without my approval", in which case the bookkeeper's own step-up satisfies the policy and the owner is notified. Periods over 90 days old and any period in a locked fiscal year always need two distinct approvers.
+- **Snow-season fiscal years.** For a May-April fiscal year, period 1 is May. Season curves (4.8.2) and budgets (4.9) are keyed to calendar months, not period numbers, so switching a Company's fiscal year start never shifts a snow curve.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Open: fiscal year created
+    Open --> SoftClosed: bookkeeper starts review
+    SoftClosed --> Open: review abandoned
+    SoftClosed --> Locked: hard checks pass and close approved
+    Locked --> SoftClosed: reopen approved (step-up, reason)
+    Locked --> YearLocked: period 12 locked and year lock confirmed
+    YearLocked --> SoftClosed: year reopen (dual control)
+```
 - **Lock date sync.** In `external_sync` or mirror mode, Rootline's lock state for a period is pushed to the external system's closing date (QBO "close the books" date where supported, verify API support) or pulled from it, depending on which is the book of record.
 - **Subledger cut-off.** Locking a period also freezes subledger documents dated in it: invoices, bills, stock movements and time entries dated in a locked period cannot be created or edited; the source modules offer "post in next open period" instead ([13](13-operations-inventory-equipment.md) already follows this).
 
@@ -429,7 +442,8 @@ System accounts (marked **S**) carry an account role and cannot be deleted, only
 | 1060 | Undeposited Funds | `undeposited_funds` S | Checks and cash awaiting deposit |
 | 1065 | Cash in Transit (crew-held) | `cash_in_transit` S | Per crew lead dimension |
 | 1075 | Disputed Payments Receivable | `disputed_receivable` S C | |
-| 1099 | Suspense - Unclassified | `suspense` S | Must be zero to lock (L16) |
+| 1090 | Payments Suspense | `payments_suspense` S | Unknown Stripe reporting categories ([08](08-payments-stripe.md) 4.17.2); must be zero to lock (L16) |
+| 1099 | Suspense - Unclassified | `suspense` S | Unresolvable account roles and unclassifiable lines from any module; must be zero to lock (L16) |
 | 1200 | Accounts Receivable | `ar_control` S C | |
 | 1205 | Retainage Receivable | `retainage_receivable` S C | Commercial installs ([07](07-invoicing-billing-contracts.md) P12) |
 | 1210 | Unbilled Receivables - Agreements | `unbilled_receivable` S | Contract asset for agreements (07 P7, P8) |
@@ -482,6 +496,7 @@ System accounts (marked **S**) carry an account role and cannot be deleted, only
 | 2160 | Tips Payable | `tips_payable` S | Cleared by payroll |
 | 2170 | Gift Credit Liability | `gift_credit` S | [07](07-invoicing-billing-contracts.md) P29 |
 | 2180 | Customer Credits and Unapplied Cash | `customer_credits` S C | |
+| 2190 | Unclaimed Property Payable | `unclaimed_property_payable` S | Dormant credits and stale vendor checks being escheated ([07](07-invoicing-billing-contracts.md) P42; stale checks 4.6.5) |
 | 2200 | Deferred Revenue - Service Agreements | `deferred_revenue` S C | Contract liability per agreement |
 | 2210 | Overbillings (Billings in Excess of Costs and Estimated Earnings) | `overbillings` S | WIP, 4.8.3 |
 | 2215 | Accrued Losses on Contracts | `contract_loss_accrual` S | Loss jobs, 4.8.4 |
@@ -620,6 +635,7 @@ Statistical accounts hold non-monetary quantities posted by the same engine (app
 | **Design-build** | Install-heavy firms | WIP accounts on by default, retainage, contract loss accounts, design fee revenue, warranty reserve |
 | **Commercial maintenance plus snow** | Summit Grounds-style | Snow sub-accounts (4610 Seasonal Contracts, 4620 Per Push, 4630 Per Application, 4640 Salt and Deicer Sales), salt inventory, subcontractor-heavy snow COGS, branch dimension required |
 | **Tree care** | Arborgold/SingleOps-style | Crane and climbing equipment, wood disposal, PHC injections |
+| **Irrigation and lighting service** | Irrigation contractors with a lighting side line | Revenue sub-accounts 4510 Spring Start-ups, 4520 Winterizations (blow-outs), 4530 Repairs and Service Calls, 4540 New System Installs, 4550 Backflow Testing, 4710 Lighting Installs, 4720 Lighting Service; prepaid start-up and winterization packages as deferred revenue; parts inventory by service van (truck stock is the main stock location); warranty reserve on installs; backflow tester certifications in overhead |
 | **Canada overlay** | Any Canadian entity | GST/HST/QST accounts and ITCs, CCA tax book classes, T5018 tracking, CAD functional currency |
 
 Templates are selected in onboarding from three questions (what do you sell, do you do installs over $10,000, do you plow snow). The CPA can import a firm-standard template instead (4.12).
@@ -646,32 +662,42 @@ Per account and dimension: `required`, `optional`, `forbidden`, with a default v
 
 #### 4.2.6 Crosswalk to codes used in 07 and 08
 
-[07](07-invoicing-billing-contracts.md) and [08](08-payments-stripe.md) used illustrative account numbers before this chart existed. Posting rules bind to roles, so the crosswalk below is the binding; those docs' entries read correctly with the canonical codes substituted.
+Earlier drafts of [07](07-invoicing-billing-contracts.md) used provisional account numbers before this chart existed. [07](07-invoicing-billing-contracts.md) 4.11 now uses the canonical codes below directly; [08](08-payments-stripe.md) 4.17.1 still uses the provisional "07 key" numbers plus payments-only additions, and some of its role keys are spelled differently. Posting rules bind to roles, so the crosswalk below is the binding: the engine resolves an 08 role alias to the canonical role, and any worked entry in 07 or 08 reads correctly with the canonical code substituted.
 
-| Role | Code in 07 | Code in 08 | Canonical default (this doc) |
-|---|---|---|---|
-| `bank:operating` | 1000 | 1010 | **1010** |
-| `stripe_clearing:USD` | 1050 | 1050 | **1050** |
-| `ar_control` | 1100 | 1200 | **1200** |
-| `retainage_receivable` | 1105 | n/a | **1205** |
-| `unbilled_receivable` | 1110 | n/a | **1210** |
-| `disputed_receivable` | 1120 | 1075 | **1075** |
-| `allowance_doubtful` | 1190 | n/a | **1220** |
-| `sales_tax_payable:{agency}` | 2100 | n/a | **2101-2149** |
-| `customer_deposits` | 2200 | 2150 | **2150** |
-| `deferred_revenue` | 2210 | n/a | **2200** |
-| `customer_credits` | 2220 | 2180 | **2180** |
-| `gift_credit` | 2230 | n/a | **2170** |
-| `tips_payable` | 2300 | 2160 | **2160** |
-| `discounts_allowances` | 4900 | 4950 (Sales Returns and Allowances) | **4910** |
-| `small_balance_adj` | 4910 | n/a | **4930** |
-| `surcharge_income` | n/a | 4910 | **4950** |
-| `payment_method_discounts` | n/a | 4960 | **4920** |
-| `merchant_fees` | 6100 | 6150 | **6150** |
-| `bad_debt` | 6200 | 6170 | **6170** |
-| `realized_fx` | 7100 | 7910 | **7910** |
-| `finance_charge_income` | 7200 | n/a | **7200** |
-| `suspense` | n/a | 1099 | **1099** |
+| Canonical role (this doc) | Role alias in [08](08-payments-stripe.md) | Provisional code (early 07 drafts) | Code in [08](08-payments-stripe.md) 4.17 | Canonical default |
+|---|---|---|---|---|
+| `bank:operating` | `operating_bank` | 1000 | 1000 | **1010** |
+| `stripe_clearing:USD` / `:CAD` | same | 1050 | 1050 / 1051 | **1050 / 1051** |
+| `stripe_reserve` | same | n/a | 1055 | **1055** |
+| `undeposited_funds` | same | n/a | 1060 | **1060** |
+| `cash_in_transit` | same | n/a | 1065 | **1065** |
+| `payments_suspense` | same | n/a | 1090 | **1090** |
+| `ar_control` | same | 1100 | 1100 | **1200** |
+| `retainage_receivable` | n/a | 1105 | n/a | **1205** |
+| `unbilled_receivable` | n/a | 1110 | n/a | **1210** |
+| `disputed_receivable` | `disputed_payments` | 1120 | 1120 | **1075** |
+| `allowance_doubtful` | n/a | 1190 | n/a | **1220** |
+| `sales_tax_payable:{agency}` | n/a | 2100 | n/a | **2101-2149** |
+| `customer_deposits` | same | 2200 | 2200 | **2150** |
+| `deferred_revenue` | n/a | 2210 | n/a | **2200** |
+| `customer_credits` | same | 2220 | 2220 | **2180** |
+| `gift_credit` | n/a | 2230 | n/a | **2170** |
+| `tips_payable` | same | 2300 | 2300 | **2160** |
+| `unclaimed_property_payable` | n/a | n/a (07 P42 asked 09 to assign) | n/a | **2190** |
+| `discounts_allowances` | same | 4900 | 4900 | **4910** |
+| `small_balance_adj` | n/a | 4910 | n/a | **4930** |
+| `surcharge_income` | `card_surcharge_income` | n/a | 4920 | **4950** |
+| `payment_method_discounts` | same | n/a | 4960 | **4920** |
+| `merchant_fees` | same | 6100 | 6100 | **6150** |
+| `platform_fees` | `platform_application_fees` | n/a | 6105 | **6152** |
+| `dispute_fees` | same | 6100 | 6110 | **6155** |
+| `financing_merchant_fees` | same | n/a | 6115 | **6156** |
+| `bad_debt` | same | 6200 | 6200 | **6170** |
+| `realized_fx` | same | 7100 | 7100 | **7910** |
+| `finance_charge_income` | n/a | 7200 | n/a | **7200** |
+| `suspense` | n/a | n/a | n/a | **1099** |
+
+> **Collision warning.** Three provisional numbers mean something different in the canonical chart: **2200** is Customer Deposits in [08](08-payments-stripe.md) but Deferred Revenue here; **4920** is Card Surcharge Income in [08](08-payments-stripe.md) but Payment Method Discounts here; **4910** was Small Balance Adjustments in early 07 drafts but is Discounts and Allowances here. The engine is unaffected (it never reads numbers), but anyone comparing worked entries across documents must compare **roles**, not numbers. Recommendation for the editorial pass on [08](08-payments-stripe.md): restate 4.17.1 and its examples in canonical codes, as [07](07-invoicing-billing-contracts.md) already did.
 
 #### 4.2.7 Chart maintenance rules [MVP]
 
@@ -684,7 +710,7 @@ Per account and dimension: `required`, `optional`, `forbidden`, with a default v
 
 ### 4.3 Automatic posting rules
 
-The registry below is the canonical list. Rule keys are namespaced by the module that emits the triggering event: `billing.P1`-`billing.P32` are the rules specified in [07](07-invoicing-billing-contracts.md) 4.11 (bound here to canonical roles), `payments.*` follow Stripe reporting categories as specified in [08](08-payments-stripe.md) 4.17, and the remaining namespaces are specified in this document. Codes are the canonical defaults from 4.2.2; the engine resolves them through account roles. "J" means the line carries job, phase and cost-type dimensions; every revenue and direct-cost line carries `division` and `branch`.
+The registry below is the canonical list. Rule keys are namespaced by the module that emits the triggering event: `billing.P1`-`billing.P42` are the rules specified in [07](07-invoicing-billing-contracts.md) 4.11 (bound here to canonical roles), `payments.*` follow Stripe reporting categories as specified in [08](08-payments-stripe.md) 4.17, and the remaining namespaces are specified in this document. Codes are the canonical defaults from 4.2.2; the engine resolves them through account roles. "J" means the line carries job, phase and cost-type dimensions; every revenue and direct-cost line carries `division` and `branch`.
 
 #### 4.3.1 Revenue, billing and AR [MVP]
 
@@ -703,6 +729,12 @@ The registry below is the canonical list. Rule keys are namespaced by the module
 | `billing.P20` Finance charge | `invoice.finance_charge_assessed` | 1200 AR | 7200 Finance Charge Income | At assessment |
 | `billing.P21` / `billing.P22` Write-off | `collections_case.written_off` | 6170 Bad Debt (direct) or 1220 Allowance | 1200 AR | At approval |
 | `billing.P25` Void | `invoice.voided` | Exact reversal of P1 | | Same period if open, else first open period |
+| `billing.P33` Offline payment (check, cash, Interac e-Transfer, wire) | `payment.recorded` (offline) | 1060 Undeposited Funds (office), 1065 Cash in Transit (crew lead dimension) or 1010 (wire, e-Transfer) | 1200 AR; 2180 for any excess | Overlaps `payments.field_receipt` and `payments.office_receipt` below; one posting key per payment, so whichever module emits first wins |
+| `billing.P34` Returned payment (ACH R01/NSF, PAD return, bounced check) | `payment.returned` | 1200 AR (invoice reopened) | 1050 Stripe Clearing, or 1010 / 1060 for checks | Bank return fee to 6160; any NSF fee to the client only if disclosed and lawful ([07](07-invoicing-billing-contracts.md)) |
+| `billing.P35` Deposit refunded on a cancelled job | `deposit.refunded` | 2150 Customer Deposits | 1050 or 1010 | Any contracted cancellation fee or non-returnable special-order material kept: Dr 2150, Cr 4300 (or 7500) |
+| `billing.P37` Prepaid value forfeited at season close (breakage) | `agreement.season_closed` with forfeiture terms | 2200 Deferred Revenue | 4100-4800 revenue | Only when signed terms state forfeiture; otherwise a P11 credit |
+| `billing.P38` / `billing.P39` Card surcharge / payment-method discount [V1] | `payment.succeeded` with surcharge or discount | 1050 / 4920 Payment Method Discounts | 4950 Card Surcharge Income / 1200 AR | Rules owned by [08](08-payments-stripe.md) 4.10 |
+| `billing.P42` Dormant credit escheated [V1] | `unclaimed_property.reported` | 2180 Customer Credits | 2190 Unclaimed Property Payable | Then Dr 2190 / Cr 1010 when remitted to the state; stale vendor checks follow the same path after the void (Dr 1010 / Cr 2000, then Dr 2000 / Cr 2190) |
 | `ar.AR1` Allowance provisioning [V1] | Month-end aging-based calculation | 6170 Bad Debt | 1220 Allowance | Month-end; percentage by aging bucket (default 1% current, 5% 31-60, 15% 61-90, 40% over 90; illustrative, tenant-set) |
 | `warranty.WR1` Warranty reserve accrual [V1] | `invoice.issued` with install lines | 5710 Warranty Expense | 2410 Warranty Reserve | Percentage of install plant and hardscape revenue (tenant default; Plant KB mortality data can suggest a rate, [13](#13-beyond-the-brief-extra-ideas)) |
 | `warranty.WR2` Warranty replacement [V1] | `ops.warranty.claim_resolved` | 2410 Warranty Reserve | 1320 Plants inventory, 2000 AP, 2310 Accrued Wages (replacement labor at cost) | At resolution |
@@ -720,7 +752,7 @@ The registry below is the canonical list. Rule keys are namespaced by the module
 | `payments.payout` | `payout` | 1010 Operating Checking | 1050/1051 | Proven against the payout's balance transactions first |
 | `payments.payout_reversal` | Failed payout | 1050/1051 | 1010 | Owner alerted |
 | `payments.reserve` | Reserve held / released | 1055 / 1050 | 1050 / 1055 | |
-| `payments.other_adjustment` | Unknown category | 1099 Suspense | 1050/1051 | Task; never dropped |
+| `payments.other_adjustment` | Unknown category | 1090 Payments Suspense | 1050/1051 | Task; never dropped |
 | `payments.field_receipt` | Cash or check collected in the field | 1065 Cash in Transit (crew lead) | 1200 AR | [08](08-payments-stripe.md) 4.20.2 |
 | `payments.office_receipt` | Check received in office | 1060 Undeposited Funds | 1200 AR | |
 | `payments.handover` | Crew cash handed to office | 1060 | 1065 | Variance to 7950 only with `owner` approval |
@@ -2319,7 +2351,7 @@ erDiagram
 
 | Event | Producer | Rules posted |
 |---|---|---|
-| `invoice.issued`, `invoice.voided`, `credit_memo.issued`, `invoice.finance_charge_assessed`, `collections_case.written_off` | billing ([07](07-invoicing-billing-contracts.md)) | `billing.P1`-`P32` |
+| `invoice.issued`, `invoice.voided`, `credit_memo.issued`, `invoice.finance_charge_assessed`, `collections_case.written_off` | billing ([07](07-invoicing-billing-contracts.md)) | `billing.P1`-`P42` |
 | Agreement recognition events, month-end billing jobs | billing | `billing.P5`-`P8` |
 | `payment.succeeded`, `payment.refunded`, `dispute.created`, `dispute.closed`, `payout.paid`, balance-entry events | payments ([08](08-payments-stripe.md)) | `payments.*` |
 | `ops.receipt.posted`, `ops.stock.moved`, `ops.stock.count_posted`, `ops.bill.matched`, `ops.disposal.recorded`, `ops.equipment.usage_recorded`, `ops.warranty.claim_resolved`, `ops.vendor.compliance_changed`, `ops.lien_waiver.signed`, `ops.po.approved` (commitments) | operations ([13](13-operations-inventory-equipment.md)) | `inventory.*`, `ap.AP2`-`AP5`, `equipment.EQ1`, `warranty.WR2`; holds; commitments |
@@ -2608,7 +2640,7 @@ Sources were verified by sibling research passes and are cited where used. Items
 - [R1 - Field service platforms](research/R1-field-service-platforms.md) (accounting approaches across FSM vendors, Jobber QuickBooks sync analysis, open accounting export recommendation)
 - [R2 - Landscape-specific platforms](research/R2-landscape-specific-platforms.md) (Aspire, LMN, SynkedUP, Real Green accounting and job costing)
 - [03 - Estimating](03-crm-sales-estimating-proposals.md) (Company Budget EST-01, overhead recovery methods EST-02)
-- [07 - Invoicing](07-invoicing-billing-contracts.md) (posting rules P1-P32, deferred revenue mechanics, sales tax)
+- [07 - Invoicing](07-invoicing-billing-contracts.md) (posting rules P1-P42, deferred revenue mechanics, sales tax)
 - [08 - Payments](08-payments-stripe.md) (Stripe clearing, posting by balance transaction, worked payment entries)
 - [13 - Operations](13-operations-inventory-equipment.md) (stock movements, 3-way match, equipment cost per hour, subcontractors)
 - [20 - Architecture](20-architecture-security.md) (ledger invariants L1-L12, connector framework, events)
