@@ -100,7 +100,7 @@ The facts below shape positioning but are not confirmed in public documentation.
 
 | Question | Why it matters | Where we would win if the answer is "no" |
 |---|---|---|
-| Does Jobber, LMN or Aspire offer SAML SSO, SCIM or enforced MFA for all staff, and on which plans? | Mid-market commercial firms (Summit-size) and PE-backed buyers ask for SSO and access evidence | SSO [V1] and SCIM [V2] on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md), [Roadmap](24-roadmap-feature-catalog.md)), MFA on by default for every office role at MVP |
+| Does Jobber, LMN or Aspire offer SAML SSO, SCIM or enforced MFA for all staff, and on which plans? | Mid-market commercial firms (Summit-size) and PE-backed buyers ask for SSO and access evidence | SSO [V1] and SCIM [V2] on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md), [Product scope](24-roadmap-feature-catalog.md)), MFA on by default for every office role at MVP |
 | Can a tenant see when vendor support accessed their account? | Trust and SOC 2 evidence for commercial clients | Support access log and consent (5.13) |
 | Is there a customer-visible audit log of permission changes and exports? | Owners want to know who exported the Client list before a sales rep quit | Hash-chained audit log with saved alerts (5.17) |
 | How do Real Green, Copilot CRM and Yardbook model crew permissions? | Lawn-care switchers are a large segment | Field classes and crew windows (5.3, 5.4) |

@@ -1268,7 +1268,7 @@ The screen a designer sees after "Generate layouts". Parsed constraints are conf
 
 ```text
 +---------------------------------------------------------------------------------------------+
-| Smith - Front yard  >  Generate layouts       Region: Central Ohio 6a   Credits: 60 (quoted) |
+| Smith - Front yard  >  Generate layouts       Region: Central Ohio 6b   Credits: 60 (quoted) |
 +-------------------------------+-------------------------------------------------------------+
 | CONSTRAINTS (confirm)         |  OPTIONS                       stage: Pricing  [###### 90%] |
 |                               |  +-----------------+ +-----------------+ +-----------------+ |
