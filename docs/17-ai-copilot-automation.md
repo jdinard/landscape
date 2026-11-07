@@ -230,7 +230,7 @@ Every agent action type has an autonomy level, configured per Company. Levels ar
 | L3 | Act and notify | The agent executes within policy limits and notifies the owner of the action. Outbound messages wait in a 5-minute undo window (configurable 0-60 min) before sending | Activity feed plus undo |
 | L4 | Autonomous within budget | Same as L3 but summarized only in the daily digest, within hard limits (count per day, dollar amounts, recipients) | Digest line |
 
-Defaults, by tier, so engineers implement one rule instead of 27 special cases:
+Defaults, by tier, so engineers implement one rule instead of 28 special cases:
 
 | Action tier (section 4.3) | Default level at agent install | Notes |
 |---------------------------|-------------------------------|-------|
@@ -287,7 +287,7 @@ A structured, editable knowledge store that makes AI output sound like *this* co
 | Voice and tone | "Friendly, no exclamation marks, sign as 'The GreenLeaf Team'", banned phrases | Onboarding plus samples |
 | Pricing rules | Target margins by service line, minimum mowing price $45/visit, fuel surcharge rules | Price book and settings |
 | SOPs | "Always photograph all four sides of the property after a cleanup", "Edging depth 2 inches" | Uploaded docs and checklists |
-| Policies | Plant warranty: 1 year on trees and shrubs, client must water; no warranty on annuals | Settings and contracts |
+| Policies | Plant warranty: 1 year on trees and shrubs, client must water; 30 days on annuals (matching the default in [Crew App](05-field-crew-mobile-app.md) section 4.6.3) | Settings and contracts |
 | Glossary | Local terms, crew nicknames, product shorthand ("the big Scag" = 61-inch Scag Turf Tiger) | Learned with confirmation |
 
 Rules: memory items are **explicit records** with an author, timestamp and scope. When the AI wants to remember something ("You prefer Net 15 for new clients?"), it proposes a memory item, which becomes active only on user confirmation. There are no silent, hidden learned preferences. Owners can view, edit and delete everything. User-level memory (preferences such as "show me numbers in thousands") is private to that user.
@@ -413,7 +413,7 @@ flowchart LR
 
 Limits (configurable by the platform operator): max 12 tool calls per turn, max 90 seconds wall time per turn (with streaming progress), max 50,000 input tokens of retrieved data per turn (larger results are summarized server-side or paged).
 
-#### 4.2.3 Canonical examples (acceptance scenarios)
+#### 4.2.3 Canonical examples (acceptance scenarios) [MVP]
 
 | User says | What happens | Tools | Tier |
 |-----------|--------------|-------|------|
@@ -547,11 +547,13 @@ Rules:
 
 A single queue for every agent proposal, filtered to items the viewer may approve.
 
-- **Card anatomy:** agent name and icon; one-line summary ("Send payment reminder to Henderson HOA, $4,812.50, 34 days overdue"); evidence (invoice link, last 3 messages, client risk score); full preview (message text, diff, journal entry); confidence (high, medium or low with a reason); credit cost; and buttons for Approve, Edit and approve, Reject (with reason chips: wrong tone, wrong data, not now, never for this client), and Snooze.
+- **Card anatomy:** agent name and icon; one-line summary ("Send payment reminder to Henderson HOA, $4,812.50, 10 days overdue"); evidence (invoice link, last 3 messages, client risk score); full preview (message text, diff, journal entry); confidence (high, medium or low with a reason); credit cost; and buttons for Approve, Edit and approve, Reject (with reason chips: wrong tone, wrong data, not now, never for this client), and Snooze.
 - **Batch approve:** select multiple similar cards, for example 18 reminders, and approve them together. Each card must have been rendered on screen at least once (scroll-through enforcement) to prevent blind approval of more than 25 items.
 - **Mobile:** swipe right to approve, left to reject, with haptic confirmation. T3 money items need a long-press to confirm.
 - **Feedback capture:** edits and rejection reasons feed the eval harness and per-tenant prompt tuning (few-shot exemplars from that tenant's accepted outputs, stored in the Company Brain; this is not model training).
-- **Routing:** by domain. Finance items go to `bookkeeper` and `owner`; schedule items to `ops_manager` and `office_manager`; sales items to the assigned `estimator`. Items unhandled for 24 hours escalate to `owner`.
+- **Routing:** by domain. Finance items go to `bookkeeper` and `owner`; schedule items to `ops_manager` and `office_manager`; sales items to the assigned `estimator`. Items unhandled for 24 hours escalate to `owner`. Time-boxed items (rain reschedules, the 5 a.m. expiry) escalate after 2 hours instead.
+- **Delegation [MVP]:** an approver can set "out of office until Nov 17, delegate to Dana". Delegation can only go to a user who holds the same approval capability, never to an agent. Delegated decisions are audited as "Dana for Maria".
+- **Two-person integrity:** when an action needs a second approver, the two approvals must come from two different people. If the first approver edited the amount or the recipients, the second approver sees the edit highlighted against the agent's original. A user who manually requested the action (for example, asked the Copilot to draft the $6,200 PO) counts as the first approver.
 
 #### 4.4.4 Autonomy graduation [V1]
 
@@ -657,9 +659,9 @@ The specifications below cover the agents this document owns (A1-A21, except A18
 **Inputs:** the Company's shared email inbox (connected via Gmail or Microsoft 365 OAuth, or forwarding to `inbox@{company}.rootline.app`), SMS conversations on the Company's Twilio numbers, web-form submissions and portal messages (unified inbox; see [Marketing](16-marketing-growth-communications.md)).
 
 **Behavior:**
-1. Run quarantined extraction (section 4.11.2) to classify the message: `new_lead`, `service_request`, `schedule_change`, `complaint`, `billing_question`, `payment_promise`, `vendor_invoice`, `vendor_availability`, `rfp`, `review_notification`, `spam`, `other`. Also extract language, sentiment, urgency (0-3), entities (client match, property, invoice number) and requested dates.
+1. Run quarantined extraction (section 4.11.2) to classify the message: `new_lead`, `service_request`, `schedule_change`, `complaint`, `billing_question`, `payment_promise`, `opt_out_request`, `vendor_invoice`, `vendor_availability`, `rfp`, `review_notification`, `spam`, `other`. Also extract language, sentiment, urgency (0-3), entities (client match, property, invoice number) and requested dates.
 2. Match the sender to a Client and Contact by email or phone, falling back to fuzzy name plus address. Unmatched senders become a Lead candidate.
-3. Route: `vendor_invoice` goes to the AP agent; `vendor_availability` to the nursery parser; `rfp` to the RFP parser; `new_lead` to the lead follow-up agent; `complaint` with urgency 3 creates a task for `ops_manager` with SLA 2 business hours.
+3. Route: `vendor_invoice` goes to the AP agent; `vendor_availability` to the nursery parser; `rfp` to the RFP parser; `new_lead` to the lead follow-up agent; `complaint` with urgency 3 creates a task for `ops_manager` with SLA 2 business hours. `opt_out_request` updates the consent ledger at once (deterministically, before any drafting), and sends at most one confirmation, in the sender's language. A classification confidence under 0.8 still applies the opt-out and flags it for human review, because a wrongly honored opt-out is cheap and a wrongly ignored one is a TCPA exposure.
 4. Draft a reply in the sender's language using the Company Brain tone and record context. For example: "Hi Janet, yes, we can skip next Tuesday's mow while you have the patio party. I've noted it and your next visit is Tuesday the 18th."
 5. Queue the draft at L2, or at L3 for pre-approved categories such as "Thanks, received" acknowledgments.
 
@@ -678,7 +680,7 @@ The specifications below cover the agents this document owns (A1-A21, except A18
 6. **Nurture:** if there is no reply, follow up on day 1, day 3 and day 7, varying the channel (SMS then email). Stop on reply, opt-out, booking, or manual takeover.
 7. **Handoff:** the moment a human replies in the thread, the agent stops sending and summarizes the conversation for the human.
 
-**Rules:** first-contact replies to inbound inquiries are transactional. Marketing nurture beyond the inquiry requires consent captured on the form, with consent text versioned and stored (see section 11). Quiet hours run 8 p.m. to 8 a.m. recipient local time; earlier sends are queued. Spanish replies are used when the lead writes in Spanish.
+**Rules:** first-contact replies to inbound inquiries are transactional. Marketing nurture beyond the inquiry requires consent captured on the form, with consent text versioned and stored (see section 11). Quiet hours run 8 p.m. to 8 a.m. recipient local time; earlier sends are queued. For Canadian tenants, nurture stops when the CASL implied-consent window from the inquiry (6 months) expires, unless express consent was captured. Spanish replies are used when the lead writes in Spanish.
 
 **KPIs:** median first-response time, lead-to-assessment booking rate, human takeover rate, opt-out rate.
 
@@ -1086,7 +1088,7 @@ The **Portal Assistant** (see [Customer Portal](06-customer-portal.md)) and the 
 - **Auth:** OAuth 2.0 authorization code with PKCE for third-party apps (scoped consent screens), and **personal access tokens** for owner scripts (scoped, expiring, revocable). Every token acts as a principal with permissions no broader than the granting user's.
 - **Scopes** mirror permission groups, e.g., `clients:read`, `schedule:write`, `invoices:read`, `ledger:read`, `messages:send` (sensitive), `payments:links` (sensitive).
 - **Webhooks:** subscribe to domain events (section 8.3), HMAC-SHA256 signed, retried with backoff for 24 hours, with a replay console.
-- **Rate limits** (initial, estimates): 600 requests/min per tenant and 120/min per token; bulk endpoints for imports.
+- **Rate limits:** per plan, as specified in [Architecture](20-architecture-security.md) section 4.7.5. A per-minute token bucket per API client ranges from 120 req/min (Starter) to 600 req/min (Pro), with a daily `api_calls` quota per tenant from V1 and bulk endpoints for imports. MCP calls count against the same bucket as REST calls from that client. Copilot and agent endpoints (`/v1/copilot/ask`) are additionally bounded by AI credits.
 - **Sandbox tenants** with seeded demo data (a fictional 12-crew landscape company) for developers.
 
 #### 4.10.2 MCP server [V1]
@@ -1095,7 +1097,7 @@ Rootline exposes a remote **Model Context Protocol** server so tenants can conne
 
 | Aspect | Design |
 |--------|--------|
-| Transport | Remote MCP over Streamable HTTP at a tenant-agnostic endpoint (for example `mcp.rootline.com`); tenant resolved from the OAuth token |
+| Transport | Remote MCP over Streamable HTTP at a tenant-agnostic endpoint (for example `mcp.rootline.com`, with `mcp.ca.rootline.com` for Canadian-region tenants to match the API's regional hosts in [Architecture](20-architecture-security.md) section 4.7.1); tenant resolved from the OAuth token. Audit rows record `actor_type = ai_agent` (doc 20 vocabulary) with `channel = mcp` |
 | Authorization | OAuth 2.1 per the MCP authorization specification. Rootline's authorization server publishes protected-resource metadata and accepts both **Client ID Metadata Documents** and **dynamic client registration** for client identification (the 2025-11-25 spec revision prefers metadata documents; from prior knowledge, verify). Tokens are audience-bound to `mcp.rootline.com` with resource indicators, bound to user and tenant, expire after 1 hour, and use rotating refresh tokens. The user consents to scopes on a Rootline consent screen that names the client and shows its verified domain |
 | Tools | Generated from the Tool Registry, filtered by the user's permissions and granted scopes. Same names and schemas as internal tools (`schedule.propose_reschedule`, `metrics.query`). Each tool declares an `outputSchema` and returns `structuredContent`, so clients receive the same typed `ScheduleDiff` or `KpiCard` payload the web app renders |
 | Tool annotations | Risk tiers are mapped to MCP tool annotations as hints for the client's own confirmation UX: T0 sets `readOnlyHint: true`; T1 and T2 set `readOnlyHint: false, destructiveHint: false`; T3 sets `openWorldHint: true` (it reaches clients, vendors or money). `idempotentHint` mirrors the tool's idempotency key. Annotations are **hints only**: Rootline enforces tiers server-side whatever the client does with them |
@@ -1109,7 +1111,7 @@ Rootline exposes a remote **Model Context Protocol** server so tenants can conne
 | Credits | Read and draft tools via MCP consume no AI credits, because the tenant's own model does the reasoning. Compute-heavy tools (aerial measurement, mockup generation, document extraction) consume credits as in-app |
 | Safety | Tool descriptions are static and signed by Rootline; no user-generated content is placed in tool descriptions. Output payloads mark untrusted content fields (for example, client message bodies) with explicit delimiters and a `trust: untrusted` annotation |
 
-> **Competitive edge:** Competitors' AI is walled-garden. An owner who lives in Claude or ChatGPT all day cannot ask it about their Jobber or ServiceTitan business without third-party glue. Rootline's MCP server makes "Rootline inside your favorite AI" a first-class, permission-safe path. It also makes Rootline the **system of action** that other agents call, rather than a data silo.
+> **Competitive edge:** Competitors' AI lives inside their own apps. Our research found no documented first-party MCP server from Jobber, ServiceTitan/Aspire, LMN or the other landscape vendors (a negative finding as of Nov 2026, verify before using it in marketing). LMN has no public REST API at all per a third-party report ([R2](research/R2-landscape-specific-platforms.md) section 5.1). An owner who lives in Claude or ChatGPT all day therefore cannot ask it about their Jobber or ServiceTitan business without third-party glue. Rootline's MCP server makes "Rootline inside your favorite AI" a first-class, permission-safe path. It also makes Rootline the **system of action** that other agents call, rather than a data silo.
 
 #### 4.10.3 Bring your own model [V2]
 
@@ -1279,6 +1281,7 @@ Every AI-originated or AI-assisted action creates an immutable `ai_action` audit
 
 - Outbound drafts are checked for profanity, discriminatory language, unverifiable promises ("guaranteed weed-free"), legal claims, medical or pesticide-safety claims ("safe for kids and pets immediately"; the label governs re-entry), and competitor disparagement.
 - The Company Brain banned-phrases list is enforced.
+- The AI never writes customer reviews, testimonials or "client quotes" for marketing, and never invents before-and-after claims. Marketing copy can only quote real, consented reviews by ID (see section 11.2).
 - Images generated for marketing are labeled as AI-generated in metadata, and mockups are watermarked "Concept rendering" on client-facing exports (see [AI Design](11-ai-design-mockups.md)).
 
 ---
@@ -1460,6 +1463,70 @@ sequenceDiagram
 5. TTS renders the audio version if enabled. At 6:00 a.m. it is delivered by push, in-app and email.
 6. Interaction tracking (opened, listened, decisions approved from the briefing) feeds briefing personalization, for example sections the user never opens move down.
 
+### 5.9 Flow: Collections agent chases an overdue HOA invoice [MVP reminders; V1 full agent]
+
+1. At 7:00 a.m. the daily scan (a Temporal cron workflow per agent instance) finds INV-2291 for Henderson HOA: $4,812.50, 10 days past due, no dispute flag, no `processing` Stripe payment, last client message Oct 21.
+2. The policy ladder (section 4.5.6) selects the commercial day-10 step: an email to the billing contact, CC the property manager. The payment-propensity score (41-day average days-to-pay, reliable) keeps the tone friendly.
+3. The agent drafts the message from the approved "Commercial reminder day 10" template plus a one-line AI personalization ("PO 7781 is on file; happy to resend the W-9 if helpful"). The number grounding check verifies $4,812.50 and the invoice number against tool results.
+4. The action is T3. The firm reminder sits at L2 for this tenant, so an `ai_proposal` and an `approval_request` routed to `office_manager` are created. The workflow waits on a Temporal signal (TTL 72 hours).
+5. Dana approves from her phone at 7:40 a.m. The runtime re-reads the invoice (staleness check) and asks the Contact Arbiter for a slot. The client received a visit summary yesterday but nothing today, so the message is cleared to send at 8:00 a.m. in the recipient's time zone.
+6. At send time the balance is re-checked again (edge case E4). The message goes out through the Company's connected mailbox, and the `ai_action` audit row records approver, template version and credits (2).
+7. Two days later the property manager replies "Board approves payments on the 15th." Inbox Triage classifies it as `payment_promise`, and the agent logs a promise dated the 15th and pauses the ladder until the 16th.
+8. On the 15th the payment arrives by ACH on the Company's Stripe account. `payment.succeeded` cancels any queued step, closes the run as `Succeeded`, and adds the outcome to the agent's acceptance and DSO metrics.
+
+```mermaid
+sequenceDiagram
+  participant TW as TemporalWorker
+  participant CA as CollectionsAgent
+  participant TR as ToolRegistry
+  participant AI as ApprovalInbox
+  participant OM as OfficeManager
+  participant ARB as ContactArbiter
+  participant MAIL as CompanyMailbox
+  TW->>CA: daily scan fires 7am
+  CA->>TR: invoices.aging and invoices.get INV-2291
+  TR-->>CA: 4812.50 due, 10 days late, no dispute
+  CA->>CA: pick ladder step and draft from template
+  CA->>AI: ai_proposal T3 at L2
+  AI-->>OM: push approval card
+  OM->>AI: approve
+  AI-->>TW: signal approved
+  TW->>TR: staleness check and balance recheck
+  TW->>ARB: request send slot
+  ARB-->>TW: cleared for 8am recipient time
+  TW->>MAIL: send email to billing contact
+  TW->>TR: write ai_action audit row
+  Note over CA,TW: payment_promise reply pauses ladder until the 16th
+```
+
+### 5.10 Flow: Bookkeeping agent matches a Stripe payout to the bank feed [V1]
+
+1. Overnight, the Company's connected Stripe account pays out $8,412.37. Rootline's Connect webhook endpoint receives `payout.paid`. The payments processor has already posted the 41 charges, 2 refunds and fees from balance transactions as they happened, and it now posts *Dr Bank (Operating) / Cr Stripe Clearing* (see [Architecture](20-architecture-security.md) section 4.19).
+2. At 6:00 a.m. the Plaid bank feed imports a deposit line "STRIPE TRANSFER ST-8K2L" for $8,412.37 dated the same day.
+3. The Bookkeeping agent proposes a match between the bank line and the payout entry. The amount is exact, the date is within 2 business days, the descriptor matches, and confidence is 0.99.
+4. A matched-to-existing-entry proposal posts nothing new: it only marks the bank line reconciled. It is T2, and the tenant allows L3, so it auto-applies and appears in the activity feed with undo.
+5. If no matching payout exists (for example, the deposit is a check deposit that was never recorded), the agent instead proposes a categorization or a payment record. That is a T3 posting that goes to `bookkeeper` at L2.
+6. Month-end: the close assistant confirms that Stripe Clearing nets to the in-transit amount (payouts initiated but not yet arrived) and flags any residue for review.
+
+```mermaid
+sequenceDiagram
+  participant ST as CompanyStripe
+  participant WH as WebhookProcessor
+  participant LG as Ledger
+  participant PL as Plaid
+  participant BA as BookkeepingAgent
+  participant BK as Bookkeeper
+  ST->>WH: payout.paid on connected account
+  WH->>ST: refetch payout and balance transactions
+  WH->>LG: post Dr Bank Cr Stripe Clearing
+  PL->>BA: bank_transaction.imported 8412.37
+  BA->>LG: find open payout entries by amount and date
+  LG-->>BA: payout entry match 0.99
+  BA->>LG: mark bank line reconciled at L3
+  BA-->>BK: activity feed item with undo
+  Note over BA,BK: unmatched deposits become T3 proposals at L2
+```
+
 ---
 
 ## 6. Screens and wireframes
@@ -1488,6 +1555,10 @@ sequenceDiagram
 | Field Report review | Web, mobile | ops_manager | MVP |
 | API and MCP connections (tokens, connected apps, scopes) | Web | owner | V1 |
 | AI Ops console (models, prompts, evals, kill switches, costs) | Platform Admin | platform_owner, platform_engineer | MVP |
+| "Who can contact this client automatically" panel (Contact Arbiter) | Web | owner, office_manager, ops_manager | MVP |
+| Policy replay report | Web | owner (plus agent-domain configurers) | V1 |
+| "Why does this exist?" AI audit drawer on any AI-assisted record | Web, mobile | Any role that can read the record | MVP |
+| Dispute evidence review (A28; owned by [Payments](08-payments-stripe.md)) | Web | owner, office_manager, bookkeeper | MVP |
 
 ### 6.2 Wireframe: Copilot panel with generative UI (web)
 
@@ -1538,7 +1609,7 @@ sequenceDiagram
 | Approval Inbox                         Filter: [All agents v] [My approvals v] [Tier v]  |
 | 23 waiting   4 high priority   Oldest: 19h                       [Select all similar]    |
 +------------------------------------------------------------------------------------------+
-| [ ] $  COLLECTIONS   Send reminder: Henderson HOA  $4,812.50  34 days    T3   High conf  |
+| [ ] $  COLLECTIONS   Send reminder: Henderson HOA  $4,812.50  10d late   T3   High conf  |
 |        Evidence: INV-2291 (viewed 3x) | PO# on file | last msg Oct 21 | pays avg 41 days |
 |        "Hi Linda, a friendly note that invoice 2291 for October grounds maintenance..."  |
 |        [Approve] [Edit & approve] [Reject v] [Snooze v]                     2 credits    |
@@ -1643,6 +1714,68 @@ sequenceDiagram
 +--------------------------------------+
 ```
 
+
+### 6.7 Wireframe: Daily Owner Briefing (mobile)
+
+```text
++--------------------------------------+
+|  Good morning, Maria      Tue Nov 10 |
+|  [> Listen 2:04]   EN | ES           |
+|--------------------------------------|
+|  3 DECISIONS                         |
+|  1 Rain plan: move 14 afternoon mows |
+|    to Thu.  Expires 5:00am Wed       |
+|    [Approve]  [Open diff]            |
+|  2 Henderson HOA renewal at +5%      |
+|    Margin 18% under target, low risk |
+|    [Approve]  [Edit]                 |
+|  3 Nursery PO $6,200 (Valley Whsl)   |
+|    Needs 2nd approver over $2,500    |
+|    [Approve]  [View PO]              |
+|--------------------------------------|
+|  YESTERDAY   96/98 visits done       |
+|  Labor  412.5h vs 398h budget  +3.6% |
+|  ! Crew 3 +2.5h on Delgado patio     |
+|--------------------------------------|
+|  CASH        Payout today $8,412.37  |
+|  AR >30d $18,240   >60d $4,105       |
+|  Bank feed: synced 5:52am            |
+|--------------------------------------|
+|  SALES  4 new leads (all < 5 min)    |
+|  2 proposals viewed, unsigned 3+ days|
+|--------------------------------------|
+|  PEOPLE  Luis: pesticide license     |
+|  expires in 21 days                  |
+|--------------------------------------|
+|  How I got this  |  2 credits        |
++--------------------------------------+
+```
+
+Behavior: decision cards are ranked by dollars at stake times urgency. The second-approver badge appears when the viewer would be the first approver of a split approval. Money approvals need a long-press (section 4.4.3). If a data source is stale, the section shows "Bank feed stale since Nov 3" instead of numbers (edge case E19).
+
+### 6.8 Wireframe: "Why does this exist?" AI audit drawer (web)
+
+```text
++----------------------------------------------------------------+
+| Invoice INV-2291  [AI-assisted]                         [x]    |
+|----------------------------------------------------------------|
+| WHY DOES THIS EXIST?                                           |
+| Nov 6 07:02  Collections agent (sponsor Maria Lopez) drafted   |
+|              "Commercial reminder day 10" (template v4)        |
+|              Evidence: INV-2291 10d overdue | no dispute flag  |
+|              Model route chat_tools v12 | prompt col-v7 | 2 cr |
+| Nov 6 07:40  Approved by Dana Ruiz (mobile, long-press)        |
+|              Edits: none                                       |
+| Nov 6 08:00  Contact Arbiter: sent (0 other msgs today)        |
+|              Channel: email via connected mailbox              |
+| Nov 8 14:12  Inbox Triage: payment_promise "on the 15th"       |
+|              Ladder paused until Nov 16                        |
+|----------------------------------------------------------------|
+| [View full run timeline]  [Report a problem]  [Export JSON]    |
+| Undo: not available (message delivered)                        |
++----------------------------------------------------------------+
+```
+
 ---
 
 ## 7. Data model
@@ -1714,6 +1847,15 @@ erDiagram
   EVAL_SUITE ||--o{ EVAL_CASE : includes
   EVAL_SUITE ||--o{ EVAL_RUN : "evaluated by"
   AGENT_DEFINITION }o--|| EVAL_SUITE : "gated by"
+  AGENT_INSTANCE ||--o{ POLICY_REPLAY_RUN : "backtested by"
+  AI_ACTION ||--o| CONTACT_ARBITRATION : "arbitrated as"
+  THREAD_OWNERSHIP }o--o| AGENT_INSTANCE : "owned by"
+  AI_PROPOSAL }o--o| MESSAGE_TEMPLATE_APPROVAL : "uses"
+  AI_MESSAGE ||--o{ AI_FEEDBACK : "rated by"
+  AI_PROPOSAL ||--o{ AI_FEEDBACK : "rated by"
+  VOICE_CAPTURE ||--o{ AI_INVOCATION : "transcribed by"
+  MEMORY_ITEM }o--o| AI_MESSAGE : "proposed in"
+  UNTRUSTED_CONTENT ||--o{ EMBEDDING_CHUNK : "indexed as"
 
   AI_CONVERSATION {
     uuid id PK
@@ -1921,6 +2063,80 @@ erDiagram
     text target_version
     jsonb scores_json
   }
+  POLICY_REPLAY_RUN {
+    uuid id PK
+    uuid tenant_id
+    uuid agent_instance_id FK
+    jsonb policy_json
+    timestamptz window_start
+    timestamptz window_end
+    int events_replayed
+    int would_send_count
+    numeric credits
+  }
+  CONTACT_ARBITRATION {
+    uuid id PK
+    uuid tenant_id
+    uuid client_id
+    text source
+    text message_class
+    text decision
+    text reason_code
+    timestamptz deferred_until
+  }
+  THREAD_OWNERSHIP {
+    uuid id PK
+    uuid tenant_id
+    uuid thread_id
+    text owner_type
+    uuid owner_id
+    timestamptz expires_at
+  }
+  MESSAGE_TEMPLATE_APPROVAL {
+    uuid id PK
+    uuid tenant_id
+    uuid template_id
+    int template_version
+    uuid approved_by
+    jsonb caps_json
+  }
+  AI_FEEDBACK {
+    uuid id PK
+    uuid tenant_id
+    text subject_type
+    uuid subject_id
+    int rating
+    text reason_code
+    int edit_distance
+  }
+  VOICE_CAPTURE {
+    uuid id PK
+    uuid tenant_id
+    uuid user_id
+    uuid visit_id
+    text audio_ref
+    text lang_detected
+    numeric confidence
+    timestamptz retention_until
+  }
+  MEMORY_ITEM {
+    uuid id PK
+    uuid tenant_id
+    text scope
+    text section
+    text content
+    uuid confirmed_by
+    text status
+  }
+  EMBEDDING_CHUNK {
+    uuid id PK
+    uuid tenant_id
+    text source_type
+    uuid source_id
+    text visibility_scope
+    text trust_level
+    vector embedding
+  }
 ```
 
 ### 7.3 Data rules
@@ -2106,12 +2322,14 @@ Items marked "verify" were not re-checked against primary sources in this resear
 
 | Area | Requirement and design response |
 |------|--------------------------------|
-| **TCPA, 10DLC and AI voice** | SMS from agents uses each Company's registered 10DLC campaign with consent records and opt-out handling (see [Marketing](16-marketing-growth-communications.md)). The FCC's February 2024 declaratory ruling treats AI-generated voices in calls as "artificial" voice under the TCPA, which requires prior express consent (verify). **Outbound AI voice calls are therefore out of scope until V2** and will require explicit, logged consent. The inbound AI receptionist is unaffected |
-| **Bot disclosure** | Client-facing AI (portal assistant, receptionist, SMS agents) discloses that it is an AI assistant, and provides a human path. Some US states have bot or AI disclosure laws (for example, California's bot-disclosure statute and Utah's 2024 AI disclosure law; verify scope); we disclose everywhere by default |
+| **TCPA, 10DLC and AI voice** | SMS from agents uses each Company's registered 10DLC campaign with consent records and opt-out handling (see [Marketing](16-marketing-growth-communications.md)). The FCC's February 2024 declaratory ruling treats AI-generated voices in calls as "artificial" voice under the TCPA, which requires prior express consent (verify). **Outbound AI voice calls are therefore out of scope until V2** and will require explicit, logged consent. The inbound AI receptionist is unaffected. **Revocation of consent:** the FCC's 2024 consent-revocation order (FCC 24-24) requires honoring opt-outs made by "any reasonable means", not only the keyword STOP, within a short deadline (10 business days per our reading). The core provisions took effect in April 2025, while the broader "revoke all" scope provision was deferred (from prior knowledge, verify current dates). Rootline is stricter than the rule: Inbox Triage classifies natural-language opt-outs in English and Spanish ("please stop texting me", "ya no me manden mensajes") as `opt_out_request`, and the consent ledger applies them **immediately** across every agent, automation and campaign for that number and Company. A single confirmation reply is allowed. The FCC's one-to-one consent rule for lead generators was vacated by the Eleventh Circuit in January 2025 (verify), but Rootline still captures consent per Company on its own forms, so leads bought from marketplaces never inherit a shared consent |
+| **Bot disclosure** | Client-facing AI (portal assistant, receptionist, SMS agents) discloses that it is an AI assistant, and provides a human path. Some US states have bot or AI disclosure laws. Examples are California's bot-disclosure statute and Utah's AI Policy Act of 2024, which Utah narrowed in 2025 to disclosure on a clear consumer request or in high-risk interactions (from prior knowledge, verify). We disclose everywhere by default, which satisfies the strictest reading without per-state logic |
+| **CASL (Canadian tenants)** | Lead nurture and marketing messages from Canadian Companies are commercial electronic messages under Canada's Anti-Spam Legislation. They need express consent or a valid implied consent: an inquiry gives implied consent for 6 months, and a purchase or contract for 2 years. Every message must identify the sender and carry a working unsubscribe that is honored within 10 business days. The lead follow-up agent (A3) computes `casl_consent_expires_at` per contact, and the Contact Arbiter blocks marketing-class messages once it passes ([Marketing](16-marketing-growth-communications.md) owns the consent ledger) |
+| **Fake reviews and testimonials** | The FTC's 2024 rule on consumer reviews and testimonials prohibits fake reviews, including AI-generated ones, and certain review-suppression and incentive practices (verify current scope). Rootline's AI **never writes a customer review or testimonial**, never conditions incentives on positive sentiment, and only drafts *replies* to real reviews (A18). Review requests go to every eligible client the recipe selects, not only to those predicted to be happy. Recipe R5 therefore keys on visit completion and the absence of open complaints, never on a sentiment score |
 | **Debt collection** | Collections messages are templated, non-threatening, time-restricted and opt-out aware. Federal FDCPA rules primarily govern third-party collectors, but some states apply similar rules to original creditors (for example, California's Rosenthal Act; verify) |
-| **Automated decisions and employment** | No automated hiring decisions or ranking (NYC Local Law 144 bias-audit regime for automated employment decision tools; Colorado's AI Act covering high-risk systems in consequential decisions, whose effective date was pushed to 2026; Illinois rules on AI in employment; verify current status of each). The hiring assistant does logistics and summaries only, with human decisions |
+| **Automated decisions and employment** | No automated hiring decisions or ranking. Applicable regimes include NYC Local Law 144 (bias audits for automated employment decision tools) and Colorado's AI Act (SB24-205, high-risk systems in consequential decisions; its effective date was delayed to June 30, 2026 by a 2025 special-session bill, from prior knowledge, verify any 2026 amendments). Illinois amended its Human Rights Act effective January 1, 2026 (HB 3773) to require notice when AI is used in employment decisions such as hiring, discipline and discharge, and to bar discriminatory use, including zip code as a proxy. California's Civil Rights Council regulations on automated-decision systems in employment took effect in late 2025 (verify). Design response: the hiring assistant does logistics and summaries only, with human decisions. Crew productivity and photo-QA scores are labeled "coaching data". A Company that uses them in discipline or pay decisions gets an employee-notice template and an acknowledgment workflow ([Team and HR](15-team-hr-payroll.md)), and Rootline keeps the inputs behind any score for 4 years |
 | **Employee monitoring** | GPS, telematics and photo-QA analytics: some states require written notice of electronic monitoring to employees (for example, New York Civil Rights Law section 52-c; verify others). Rootline provides notice templates and acknowledgment capture in onboarding (see [Team and HR](15-team-hr-payroll.md)) |
-| **Privacy (GDPR, CCPA/CPRA, PIPEDA, Quebec Law 25)** | Data-subject requests cascade to AI stores. Quebec Law 25 requires informing individuals of decisions based exclusively on automated processing (verify specifics); Rootline has no exclusively automated decisions about individuals. California's automated decision-making technology regulations need review (verify status) |
+| **Privacy (GDPR, CCPA/CPRA, PIPEDA, Quebec Law 25)** | Data-subject requests cascade to AI stores. Quebec Law 25 requires informing individuals of decisions based exclusively on automated processing (verify specifics); Rootline has no exclusively automated decisions about individuals. California's privacy agency finalized regulations on automated decision-making technology in 2025, with compliance obligations phasing in from 2027 (from prior knowledge, verify). Rootline's position is that it makes no significant decisions about consumers by ADMT; price recommendations are advisory to the Company and never use personal or demographic data (section 4.7.3) |
 | **PCI DSS** | No card data in AI paths; Stripe Elements only (SAQ-A scope) |
 | **Pesticide recordkeeping** | AI assists completeness; records are structured and signed by the licensed applicator; state-specific required fields are maintained per state (see [Service Lines](14-service-line-modules.md)) |
 | **SOC 2** | AI audit logs, change management (eval-gated releases), access reviews for AI Ops, and subprocessor management are in SOC 2 scope (see [Architecture](20-architecture-security.md)) |
@@ -2164,6 +2382,9 @@ Items marked "verify" were not re-checked against primary sources in this resear
 | Rejection reason "wrong data" rate | Under 2% of decisions |
 | Approval latency (median) | Under 2 business hours |
 | Undo rate on L3 actions | Under 1% (higher triggers demotion review) |
+| Opt-out honoring latency (keyword or natural-language opt-out to consent ledger) | 100% within 60 seconds |
+| Contact Arbiter suppression rate | Tracked per source; any automation whose messages are suppressed or deferred more than 20% of the time is flagged in its health score |
+| Client complaints mentioning "too many messages" | Under 1 per 1,000 automated messages |
 
 ### 12.3 Economics and performance
 
@@ -2197,6 +2418,11 @@ Items marked "verify" were not re-checked against primary sources in this resear
 14. **AI-generated SOP library [V1].** The AI turns the Company's best-rated visit photo sets and crew lead voice explanations into illustrated SOPs in English and Spanish, which also feed the Copilot's how-to answers.
 15. **Automation health score [V1].** Each automation gets a monthly score covering run failures, messages that triggered opt-outs, recipients who complained, and ROI attribution, so owners prune noisy automations.
 16. **Customer-side MCP for property managers [V3].** Commercial clients connect their own AI tools to their Rootline portal data (work orders, spend, approvals) across *all* their landscape vendors on Rootline. This is a wedge for a multi-vendor property-management network.
+17. **Morning tailgate talk generator [V1].** This extends the tailgate-talk feature of the [Crew App](05-field-crew-mobile-app.md). Each morning the crew app plays a 3-minute bilingual safety huddle tailored to the day. For example: heat index 104°F, so water, shade and rest every hour; two crews are spraying, so PPE and re-entry intervals; a chainsaw is assigned to Crew 4, so chaps and two-person rule; and last week's near-miss on a slope. The crew lead taps "Delivered", each member taps or says "Entendido", and the signed roster becomes OSHA-style training documentation in [Team and HR](15-team-hr-payroll.md). Content comes from a curated safety library maintained by `platform_curator`, with weather and assignments filled in by tools, so the AI picks topics and never invents safety rules.
+18. **Owner's text line [V1].** A dedicated, owner-only SMS number the owner can text from anywhere without opening the app. "How much did we bill last week?" "Approve the Henderson renewal." "Who's on Crew 2 tomorrow?" The number is bound to the owner's verified phone, read answers need no PIN, and approvals require a 6-digit PIN or a passkey tap via push. The same tools, tiers and audit apply as in the app. It reaches owners who live in their texts and resist apps, which describes much of the market.
+19. **Public bid radar [V2].** The AI monitors public procurement portals and newspaper legal notices for landscape maintenance, snow and tree-care solicitations inside the Company's service area. It runs each one through the RFP parser (A10) and a bid/no-bid score (route density, capacity, payment terms), and posts a weekly digest: "3 new municipal bids within 12 miles; best fit: Westerville parks mowing, due Dec 4." Commercial growth no longer depends on someone remembering to check a dozen sites.
+20. **CPA year-end packet [V1].** In January, the Copilot assembles a year-end packet from the built-in ledger for the outside CPA (`bookkeeper`): 1099-NEC candidates (subcontractors over the reporting threshold, with W-9 status), the fixed-asset roll-forward for mowers and trucks, sales tax filed vs. collected by jurisdiction, prepaid-program deferred revenue, and a list of uncategorized or suspense items with suggested fixes. Every number links to ledger entries. This turns Priya's 6 hours a month into a 2-hour year-end review.
+21. **Storm-damage documentation assistant [V2].** After a wind, hail or ice event, crews photograph damage at client properties (snapped limbs, crushed shrubs, displaced pavers). The AI groups the photos by property, drafts a dated damage report with GPS-verified photo evidence for the client's homeowner's-insurance claim, and drafts a priced cleanup and replacement proposal using region-appropriate replacements from the Plant KB. The client gets a claim-ready PDF in the portal, and the Company gets the cleanup job.
 
 ---
 
@@ -2215,12 +2441,15 @@ Items marked "verify" were not re-checked against primary sources in this resear
 11. **Agent marketplace liability:** if a partner-published recipe causes harm (for example, an aggressive collections cadence), what are the review standards and liability terms?
 12. **Bring-your-own-model:** does BYO-LLM undermine our eval guarantees? Should it be restricted to specific model versions we have evaluated?
 13. **Briefing timing:** a fixed 6:00 a.m., or adaptive to each owner's first-open time? Weekends in peak season?
+14. **Contact Arbiter defaults:** is 3 automated messages per client per day right for residential homeowners, or should residential be 2 and commercial 4? During a snow event, should per-push service updates be exempt from caps, given that a property manager may want one update per push?
+15. **In-client confirmation UI:** if AI clients render Rootline components through an MCP UI extension, could a malicious or compromised client imitate Rootline's confirmation card? Do we therefore require every T3 confirmation to happen on a Rootline-hosted page or in the Rootline app, even when the client could render it inline?
+16. **Liability for owner-enabled autonomy:** when an owner raises an agent to L3 and it sends a wrong but policy-compliant message, what do the terms of service say, and should Rootline carry technology errors-and-omissions coverage that explicitly includes AI agent actions? This affects how aggressive the graduation recommendations in section 4.4.4 can be.
 
 ---
 
 ## Sources
 
-**Research note.** This pass ran 11 web searches before the research environment's shared search budget was exhausted. Direct page fetching was blocked for most hosts, so vendor facts come from search-result summaries of the pages below. Treat all vendor capabilities, plan names and prices as "as of November 2026, verify". Additional competitor coverage lives in [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [R3](research/R3-design-ai-plant-data.md) and [R4](research/R4-industry-payments-accounting.md).
+**Research note.** The first pass ran 11 web searches before the research environment's shared search budget was exhausted. The review pass could run no new searches and could not reach primary-source hosts, so its additions come from the sibling research reports (cited with their original links) or from prior knowledge (listed separately below and marked verify). Direct page fetching was blocked for most hosts, so vendor facts come from search-result summaries of the pages below. Treat all vendor capabilities, plan names and prices as "as of November 2026, verify". Additional competitor coverage lives in [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [R3](research/R3-design-ai-plant-data.md) and [R4](research/R4-industry-payments-accounting.md).
 
 **Competitors and market**
 - Jobber: [Jobber launches Copilot (PR Newswire)](https://prnewswire.com/news-releases/jobber-launches-copilot-the-first-of-several-ai-powered-products-aimed-at-making-home-service-business-ownership-simpler-than-ever-before-302264047.html); [Jobber launches Jobber Copilot (Green Industry Pros)](https://www.greenindustrypros.com/business-management/software/product/22922371/jobber-jobber-launches-jobber-copilot); [Jobber AI page](https://www.getjobber.com/ai/); [Jobber product update: chat with Jobber Copilot](https://productupdates.getjobber.com/71383-chat-with-jobber-copilot-to-run-your-business-with-confidence); [Jobber adds new AI-powered features (Lawn and Landscape)](https://www.lawnandlandscape.com/news/jobber-adds-new-ai-powered-features); [Jobber AI Receptionist help article](https://help.getjobber.com/en/articles/receptionistpowered-by-jobber-ai/); [Jobber AI Receptionist feature page](https://www.getjobber.com/features/ai-receptionist)
@@ -2245,3 +2474,19 @@ Items marked "verify" were not re-checked against primary sources in this resear
 - [NYC Automated Employment Decision Tools (Local Law 144)](https://www.nyc.gov/site/dca/about/automated-employment-decision-tools.page)
 - [National Weather Service API](https://www.weather.gov/documentation/services-web-api)
 - [Temporal documentation](https://docs.temporal.io/)
+
+**Added in the review pass from the sibling research reports (sources as cited there)**
+- [TechRadar: Jobber CRM review](https://www.techradar.com/pro/software-services/jobber-crm-review); [FieldCamp: Jobber reviews (third-party)](https://fieldcamp.ai/reviews/jobber-reviews/) (via [R1](research/R1-field-service-platforms.md))
+- Workiz AI answering: [ServiceAgent: Workiz pricing (third-party)](https://serviceagent.ai/blogs/workiz-pricing/); [Carly: Workiz AI (third-party)](https://www.usecarly.com/blog/workiz-ai/) (via [R1](research/R1-field-service-platforms.md))
+- Service Autopilot automation: [MowBoss review](https://mowbosshq.pages.dev/guides/service-autopilot-review); [Capterra reviews](https://www.capterra.com/p/122075/Service-Autopilot/reviews/?page=3); [GetApp reviews](https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/) (via [R2](research/R2-landscape-specific-platforms.md))
+- [QuoteIQ: AI Smart Import](https://intercom.help/quoteiq/en/articles/14442924-ai-smart-import-migrate-your-data-from-any-crm-in-minutes) (via [R2](research/R2-landscape-specific-platforms.md))
+- Commercial bolt-ons: [Vergo: AP automation for landscape companies using Aspire](https://www.getvergo.com/learn/best-ap-automation-software-for-landscape-companies-using-aspire); [SiteDNA](https://sitedna-marketing-site.pages.dev/) (via [R2](research/R2-landscape-specific-platforms.md))
+
+**Added in the review pass from prior knowledge (not fetched: the research environment blocked these hosts; verify every item before relying on it)**
+- Accounting-platform AI: [QuickBooks (Intuit) product site](https://quickbooks.intuit.com/) for QuickBooks Online AI agents; [Xero](https://www.xero.com/) for the JAX assistant
+- [Model Context Protocol specification, 2025-11-25 revision](https://modelcontextprotocol.io/specification/2025-11-25) (client ID metadata documents, URL-mode elicitation, tasks, tool annotations, structured tool output); [MCP Apps extension repository](https://github.com/modelcontextprotocol/ext-apps)
+- [OWASP GenAI Security Project](https://genai.owasp.org/) (LLM Top 10 and agentic application guidance)
+- [FCC Report and Order on revocation of consent under the TCPA (FCC 24-24)](https://docs.fcc.gov/public/attachments/FCC-24-24A1.pdf)
+- [CRTC: Canada's Anti-Spam Legislation](https://crtc.gc.ca/eng/internet/anti.htm)
+- [FTC: Rule on the Use of Consumer Reviews and Testimonials](https://www.ftc.gov/legal-library/browse/rules/rule-use-consumer-reviews-testimonials)
+- [Colorado SB25B-004 (delay of SB24-205)](https://leg.colorado.gov/bills/sb25b-004); [Utah SB 226 (2025), AI disclosure amendments](https://le.utah.gov/~2025/bills/static/SB0226.html); [Illinois General Assembly](https://www.ilga.gov/) (HB 3773, Public Act 103-0804); [California Privacy Protection Agency regulations](https://cppa.ca.gov/regulations/); [California Civil Rights Council](https://calcivilrights.ca.gov/civilrightscouncil/)

@@ -216,7 +216,7 @@ A $2.0M residential design-build-maintain Company in the Midwest with 22 peak em
 | Equipment and fuel (direct) | $120,000 | 6% | Internal equipment rates charged to jobs |
 | Subcontractors | $90,000 | 4.5% | Concrete, electrical, snow subs |
 | **Gross profit** | **$650,000** | **32.5%** | Well below the roughly 53% Wilson 360 reports for larger firms; benchmark definitions (what "net revenue" excludes, which costs sit above the gross-margin line) differ, so compare like with like ([18](../18-reporting-analytics.md) KPI Dictionary) |
-| Overhead (office staff, rent, insurance, software, vehicles not on jobs, marketing) | $480,000 | 24% | Software stack today: about $1,000-$1,500/month per [R2](R2-landscape-specific-platforms.md) section 13 [E] |
+| Overhead (office staff, rent, insurance, software, vehicles not on jobs, marketing) | $480,000 | 24% | Software stack today: about $1,000-$1,500/month per [R2](R2-landscape-specific-platforms.md) section 14 [E] |
 | **Net operating profit** | **$170,000** | **8.5%** | Before owner add-backs and taxes |
 | Memo: card and ACH processing fees (included in overhead above) | about $37,000 | 1.9% | Falls to about $23,500 with ACH steering (section 13.4) |
 
@@ -269,10 +269,10 @@ The point of the illustration: processing fees equal about a fifth of this Compa
 |---|---|---|
 | Embedded payments reach | Stripe describes Jobber's payments customer base as about 200,000 home service professionals | [S] [Stripe case study](https://www.casestudies.com/company/stripe/case-study/jobber-and-stripe-help-200k-home-service-professionals-save-on-payment-fees) (vendor claim) |
 | AI belief vs use among commercial landscapers | 43% believe in AI; 15% use it daily, in Aspire's 2026 survey of 1,020 commercial landscape leaders | [S] [Aspire report via Finviz](https://finviz.com/news/401821/aspire-report-finds-commercial-landscapers-prioritizing-growth-as-businesses-navigate-operational-complexity) (vendor-run survey) |
-| Bolt-on economy | Aspire customers buy separate tools for site audits (SiteDNA, SiteRecon), AP automation (Vergo), benchmarking (Wilson360), telematics (Motive) | [S] [R2](R2-landscape-specific-platforms.md) section 9 |
+| Bolt-on economy | Aspire customers buy separate tools for site audits (SiteDNA, SiteRecon), AP automation (Vergo), benchmarking (Wilson360), telematics (Motive) | [S] [R2](R2-landscape-specific-platforms.md) section 8 |
 | Accounting | Every FSM and landscape vendor syncs to QuickBooks (Online or Desktop) or another external GL; none keeps books | [S] [R1](R1-field-service-platforms.md) section 14, [R2](R2-landscape-specific-platforms.md) section 12.6 |
 | Long tail on paper | Many small operators still run on spreadsheets, QuickBooks invoices and paper route sheets | [B] [R2](R2-landscape-specific-platforms.md) |
-| Software spend | A 12-person company buying estimating, measurement, design, QuickBooks, reviews and a website plausibly spends $1,000-$1,500/month | [E] [R2](R2-landscape-specific-platforms.md) section 13 |
+| Software spend | A 12-person company buying estimating, measurement, design, QuickBooks, reviews and a website plausibly spends $1,000-$1,500/month | [E] [R2](R2-landscape-specific-platforms.md) section 14 |
 
 **Interpretation [E].** Adoption is bimodal: owner-operators adopt cheap horizontal FSM apps (Jobber, Housecall Pro, Yardbook) for quoting, scheduling and getting paid; firms above about $3M adopt landscape ERPs (Aspire, LMN) for estimating discipline and job costing. The middle (10-40 employees, $1-6M) is the most under-served: too complex for horizontal apps, too small for Aspire's implementation, and still running design, books and payroll in separate tools. That is Rootline's beachhead ([22](../22-business-model-pricing-gtm.md)).
 
@@ -571,6 +571,8 @@ A $28,000 paver patio and seat wall is a different purchase at "$310/month" than
 | **ServiceTitan (core)** | ServiceTitan Payments and built-in consumer financing | In-house branded | ServiceTitan reports usage-based platform revenue, largely from payments and financing, alongside subscription revenue in its public filings since its December 2024 IPO | [B] verify against filings |
 | **Real Green (WorkWave)** | WorkWave payments | In-house | Not verified | [B] [R2](R2-landscape-specific-platforms.md) |
 
+> **Competitive edge.** Every vendor in the table above whose payments product could be verified runs a vendor-branded arrangement in which the vendor, not the landscaper, controls the processor relationship: Jobber (Stripe-based, 1% instant payouts at its discretion), Housecall Pro (1% Instapay), LMN Pay (accounts reportedly not controlled by the contractor) and Service Autopilot (processor choice removed after the Xplor acquisition). Rootline is the only option in this research where the landscaper's Stripe account, card vault and dispute history leave with the landscaper, and where Stripe's own instant payouts and pricing apply without a vendor layer in between.
+
 ---
 
 ## 18. The value of embedded payments to field-service vendors
@@ -672,6 +674,8 @@ flowchart TB
 4. **Webhooks plus CDC.** Webhooks for latency; nightly CDC as the guarantee; both feed the same idempotent reconciler [B/E].
 5. **Budget reads.** If the App Partner Program meters reads, prefer webhooks and CDC over polling queries, cache reference data (accounts, tax codes, classes), and batch writes [B/E].
 6. **Post payouts as deposits with fee lines** so QBO bank reconciliation matches the bank feed to the penny [S/E].
+
+> **Competitive edge.** Jobber's QBO integration is one-way, parent-customer-only and blocks a whole client on one error, and it does not support Desktop ([Jobber](https://help.getjobber.com/es/articles/quickbooks-integration-faqs/)). Rootline's default is no sync at all (the books are native), and for Companies that keep QuickBooks, the sync posts Properties as sub-customers, quarantines single records, reconciles via webhooks plus CDC and posts Stripe payouts as deposits with fee lines so bank reconciliation in QBO matches to the penny.
 
 ---
 
@@ -902,7 +906,7 @@ stateDiagram-v2
 - COGS split into **labor (applied), labor burden (applied), materials, plants, equipment (applied), subcontractors, disposal and dump fees**, plus **variance accounts** (actual payroll vs applied labor; actual equipment cost vs applied equipment rates).
 - Liabilities: **Customer deposits, Deferred revenue - agreements, Deferred revenue - prepaid programs, Sales tax payable per agency, Tips payable, Warranty reserve, Accrued wages, Retainage payable** (to subs).
 - Assets: **Stripe clearing, Undeposited funds, Retainage receivable, Unbilled receivables (contract asset), Inventory (plants, hardgoods, salt), Prepaid insurance, Equipment and vehicles** with accumulated depreciation.
-- Consistent with the default chart in [07](../07-invoicing-billing-contracts.md) section 4.8 (`1050 Stripe clearing`, `2200 Customer deposits`, `2210 Deferred revenue - agreements`) [S].
+- Consistent with the default accounts in [07](../07-invoicing-billing-contracts.md) section 4.11 (for example `1050/1051 Stripe clearing USD/CAD`, `1210 Unbilled receivables - agreements`, `2150 Customer deposits`, `2160 Tips payable`, `2200 Deferred revenue - service agreements`) [S].
 
 ### 26.2 Job costing
 
@@ -1003,3 +1007,210 @@ Many small landscapers keep cash-basis books for taxes while needing accrual inf
 2. **V1: API push of hours and earnings** to the two or three most common providers among customers, plus **payroll journal import** (gross wages, employer taxes, withholdings, net pay) into the ledger to replace applied labor with actuals and post variances.
 3. **V2: embedded payroll** (Gusto Embedded or Check) for Companies that want one system, with Rootline never holding wage funds (the partner moves money and files taxes), matching the "never hold client funds" principle ([15](../15-team-hr-payroll.md), [08](../08-payments-stripe.md)).
 4. **Seasonality.** Bulk rehire and termination, H-2B workers, multi-state work, daily OT in California, production pay regular-rate OT and certified payroll ([15](../15-team-hr-payroll.md) regulatory map) [S] are where generic payroll breaks; the integration must carry earning codes for these.
+
+---
+
+## 28. Lessons for Rootline
+
+Each lesson names the evidence, the decision it supports and the owner document. Priority tags follow the doc set's convention.
+
+### 28.1 Market and positioning
+
+| # | Lesson | Evidence | Decision / feature | Priority | Owner |
+|---|---|---|---|---|---|
+| L1 | Build the TAM from Census CBP (NAICS 561730) and Statistics Canada counts by employee band before any external deck. Public top-line figures (IBISWorld, associations) differ in definitions | Section 2 [B] | Replace estimates in [22](../22-business-model-pricing-gtm.md) section 7 with CBP/StatCan counts; size S2/S3 (5-49 employees) explicitly | [MVP] (pre-launch analysis) | [01](../01-market-landscape.md), [22](../22-business-model-pricing-gtm.md) |
+| L2 | Sell margin, not software. Burdened labor near 43% of net revenue and net margins near 10% mean a point of labor efficiency or price realization is worth more than the subscription | Section 4 [S/B] | "Margin found" dashboard: ACH savings, price realization, overhead recovery, labor variance, in dollars per month | [V1] | [18](../18-reporting-analytics.md) |
+| L3 | The 10-40 employee residential design-build-maintain firm is under-served: too complex for horizontal apps, too small for Aspire | Sections 2.2, 7 [E] with [R1](R1-field-service-platforms.md), [R2](R2-landscape-specific-platforms.md) | Keep S2 as beachhead | [MVP] | [22](../22-business-model-pricing-gtm.md) |
+| L4 | Seasonality is the organizing principle for money: spring cash trough, prepaid programs, level billing, snow events | Section 3 [S/E] | Season cash forecast, prepay programs with deferred revenue, Winter Mode billing | [MVP] prepay/deferral, [V1] forecast | [07](../07-invoicing-billing-contracts.md), [09](../09-accounting-ledger-integrations.md), [18](../18-reporting-analytics.md) |
+| L5 | Labor is the binding constraint and largely Spanish-speaking and seasonal | Section 5 [S] | Spanish-first crew app, H-2B costs as burden components, payroll export with seasonal earning codes | [MVP] | [05](../05-field-crew-mobile-app.md), [15](../15-team-hr-payroll.md) |
+
+### 28.2 Payments
+
+| # | Lesson | Evidence | Decision / feature | Priority | Owner |
+|---|---|---|---|---|---|
+| L6 | Implement BYO Stripe as controller-properties "Standard-equivalent" accounts (full dashboard, Stripe-owned losses, Stripe-collected requirements, account-paid fees), with Accounts v2 `merchant` configuration where enabled and a recorded API generation per account | Section 10 [S] | Confirms [08](../08-payments-stripe.md) 4.1 option A; track Stripe's v1/v2 coexistence guidance | [MVP] | [08](../08-payments-stripe.md) |
+| L7 | Use **direct charges** only for client money; never destination charges or separate transfers for Company revenue | Section 11 [S] | Rootline is never merchant of record and never holds funds; zero Connect fees | [MVP] | [08](../08-payments-stripe.md), [20](../20-architecture-security.md) |
+| L8 | Offer OAuth for existing accounts and Account Links/embedded onboarding for new ones; keep restricted-key mode as an advanced path | Section 10.3 [S] | Connection wizard with both paths | [MVP] OAuth + Account Links; [V1] restricted keys, embedded components | [08](../08-payments-stripe.md) |
+| L9 | Make ACH (and PAD in Canada) the default for autopay, prepaid seasons and large invoices; show the Company its savings | Sections 13.4, 14 [S3P/E] | Per-context payment-method rules, ACH incentive, savings meter | [MVP] rules, [V1] incentives | [08](../08-payments-stripe.md), [07](../07-invoicing-billing-contracts.md) |
+| L10 | Surcharging must be a rules engine (card funding type, network caps, state/province bans and caps, display rules), with effective-dated rule data maintained by `platform_finance` | Section 15 [S] | Compliance-gated surcharging with audit trail and quarterly cost-of-acceptance report | [V1] | [08](../08-payments-stripe.md), [19](../19-platform-admin-portal.md) |
+| L11 | Financing belongs in proposals above a threshold; Rootline is a technology/referral provider only, displays only lender-supplied compliant copy, and books merchant fees as expense | Section 16 [S/B] | `FinancingProvider` interface; Wisetack-class partner in the US; Canadian partner selected through open question Q3 (Financeit-class candidates) | [V1] | [03](../03-crm-sales-estimating-proposals.md), [08](../08-payments-stripe.md) |
+| L12 | The Zero-Markup Pledge is the sharpest message against vendor-branded payments, but only if it is contractual | Sections 12, 17, 18 [S/E] | Put the pledge in the terms of service; opt-in application fee plan is separate and clearly disclosed | [MVP] pledge, [V1] opt-in plan | [22](../22-business-model-pricing-gtm.md) |
+| L13 | BYO means no pooled pricing; large Companies negotiate directly with Stripe | Section 13.3 [B/E] | Provide a "rate review" report (effective rate by method) the Company can take to Stripe; provider abstraction for future processors | [V1] report, [V2] other processors | [08](../08-payments-stripe.md) |
+| L14 | Payout reconciliation is where payments meet books; post gross payments to a Stripe clearing account and payouts as gross minus fees, with a zero-balance assertion on the clearing account | Sections 20.2, 25.1 [S/B] | Automatic payout matching to bank feed lines | [MVP] | [08](../08-payments-stripe.md), [09](../09-accounting-ledger-integrations.md) |
+
+### 28.3 Accounting and payroll
+
+| # | Lesson | Evidence | Decision / feature | Priority | Owner |
+|---|---|---|---|---|---|
+| L15 | A built-in ledger is the differentiator and the hedge against Intuit price and API changes, but CPAs must be won, not bypassed | Sections 20-23 [S/B] | Free accountant seats, multi-client accountant hub, standard exports, optional QBO mirror | [MVP] ledger + exports, [V1] hub | [09](../09-accounting-ledger-integrations.md) |
+| L16 | QBO sync must fix the known failure modes: per-Property sub-customers, explicit direction per object, lookup-before-create, per-record quarantine, webhooks plus CDC, deposits with fee lines, tax override strategy for automated-sales-tax companies | Section 20 [S/B] | Sync engine design in [09](../09-accounting-ledger-integrations.md) 4.17 | [MVP] QBO | [09](../09-accounting-ledger-integrations.md), [20](../20-architecture-security.md) |
+| L17 | Budget API calls: design for metered reads (Intuit) and daily caps (Xero) from day one | Sections 20.1, 22 [B] | Cache reference data, summarize documents where allowed, batch writes, per-connection rate budgets | [MVP] | [20](../20-architecture-security.md) |
+| L18 | Desktop is a migration channel, not a long-term integration | Section 21 [B] | One-way summarized Web Connector sync plus a Desktop-to-Rootline migration kit | [V1] | [09](../09-accounting-ledger-integrations.md) |
+| L19 | Build the ledger natively in Postgres with eight invariants; borrow pending/posted semantics and version-checked balances from specialized ledgers | Section 25 [B/E] | No external ledger dependency at MVP; Beancount/CSV journal export | [MVP] | [09](../09-accounting-ledger-integrations.md), [20](../20-architecture-security.md) |
+| L20 | Landscaping needs five specialized accounting capabilities: burdened job costing with variances, overhead recovery tracking, WIP with over/under billings, deferred revenue for seasonal programs, per-line sales tax | Section 26 [S/B] | Posting rules for each billing mode; WIP schedule; overhead recovery tracker; tax evidence | [MVP] deferral, job cost, tax; [V1] WIP, recovery tracker | [07](../07-invoicing-billing-contracts.md), [09](../09-accounting-ledger-integrations.md) |
+| L21 | Plant warranty reserves can be estimated from Plant KB regional performance data, a capability unique to Rootline | Section 26.6 [E] | Warranty reserve suggestion at install completion | [V2] | [09](../09-accounting-ledger-integrations.md), [12](../12-plant-knowledge-base.md) |
+| L22 | Payroll: export files first, APIs second, embedded payroll third; never hold wage funds | Section 27 [B] | Gusto/ADP/Paychex/QBO Payroll formats at MVP, API push and payroll-journal import at V1, Gusto Embedded or Check evaluation at V2 | [MVP]/[V1]/[V2] | [15](../15-team-hr-payroll.md) |
+
+> **Competitive edge (summary).** Jobber, Housecall Pro, LMN and Service Autopilot all monetize payments through vendor-branded processing, and all of them outsource the books to QuickBooks. Rootline inverts both: the Company owns its Stripe account (zero markup by default) and owns real books inside the product. The research shows these are exactly the two areas where incumbents generate their most specific complaints: processor lock-in after acquisitions ([GetApp](https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/)) and QuickBooks sync gaps ([Jobber](https://help.getjobber.com/es/articles/quickbooks-integration-faqs/)).
+
+---
+
+## 29. Beyond the brief
+
+Ideas the research suggests that nobody asked for. Each is tagged and kept short; owners can pull them into module docs.
+
+1. **Payments cost coach [V1].** A monthly "you paid $3,140 in processing; $1,180 of it was card fees on invoices over $2,500 that clients would likely have paid by ACH" message with one-click policy changes. Uses balance-transaction data the Company already owns. Pairs with the rate-review report (L13).
+2. **Spring Ready cash plan [V1].** In January, the Copilot builds a cash forecast through June from contracted maintenance, prepaid programs collected so far, signed installs with deposit schedules, rehire dates and H-2B arrival costs, and proposes levers: prepay campaign dates and discounts, deposit percentages, a credit-line draw. Connects [18](../18-reporting-analytics.md) forecasting with [16](../16-marketing-growth-communications.md) campaigns.
+3. **Prepay program designer [V1].** Simulates the cash and margin effect of a 3%, 5% or 8% prepay discount using the Company's historic cancellation rate and processing mix, then posts the program with correct deferred-revenue rules. Lawn-care firms already use prepay discounts ([Weed Man](https://weedman.com/blog/prepay-and-referral-discounts)) but price them by gut.
+4. **Working-capital partner marketplace [V3].** Ledger-verified financials (actual AR aging, deferred revenue, seasonality) let lenders underwrite spring ramp loans or equipment loans quickly. Rootline earns a disclosed referral fee and never lends. Stripe also offers platform-distributed financing products (Stripe Capital) whose eligibility for full-dashboard accounts must be verified [B].
+5. **Subcontractor payouts [V2].** For snow subcontractors paid per push, a Company could pay subs through its own Stripe account (separate transfers to sub recipient accounts) or through bill pay, with 1099-NEC data collected at onboarding. Needs careful liability analysis because it is the one place Rootline would orchestrate a money movement between two parties.
+6. **"Books health score" for CPAs [V1].** A single page per Company: clearing accounts at zero, unreconciled bank lines, unposted payouts, deferred revenue roll-forward tie-out, sales tax liability vs filed returns. Turns the CPA into an advocate.
+7. **Benchmark-backed pricing nudges [V2].** With opt-in benchmarks ([18](../18-reporting-analytics.md)), show "your mulch install price per cubic yard is at the 22nd percentile for your Region and size band" next to the price book. Ratio-only and k-anonymous per [18](../18-reporting-analytics.md) rules.
+8. **Card-vault portability as a feature, not a policy [MVP].** Because the Company owns its Stripe account, publish a "switch to Rootline" kit that explains how a Company using its own Stripe today (via a website builder) can connect it in minutes and keep every saved card. For Companies leaving a vendor-branded processor, a guided re-collection campaign (autopay re-enrollment by text with ACH incentive) turns a painful migration into a cost-saving event.
+9. **Tax-season packet [V1].** In January: 1099-NEC list for subcontractors, sales tax annual summaries, fixed-asset additions with Section 179 candidates flagged for the CPA ([26.8](#268-equipment-and-fixed-assets)), H-2B reimbursement summaries, and the year's processing fees by method.
+10. **Seasonal credit-line tracker [V2].** Bank-feed detection of line-of-credit draws and repayments, with interest cost attributed to the months that caused the draw, so owners see the true cost of slow collections.
+
+---
+
+## 30. Open questions and verification checklist
+
+### 30.1 Open questions for the founder and module owners
+
+| # | Question | Why it matters | Owner |
+|---|---|---|---|
+| Q1 | Is Rootline's Stripe platform enabled for Accounts v2 with full-dashboard `merchant` configurations, and what is Stripe's timeline for retiring v1 controller-property accounts? | Determines MVP onboarding API | `platform_engineer`, Stripe partner manager |
+| Q2 | Which Connect embedded components are available for full-dashboard accounts with Stripe-owned losses? | Decides how much of onboarding and payouts UI stays in Rootline | Payments team |
+| Q3 | Which financing partner covers both US and Canada at Rootline's ticket sizes, and does any referral fee trigger broker licensing? | Canada is a launch market; HCP's Wisetack is not offered in Canada | Legal, `platform_finance` |
+| Q4 | What are the current Intuit App Partner Program tiers, allotments and overage prices, and which of Rootline's sync calls count as metered reads? | Sync design and cost of goods sold | Money team ([20](../20-architecture-security.md) Q13) |
+| Q5 | What are Xero's current developer tiers and data-egress terms, and do the AI-training restrictions affect Copilot features that read synced data? | Xero connector viability | Legal, money team |
+| Q6 | Default revenue-recognition policy for seasonal snow contracts and level billing: ratable vs per event or per visit? | Ledger posting rules | CPA advisor ([14](../14-service-line-modules.md) Q4) |
+| Q7 | Gusto Embedded vs Check for [V2] embedded payroll: economics, Canadian coverage (neither may cover Canada), and UX control | Payroll roadmap | [15](../15-team-hr-payroll.md) owner |
+| Q8 | Should Rootline ever pool volume (for example a referral program with Stripe for IC+ pricing for qualifying Companies) without taking a spread? | Answers the "BYO means worse rates" objection | `platform_owner` |
+
+### 30.2 Verification checklist (every [B] fact that must be confirmed before external use)
+
+| Item | Where to verify |
+|---|---|
+| US landscaping revenue, business counts, employer establishments by size band (NAICS 561730) | IBISWorld summary; Census County Business Patterns and Nonemployer Statistics; Census Economic Census |
+| Canadian business counts by employee band (NAICS 56173) | Statistics Canada Canadian Business Counts; ISED SME profiles |
+| BLS OEWS employment and wages for SOC 37-3011 | bls.gov OEWS |
+| Revenue mix by service line and net margins | Lawn & Landscape State of the Industry; NALP; Wilson 360; Landscape Management benchmarks |
+| H-2B supplemental visas for FY2026 and the landscaping share of certifications | USCIS cap count; DOL OFLC performance data |
+| Stripe list pricing (US, Canada): manual entry, international, Terminal, Tap to Pay, disputes and dispute-countered fee, Instant Payouts, ACH failure fees, PAD, Interac, Financial Connections, Stripe Tax, Billing, Connect | stripe.com/pricing, stripe.com/connect/pricing, stripe.com/ca/pricing |
+| Embedded component availability for full-dashboard accounts | docs.stripe.com Connect embedded components |
+| Nacha 2026 fraud-monitoring phases and dates; WEB debit validation | nacha.org rules |
+| Payments Canada Rule H1 pre-notification requirements | payments.ca |
+| New York surcharge display rule; Visa/Mastercard settlement status; Quebec surcharge ban | Counsel; network rule books |
+| 1099-K thresholds and Stripe's filing responsibility for full-dashboard accounts | IRS; Stripe tax reporting docs |
+| Financing partners' ticket ranges, terms, merchant fees, Canadian availability; GreenSky ownership | Partner sites; press releases |
+| ServiceTitan usage revenue composition | ServiceTitan 10-K and 10-Q filings |
+| QBO API: minor versions, rate limits, batch limits, CDC limits, webhook format migration, refresh-token policy, app assessment | developer.intuit.com |
+| Intuit App Partner Program tiers and metering | developer.intuit.com partner program pages |
+| QBO plan feature matrix and current list prices; Desktop edition availability and retirement dates | quickbooks.intuit.com |
+| Xero API limits, token lifetimes, webhooks, tracking-category limit, developer pricing tiers, AI terms, Melio acquisition | developer.xero.com; Xero investor releases |
+| Modern Treasury Ledgers, Formance Ledger, TigerBeetle features and licenses; Stripe Ledger blog | Vendor docs; GitHub repositories; stripe.com/blog |
+| Section 179 and bonus depreciation changes from 2025 legislation; IRC 448/460 thresholds for 2025-2026 | IRS guidance; CPA advisor |
+| California home-improvement deposit limit | California Business and Professions Code; counsel |
+| Gusto, Gusto Embedded, Check, ADP, Paychex, Finch, Merge capabilities and pricing | Vendor developer docs |
+| CFPB section 1033 rule status; bank data-access fees | consumerfinance.gov; press |
+
+---
+
+## Sources
+
+**How these sources were gathered.** This report's own web searches were refused because the run-wide search budget was exhausted, and direct fetches to stripe.com and docs.stripe.com failed under the session's network allowlist. The sources below marked "retrieved in this run" were found by sibling agents during the same research run and are cited in [08](../08-payments-stripe.md), [07](../07-invoicing-billing-contracts.md), [09](../09-accounting-ledger-integrations.md), [14](../14-service-line-modules.md), [15](../15-team-hr-payroll.md), [18](../18-reporting-analytics.md), [22](../22-business-model-pricing-gtm.md), [R1](R1-field-service-platforms.md) and [R2](R2-landscape-specific-platforms.md); this report re-cites them without reopening the pages. The final group lists primary references for the [B] facts; they were **not** retrieved in this run.
+
+**Stripe documentation (retrieved in this run)**
+
+- [Stripe: Connect and Accounts v2](https://docs.stripe.com/connect/accounts-v2)
+- [Stripe: Connect and the Accounts v2 API](https://docs.stripe.com/connect/accounts-v2/api)
+- [Stripe edge docs: Accounts v2 connected account configuration](https://edge-docs.stripe.com/connect/accounts-v2/connected-account-configuration)
+- [Stripe: Migrate your Connect integration to use controller properties](https://docs.stripe.com/connect/migrate-to-controller-properties)
+- [Stripe: Update to typeless Connect](https://docs.stripe.com/connect/update-to-typeless-connect)
+- [Stripe: Using Standard connected accounts (OAuth)](https://docs.stripe.com/connect/oauth)
+- [Stripe: Standard accounts](https://docs.stripe.com/connect/standard-accounts)
+- [Stripe: Application fees](https://docs.stripe.com/connect/application-fees)
+- [Stripe: Collect application fees (SaaS)](https://docs.stripe.com/connect/saas/tasks/app-fees)
+- [Stripe: Create direct charges](https://docs.stripe.com/connect/direct-charges)
+- [Stripe: Direct charges fee payer behavior](https://docs.stripe.com/connect/direct-charges-fee-payer-behavior)
+- [Stripe edge docs: Platform pricing tools](https://edge-docs.stripe.com/connect/platform-pricing-tools)
+
+**Stripe pricing summaries (third-party, retrieved in this run)**
+
+- [Superdupr: Stripe fees (2026)](https://superdupr.com/blog/stripe-fees)
+- [Superdupr: ACH fees in 2026](https://superdupr.com/blog/ach-fees)
+- [Dodo Payments: Stripe ACH fees](https://dodopayments.com/blogs/stripe-ach-fees/)
+- [PaymentProviders.io: Stripe vs Jobber Payments fees](https://paymentproviders.io/compare/stripe-vs-jobber-payments?focus=fees)
+
+**Competitor payments (retrieved in this run)**
+
+- [Stripe case study: Jobber and Stripe help 200k home service professionals](https://www.casestudies.com/company/stripe/case-study/jobber-and-stripe-help-200k-home-service-professionals-save-on-payment-fees)
+- [Jobber Help: Instant payouts](https://help.getjobber.com/en/articles/instant-payouts/)
+- [Jobber: ACH on us promotion](https://www.getjobber.com/ach-on-us/)
+- [Jobber Community: adding a credit card service fee to invoices](https://community.getjobber.com/discussions/invoicing-getting-paid/advice-adding-the-credit-card-service-fee-to-invoices/1228/replies/8669)
+- [ACHR News: Jobber partners with Stripe for financing and instant payouts](https://www.achrnews.com/articles/143559-jobber-partners-with-stripe-to-activate-financing-and-instant-payouts-for-home-service-businesses)
+- [Housecall Pro: Payment processing](https://www.housecallpro.com/features/payment-processing/)
+- [Housecall Pro: February 2026 product updates](https://www.housecallpro.com/resources/february-2026-product-updates/)
+- [Housecall Pro Help: Wisetack consumer financing overview](https://help.housecallpro.com/en/articles/3836042-wisetack-consumer-financing-overview)
+- [Dupple: Housecall Pro review](https://dupple.com/reviews/housecall-pro)
+- [Landscape Management: LMN by Granum launches financial infrastructure platform with Stripe](https://www.landscapemanagement.net/lmn-by-granum-launches-new-financial-infrastructure-platform-in-partnership-with-stripe/)
+- [Green Industry Pros: Granum launches LMN Pay experience](https://www.greenindustrypros.com/business-management/software/product/22963124/granum-granum-launches-lmn-pay-experience)
+- [LMN Help: Payment runs with Stripe](https://intercom.help/lmn/en/articles/15938993-payment-runs-with-stripe)
+- [Merchant Cost Consulting: LMN Pay Stripe migration review](https://merchantcostconsulting.com/lower-credit-card-processing-fees/lmn-pay-stripe-migration/) (single third-party opinion)
+- [Aspire blog: customers can pay online with Aspire 5.0 (2019)](https://www.youraspire.com/blog/your-customers-can-pay-online-with-aspire-in-version-5.0-0)
+- [Aspire blog: collecting payments from landscaping customers](https://youraspire.com/blog/how-to-collect-payments-from-landscaping-customers)
+- [MowBoss: Service Autopilot review 2026](https://mowbosshq.pages.dev/guides/service-autopilot-review)
+- [Capterra: LawnPro vs Service Autopilot](https://www.capterra.com/compare/105508-122075/LawnPro-vs-Service-Autopilot)
+- [GetApp: Service Autopilot reviews](https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/)
+
+**Surcharging and network rules (retrieved in this run)**
+
+- [AFS Law: Visa reduces its merchant surcharge cap to 3%](https://www.afslaw.com/perspectives/alerts/visa-reduces-its-merchant-surcharge-cap-3-effective-april-15-2023-merchants)
+- [Paya: Updates to Visa's surcharge rules in Canada, the US and US territories](https://support.paya.com/updates-to-visas-surcharge-rules-in-canada-the-us-and-us-territories)
+- [Visa Canada: Surcharging FAQ for businesses (PDF)](https://www.visa.ca/content/dam/VCOM/regional/na/canada/Support/Documents/surcharging-faq-businesses-en.pdf)
+- [Mastercard Canada: Merchant surcharge rules](https://www.mastercard.com/ca/en/business/support/merchant-surcharge-rules.html)
+- [LawPay: Credit card surcharge laws by state for 2026](https://www.lawpay.com/about/blog/credit-card-surcharge-rules/)
+- [Nickel: 2026 credit card surcharge laws by state](https://www.nickel.com/surcharge-laws)
+- [Rundoo: Credit card surcharge laws by state (September 2026)](https://rundoo.ai/insights/credit-card-surcharge-laws-by-state/)
+- [Lifted Payments: Credit card surcharge rules by state](https://liftedpayments.com/credit-card-surcharge-rules-by-state)
+
+**Accounting and competitor sync behavior (retrieved in this run)**
+
+- [Jobber Help: QuickBooks integration FAQs](https://help.getjobber.com/es/articles/quickbooks-integration-faqs/)
+- [Jobber Help: How to connect Jobber and QuickBooks Online (new integration)](https://help.getjobber.com/es/articles/how-to-connect-jobber-and-quickbooks-online-new-quickbooks-integration/)
+- [Jobber Help: Common QuickBooks sync errors](https://help.getjobber.com/hc/en-us/articles/10466688449431-Common-QuickBooks-Sync-Errors-and-How-to-Fix-Them)
+- [Jobber Help: Batch invoice creation](https://help.getjobber.com/hc/en-us/articles/115009542848)
+- [Capterra: Real Green (Service Assistant) reviews](https://www.capterra.com/p/78106/Service-Assistant/reviews/?page=5)
+- [LMN Help: How LMN calculates overhead, labor burden and profit in estimates](https://intercom.help/lmn/en/articles/15939065-how-lmn-calculates-overhead-labor-burden-and-profit-in-estimates)
+- [Lawn & Landscape: MORS estimating method](https://www.lawnandlandscape.com/article/mors-estimating-method/)
+- [Total Landscape Care: How to properly cost a job](https://www.totallandscapecare.com/business/article/15034644/how-to-properly-cost-a-job)
+- [LawnPro: Level billing](https://lawnprosoftware.com/features/level-billing)
+- [Weed Man: Prepay and referral discounts](https://weedman.com/blog/prepay-and-referral-discounts)
+- [Beancount: Snow removal contractor bookkeeping, ASC 606 seasonal deferred revenue (June 2026)](https://beancount.io/blog/2026/06/03/snow-removal-plowing-ice-management-contractor-bookkeeping-asc-606-seasonal-deferred-revenue-per-push-trigger-section-179-plow-truck-salt-spreader-sima-asca-revenue-per-truck-hour-kpi-guide)
+- [Jobber Academy: How to bid snow removal](https://www.getjobber.com/academy/snow-removal/how-to-bid-snow-removal/)
+
+**Industry economics, labor and benchmarks (retrieved in this run)**
+
+- [Lawn & Landscape: Wilson 360 2024 landscape industry benchmark](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)
+- [Aspire blog: Landscaping labor percentage of revenue](https://www.youraspire.com/blog/landscaping-labor-percentage-of-revenue)
+- [Lawn & Landscape: Useful business benchmarks](https://www.lawnandlandscape.com/article/ll0314-business-useful-benchmarks)
+- [SynkedUP: Average man-hour rate for landscape jobs](https://synkedup.com/average-man-hour-rate-for-landscape-jobs/)
+- [ISED Canada: Financial performance data, NAICS 56173 Landscaping Services](https://ised-isde.canada.ca/app/ixb/cis/performance/56173)
+- [Data USA: Landscaping and groundskeeping workers](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers)
+- [USCIS: H-2B cap count](https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-2b-non-agricultural-workers/cap-count-for-h-2b-nonimmigrants)
+- [DOL WHD: H-2B program](https://www.dol.gov/agencies/whd/immigration/h2b)
+- [eCFR: 20 CFR 655 Subpart A](https://www.ecfr.gov/current/title-20/chapter-V/part-655/subpart-A)
+- [California DLSE: Overtime FAQ](https://www.dir.ca.gov/dlse/faq_overtime.htm)
+- [Aspire report via Finviz: commercial landscapers prioritizing growth (2026 survey)](https://finviz.com/news/401821/aspire-report-finds-commercial-landscapers-prioritizing-growth-as-businesses-navigate-operational-complexity)
+- [TechCrunch: ServiceTitan acquires Aspire (June 2021)](https://techcrunch.com/2021/06/30/servicetitan-acquires-aspire-to-move-into-landscaping-raises-200m-at-a-9-5b-valuation)
+- [SIMA: Effective in-season documentation](https://resources.sima.org/snow-and-ice-resource-center/effective-in-season-documentation)
+
+**Primary references for [B] facts (not retrieved in this run; verify before use)**
+
+- Stripe: [pricing](https://stripe.com/pricing), [Connect pricing](https://stripe.com/connect/pricing), [Canada pricing](https://stripe.com/ca/pricing), Connect embedded components and ACH/PAD/Terminal docs on docs.stripe.com, Stripe engineering blog post on its Ledger system
+- Intuit: [QuickBooks Online Accounting API docs](https://developer.intuit.com/app/developer/qbo/docs/get-started), Web Connector and qbXML SDK docs, App Partner Program pages on developer.intuit.com, [QuickBooks pricing](https://quickbooks.intuit.com/pricing/)
+- Xero: [Xero developer docs](https://developer.xero.com/documentation/), rate limits, webhooks and developer pricing pages
+- Ledgers: [Modern Treasury Ledgers docs](https://docs.moderntreasury.com/), [Formance docs](https://docs.formance.com/), [TigerBeetle docs](https://docs.tigerbeetle.com/)
+- Payroll: [Gusto developer docs](https://docs.gusto.com/), [Check docs](https://docs.checkhq.com/), ADP Marketplace developer resources, Finch and Merge HRIS docs
+- Government and regulators: [Census County Business Patterns](https://www.census.gov/programs-surveys/cbp.html), [Census Nonemployer Statistics](https://www.census.gov/programs-surveys/nonemployer-statistics.html), [BLS OEWS SOC 37-3011](https://www.bls.gov/oes/current/oes373011.htm), [Statistics Canada](https://www.statcan.gc.ca/), [DOL OFLC performance data](https://www.dol.gov/agencies/eta/foreign-labor/performance), [Nacha Operating Rules](https://www.nacha.org/rules), [Payments Canada rules](https://www.payments.ca/), [CFPB personal financial data rights](https://www.consumerfinance.gov/personal-financial-data-rights/), IRS guidance on Section 179, bonus depreciation and sections 448/460
+- Industry: Lawn & Landscape State of the Industry report (annual), NALP industry resources, IBISWorld "Landscaping Services in the US" summary, BrightView investor filings, ServiceTitan SEC filings

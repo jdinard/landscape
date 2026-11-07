@@ -90,6 +90,8 @@ The landscape software market splits along service lines:
 | Commercial client (`client_commercial`) | Approve SOWs and enhancements against POs, view audit scores and monthly reports across a portfolio, download snow proof packets for their insurer, see backflow compliance status across sites. |
 | Platform Curator (`platform_curator`) | Maintain the product label library, state/provincial pesticide rule packs, backflow jurisdiction packs, program templates per region, tree species failure profiles. |
 | Platform Operator (`platform_owner`) | Decide module entitlements per plan, grant trials, approve rule pack publication, monitor compliance feature health. |
+| Platform Finance (`platform_finance`) | Configure module add-on prices and seasonal billing masks (Snow & Ice billed Nov-Mar) on Rootline's own Stripe Billing account; handle no-snow-winter goodwill credits ([22](22-business-model-pricing-gtm.md)). |
+| Platform Engineer (`platform_engineer`) | Keep smart-controller, weather and one-call ingestion connectors healthy; size the platform for 3 a.m. storm peaks; ship module manifests and migrations behind flags. |
 
 **Jobs-to-be-done statements (selected):**
 
@@ -245,7 +247,7 @@ The calendar below is an illustrative default loaded for a Midwest Region; every
 | Nov | Round 5, renewal pricing | Winterizations | Season opens (Nov 1 default) | Leaf cleanups | DST timer adjust | Installs | - |
 | Dec | Renewal campaign | - | Events | - | - | Service calls (outages) | - |
 
-### 4.1 Lawn care and Plant Health Care (PHC) programs (`lawn_phc`)
+### 4.1 Lawn care and Plant Health Care (PHC) programs (`lawn_phc`) [MVP]
 
 Lawn and PHC companies sell a **season-long program** of rounds (typically 5-8 for lawn, 3-6 for tree and shrub PHC), each with an application window, a product mix and a rate, priced by measured area or plant count. Revenue depends on route density inside narrow windows; risk depends on getting labels, weather limits and state recordkeeping right.
 
@@ -432,7 +434,7 @@ Rules:
 
 > **Competitive edge.** Real Green pioneered rounds-and-programs and is the system to beat on prepay and chemical history, but public material shows no platform-curated, versioned state rule packs, parcel-based registry detection or a Plant KB that knows which ornamental pests belong to which species in which Region (verify in a demo). GorillaDesk and FieldRoutes log chemicals well for pest-and-lawn routes but stop at design-build, snow and a real ledger. Jobber has a basic chemical-tracking capability and Housecall Pro has no documented chemical module; both model programs as generic recurring jobs with no rule-pack, guardrail or registry logic (as of Nov 2026, verify). Rootline's edge is that the compliant record is the only way to complete the Visit, the rule pack is maintained once by `platform_curator` for every tenant, and cross-line rules (seeding compatibility, water-in and rainfast via the linked smart controller, section 4.11) are impossible in a lawn-only tool.
 
-### 4.2 Irrigation (`irrigation`, `backflow`, `smart_irrigation`)
+### 4.2 Irrigation (`irrigation` [MVP], `backflow` [V1], `smart_irrigation` [V1])
 
 Irrigation is high-margin, highly seasonal (start-ups and winterizations are compressed into a few weeks) and knowledge-heavy (which zone covers the side yard, where the valve box is buried). The module turns tribal knowledge into a per-property **Irrigation System Inventory** with a zone map, then uses it for seasonal services, repairs, backflow compliance, smart-controller integration and water management.
 
@@ -537,7 +539,7 @@ Rules: a start-up that finds the system cannot be pressurized (mainline break) b
 
 > **Competitive edge.** Generic FSM tools treat irrigation as free-text notes; vendor apps (Hydrawise, Rachio, IQ4) know controllers but not the contractor's billing, crew or zone repair history. Rootline joins both: an alarm becomes a priced, pre-authorized repair visit for the right zone with the valve photo already on the technician's phone, and the same zone map protects heads during aeration and gives designers a true as-built.
 
-### 4.3 Snow and ice management (`snow_ice`)
+### 4.3 Snow and ice management (`snow_ice`) [V1]
 
 Snow is a different business: revenue arrives in unpredictable bursts, work happens at night in hazardous conditions, crews and subcontractors must be committed hours before the first flake, and the documentation produced during a storm decides lawsuits years later. The module is built around the **Storm Event Engine** and **Proof-of-Service Packets**, aligned with the documentation themes of the SIMA procurement standard (service documentation and reporting, billing requirements, technology requirements, service controls and communication; [SIMA standards](https://sima.org/standards)) and the ASCA A1000 standard (pre-season site inspection reports, in-event documentation, post-event processes, weather service reporting; [ANSI webstore](https://webstore.ansi.org/standards/ansi/ansiascaa10002014)).
 
@@ -632,7 +634,9 @@ Rules:
 - **Re-optimization:** when a truck goes down or a site calls in, the ops manager drags a site to another route or runs re-optimization (OR-Tools VRP with priorities and time windows, see [04](04-scheduling-dispatch-routing.md)).
 - **Re-service loops:** for long events, sites with "re-service every N inches" automatically re-enter the queue as accumulation increases.
 - **Staffing commitments:** at `watch`, the engine sends shift call-outs to employees and subs (accept/decline in app); ops sees committed capacity vs required capacity.
-- **Driver safety:** hours-on-shift counter per driver with warnings at configurable thresholds (e.g., 12 and 16 hours) and forced break prompts; links to [15](15-team-hr-payroll.md) for timesheets.
+- **Driver safety:** hours-on-shift counter per driver with warnings at configurable thresholds (e.g., 12 and 16 hours) and forced break prompts; links to [15](15-team-hr-payroll.md) for timesheets. Drivers of commercial motor vehicles may also fall under hours-of-service rules depending on vehicle weight and operation (verify with the Company's safety program); the counter is a fatigue control, not a DOT compliance tool.
+- **Billing-state carve-out:** dispatch and logging never stop mid-storm because of a Rootline subscription problem (72-hour carve-out per event, see 4.0.3 and [22](22-business-model-pricing-gtm.md)).
+- **Pre-season readiness gate [V1]:** on the Company's readiness date (default Oct 15) the module lists every contracted site missing a signed site map, staking, gate codes, an assigned route, a sub with a valid COI or a spreader calibration; ops cannot mark the season "ready" until the list is empty or each item is waived with a reason.
 
 #### 4.3.5 Salt and material usage logging [V1]
 
@@ -710,9 +714,9 @@ Rules:
 
 > **Competitive edge.** Yeti and Aspire both offer GPS-verified service history and subcontractor portals; Jobber-style tools need template duplication and spreadsheets for per-inch pricing. Rootline's edge is (1) a tamper-evident, hash-manifested packet designed for court, (2) one-click incident packets pinned to the exact location of a fall, (3) all eight pricing models evaluated automatically against a named weather station of record, and (4) the same crews, subs, clients and ledger used for the other eight months of the year.
 
-### 4.4 Tree care (`tree_care`)
+### 4.4 Tree care (`tree_care`) [V2]
 
-Tree care combines consulting (inventories, risk assessments), high-hazard work (climbing, cranes, near utilities) and regulated activity (protected-tree permits, nesting season, PHC treatments).
+Tree care combines consulting (inventories, risk assessments), high-hazard work (climbing, cranes, near utilities) and regulated activity (protected-tree permits, nesting season, PHC treatments). The module ships at [V2] (4.0.1). Until then, Companies with occasional tree work sell removals and pruning as ordinary Work Orders with the 811 gate (4.5.6) and record trees as simple plant points on the Property; those points migrate into the GPS inventory when the module is enabled.
 
 #### 4.4.1 GPS tree inventory [V2]
 
@@ -763,7 +767,7 @@ The Inspection Engine ships a risk assessment template aligned with ANSI A300 Pa
 
 > **Competitive edge.** Arborgold and SingleOps serve arborists well, but their species data is not a curated, region-aware knowledge base, and their inventories do not flow into PHC programs, design-build replacements, warranty claims and commercial audit reports. In Rootline, the tree in the inventory is the same object the designer sees in the plan and the same plant the warranty engine covers.
 
-### 4.5 Installation and hardscape projects (`install_projects`)
+### 4.5 Installation and hardscape projects (`install_projects`) [MVP]
 
 Design-build revenue comes in larger tickets (a USD 38,000 paver patio with seat walls, a USD 120,000 backyard renovation) with multi-week schedules, many material deliveries, subcontractors, permits, utility locates and long warranty tails. The module is the Project Engine plus landscape-specific gates.
 
@@ -825,8 +829,28 @@ Change order mechanics live in [03](03-crm-sales-estimating-proposals.md). Proje
 
 Every excavation in the US and Canada is governed by one-call ("call before you dig") laws; notice periods (commonly two to three business days), ticket validity and re-mark rules vary by state/province (verify per one-call center).
 
-- **Dig Ticket** entity: one-call center, ticket number, ticket type (normal, emergency, re-mark, update), request date/time, **legal start date/time** (computed from the one-call rule pack's wait period, business days and holidays), **expiration date** (per pack), work area description, white-lining required flag and photo, excavation methods, status (`requested`, `waiting`, `clear_to_dig`, `expired`, `cancelled`), positive response per utility (marked, clear/no conflict, not yet responded), locate mark photos.
+- **Dig Ticket** entity: one-call center, ticket number, ticket type (normal, emergency, re-mark, update), request date/time, **legal start date/time** (computed from the one-call rule pack's wait period, business days and holidays), **expiration date** (per pack), work area description, white-lining required flag and photo, excavation methods, status (`requested`, `waiting`, `clear_to_dig`, `expired`, `cancelled`, `closed`), positive response per utility (marked, clear/no conflict, not yet responded), locate mark photos.
 - **Hard gate:** any task tagged `excavation` (planting trees, footing digs, irrigation trenching, lighting cable trenching, fence posts, post-hole augering) on a Visit cannot be started in the crew app unless a valid ticket covers the property and date. Override only by `owner` or `ops_manager` with reason; overrides are audited and reported.
+- **Depth threshold:** the one-call pack carries the jurisdiction's excavation definition (some exempt very shallow hand work such as planting annuals or bed edging, others do not; verify per state). Tasks are tagged `excavation` from the price book item (e.g., "Plant shrub 3-gal" yes, "Edge beds" per pack), so crews never decide the legal question on site.
+- **Gate evaluation offline:** the crew app caches each ticket's status, legal start and expiry with the day's route, so the gate works in dead zones; a ticket that expires while offline closes the gate at the expiry time on the device clock and re-checks on sync.
+
+Dig ticket lifecycle:
+
+```mermaid
+stateDiagram-v2
+    [*] --> requested
+    requested --> waiting : "ticket number received"
+    waiting --> clear_to_dig : "legal start reached and all utilities responded"
+    waiting --> waiting : "utility marked conflict, re-mark requested"
+    clear_to_dig --> expired : "ticket life ends"
+    clear_to_dig --> waiting : "marks destroyed, update requested"
+    expired --> requested : "update or new ticket"
+    requested --> cancelled : "project cancelled"
+    waiting --> cancelled : "project cancelled"
+    clear_to_dig --> closed : "excavation complete"
+    closed --> [*]
+    cancelled --> [*]
+```
 - **Expiry handling:** reminders before expiry; one-click "renew/update ticket" instructions; multi-week projects show ticket coverage on the Gantt.
 - **Positive response parsing [V1]:** one-call positive response emails are forwarded to a Company inbox address; AI extracts utility responses into the ticket ([17](17-ai-copilot-automation.md)). Direct one-call center integrations where APIs exist (V2, verify per center).
 - **Private lines:** the crew sees Rootline's own as-built layers (irrigation, lighting cables, drainage) because one-call centers generally do not locate privately owned lines (verify per state). This is a safety and margin win unique to an integrated platform.
@@ -837,16 +861,19 @@ Every excavation in the US and Canada is governed by one-call ("call before you 
 - **Closeout package:** as-built plan, plant list with species and sizes (from the Design and KB), care guide per plant (auto-generated from the KB in the client's language), irrigation zone map and controller schedule, lighting fixture map, warranty certificate, maintenance program offer.
 - **Warranty terms (Warranty Engine):** per item category: e.g., trees and shrubs 1 year, perennials 1 growing season, annuals and bulbs none, sod 30 days with watering compliance, hardscape workmanship 3-5 years, manufacturer warranties referenced (pavers, lighting fixtures, controllers). Conditions: client watering compliance, no damage by animals/vehicles/acts of nature, drought restrictions exclusion, maintenance by the Company (optional extended warranty when on a maintenance program).
 - **Warranty claim flow:** client submits a claim in the portal (photo, plant pinned on the plan) -> system checks coverage period and conditions -> **evidence assist**: if a smart controller is linked, the claim shows irrigation run history for that zone; AI suggests probable causes using the KB (e.g., "Japanese maple leaf scorch, likely heat/wind exposure; site is full sun south wall") -> ops decides approve/deny/partial -> replacement Visit scheduled (in the right planting window) -> plant ordered -> cost posted against the warranty reserve ([09](09-accounting-ledger-integrations.md)).
-- **Warranty reserve:** configurable percentage of install revenue accrued to a warranty reserve; claims draw it down; reports compare actual vs reserve by plant species and crew (feeds plant palette decisions back to the KB curators as anonymized aggregate signals, opt-in).
+- **Warranty reserve:** configurable percentage of install revenue accrued to a warranty reserve (ledger rule `warranty.WR1`: debit 5710 Warranty Expense, credit 2410 Warranty Reserve, per [09](09-accounting-ledger-integrations.md)); claims draw it down (`warranty.WR2`); reports compare actual vs reserve by plant species and crew (feeds plant palette decisions back to the KB curators as anonymized aggregate signals, opt-in).
 - **Expiry reminders:** 30 days before plant warranty expiry, the client gets a "last chance to report" check-in (a delight and trust feature) and an upsell to a maintenance program.
+- **Replacement rules [V1]** (Company policy, defaults shown): one replacement per warranted plant; the replacement carries the remaining term of the original warranty, not a new one (Company option: new 1-year term on maintenance-program clients); replacement is the same species and size unless the KB flags poor Region or site fit, in which case ops picks a KB-recommended substitute of equal or lower cost; client-requested upgrades are billed at the price difference; labor covered or charged per policy (common options: plant only, plant + labor, 50% labor).
+- **Claim states [V1]:** `submitted` -> `under_review` -> `approved` / `partially_approved` / `denied` -> `replacement_scheduled` -> `replaced` -> `closed`. Denials require a reason code (out of term, watering non-compliance, animal or vehicle damage, act of nature, client-installed) and the evidence summary shown to the client.
+- **Nursery pass-back [V1]:** when the supplying nursery offers a guarantee, the claim creates a vendor claim (doc 13 vendor returns; ledger account 1230 Vendor Claims Receivable in [09](09-accounting-ledger-integrations.md)) so the Company recovers the plant cost instead of eating it in the reserve.
 
 #### 4.5.8 Project billing [MVP]
 
 Progress billing schedules (deposit, milestones, percent complete), retainage for commercial projects, and AIA-style pay application export (V1) are specified in [07](07-invoicing-billing-contracts.md); WIP and over/under billing in [09](09-accounting-ledger-integrations.md). This module supplies phase completion percentages and milestone events.
 
-> **Competitive edge.** SynkedUP, LMN and Aspire handle estimating and job costing for installs, but none of them gate excavation on a valid 811 ticket, show the crew the Company's own as-built private lines, or adjudicate a plant warranty claim with irrigation run history and species knowledge. Those three features turn into fewer cut cables, fewer disputed warranty replacements and better plant choices.
+> **Competitive edge.** SynkedUP, LMN and Aspire handle estimating and job costing for installs, but public material for none of them shows excavation gated on a valid 811 ticket, the crew seeing the Company's own as-built private lines, or a plant warranty claim adjudicated with irrigation run history and species knowledge (as of Nov 2026, verify in demos). Those three features turn into fewer cut cables, fewer disputed warranty replacements, nursery pass-back recoveries and better plant choices, and the warranty reserve posts to a real ledger instead of a spreadsheet.
 
-### 4.6 Commercial grounds maintenance (`commercial_grounds`)
+### 4.6 Commercial grounds maintenance (`commercial_grounds`) [MVP]
 
 Commercial maintenance is won by bids against a scope of work, retained by quality and relationships, and made profitable by enhancements. The module makes the SOW, the audit and the enhancement pipeline first-class.
 
@@ -860,9 +887,9 @@ Commercial maintenance is won by bids against a scope of work, retained by quali
 
 #### 4.6.2 Site inspections and quality audits with scores [MVP]
 
-- **Scorecard templates** (Inspection Engine): categories with weights, e.g., Turf (25%), Beds (20%), Shrubs and trees (15%), Hard surfaces and litter (15%), Irrigation (10%), Seasonal color (10%), Safety/hazards (5%). Each category scored 1-5 (or pass/fail items), producing a **site score 0-100**.
+- **Scorecard templates** (Inspection Engine): categories with weights, e.g., Turf (25%), Beds (20%), Shrubs and trees (15%), Hard surfaces and litter (15%), Irrigation (10%), Seasonal color (10%), Safety/hazards (5%). Each category scored 1-5 (or pass/fail items), producing a **site score 0-100** = sum over categories of weight x (category score / 5) x 100, rounded to the nearest whole point (e.g., 5/4/4/4/5/3/5 on the weights above = 25 + 16 + 12 + 12 + 10 + 6 + 5 = 86). Pass/fail items count as 5 or 1. A category scored 3 or lower requires at least one pinned issue; a Safety score below 5 automatically notifies the `ops_manager` and, for a hazard to the public, the client contact.
 - **Audit types:** internal QA audit (account manager, monthly), client joint walk (with property manager), pre-renewal audit, post-storm audit, new-account baseline.
-- **Issue capture:** each low score requires at least one issue: photo, geo-pin, zone, category, severity, type (`corrective` = within SOW, the crew must fix; `enhancement` = outside SOW, sales opportunity; `client_responsibility` = e.g., vehicle damage).
+- **Issue capture:** each low score (3 or lower) requires at least one issue: photo, geo-pin, zone, category, severity, type (`corrective` = within SOW, the crew must fix; `enhancement` = outside SOW, sales opportunity; `client_responsibility` = e.g., vehicle damage).
 - **Corrective issues** auto-create tasks on the next Visit (or a dedicated corrective Visit within the SLA, e.g., 72 hours); closure requires an after-photo.
 - **Trends:** site score history, category trends, crew comparisons, portfolio heat map for multi-property clients.
 
@@ -889,49 +916,145 @@ Commercial maintenance is won by bids against a scope of work, retained by quali
 #### 4.6.5 Commercial billing [MVP]
 
 - Annual contracts billed in 12 equal monthly installments (common in commercial maintenance) or per visit; enhancements billed separately on completion; consolidated portfolio invoices with per-property lines and PO numbers; credit for missed services per contract terms (automatic credit memo suggestions when a SOW-required visit is missed and not made up).
+- **SOW unit values:** every spec item carries a unit value per occurrence derived from its estimate (labor hours x billing rate + materials). Example: a USD 57,600 annual contract billed USD 4,800/month whose SOW includes 32 mowings valued at USD 640 each, 16 bed weedings at USD 380 and 3 shrub prunings at USD 1,450. These values drive three things: revenue recognition per completed occurrence ([09](09-accounting-ledger-integrations.md) `billing.P5`, with `billing.P7` reclassing earned-but-unbilled value to 1210 Unbilled Receivables in heavy months), missed-service credits, and per-property profitability.
+- **Missed-service credit rule [MVP]:** a SOW occurrence not completed by the end of its makeup window (default 7 days; rain delays extend it automatically) generates a credit memo suggestion equal to its unit value (USD 640 for a missed mowing in the example). The account manager approves, edits or rejects with a reason; approved credits post as `billing.P18` and appear on the monthly property report so the property manager sees them before asking.
+- **PO ceilings:** a property with a PO ceiling warns at 80% consumed and blocks enhancement invoices that would exceed it until the client raises the PO in the portal.
 
-> **Competitive edge.** Aspire and LMN customers bolt on SiteDNA or SiteRecon for audits and enhancement capture ([SiteDNA](https://sitedna-marketing-site.pages.dev/), [SiteRecon](https://www.sourceforge.net/software/compare/LMN-vs-SiteRecon)). Rootline has the audit, the SOW, the zone geometry, the AI mockup and the approval workflow in the same object graph, so an issue pinned at 9:05 a.m. can be a priced, illustrated, PO-ready proposal by 9:15 a.m.
+> **Competitive edge.** Aspire is the commercial incumbent (contract maintenance, opportunities, divisions as P&L centers), yet its customers, like LMN's, bolt on SiteDNA or SiteRecon for audits and enhancement capture ([SiteDNA](https://sitedna-marketing-site.pages.dev/), [SiteRecon](https://www.sourceforge.net/software/compare/LMN-vs-SiteRecon)). Rootline has the audit, the SOW, the zone geometry, the AI mockup and the approval workflow in the same object graph, so an issue pinned at 9:05 a.m. can be a priced, illustrated, PO-ready proposal by 9:15 a.m.
 
-### 4.7 Landscape lighting service plans (`landscape_lighting`)
+### 4.7 Landscape lighting service plans (`landscape_lighting`) [V1]
 
-- **Lighting system inventory [V1]:** transformers (brand, model, wattage, taps, timer/photocell/astronomical clock, smart/zoned controller, location photo), runs/cables (gauge, length, hub or daisy chain), fixtures (type: path, up, down, well, wall wash, spot, step, underwater; brand/model; lamp type and wattage; color temperature such as 2700 K or 3000 K; beam angle; location on the plan from the Design Studio lighting layer; photo by night).
-- **Voltage records:** measured voltage at the transformer and at representative fixtures per visit; out-of-range values (Company-configured target range for its fixture types) flagged.
-- **Service plan tiers:** e.g., Basic (1 visit/year: clean lenses, re-aim, check timer), Plus (2 visits: spring/fall, includes lamp replacements up to N), Premium (quarterly + priority outage response). Priced per fixture per visit with a minimum.
-- **Night-window scheduling:** lighting visits get a time window starting at local sunset + 20 minutes (computed per property location and date), so the scheduler ([04](04-scheduling-dispatch-routing.md)) builds evening routes.
-- **DST adjustments:** automated reminders/visits around daylight saving changes for non-astronomical timers; smart transformer integrations (V2, vendors such as FX Luminaire and Kichler offer app-controlled systems; API availability to verify) allow remote timer and zone changes.
-- **Outage tickets:** client reports "path lights out on left side" in the portal; ticket references the run; technicians see fixture map.
-- **Upsell:** AI night mockups from a daytime photo ([11](11-ai-design-mockups.md)) to sell expansions.
-- **Data and billing:** fixtures and transformers are Property Asset Registry entries (data model 7.6); service plans run on the Program Engine (one round per plan visit); billing is an annual plan fee (charged up front or monthly) plus lamp/part lines beyond the plan allowance; installs themselves are `install_projects` jobs whose Design lighting layer seeds the inventory automatically.
+Low-voltage lighting is sold once as an install and then decays: lamps fail, fixtures get knocked out of aim by mowers, mulch buries well lights, plants grow over path lights and timers drift twice a year at daylight saving changes. A service plan turns that decay into recurring revenue, but only if the Company knows every fixture, run and transformer on the property.
 
-> **Competitive edge.** Lighting service plans are usually run as generic recurring jobs with no fixture inventory (as of Nov 2026, verify per competitor). Rootline inherits the fixture map from the Design Studio, schedules visits after dusk automatically, and turns a low-voltage reading into an upgrade proposal, so a one-time install becomes a recurring revenue line.
+#### 4.7.1 Lighting system inventory [V1]
 
-### 4.8 Holiday lighting install, takedown and storage (`holiday_lighting`)
+- **Transformers:** brand, model, wattage rating, voltage taps (e.g., 12/13/14/15 V), control type (timer, photocell, astronomical clock, smart/zoned controller), location photo, install date, manufacturer warranty end.
+- **Runs/cables:** gauge (16, 14, 12, 10, 8 AWG), length, topology (home run, hub, daisy chain, T), tap used, connected fixture count and wattage.
+- **Fixtures:** type (path, up, down, well, wall wash, spot, step, underwater), brand/model, lamp type and wattage (integrated LED or MR16/bi-pin), color temperature (2700 K or 3000 K are common warm choices), beam angle, location on the plan from the Design Studio lighting layer ([10](10-design-studio.md)), night photo, manufacturer warranty end.
+- Fixtures and transformers are Property Asset Registry entries; an install job whose Design has a lighting layer seeds the inventory automatically at closeout (4.5.7), so a Company never re-walks its own installs.
 
-- **Display design [V1]:** measured rooflines, ridges, windows and trees (linear ft and tree heights from photos/aerial or on-site measure); items: C9 or C7 LED strands, mini-light tree wraps (priced by height and canopy), wreaths, garland, stakes, timers; **AI holiday mockup** from a house photo to sell the display (powered by [11](11-ai-design-mockups.md)).
-- **Ownership model:** `lease` (Company-owned, reused across seasons, installed for the client), `purchase` (client-owned after first season), `client_supplied` (Company installs client's lights, higher liability waiver). Tracked per item.
-- **Custom-cut runs:** strands cut to fit a specific roofline segment are labeled ("Front gable A, 38 ft, 12-inch spacing") and stay assigned to that property.
-- **Storage [V1]:** storage bins with QR labels; each bin linked to a client and property; contents list; storage location (warehouse, aisle, shelf); check-in/check-out by scan; condition notes; storage fee per bin or flat per season.
-- **Seasonal scheduling:** install window (e.g., Oct 15 - Dec 10), takedown window (e.g., Jan 2 - Jan 31); capacity-based booking (sell-out when capacity reached, waitlist); priority by booking date and prepayment; crews with lifts/ladders scheduled as resources; weather (ice, wind) holds.
-- **Service calls:** outage requests during the season with an SLA (e.g., 48 hours), included or billable by plan.
-- **Billing:** deposit at booking (e.g., 50%), balance on install; takedown and storage bundled or separate; multi-year agreements with renewal reminders in August; commercial displays as Projects.
+#### 4.7.2 Voltage records and voltage-drop check [V1]
 
-> **Competitive edge.** Holiday lighting businesses commonly juggle a booking spreadsheet, a separate storage system and a generic FSM. Rootline connects the AI mockup that sells the display, the measured rooflines that price it, the capacity calendar that books it and the QR-tracked bins that store it, inside the same platform that runs the Company's green-season work, which turns idle Q4 crews into revenue.
+- **Readings:** voltage at each transformer tap and at representative fixtures (the nearest and the farthest on each run) per visit; out-of-range values against the Company's target range for its fixture types are flagged.
+- **Voltage-drop estimate:** when a run is added or changed, the engine estimates end-of-run voltage with the cable-constant rule of thumb used in the lighting trade: drop (V) = total watts on the run x run length (ft) / cable constant, with constants commonly quoted as about 7,500 for 12 AWG, 11,920 for 10 AWG and 18,960 for 8 AWG (verify against the cable manufacturer's tables). Example: 120 W of LED fixtures at the end of 150 ft of 12 AWG gives 120 x 150 / 7,500 = 2.4 V of drop, so a 13 V tap delivers about 10.6 V at the last fixture. The estimate is compared with the field reading; a gap above 1 V suggests a bad splice or corroded connection and opens a repair item.
+- **Transformer loading:** planned connected load above 80% of the transformer rating (Company-configurable design rule) shows a warning in the Design Studio and on the inventory; it is the most common root cause of "half my lights are dim".
 
-### 4.9 Mosquito and pest (`mosquito_pest`)
+#### 4.7.3 Service plan tiers and pricing [V1]
 
-- **Programs [V1]:** barrier treatments on a recurring interval (commonly about every 21 days during the season, Company-configurable), tick treatments, larvicide for standing water, event sprays (one-time before a party), perimeter pest treatments, organic/botanical program variants.
-- **Shared compliance:** uses the Application Compliance Engine (product library, records, weather guardrails, sign posting and registry rules where they apply to the product category and jurisdiction).
-- **No-spray zones:** per property map polygons for ponds/streams, vegetable gardens, pollinator plantings, children's play areas, neighbor hives; buffer distances from label; crew app warns when the technician's position enters a no-spray zone during an active application.
-- **Pollinator protection:** guardrail "do not apply to blooming plants" for products whose label requires it; optional integration with apiary registries where available (e.g., FieldWatch BeeCheck/DriftWatch; API availability and coverage to verify).
-- **Licensing:** applicator license categories per state may differ from turf categories (e.g., public health or mosquito categories); assignment validation uses the product's required category.
-- **Re-treat guarantee:** service calls between treatments tracked like lawn re-treats.
-- **Rain rules:** if rain exceeds a threshold within N hours after application (label rainfast), the system proposes a re-treat Visit.
-- **Scheduling specifics:** treatments are Program Engine rounds with an interval rule (e.g., 21 days +/- 3) instead of fixed windows; the next treatment re-anchors to the actual completion date; event sprays are one-off Visits with a must-finish-by time (e.g., 24-48 hours before the party).
-- **Billing:** per treatment, season prepay with discount, monthly autopay.
+| Tier (example) | Visits | Included | Example price (illustrative price-book values) |
+|---|---|---|---|
+| Basic | 1 per year (fall) | Clean lenses, re-aim, trim plants away from fixtures, check timer, voltage readings | USD 7 per fixture per visit, minimum USD 149 |
+| Plus | 2 per year (spring, fall) | Basic + up to 4 lamp replacements per year + one free outage call | USD 9 per fixture per visit, minimum USD 189 (28 fixtures x 2 visits = USD 504/year) |
+| Premium | 4 per year | Plus + unlimited lamp replacement on covered fixtures + 48-hour outage response | Quoted per property |
 
-> **Competitive edge.** Pest-first tools such as PestPac and FieldRoutes are built for structural pest companies, and lawn tools rarely model mosquito intervals or no-spray zones (as of Nov 2026, verify). Rootline lets a landscape company add mosquito as a high-margin add-on that reuses the same product library, applicator licenses, compliance records, registry notices and client portal it already runs for lawn programs.
+- **Allowance counters:** lamp replacements and outage calls decrement plan counters; the crew app shows the remaining allowance before the technician swaps a lamp, and anything above it becomes a billable line automatically.
+- **Plan renewal:** annual, through the same renewal engine as lawn programs (4.1.9).
 
-### 4.10 Seasonal campaigns (`seasonal_campaigns`)
+#### 4.7.4 Night-window scheduling and DST [V1]
+
+- **Night window:** lighting visits get a time window starting at local sunset + 20 minutes (computed per property location and date), so the scheduler ([04](04-scheduling-dispatch-routing.md)) builds evening routes; a daytime "maintenance only" visit type exists for cleaning and trimming without aiming.
+- **DST adjustments:** the US and most of Canada change clocks on the second Sunday of March and the first Sunday of November; the module sends reminders or creates visits for properties whose transformers use plain timers (astronomical clocks and photocells do not need them).
+- **Smart transformers [V2]:** vendors such as FX Luminaire and Kichler sell app-controlled systems; where an API or partner program exists (verify), Rootline reads status and changes timers and zones remotely, which removes most DST visits.
+
+#### 4.7.5 Outage tickets and upsell [V1]
+
+- **Outage tickets:** client reports "path lights out on left side" in the portal with a photo; the ticket references the run and transformer; technicians see the fixture map, the last readings and the parts history. Covered outages consume the plan allowance; others are billed.
+- **Upsell:** AI night mockups from a daytime photo ([11](11-ai-design-mockups.md)) sell expansions; a low end-of-run reading drafts a "re-wire to hub" or "add transformer" proposal (flow 5.13).
+
+#### 4.7.6 Data and billing [V1]
+
+Service plans run on the Program Engine (one round per plan visit). Billing is an annual plan fee charged up front or monthly by autopay through the Company's own Stripe account ([08](08-payments-stripe.md)); prepaid plan fees post to deferred revenue and recognize per completed visit (4.12). Lamps and parts beyond the allowance are invoiced on visit completion. Installs themselves are `install_projects` jobs whose lighting layer seeds the inventory, and fixture replacements under the manufacturer's warranty create vendor claims instead of client charges.
+
+> **Competitive edge.** Lighting service plans are usually run as generic recurring jobs with no fixture inventory (as of Nov 2026, verify per competitor). Rootline inherits the fixture map from the Design Studio, schedules visits after dusk automatically, checks voltage drop against the actual cable runs, and turns a low reading into an upgrade proposal, so a one-time install becomes a recurring revenue line.
+
+### 4.8 Holiday lighting install, takedown and storage (`holiday_lighting`) [V1]
+
+Holiday lighting fills Q4, when green-season crews would otherwise be laid off. The work is short-window, capacity-bound and logistics-heavy: hundreds of custom-cut strands, clips and wreaths must come out of storage, go up on the right house, come down in January and go back into the right bin.
+
+#### 4.8.1 Display design and quoting [V1]
+
+- **Measured display:** rooflines, ridges, eaves, windows, columns and trees (linear ft and tree heights from photos, aerial imagery or an on-site measure); items: C9 or C7 LED strands, mini-light tree wraps (priced by height and trunk or canopy wrap), wreaths, garland, stakes, timers.
+- **Price-book pricing:** per linear foot of roofline by item type and roof pitch or story (a second-story ridge costs more than a first-story eave), per tree by height band, per accessory; a lift-required surcharge; all values are Company price-book entries.
+- **AI holiday mockup** from a house photo to sell the display, sized from the measured rooflines (powered by [11](11-ai-design-mockups.md)); labeled "concept image".
+
+#### 4.8.2 Electrical load and safety checks [V1]
+
+- **Circuit load:** each display zone is assigned to an outdoor GFCI-protected circuit; the planned load of a display that runs for hours is checked against 80% of the breaker rating (the usual continuous-load rule: 15 A x 120 V x 0.8 = 1,440 W; 20 A gives 1,920 W). Strand wattages come from the item catalog, and the per-strand end-to-end connection limit from the manufacturer is enforced. Over-limit zones cannot be scheduled until re-planned.
+- **Install checklist:** outlet and circuit used, GFCI tested, timer set, cords off walkways, photo of each connection point.
+- **Working at heights:** roof and ladder work requires the Company's fall-protection checklist (ladder angle and tie-off, roof pitch limit for walking, harness use above the Company threshold) signed in the app; employer obligations under OSHA and provincial rules apply (verify with the Company's safety program, [15](15-team-hr-payroll.md)). Wind and ice weather holds use the same weather adapter as other modules.
+
+#### 4.8.3 Ownership models [V1]
+
+| Model | Who owns the lights | Accounting and tax (owned by [07](07-invoicing-billing-contracts.md) and [09](09-accounting-ledger-integrations.md)) | Risk handling |
+|---|---|---|---|
+| `lease` | Company; reused across seasons and assigned to the property | Company asset (inventory or equipment per its capitalization policy); client pays an annual service fee | Wear and breakage are Company cost; client-caused damage chargeable per agreement |
+| `purchase` | Client after the first season | Sale of goods plus installation labor; materials are typically taxable (per 07 tax engine) | Client owns replacements; Company can store them for a fee |
+| `client_supplied` | Client | Labor only | Higher liability waiver; crew records condition at install; no warranty on client lights |
+
+Ownership is tracked per item, so one display can mix leased strands and a client-owned wreath.
+
+#### 4.8.4 Custom-cut runs and storage [V1]
+
+- **Custom-cut runs:** strands cut to fit a specific roofline segment are labeled ("Front gable A, 38 ft, 12-inch spacing") and stay assigned to that property across seasons.
+- **Storage bins:** QR-labeled bins linked to a client and property; contents list; storage location (warehouse, aisle, shelf); check-in/check-out by scan; condition notes; storage fee per bin or flat per season.
+- **Pull lists:** each install day generates a pull list by bin location in pick order; missing or damaged items trigger reorders from [13](13-operations-inventory-equipment.md) before the install date.
+
+#### 4.8.5 Seasonal scheduling and capacity [V1]
+
+- **Windows:** install window (e.g., Oct 15 - Dec 10), takedown window (e.g., Jan 2 - Jan 31); both Company-configurable per Region.
+- **Capacity in linear feet, not visits:** each crew-day has a capacity in installed linear feet by crew size and equipment (for example a 2-person crew with a lift, a Company-calibrated value); a 600-ft commercial facade consumes more capacity than three 120-ft homes. Booking stops (and waitlist starts) when capacity for the requested window is gone.
+- **Priority:** returning clients get a renewal hold until a cutoff date (e.g., Sep 15); then bookings are served by booking date and deposit status.
+- **Takedown rules:** takedown must be complete by the window end; clients who are not ready (inaccessible, travel) get a single reschedule, after which a late-takedown fee applies per agreement.
+
+#### 4.8.6 Service calls [V1]
+
+Outage requests during the season with an SLA (e.g., 48 hours), included or billable by plan; the ticket shows the display map, circuit assignments and the last photo, so a GFCI trip after rain is diagnosed on the phone before a truck rolls.
+
+#### 4.8.7 Billing [V1]
+
+Deposit at booking (e.g., 50%) collected through the Company's own Stripe and held as a customer deposit (ledger rule `billing.P2`, applied on the install invoice by `billing.P3`, [09](09-accounting-ledger-integrations.md)); balance invoiced on install; takedown and storage bundled or separate; multi-year agreements with renewal reminders in August; cancellation after custom cutting triggers the agreement's cancellation fee; commercial displays run as Projects (4.5).
+
+> **Competitive edge.** Holiday lighting businesses commonly juggle a booking spreadsheet, a separate storage system and a generic FSM. Rootline connects the AI mockup that sells the display, the measured rooflines that price it, the circuit check that keeps it safe, the linear-foot capacity calendar that books it and the QR-tracked bins that store it, inside the same platform that runs the Company's green-season work, which turns idle Q4 crews into revenue.
+
+### 4.9 Mosquito and pest (`mosquito_pest`) [V1]
+
+Mosquito and tick control is a high-margin add-on for lawn and maintenance companies: the same clients, the same routes, and much of the same compliance machinery. The module reuses the Program Engine and the Application Compliance Engine; what it adds is interval scheduling, no-spray geometry, pollinator guardrails and event sprays.
+
+#### 4.9.1 Programs [V1]
+
+- Barrier treatments on a recurring interval (commonly about every 21 days during the season, Company-configurable), tick treatments, larvicide for standing water (dunks or granules in birdbaths, drains, low spots), event sprays (one-time before a party or wedding), perimeter pest treatments, organic/botanical program variants with their own product mixes.
+- **Season example:** a 21-day interval from May 1 gives treatments on May 1, May 22, Jun 12, Jul 3, Jul 24, Aug 14, Sep 4 and Sep 25: 8 treatments. At an illustrative USD 79 per treatment for up to half an acre, the season is USD 632, or USD 600.40 prepaid at 5% off.
+
+#### 4.9.2 Shared compliance [V1]
+
+- Uses the Application Compliance Engine: product library, records, label guardrails (wind, rain, temperature), sign posting and registry rules where they apply to the product category and jurisdiction.
+- **Licensing:** applicator license categories per state may differ from turf categories (e.g., public health or mosquito categories); assignment validation uses the product's required category, and a technician licensed only for turf cannot be routed to a mosquito round that needs another category.
+- **Pollinator protection:** many insecticide labels carry pollinator precautions (for example, not applying while bees are foraging on blooming plants in the treated area; verify per label). Products with that flag add a crew-app confirmation ("blooming plants avoided or not present") to the record; optional integration with apiary registries where available (e.g., FieldWatch BeeCheck/DriftWatch; API availability and coverage to verify) [V2].
+- **Water setbacks:** label buffers from ponds, streams and wetlands are enforced as no-spray buffers (4.9.3).
+
+#### 4.9.3 No-spray zones and drift [V1]
+
+- Per-property polygons for ponds/streams, vegetable gardens, pollinator plantings, children's play areas and neighbor hives, with buffer distances from the label or Company policy.
+- The crew app warns when the technician's position enters a no-spray zone during an active application, records the warning on the Application Record and requires an acknowledgment.
+- **Drift complaints:** a neighbor complaint opens an incident linking the Application Record, the weather at the time, the no-spray zones and the technician's GPS path; the owner is alerted and the record is put on legal hold.
+
+#### 4.9.4 Scheduling specifics [V1]
+
+- Treatments are Program Engine rounds with an interval rule (e.g., 21 days +/- 3) instead of fixed windows; the next treatment re-anchors to the actual completion date so the interval holds even after rain delays.
+- Event sprays are one-off Visits with a must-finish-by time (e.g., 24-48 hours before the party) and priority over interval rounds on the same day.
+- Mosquito and lawn rounds on the same Property can be combined into one stop when both are due within 3 days and the crew holds both license categories (4.11).
+
+#### 4.9.5 Rain re-treat and guarantee [V1]
+
+If rain exceeds the product's rainfast threshold within N hours after application (label rainfast), the system proposes a re-treat Visit; service calls between treatments are tracked like lawn re-treats (free to the client under the guarantee, cost tracked against the enrollment).
+
+#### 4.9.6 Billing [V1]
+
+Per treatment, season prepay with discount, or monthly autopay through the Company's own Stripe; prepaid seasons post to deferred revenue and recognize per completed treatment (4.12); event sprays are billed on booking (card captured) or on completion.
+
+> **Competitive edge.** Pest-first tools such as PestPac and FieldRoutes are built for structural pest companies, and lawn tools rarely model mosquito intervals or no-spray zones (as of Nov 2026, verify). Rootline lets a landscape company add mosquito as a high-margin add-on that reuses the same product library, applicator licenses, compliance records, registry notices and client portal it already runs for lawn programs, and it can combine a mosquito and a lawn round into one stop.
+
+### 4.10 Seasonal campaigns (`seasonal_campaigns`) [MVP]
 
 Seasonal campaigns are high-volume, short-window offers sold to the existing client base and new leads: core aeration and overseeding, spring and fall cleanups, mulch season, leaf removal.
 
@@ -943,7 +1066,8 @@ Seasonal campaigns are high-volume, short-window offers sold to the existing cli
   - Aeration: lawn sq ft tiers.
   - Mulch: cubic yards = bed sq ft x depth inches / 324 (e.g., 1,620 sq ft at 2 inches = 10 cu yd), priced per installed yard with color options; edging and pre-emergent in beds as add-ons.
   - Cleanups: estimated hours from property size, bed area, tree count and last year's actuals; disposal fees per load.
-- **One-click acceptance:** clients receive a personalized offer with their price; accepting creates a Job and Visit request; payment can be captured or authorized at booking via the Company's Stripe ([08](08-payments-stripe.md)).
+- **One-click acceptance:** clients receive a personalized offer with their price; accepting creates a Job and Visit request; payment is taken through the Company's own Stripe account ([08](08-payments-stripe.md)) in one of three Company-chosen ways: charge now (prepaid, posts to customer deposits until the visit is completed), save the card on file with consent and charge on completion (the default, because a card authorization placed at booking generally expires long before a visit six weeks out; Stripe's uncaptured-authorization window for most card payments is about 7 days, verify in 08), or invoice on completion for existing autopay clients.
+- **Leaf removal and cleanups pricing:** priced from last season's actuals where they exist (hours and loads per property), otherwise from tree count, bed area and lot size; disposal priced per load or per cubic yard; a "second pass" option (late-November final leaf pickup) is offered at acceptance.
 
 #### 4.10.2 Campaign scheduling specifics [MVP]
 
@@ -957,6 +1081,48 @@ Seasonal campaigns are high-volume, short-window offers sold to the existing cli
 Offer sent, opened, accepted, revenue booked, capacity utilization, revenue per crew-day, acceptance by segment, and next-year predicted demand.
 
 > **Competitive edge.** Most FSM tools treat a campaign as a mass email plus manual job creation. Rootline prices every offer from real measured areas, books into capacity-aware route-dense days, and protects irrigation heads using the zone map, which no lawn-only or marketing-only tool can do.
+
+### 4.11 Cross-module orchestration rules [MVP engine, rules phased as tagged]
+
+The reason to run every service line on one property graph is that the lines interact. A lawn-only tool cannot know that the irrigation system was winterized yesterday; an irrigation tool cannot know that a broadleaf herbicide went down this morning. Cross-module rules are shipped as system-owned Automation recipes ([17](17-ai-copilot-automation.md)) with three severities: **block** (cannot schedule or complete without an audited override), **warn** (shown to ops and crew, logged) and **suggest** (an offer or task). Safety and compliance rules cannot be disabled by a tenant, only overridden per Visit with a reason; commercial and convenience rules can be turned off.
+
+| ID | Lines involved | Trigger and condition | Action | Severity | Priority |
+|---|---|---|---|---|---|
+| X1 | lawn_phc + seasonal_campaigns | Property booked for overseeding while a germination-blocking pre-emergent is planned or was applied inside the label's reseeding interval | Swap to the template's seeding-safe mix or move the overseeding; explain the conflict to ops | block | [MVP] |
+| X2 | irrigation + seasonal_campaigns + install_projects | Aeration, planting, fence or post-hole task on a Property with mapped irrigation or lighting lines | Show the private-line layer; require "heads and lines flagged" confirmation before the task can start | block | [MVP] |
+| X3 | lawn_phc + core_maintenance | Mowing Visit scheduled within the label's no-mow interval after a liquid broadleaf herbicide application (commonly 1-2 days; per label) | Move the mowing Visit or warn the crew lead | warn | [MVP] |
+| X4 | lawn_phc + smart_irrigation | Liquid application completed on turf zones with a linked controller and contractor control allowed | Suspend those zones for the product's rainfast period (e.g., 24 hours), then resume; log both actions on the Application Record | suggest (auto with client consent) | [V1] |
+| X5 | lawn_phc + smart_irrigation | Granular product whose label calls for watering-in (e.g., a pre-emergent that needs activation by irrigation or rain within a stated number of days) and no qualifying rain in the forecast | Schedule a one-time watering-in run on the treated zones, or send the client watering instructions if no controller is linked | suggest | [V1] |
+| X6 | irrigation + lawn_phc | Fall fertilizer or overseeding scheduled after the Property's winterization is complete | Warn that watering-in and seed establishment will depend on rain; offer to swap the order | warn | [MVP] |
+| X7 | any two Program Engine lines | Two rounds on the same Property due within 3 days and one crew holds every required license and equipment | Offer a combined stop (one trip, one drive-time charge saved) | suggest | [V1] |
+| X8 | snow_ice + seasonal_campaigns | Site logged salt above 150% of its target rate for the season, or crews noted turf damage along walks | Add the Property to the spring "salt damage repair" segment (edge overseeding, gypsum where the Company uses it, bed flush) | suggest | [V1] |
+| X9 | install_projects + smart_irrigation + Warranty Engine | Active plant warranty and the linked controller shows the plant's zone off or skipped for more than 7 days in a heat wave | Alert the client and ops before the plant dies; log the alert as warranty evidence | warn | [V1] |
+| X10 | install_projects + all recurring lines | Project closeout signed off | Generate maintenance, lawn/PHC, irrigation and lighting plan offers priced from the as-built | suggest | [MVP] |
+| X11 | commercial_grounds + irrigation / tree_care | Audit issue in category Irrigation or a tree hazard | Create an irrigation repair ticket or a tree prescription draft instead of a generic task | suggest | [MVP] irrigation, [V2] trees |
+| X12 | tree_care + snow_ice | Tree rated high or extreme risk over a parking area or walk on a snow site | Add a hazard point to the snow site map and the pre-season inspection | warn | [V2] |
+
+**One property calendar [MVP].** Office and portal both show a single timeline per Property across all enabled lines (rounds, start-ups, pushes, takedowns, project phases), so a client sees "Round 3 on Tuesday, irrigation audit on Thursday" in one place and the office sees collisions before they happen.
+
+### 4.12 Billing and ledger postings by service line [MVP]
+
+This module never writes journal entries. It emits domain events (section 8.2) and supplies the operational facts (rounds completed, events closed, sub logs verified, warranty claims decided); the built-in double-entry ledger posts them with the canonical rules in [09](09-accounting-ledger-integrations.md) section 4.3 (rule keys and account numbers below are 09's). Client money is always collected on the Company's own Stripe account ([08](08-payments-stripe.md)) and arrives in the ledger through 1050 Stripe Clearing. Rows apply from the release in which each module ships (snow at [V1], warranty reserve at [V1]).
+
+| Scenario | Fact emitted here | Ledger rule (09) | Entry (simplified, tax lines omitted) |
+|---|---|---|---|
+| Lawn program prepaid: 5 rounds at USD 62, 5% prepay discount = USD 294.50 | `program_enrollment.created` (billing mode prepay) | `billing.P4`/`P9` prepaid season invoice; `payments.charge` | Dr 1200 AR 294.50 / Cr 2200 Deferred Revenue 294.50; on payment Dr 1050 Stripe Clearing / Cr 1200 AR |
+| Each prepaid round completed | `application_record.sealed` -> `visit.completed` | `billing.P5` recognition per occurrence | Dr 2200 Deferred Revenue 58.90 / Cr 4400 Lawn Care and PHC Revenue 58.90 |
+| Pay-per-round client | `visit.completed` -> invoice | `billing.P1` | Dr 1200 AR 62.00 / Cr 4400 62.00 |
+| Product applied from truck stock | `application_record.sealed` (product lines) -> stock issue | `inventory.IN3` issue to job | Dr 5240 Materials - Fertilizer and Chemicals (job) / Cr 1330 Inventory - Fertilizer and Chemicals |
+| Seasonal snow contract USD 9,600 in 6 installments | Agreement installment schedule (storm events do not change the billing, only the cap counters) | `billing.P4` installment invoice; `billing.P6` ratable recognition by weighted season curve; `billing.P7` contract asset when earned exceeds billed | Each installment: Dr 1200 AR 1,600 / Cr 2200 Deferred Revenue 1,600; month-end: Dr 2200 / Cr 4600 Snow and Ice Revenue at the curve's share |
+| Per-push or per-event snow invoice | `storm_event.closed` -> approved event invoices | `billing.P1` | Dr 1200 AR / Cr 4600 Snow and Ice Revenue, per site-event line |
+| Salt applied | `snow_service_log.recorded` (material usage) | `inventory.IN3` | Dr 5260 Materials - Salt and Deicers (site job) / Cr 1345 Inventory - Salt and Deicers |
+| Subcontractor plower paid from verified logs | `storm_event.closed` -> draft vendor bills approved | `ap.AP4` (sub bill), `ap.AP6` (payment) | Dr 5410 Subcontractors (site job, event dimension) / Cr 2000 AP; holdbacks to 2010 Retainage Payable - Subcontractors where used |
+| Holiday lighting deposit, then install | `holiday_display` booking paid; install completed | `billing.P2` deposit; `billing.P1` + `billing.P3` on install invoice | Dr 1050 / Cr 2150 Customer Deposits; at install Dr 2150 / Cr 1200 AR for the deposit applied |
+| Install warranty accrual and claim | Install invoice issued; `warranty_claim.decided` | `warranty.WR1`, `warranty.WR2`; `inventory.IN6` / 1230 Vendor Claims for nursery pass-back | Dr 5710 Warranty Expense / Cr 2410 Warranty Reserve; on replacement Dr 2410 / Cr 1320 Plants inventory, 2000 AP, 2310 Accrued Wages |
+| Backflow filing fee paid to the purveyor and re-billed | `backflow_test.filed` (fee, confirmation number) | AP or card for the fee; `billing.P1` for the client line | Dr 5610 Permits, Inspections and Locates (job) / Cr 2040 Credit Card; client line Cr 4500 Irrigation Revenue (or a pass-through clearing account if the Company configures one in 09) |
+| Missed commercial SOW service credited | Approved missed-service credit (4.6.5) | `billing.P18` credit memo | Dr 4100 Maintenance Revenue or 4910 Discounts and Allowances (reason code) / Cr 1200 AR |
+
+Dimensions on every line come from this module: division (one per service line by default: maintenance, lawn/PHC, irrigation, snow, lighting, tree, install), branch, property, job, and for snow the storm event, so the owner can see "snow made 31% gross margin in the Jan 14 event" without a spreadsheet. Companies that keep QuickBooks Online, QuickBooks Desktop or Xero as the book of record still get these postings in Rootline's ledger and sync them per the mapping rules in [09](09-accounting-ledger-integrations.md).
 
 ---
 
@@ -1257,6 +1423,34 @@ flowchart LR
 4. Timer is set for the upcoming DST change; a night photo set is attached.
 5. The client gets a visit summary; if the voltage at the far end is below target, an upgrade proposal (re-wire or hub conversion) is drafted for review.
 
+### 5.14 Cross-module: broadleaf round with rainfast irrigation hold (rule X4)
+
+1. Round 2 (liquid fertilizer + broadleaf herbicide) is completed at 1482 Elm St at 10:20 a.m.; the label's rainfast period in the product library is 24 hours (illustrative).
+2. The Property has a linked Hydrawise controller and the client allowed contractor control in the portal.
+3. Rule X4 fires: Rootline suspends turf zones 1, 4 and 5 (the treated polygons) until 10:20 a.m. the next day; drip zones keep running.
+4. The Application Record logs the suspension (command, zones, actor "system", duration), and the client's post-application notice says "We paused your lawn sprinklers until tomorrow 10:20 a.m. so the treatment works; your shrub drip is unaffected."
+5. At expiry the zones resume automatically; if the resume call fails (controller offline), an ops task is created and the client is told how to resume manually.
+6. Rule X3 also fires: the weekly mowing Visit planned for this afternoon by the maintenance crew moves to the next day.
+
+```mermaid
+sequenceDiagram
+    participant Crew
+    participant Compliance
+    participant Rules as RuleEngine
+    participant Ctrl as Controller
+    participant Sched as Scheduler
+    participant Client
+    Crew->>Compliance: Seal application record
+    Compliance->>Rules: application_record.sealed
+    Rules->>Ctrl: Suspend turf zones 1 4 5 for 24h
+    Ctrl-->>Rules: Suspended
+    Rules->>Compliance: Log hold on the record
+    Rules->>Sched: Move mowing visit past no-mow interval
+    Rules->>Client: Notice with resume time
+    Rules->>Ctrl: Resume zones at expiry
+    Ctrl-->>Rules: Resumed
+```
+
 ---
 
 ## 6. Screens and wireframes
@@ -1292,12 +1486,15 @@ flowchart LR
 | S25 | Holiday booking board and storage bin scanner | Company web + crew app | holiday_lighting | office_manager, technician | V1 |
 | S26 | Campaign builder and capacity view | Company web | seasonal_campaigns | owner, office_manager | MVP |
 | S27 | Client portal: My programs, Treatments log, Snow events, Warranty | Portal | multiple | client_residential, client_commercial | MVP to V1 |
+| S28 | Cross-module rules (severity, enable/disable, override log) | Company web | Framework | owner, ops_manager | MVP |
+| S29 | Equipment calibration log (spreaders, sprayers, salt spreaders) | Crew app + Company web | lawn_phc, mosquito_pest, snow_ice | crew_lead, ops_manager | V1 |
+| S30 | Property timeline (one calendar across all lines) | Company web + portal | Framework | office_manager, client_residential, client_commercial | MVP |
 
 ### 6.2 Wireframe: Settings > Service Lines (S1)
 
 ```text
 +--------------------------------------------------------------------------------------+
-| Settings > Service Lines                                    Plan: Pro (2 add-ons)    |
+| Settings > Service Lines                          Plan: Pro (add-on: Snow & Ice)    |
 +--------------------------------------------------------------------------------------+
 | Turn on the lines you sell. Data is never deleted when you turn a line off.          |
 |                                                                                      |
@@ -1305,19 +1502,21 @@ flowchart LR
 |  [ON ] Lawn care & PHC            Active  - OH, KY, IN rule packs   [Configure]      |
 |  [ON ] Irrigation                 Active                            [Configure]      |
 |        [ON ] Backflow testing     Setup 3/5 - add tester certs      [Resume setup]   |
-|        [OFF] Smart controllers    Pro+ feature                      [Try 30 days]    |
-|  [ON ] Snow & ice                 Active  - Season Nov 1 - Apr 15   [Configure]      |
-|  [OFF] Tree care                  Add-on  $                         [Start trial]    |
+|        [OFF] Smart controllers    Included in Pro                   [Turn on]        |
+|  [ON ] Snow & ice                 Active  - add-on billed Nov-Mar   [Configure]      |
+|  [OFF] Tree care                  Included in Pro                   [Turn on]        |
 |  [ON ] Install projects           Active  - 811: OH                 [Configure]      |
 |  [ON ] Commercial grounds         Active  - 14 properties           [Configure]      |
 |  [OFF] Landscape lighting                                           [Turn on]        |
 |  [~  ] Holiday lighting           Winding down - 23 open takedowns  [Details]        |
-|  [OFF] Mosquito & pest            Add-on                            [Start trial]    |
+|  [OFF] Mosquito & pest            Included in Pro                   [Turn on]        |
 |  [ON ] Seasonal campaigns         Active  - 3 campaigns             [Configure]      |
 |                                                                                      |
 |  Branch overrides: [Columbus v]  Lines enabled here differ from company: Snow OFF     |
 +--------------------------------------------------------------------------------------+
 ```
+
+On Starter and Grow the same rows show the entitlement state instead: "Add-on USD 59/mo [Start 30-day trial]" for tree care, "Add-on, billed Nov-Mar [Add]" for snow, and limits such as "Commercial grounds: 5 of 5 commercial clients used [Upgrade]". Branch overrides appear only on plans with multi-branch ([22](22-business-model-pricing-gtm.md)).
 
 ### 6.3 Wireframe: Round Planner (S3)
 
@@ -1433,12 +1632,12 @@ flowchart LR
 | Score so far: 86 / 100   (last: 81)                           |
 +---------------------------------------------------------------+
 | Category            Weight  Score (1-5)      Issues            |
-| Turf                 25%    [4]              0                 |
-| Beds                 20%    [3]              2  (+ pin)        |
-| Shrubs & trees       15%    [3]              1  (+ pin)        |
-| Hard surfaces/litter 15%    [5]              0                 |
-| Irrigation           10%    [4]              0                 |
-| Seasonal color       10%    [4]              1  (+ pin)        |
+| Turf                 25%    [5]              0                 |
+| Beds                 20%    [4]              2  (+ pin)        |
+| Shrubs & trees       15%    [4]              1  (+ pin)        |
+| Hard surfaces/litter 15%    [4]              0                 |
+| Irrigation           10%    [5]              0                 |
+| Seasonal color       10%    [3]              1  (+ pin) req'd  |
 | Safety               5%     [5]              0                 |
 +---------------------------------------------------------------+
 | PIN ISSUE  [photo]  Zone: Entrance beds                        |
@@ -1451,11 +1650,104 @@ flowchart LR
 +---------------------------------------------------------------+
 ```
 
+
+### 6.8 Wireframe: Snow service log in the crew app (S12)
+
+```text
++--------------------------------------+
+| STORM Jan 14 - ACTIVE   OFFLINE (12) |
+| Kroger #512 - P1     Route T4 3/11   |
+| Trigger 2.0 in | Walks: any accum.   |
++--------------------------------------+
+| ARRIVED 02:14 (geofence)  GPS +-4 m  |
+| Device 02:14:08 | Server: pending    |
++--------------------------------------+
+| 1 DEPTH AT MEASURING POINT           |
+|  [ Photo of ruler ] [thumb] 3.5 in   |
+| 2 SERVICES                           |
+|  [x] Plow lot  pushes [ 1 ] [+]      |
+|  [x] Walks: blower crew (2)          |
+|  [ ] Haul / relocate  (needs approval)|
+| 3 MATERIALS                          |
+|  Bulk salt [ 1.2 ] t  setting 6      |
+|  Rate 520 lb/acre  target 400-600 OK |
+|  Calibration #SP-04 (11 days ago)    |
+| 4 AFTER PHOTOS (P1 areas)            |
+|  Entrance [ok]  Cart corral [ ]      |
+|  Fire lane [ok]  Ramp [ ]            |
++--------------------------------------+
+| ! 2 required photos missing          |
+| Exception: [ Car blocking row C ]    |
+| [ Finish site ]  (disabled)          |
++--------------------------------------+
+```
+
+Behavior: the log works fully offline; the "Server" timestamp fills on sync. Finish is disabled until required photos exist or an exception with a photo is recorded. Subcontractors see the same screen without any price. Units follow the Company setting (inches/tons or cm/tonnes).
+
+### 6.9 Wireframe: Dig ticket gate in the crew app (S18)
+
+```text
++--------------------------------------+
+| Smith backyard - Phase 4 Planting    |
+| Task: Plant 3 trees (2-in caliper)   |
+| Tagged: EXCAVATION                   |
++--------------------------------------+
+| DIG TICKET  #A2704155  (OH one-call) |
+| Legal start  Apr 11 07:00  [ok]      |
+| Expires      May 2         19 days   |
+| Responses   5 of 6                   |
+|  Gas        marked  [photo]          |
+|  Electric   clear                    |
+|  Water      marked  [photo]          |
+|  Telecom    clear                    |
+|  Cable      clear                    |
+|  Sewer      NO RESPONSE        !     |
++--------------------------------------+
+| PRIVATE LINES (Rootline as-built)    |
+|  Irrigation mainline 4 ft from pin 2 |
+|  Lighting run L3 crosses bed B       |
+|  [ Show on map ]                     |
++--------------------------------------+
+| STATUS: BLOCKED - waiting on 1 utility|
+| [ Call office ]  [ Request override ]|
+|  Override: owner or ops_manager only |
++--------------------------------------+
+```
+
+Behavior: the gate state is cached with the route so it works offline; a response arriving by email is AI-extracted into the ticket (V1) and unblocks the task on the next sync; an override requires a reason and is reported on the compliance dashboard.
+
+### 6.10 Wireframe: Holiday lighting bin scanner (S25)
+
+```text
++--------------------------------------+
+| TAKEDOWN  14 Birch Ct (Lopez)  Jan 9 |
+| Bins assigned: 3   Items: 41         |
++--------------------------------------+
+| [ Scan bin QR ]  Bin H-0212 ok        |
+| Scanned into H-0212: 17 / 18 items    |
+|  Front gable A 38 ft C9    ok         |
+|  Front gable B 22 ft C9    ok         |
+|  Maple wrap 14 ft          DAMAGED    |
+|  Wreath 36 in              MISSING  ! |
++--------------------------------------+
+| Bin H-0213  0 / 15   Bin H-0214 0 / 8 |
++--------------------------------------+
+| Damaged: replace before Oct 15  [x]   |
+| Missing wreath: [ Client kept ]       |
+|                 [ Lost - charge ]     |
+|                 [ Search truck ]      |
++--------------------------------------+
+| [ Finish takedown ] -> bins to WH-2   |
++--------------------------------------+
+```
+
+Behavior: every leased or stored item must be scanned into a bin (or resolved as client-kept, lost or damaged) before the takedown can be completed; damaged items create replacement tasks for next season, and the bin's warehouse location is scanned at check-in.
+
 ---
 
 ## 7. Data model
 
-All tables carry `company_id` (tenant) and are protected by Postgres row-level security; geometry columns use PostGIS (SRID 4326 storage, projected on the fly for area math); audit columns (`created_at`, `created_by`, `updated_at`, `version`) omitted below for brevity. Platform-curated tables (product label library, rule packs, jurisdiction packs) have no `company_id` and are read-only to tenants. Core entities (`company`, `client`, `property`, `job`, `visit`, `invoice`, `employee`, `price_book_item`, `design`) are owned by other docs ([20](20-architecture-security.md)).
+Every tenant-scoped table carries `tenant_id uuid NOT NULL` (the Company's id), has row-level security enabled and forced, and uses composite foreign keys `(tenant_id, id)`, exactly as specified in [20](20-architecture-security.md); the diagrams show `tenant_id` on aggregate roots only, for brevity, but child tables (round instances, service logs, breadcrumbs, zones) carry it too. Geometry columns use PostGIS (SRID 4326 storage, projected on the fly for area math); audit columns (`created_at`, `created_by`, `updated_at`, `version`) are omitted below for brevity. Platform-curated tables (rule packs, jurisdiction packs, one-call packs) have no `tenant_id` and are read-only to tenants; the product label library and registry lists are shared tables where a null `tenant_id` marks a platform-curated row and a non-null value marks a tenant-private row (RLS policy: `tenant_id IS NULL OR tenant_id = current tenant`). Core entities (`company`, `client`, `property`, `job`, `visit`, `invoice`, `employee`, `price_book_item`, `design`, `equipment`, `plant`) are owned by other docs ([20](20-architecture-security.md), [13](13-operations-inventory-equipment.md), [12](12-plant-knowledge-base.md)).
 
 ### 7.1 Framework and Program Engine
 
@@ -1479,7 +1771,7 @@ erDiagram
     }
     company_service_line {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         text module_key FK
         uuid branch_id FK
         text state
@@ -1490,7 +1782,7 @@ erDiagram
     }
     program_template {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         text module_key
         text name
         text turf_type
@@ -1507,13 +1799,15 @@ erDiagram
         text window_end_md
         text dynamic_trigger
         int min_days_since_prev
+        int interval_days
+        int interval_tolerance_days
         uuid product_mix_id FK
         jsonb pricing_rule
         jsonb compliance_steps
     }
     program_enrollment {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         uuid client_id FK
         uuid property_id FK
         uuid program_template_id FK
@@ -1559,7 +1853,7 @@ erDiagram
     property ||--o{ no_spray_zone : "protected by"
     product_label {
         uuid id PK
-        uuid company_id
+        uuid tenant_id
         text brand_name
         text registrant
         text reg_number
@@ -1583,7 +1877,7 @@ erDiagram
     }
     product_mix {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         text name
         text rate_basis
         numeric carrier_gal_per_ksqft
@@ -1597,7 +1891,7 @@ erDiagram
     }
     application_record {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         uuid visit_id FK
         uuid property_id FK
         uuid applicator_id FK
@@ -1611,6 +1905,7 @@ erDiagram
         text target_pests
         text method
         uuid equipment_id
+        uuid calibration_id
         numeric wind_mph
         text wind_dir
         numeric temp_f
@@ -1664,7 +1959,7 @@ erDiagram
     }
     registry_list {
         uuid id PK
-        uuid company_id
+        uuid tenant_id
         text jurisdiction_code
         text source
         date imported_on
@@ -1681,7 +1976,7 @@ erDiagram
     }
     notification_log {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         uuid visit_id FK
         uuid registry_entry_id FK
         uuid client_id FK
@@ -1741,7 +2036,7 @@ erDiagram
     irrigation_zone ||--o{ water_budget : "budgeted by"
     irrigation_system {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         uuid property_id FK
         text water_source
         geometry poc_location
@@ -1884,7 +2179,7 @@ erDiagram
     snow_service_log }o--o| subcontractor : "performed by"
     storm_event {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         text name
         text state
         timestamptz precip_start
@@ -1897,7 +2192,7 @@ erDiagram
     }
     snow_site {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         uuid property_id FK
         uuid agreement_id FK
         geometry site_polygon
@@ -1990,7 +2285,7 @@ erDiagram
     }
     subcontractor {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         text name
         date coi_expires_on
         jsonb rate_card
@@ -2019,7 +2314,7 @@ erDiagram
     warranty ||--o{ warranty_claim : "claimed by"
     tree {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         uuid property_id FK
         uuid plant_id FK
         text tag_number
@@ -2121,7 +2416,7 @@ erDiagram
     }
     permit {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         text permit_type
         text jurisdiction
         text permit_number
@@ -2228,7 +2523,7 @@ erDiagram
     }
     enhancement_opportunity {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         uuid property_id FK
         text stage
         numeric est_value
@@ -2279,7 +2574,7 @@ erDiagram
     }
     storage_bin {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         text qr_code
         text location_code
         uuid client_id
@@ -2287,7 +2582,7 @@ erDiagram
     }
     campaign {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         text service_type
         date sale_start
         date service_start
@@ -2306,7 +2601,70 @@ erDiagram
     }
 ```
 
-### 7.7 Key modeling decisions
+### 7.7 Cross-module rules, calibration and holiday circuits
+
+```mermaid
+erDiagram
+    cross_module_rule ||--o{ cross_module_rule_override : "overridden by"
+    cross_module_rule ||--o{ cross_module_rule_hit : "fires as"
+    visit ||--o{ cross_module_rule_hit : "affected by"
+    equipment ||--o{ equipment_calibration : "calibrated by"
+    equipment_calibration ||--o{ application_record : "used in"
+    holiday_display ||--o{ holiday_circuit : "powered by"
+    holiday_circuit ||--o{ holiday_item : "feeds"
+    cross_module_rule {
+        text rule_key PK
+        text modules
+        text trigger_event
+        jsonb condition
+        text action
+        text severity
+        bool tenant_can_disable
+        text priority_tag
+    }
+    cross_module_rule_override {
+        uuid id PK
+        uuid tenant_id FK
+        text rule_key FK
+        bool enabled
+        jsonb parameters
+        uuid changed_by
+    }
+    cross_module_rule_hit {
+        uuid id PK
+        uuid tenant_id FK
+        text rule_key FK
+        uuid visit_id FK
+        uuid property_id FK
+        text outcome
+        text override_reason
+        uuid override_by
+        timestamptz fired_at
+    }
+    equipment_calibration {
+        uuid id PK
+        uuid tenant_id FK
+        uuid equipment_id FK
+        date calibrated_on
+        text method
+        numeric output_per_ksqft
+        text output_unit
+        jsonb setting_chart
+        uuid technician_id
+    }
+    holiday_circuit {
+        uuid id PK
+        uuid holiday_display_id FK
+        text outlet_label
+        int breaker_amps
+        numeric planned_watts
+        bool gfci_tested
+    }
+```
+
+`cross_module_rule` rows are platform-owned defaults (no `tenant_id`); tenants change behavior only through `cross_module_rule_override`, and only for rules where `tenant_can_disable` is true. `cross_module_rule_hit` is the audit trail for every block, warning and suggestion, which feeds the "gate health" dashboard (11.3).
+
+### 7.8 Key modeling decisions
 
 | Decision | Rationale |
 |---|---|
@@ -2316,6 +2674,8 @@ erDiagram
 | Trees reference `plant_id` from the Plant KB. | Species intelligence (failure profiles, pests, wood weight, Region suitability) stays curated once, used everywhere. |
 | Assets are typed geometry on the Property, not free text. | Enables private-line warnings, zone maps, snow features and audit pins to be overlaid and queried spatially. |
 | Rule packs are platform-curated, versioned, with `last_verified_on`. | Centralizes regulatory upkeep for every tenant; the operator can see stale packs in the admin console ([19](19-platform-admin-portal.md)). |
+| Cross-module rules are platform-owned rows with tenant overrides, not tenant-authored automations. | Agronomic and safety rules need one curated source of truth and an audit trail of every hit and override; tenants still build their own automations in [17](17-ai-copilot-automation.md). |
+| Billing facts are emitted, never posted, by this module. | Keeps the ledger's posting rules ([09](09-accounting-ledger-integrations.md)) the single place where accounting policy lives, so a revenue-recognition change never requires a module release. |
 
 ---
 
@@ -2339,7 +2699,8 @@ erDiagram
 | Apiary registries (e.g., FieldWatch BeeCheck) | mosquito_pest, lawn_phc | Inbound | API or periodic import (verify availability) | V2 | Buffer warnings. |
 | Vehicle telematics (Samsara, Geotab, Verizon Connect) | snow_ice, all | Inbound | APIs/webhooks via [13](13-operations-inventory-equipment.md) | V1 | Alternative GPS source for proof packets when phones are not used. |
 | Smart lighting transformers (FX Luminaire, Kichler and others) | landscape_lighting | Bi-directional | Vendor APIs (verify) | V2 | Remote diagnostics and timers. |
-| Trusted timestamp authority (RFC 3161) | snow_ice | Outbound | Timestamp manifest hashes | V2 | Third-party verifiable proof. |
+| Trusted timestamp authority (RFC 3161) | snow_ice | Outbound | Timestamp manifest hashes | V2 |
+| Company's own Stripe account (Stripe Connect, Standard-style, connected by OAuth) | all billing modes | Outbound charges, inbound webhooks | Direct charges on the connected account for prepay, deposits, autopay installments, card-on-file campaign bookings and event invoices; refunds and disputes stay in the Company's Stripe dashboard ([08](08-payments-stripe.md)) | MVP | Rootline never holds client funds; module add-ons such as Snow & Ice are billed separately on Rootline's own Stripe Billing account ([22](22-business-model-pricing-gtm.md)). | Third-party verifiable proof. |
 
 ### 8.2 Domain events emitted
 
@@ -2371,6 +2732,11 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 | `enhancement.stage_changed` | stage, value | Sales pipeline ([03](03-crm-sales-estimating-proposals.md)) |
 | `holiday_bin.scanned` | bin, direction, location | Storage inventory |
 | `campaign_offer.accepted` | campaign, property, price | Job creation, capacity counter |
+| `cross_module_rule.fired` | rule key, severity, visit, outcome, override | Ops dashboard, crew app banner, gate health report |
+| `equipment_calibration.recorded` / `.overdue` | equipment, output, method | Load sheets, application records, ops alerts |
+| `holiday_display.booked` / `.installed` / `.taken_down` | display, ownership mix, linear ft | Capacity counter, deposit invoice, storage tasks |
+| `lighting_reading.out_of_range` | fixture or run, measured volts, target | Repair item, upgrade proposal draft |
+| `snow_season.readiness_changed` | sites missing items, ready flag | Owner dashboard, pre-season tasks |
 
 ### 8.3 Events consumed
 
@@ -2422,10 +2788,15 @@ Legend: **F** full (create, edit, delete/void, configure), **E** edit/create, **
 | Lighting and holiday inventories, storage bins | - | - | V | F | E | E | E | F | E | E | - | O | P | P |
 | Campaign builder | - | - | V | F | F | E | - | E | - | - | V | - | Accept offers | Accept offers |
 | Module reports and profitability | V (aggregate, anonymized) | - | - | F | V | V (own pipeline) | - | V | - | - | V | - | - | - |
+| Cross-module rules: enable/disable, parameters | A (publish defaults) | E (agronomic defaults) | V | F | - | - | - | E | - | - | - | - | - | - |
+| Override a cross-module block on a Visit | - | - | - | F | - | - | - | E (with reason) | E (safety rules excluded) | - | - | - | - | - |
+| Equipment calibration records | - | - | V | F | V | - | - | E | E | E | - | O (own rigs) | - | - |
 
 Rules:
 - "if licensed / if certified / if TRAQ" means the action is permitted only when the actor's current credential (from [15](15-team-hr-payroll.md)) matches the required category and is unexpired on the action date.
 - platform_support access to tenant records requires a tenant-granted, time-boxed support session, audit-logged ([19](19-platform-admin-portal.md)).
+- `platform_finance` sees module entitlements, trials and add-on billing (Snow & Ice season charges) in the admin console but no tenant operational records; `platform_engineer` sees connector health (smart controllers, weather, one-call email ingestion) and rule-engine metrics, again without tenant records unless a support session is granted ([02](02-personas-roles-permissions.md), [19](19-platform-admin-portal.md)).
+- Field-level masking from [02](02-personas-roles-permissions.md) applies throughout: `technician` and `subcontractor` never see client prices, contract values, sub rate cards of other subs or margins, even on screens they can open (snow logs, holiday takedowns, application capture).
 - client_commercial approvals honor the client's own approval chain and thresholds (configured in the portal, [06](06-customer-portal.md)).
 
 ---
@@ -2457,6 +2828,10 @@ All AI runs through the provider-agnostic AI Gateway, is metered as AI credits, 
 | AI19 | Night lighting and holiday mockups | lighting, holiday | Generates night scenes or holiday displays on a client's house photo, sized from measured rooflines. | Labeled "concept image". | V1 |
 | AI20 | Campaign targeting | seasonal_campaigns | Propensity model ranks clients by likelihood to buy aeration/cleanup/mulch; optimizes offer timing. | Respect marketing consent ([16](16-marketing-growth-communications.md)). | V1 |
 | AI21 | Copilot service-line tools | all | Natural-language: "Which lawns in Dublin still need Round 2 and have a registry neighbor?", "Show me sites we salted more than 2x the target rate last event." | Read tools free; write tools require confirmation. | MVP (read) / V1 (write) |
+| AI22 | Rule-pack change monitoring | framework (`platform_curator`) | Watches the agency pages, bulletins and statutes listed as each pack's sources; when content changes, an LLM drafts a structured diff of the affected pack keys (retention, notice windows, restricted actives) with quotes from the source. | Curator approves every change; packs are never auto-published; tenants see the new `last_verified_on`. | V1 |
+| AI23 | Missed-service early warning | commercial_grounds | Predicts SOW occurrences that will miss their makeup window (weather backlog, crew capacity) and proposes reshuffles before credits accrue. | Suggestions only; AM approves moves. | V1 |
+| AI24 | Roofline measurement from photos | holiday_lighting | Estimates linear feet of eaves, ridges and gables from a street photo plus aerial imagery and parcel geometry, as a range for quoting. | Crew verifies on site before strands are cut; quote shows "estimated". | V2 |
+| AI25 | Lighting fault triage | landscape_lighting | Reads voltage readings, run topology and night photos to rank likely causes (failed lamp, bad splice, overloaded tap). | Advisory; technician confirms. | V2 |
 
 ---
 
@@ -2488,6 +2863,15 @@ All AI runs through the provider-agnostic AI Gateway, is metered as AI credits, 
 | holiday_lighting | Client cancels after custom-cut strands were made. | Cancellation fee per agreement; custom runs stay assigned to property for future season or are written off to inventory. |
 | mosquito_pest | Neighbor complaint about drift. | Incident record linking the application record, weather at the time, no-spray zones and technician path; owner alert. |
 | seasonal_campaigns | Capacity sells out. | Offers switch to waitlist; accepted waitlist offers auto-scheduled when cancellations open slots. |
+| Framework | Paid snow add-on lapses in dunning during a forecast storm. | 72-hour carve-out per event keeps dispatch and logging alive; billing actions stay disabled until the account is current (4.0.3). |
+| Framework (X1) | Client insists on overseeding three weeks after a prodiamine round. | Block with explanation and two options: delay seeding to the label interval or accept a documented "seed failure risk" waiver signed in the portal; the waiver is attached to the Visit. |
+| Framework (X4) | Client revokes contractor control after a rainfast suspension was sent. | Resume command is still sent (it restores the client's own schedule); further writes are blocked; the record notes the revocation time. |
+| lawn_phc | Restricted active takes effect mid-season (e.g., a state neonicotinoid restriction on turf). | Future rounds using the active go `blocked`; substitution proposal with price delta; completed records keep the original product snapshot. |
+| landscape_lighting | Transformer replaced with a different tap set. | Old readings remain attached to the retired transformer asset; the voltage-drop estimate is recomputed for each run on the new one. |
+| holiday_lighting | Planned display exceeds the circuit limit on the only available outlet. | Scheduling blocked; options offered: reduce strands, add a timer-split second circuit, or quote an electrician (subcontractor) to add an outdoor circuit. |
+| holiday_lighting | Leased strand damaged by the client's roofer mid-season. | Damage recorded with photo; chargeable per agreement; replacement pulled from stock and the old item retired. |
+| install_projects | Ticket expires while the crew is offline mid-dig. | Device closes the gate at expiry; work in progress can be finished only with an ops override logged on sync. |
+| commercial_grounds | Missed mowing is caused by a client lockout (gate code changed). | Missed-service credit suppressed when the Visit has a client-responsibility exception with photo; the property report shows the reason. |
 
 ### 11.2 Compliance obligations
 
@@ -2503,6 +2887,9 @@ All AI runs through the provider-agnostic AI Gateway, is metered as AI credits, 
 | Tree work safety | ANSI Z133 practices, line clearance qualification near energized lines, crane rules (OSHA crane standards for construction apply to some crane work; verify applicability). | Credential checks, JHA briefings, utility proximity flags, lift plans. |
 | Protected trees and wildlife | Municipal tree ordinances; Migratory Bird Treaty Act protections for active nests. | Permit gating; nesting-season checklist. |
 | Snow documentation | Contractual and legal defensibility; industry standards (SIMA procurement standard; ASCA A1000). | Proof packets, retention, legal hold. |
+| Snow contract indemnification | Several states void contract clauses that make a snow contractor indemnify the owner for the owner's own negligence (verify current list). | Clause library guardrail per jurisdiction (4.3.1). |
+| Restricted actives (e.g., neonicotinoid limits on turf and ornamentals in some states; Canadian cosmetic bans) | Product or use-site restrictions with effective dates. | `restricted_actives` in rule packs; substitution workflow (4.1.3). |
+| Working at heights and electrical (holiday lighting) | Fall protection and ladder safety for employees; outdoor circuits GFCI-protected and not overloaded. | Fall-protection checklist, circuit load check, GFCI test on the install record (4.8.2). |
 | Employee GPS privacy | Location tracking disclosures and limits (varies by state/province; some jurisdictions require notice or consent). | Tracking only while clocked in on shift; disclosure acknowledgment at onboarding ([15](15-team-hr-payroll.md)); breadcrumb access restricted. |
 | Automatic renewal laws | Clear disclosure, consent and easy cancellation for auto-renewing programs (state-specific; verify). | Renewal disclosures generated per jurisdiction; one-click cancel in portal. |
 | SMS consent | TCPA/10DLC for notices and campaign texts. | Consent flags per contact; transactional vs marketing separation ([16](16-marketing-growth-communications.md)). |
@@ -2519,6 +2906,8 @@ All AI runs through the provider-agnostic AI Gateway, is metered as AI credits, 
 | Module sprawl slows the core product | Engineering spread thin. | Shared engines first; modules are configuration + thin domain logic; strict MVP scope (section 4 tags). |
 | AI misidentifies species or risk | Unsafe tree work or wrong treatment. | AI never assigns risk or applies products; assessor/applicator confirmation is mandatory. |
 | Snow-season load spikes | Thousands of tenants hit the platform at 3 a.m. in the same storm. | Regional autoscaling, offline-first crew app, queue-based log ingestion, load tests simulating a Northeast storm ([20](20-architecture-security.md)). |
+| Cross-module rule fatigue | Too many warnings and crews start ignoring them, including the safety ones. | Three severities only; per-tenant hit and override analytics; any warn-level rule overridden more than 30% of the time is reviewed by `platform_curator` for tuning; safety blocks are few and never noisy by design. |
+| Scope creep across thirteen modules | Specialist depth promised everywhere, delivered nowhere. | Phasing in 4.0.1 (snow V1, tree V2); each module needs three design-partner Companies running it in production before GA. |
 
 ---
 
@@ -2530,6 +2919,9 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 |---|---|---|
 | Framework | Module adoption | % of active tenants with each module `active`; average modules per tenant. |
 | Framework | Time to first value | Hours from module `active` to first completed Visit in that line. |
+| Framework | Multi-line client share (goal G5) | Clients with 2+ active service lines / active clients; and their share of revenue. |
+| Framework | Closeout cross-sell conversion | Recurring-plan offers accepted within 60 days / offers generated by rule X10. |
+| Framework | Cross-module rule override rate | Overrides / block-or-warn hits, per rule; target falling quarter over quarter. |
 | lawn_phc | Round completion in window | Completed round instances / scheduled instances whose window closed. Target above 97% (estimate). |
 | lawn_phc | Revenue per production hour | Program revenue recognized / technician hours on program visits. |
 | lawn_phc | Renewal rate | Renewed enrollments / eligible enrollments. |
@@ -2537,6 +2929,7 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 | lawn_phc | Service call rate | Re-treat service calls per 100 completed rounds. |
 | lawn_phc | Compliance completeness | Records with all required fields and proofs / records. Target 100%. |
 | lawn_phc | Guardrail override rate | Overrides / applications; trend should fall. |
+| lawn_phc | Rate accuracy | Applications whose actual product amount is within 10% of planned / applications; by technician and rig (signals calibration drift). |
 | irrigation | Seasonal service throughput | Start-ups or winterizations per tech-day. |
 | irrigation | Repair attach rate | Repair revenue per seasonal service visit. |
 | backflow | On-time filing rate | Filings submitted within jurisdiction deadline / tests. |
@@ -2558,7 +2951,9 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 | commercial_grounds | Corrective SLA | % corrective issues closed within SLA. |
 | commercial_grounds | Enhancement ratio | Enhancement revenue / maintenance contract revenue per account. |
 | commercial_grounds | Report open rate | Monthly reports opened by client_commercial users. |
+| commercial_grounds | Missed-service credit ratio | Approved missed-service credits / maintenance contract revenue; target under 1% (estimate). |
 | landscape_lighting | Plan attach rate | Lighting installs with a service plan within 90 days. |
+| landscape_lighting | Allowance overage revenue | Lamp and part revenue billed beyond plan allowances / plan revenue. |
 | holiday_lighting | Capacity sell-through | Booked install slots / available slots by date. |
 | holiday_lighting | Bin accuracy | Takedowns with all items scanned into the correct bin. |
 | mosquito_pest | Interval adherence | Treatments within interval tolerance (e.g., 21 days +/- 3). |
@@ -2585,6 +2980,11 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 14. **Post-storm cleanup event mode [V2].** Reuse the Storm Event Engine for hurricanes and derechos: debris triage per property, tree emergency prioritization from the inventory's risk ratings, insurance documentation packets for homeowners.
 15. **Drone and satellite monitoring [V3].** NDVI from satellite or drone flights to detect turf stress and irrigation failures across commercial portfolios before audits; integrates with audit scoring and irrigation alerts.
 16. **Autonomous equipment orchestration [V3].** Robotic mowers and autonomous spreaders as schedulable "crew members" with geofenced work areas drawn from service zones and no-go zones from snow/irrigation/tree maps ([23](23-innovation-moonshots.md)).
+17. **Line Mix Planner [V2].** Uses the Company's own capacity curve (crew-hours available vs booked by month, from [04](04-scheduling-dispatch-routing.md) and [15](15-team-hr-payroll.md)) and per-line margins from the ledger to show which service line would fill a trough: "You have about 1,900 idle crew-hours in Nov-Dec; at your mosquito and lighting margins, holiday lighting fills them best; projected gross profit range shown." The toggle in 4.0.3 becomes a strategy decision backed by data instead of a guess.
+18. **Skip-saver retention [V1].** When a client tries to cancel or skip a program round in the portal, Rootline offers a pause, a reduced-round program priced from their measured area, an organic or IPM variant, or a one-time credit within the Company's rules, and logs the reason. Renewal pricing and the churn report use those reasons.
+19. **Drought mode [V2].** When a water utility declares a restriction stage (tenant-entered at first, a curated feed later), one action pushes restriction-compliant schedules to every linked controller in that utility's area, notifies affected clients in their language, pauses overseeding offers there and reverts when the restriction lifts. A water-wise brand moment no irrigation-only or lawn-only tool can deliver.
+20. **Snow readiness score for clients [V1].** The commercial portal shows each site's pre-season readiness (map signed, staking photos, contacts confirmed, salt reserved, route and sub assigned) as a percentage with the open items. It gets contracts signed earlier and documents due diligence for the client's insurer before the first flake.
+21. **Inspector mode [V1].** When a state pesticide inspector or a municipal backflow auditor asks for records, the owner opens a time-boxed, read-only view (or a single PDF) of application records, licenses, calibration logs, sign photos and filings for a date range and scope. Ten minutes instead of a day with binders, and a strong selling line for lawn-care owners who have lived through an audit.
 
 ---
 
@@ -2602,15 +3002,22 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 10. **Franchise systems:** mosquito and holiday lighting are heavily franchised; do we need franchisor-level rollups (central product mixes, brand-standard programs) in V1 or V2?
 11. **Canada at launch:** which provinces' pesticide and one-call rules are in the launch set, and is French-language content required for rule-pack notices in Quebec before French UI ships?
 12. **Employee location data:** what is the default breadcrumb retention for employees (separate from proof packets) that balances privacy law and claim defense?
+13. **Agronomy authority:** cross-module rules X1, X3 and X5 encode label-driven agronomy. Does `platform_curator` need a turf agronomist (in addition to horticulturists) on staff or on an advisory board to own those defaults, and how are label-specific intervals kept in sync with the product library?
+14. **Leased holiday lights in the books:** should leased strands default to inventory (expensed as consumed) or to a capitalized equipment class with a 3-5 year life? The answer changes the posting rules in [09](09-accounting-ledger-integrations.md) and should be decided with the accounting advisor.
+15. **Snow clause library legal review:** which jurisdictions' anti-indemnification statutes and contract norms must be reviewed by counsel before the clause library ships at V1, and does SIMA offer reviewed template language we can license?
+16. **Phasing confirmation:** this doc moves `snow_ice` to [V1] and `tree_care` to [V2] to match the pricing and portal docs. Confirm in [24](24-roadmap-feature-catalog.md), and decide whether a snow-belt design partner needs a limited snow pilot during the MVP winter.
 
 ---
 
 ## Sources
 
-Research note: sources reflect public information available as of November 2026. Several vendor pages could not be fetched directly during this research pass; claims sourced from secondary listings or competitor-written comparison pages are labeled in the text and should be verified. Industry practices stated without a citation (e.g., typical round windows, example prices, production rates) are illustrative defaults or estimates, not market statistics.
+Research note: sources reflect public information available as of November 2026. Several vendor pages could not be fetched directly during this research pass; claims sourced from secondary listings or competitor-written comparison pages are labeled in the text and should be verified. A November 2026 review pass cross-checked this doc against [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md) and the sibling docs ([02](02-personas-roles-permissions.md), [07](07-invoicing-billing-contracts.md), [09](09-accounting-ledger-integrations.md), [20](20-architecture-security.md), [22](22-business-model-pricing-gtm.md)). New web searches were not possible in that pass (the shared search budget was exhausted and several vendor and government hosts were unreachable), so facts added from domain knowledge (New York neighbor notification and neonicotinoid restrictions, California automatic renewal amendments, the vacated FTC click-to-cancel rule, snow anti-indemnification statutes, the lighting cable-constant rule of thumb, Stripe's authorization window) are marked "verify" in the text and must be confirmed before external use. Industry practices stated without a citation (e.g., typical round windows, example prices, production rates) are illustrative defaults or estimates, not market statistics.
 
 **Competitors and market**
-- Lawn & Landscape, "Service Assistant Software" product listing (Real Green): https://www.lawnandlandscape.com/product/real-green-systems-service-assistant
+- Jobber Help Center, user permissions (chemical-tracking permission toggle, as cited in [02](02-personas-roles-permissions.md)): [Jobber help](https://help.getjobber.com/hc/en-us/articles/115009568687)
+- Rootline raw research, GorillaDesk and FieldRoutes chemical tracking (section 11): [R1](research/R1-field-service-platforms.md)
+- Rootline raw research, landscape-specific platforms, snow and chemical-record sections: [R2](research/R2-landscape-specific-platforms.md)
+- Lawn & Landscape, "Service Assistant Software" product listing (Real Green): [Lawn & Landscape](https://www.lawnandlandscape.com/product/real-green-systems-service-assistant)
 - IronPros, RealGreen Systems product listing: [IronPros](https://www.ironpros.com/product-categories/technology-and-software/business-financial-tools/field-service-management-software/product/22904391/realgreen-systems-real-green)
 - Capterra, RealGreen (Service Assistant) reviews: [Capterra RealGreen reviews](https://www.capterra.com/p/78106/Service-Assistant/reviews/?page=5)
 - Yeti Software home page (snow and ice management): [Yeti Software](https://yetisoftware.com/)
