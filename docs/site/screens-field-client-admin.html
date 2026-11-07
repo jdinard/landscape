@@ -86,6 +86,7 @@
 .crew-fig .phone { width: 288px; flex: 1; display: flex; flex-direction: column; }
 .crew-fig figcaption { font-size: .84rem; color: var(--text-2); text-align: center; max-width: 280px; display: flex; flex-wrap: wrap; gap: 4px 6px; justify-content: center; align-items: center; }
 .crew-fig figcaption b { color: var(--text); }
+.crew-fig figcaption { min-height: 80px; align-content: flex-start; }
 .phone .body { min-height: 0; flex: 1; padding: 10px 10px 0; gap: 8px; font-size: .84rem; line-height: 1.35; font-variant-numeric: tabular-nums; }
 .phone .status { color: var(--text); }
 .m-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -150,11 +151,11 @@
 .tabbar span.on { color: var(--primary-soft-text); }
 .badge { position: absolute; top: -4px; left: 56%; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 99px; background: var(--danger-solid); color: var(--stone-0); font-size: .6rem; font-weight: 800; display: grid; place-items: center; }
 .ok-mark { display: inline-flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 800; color: var(--ok-text); white-space: nowrap; }
-.reveal { font-family: var(--font-mono); font-weight: 600; letter-spacing: .2em; }
+.reveal { font-family: var(--font-mono); font-weight: 600; letter-spacing: .08em; white-space: nowrap; }
 .quote { font-size: .76rem; font-weight: 600; color: var(--text); border-left: 3px solid var(--accent); padding-left: 7px; }
 .shots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
 .shot { border-radius: 8px; overflow: hidden; position: relative; aspect-ratio: 1 / 1; border: 1.5px solid var(--border); background: var(--surface-2); }
-.shot svg { display: block; width: 100%; height: 100%; }
+.shot > svg { display: block; width: 100%; height: 100%; }
 .shot .cap { position: absolute; left: 3px; bottom: 3px; font-size: .56rem; font-weight: 800; padding: 1px 4px; border-radius: 4px; background: var(--stone-900); color: var(--stone-0); }
 .shot.empty { border: 2px dashed var(--border-strong); display: grid; place-items: center; color: var(--text-2); font-size: .58rem; font-weight: 800; text-align: center; padding: 3px; line-height: 1.2; }
 .shot.empty .ic { width: 18px; height: 18px; display: block; margin: 0 auto 2px; }
@@ -165,7 +166,8 @@
 .check input:checked::after { content: ""; width: 7px; height: 13px; border: solid var(--on-primary); border-width: 0 3px 3px 0; transform: translate(0, -1px) rotate(45deg); }
 .check input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .check .meta { margin-left: auto; font-size: .68rem; color: var(--text-2); font-family: var(--font-mono); white-space: nowrap; }
-.ai-note { display: flex; align-items: center; gap: 5px; font-size: .68rem; font-weight: 700; color: var(--ai-text); flex-wrap: wrap; }
+.ai-note { display: block; font-size: .68rem; font-weight: 700; color: var(--ai-text); line-height: 1.5; }
+.ai-note .ic { margin-right: 3px; }
 .credit { font-family: var(--font-mono); font-size: .66rem; font-weight: 600; color: var(--ai-text); background: var(--ai-bg); border: 1px solid var(--ai-solid); border-radius: 4px; padding: 0 5px; white-space: nowrap; }
 .ai-box { background: var(--ai-bg); border: 1px solid var(--ai-solid); border-radius: 10px; padding: 8px 10px; color: var(--text); }
 .steps { display: flex; gap: 4px; }
@@ -179,7 +181,7 @@
 .wx b { display: block; font-size: .98rem; color: var(--text); }
 .wx span { font-size: .58rem; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: .04em; }
 .mapbox { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-.mapbox svg { display: block; width: 100%; height: auto; }
+.mapbox > svg { display: block; width: 100%; height: auto; }
 .zone { display: flex; justify-content: space-between; font-size: .74rem; font-weight: 700; color: var(--text); }
 .sigpad { border: 2px dashed var(--border-strong); border-radius: 10px; background: var(--surface-2); position: relative; height: 58px; }
 .sigpad svg { position: absolute; inset: 4px 10px 12px; width: calc(100% - 20px); height: calc(100% - 16px); }
@@ -207,10 +209,10 @@
 
 /* Customer portal */
 .pt { background: var(--canvas); font-variant-numeric: tabular-nums; }
-.pt-top { display: flex; align-items: center; gap: 22px; padding: 10px 22px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.pt-top { display: flex; align-items: center; gap: 16px; padding: 10px 22px; background: var(--surface); border-bottom: 1px solid var(--border); }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--text); }
 .brand svg { width: 34px; height: 34px; flex: none; }
-.brand b { font-family: var(--font-display); font-weight: 600; font-size: 1.06rem; display: block; line-height: 1.1; }
+.brand b { font-family: var(--font-display); font-weight: 600; font-size: 1.06rem; display: block; line-height: 1.1; white-space: nowrap; }
 .brand small { font-size: .7rem; color: var(--text-3); font-weight: 600; display: block; }
 .pt-nav { display: flex; gap: 2px; }
 .pt-nav span { padding: 7px 11px; font-size: .86rem; font-weight: 600; color: var(--text-2); border-radius: 8px; white-space: nowrap; }
@@ -235,6 +237,14 @@
 .pcard.top-accent { border-top: 4px solid var(--accent); }
 .pk { font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); display: flex; align-items: center; gap: 6px; }
 .pk .pill { text-transform: none; letter-spacing: 0; margin-left: auto; }
+.pk .note { text-transform: none; letter-spacing: 0; font-weight: 500; margin-left: auto; font-size: .78rem; }
+.prop { white-space: nowrap; }
+.pgrid12 .s12 { grid-column: span 12; }
+.insp { display: grid; grid-template-columns: 130px minmax(0, 1fr) 34px; gap: 5px 10px; align-items: center; font-size: .8rem; color: var(--text); }
+.insp .fb { height: 10px; border-radius: 99px; background: var(--surface-3); overflow: hidden; }
+.insp .fb i { display: block; height: 100%; background: var(--primary); }
+.insp .fb i.lo { background: var(--warn-solid); }
+.insp .v { text-align: right; font-weight: 700; }
 .pbig { font-size: 1.65rem; font-weight: 700; line-height: 1.1; color: var(--text); }
 .ptitle { font-weight: 650; font-size: 1rem; color: var(--text); line-height: 1.3; }
 .pcard p { font-size: .86rem; color: var(--text-2); }
@@ -244,9 +254,9 @@
 .switch[aria-checked="true"] .track { background: var(--primary); }
 .switch[aria-checked="true"] .track::after { left: 19px; }
 .map-sm { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-.map-sm svg { display: block; width: 100%; height: auto; }
+.map-sm > svg { display: block; width: 100%; height: auto; }
 .thumb { border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-.thumb svg { display: block; width: 100%; height: auto; }
+.thumb > svg { display: block; width: 100%; height: auto; }
 .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .tiers div { border: 1px solid var(--border); border-radius: 8px; padding: 5px 7px; font-size: .74rem; color: var(--text-2); }
 .tiers b { display: block; color: var(--text); font-size: .86rem; }
@@ -275,7 +285,7 @@
 .plants span { margin-left: auto; color: var(--text-2); font-weight: 600; }
 .pphotos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .pphoto { border-radius: 8px; overflow: hidden; position: relative; border: 1px solid var(--border); }
-.pphoto svg { display: block; width: 100%; height: auto; }
+.pphoto > svg { display: block; width: 100%; height: auto; }
 .pphoto span { position: absolute; left: 6px; bottom: 6px; font-size: .68rem; font-weight: 700; background: var(--stone-900); color: var(--stone-0); padding: 1px 6px; border-radius: 4px; }
 .powered { font-size: .72rem; color: var(--text-3); text-align: center; }
 
@@ -331,6 +341,7 @@
 .appr { display: grid; grid-template-columns: 150px minmax(0, 1fr) 190px; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: start; }
 .appr:last-child { border-bottom: 0; padding-bottom: 0; }
 .appr .thumb { position: relative; }
+.ai-chip .ic { width: 11px; height: 11px; }
 .ai-chip { position: absolute; left: 6px; top: 6px; display: inline-flex; align-items: center; gap: 4px; font-size: .64rem; font-weight: 700; background: var(--ai-bg); color: var(--ai-text); border: 1px solid var(--ai-solid); border-radius: 99px; padding: 0 7px; }
 .appr .meta { font-size: .8rem; color: var(--text-2); display: flex; flex-direction: column; gap: 3px; }
 .appr .side { display: flex; flex-direction: column; gap: 6px; align-items: stretch; font-size: .8rem; }
@@ -380,6 +391,8 @@
 table.dense { font-size: .78rem; }
 table.dense th { padding: 5px 7px; font-size: .64rem; white-space: nowrap; }
 table.dense td { padding: 5px 7px; vertical-align: middle; }
+table.dense.nw td { white-space: nowrap; padding: 5px 6px; }
+table.dense.nw th { padding: 5px 6px; }
 table.dense tr.sel td { background: var(--primary-soft); }
 table.dense tr.sel td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
 table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
@@ -392,6 +405,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 .tlogo { width: 46px; height: 46px; border-radius: 10px; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; flex: none; }
 .t360-head h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; color: var(--text); text-transform: none; letter-spacing: 0; }
 .t360-head .ids { font-size: .76rem; color: var(--text-3); }
+.t360-head .who-t { flex: 1 1 420px; min-width: 0; }
 .t360-head .acts { margin-left: auto; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); font-size: .8rem; flex-wrap: wrap; }
 .tabs span { padding: 6px 11px; color: var(--text-2); font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; }
@@ -414,7 +428,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 .factors .s { font-weight: 800; width: 10px; flex: none; }
 .ai-meter { height: 12px; border-radius: 99px; background: var(--ai-bg); border: 1px solid var(--ai-solid); overflow: hidden; display: flex; }
 .ai-meter i { display: block; height: 100%; background: var(--ai-solid); }
-.feat { display: grid; grid-template-columns: minmax(0, 1fr) 70px 46px; gap: 3px 8px; align-items: center; font-size: .75rem; color: var(--text); }
+.feat { display: grid; grid-template-columns: minmax(0, 1fr) 64px 34px; gap: 3px 8px; align-items: center; font-size: .75rem; color: var(--text); }
 .feat .fb { height: 6px; border-radius: 99px; background: var(--surface-3); overflow: hidden; }
 .feat .fb i { display: block; height: 100%; background: var(--ai-solid); }
 .feat .v { text-align: right; font-weight: 700; }
@@ -429,8 +443,9 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 .check-list { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; font-size: .76rem; color: var(--text); }
 .check-list li { display: flex; gap: 6px; align-items: center; }
 .check-list .ic { color: var(--ok-text); stroke-width: 3; width: 13px; height: 13px; }
-.chart svg { display: block; width: 100%; height: auto; }
-.chart-legend { display: flex; gap: 14px; font-size: .74rem; color: var(--text-2); flex-wrap: wrap; }
+.chart > svg { display: block; width: 100%; height: auto; }
+.chart-legend { display: flex; gap: 12px; font-size: .74rem; color: var(--text-2); flex-wrap: wrap; justify-content: flex-end; }
+.chart-legend span { white-space: nowrap; }
 .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .chart-legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
 .chart-legend i.sq { width: 10px; height: 10px; }
@@ -448,6 +463,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 .svc.deg .dot { background: var(--warn-solid); }
 .inc { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: .78rem; color: var(--text); background: var(--warn-bg); border: 1px solid var(--warn-solid); border-radius: 8px; padding: 6px 10px; }
 .inc b { color: var(--warn-text); }
+.inc > span { flex: 1 1 420px; }
 .fun { display: grid; grid-template-columns: 168px minmax(0, 1fr) 84px; gap: 5px 10px; align-items: center; font-size: .76rem; color: var(--text); }
 .fun .fb { height: 14px; background: var(--surface-3); border-radius: 4px; overflow: hidden; }
 .fun .fb i { display: block; height: 100%; background: var(--primary); border-radius: 4px; }
@@ -700,8 +716,8 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
           </div>
 
           <div class="m-card alert">
-            <div class="m-row"><span class="hz dog"><svg class="ic" aria-hidden="true"><use href="#i-paw"/></svg><span data-es="Bruno (amigable) · patio trasero">Bruno (friendly) · back yard</span></span><span class="ok-mark"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span data-es="Asegurado">Secured</span></span></div>
-            <div class="m-row"><span class="hz gate"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span data-es="Portón lateral">Side gate</span></span><span class="reveal" aria-label="Gate code hidden">• • • •</span><span class="v-meta" data-es="Tocar para ver">Tap to reveal</span></div>
+            <div class="m-row"><span class="hz dog"><svg class="ic" aria-hidden="true"><use href="#i-paw"/></svg><span data-es="Bruno (amigable) · atrás">Bruno (friendly) · back</span></span><span class="ok-mark"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span data-es="Asegurado">Secured</span></span></div>
+            <div class="m-row"><span class="hz gate"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><span data-es="Código portón lateral">Side gate code</span> <span class="reveal" aria-label="hidden">••••</span></span><span class="ok-mark info-t" data-es="Tocar para ver">Tap to reveal</span></div>
             <div class="quote"><span data-es="Nota (cambió 10 may):">Note (changed May 10):</span> “Skip the wildflower strip along the back fence.”</div>
           </div>
 
@@ -794,7 +810,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
         <div class="body">
           <div class="m-head">
             <div class="m-back"><svg class="ic" aria-hidden="true"><use href="#i-back"/></svg><div><div class="m-title" data-es="Registro de aplicación">Application record</div><div class="m-sub">Kowalski · 917 Glenmont Ave</div></div></div>
-            <span class="m-sub" data-es="Paso 3 de 4">Step 3 of 4</span>
+            <span class="m-sub nowrap" data-es="Paso 3 de 4">Step 3 of 4</span>
           </div>
           <div class="steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
 
@@ -825,7 +841,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                 <circle cx="28" cy="26" r="15" class="il-shrub-l" opacity=".9"/><circle cx="28" cy="26" r="2.5" class="il-trunk"/>
                 <rect x="6" y="6" width="248" height="138" class="il-lot"/>
                 <text x="128" y="27" text-anchor="middle" class="il-txt">Back lawn 3,830 sf</text>
-                <text x="226" y="50" text-anchor="middle" class="il-txt-s">Veg garden: no spray</text>
+                <text x="226" y="28" text-anchor="middle" class="il-txt-s">No spray</text>
                 <text x="110" y="81" text-anchor="middle" class="il-txt-s">House</text>
                 <text x="98" y="132" text-anchor="middle" class="il-txt">Front lawn 2,410 sf</text>
               </svg>
@@ -1223,7 +1239,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
             <div class="pt-nav"><span class="on">Portfolio</span><span>Approvals<span class="cnt">2</span></span><span>Requests</span><span>Reports</span><span>Invoices</span><span>Documents</span></div>
             <div class="pt-right">
               <span class="switcher"><svg class="ic" aria-hidden="true"><use href="#i-building"/></svg>Maple Ridge HOA · 5 properties<svg class="ic" aria-hidden="true"><use href="#i-chev-down"/></svg></span>
-              <span class="small">Denise Walker<br><span class="muted tiny">Brightway Community Mgmt</span></span>
+              <span class="small nowrap"><b>Denise Walker</b> · Brightway CM</span>
               <span class="me" aria-hidden="true">DW</span>
             </div>
           </div>
@@ -1242,34 +1258,20 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
             </div>
 
             <div class="pgrid12">
-              <div class="pcard s8">
-                <div class="pk"><svg class="ic" aria-hidden="true"><use href="#i-building"/></svg>Properties<span class="muted small">Inspections are scored 1–5 by Greenleaf ops</span></div>
+              <div class="pcard s12">
+                <div class="pk"><svg class="ic" aria-hidden="true"><use href="#i-building"/></svg>Properties<span class="note muted">Inspections scored 1–5 by Greenleaf ops · budget used is year to date</span></div>
                 <div class="table-scroll">
                   <table class="data">
                     <thead><tr><th>Property</th><th>Service status</th><th>Last · next visit</th><th>Inspection (6 mo)</th><th class="num">Requests</th><th>Budget used</th></tr></thead>
                     <tbody>
-                      <tr><td><b>North Entrance and Clubhouse</b><br><span class="tiny muted">3.4 ac · irrigation 9 zones</span></td><td><span class="pill ok">On schedule</span></td><td class="nowrap">May 12 · May 19</td><td class="nowrap"><span class="score">4.6</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend rising from 4.1 to 4.6"><polyline class="sp" points="2,14 14,12 26,12 38,9 50,7 60,5"/></svg></td><td class="num">1</td><td class="nowrap"><span class="mini-meter"><i style="width:62%"></i></span>62%</td></tr>
-                      <tr><td><b>Pond Commons and Walking Trail</b><br><span class="tiny muted">5.1 ac · pond edge 420 lf</span></td><td><span class="pill info">Crew on site now</span></td><td class="nowrap">May 13 · May 20</td><td class="nowrap"><span class="score">4.1</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend falling from 4.5 to 4.1"><polyline class="sp" points="2,6 14,6 26,8 38,9 50,11 60,13"/></svg></td><td class="num">2</td><td class="nowrap"><span class="mini-meter"><i class="hi" style="width:71%"></i></span>71%</td></tr>
-                      <tr><td><b>Pool and Amenity Center</b><br><span class="tiny muted">1.2 ac · seasonal color 3 beds</span></td><td><span class="pill ok">On schedule</span></td><td class="nowrap">May 11 · May 18</td><td class="nowrap"><span class="score">4.7</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend steady near 4.7"><polyline class="sp" points="2,6 14,5 26,6 38,5 50,4 60,4"/></svg></td><td class="num">0</td><td class="nowrap"><span class="mini-meter"><i style="width:38%"></i></span>38%</td></tr>
-                      <tr><td><b>Section 3 Islands and Medians</b><br><span class="tiny muted">14 islands · 2,900 lf curb</span></td><td><span class="pill warn">Rain delay, moved to Fri</span></td><td class="nowrap">May 10 · May 14</td><td class="nowrap"><span class="score">4.2</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend rising from 3.8 to 4.2"><polyline class="sp" points="2,15 14,14 26,11 38,12 50,10 60,9"/></svg></td><td class="num">1</td><td class="nowrap"><span class="mini-meter"><i style="width:55%"></i></span>55%</td></tr>
-                      <tr><td><b>Westgate Entrance</b><br><span class="tiny muted">0.8 ac · monument sign bed</span></td><td><span class="pill ok">On schedule</span></td><td class="nowrap">May 12 · May 19</td><td class="nowrap"><span class="score">4.5</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend steady near 4.5"><polyline class="sp" points="2,9 14,8 26,7 38,8 50,7 60,7"/></svg></td><td class="num">0</td><td class="nowrap"><span class="mini-meter"><i style="width:49%"></i></span>49%</td></tr>
+                      <tr><td class="prop"><b>North Entrance and Clubhouse</b><br><span class="tiny muted">3.4 ac · irrigation 9 zones</span></td><td><span class="pill ok">On schedule</span></td><td class="nowrap">May 12 · May 19</td><td class="nowrap"><span class="score">4.6</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend rising from 4.1 to 4.6"><polyline class="sp" points="2,14 14,12 26,12 38,9 50,7 60,5"/></svg></td><td class="num">1</td><td class="nowrap"><span class="mini-meter"><i style="width:62%"></i></span>62%</td></tr>
+                      <tr><td class="prop"><b>Pond Commons and Walking Trail</b><br><span class="tiny muted">5.1 ac · pond edge 420 lf</span></td><td><span class="pill info">Crew on site now</span></td><td class="nowrap">May 13 · May 20</td><td class="nowrap"><span class="score">4.1</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend falling from 4.5 to 4.1"><polyline class="sp" points="2,6 14,6 26,8 38,9 50,11 60,13"/></svg></td><td class="num">2</td><td class="nowrap"><span class="mini-meter"><i class="hi" style="width:71%"></i></span>71%</td></tr>
+                      <tr><td class="prop"><b>Pool and Amenity Center</b><br><span class="tiny muted">1.2 ac · seasonal color 3 beds</span></td><td><span class="pill ok">On schedule</span></td><td class="nowrap">May 11 · May 18</td><td class="nowrap"><span class="score">4.7</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend steady near 4.7"><polyline class="sp" points="2,6 14,5 26,6 38,5 50,4 60,4"/></svg></td><td class="num">0</td><td class="nowrap"><span class="mini-meter"><i style="width:38%"></i></span>38%</td></tr>
+                      <tr><td class="prop"><b>Section 3 Islands and Medians</b><br><span class="tiny muted">14 islands · 2,900 lf curb</span></td><td><span class="pill warn">Rain delay, moved to Fri</span></td><td class="nowrap">May 10 · May 14</td><td class="nowrap"><span class="score">4.2</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend rising from 3.8 to 4.2"><polyline class="sp" points="2,15 14,14 26,11 38,12 50,10 60,9"/></svg></td><td class="num">1</td><td class="nowrap"><span class="mini-meter"><i style="width:55%"></i></span>55%</td></tr>
+                      <tr><td class="prop"><b>Westgate Entrance</b><br><span class="tiny muted">0.8 ac · monument sign bed</span></td><td><span class="pill ok">On schedule</span></td><td class="nowrap">May 12 · May 19</td><td class="nowrap"><span class="score">4.5</span> <svg class="spark" viewBox="0 0 62 18" role="img" aria-label="Inspection trend steady near 4.5"><polyline class="sp" points="2,9 14,8 26,7 38,8 50,7 60,7"/></svg></td><td class="num">0</td><td class="nowrap"><span class="mini-meter"><i style="width:49%"></i></span>49%</td></tr>
                     </tbody>
                   </table>
                 </div>
-                <p class="small">Pond Commons, May 6 inspection: turf 4.4 · bed weeding 3.5 · shrub pruning 4.0 · irrigation 4.5 · litter 4.2. Trail bed weeding is scheduled for May 14.</p>
-              </div>
-
-              <div class="pcard s4">
-                <div class="pk"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg>FY2027 budget · all properties</div>
-                <div><span class="pbig">$64,650</span> <span class="small muted">used of $167,880</span></div>
-                <div class="meter" role="img" aria-label="38.5 percent used, 61.5 percent remaining"><i class="m-used" style="width:38.5%"></i></div>
-                <div class="m-row small"><span><b>$103,230</b> remaining</span><span class="muted">Jan–Dec · 4 of 12 months</span></div>
-                <div class="legend"><span><i class="m-used"></i>Used</span><span><i class="m-pend"></i>Pending approval</span><span><i style="background:var(--surface-3)"></i>Remaining</span></div>
-                <div class="budget-row"><span class="nm">Enhancements</span><div class="meter"><i class="m-used" style="width:50%"></i><i class="m-pend" style="width:47%"></i></div><div class="nums"><span>$21,100 of $42,000</span><span>+$19,860 pending</span></div></div>
-                <div class="budget-row"><span class="nm">Irrigation repairs</span><div class="meter"><i class="m-used" style="width:36%"></i></div><div class="nums"><span>$3,240 of $9,000</span><span>36%</span></div></div>
-                <div class="budget-row"><span class="nm">Tree work</span><div class="meter"><i class="m-used" style="width:15%"></i></div><div class="nums"><span>$1,850 of $12,000</span><span>15%</span></div></div>
-                <div class="budget-row"><span class="nm">Seasonal color</span><div class="meter"><i class="m-used" style="width:75%"></i></div><div class="nums"><span>$6,300 of $8,400</span><span>75%</span></div></div>
-                <div class="budget-row"><span class="nm">Contract</span><div class="meter"><i class="m-used" style="width:33%"></i></div><div class="nums"><span>$32,160 of $96,480</span><span>on plan</span></div></div>
               </div>
 
               <div class="pcard s8">
@@ -1347,8 +1349,39 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                 </div>
                 <button class="btn sm" type="button"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>All monthly reports (ZIP, 5 properties)</button>
               </div>
+              <div class="pcard s5">
+                <div class="pk"><svg class="ic" aria-hidden="true"><use href="#i-chart"/></svg>FY2027 budget · all properties</div>
+                <div><span class="pbig">$64,650</span> <span class="small muted">used of $167,880</span></div>
+                <div class="meter" role="img" aria-label="38.5 percent used, 61.5 percent remaining"><i class="m-used" style="width:38.5%"></i></div>
+                <div class="m-row small"><span><b>$103,230</b> remaining</span><span class="muted">Jan–Dec · 4 of 12 months</span></div>
+                <div class="legend"><span><i class="m-used"></i>Used</span><span><i class="m-pend"></i>Pending approval</span><span><i style="background:var(--surface-3)"></i>Remaining</span></div>
+                <div class="budget-row"><span class="nm">Enhancements</span><div class="meter"><i class="m-used" style="width:50%"></i><i class="m-pend" style="width:47%"></i></div><div class="nums"><span>$21,100 of $42,000</span><span>+$19,860 pending</span></div></div>
+                <div class="budget-row"><span class="nm">Irrigation repairs</span><div class="meter"><i class="m-used" style="width:36%"></i></div><div class="nums"><span>$3,240 of $9,000</span><span>36%</span></div></div>
+                <div class="budget-row"><span class="nm">Tree work</span><div class="meter"><i class="m-used" style="width:15%"></i></div><div class="nums"><span>$1,850 of $12,000</span><span>15%</span></div></div>
+                <div class="budget-row"><span class="nm">Seasonal color</span><div class="meter"><i class="m-used" style="width:75%"></i></div><div class="nums"><span>$6,300 of $8,400</span><span>75%</span></div></div>
+                <div class="budget-row"><span class="nm">Contract</span><div class="meter"><i class="m-used" style="width:33%"></i></div><div class="nums"><span>$32,160 of $96,480</span><span>on plan</span></div></div>
+              </div>
+
+              <div class="pcard s7">
+                <div class="pk"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Latest site inspection · Pond Commons and Walking Trail<span class="pill warn">4.1 / 5</span></div>
+                <p class="small">Inspected May 6 by Sam Ortiz (account manager) · 22 photos · 3 issues flagged · previous score 4.3 on Apr 8</p>
+                <div class="insp">
+                  <span>Turf quality</span><span class="fb"><i style="width:88%"></i></span><span class="v">4.4</span>
+                  <span>Bed weeding</span><span class="fb"><i class="lo" style="width:70%"></i></span><span class="v">3.5</span>
+                  <span>Shrub pruning</span><span class="fb"><i style="width:80%"></i></span><span class="v">4.0</span>
+                  <span>Tree health</span><span class="fb"><i style="width:86%"></i></span><span class="v">4.3</span>
+                  <span>Irrigation</span><span class="fb"><i style="width:90%"></i></span><span class="v">4.5</span>
+                  <span>Litter and debris</span><span class="fb"><i style="width:84%"></i></span><span class="v">4.2</span>
+                  <span>Hardscape and trail</span><span class="fb"><i style="width:80%"></i></span><span class="v">4.0</span>
+                </div>
+                <div class="split small">
+                  <div class="minibox"><b>Issue, bed weeding:</b> trail beds behind the gazebo, about 1,800 sq ft. Included in the contract, scheduled Fri May 14.</div>
+                  <div class="minibox"><b>Recommendation:</b> shoreline buffer to cut goose traffic and pond-edge mowing. Sent for board approval above.</div>
+                </div>
+              </div>
             </div>
             <p class="powered">Powered by Rootline · Greenleaf Grounds Co., Columbus, OH</p>
+
           </div>
         </div>
       </div>
@@ -1408,16 +1441,16 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                 <span class="right row"><button class="btn sm" type="button">Bulk actions</button><button class="btn sm" type="button">Export CSV (audited)</button></span>
               </div>
               <div class="table-scroll">
-                <table class="data dense">
-                  <thead><tr><th>Tenant</th><th>Plan</th><th>State</th><th>Health</th><th class="num">MRR</th><th class="num">Seats office · field</th><th class="num">AI credits</th><th>Stripe</th><th>10DLC</th><th>Region</th><th>CSM</th></tr></thead>
+                <table class="data dense nw">
+                  <thead><tr><th>Tenant · region</th><th>Plan</th><th>State</th><th>Health</th><th class="num">MRR</th><th class="num">Seats office · field</th><th class="num">AI credits</th><th>Stripe chg · pay</th><th>10DLC</th><th>CSM</th></tr></thead>
                   <tbody>
-                    <tr class="sel"><td><b>Greenleaf Grounds Co.</b><span class="sub mono-s">TNT-51207</span></td><td>grow</td><td><span class="pill ok">active · 461 d</span></td><td><span class="hs"><i class="band-g"></i>82</span></td><td class="num">$456</td><td class="num">6 · 19</td><td class="num">86%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>charges, payouts</span></td><td>live</td><td>Columbus OH · 6b</td><td>Priya S.</td></tr>
-                    <tr><td><b>Buckeye Turf and Tree</b><span class="sub mono-s">TNT-49932</span></td><td>pro</td><td><span class="pill ok">active · 702 d</span></td><td><span class="hs"><i class="band-g"></i>74</span></td><td class="num">$725</td><td class="num">11 · 34</td><td class="num">52%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>charges, payouts</span></td><td>live</td><td>Dayton OH · 6b</td><td>Priya S.</td></tr>
-                    <tr><td><b>Prairie Edge Design</b><span class="sub mono-s">TNT-58122</span></td><td>grow</td><td><span class="pill ok">active · 188 d</span></td><td><span class="hs"><i class="band-g"></i>91</span></td><td class="num">$416</td><td class="num">5 · 12</td><td class="num">97%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>charges, payouts</span></td><td>live</td><td>Indianapolis IN · 6a</td><td>Owen T.</td></tr>
-                    <tr><td><b>Hocking Hills Hardscape</b><span class="sub mono-s">TNT-55810</span></td><td>grow</td><td><span class="pill warn">past_due · day 4</span></td><td><span class="hs"><i class="band-y"></i>48</span></td><td class="num">$288</td><td class="num">4 · 8</td><td class="num">31%</td><td><span class="warn-t b">1 requirement due May 19</span></td><td>live</td><td>Lancaster OH · 6a</td><td>Priya S.</td></tr>
-                    <tr><td><b>Three Rivers Landscape</b><span class="sub mono-s">TNT-52244</span></td><td>grow</td><td><span class="pill danger">restricted · day 16</span></td><td><span class="hs"><i class="band-r"></i>37</span></td><td class="num">$298</td><td class="num">4 · 11</td><td class="num">AI paused</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>charges, payouts</span></td><td>live</td><td>Fort Wayne IN · 6a</td><td>Owen T.</td></tr>
-                    <tr><td><b>Lakeshore Lawn Care</b><span class="sub mono-s">TNT-47781</span></td><td>starter</td><td><span class="pill ok">active · 530 d</span></td><td><span class="hs"><i class="band-y"></i>66</span></td><td class="num">$81</td><td class="num">1 · 4</td><td class="num">12%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>charges, payouts</span></td><td>live</td><td>Sandusky OH · 6b</td><td>pooled</td></tr>
-                    <tr><td><b>Cardinal Outdoor</b><span class="sub mono-s">TNT-60318</span></td><td>grow</td><td><span class="pill info">trial · day 9 of 14</span></td><td><span class="hs"><i class="band-g"></i>80</span></td><td class="num">–</td><td class="num">3 · 6</td><td class="num">41% of 500</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>charges</span></td><td><span class="warn-t b">campaign_pending d9</span></td><td>Columbus OH · 6b</td><td>Priya S.</td></tr>
+                    <tr class="sel"><td><b>Greenleaf Grounds Co.</b><span class="sub"><span class="mono-s">TNT-51207</span> · Columbus OH · 6b</span></td><td>grow</td><td><span class="pill ok">active · 461 d</span></td><td><span class="hs"><i class="band-g"></i>82</span></td><td class="num">$456</td><td class="num">6 · 19</td><td class="num">86%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>Priya S.</td></tr>
+                    <tr><td><b>Buckeye Turf and Tree</b><span class="sub"><span class="mono-s">TNT-49932</span> · Dayton OH · 6b</span></td><td>pro</td><td><span class="pill ok">active · 702 d</span></td><td><span class="hs"><i class="band-g"></i>74</span></td><td class="num">$725</td><td class="num">11 · 34</td><td class="num">52%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>Priya S.</td></tr>
+                    <tr><td><b>Prairie Edge Design</b><span class="sub"><span class="mono-s">TNT-58122</span> · Indianapolis IN · 6a</span></td><td>grow</td><td><span class="pill ok">active · 188 d</span></td><td><span class="hs"><i class="band-g"></i>91</span></td><td class="num">$416</td><td class="num">5 · 12</td><td class="num">97%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>Owen T.</td></tr>
+                    <tr><td><b>Hocking Hills Hardscape</b><span class="sub"><span class="mono-s">TNT-55810</span> · Lancaster OH · 6a</span></td><td>grow</td><td><span class="pill warn">past_due · day 4</span></td><td><span class="hs"><i class="band-y"></i>48</span></td><td class="num">$288</td><td class="num">4 · 8</td><td class="num">31%</td><td><span class="warn-t b">1 req. due May 19</span></td><td>live</td><td>Priya S.</td></tr>
+                    <tr><td><b>Three Rivers Landscape</b><span class="sub"><span class="mono-s">TNT-52244</span> · Fort Wayne IN · 6a</span></td><td>grow</td><td><span class="pill danger">restricted · day 16</span></td><td><span class="hs"><i class="band-r"></i>37</span></td><td class="num">$298</td><td class="num">4 · 11</td><td class="num">AI paused</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>Owen T.</td></tr>
+                    <tr><td><b>Lakeshore Lawn Care</b><span class="sub"><span class="mono-s">TNT-47781</span> · Sandusky OH · 6b</span></td><td>starter</td><td><span class="pill ok">active · 530 d</span></td><td><span class="hs"><i class="band-y"></i>66</span></td><td class="num">$81</td><td class="num">1 · 4</td><td class="num">12%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>pooled</td></tr>
+                    <tr><td><b>Cardinal Outdoor</b><span class="sub"><span class="mono-s">TNT-60318</span> · Columbus OH · 6b</span></td><td>grow</td><td><span class="pill info">trial · day 9 of 14</span></td><td><span class="hs"><i class="band-g"></i>80</span></td><td class="num">–</td><td class="num">3 · 6</td><td class="num">41% of 500</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · off</span></td><td><span class="warn-t b">pending d9</span></td><td>Priya S.</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -1427,7 +1460,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
             <div class="cbox t360">
               <div class="t360-head">
                 <span class="tlogo" aria-hidden="true">GG</span>
-                <div>
+                <div class="who-t">
                   <h3>Greenleaf Grounds Co.</h3>
                   <div class="ids"><span class="mono-s">TNT-51207</span> · Greenleaf Grounds Co. LLC · owner Jordan Ellis · since Feb 6 · design-build-maintain, 28 staff · Columbus OH, USDA 6b · data residency us · cell us-2</div>
                 </div>
@@ -1451,7 +1484,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                   <h3><svg class="ic" aria-hidden="true"><use href="#i-pulse"/></svg>Health score<span class="r muted">model v3 · nightly</span></h3>
                   <div class="score-big">
                     <span class="n">82</span>
-                    <div><span class="pill ok">green</span><br><span class="tiny muted">26 weeks, 71 → 82</span></div>
+                    <div><span class="pill ok">green</span><br><span class="tiny muted nowrap">26 wk: 71 → 82</span></div>
                     <svg viewBox="0 0 130 32" role="img" aria-label="Health score rising from 71 to 82 over 26 weeks"><polyline class="sp" points="0,23 5.2,21.6 10.4,18.8 15.6,20.2 20.8,17.4 26,16 31.2,18.8 36.4,14.6 41.6,13.2 46.8,13.2 52,11.8 57.2,10.4 62.4,11.8 67.6,9 72.8,10.4 78,7.6 83.2,9 88.4,6.2 93.6,7.6 98.8,4.8 104,6.2 109.2,7.6 114.4,9 119.6,6.2 124.8,7.6 128,7.6"/><circle cx="128" cy="7.6" r="2.5" class="sp-dot"/></svg>
                   </div>
                   <div class="comp">
@@ -1481,8 +1514,8 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                     <dt>Designer seat (1 included)</dt><dd>$0.00</dd>
                   </dl>
                   <dl class="kv">
-                    <dt>Office seats</dt><dd>6 used · 3 included</dd>
-                    <dt>Field seats active (April)</dt><dd>19 · 10 included</dd>
+                    <dt>Office seats</dt><dd>6 (3 incl.)</dd>
+                    <dt>Field seats active, Apr</dt><dd>19 (10 incl.)</dd>
                     <dt>SMS segments this month</dt><dd>1,640 of 2,500</dd>
                     <dt>Storage</dt><dd>61 GB of 250 GB</dd>
                   </dl>
@@ -1494,17 +1527,17 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                   <div class="score-big"><span class="n ai-t">1,712</span><span class="small muted">of 2,000 included (86%)<br>+ 640 pack credits left (Apr 18)</span></div>
                   <div class="ai-meter" role="img" aria-label="86 percent of included AI credits used"><i style="width:86%"></i></div>
                   <div class="feat">
-                    <span>Photo mockup sets (23 × 40)</span><span class="fb"><i style="width:100%"></i></span><span class="v">920</span>
-                    <span>Proposal drafts (48 × 8)</span><span class="fb"><i style="width:42%"></i></span><span class="v">384</span>
-                    <span>Copilot questions and drafts</span><span class="fb"><i style="width:29%"></i></span><span class="v">268</span>
-                    <span>Plant palettes (32 × 3)</span><span class="fb"><i style="width:10%"></i></span><span class="v">96</span>
-                    <span>Voice transcription (22 × 2)</span><span class="fb"><i style="width:5%"></i></span><span class="v">44</span>
+                    <span>Mockup sets 23 × 40</span><span class="fb"><i style="width:100%"></i></span><span class="v">920</span>
+                    <span>Proposal drafts 48 × 8</span><span class="fb"><i style="width:42%"></i></span><span class="v">384</span>
+                    <span>Copilot</span><span class="fb"><i style="width:29%"></i></span><span class="v">268</span>
+                    <span>Plant palettes 32 × 3</span><span class="fb"><i style="width:10%"></i></span><span class="v">96</span>
+                    <span>Transcription 22 × 2</span><span class="fb"><i style="width:5%"></i></span><span class="v">44</span>
                   </div>
                   <p class="small">Overage behavior: block and ask the owner. Suggest the 5,000-credit pack ($100) or Pro (6,000 included).</p>
                 </div>
 
                 <!-- Stripe -->
-                <div class="cbox c5">
+                <div class="cbox c6">
                   <h3><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg>Stripe connected account<span class="r muted">last account.updated May 12, 4:18 pm</span></h3>
                   <dl class="kv">
                     <dt>Account</dt><dd class="mono-s">acct_1Pq…7Qw2 · US · USD</dd>
@@ -1519,8 +1552,35 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                   <div class="note-box"><b>No access to funds.</b> Money moves only inside Greenleaf's own Stripe account. This screen has no charge, refund, payout or dispute-response actions, by design.</div>
                 </div>
 
+                <div class="cbox c6">
+                  <h3><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg>Migration MIG-2207<span class="r"><span class="pill ok">completed</span></span></h3>
+                  <dl class="kv">
+                    <dt>Source</dt><dd>Jobber + QuickBooks Online</dd>
+                    <dt>Type · duration</dt><dd>white-glove · 21 days</dd>
+                    <dt>Cutover</dt><dd>Mar 2 · parallel run closed Mar 9</dd>
+                    <dt>Clients · properties</dt><dd>412 · 486</dd>
+                    <dt>Invoices · visit history</dt><dd>1,906 · 3,914</dd>
+                    <dt>Open AR tie-out</dt><dd><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>$38,410.22, to the cent</span></dd>
+                    <dt>Saved cards re-collected</dt><dd>212 of 230 (92%)</dd>
+                  </dl>
+                </div>
+
+                <!-- Support access -->
+                <div class="cbox c4">
+                  <h3><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg>Support access grant</h3>
+                  <div class="m-row"><span class="pill danger"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>No active grant</span><span class="small muted">Standing read-only consent: off</span></div>
+                  <dl class="kv">
+                    <dt>Last grant</dt><dd class="mono-s">SAG-88213</dd>
+                    <dt>Scope · modules</dt><dd>read_only · scheduling</dd>
+                    <dt>Approved by</dt><dd>Jordan E. (owner, MFA)</dd>
+                    <dt>Window</dt><dd>May 3 9:47 am → May 6 (72 h)</dd>
+                    <dt>Sessions</dt><dd>1 · 22 min · 0 writes</dd>
+                  </dl>
+                  <div class="callout warn small"><b>Consent required.</b> Requests go to the owner or office manager in-app, by email and SMS; they approve with MFA. read_write is owner-only and capped at 72 hours; ledger and migration scopes need explicit opt-in.</div>
+                </div>
+
                 <!-- Comms + migration -->
-                <div class="cbox c3">
+                <div class="cbox c4">
                   <h3><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>10DLC messaging</h3>
                   <dl class="kv">
                     <dt>Brand</dt><dd><span class="yes">verified</span> Feb 12</dd>
@@ -1538,34 +1598,21 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                 </div>
 
                 <div class="cbox c4">
-                  <h3><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg>Migration MIG-2207<span class="r"><span class="pill ok">completed</span></span></h3>
-                  <dl class="kv">
-                    <dt>Source</dt><dd>Jobber + QuickBooks Online</dd>
-                    <dt>Type · duration</dt><dd>white-glove · 21 days</dd>
-                    <dt>Cutover</dt><dd>Mar 2 · parallel run closed Mar 9</dd>
-                    <dt>Clients · properties</dt><dd>412 · 486</dd>
-                    <dt>Invoices · visit history</dt><dd>1,906 · 3,914</dd>
-                    <dt>Open AR tie-out</dt><dd><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>$38,410.22, to the cent</span></dd>
-                    <dt>Saved cards re-collected</dt><dd>212 of 230 (92%)</dd>
-                  </dl>
+                  <h3><svg class="ic" aria-hidden="true"><use href="#i-flag"/></svg>Notes and activation</h3>
                   <div class="pinned"><b>Pinned note (Priya S.):</b> Owner Jordan prefers text. Crew leads are Spanish-first. Ask before scheduling calls during Mon–Thu dispatch hours.</div>
+                  <ul class="check-list">
+                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Stripe charges_enabled</li>
+                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Portal branding</li>
+                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Price book seeded</li>
+                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>First visit in crew app</li>
+                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>First invoice paid</li>
+                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Ledger as books</li>
+                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Crew app on all 4 leads</li>
+                    <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>10DLC live</li>
+                  </ul>
+                  <p class="small">Spring-Ready pre-flight passed Mar 1: autopay mandates tested on 230 agreements.</p>
                 </div>
-
-                <!-- Support access -->
-                <div class="cbox c4">
-                  <h3><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg>Support access grant</h3>
-                  <div class="m-row"><span class="pill danger"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>No active grant</span><span class="small muted">Standing read-only consent: off</span></div>
-                  <dl class="kv">
-                    <dt>Last grant</dt><dd class="mono-s">SAG-88213</dd>
-                    <dt>Scope · modules</dt><dd>read_only · scheduling</dd>
-                    <dt>Approved by</dt><dd>Jordan E. (owner, MFA)</dd>
-                    <dt>Window</dt><dd>May 3 9:47 am → May 6 (72 h)</dd>
-                    <dt>Sessions</dt><dd>1 · 22 min · 0 writes</dd>
-                  </dl>
-                  <div class="callout warn small"><b>Consent required.</b> Requests go to the owner or office manager in-app, by email and SMS; they approve with MFA. read_write is owner-only and capped at 72 hours; ledger and migration scopes need explicit opt-in.</div>
-                </div>
-
-                <div class="cbox c8">
+                <div class="cbox c12">
                   <h3><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg>Audit log excerpt · this tenant<span class="r muted">immutable · times ET</span></h3>
                   <div class="table-scroll">
                     <table class="data dense log">
