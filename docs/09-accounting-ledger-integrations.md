@@ -207,6 +207,7 @@ The phasing reflects one opinion: **the ledger engine runs for every tenant from
 | BK-02 | AI-assisted categorization and rules | 4.6.3 | [MVP] rules, [V1] AI |
 | BK-03 | Receipt capture and matching | 4.6.4 | [MVP] |
 | BK-04 | Reconciliation workspace | 4.6.5 | [MVP] |
+| BK-05 | Fuel card program import (card, driver, vehicle, gallons) with fraud flags | 4.6.1 | [V1] |
 | JC-01 | Job costing by job, phase, cost type; applied labor and burden | 4.7 | [MVP] |
 | JC-02 | Equipment cost allocation and over/under recovery | 4.7.3 | [V1] |
 | JC-03 | Commitments and projected cost at completion | 4.7.5 | [V1] |
@@ -2304,6 +2305,7 @@ All tables live in the `ledger` schema (integrations tables in `integrations`), 
 | `migration_run` / `opening_balance_item` | id, source, conversion_date, snapshot_file_id, status, certificate_file_id; item_type, source_ref, amount_minor, local_ref, journal_entry_id | Proof data |
 | `tax_line_map` | account_id, return_type, tax_line_code | Tax exports |
 | `ledger_integrity_case` | id, check_code, legal_entity_id, detected_at, drift_minor, details, status | L7 |
+| `fuel_card_transaction` | id, program, card_id, driver_employee_id, vehicle_asset_id, odometer, product, gallons, amount_minor, bank_transaction_id, flags | Fuel card import (BK-05); ties to the card statement line |
 
 ### 7.2 Entity relationships
 
