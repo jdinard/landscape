@@ -1912,7 +1912,7 @@ Validation rules: promotion requires the stage's exit evidence attached to the f
 
 ```text
 +------------------------------------------------------------------------------------------+
-| PLATFORM ADMIN > Innovation lab                      Next review: Q1 2028 (Jan 12)        |
+| PLATFORM ADMIN > Innovation lab                      Next review: Jan 12                  |
 +------------------------------------------------------------------------------------------+
 | Bet                     Stage      Cohort          Pilot KPI (target)        Kill rule    |
 | M-01 Twin timeline      2 Pilot    9 tenants       precision 0.74 (0.70) ok  2 iter left |
@@ -1921,7 +1921,7 @@ Validation rules: promotion requires the stage's exit evidence attached to the f
 | M-15 Overflow market    1 Proto    internal        legal review open         -           |
 | M-21 Gen. video         0 Explore  -               cost/30s 310 cr (<200)    shelve?     |
 +------------------------------------------------------------------------------------------+
-| ENGINEERING CAPACITY ON MOONSHOTS  14% (cap 15% until V1 GA)                              |
+| OPEN DECISIONS          1 ready to promote (M-20), 1 at risk (M-07), 1 kill rule (M-21)   |
 | RAILS R-01..R-14        13 shipped, 1 in progress (R-04 photo stations)                   |
 | TRUST INCIDENTS (90 d)  0 Sev-1, 2 Sev-3                                                  |
 | [Promote M-20 to GA] [Extend M-07 pilot] [Shelve M-21] [Export review pack]               |
@@ -2724,11 +2724,12 @@ Score = (Impact x Confidence) / Effort. Confidence (0.5-1.0) reflects technical 
 
 **Reading the ranking.** Cheap compliance and sales accelerators (M-09, M-10, M-31, M-25) belong in V1 because they help sell and retain from day one. The four **moat builders** (M-01, M-13, M-14, M-29) score lower because they are expensive and slow, but they are the reason Rootline's lead widens over time. Fund their rails at MVP and V1 regardless of score, and fund their full bets as soon as the MVP and V1 core is stable.
 
-### 15.3 Sequencing waves
+<a id="153-sequencing-waves"></a>
+### 15.3 Sequencing by scope tier
 
 ```mermaid
 flowchart LR
-    subgraph W1["Wave 1 - MVP and V1 rails and quick wins"]
+    subgraph T1["MVP and V1 - rails and quick wins"]
         A1["Rails R-01 to R-14"]
         A2["M-09 Snapshot"]
         A3["M-10 Rebate packets"]
@@ -2737,7 +2738,7 @@ flowchart LR
         A6["M-22 Rule-based pricing"]
         A7["M-12 QR as-built plate"]
     end
-    subgraph W2["Wave 2 - V2 platform bets"]
+    subgraph T2["V2 - platform bets"]
         B1["M-01 Twin timeline"]
         B2["M-07 Hydro assist"]
         B3["M-03 AR preview"]
@@ -2747,7 +2748,7 @@ flowchart LR
         B7["M-12 Passport transfer"]
         B8["M-14 Live nursery exchange"]
     end
-    subgraph W3["Wave 3 - V3 network and autonomy"]
+    subgraph T3["V3 - network and autonomy"]
         C1["M-01 3D twin"]
         C2["M-04 AR layout"]
         C3["M-07 Hydro autopilot"]
@@ -2756,19 +2757,20 @@ flowchart LR
         C6["M-18 Parametric and warranty"]
         C7["M-33 Global"]
     end
-    W1 --> W2
-    W2 --> W3
+    T1 --> T2
+    T2 --> T3
 ```
 
-**Explicitly not now:** M-33 Global (until North American Region coverage is strong), M-32 Rootline Grounds (until the core is proven with contractors), M-18 parametric products (until the Weather Desk and snow data exist), and M-21 generative-enhanced video (until cost per second falls and geometry control is reliable).
+**Explicitly not in early scope:** M-33 Global (until North American Region coverage is strong), M-32 Rootline Grounds (until the core is proven with contractors), M-18 parametric products (until the Weather Desk and snow data exist), and M-21 generative-enhanced video (until cost per second falls and geometry control is reliable).
 
 ---
 
-## 16. Rootline in 2031: a narrative
+<a id="16-rootline-in-2031-a-narrative"></a>
+## 16. The end state: a narrative
 
-*Illustrative and fictional. Companies, people and numbers are invented to show how the bets fit together.*
+*Illustrative and fictional, and deliberately undated. Companies, people and numbers are invented to show how the bets fit together once they have landed; nothing here is a forecast of when.*
 
-**5:10 a.m., Columbus, Ohio. Late June 2031.** Dana Whitfield, who owns Cedar & Stone Landscapes, is not awake yet. Her company has grown from 38 people in 2026 to 71 today, with the same three office staff. Rootline has been working all night.
+**5:10 a.m., Columbus, Ohio. Late June.** Dana Whitfield, who owns Cedar & Stone Landscapes, is not awake yet. Her company has grown from 38 people when she switched to Rootline to 71 today, with the same three office staff. Rootline has been working all night.
 
 Nine robotic mowers finished the soccer complex, two office parks and an HOA's common area; one reported `stuck` at 3:42, and Rootline put a 10-minute stop on Crew 4's route. Hydro trimmed run times on 212 irrigation zones after last night's storm. It suspended zone 7 at the Westbrook office park when its flow jumped to 170%, and booked the irrigation tech for 7:30 within the client's pre-authorized limit. Autopilot sent 41 invoices for yesterday's verified Visits, matched 96 bank lines and posted the accrual for unbilled work on the Patel backyard Project. The digest says: *"All routine. 3 items need you."*
 
@@ -2780,7 +2782,7 @@ Nine robotic mowers finished the soccer complex, two office parks and an HOA's c
 
 **11:00 a.m., a property manager.** At a REIT's regional office, the sustainability lead downloads Cedar & Stone's Q2 landscape report for 14 sites: battery and robot share of equipment hours at 81%, water down 27% against the ET budget, native plants up to 38% after two turf conversions that each earned a utility rebate, and tree carbon stored, all with methods and data-quality grades. She forwards it to her CFO with one line: "This is what I want from every vendor."
 
-**1:30 p.m., a homeowner.** In a different Ohio suburb, a couple who bought a house three months ago open Rootline Home. The Passport the sellers transferred at closing shows the irrigation zones, the 2028 paver patio's color lot (one paver cracked), and a note from Cedar & Stone, which built and maintained the garden for seven years: "Welcome! Here's what's planted and how we cared for it." They book weekly maintenance and a paver repair. Plant Doctor flags early boxwood leafminer from a photo they took. The PHC lead approves a treatment within label, and a $165 Proposal arrives before dinner.
+**1:30 p.m., a homeowner.** In a different Ohio suburb, a couple who bought a house three months ago open Rootline Home. The Passport the sellers transferred at closing shows the irrigation zones, the paver patio's color lot (one paver cracked), and a note from Cedar & Stone, which built and maintained the garden for seven years: "Welcome! Here's what's planted and how we cared for it." They book weekly maintenance and a paver repair. Plant Doctor flags early boxwood leafminer from a photo they took. The PHC lead approves a treatment within label, and a $165 Proposal arrives before dinner.
 
 **3:00 p.m., the twin.** Cedar & Stone's ops manager scans the morning's proposed updates: 18 across 140 maintained properties. Two dead arborvitae are under warranty and get replacement tasks. One bed shows weed pressure rising for three straight months, so the crew checklist changes. One 'Autumn Blaze' maple is flagged by the Climate Risk review as a succession candidate by 2040; the account manager adds an underplanting option to the fall enhancement Proposal.
 
@@ -2790,7 +2792,7 @@ Nine robotic mowers finished the soccer complex, two office parks and an HOA's c
 
 **9:30 p.m., the operator.** Rootline's founder, signed in as `platform_owner`, opens the Innovation lab console for tomorrow's quarterly review. Twenty-two of the 33 bets are generally available; four were shelved over the years, and their rails still run. Robot missions across the network passed 40,000 a week, on five OEMs' machines. The Hydro water model is live in 31 Regions, and a water utility in Nevada has asked for program analytics from the rebate cases its customers' contractors filed. One line is red: an Autopilot collections policy at one tenant tripped its undo threshold and demoted itself to Draft overnight, exactly as designed. She reads the auto-generated incident note, approves the next KB release (412 Region Profile changes, each with evidence and a curator's signature) and closes the laptop. The network grew this quarter, and no tenant lost a Client to another tenant through it.
 
-**What changed between 2026 and 2031** is not one feature. Every visit, photo, plant, gallon and dollar landed in one graph, and each season made that graph smarter. Competitors can copy a screen. They cannot copy five years of registered photos, plant outcomes, production rates and closed books. The 2026 promise was to replace the 5-10 tools a landscape company juggles. By 2031 Rootline does more than that: it runs the yard alongside the people who love the work, and gives them back their evenings.
+**What changed** is not one feature. Every visit, photo, plant, gallon and dollar landed in one graph, and each season made that graph smarter. Competitors can copy a screen. They cannot copy years of registered photos, plant outcomes, production rates and closed books. The original promise was to replace the 5-10 tools a landscape company juggles. In the end state Rootline does more than that: it runs the yard alongside the people who love the work, and gives them back their evenings.
 
 ---
 
