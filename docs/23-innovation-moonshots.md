@@ -1,22 +1,22 @@
 # 23 - Innovation and Moonshots
 
-> Rootline's core modules ([03](03-crm-sales-estimating-proposals.md) through [20](20-architecture-security.md)) replace the 5-10 tools a landscape company juggles today. This document goes further. It describes how one platform that holds the **geometry** of every property, the **plants** in it, every **visit**, **photo** and **chemical application**, and the Company's **real books** can do things that a stack of separate tools never can. We specify a portfolio of **33 ambitious bets**: a persistent property digital twin, AR for homeowners and crews, robotic mower fleets, closed-loop smart irrigation, plant health AI, ESG reporting, turf-rebate automation, a "Carfax for landscapes", a homeowner network, a nursery supply exchange, a labor marketplace, embedded fintech, franchise mode, a voice-first crew assistant, generative video, predictive pricing, a self-driving back office, an app and MCP ecosystem, an academy, a community, climate-adaptive planting and more. Each bet states the problem, the concept, the data moat it builds on, technical readiness, dependencies, a phase tag and a "headline demo". We also define the **rails** that MVP and V1 must lay so these bets stay possible. Without those rails, they quietly become impossible. The document ends with an impact-versus-effort prioritization matrix and a narrative of a landscape company running on Rootline in 2031. It matters because software in this category is converging on parity features. The durable advantage goes to the platform whose data compounds, and every bet here is designed to make Rootline's data more valuable each season it is used.
+> Rootline's core modules ([03](03-crm-sales-estimating-proposals.md) through [20](20-architecture-security.md)) replace the 5-10 tools a landscape company juggles today. This document goes further. It describes how one platform that holds the **geometry** of every property, the **plants** in it, every **visit**, **photo** and **chemical application**, and the Company's **real books** can do things that a stack of separate tools never can. We specify a portfolio of **33 ambitious bets**: a persistent property digital twin, AR for homeowners and crews, robotic mower fleets, closed-loop smart irrigation, plant health AI, ESG reporting, turf-rebate automation, a "Carfax for landscapes", a homeowner network, a nursery supply exchange, a labor marketplace, embedded fintech, franchise mode, a voice-first crew assistant, generative video, predictive pricing, a self-driving back office, an app and MCP ecosystem, an academy, a community, climate-adaptive planting and more. Each bet states the problem, the concept, the data moat it builds on, technical readiness, dependencies, a scope tag and a "headline demo". We also define the **rails** that MVP and V1 must lay so these bets stay possible. Without those rails, they quietly become impossible. The document ends with an impact-versus-effort prioritization matrix and an undated end-state narrative of a landscape company running on Rootline once the bets have landed. It matters because software in this category is converging on parity features. The durable advantage goes to the platform whose data compounds, and every bet here is designed to make Rootline's data more valuable each season it is used.
 
 **At a glance**
 
 - **What it is:** a portfolio of 33 ambitious bets (M-01 to M-33) in nine themes that go beyond the core modules: property digital twin, AR, robotic mowers, closed-loop irrigation, plant health AI, ESG and rebates, the homeowner network, supply and labor networks, embedded fintech, a voice-first crew assistant, predictive pricing, Autopilot, the app and MCP ecosystem, an academy, a community and international expansion.
 - **Decision 1, rails before bets:** 14 rails (R-01 to R-14) are requirements on MVP and V1 module docs, such as stable object IDs, plant instances, rich photo metadata, the consent ledger, Action Layer parity and a Region on every Property. They are cheap now and expensive to retrofit ([4.2](#42-rails-what-mvp-and-v1-must-build-so-the-moonshots-stay-possible)).
-- **Decision 2, stage gates and kill criteria:** every bet moves through Explore, Prototype, Pilot, Beta and GA, approved by `platform_owner` each quarter. Each card names pilot KPIs and a kill criterion ([4.3](#43-stage-gates-and-kill-criteria), [12.2](#122-per-bet-pilot-kpis-exit-criteria-for-stage-2)).
+- **Decision 2, stage gates and kill criteria:** every bet moves through Explore, Prototype, Pilot, Beta and GA on evidence, not dates, with each promotion approved by `platform_owner` in the Innovation review. Each card names pilot KPIs and a kill criterion ([4.3](#43-stage-gates-and-kill-criteria), [12.2](#122-per-bet-pilot-kpis-exit-criteria-for-stage-2)).
 - **Decision 3, data rights:** tenant data belongs to the Company. Cross-tenant use is aggregated and opt-in under the thresholds owned by [18](18-reporting-analytics.md) (at least 10 Companies per cell, 25% dominance limit), homeowner network features need the homeowner's own opt-in, and no Pulse or other cross-tenant price data ever feeds a pricing suggestion ([4.1](#41-the-data-moats-every-bet-builds-on)).
 - **Decision 4, fintech without holding funds:** working capital, equipment finance and insurance are partner-funded referral and data rails. Payments stay on each Company's own connected Stripe account, and Rootline never holds client funds ([08](08-payments-stripe.md)).
 - **Decision 5, one autonomy model:** Autopilot (M-23) reuses the L0-L4 autonomy levels and T0-T4 risk tiers of [17](17-ai-copilot-automation.md), and its domain policies never exceed per-tool tier caps; the voice assistant (M-20) uses the same risk-tiered confirmations.
-- **Phasing:** MVP and early slices live in the module docs and are linked, not repeated (voice notes and commands in [05](05-field-crew-mobile-app.md) and [17](17-ai-copilot-automation.md), controller integrations in [14](14-service-line-modules.md), nursery-sheet ingestion in [12](12-plant-knowledge-base.md), neighbor campaigns in [16](16-marketing-growth-communications.md), the public API in [20](20-architecture-security.md)). [V1] first slices include the M-09 Sustainability Snapshot, M-10 rebate packets, M-31 heat-aware scheduling, M-22 rule-based pricing and the M-24 MCP server; [V2] brings the twin timeline, domain-level Autopilot, the Landscape Passport, the marketplace and a working-capital pilot; [V3] covers closed-loop irrigation, robot fleets at scale, L4 autonomy, Rootline Grounds and Rootline Global.
+- **Scope tiers:** MVP and early slices live in the module docs and are linked, not repeated (voice notes and commands in [05](05-field-crew-mobile-app.md) and [17](17-ai-copilot-automation.md), controller integrations in [14](14-service-line-modules.md), nursery-sheet ingestion in [12](12-plant-knowledge-base.md), neighbor campaigns in [16](16-marketing-growth-communications.md), the public API in [20](20-architecture-security.md)). [V1] first slices include the M-09 Sustainability Snapshot, M-10 rebate packets, M-31 heat-aware scheduling, M-22 rule-based pricing and the M-24 MCP server; [V2] brings the twin timeline, domain-level Autopilot, the Landscape Passport, the marketplace and a working-capital pilot; [V3] covers closed-loop irrigation, robot fleets at scale, L4 autonomy, Rootline Grounds and Rootline Global.
 - **Differentiators:** one compounding data graph (Property Graph, Visit Evidence Stream, Plant Performance Ledger, production rates and a real Ledger) that point tools cannot assemble; every bet is designed to make that data more valuable each season.
-- **Key cross-links:** benchmarking privacy in [18](18-reporting-analytics.md), revenue lines and the homeowner app in [22](22-business-model-pricing-gtm.md), the heat-plan core in [15](15-team-hr-payroll.md), operator stage-gate tooling in [19](19-platform-admin-portal.md), the impact-versus-effort matrix in [section 15](#15-prioritization-matrix-impact-vs-effort), and final phase tags in [24](24-roadmap-feature-catalog.md).
+- **Key cross-links:** benchmarking privacy in [18](18-reporting-analytics.md), revenue lines and the homeowner app in [22](22-business-model-pricing-gtm.md), the heat-plan core in [15](15-team-hr-payroll.md), operator stage-gate tooling in [19](19-platform-admin-portal.md), the impact-versus-effort matrix in [section 15](#15-prioritization-matrix-impact-vs-effort), the end-state narrative in [section 16](#16-the-end-state-a-narrative), and final scope tags in [24](24-roadmap-feature-catalog.md).
 
 **Related docs:** [Market landscape](01-market-landscape.md) | [Personas and RBAC](02-personas-roles-permissions.md) | [CRM and estimating](03-crm-sales-estimating-proposals.md) | [Scheduling and routing](04-scheduling-dispatch-routing.md) | [Crew app](05-field-crew-mobile-app.md) | [Customer portal](06-customer-portal.md) | [Invoicing](07-invoicing-billing-contracts.md) | [Payments](08-payments-stripe.md) | [Ledger](09-accounting-ledger-integrations.md) | [Design Studio](10-design-studio.md) | [AI design and mockups](11-ai-design-mockups.md) | [Plant Knowledge Base](12-plant-knowledge-base.md) | [Operations and equipment](13-operations-inventory-equipment.md) | [Service lines](14-service-line-modules.md) | [Team, HR and payroll](15-team-hr-payroll.md) | [Marketing and growth](16-marketing-growth-communications.md) | [AI copilot and automation](17-ai-copilot-automation.md) | [Reporting and analytics](18-reporting-analytics.md) | [Platform admin](19-platform-admin-portal.md) | [Architecture and security](20-architecture-security.md) | [UX and sitemaps](21-ux-design-system-sitemaps.md) | [Business model and GTM](22-business-model-pricing-gtm.md) | [Roadmap and feature catalog](24-roadmap-feature-catalog.md)
 
-**Document status:** Proposal v1.0, 2026-11-07. Priority tags: **[MVP]** first sellable release, **[V1]** within about 12 months of MVP, **[V2]** 12-24 months, **[V3]** moonshot, 2+ years. Most bets carry several tags: early "rails" ship at MVP or V1, and the full bet lands later. [24-roadmap-feature-catalog.md](24-roadmap-feature-catalog.md) is the authority if tags conflict.
+**Document status:** Proposal v1.0, 2026-11-07. Scope tags: **[MVP]** first sellable release, **[V1]** next scope wave, **[V2]** later wave, **[V3]** moonshot / long-term. Tags describe scope order, not dates or build durations. Most bets carry several tags: early "rails" belong to MVP or V1, and the full bet lands in a later wave. [24-roadmap-feature-catalog.md](24-roadmap-feature-catalog.md) is the authority if tags conflict.
 
 > **Research basis (as of Nov 2026).** This document reuses sources already gathered and checked in [research/R1](research/R1-field-service-platforms.md), [research/R2](research/R2-landscape-specific-platforms.md), [research/R3](research/R3-design-ai-plant-data.md), [research/R4](research/R4-industry-payments-accounting.md) and the sibling module docs (competitor AI, payments and financing, measurement vendors, smart-irrigation APIs, pesticide and heat rules, MCP). Facts about robotics vendors, emissions and turf rules, drone policy, climate datasets and fintech regulation come from general industry and regulatory knowledge through mid-2026. Verification note: items marked **"verify"** are from secondary sources or general knowledge and need first-hand confirmation before anything is committed in a build plan, roadmap, pitch or contract. No statistics are invented. Figures we derived ourselves are labeled **estimate**.
 
@@ -39,7 +39,7 @@
 13. [Beyond the brief: extra ideas](#13-beyond-the-brief-extra-ideas)
 14. [Open questions](#14-open-questions)
 15. [Prioritization matrix: impact vs effort](#15-prioritization-matrix-impact-vs-effort)
-16. [Rootline in 2031: a narrative](#16-rootline-in-2031-a-narrative)
+16. [The end state: a narrative](#16-the-end-state-a-narrative)
 17. [Sources](#sources)
 
 ---
@@ -51,7 +51,7 @@
 | # | Goal | How we will know |
 |---|---|---|
 | G1 | **Give the founder a ranked, defensible portfolio of big bets** that extend Rootline from "the system of record" to "the system that runs the yard". | 33 bets, each with problem, concept, moat, readiness, dependencies, phase and demo. Ranked in section 15. |
-| G2 | **Protect optionality by specifying the rails now.** Each bet names the MVP/V1 data and architecture it needs, such as geotagged photos tied to objects, stable plant-instance IDs and device abstractions. Those rails get built even if the bet itself waits three years. | Every rail appears in section 4.2 and is referenced from the module docs. |
+| G2 | **Protect optionality by specifying the rails now.** Each bet names the MVP/V1 data and architecture it needs, such as geotagged photos tied to objects, stable plant-instance IDs and device abstractions. Those rails get built even if the bet itself waits for a much later scope wave. | Every rail appears in section 4.2 and is referenced from the module docs. |
 | G3 | **Compound the data moats.** Each bet should make the Property Graph, the Plant Performance Ledger, production rates or the Ledger richer, so the next bet is easier and a copycat starts further behind. | Each card has a "Builds on" line and a "Feeds back" line. |
 | G4 | **Make the first slice of every bet estimable.** Engineers get rules, states, validations and edge cases for the first shippable increment, not just the dream. | Section 4 "Behaviors and rules" and "Phasing" blocks per card; sections 5-9 cover flows, data, events and permissions. |
 | G5 | **Create new revenue lines without betraying the core promises**: bring-your-own Stripe, zero markup by default, tenant-owned data, operator neutrality on plant recommendations. | Every monetized bet states its model and the guardrail it respects ([22](22-business-model-pricing-gtm.md)). |
@@ -59,7 +59,7 @@
 
 ### 1.2 Non-goals
 
-1. **Not a commitment.** This is a portfolio, not a roadmap. Sequencing, staffing and dates live in [24](24-roadmap-feature-catalog.md). A bet can be killed at any readiness gate (section 4.3).
+1. **Not a commitment.** This is a portfolio, not a roadmap. Final scope tags live in [24](24-roadmap-feature-catalog.md); this doc sets no dates. A bet can be killed at any readiness gate (section 4.3).
 2. **No hardware manufacturing.** Rootline orchestrates robots, sensors, drones and RTK receivers made by others. We may certify or resell partner kits ([V3]), but we will not design mowers or controllers.
 3. **No balance-sheet lending, no insurance carrier risk, no money transmission.** Fintech bets are built as referral marketplaces and data rails for licensed partners. Rootline never holds client funds, which is consistent with [08](08-payments-stripe.md).
 4. **No autonomous control of safety-critical actions without a human in the loop.** Examples are restricted-use pesticide prescriptions, robot operation in public spaces outside geofences, and irrigation changes that exceed water-budget or ordinance limits.
@@ -166,7 +166,7 @@ The module docs and research reports collected these pain points. They are summa
 ### 2.5 The gap we exploit
 
 1. **The joined Property Graph.** Geometry (Design), objects (plants, heads, fixtures, hardscape), time (visits, photos, applications) and money (estimates, invoices, job costs) live in one tenant-scoped graph. Competitors own one or two of the four.
-2. **A curated, region-aware plant brain.** The operator-curated Plant KB, with Region Profiles ([12](12-plant-knowledge-base.md)), turns raw imagery into horticultural meaning: "that is a 'Limelight' hydrangea in zone 6a, planted in May 2027, under warranty until May 2028".
+2. **A curated, region-aware plant brain.** The operator-curated Plant KB, with Region Profiles ([12](12-plant-knowledge-base.md)), turns raw imagery into horticultural meaning: "that is a 'Limelight' hydrangea in zone 6a, planted last May, under warranty until next May".
 3. **True books.** The built-in double-entry Ledger ([09](09-accounting-ledger-integrations.md)) makes underwriting, ESG cost allocation, franchise royalties and predictive pricing trustworthy. Spreadsheet-grade data cannot do this.
 4. **Neutral money rails.** BYO Stripe means fintech bets are a marketplace of partners and never a lock-in tax. That trust is what lets a Company share its books with a lender through Rootline.
 5. **Seasonal repetition.** Landscaping revisits the same property 20 to 40 times a year (for example, weekly mowing from April to November is about 30 visits). No other trade gets so many observations of the same asset. Our twin, plant-performance and pricing models feed on that repetition.
@@ -250,7 +250,7 @@ flowchart LR
 
 ### 4.2 Rails: what MVP and V1 must build so the moonshots stay possible
 
-These are cheap now and expensive to retrofit. Each line is a requirement on the named module, tagged with when it must ship.
+These are cheap now and expensive to retrofit. Each line is a requirement on the named module, tagged with the scope tier it belongs to.
 
 | Rail | Requirement | Owning doc | Tag | Unlocks |
 |---|---|---|---|---|
@@ -271,21 +271,21 @@ These are cheap now and expensive to retrofit. Each line is a requirement on the
 
 ### 4.3 Stage gates and kill criteria
 
-Every bet moves through five stages. `platform_owner` approves each promotion in the Innovation review held each quarter. Feature flags and tenant cohorts are managed in [19](19-platform-admin-portal.md).
+Every bet moves through five stages on evidence, not on a calendar. `platform_owner` approves each promotion in the Innovation review. Feature flags and tenant cohorts are managed in [19](19-platform-admin-portal.md).
 
-| Stage | Entry criteria | Exit (promote) criteria | Typical size |
+| Stage | Entry criteria | Exit (promote) criteria | Exposure |
 |---|---|---|---|
-| **0. Explore** | One-page problem statement, the moat it uses, hypotheses | 10+ customer interviews confirm the pain; a technical spike shows the approach is feasible | 1 PM + 1 engineer, 2-4 weeks |
-| **1. Prototype** | Gate 0 passed | Internal demo of the headline demo; cost per use estimated; risk register written | Squad of 2-4, 1 quarter |
-| **2. Pilot** | Gate 1 passed; 3-10 design-partner Companies signed | Pilot KPIs hit (per card); no Sev-1 trust incidents; unit economics within 2x of target | Squad of 4-6, 1-2 quarters |
-| **3. Beta** | Gate 2 passed; support runbooks; pricing and packaging set | Adoption and retention targets; compliance review signed off | Squad of 6-8 |
-| **4. GA** | Gate 3 passed | Ongoing: owner KPI dashboard in [18](18-reporting-analytics.md) | Becomes a product line |
+| **0. Explore** | One-page problem statement, the moat it uses, hypotheses | 10+ customer interviews confirm the pain; a technical spike shows the approach is feasible | No tenants (interviews and spikes only) |
+| **1. Prototype** | Gate 0 passed | Internal demo of the headline demo; cost per use estimated; risk register written | Internal and demo tenants only |
+| **2. Pilot** | Gate 1 passed; 3-10 design-partner Companies signed | Pilot KPIs hit (per card); no Sev-1 trust incidents; unit economics within 2x of target | 3-10 design-partner Companies behind a feature flag |
+| **3. Beta** | Gate 2 passed; support runbooks; pricing and packaging set | Adoption and retention targets; compliance review signed off | Opt-in tenant cohorts, labeled Beta in the product |
+| **4. GA** | Gate 3 passed | Ongoing: owner KPI dashboard in [18](18-reporting-analytics.md) | All eligible tenants per plan entitlement; becomes a product line |
 
-**Global kill rules:** kill or shelve a bet if (a) pilot KPIs miss by more than 50% after two iterations, (b) a trust incident shows that its data use cannot be made safe, (c) a partner dependency becomes unavailable and there is no second source within two quarters, or (d) its marginal cost per Company exceeds 25% of the Company's subscription with no pricing path.
+**Global kill rules:** kill or shelve a bet if (a) pilot KPIs miss by more than 50% after two iterations, (b) a trust incident shows that its data use cannot be made safe, (c) a partner dependency becomes unavailable and there is no viable second source, or (d) its marginal cost per Company exceeds 25% of the Company's subscription with no pricing path.
 
 ### 4.4 Portfolio overview
 
-Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates). Impact weighs revenue, retention, differentiation and customer outcome. Effort weighs engineering, partnerships, regulatory and operating cost. "First slice" is the earliest increment that ships customer value.
+Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates). Impact weighs revenue, retention, differentiation and customer outcome. Effort is a relative complexity score that weighs technical difficulty, partnerships, regulatory exposure and operating cost; it is not a time or staffing estimate. "First slice" is the earliest increment that ships customer value.
 
 | ID | Bet | Theme | First slice | Headline | Primary moat | Rootline TRL | Impact | Effort | Revenue model |
 |---|---|---|---|---|---|---|---|---|---|
@@ -333,7 +333,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Problem.** A landscape company's knowledge of a property is scattered: the original design PDF, a few hundred unlabeled crew photos, the account manager's memory and an irrigation map on paper in the truck. When the account manager leaves or the property changes hands, the knowledge goes with them. Commercial property managers cannot see condition across a portfolio. Estimators re-measure properties the company has maintained for six years.
 
-**Concept.** Every Property gets a living, versioned model: the **Property Twin**. It starts as the as-built Design ("Living Property Map", [10](10-design-studio.md) section on as-builts). Every source of evidence then updates it automatically: crew photos, photo stations, drone flights, LiDAR scans, homeowner photos, satellite revisits and IoT sensors. The twin knows *objects* (this 'Green Velvet' boxwood, this 4-inch pop-up head in zone 6, this 14 x 18 ft paver patio), their *condition over time* and their *history* (installed, pruned, treated, replaced). It answers questions such as "What changed since last month?", "Which plants are declining?", "Where are the dry spots?" and "What did the front bed look like in June 2027?"
+**Concept.** Every Property gets a living, versioned model: the **Property Twin**. It starts as the as-built Design ("Living Property Map", [10](10-design-studio.md) section on as-builts). Every source of evidence then updates it automatically: crew photos, photo stations, drone flights, LiDAR scans, homeowner photos, satellite revisits and IoT sensors. The twin knows *objects* (this 'Green Velvet' boxwood, this 4-inch pop-up head in zone 6, this 14 x 18 ft paver patio), their *condition over time* and their *history* (installed, pruned, treated, replaced). It answers questions such as "What changed since last month?", "Which plants are declining?", "Where are the dry spots?" and "What did the front bed look like last June?"
 
 **Twin layers:**
 
@@ -404,7 +404,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Headline demo.** *An estimator flies a 9-acre HOA entrance and pond in 14 minutes. Forty minutes later Rootline has drawn 61 beds, 4.2 acres of turf, 1,180 linear feet of edging and 38 tree crowns with heights. The bed polygons price the spring mulch install at 112 cubic yards. The HOA board sees a photoreal 3D flyover of the pond renovation option that night.*
 
-**Kill criterion.** If fewer than 10% of Pro tenants in drone-heavy segments (commercial, HOA) process a flight in the first two quarters of beta, keep upload-only and drop the pilot network.
+**Kill criterion.** If fewer than 10% of Pro tenants in drone-heavy segments (commercial, HOA) process a flight in the first two quarters of the bet's Beta stage (4.3), keep upload-only and drop the pilot network.
 
 #### M-08 Plant health AI with prescriptions
 
@@ -452,7 +452,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 2. **Projected Region climate.** For each Region, `platform_curator` publishes horizon projections derived from downscaled CMIP6 datasets (for example NASA NEX-GDDP-CMIP6 or LOCA2; verify licensing and choose an ensemble median plus spread), summarized as projected zone, heat days, dry spells and heavy-rain frequency. Projections are versioned and cite their source and scenario (for example an intermediate emissions scenario; the curator documents the choice).
 3. **Climate Fit score** per plant per Region per horizon: `fit` (inside envelope with margin), `edge` (within 1 half-zone or 10% of a tolerance limit), `risk` (outside). Shown as three dots (now, 2040, 2060) in the plant picker.
 4. **Design checks.** In Design Studio, a "Climate horizon" toggle recolors plant symbols by future fit. Long-lived plants (trees and large shrubs with an expected lifespan of 25+ years in the KB) are flagged when 2060 fit is `risk`. Short-lived perennials are flagged only on present fit.
-5. **Climate Risk review for existing Properties.** A batch job lists plant instances with `edge` or `risk`, weighted by replacement cost and visual importance (specimen tree > groundcover). The output is a phased succession plan, for example "underplant 'Autumn Blaze' maple replacement candidates now; remove in 2032".
+5. **Climate Risk review for existing Properties.** A batch job lists plant instances with `edge` or `risk`, weighted by replacement cost and visual importance (specimen tree > groundcover). The output is a phased succession plan, for example "underplant 'Autumn Blaze' maple replacement candidates now; remove in 6-8 years".
 6. **Communication rules.** Language is probabilistic and modest: "projected to be at the warm edge of its comfort range by 2040 under the scenario we use". No fear marketing. Owners can disable climate messaging in client-facing outputs.
 7. **Curator workflow.** Changes to envelopes or projections go through the KB release process ([19](19-platform-admin-portal.md) `kb.release_published`) with diffs and reviewer sign-off.
 
@@ -495,7 +495,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Headline demo.** *A curator sees that 'Knock Out' rose in a humid southeastern Region shows 2-year survival 18 points below expectation, with rose rosette disease the top cause. She downgrades the Region Profile, adds a curator note and pushes a KB release. Within a week, 600 open designs show a "consider an alternative" chip.*
 
-**Kill criterion.** The rails are cheap and stay regardless. If fewer than 3 Regions reach the thresholds within 2 years of [V2], keep evidence internal to curators and skip public Evidence Scores.
+**Kill criterion.** The rails are cheap and stay regardless. If fewer than 3 Regions reach the thresholds within 2 years of Evidence Scores going live, keep evidence internal to curators and skip public Evidence Scores.
 
 > **Competitive edge.** No FSM vendor has plant identity, so none can measure plant outcomes. Consumer plant apps have identity but no install, warranty or care data. Rootline is the only system where a plant's whole life (design, purchase, install, care, failure, replacement) is recorded in one place. After a few seasons, the Evidence Scores become something a competitor cannot buy.
 
@@ -894,9 +894,9 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Rootline Home identity and accounts (M-13); consent ledger (R-06); as-built and twin data (M-01, [10](10-design-studio.md)); QR plate from [14](14-service-line-modules.md); legal review of chemical-history sharing and real-estate disclosure interplay per state.
 
-**Headline demo.** *A buyer's agent opens a link in the listing: "Verified Landscape Passport: 9 years of records". There is the irrigation map with 11 zones, the 2029 paver patio's product and color lot, the warranty on the river birch, and lawn treatments with EPA registration numbers. At closing, the new owners claim it. A day later they get a friendly note from the Company that built and maintained the garden, and they sign up for weekly maintenance.*
+**Headline demo.** *A buyer's agent opens a link in the listing: "Verified Landscape Passport: 9 years of records". There is the irrigation map with 11 zones, the paver patio's product and color lot, the warranty on the river birch, and lawn treatments with EPA registration numbers. At closing, the new owners claim it. A day later they get a friendly note from the Company that built and maintained the garden, and they sign up for weekly maintenance.*
 
-**Kill criterion.** If fewer than 5% of residential Clients with as-builts activate a Passport after a year of [V2], keep the QR plate and portal as-builts and stop transfer work.
+**Kill criterion.** If fewer than 5% of residential Clients with as-builts activate a Passport within a year of Passport transfer going live, keep the QR plate and portal as-builts and stop transfer work.
 
 > **Competitive edge.** Home-record apps exist (verify current players, e.g., HomeBinder or Centriq), but they rely on homeowners typing in data. Only the contractor's system of record can fill a Passport automatically, and only Rootline has the as-built geometry and plant identity to make it meaningful. For Companies, the continuity offer turns home sales from a churn event into a retention event.
 
@@ -1063,7 +1063,7 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Ledger close discipline and bank feeds ([09](09-accounting-ledger-integrations.md)); Service Agreement backlog data ([07](07-invoicing-billing-contracts.md)); consent ledger and partner gateway (R-06, section 8.4); 2-3 partner lenders under contract; compliance review of disclosures.
 
-**Headline demo.** *On January 15 the owner receives a notification: "Based on your $612,000 of signed 2028 maintenance contracts and reconciled books, two partners pre-qualified you for up to $90,000, drawn in March and repaid June-November." She compares two offers side by side, sees Rootline's disclosed fee, and accepts in 6 minutes. The loan appears in the Ledger with its schedule.*
+**Headline demo.** *On January 15 the owner receives a notification: "Based on your $612,000 of signed maintenance contracts for the coming season and reconciled books, two partners pre-qualified you for up to $90,000, drawn in March and repaid June-November." She compares two offers side by side, sees Rootline's disclosed fee, and accepts in 6 minutes. The loan appears in the Ledger with its schedule.*
 
 **Kill criterion.** If fewer than 5% of eligible owners request offers over two springs, or partner approval rates stay below 30%, keep the Verified Financial Package as a downloadable data room only.
 
@@ -1119,7 +1119,7 @@ Common guardrails for M-16 to M-18:
 
 **Headline demo.** *A snow contractor in Buffalo gets a slip-and-fall demand letter for a January 14 incident. In three clicks the insurer receives the evidence package: the site was plowed at 4:12 a.m. at 2.4 inches, salted at 4:20 with 450 lb, photos at both times, and weather station data showing no further accumulation until 9 a.m. The claimant's attorney withdraws the demand two weeks later (illustrative outcome).*
 
-**Kill criterion.** If no carrier offers measurable pricing credit for Rootline data within 4 quarters of [V2], keep referral quotes and the snow defense file and drop data-priced products.
+**Kill criterion.** If no carrier offers measurable pricing credit for Rootline data within 4 quarters of referral quotes going live, keep referral quotes and the snow defense file and drop data-priced products.
 
 > **Competitive edge (M-16 to M-18).** Incumbents' fintech is bolted to their own payments rail: Jobber's financing and instant payouts come through its Stripe partnership, and payouts are "at Jobber's discretion" ([ACHR News](https://www.achrnews.com/articles/143559-jobber-partners-with-stripe-to-activate-financing-and-instant-payouts-for-home-service-businesses), [Jobber Help](https://help.getjobber.com/en/articles/instant-payouts/)); Housecall Pro sells Wisetack consumer financing and 1% Instapay through its own payments product ([R4](research/R4-industry-payments-accounting.md)); LMN Pay and Service Autopilot's processing are vendor-controlled ([R4](research/R4-industry-payments-accounting.md)). None of them keeps the books, so a lender still sees bank deposits and a tax return. Rootline's offer is different in two ways that are hard to copy. The underwriting evidence is a **reconciled double-entry Ledger plus contracted Service Agreement backlog**, not deposit history. And because money always flows through the Company's own Stripe account and bank, accepting a loan or a policy never deepens lock-in: the Company can leave Rootline and keep its lender, its insurer and its payment history.
 
@@ -1277,7 +1277,7 @@ Common guardrails for M-16 to M-18:
 
 **Headline demo.** *An owner types into Claude on her laptop: "Using Rootline, list every commercial property where we installed boxwood in the last 3 years, then use the distributor connector to price replacing 8 percent of them as a boxwood-blight allowance." (The distributor connector is hypothetical.) Two MCP servers, one permission model, and a draft Proposal batch waiting in her Approval Inbox.*
 
-**Kill criterion.** If fewer than 20 third-party apps or connectors are live 12 months after [V2], shift effort to first-party integrations and keep the API and MCP server.
+**Kill criterion.** If fewer than 20 third-party apps or connectors are live 12 months after the marketplace opens, shift effort to first-party integrations and keep the API and MCP server.
 
 > **Competitive edge.** Jobber runs an App Marketplace on a public GraphQL API ([R1](research/R1-field-service-platforms.md)), including third-party AI apps such as an AI dispatcher ([Jobber community](https://community.getjobber.com/discussions/operations-forum/just-launched-in-the-app-marketplace-an-ai-dispatcher-that-books-right-into-your/15079)), and Aspire and ServiceTitan run partner marketplaces ([Aspire marketplace](https://marketplace.youraspire.com/partners/implementation-services?taxon_id=8)). These are app stores *around* a closed AI. Rootline's difference is **parity and direction**: every in-app capability is the same typed tool through the API and MCP server with the same permission checks ([17](17-ai-copilot-automation.md) section 1.3, design principle 1), and Rootline's own agents can call vetted external MCP servers (a distributor's catalog, an OEM's robots). A landscape company can bring its own AI assistant to its Rootline data on day one of [V1].
 
@@ -1313,7 +1313,7 @@ Common guardrails for M-16 to M-18:
 
 **Headline demo.** *A franchisor's COO opens the system dashboard: 84 locations, March royalties computed from posted Ledger revenue (no self-reporting), a new spring aeration promo template pushed to all locations at 9 a.m., and 11 locations whose close rate on aeration upsells sits in the bottom quartile, each with a coaching task assigned.*
 
-**Kill criterion.** If no franchisor with 20 or more locations signs within 4 quarters of the [V2] launch, keep the multi-brand template and pause franchisor-specific features.
+**Kill criterion.** If no franchisor with 20 or more locations signs within 4 quarters of franchise mode going live, keep the multi-brand template and pause franchisor-specific features.
 
 > **Competitive edge.** Aspire models branches and divisions inside one company, with branch-level reporting and branch-to-branch subcontract workflows ([Aspire docs](https://guide.youraspire.com/docs/building-your-organization-in-aspire), [branch-to-branch work](https://guide.youraspire.com/docs/workflow-for-managing-branch-to-branch-subcontract-work), via [02](02-personas-roles-permissions.md)). That suits one owner with many locations, not a franchisor and independent franchisees who are separate legal entities with their own books and payment accounts. Franchisors in lawn care today typically collect royalties from self-reported sales or from exports out of each franchisee's QuickBooks (general industry practice; verify with design partners). Rootline computes royalties from each franchisee's own closed Ledger, while the franchisee keeps its own Stripe account, its own Clients and a recorded, revocable data-sharing agreement.
 
@@ -1418,9 +1418,9 @@ Common guardrails for M-16 to M-18:
 
 **Builds on.** The curation model and tooling ([12](12-plant-knowledge-base.md), [19](19-platform-admin-portal.md)), metric-first UX ([21](21-ux-design-system-sitemaps.md)), the Xero integration ([09](09-accounting-ledger-integrations.md)) and BYO Stripe ([08](08-payments-stripe.md)).
 
-**Dependencies.** Regional curators hired before launch; a VAT/GST tax engine; local payroll partners; Stripe availability per country (verify); data residency options ([20](20-architecture-security.md)).
+**Dependencies.** Regional curation in place before launch; a VAT/GST tax engine; local payroll partners; Stripe availability per country (verify); data residency options ([20](20-architecture-security.md)).
 
-**Phasing.** [V3]: one pilot market first, and a second 12 months later if the readiness gate holds.
+**Phasing.** [V3]: one pilot market first, and a second only after the first meets the readiness gate and kill criterion below.
 
 **Readiness.** TRL 7 technically, because the platform already handles metric units and multiple currencies. Curation capacity and local integrations are the constraint.
 
@@ -1687,7 +1687,7 @@ flowchart TD
 
 ### 5.11 Innovation stage gates in the Platform Admin console (all bets)
 
-Each bet is an `innovation_flag` record (section 7.4) that moves through the stages in section 4.3. `platform_owner` approves every promotion at the quarterly Innovation review. Any kill rule firing moves the bet to `shelved` automatically pending review; rails stay in production regardless.
+Each bet is an `innovation_flag` record (section 7.4) that moves through the stages in section 4.3. `platform_owner` approves every promotion at the Innovation review. Any kill rule firing moves the bet to `shelved` automatically pending review; rails stay in production regardless.
 
 ```mermaid
 stateDiagram-v2
@@ -2525,7 +2525,7 @@ Physical-world AI fails in ways chat AI does not: snow hides the twin, leaf-off 
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| **Focus dilution:** moonshots starve the core | High | High | Cap moonshot capacity at about 15% of engineering until V1 GA, 25% thereafter. Stage gates. Kill rules |
+| **Focus dilution:** moonshots starve the core | High | High | Rails before bets: MVP and V1 carry the rails and only the sales-accelerating first slices (M-09, M-10); everything else waits for promotion through the stage gates (4.3). Kill rules |
 | **Tenant trust erosion** from network features (marketplace, homeowner app) | Medium | Very high | Client-of-record protection, no poaching, opt-ins, transparent fees, an owner-facing "what we share" page |
 | **Partner dependency** (OEMs, lenders, video models) | Medium | Medium | Adapter pattern, at least two partners per category before GA, exit clauses |
 | **Data volume too thin** for M-22 and M-29 | Medium | Medium | Thresholds and fallbacks. Launch Region by Region where density exists |
@@ -2544,8 +2544,8 @@ Physical-world AI fails in ways chat AI does not: snow hides the twin, leaf-off 
 
 | Metric | Definition | Target (estimate) |
 |---|---|---|
-| Moonshot adoption | Share of paying Companies using at least one GA moonshot capability monthly | 30% by end of V2, 60% by 2031 |
-| New-line revenue share | Revenue from lines other than subscription seats (credits, marketplace, partner fees, add-ons) | 20% of total revenue by 2031 |
+| Moonshot adoption | Share of paying Companies using at least one GA moonshot capability monthly | 30% once the [V2] bets are live, 60% in the end state (section 16) |
+| New-line revenue share | Revenue from lines other than subscription seats (credits, marketplace, partner fees, add-ons) | 20% of total revenue in the end state (section 16) |
 | Moat depth: registered evidence | Station-matched photos per maintained Property per season | ≥ 8 |
 | Moat depth: plant outcomes | Share of installed plant instances with a 12-month outcome recorded | ≥ 70% |
 | Moat depth: data-sharing opt-in | Share of eligible Companies holding the `peer_benchmarks` consent scope ([18](18-reporting-analytics.md) section 4.11.1) | ≥ 50% |
@@ -2584,7 +2584,7 @@ Physical-world AI fails in ways chat AI does not: snow hides the twin, leaf-off 
 | M-26 Community | ≥ 15% of owners monthly active; ≥ 500 template imports per quarter; antitrust moderation flags reviewed within 24 hours |
 | M-27 Wildfire | ≥ 1 inspection sold per 50 residential Clients per year in WUI Regions; insurer accepts the report format in ≥ 1 pilot |
 | M-28 Stormwater | ≥ 5% of tenants in program cities use the calculator; ≥ 50% of credited features carry an O&M Service Agreement |
-| M-29 Plant science | ≥ 70% of plant instances get a 12-month outcome; ≥ 3 Regions reach Evidence Score thresholds within 2 years of [V2] |
+| M-29 Plant science | ≥ 70% of plant instances get a 12-month outcome; ≥ 3 Regions reach Evidence Score thresholds within 2 years of Evidence Scores going live |
 | M-30 Density engine | Campaign cost per acquired Client ≤ the Company's average; `revenue_per_crew_day` ([18](18-reporting-analytics.md) section 4.3.3) +5% on targeted routes and service days |
 | M-31 Heat-safe crews | 100% of high-heat days have an approved heat plan action by 8 p.m. the day before; heat-related first-aid events down vs prior season (tenant-reported) |
 | M-32 Rootline Grounds | 2 campus pilots convert to paid contracts; ≥ 80% of work orders closed in the crew app |
@@ -2620,7 +2620,7 @@ These are smaller or stranger ideas that did not make the 33-bet portfolio but a
 
 ## 14. Open questions
 
-1. **Capacity split.** Is 15% of engineering for moonshots before V1 GA the right cap, or should the first 18 months be 100% core? (Recommendation: rails yes, bets no, except M-10 and M-09 [V1] slices, which help sell.)
+1. **Rails versus bets in early scope.** Should [MVP] and [V1] carry only the core modules and the rails, or also first slices of bets? (Recommendation: rails yes, bets no, except the M-10 and M-09 [V1] slices, which help sell.)
 2. **Robot partnerships.** Which OEM is the first adapter: the one with the most open API, or the one with the largest installed base among our design partners? Should Rootline resell robots-as-a-service to Companies, or stay purely software?
 3. **Rootline Home branding.** Does a consumer-facing Rootline brand conflict with white-label promises to Companies? Option: co-branded "Powered by Rootline", with the Company's brand dominant inside My Pros.
 4. **Passport contribution default.** Should "basic" contribution be on by default for new tenants (more network value) or off (more caution)? Legal and tenant interviews needed.
@@ -2643,7 +2643,7 @@ These are smaller or stranger ideas that did not make the 33-bet portfolio but a
 
 ### 15.1 The 2 x 2
 
-Scores come from section 4.4 (impact and effort, 1-5; estimates). "Quick wins" are high impact and low-to-medium effort. "Big bets" are high impact and high effort. "Fill-ins" are lower impact and low effort. "Question marks" are lower impact and high effort.
+Scores come from section 4.4 (impact and effort, 1-5; estimates; effort is relative complexity, not time). "Quick wins" are high impact and low-to-medium effort. "Big bets" are high impact and high effort. "Fill-ins" are lower impact and low effort. "Question marks" are lower impact and high effort.
 
 ```text
                                    EFFORT
@@ -2678,7 +2678,8 @@ Scores come from section 4.4 (impact and effort, 1-5; estimates). "Quick wins" a
             |  M-32 Rootline Grounds        3/3  |                                    |
             +------------------------------------+------------------------------------+
    * M-10 sits in Quick Wins despite impact 3: it unlocks close-rate lift in the
-     arid-West beachhead markets and nonfunctional-turf deadlines (strategic override).
+     arid-West markets (a possible Wave 3 candidate) and nonfunctional-turf
+     deadlines (strategic override).
 ```
 
 ### 15.2 Weighted ranking (all 33 bets)
@@ -2721,7 +2722,7 @@ Score = (Impact x Confidence) / Effort. Confidence (0.5-1.0) reflects technical 
 | 32 | M-33 Rootline Global | 3 | 4 | 0.6 | 0.45 | New markets | [V3] |
 | 33 | M-18 Embedded insurance | 3 | 4 | 0.5 | 0.38 | New revenue, licensing-heavy | [V2] referral quotes |
 
-**Reading the ranking.** Cheap compliance and sales accelerators (M-09, M-10, M-31, M-25) belong in V1 because they help sell and retain from day one. The four **moat builders** (M-01, M-13, M-14, M-29) score lower because they are expensive and slow, but they are the reason Rootline's lead widens over time. Fund their rails at MVP and V1 regardless of score, and fund their full bets as soon as Wave 1 is stable.
+**Reading the ranking.** Cheap compliance and sales accelerators (M-09, M-10, M-31, M-25) belong in V1 because they help sell and retain from day one. The four **moat builders** (M-01, M-13, M-14, M-29) score lower because they are expensive and slow, but they are the reason Rootline's lead widens over time. Fund their rails at MVP and V1 regardless of score, and fund their full bets as soon as the MVP and V1 core is stable.
 
 ### 15.3 Sequencing waves
 

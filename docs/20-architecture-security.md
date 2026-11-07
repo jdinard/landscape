@@ -10,7 +10,7 @@
 - **Decision - money:** bring-your-own Stripe through Connect direct charges on each Company's own account (restricted-key "advanced mode" as the secondary path), Rootline's SaaS billing on a separate Stripe account, PCI SAQ-A scope by design, and a built-in double-entry ledger whose invariants the database enforces.
 - **Decision - field durability:** SQLite on the device and a bucket-based pull/push sync protocol Rootline owns. Field mutations are never lost and never refused for billing reasons.
 - **Decision - AI:** one AI Gateway for every model call (Claude family for reasoning, image models chosen per task), with task routing, per-tenant budgets, 100% metering in AI credits and no training on customer data.
-- **MVP:** the monolith and satellites in `prod-us` (Ohio primary, Oregon DR), public REST API for core objects with OpenAPI 3.1 and signed webhooks, Postgres FTS + pgvector search, 99.9% core API availability, SOC 2 Type I within 6 months of GA. **V1:** Canadian stack, MSK, OpenSearch, OAuth apps and the MCP server, full API surface and daily quotas, SOC 2 Type II, 99.95% availability. **V2:** dedicated database cells and tenant moves; public GraphQL reconsidered.
+- **MVP:** the monolith and satellites in `prod-us` (Ohio primary, Oregon DR), public REST API for core objects with OpenAPI 3.1 and signed webhooks, Postgres FTS + pgvector search, 99.9% core API availability, SOC 2 Type I. **V1:** Canadian stack, MSK, OpenSearch, OAuth apps and the MCP server, full API surface and daily quotas, SOC 2 Type II, 99.95% availability. **V2:** dedicated database cells and tenant moves; public GraphQL reconsidered.
 - **Differentiators:** zero cross-tenant exposure by design, an open API and event catalog with flat, published rate limits, offline depth that covers the whole visit (time, photos, chemical logs), and a vendor-continuity escrow export.
 - **Cross-links:** roles in [02](02-personas-roles-permissions.md); tenant lifecycle names in [19](19-platform-admin-portal.md) (enforced here in [4.4.7](#447-tenant-lifecycle-and-access-enforcement-mvp)); payments contracts in [08](08-payments-stripe.md); posting rules in [09](09-accounting-ledger-integrations.md); AI credits in [17](17-ai-copilot-automation.md) and [22](22-business-model-pricing-gtm.md); the canonical ERD in [section 7.2](#72-canonical-cross-domain-erd); decisions in [Appendix A](#appendix-a-architecture-decision-records-adrs).
 
@@ -57,12 +57,12 @@ Every goal below has a number so engineering can be held to it. Targets are **de
 | G8 | **Openness** | 100% of user-visible objects reachable via the public API. Every state change is emitted as an event/webhook | Integrators and power users were burned by closed platforms | [MVP] (core) / [V1] (full) |
 | G9 | **Cost efficiency** | Infra COGS (excluding AI, SMS, maps pass-through) < $20 per Company per month at 10k Companies (estimate) | Pricing has to work for a 2-truck lawn company (see [Business model](22-business-model-pricing-gtm.md)) | [V1] |
 | G10 | **Evolvability** | Any module can be extracted into a service without changing its public contract. Schema changes ship with zero downtime | We will be wrong about boundaries. We need to change them cheaply | [MVP] |
-| G11 | **Security assurance** | SOC 2 Type I within 6 months of MVP GA, Type II within 15 months. OWASP ASVS Level 2 baseline, Level 3 for auth, payments, ledger and admin | Commercial property managers and HOAs send security questionnaires | [MVP]/[V1] |
+| G11 | **Security assurance** | SOC 2 Type I at MVP, Type II at V1 after its observation period. OWASP ASVS Level 2 baseline, Level 3 for auth, payments, ledger and admin | Commercial property managers and HOAs send security questionnaires | [MVP]/[V1] |
 | G12 | **AI safety and cost control** | All model calls pass through the AI Gateway. 100% metered in AI credits. Per-tenant budgets. No training on customer data | AI is a margin risk and a trust risk if ungoverned | [MVP] |
 
 ### 1.2 Non-goals
 
-- **No microservices-first architecture.** We will not start with 30 services, a service mesh and distributed transactions. A 15-25 engineer team cannot operate that well, and the domain (estimates, jobs, invoices, ledger) needs transactional consistency.
+- **No microservices-first architecture.** We will not start with 30 services, a service mesh and distributed transactions. A small engineering team cannot operate that well, and the domain (estimates, jobs, invoices, ledger) needs transactional consistency.
 - **No custom card-data handling.** Card numbers never touch Rootline servers. Card capture is Stripe Elements, Payment Element, Checkout and Terminal SDKs only (see [Payments](08-payments-stripe.md)).
 - **No holding of client funds.** Rootline is never a money transmitter or payment facilitator. Funds flow client to the Company's own Stripe account.
 - **No public GraphQL API at MVP.** REST + OpenAPI + webhooks first. GraphQL is reconsidered at V2 (see ADR-009).
@@ -1089,7 +1089,7 @@ Service control policies deny resource creation outside approved regions per acc
 | `preview` | Per-PR ephemeral web + API stack against a shared dev database with a per-PR schema clone | Synthetic | Test mode | Every PR (auto-destroyed on merge) |
 | `dev` | Integration of `main` | Synthetic | Test mode | Every merge to `main` |
 | `staging` | Production-like topology, release candidate validation, migration rehearsal | Synthetic + anonymized production-shaped data (never raw PII) | Test mode | Release candidate |
-| `perf` | On-demand load tests at year-3 scale | Synthetic at 10k-tenant scale | Mocks with recorded latencies | Manual / weekly |
+| `perf` | On-demand load tests at planning scale (4.27) | Synthetic at 10k-tenant scale | Mocks with recorded latencies | Manual / weekly |
 | `sandbox` | Public developer sandbox tenants | Synthetic per developer | Stripe test mode | Same release as prod |
 | `prod-us`, `prod-ca` | Production | Real | Live | Canary → progressive |
 | `dr-us`, `dr-ca` | Warm standby (Aurora secondary, scaled-down compute) | Replica | Live (dormant) | With prod |
@@ -1117,7 +1117,7 @@ Service control policies deny resource creation outside approved regions per acc
 
 - **Synthetic monitoring:** canary tenants run critical journeys every 5 minutes per region: log in, create a client, schedule a visit, complete via the sync API, issue an invoice, pay with a Stripe test card in the sandbox, and check the webhook arrives.
 - **Status page** per region and per component, with incident updates and subscribe-by-email/SMS. Tenants affected by a cell-level incident are notified in-app [MVP].
-- **On-call:** follow-the-sun is unrealistic at MVP. A single rotation of 6-8 engineers with a 15 min page acknowledgement SLA for SEV1, plus a **seasonal surge rota** in March-May (spring start-up) and on first-snow days.
+- **On-call:** follow-the-sun is unrealistic at MVP. A single on-call rotation with a 15 min page acknowledgement SLA for SEV1, plus a **seasonal surge rota** in March-May (spring start-up) and on first-snow days.
 
 ### 4.24 Security architecture [MVP → V1]
 
@@ -1199,7 +1199,7 @@ Modes, durations and approvers below are those defined in [02](02-personas-roles
 | DAST | Authenticated DAST (ZAP-class) nightly against staging with seeded tenants | [V1] |
 | Container and IaC scanning | Trivy (images), Checkov (Terraform). Base images rebuilt weekly | [MVP] |
 | SBOM and signing | Syft SBOM per image. Cosign signatures verified at deploy (admission check in the deploy pipeline) | [V1] |
-| Pen testing | Third-party pen test before GA (web, API, mobile, tenant isolation), then annually and before major launches. Separate test for the Platform Admin console | [MVP] |
+| Pen testing | Third-party pen test before the first sellable release (web, API, mobile, tenant isolation), then annually and before major launches. Separate test for the Platform Admin console | [MVP] |
 | Bug bounty | Private program at V1, public at V2 | [V1] |
 | Vulnerability SLAs | Critical: 7 days, High: 30 days, Medium: 90 days, tracked as SOC 2 evidence | [MVP] |
 | Security headers | CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, COOP/COEP where compatible | [MVP] |
@@ -1299,9 +1299,9 @@ Retention is executed by a nightly `RetentionWorkflow` per tenant per data class
 
 ### 4.27 Scalability targets and capacity math [MVP] (planning model, revalidated before each phase)
 
-All numbers are **planning estimates** for a year-3 scenario, to be revalidated with real usage. They show which components need attention, not commitments.
+All numbers are **planning estimates** for a 10,000-Company scenario, to be revalidated with real usage. They show which components need attention, not commitments.
 
-**Assumptions (year 3):**
+**Assumptions (10,000-Company scenario):**
 
 | Driver | Assumption | Derived |
 |---|---|---|
@@ -1321,7 +1321,7 @@ All numbers are **planning estimates** for a year-3 scenario, to be revalidated 
 | GPS ingest | 60k devices ÷ 30 s = 2,000 points/s; ~900 points/device/day ≈ 54M/day ≈ 5 GB/day raw | **5,000 points/s**; ~500 GB hot (90 days) |
 | API requests | Web: ~25k concurrent office users × 0.2 req/s = 5k/s; sync: 60k devices ≈ 1.5k/s; portal: ~10k concurrent clients × 0.2 = 2k/s; public API/integrations ≈ 1k/s | **~10k req/s peak, provisioned for 20k** (≈ 30-60 API tasks at 2 vCPU, to be confirmed by load test) |
 | OLTP writes | ~3k transactions/s across cells at peak | ~600-900 TPS per US cell writer; well inside a large Aurora instance class (load-test to confirm) |
-| OLTP storage | Visits ~1 KB/row with indexes (60 GB/yr), journal lines (~250M/yr ≈ 100 GB/yr with indexes), plus other modules | ~2-3 TB total OLTP by year 3 across cells (audit and telemetry stored separately) |
+| OLTP storage | Visits ~1 KB/row with indexes (60 GB/yr), journal lines (~250M/yr ≈ 100 GB/yr with indexes), plus other modules | ~2-3 TB total OLTP at that scale across cells (audit and telemetry stored separately) |
 | Domain events | ~3B/year ≈ 100/s average, ~1.5k/s peak | Comfortable for SNS/SQS; MSK at V1 for replay |
 | Outbound webhooks | ~30% of tenants subscribe; ~200 deliveries/s peak | 500/s delivery capacity |
 | LLM calls | ~1M requests/day in peak season; avg 3k input tokens (≈ 60% cached on Sonnet/Opus tiers) + 400 output; mix 70% Haiku-tier, 25% Sonnet-tier, 5% Opus-tier | At list prices as of Nov 2026 ($0.10/$0.50, $2/$10, $4/$20 per million input/output tokens for the current Haiku, Sonnet and Opus tiers; verify), ≈ **$2.7k/day ≈ $80k/month in peak season, about $8 per Company per month** (Haiku ≈ $350/day, Sonnet ≈ $1,690, Opus ≈ $660; cached input priced at $0.20 per million tokens). **Caveats that push this up:** current models think adaptively and bill thinking as output. With 400 visible output tokens, 600 thinking tokens per Sonnet/Opus call would raise those tiers' output cost about 2.5× (≈ +$2.1k/day), so routes pin `effort` (4.13). Cache writes also carry a premium over base input. Budget 1.5-2× this figure until real telemetry exists (estimate). This is why task routing and credits matter, and it is consistent with the 2,000 included credits per month on Grow ([22](22-business-model-pricing-gtm.md)) |
@@ -1385,27 +1385,27 @@ Budgets are enforced in CI where possible (bundle size checks, Lighthouse CI on 
 - **Pipeline:** lint/typecheck → unit/property → integration (Testcontainers) → contract → build once (container image, signed, SBOM) → deploy to `dev` → E2E smoke → `staging` → **production canary cell** (internal tenants + opted-in beta tenants) for 30 min with automated SLO comparison → progressive rollout across cells → done. Automated rollback on burn-rate alerts.
 - **Database migrations:** expand/contract only. Every migration must be backward compatible with the previous app version. `lock_timeout = 5s` and `statement_timeout` are applied in migrations. Large backfills run as throttled Temporal batch workflows, never inside the migration. Migrations roll out **cell by cell** behind the same canary.
 - **Mobile releases:** EAS Build for store binaries every 2 weeks (staged rollout 10% → 50% → 100%). **EAS Update** for JS-only fixes, constrained by runtime version so native-incompatible updates never ship. The sync API's minimum protocol version enforces upgrades without stranding offline data (4.11.4).
-- **Release cadence:** web/API continuously (target ≥ 10 production deploys/day by V1). Customer-visible feature releases announced in a monthly changelog. **Change freeze windows** during the first week of April (spring start-up) and on declared snow-event days, except fixes.
+- **Release cadence:** web/API continuously (target ≥ 10 production deploys/day). Customer-visible feature releases announced in a monthly changelog. **Change freeze windows** during the first week of April (spring start-up) and on declared snow-event days, except fixes.
 - **DORA targets:** deploy frequency multiple times/day, lead time < 1 day, change failure rate < 10%, time to restore < 1 h.
 
-### 4.31 Team topology [MVP → V2]
+<a id="431-team-topology-mvp--v2"></a>
+### 4.31 Module ownership boundaries [MVP]
 
-Teams follow Team Topologies: **stream-aligned teams** own bounded contexts end to end (web, mobile, API, data, on-call). A **platform team** provides paved roads. **Complicated-subsystem teams** own solvers and ML. **Enabling teams** raise capability in security and AI.
+Ownership follows Team Topologies: **stream-aligned** owners hold bounded contexts end to end (web, mobile, API, data, on-call). A **platform** owner provides paved roads. **Complicated-subsystem** owners hold solvers and ML. **Enabling** owners raise capability in security and AI. The boundaries below are about who owns which modules and seams; they say nothing about team size.
 
-| Team | Type | Owns (modules) | MVP size | V1 size | V2 size |
+| Owner | Type | Owns (modules) | Spec docs | Publishes (event examples) | On-call scope |
 |---|---|---|---|---|---|
-| Sales and CRM | Stream-aligned | `crm`, `sales`, `catalog` | 3 | 5 | 7 |
-| Operations and Field | Stream-aligned | `ops`, `field`, `people`, crew app | 4 | 7 | 9 |
-| Money | Stream-aligned | `billing`, `payments`, `ledger`, `integrations` (accounting connectors) | 4 | 6 | 9 |
-| Design and Plants | Stream-aligned | `design`, `mockup`, `kb` | 3 | 6 | 8 |
-| Client Experience and Growth | Stream-aligned | `portal`, `growth`, `comms` | 2 | 5 | 7 |
-| Platform | Platform | `iam`, `tenancy`, `platform`, `audit`, infra, CI/CD, sync engine core, observability, data platform | 3 | 6 | 9 |
-| Routing and Geo | Complicated subsystem | Optimizer, geo services | 1 (shared) | 2 | 3 |
-| AI and ML | Complicated subsystem + enabling | AI Gateway, GPU orchestration, evals, vision models | 2 | 4 | 6 |
-| Security and Compliance | Enabling | AppSec program, SOC 2, privacy engineering | 1 | 2 | 3 |
-| **Total engineers (estimate)** | | | **~23** | **~43** | **~61** |
+| Sales and CRM | Stream-aligned | `crm`, `sales`, `catalog` | [03](03-crm-sales-estimating-proposals.md) | `client.created`, `proposal.accepted` | Proposal send, e-sign, price book |
+| Operations and Field | Stream-aligned | `ops`, `field`, `people`, crew app | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md), [15](15-team-hr-payroll.md) | `visit.completed`, `timesheet.approved` | Dispatch board, sync API, crew app releases |
+| Money | Stream-aligned | `billing`, `payments`, `ledger`, `integrations` (accounting connectors) | [07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md) | `invoice.issued`, `payment.succeeded`, `journal_entry.posted` | Stripe webhooks, invoice runs, ledger posting, accounting sync |
+| Design and Plants | Stream-aligned | `design`, `mockup`, `kb` | [10](10-design-studio.md), [11](11-ai-design-mockups.md), [12](12-plant-knowledge-base.md) | `design.version_published`, `mockup.generated`, `kb.release_published` | Design editor, mockup pipeline, KB releases |
+| Client Experience and Growth | Stream-aligned | `portal`, `growth`, `comms` | [06](06-customer-portal.md), [16](16-marketing-growth-communications.md) | `client_request.submitted`, `booking.created`, `message.delivered` | Client portal, message delivery, 10DLC |
+| Platform | Platform | `iam`, `tenancy`, `platform`, `audit`, infra, CI/CD, sync engine core, observability, data platform | [02](02-personas-roles-permissions.md), [19](19-platform-admin-portal.md), this doc | `tenant.provisioned`, `user.invited` | Cells, auth, CI/CD, sync engine core |
+| Routing and Geo | Complicated subsystem | Optimizer, geo services | [04](04-scheduling-dispatch-routing.md), section 4.17 | `route.optimized` (through `ops`) | Optimizer solve queue, geocoding |
+| AI and ML | Complicated subsystem + enabling | AI Gateway, GPU orchestration, evals, vision models | [17](17-ai-copilot-automation.md), [11](11-ai-design-mockups.md), sections 4.13-4.14 | `ai.credit_threshold_reached` | AI Gateway, GPU lanes, model routing |
+| Security and Compliance | Enabling | AppSec program, SOC 2, privacy engineering | Sections 4.24-4.25, [19](19-platform-admin-portal.md) | None (consumes the audit trail) | Security incidents, breach clocks |
 
-Staffing and hiring sequence are in [Roadmap](24-roadmap-feature-catalog.md). Each team owns its on-call, SLOs and cost dashboards. Architecture decisions affecting more than one team go through a lightweight **ADR review** (async, 48 h comment window, final call by the tech lead group).
+Each owner holds its on-call, SLOs and cost dashboards. Architecture decisions affecting more than one team go through a lightweight **ADR review** (async, 48 h comment window, final call by the tech lead group).
 
 ---
 
@@ -2677,24 +2677,24 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 
 | # | Question | Options | Owner | Needed by |
 |---|---|---|---|---|
-| Q1 | Offline sync: adopt PowerSync for the read path or build fully in-house? | PowerSync self-hosted / fully custom | Platform lead | MVP month 2 |
+| Q1 | Offline sync: adopt PowerSync for the read path or build fully in-house? | PowerSync self-hosted / fully custom | Platform lead | MVP (early) |
 | Q2 | Event bus timing: introduce MSK at V1 or stay on SNS/SQS + CDC directly into the lake? | MSK / Kinesis / SNS+SQS only | Platform lead | V1 planning |
 | Q3 | Canadian DR region readiness: are all required services (Aurora Global Database, ElastiCache, OpenSearch, Temporal Cloud) available in ca-west-1 and in a Canadian Temporal region? | Calgary DR / snapshot-only DR within Canada | Platform + legal | Before CA launch |
-| Q4 | Connection pooling: RDS Proxy (verify pinning with `set_config`) vs PgBouncer vs app pools only | Spike | Platform | MVP month 1 |
+| Q4 | Connection pooling: RDS Proxy (verify pinning with `set_config`) vs PgBouncer vs app pools only | Spike | Platform | MVP (early) |
 | Q5 | Default for cross-border AI processing for Canadian tenants (especially Quebec) | Off by default / on with disclosure / per feature | Legal + product | Before CA launch |
 | Q6 | Identity broker for SSO/SCIM: vendor vs self-hosted, given residency | Vendor broker / self-hosted SAML broker | Security lead | V1 |
-| Q7 | Observability vendor at projected span volume | Grafana Cloud / Datadog / self-hosted | Platform | MVP month 1 |
-| Q8 | Custom domains at scale for portals and websites: CloudFront multi-tenant features vs a dedicated managed-certificate edge | Spike both | Platform | MVP month 3 |
-| Q9 | Should the ledger be the default book of record for new tenants, or opt-in until V1 maturity? | **Resolved:** the ledger engine runs for every tenant from MVP and the built-in GL is the default book of record (`ledger_mode = native`); QuickBooks or Xero as book of record (`external_sync`) is an onboarding choice per legal entity ([09](09-accounting-ledger-integrations.md) 4.17.1) | Product + Money team | MVP GA |
-| Q10 | GPU strategy break-even and vendor (serverless GPU vendors vs EKS) | Measure at 6 months post-MVP | AI lead | V1 |
-| Q11 | Policy engine: Cedar (WASM) performance at 1k decisions/s per task | Benchmark | Platform | MVP month 1 |
+| Q7 | Observability vendor at projected span volume | Grafana Cloud / Datadog / self-hosted | Platform | MVP (early) |
+| Q8 | Custom domains at scale for portals and websites: CloudFront multi-tenant features vs a dedicated managed-certificate edge | Spike both | Platform | MVP (early) |
+| Q9 | Should the ledger be the default book of record for new tenants, or opt-in until V1 maturity? | **Resolved:** the ledger engine runs for every tenant from MVP and the built-in GL is the default book of record (`ledger_mode = native`); QuickBooks or Xero as book of record (`external_sync`) is an onboarding choice per legal entity ([09](09-accounting-ledger-integrations.md) 4.17.1) | Product + Money team | MVP |
+| Q10 | GPU strategy break-even and vendor (serverless GPU vendors vs EKS) | Measure on real MVP usage | AI lead | V1 |
+| Q11 | Policy engine: Cedar (WASM) performance at 1k decisions/s per task | Benchmark | Platform | MVP (early) |
 | Q12 | Do we offer a public GraphQL API at V2 for partners building rich UIs? | REST-only / GraphQL read-only | API lead | V2 |
-| Q13 | Accounting provider API metering: how do current Intuit and Xero developer terms (call fees, tiers) affect sync design and pricing? | Research + vendor talks (see R4); sizes the cost governor in 4.8 | Money team | MVP GA |
-| Q14 | When does Rootline move new connected accounts to Stripe Accounts v2 (and the `/webhooks/stripe/v2` thin-event path) versus v1 controller properties? | v2 at MVP where enabled / v1 at MVP then migrate (see [08](08-payments-stripe.md)) | Money team | MVP month 2 |
+| Q13 | Accounting provider API metering: how do current Intuit and Xero developer terms (call fees, tiers) affect sync design and pricing? | Research + vendor talks (see R4); sizes the cost governor in 4.8 | Money team | MVP |
+| Q14 | When does Rootline move new connected accounts to Stripe Accounts v2 (and the `/webhooks/stripe/v2` thin-event path) versus v1 controller properties? | v2 at MVP where enabled / v1 at MVP then migrate (see [08](08-payments-stripe.md)) | Money team | MVP (early) |
 | Q15 | Does each Claude model tier in the AI Gateway registry offer a **Canadian** inference geography (Claude API `inference_geo` or Amazon Bedrock in ca-central-1)? Which image models can run in Canada? | Per-task matrix; disable or disclose where none exists | AI lead + legal | Before CA launch |
-| Q16 | Who maintains the per-jurisdiction quiet-hours and messaging-cap table (4.16), and how often is it reviewed? | Outside counsel annually + compliance-feed vendor | Security and Compliance + legal | MVP GA |
+| Q16 | Who maintains the per-jurisdiction quiet-hours and messaging-cap table (4.16), and how often is it reviewed? | Outside counsel annually + compliance-feed vendor | Security and Compliance + legal | MVP |
 | Q17 | Escrow agent and legal structure for the vendor-continuity escrow (Section 13, idea 15) | Software escrow agent / trust structure | `platform_owner` + legal | V1 |
-| Q18 | Device-key offline lease length (4.11.1): 14 days is a guess for the cryptographic backstop behind the 7-day working grace in [02](02-personas-roles-permissions.md) section 5.16. It trades revoked-device exposure against seasonal workers whose phones sit idle | 7 / 14 / 30 days, per-tenant setting with a ceiling, never shorter than the 7-day grace | Platform + Operations and Field | MVP month 2 |
+| Q18 | Device-key offline lease length (4.11.1): 14 days is a guess for the cryptographic backstop behind the 7-day working grace in [02](02-personas-roles-permissions.md) section 5.16. It trades revoked-device exposure against seasonal workers whose phones sit idle | 7 / 14 / 30 days, per-tenant setting with a ceiling, never shorter than the 7-day grace | Platform + Operations and Field | MVP (early) |
 
 ---
 

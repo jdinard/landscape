@@ -52,7 +52,7 @@
 | G5 | **Win disputes by default.** Signed proposals, GPS-stamped visit photos and completion records are assembled into dispute evidence automatically. | Evidence packet drafted within 10 minutes of `charge.dispute.created` for 100% of disputes. |
 | G6 | **Field-ready.** Crews collect payment and tips on a phone with Tap to Pay, in English or Spanish, without a separate app. | Field payment flow under 45 seconds from "Collect payment" to receipt. |
 | G7 | **Transparent economics.** A Company can see, per payout, exactly what Stripe charged and what (if anything) Rootline took. | Default Rootline processing markup: 0%. |
-| G8 | **Processor-portable architecture.** Stripe is the first adapter behind a provider abstraction; adding a second processor does not require rewriting invoicing, the portal or the ledger. | New-provider adapter estimated at under one quarter of one team's time. |
+| G8 | **Processor-portable architecture.** Stripe is the first adapter behind a provider abstraction; adding a second processor does not require rewriting invoicing, the portal or the ledger. | A second processor plugs in as a new adapter with no changes to invoicing, portal or ledger code; every adapter passes the same provider contract test suite. |
 
 ### 1.2 Non-goals
 
@@ -221,7 +221,7 @@ Scores: 5 = best for Rootline's strategy; criteria are equally weighted (doublin
 | Tax forms (1099-K) | Stripe files directly to Company as a direct Stripe user (verify for current year) (5) | Platform responsibility via Connect tax reporting (2) | Platform (2) | Stripe/Company (5) |
 | Regulatory exposure for Rootline | Lowest (5) | Higher: platform bears losses (2) | Highest (1) | Low, but key custody risk (3) |
 | Brand control of onboarding | Stripe-hosted or embedded onboarding (3) | Embedded/hosted (4) | Full (5) | None (2) |
-| Engineering effort | Medium (4) | Medium (4) | High (1) | Medium-high: per-account endpoints, scope checks (3) |
+| Integration complexity | Medium (4) | Medium (4) | High (1) | Medium-high: per-account endpoints, scope checks (3) |
 | **Total (of 75)** | **72** | **44** | **32** | **59** |
 
 #### 4.1.3 Recommendation
