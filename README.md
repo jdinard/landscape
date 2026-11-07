@@ -12,6 +12,8 @@ Rootline runs a landscape company in one system, from first photo to closed book
 
 An operator-curated, region-aware Plant Knowledge Base underpins design, estimating and client care.
 
+Rootline launches in one region, the **Great Lakes** (Ohio, Michigan, Chicagoland and Northwest Indiana, Southeast Wisconsin), and extends it across the border into Ontario's Golden Horseshoe at V1. Because Great Lakes crews plow in winter, the MVP includes **Snow Lite**: storm visit logs with GPS-stamped photos, per-push invoices and a per-site proof-of-service PDF, in every plan.
+
 ## Start here
 
 - **[Product design proposal](docs/README.md)**: the front door. It has the executive summary, the 10 big bets, personas, the surface map, the lead-to-cash-to-books flow, a map of every module doc, the business model, reading paths and the glossary.

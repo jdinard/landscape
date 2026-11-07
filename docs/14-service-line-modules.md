@@ -10,9 +10,9 @@
 - **Decision 3: this doc owns domain rules, not mechanics.** Jobs, Visits, routes and the Visit state machine are in [04](04-scheduling-dispatch-routing.md); capture UX in [05](05-field-crew-mobile-app.md); invoices in [07](07-invoicing-billing-contracts.md); posting rules in [09](09-accounting-ledger-integrations.md) (this module emits facts and never writes journal entries); materials, salt and subcontractor records in [13](13-operations-inventory-equipment.md); credentials in [15](15-team-hr-payroll.md).
 - **Decision 4: rounds become Visits only through the Round Planner.** Round instances (`planned` -> `window_open` -> `scheduled` -> `applied`) carry windows, notice gates and license requirements into the optimizer in [04](04-scheduling-dispatch-routing.md).
 - **Decision 5: snow is evidence-first.** The Storm Event Engine evaluates per-site triggers, bills eight pricing models against a named weather station of record and seals hash-manifested proof-of-service packets for slip-and-fall defense.
-- **MVP:** the framework, lawn and PHC programs with application records, irrigation (system inventory, seasonal services, repairs), install projects with an 811 gate that has no override, commercial grounds (SOW, audits, enhancement capture) and seasonal campaigns.
-- **Later:** [V1] snow and ice (first winter after MVP), backflow, smart irrigation, landscape lighting, holiday lighting, mosquito and pest, notification registries. [V2] tree care, advanced water budgets, automated storm creation. [V3] weather-indexed snow contracts.
-- **Packaging ([22](22-business-model-pricing-gtm.md) 4.2.1 and 4.5):** core lines on every plan. Snow and Ice is an add-on billed Nov-Mar only ($99/mo, $79/mo on annual plans) and included in Enterprise. Tree Care is a $59/mo add-on on Starter and Grow, included in Pro and Enterprise.
+- **MVP:** the framework, lawn and PHC programs with application records, irrigation (system inventory, seasonal services, repairs), install projects with an 811 gate that has no override, commercial grounds (SOW, audits, enhancement capture), seasonal campaigns and **Snow Lite** (storm visit logs with timestamped GPS photos, a priority-ordered snow site list, per-push and per-application invoices, a per-site PDF proof of service; section 4.3.0), because the launch region is the Great Lakes, where maintenance firms commonly plow in winter.
+- **Later:** [V1] the full Snow & Ice module (Storm Command Center, eight pricing models, subcontractor plowers, salt inventory, hash-sealed proof packets), backflow, smart irrigation, landscape lighting, holiday lighting, mosquito and pest, notification registries. [V2] tree care, advanced water budgets, automated storm creation. [V3] weather-indexed snow contracts.
+- **Packaging ([22](22-business-model-pricing-gtm.md) 4.2.1 and 4.5):** core lines on every plan. Snow Lite is included in every plan at no charge; the full Snow and Ice module is an add-on billed Nov-Mar only ($99/mo, $79/mo on annual plans) and included in Enterprise. Tree Care is a $59/mo add-on on Starter and Grow, included in Pro and Enterprise.
 - **Differentiators:** one platform for multi-line companies that today run 2-4 niche tools; cross-module rules (seeding-safe pre-emergents, rainfast irrigation holds, zone maps that protect heads during aeration); court-ready snow proof; the Company's own private-line as-builts shown at the dig gate.
 - **Key cross-links:** [06](06-customer-portal.md) (treatments log, snow service log, warranty claims), [12](12-plant-knowledge-base.md) (species, pests and Region profiles for PHC and trees), [17](17-ai-copilot-automation.md) (AI Gateway, agents), [18](18-reporting-analytics.md) (module KPIs), [02](02-personas-roles-permissions.md) (roles and field masking).
 
@@ -136,7 +136,7 @@ Plan names follow [22](22-business-model-pricing-gtm.md) section 4.2 (Starter, G
 | `irrigation` | Irrigation systems, seasonal services, repairs | Property Asset Registry | All plans (22) | MVP |
 | `backflow` | Backflow testing and municipal submission | `irrigation` | Grow, Pro, Enterprise (proposed) | V1 |
 | `smart_irrigation` | Smart controller integrations, water budgets, leak alerts | `irrigation` | Pro and Enterprise; Grow limited to 25 linked controllers (proposed) | V1 |
-| `snow_ice` | Snow and ice management | Storm Event Engine | Add-on `snow_ice` on Starter, Grow and Pro, billed Nov-Mar only; included in Enterprise (22 section 4.5) | V1 (ships for the first winter after MVP) |
+| `snow_ice` | Snow and ice management | Snow Lite: Visit and photo pipeline only; full module: Storm Event Engine | Snow Lite (4.3.0) on all plans at no charge (proposed); full module as add-on `snow_ice` on Starter, Grow and Pro, billed Nov-Mar only, included in Enterprise (22 section 4.5) | MVP (Snow Lite); V1 (full module) |
 | `tree_care` | Tree inventory, ISA risk, prescriptions, permits, crane jobs | Plant KB, Inspection Engine | Add-on `tree_care` on Starter and Grow; included in Pro and Enterprise (22) | V2 |
 | `install_projects` | Installation and hardscape project management | Project Engine, Warranty Engine | All plans (22); Gantt view Pro and Enterprise (proposed); 811 gating on every plan because it is a safety control | MVP |
 | `commercial_grounds` | SOW specs, quality audits, enhancement pipeline, property reports | Inspection Engine | Grow limited to 5 commercial clients (matches the commercial portal limit in 22); unlimited on Pro and Enterprise (proposed) | MVP |
@@ -145,7 +145,7 @@ Plan names follow [22](22-business-model-pricing-gtm.md) section 4.2 (Starter, G
 | `mosquito_pest` | Mosquito, tick and perimeter pest programs | Program Engine, Application Compliance Engine | Grow, Pro, Enterprise (proposed) | V1 |
 | `seasonal_campaigns` | Aeration/overseeding, cleanups, mulch season campaigns | Program Engine, Marketing ([16](16-marketing-growth-communications.md)) | All plans (proposed) | MVP |
 
-Plan availability is a default; the operator can change entitlements per plan or per tenant from the [Platform admin console](19-platform-admin-portal.md). Phasing note: `snow_ice` is [V1] and `tree_care` is [V2] to match [05](05-field-crew-mobile-app.md), [06](06-customer-portal.md), [19](19-platform-admin-portal.md) and [22](22-business-model-pricing-gtm.md); the MVP stays focused on the beachhead (residential design-build-maintain firms), and snow ships in time for the first winter after MVP launch. [24](24-roadmap-feature-catalog.md) is the authority if tags differ.
+Plan availability is a default; the operator can change entitlements per plan or per tenant from the [Platform admin console](19-platform-admin-portal.md). Phasing note: the full `snow_ice` module is [V1] and `tree_care` is [V2] to match [05](05-field-crew-mobile-app.md), [06](06-customer-portal.md), [19](19-platform-admin-portal.md) and [22](22-business-model-pricing-gtm.md); the MVP stays focused on the beachhead (residential design-build-maintain firms). Because the launch region is the Great Lakes ([24](24-roadmap-feature-catalog.md) OD-01), where those firms commonly plow and salt for their maintenance clients in winter, the MVP ships the Snow Lite slice of `snow_ice` (4.3.0) on every plan; the full module follows at [V1] ([24](24-roadmap-feature-catalog.md) OD-05). [24](24-roadmap-feature-catalog.md) is the authority if tags differ.
 
 #### 4.0.2 Module manifest [MVP]
 
@@ -222,7 +222,7 @@ Each module has a 3-7 step wizard that loads region-aware defaults based on the 
 |---|---|
 | `lawn_phc` | **States/provinces of operation** (auto-attach rule packs) -> **applicator licenses** (link to employee certifications in [15](15-team-hr-payroll.md)) -> turf types served -> program templates (pick from regional library) -> product library selection -> prepay and renewal policy |
 | `irrigation` | Brands serviced -> **seasonal service windows** (start-up, winterization) -> flat-rate repair price book -> zone map defaults |
-| `snow_ice` | **Season dates** -> **default trigger depth** -> **pricing models offered** -> **weather sources and stations** -> salt and material units -> subcontractor rate cards |
+| `snow_ice` | Snow Lite [MVP]: **snow sites and priority order** -> **per-push and per-application prices** (Price Book) -> who receives storm visit summaries. Full module [V1]: **season dates** -> **default trigger depth** -> **pricing models offered** -> **weather sources and stations** -> salt and material units -> subcontractor rate cards |
 | `install_projects` | Phase templates -> **811 one-call states** -> warranty policies -> permit jurisdictions |
 | `commercial_grounds` | Audit scorecard template -> SOW spec library -> monthly report template |
 | `tree_care` | Assessor credentials -> risk form template -> protected-tree jurisdictions -> crane vendors |
@@ -556,6 +556,24 @@ Rules: a start-up that finds the system cannot be pressurized (mainline break) b
 ### 4.3 Snow and ice management (`snow_ice`) [V1]
 
 Snow is a different business: revenue arrives in unpredictable bursts, work happens at night in hazardous conditions, crews and subcontractors must be committed hours before the first flake, and the documentation produced during a storm decides lawsuits years later. The module is built around the **Storm Event Engine** and **Proof-of-Service Packets**, aligned with the documentation themes of the SIMA procurement standard (service documentation and reporting, billing requirements, technology requirements, service controls and communication; [SIMA standards](https://sima.org/standards)) and the ASCA A1000 standard (pre-season site inspection reports, in-event documentation, post-event processes, weather service reporting; [ANSI webstore](https://webstore.ansi.org/standards/ansi/ansiascaa10002014)).
+
+The module ships in two slices. **Snow Lite [MVP]** (4.3.0) is a thin layer on the MVP Visit and photo pipeline for the Great Lakes launch Companies that plow and salt in winter. Sections 4.3.1-4.3.8 are the **full Snow & Ice module [V1]**, sold as the `snow_ice` add-on ([24](24-roadmap-feature-catalog.md) OD-05).
+
+#### 4.3.0 Snow Lite [MVP]
+
+Snow Lite lets a design-build-maintain or lawn Company that also plows its maintenance clients run winter in Rootline from day one, without the Storm Event Engine. It is the `snow_ice` module at its `lite` entitlement: on every plan, at no charge.
+
+| Capability | What Snow Lite does | What waits for the full module [V1] |
+|---|---|---|
+| Snow site list | A list of snow sites (Properties, or areas of a Property, served in winter) in priority order (1-3, then a manual sequence). The office creates storm visits for selected sites, in that order, on the dispatch board ([04](04-scheduling-dispatch-routing.md)) | Site maps with plow polygons, staking, no-service areas and client sign-off (4.3.2); route templates and the Storm Command Center (4.3.4) |
+| Storm visit log | In the crew app, each storm visit records arrival and departure, services performed as counts (pushes; salt or ice-melt applications; walks), timestamped GPS photos and notes, offline, through the standard Visit and photo pipeline ([05](05-field-crew-mobile-app.md#418-service-line-field-adapters)) | Measured depth at a measuring point, trigger evaluation, breadcrumbs, material quantities and spreader settings (4.3.5, 4.3.6), subcontractor logs (4.3.7) |
+| Invoicing | Per-push and per-application invoice lines generated from the logged counts at the site's Price Book rates ([07](07-invoicing-billing-contracts.md#4210-event-based-snow-and-ice-billing-mvp-basic--v1-full) basic). Seasonal fixed-fee clients keep billing through ordinary agreement installments; their storm visits are still logged | Storm events, accumulation bands, the eight pricing models with caps, floors and per-inch true-ups (4.3.1, 4.3.8) |
+| Proof of service | A per-site PDF for a date range: each storm visit with times, crew, services, photos with their GPS coordinates and device and server timestamps, and notes. The footer says it is a service-log export, not a sealed packet | Hash-manifested, retention-locked proof packets with legal hold and incident packets (4.3.6) |
+
+Rules:
+- Snow Lite writes ordinary Visits and Billable Items; it creates no `storm_event`, `event_site` or `proof_packet` records (7.4). Photos and logs follow the retention of visit records, and the 72-hour billing-state carve-out in 4.0.3 applies to storm visit logging.
+- When a Company adds the `snow_ice` add-on, its Snow Lite sites become the starting `snow_site` list and past storm visits stay on the Property timeline as history; they are not re-sealed as proof packets.
+- No weather feeds, triggers, salt inventory, Snow Terms or client portal snow board in Snow Lite; clients see storm visits in their normal visit history ([06](06-customer-portal.md)).
 
 #### 4.3.1 Snow contracts and pricing models [V1]
 
@@ -1482,11 +1500,11 @@ sequenceDiagram
 | S7 | Property > Irrigation tab (system, zones, map, devices, alerts) | Company web + crew app | irrigation | ops_manager, crew_lead | MVP |
 | S8 | Backflow test form and filing queue | Crew app + Company web | backflow | technician, office_manager | V1 |
 | S9 | Smart controller connections and alerts inbox | Company web | smart_irrigation | ops_manager | V1 |
-| S10 | Snow site map editor | Company web | snow_ice | estimator, ops_manager | V1 |
+| S10 | Snow site map editor (Snow Lite: site list with priority order) | Company web | snow_ice | estimator, ops_manager | V1 (site list MVP) |
 | S11 | Storm Command Center | Company web (wall display mode) | snow_ice | ops_manager, owner | V1 |
-| S12 | Snow service log (geofence, depth, photos, salt) | Crew app | snow_ice | crew_lead, technician, subcontractor | V1 |
+| S12 | Snow service log (geofence, depth, photos, salt); Snow Lite storm visit log (counts, GPS photos, notes) | Crew app | snow_ice | crew_lead, technician, subcontractor | V1 (Snow Lite log MVP) |
 | S13 | Event billing review | Company web | snow_ice | ops_manager, bookkeeper | V1 |
-| S14 | Proof packet viewer and export | Company web + portal | snow_ice | owner, client_commercial | V1 |
+| S14 | Proof packet viewer and export (Snow Lite: per-site PDF export) | Company web + portal | snow_ice | owner, client_commercial | V1 (Snow Lite PDF MVP) |
 | S15 | Tree inventory map and bulk walk mode | Company web + crew app | tree_care | estimator, crew_lead | V2 |
 | S16 | Risk assessment form and report | Crew app + web | tree_care | estimator (arborist) | V2 |
 | S17 | Project workspace (phases, Gantt, materials, permits, dig tickets, punch list) | Company web | install_projects | ops_manager, crew_lead | MVP (Gantt V1) |
@@ -2715,8 +2733,8 @@ erDiagram
 | Apiary registries (e.g., FieldWatch BeeCheck) | mosquito_pest, lawn_phc | Inbound | API or periodic import (verify availability) | V2 | Buffer warnings. |
 | Vehicle telematics (Samsara, Geotab, Verizon Connect) | snow_ice, all | Inbound | APIs/webhooks via [13](13-operations-inventory-equipment.md) | V1 | Alternative GPS source for proof packets when phones are not used. |
 | Smart lighting transformers (FX Luminaire, Kichler and others) | landscape_lighting | Bi-directional | Vendor APIs (verify) | V2 | Remote diagnostics and timers. |
-| Trusted timestamp authority (RFC 3161) | snow_ice | Outbound | Timestamp manifest hashes | V2 |
-| Company's own Stripe account (Stripe Connect, Standard-style, connected by OAuth) | all billing modes | Outbound charges, inbound webhooks | Direct charges on the connected account for prepay, deposits, autopay installments, card-on-file campaign bookings and event invoices; refunds and disputes stay in the Company's Stripe dashboard ([08](08-payments-stripe.md)) | MVP | Rootline never holds client funds; module add-ons such as Snow & Ice are billed separately on Rootline's own Stripe Billing account ([22](22-business-model-pricing-gtm.md)). | Third-party verifiable proof. |
+| Trusted timestamp authority (RFC 3161) | snow_ice | Outbound | Timestamp manifest hashes | V2 | Third-party verifiable proof. |
+| Company's own Stripe account (Stripe Connect, Standard-style, connected by OAuth) | all billing modes | Outbound charges, inbound webhooks | Direct charges on the connected account for prepay, deposits, autopay installments, card-on-file campaign bookings and event invoices; refunds and disputes stay in the Company's Stripe dashboard ([08](08-payments-stripe.md)) | MVP | Rootline never holds client funds; module add-ons such as Snow & Ice are billed separately on Rootline's own Stripe Billing account ([22](22-business-model-pricing-gtm.md)). |
 
 ### 8.2 Domain events emitted
 
@@ -3017,7 +3035,7 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 ## 14. Open questions
 
 1. **Rule pack liability and staffing:** how many `platform_curator` hours per state per year are needed to keep pesticide, fertilizer, registry and auto-renew rule packs current, and should packs be sold as a premium "Compliance+" add-on or included? (Recommendation: include basic packs; charge for registry automation and regulator export formats.)
-2. **Which states first?** Proposed: the 10 states with the highest density of target customers plus all states with registries, validated with counsel before GA.
+2. **Which states first?** The launch region sets the first set: Ohio, Michigan, Illinois, Indiana and Wisconsin for the Wave 1 Great Lakes Regions, then New York and Pennsylvania (and Ontario) for Wave 2 at V1, plus all states with registries, validated with counsel before GA ([24](24-roadmap-feature-catalog.md) OD-01).
 3. **Snow proof format review:** which snow-litigation defense attorneys and insurers will review the packet format, and do we need an expert-witness-ready affidavit template?
 4. **Seasonal snow revenue recognition:** confirm with the accounting advisor the default recognition pattern for seasonal contracts (ratably over the season vs by expected events) and how caps/overages affect it ([09](09-accounting-ledger-integrations.md)).
 5. **Smart controller partnerships:** do Hunter, Rachio, Rain Bird and Weathermatic offer contractor-partner API programs with higher rate limits and multi-site tokens, and on what commercial terms?
@@ -3031,7 +3049,7 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 13. **Agronomy authority:** cross-module rules X1, X3 and X5 encode label-driven agronomy. Does `platform_curator` need a turf agronomist (in addition to horticulturists) on staff or on an advisory board to own those defaults, and how are label-specific intervals kept in sync with the product library?
 14. **Leased holiday lights in the books:** should leased strands default to inventory (expensed as consumed) or to a capitalized equipment class with a 3-5 year life? The answer changes the posting rules in [09](09-accounting-ledger-integrations.md) and should be decided with the accounting advisor.
 15. **Snow clause library legal review:** which jurisdictions' anti-indemnification statutes and contract norms must be reviewed by counsel before the clause library ships at V1, and does SIMA offer reviewed template language we can license?
-16. **Phasing confirmation:** this doc moves `snow_ice` to [V1] and `tree_care` to [V2] to match the pricing and portal docs. Confirm in [24](24-roadmap-feature-catalog.md), and decide whether a snow-belt design partner needs a limited snow pilot during the MVP winter.
+16. **Phasing confirmation:** confirmed in [24](24-roadmap-feature-catalog.md): the full `snow_ice` module is [V1] and `tree_care` is [V2], and the MVP includes Snow Lite (4.3.0) on every plan because the launch region is the Great Lakes (OD-01, OD-05). Still open: which Wave 1 design partners need more than Snow Lite in the MVP winter (seasonal caps, subcontracted sites, salt tracking), and how each bridges until the full module.
 
 ---
 
