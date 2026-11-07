@@ -7,7 +7,7 @@
 | Report | R4 - Industry economics, payments and accounting landscape |
 | Date | 2026-11-07 |
 | Status | Research input, not a spec. Every material fact carries an evidence tag (section 0). |
-| Primary consumers | [07 Invoicing](../07-invoicing-billing-contracts.md), [08 Payments](../08-payments-stripe.md), [09 Accounting](../09-accounting-ledger-integrations.md), [15 Team and payroll](../15-team-hr-payroll.md), [18 Reporting](../18-reporting-analytics.md), [20 Architecture](../20-architecture-security.md), [22 Pricing and GTM](../22-business-model-pricing-gtm.md), [24 Roadmap](../24-roadmap-feature-catalog.md), [01 Market landscape](../01-market-landscape.md) |
+| Primary consumers | [07 Invoicing](../07-invoicing-billing-contracts.md), [08 Payments](../08-payments-stripe.md), [09 Accounting](../09-accounting-ledger-integrations.md), [15 Team and payroll](../15-team-hr-payroll.md), [18 Reporting](../18-reporting-analytics.md), [20 Architecture](../20-architecture-security.md), [22 Pricing and GTM](../22-business-model-pricing-gtm.md), [24 Product scope](../24-roadmap-feature-catalog.md), [01 Market landscape](../01-market-landscape.md) |
 | Sibling reports | [R1 Field-service platforms](R1-field-service-platforms.md), [R2 Landscape-specific platforms](R2-landscape-specific-platforms.md), [R3 Design, AI and plant data](R3-design-ai-plant-data.md) |
 
 ---

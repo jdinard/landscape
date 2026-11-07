@@ -1752,11 +1752,11 @@ Validation rules: promotion requires the stage's exit evidence attached to the f
 | [x] Irrigation    |   |  /  BED 14      \                          |       |    conf 0.87        |
 | [ ] Lighting      |   | |   o o o  (!)(!)|      [cam] station 7    |       |    [Confirm][Reject]|
 | [x] Photo stations|   |  \____    ______/                          |       |  ! Zone 6 flow -40% |
-| [ ] Drone 2027-05 |   |       \__/      TURF B  (turf idx 0.71)    |       |    [Open ticket]    |
+| [ ] Drone (May)   |   |       \__/      TURF B  (turf idx 0.71)    |       |    [Open ticket]    |
 |                   |   +--------------------------------------------+       |  ~ Mulch thin, bed 3|
 | CONDITION         |                                                        |    conf 0.64 (digest)|
 |  Thriving  71%    |  TIMELINE                                              |                     |
-|  OK        22%    |  2027 |Apr  May  Jun [Jul] Aug  Sep  Oct  Nov |  2028  | SUGGESTED ACTIONS   |
+|  OK        22%    |  Prev |Apr  May  Jun [Jul] Aug  Sep  Oct  Nov |  Next  | SUGGESTED ACTIONS   |
 |  Stressed   5%    |        o    o    o    *                               |  Warranty watch x2  |
 |  Declining  2%    |  [Compare: Jun 12  <|>  Jul 15 ]   [Play season]       |  Mulch 18 cu yd     |
 |                   |                                                        |   -> Draft proposal |
@@ -1847,7 +1847,7 @@ Validation rules: promotion requires the stage's exit evidence attached to the f
 |    [ Create link ]                   |
 | 2. Transfer at closing               |
 |    Buyer email [________________]    |
-|    Closing date [ 2028-06-30 ]       |
+|    Closing date [ Jun 30     ]       |
 |    Let Cedar & Stone introduce       |
 |    themselves to the new owner [x]   |
 |    [ Start transfer ]                |

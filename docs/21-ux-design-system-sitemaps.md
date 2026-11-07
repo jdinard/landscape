@@ -14,7 +14,7 @@
 - **Differentiators:** progressive depth (the same record page serves a 3-person lawn crew and a 120-person design-build firm), a landscape icon set and plant plan symbol library that runs from Design Studio to proposal, and AI output that is always previewable, attributable, editable and undoable.
 - **Cross-links:** roles in [02](02-personas-roles-permissions.md); console IA mirrors [19](19-platform-admin-portal.md) PA-001; domains, tenancy and data model in [20](20-architecture-security.md); AI behavior in [17](17-ai-copilot-automation.md); credit costs shown in the AI UX come from [22](22-business-model-pricing-gtm.md) section 4.4.1.
 
-**Related docs:** [Personas, roles and permissions](02-personas-roles-permissions.md) - [Architecture and security](20-architecture-security.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Platform admin](19-platform-admin-portal.md) - [Roadmap and feature catalog](24-roadmap-feature-catalog.md)
+**Related docs:** [Personas, roles and permissions](02-personas-roles-permissions.md) - [Architecture and security](20-architecture-security.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Platform admin](19-platform-admin-portal.md) - [Product scope and feature catalog](24-roadmap-feature-catalog.md)
 
 ---
 
@@ -50,7 +50,7 @@
 28. [Open questions](#28-open-questions)
 29. [Sources](#sources)
 
-Priority tags used throughout: **[MVP]** first sellable release, **[V1]** within ~12 months of MVP, **[V2]** 12-24 months, **[V3]** moonshot, 2+ years.
+Priority tags used throughout are scope tiers: **[MVP]** first sellable release, **[V1]** next scope wave, **[V2]** later wave, **[V3]** moonshot / long-term.
 
 ---
 
@@ -1044,7 +1044,7 @@ Money is never encoded by red/green alone: negative amounts always show a minus 
 | OptionTierCards | Good/Better/Best proposal options with deltas and recommended badge | Portal, proposal editor | [MVP] |
 | ProposalSignatureBlock | Legal text, signature, initials, deposit pay | Portal | [MVP] |
 | PlantCard / PlantRow | Thumbnail, botanical + common name, size, region rating badge, sun/water icons, deer-resistance, native badge, availability | Web, portal, crew | [MVP] |
-| RegionRatingBadge | Curated performance rating for the Company's Region (e.g., "Recommended - Central Ohio 6a"), tooltip with curator notes | All | [MVP] |
+| RegionRatingBadge | Curated performance rating for the Company's Region (e.g., "Recommended - Central Ohio 6b"), tooltip with curator notes | All | [MVP] |
 | PlantSymbol | Renders the plan symbol family with style params at scale | Studio, PDFs, portal | [MVP] |
 | DesignViewer | Pan/zoom 2D plan with layer toggles, plant schedule, measure tool; read-only for clients | Portal, web, crew | [MVP] |
 | MockupCompare | Before/after/options with "AI concept" label | Portal, web | [V1] |
@@ -1751,14 +1751,14 @@ Key behaviors: this snapshot is from Nov 9, after the owner approved E-2290 from
 | [x] Base aerial |                                                              | Plant: 'Limelight'  |
 | [x] Existing    |      . . . . . . . . . . . . . . . . . .                     | Hydrangea paniculata|
 | [x] Hardscape   |     .   (o)    (o)    (o)     *       .                      | Region: Recommended |
-| [x] Beds        |    .  BED A  1,140 sq ft  mulch dbl shred .                  |  Central Ohio 6a    |
+| [x] Beds        |    .  BED A  1,140 sq ft  mulch dbl shred .                  |  Central Ohio 6b    |
 | [x] Plants      |     .  {@}  {@}  ###  ###  ###        .                      | Size #5   Qty 12    |
 | [ ] Irrigation  |      . . . . . . . . . . . . . . . . . .                     | Mature 6-8 ft wide  |
 | [x] Lighting    |   ==== PAVER WALK 320 sq ft herringbone ====                 | Spacing 5 ft o.c.   |
 | [ ] Notes       |                       |<---- 42' 6" ---->|                   | Sun: full to part   |
 |-----------------|                                                              | [Swap from palette] |
 | Plant palette   |  [Maturity: Install | Yr 1 | Yr 5 | Mature]                  |---------------------|
-| Central Ohio 6a |                                                              | Takeoff (live)      |
+| Central Ohio 6b |                                                              | Takeoff (live)      |
 | Search ______   |  Copilot (seedling): "Fill Bed A with deer-                  |  Mulch    14.0 cu yd|
 | [HYD PAN] [SCH] |  resistant natives, max 3 ft" [Generate layout]              |  Pavers   320 sq ft |
 | [AME GRA] [ILE] |                                                              |  Plants   86 ea     |
@@ -1781,7 +1781,7 @@ Step 1 of 3: Photo and dimensions                     Step 2 of 3: Generating (a
 |  existing maple (keep?)  [x] Keep  [ ] Remove |     |  (seedling) Working on it:                    |
 |                                               |     |   [check] Reading depth and scale             |
 |  Scale reference:                             |     |   [check] Matching beds to your plan D-311 v3 |
-|   ( ) Use Design D-311 v3 (to scale)  *       |     |   [....] Choosing plants from Central Ohio 6a |
+|   ( ) Use Design D-311 v3 (to scale)  *       |     |   [....] Choosing plants from Central Ohio 6b |
 |   ( ) Enter a known length: garage door       |     |          palette (deer-resistant, native)     |
 |       = [ 16 ] ft                             |     |   [    ] Rendering 4 concepts                 |
 |                                               |     |                                               |
@@ -1875,7 +1875,7 @@ Key behaviors: one "Next step" card drives the visit; photography leads; the Com
 
 ```text
 +------------------------------------------------------------------------------------------------------+
-| ADMIN  Plant KB / Curation queue (214)  Region: Central Ohio 6a  Source: nursery feed  [Mine]        |
+| ADMIN  Plant KB / Curation queue (214)  Region: Central Ohio 6b  Source: nursery feed  [Mine]        |
 +------------------------+-----------------------------------------------------------------------------+
 | Queue                  | Hydrangea paniculata 'Limelight'  PLT-04412  Status: In review              |
 | > 'Limelight' (update) | [Photos 6]  Symbol family: Deciduous shrub  [Preview symbol]                |
@@ -1887,7 +1887,7 @@ Key behaviors: one "Next step" card drives the visit; photography leads; the Com
 |                        | Deer resistance | Moderate          | High                    | [x]         |
 |                        | USDA zones      | 3-8               | 3-9                     | [ok]        |
 |                        |-----------------------------------------------------------------------------|
-|                        | Region profile: Central Ohio 6a                                             |
+|                        | Region profile: Central Ohio 6b                                             |
 |                        |  Rating [Recommended v]  Confidence: High (12 tenants planted,              |
 |                        |  2 warranty claims per 340 installs)                                        |
 |                        |  Notes: "Tolerates clay; avoid hot west walls."                             |
@@ -1931,7 +1931,7 @@ Key behaviors: debits and credits must balance before Post; posted entries are i
 ```text
 +------------------------------------------------------------------------------------------------------+
 | CONSOLE  Tenants / Acme Landscapes LLC (tn_7Kq...)  Plan: Grow (annual)  Health 82 (up 4)            |
-| Columbus, OH | Region Central Ohio 6a | 6 crews, 37 users | Since Mar 2026 | Data: US-East           |
+| Columbus, OH | Region Central Ohio 6b | 6 crews, 37 users | Since Mar 2026 | Data: US-East           |
 | [Impersonate (request consent)] [Add note] [Flags] [Billing] [...]            Owner: Dana H.         |
 +-------------------------------------------------------------+----------------------------------------+
 | Overview | Usage | Billing | AI | Payments | Users | Support| Flags | Audit | Danger zone            |
@@ -2584,13 +2584,13 @@ Clients: `client_residential` and `client_commercial` contacts can set their own
 
 ### 24.1 Research program overview
 
-| Phase | Timing | Methods | Participants | Output |
+| Phase | Stage | Methods | Participants | Output |
 |---|---|---|---|---|
-| Discovery | Pre-MVP, 8 weeks | Ride-alongs (2 days each with 10 Companies across 4 regions and 3 sizes), contextual inquiry in offices, diary study with 8 crew leads, competitive teardown of Jobber, LMN, Aspire, Service Autopilot, SingleOps, Real Green, Housecall Pro, ServiceTitan | 10 Companies, ~60 people | Journey maps, JTBD, opportunity backlog, teardown report (fills gaps flagged in section 2) |
+| Discovery | Before MVP design | Ride-alongs (2 days each with 10 Companies across 4 regions and 3 sizes), contextual inquiry in offices, diary study with 8 crew leads, competitive teardown of Jobber, LMN, Aspire, Service Autopilot, SingleOps, Real Green, Housecall Pro, ServiceTitan | 10 Companies, ~60 people | Journey maps, JTBD, opportunity backlog, teardown report (fills gaps flagged in section 2) |
 | Concept | MVP design | Paper and clickable prototypes; card sorting and tree testing for the web app IA (target >= 80% correct first click on 12 top tasks) | 30 office users, 20 field users | Validated IA, nav labels |
 | Prototype usability | MVP design | Moderated task tests in English and Spanish; glove and sun protocols (24.2); 5-second tests for proposal and portal | 5-8 per persona per round, 3 rounds | Fixes, benchmark baseline |
-| Beta | MVP build | **Field Council** of 25 design-partner Companies; in-app feedback; weekly calls; telemetry review | 25 Companies | Release readiness, top issues |
-| Post-launch continuous | Ongoing | Quarterly benchmark study; monthly unmoderated tests; NPS/CSAT; support ticket mining; session replay sampling (masked) | Rolling panel of 200+ users | Trend lines, roadmap input |
+| Beta | Before MVP release | **Field Council** of 25 design-partner Companies; in-app feedback; weekly calls; telemetry review | 25 Companies | Release readiness, top issues |
+| Post-launch continuous | After MVP release, ongoing | Quarterly benchmark study; monthly unmoderated tests; NPS/CSAT; support ticket mining; session replay sampling (masked) | Rolling panel of 200+ users | Trend lines, roadmap input |
 
 Participant recruitment includes Spanish-dominant technicians (interviewed by bilingual researchers, not through interpreters where possible), owners of solo operations and multi-branch firms, an external CPA serving multiple landscape clients, commercial property managers and HOA board members, and users with disabilities (screen reader users, low vision, color-vision deficiency, motor impairments) at least once per quarter. Incentives: $75-$150 per session for office/client participants and paid time for crews arranged with their employer (estimates, verify with research ops).
 
@@ -2633,19 +2633,20 @@ Participant recruitment includes Spanish-dominant technicians (interviewed by bi
 
 Standard measures per round: task success, time on task, error count, SEQ (single ease question) per task, SUS per persona (target >= 80 office, >= 85 portal), and for crews a simplified, translated SUS read aloud.
 
-### 24.4 Design ops: team and rituals
+<a id="244-design-ops-team-and-rituals"></a>
+### 24.4 Design ops: roles and rituals
 
-**Team plan (estimates, align with [24 - Roadmap](24-roadmap-feature-catalog.md)):**
+**Design roles and the review gates they own** (responsibilities, not headcount):
 
-| Role | MVP | V1 | V2 |
+| Role | Focus | Main artifacts | Review gates owned |
 |---|---|---|---|
-| Head of Design | 1 | 1 | 1 |
-| Product designers (embedded in pods: Sales/Design, Field/Schedule, Money/Books, Portal/Growth, Platform/Admin) | 3 | 5 | 7 |
-| Design systems (designer + engineers) | 1 + 1 | 1 + 2 | 2 + 3 |
-| UX researcher + research ops | 1 | 2 | 3 |
-| Content designer (EN/ES), localization PM | 1 | 2 | 2 |
-| Brand / illustration (contract at MVP) | contract | 1 | 1 |
-| Design technologist (Studio canvas, maps, motion) | 1 | 1 | 2 |
+| Head of Design | Design direction and quality across all five surfaces | Design principles, critique agenda, UX benchmark readout | Problem and solution reviews for cross-pod epics |
+| Product designers (embedded in pods: Sales/Design, Field/Schedule, Money/Books, Portal/Growth, Platform/Admin) | End-to-end flows for their pod's modules | Flows, tested prototypes, all-states specs | Solution review, build review, design QA sign-off |
+| Design systems (designers and engineers) | Tokens, components, themes and Storybook | `@rootline/tokens`, `@rootline/ui`, `@rootline/ui-native`, docs site | Component contribution pipeline in 9.5 (proposal -> design review -> a11y review -> release) |
+| UX research and research ops | Research program (24.1), field protocols (24.2), panels and incentives | Journey maps, benchmark rounds, participant panel | Evidence for problem review; benchmark targets (24.3) |
+| Content design (EN/ES) and localization | Voice, glossary, microcopy and translation quality | Glossary in the TMS, string reviews | Microcopy and Spanish review in design QA |
+| Brand and illustration (contract or in-house) | Brand system, illustrations, empty states | Illustration library, brand kit | Brand review for marketing site and onboarding |
+| Design technologist (Studio canvas, maps, motion) | Feasibility and high-fidelity interaction | Coded prototypes, motion specs | Feasibility input at solution review |
 
 **Rituals:**
 - Weekly design critique (cross-pod), biweekly accessibility office hours, monthly "field day" where designers ride along with a crew.

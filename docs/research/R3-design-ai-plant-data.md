@@ -7,7 +7,7 @@
 | Report | R3 - Landscape design tools, AI mockup tech, and plant data sources |
 | Date | 2026-11-07 |
 | Status | Research input, not a spec. Every material fact carries an evidence tag (section 0). |
-| Primary consumers | [10 Design Studio](../10-design-studio.md), [11 AI design and mockups](../11-ai-design-mockups.md), [12 Plant Knowledge Base](../12-plant-knowledge-base.md), [13 Operations and inventory](../13-operations-inventory-equipment.md), [17 AI copilot](../17-ai-copilot-automation.md), [19 Platform admin](../19-platform-admin-portal.md), [20 Architecture](../20-architecture-security.md), [22 Pricing and GTM](../22-business-model-pricing-gtm.md), [24 Roadmap](../24-roadmap-feature-catalog.md) |
+| Primary consumers | [10 Design Studio](../10-design-studio.md), [11 AI design and mockups](../11-ai-design-mockups.md), [12 Plant Knowledge Base](../12-plant-knowledge-base.md), [13 Operations and inventory](../13-operations-inventory-equipment.md), [17 AI copilot](../17-ai-copilot-automation.md), [19 Platform admin](../19-platform-admin-portal.md), [20 Architecture](../20-architecture-security.md), [22 Pricing and GTM](../22-business-model-pricing-gtm.md), [24 Product scope](../24-roadmap-feature-catalog.md) |
 | Sibling reports | [R1 Field-service platforms](R1-field-service-platforms.md), [R2 Landscape-specific platforms](R2-landscape-specific-platforms.md), [R4 Industry, payments and accounting](R4-industry-payments-accounting.md) |
 
 ---
@@ -932,7 +932,7 @@ erDiagram
 
 ### 4.12 Curation at scale: how thousands of plants stay accurate
 
-1. **Start narrow and deep [E].** A practical launch set is about 1,500 species and cultivars covering the large majority of what design-build firms in launch Regions actually install, then grow toward 5,000 or more in 18 to 24 months. Seed the list from tenants' imported price books and purchase history (the plants they really buy), not from a botanical checklist.
+1. **Start narrow and deep [E].** A practical launch set is about 1,500 species and cultivars covering the large majority of what design-build firms in launch Regions actually install, then grow toward 5,000 or more as Regions are added. Seed the list from tenants' imported price books and purchase history (the plants they really buy), not from a botanical checklist.
 2. **Compute before curating.** Climate envelopes from filtered GBIF occurrences, zone ranges from multiple references, and ecoregion nativity rules produce **draft** Region ratings. Curators then confirm or override rather than research from scratch.
 3. **AI enrichment with citations.** An LLM proposes trait values with source citations and confidence; curators accept, edit or reject in bulk ([19](../19-platform-admin-portal.md)). Critical claims (invasiveness, toxicity, deer resistance, hardiness) need two reviewers.
 4. **Field truth from tenants.** Plant warranty claims, replacements and crew notes ("3 of 12 'Green Mountain' boxwoods browned after winter", an illustrative example) become anonymized performance signals per Region, with tenant opt-in ([12](../12-plant-knowledge-base.md), [13](../13-operations-inventory-equipment.md)). No public source has this data.

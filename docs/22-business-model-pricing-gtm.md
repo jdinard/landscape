@@ -1415,7 +1415,7 @@ Rules: competitor price defaults come from a `platform_finance`-maintained table
 +---------------------------------------------------------------------------------------------+
 | Settings / Plan & Billing                                             Greenleaf Grounds Co. |
 +---------------------------------------------------------------------------------------------+
-| PLAN  Grow - Annual (USD)   Renews Mar 1, 2028   Price locked until Mar 1, 2029  [Change plan] |
+| PLAN  Grow - Annual (USD)   Renews Mar 1   Price locked 12 more months           [Change plan] |
 | Founding Customer -25% applied                                                              |
 |---------------------------------------------------------------------------------------------|
 | SEATS                          Included   In use   Billed extra   Next invoice              |
@@ -1425,7 +1425,7 @@ Rules: competitor price defaults come from a `platform_finance`-maintained table
 | Bookkeeper (free)                  1         1          -            $0                     |
 |---------------------------------------------------------------------------------------------|
 | USAGE THIS PERIOD (Jul 1 - Jul 31)                                                          |
-| AI credits     [##############------]  1,412 / 2,000 incl.  + 3,600 pack credits (exp May 2028) |
+| AI credits     [##############------]  1,412 / 2,000 incl.  + 3,600 pack credits (exp next May) |
 |                Budgets: Technicians 20/user  Estimators 300/user   Auto top-up: OFF  [Edit] |
 | SMS segments   [#################---]  2,130 / 2,500         Cap: 7,500   [Buy pack]       |
 | Storage        [#####---------------]  61 / 250 GB                                          |
@@ -1524,7 +1524,7 @@ Rules: the radio defaults to whichever option is cheaper at the Company's traili
 +--------------------------------------------------------------------------------------+
 | Schedule Winter Mode                                        Greenway Lawn & Garden   |
 |--------------------------------------------------------------------------------------|
-| Pause from  [ Dec 1, 2027 v ]   Resume on  [ Mar 1, 2028 v ]    = 3 months           |
+| Pause from  [ Dec 1       v ]   Resume on  [ Mar 1       v ]    = 3 months           |
 | Winter Mode used in the last 12 months: 0 of 4                                       |
 |--------------------------------------------------------------------------------------|
 | YOUR BILL                     Now (Grow monthly)        During Winter Mode            |
