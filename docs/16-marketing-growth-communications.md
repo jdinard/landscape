@@ -211,7 +211,7 @@ Local SEO depends on city pages, but templated pages that differ only by city na
 - Plant library pages show KB data relevant to the Company's Region(s): common and botanical names, mature size, light, water, hardiness, bloom time, native status for the ecoregion, deer resistance, and the **Plant Region Profile** rating and notes written by `platform_curator` ([12](12-plant-knowledge-base.md)).
 - Tenants can add **"We install this"** notes, their own photos of the plant in their projects, and a typical installed price per container size.
 - **Duplicate-content strategy (opinionated):** KB core text is identical across many tenant sites. To avoid thin duplicated pages, a tenant plant page is **indexable only when it has tenant-unique content** (at least 2 tenant project photos featuring the plant and at least 120 words of tenant notes). Otherwise it is rendered for visitors (useful for browsing and proposals) with `noindex` and a canonical link to the Rootline public plant encyclopedia on the marketing site. This protects tenants from duplicate-content dilution and builds a platform-level SEO asset (see [22](22-business-model-pricing-gtm.md)).
-- **Plant of the month** block rotates seasonally appropriate plants for the Region (e.g., in Zone 7b mid-Atlantic in October: switchgrass, aromatic aster, winterberry holly).
+- **Plant of the month** block rotates seasonally appropriate plants for the Region (e.g., in Central Ohio, Zone 6a, in October: switchgrass, aromatic aster, winterberry holly).
 
 <a id="416-seo-toolkit-mvp"></a>
 
