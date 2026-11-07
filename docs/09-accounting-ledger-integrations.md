@@ -801,7 +801,7 @@ Reyes Outdoor Living (Charlotte, NC) in May 2027. The Thompson backyard (paver p
 | 5210 Materials - Hardscape and Aggregates | J-2291, Phase 2 Hardscape, cost type Materials, Design-Build | 3,598.00 | |
 | 2020 Goods Received Not Invoiced | Vendor: hardscape supplier, PO 4471 | | 3,598.00 |
 
-**E3 - May 9. Supplier bill matched with a $95.00 delivery charge** (`ap.AP3`). The PO had no delivery line; the charge is within the $75-per-bill freight tolerance only after approval by the `ops_manager`, and is landed to the job ([13](13-operations-inventory-equipment.md) 4.11.2).
+**E3 - May 9. Supplier bill matched with a $95.00 delivery charge** (`ap.AP3`). The PO had no delivery line and $95.00 exceeds the default $75-per-bill freight tolerance, so the match engine raised a `price_variance` exception; the `ops_manager` accepted it and the freight is landed to the job ([13](13-operations-inventory-equipment.md) 4.11.2).
 
 | Account | Dimensions | Debit | Credit |
 |---|---|---:|---:|
