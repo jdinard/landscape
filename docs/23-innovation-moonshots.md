@@ -2353,7 +2353,7 @@ Event naming follows [20](20-architecture-security.md) (`entity.action`, publish
 | `esg.report_published` | report_id, client_id, methodology_version | Portal, email |
 | `rebate.case_status_changed` | case_id, from, to | Scheduling guard, AR (if assigned) |
 | `passport.entry_added` / `passport.transferred` | passport_id, entry_type or buyer ref | Rootline Home, continuity lead |
-| `nursery.listing_updated` / `plant.hold_status_changed` | listing_id or hold_id, quantity, status | Design Studio badges, purchasing |
+| `kb.nursery_listing_updated` (owned and emitted by the KB per [12](12-plant-knowledge-base.md) section 8.2; M-14 live feeds publish listing changes through it rather than a separate event) / `plant.hold_status_changed` | listing_id or hold_id, quantity, status | Design Studio badges, availability aggregates and picker chips, purchasing |
 | `work_package.status_changed` | package_id, from, to | Both tenants' Jobs, payments |
 | `data_share.granted` / `data_share.revoked` | grant_id, recipient, scopes | Partner gateway |
 | `financing.offer_received` / `financing.facility_booked` | offer_id, amount, terms | Owner notifications, Ledger |

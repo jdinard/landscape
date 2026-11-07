@@ -405,7 +405,7 @@ Online client payments use Stripe's **Payment Element** (an iframe-hosted, PCI-s
 **Behaviors and rules:**
 
 - PaymentIntent is created server-side when the client clicks "Pay", not on page load (avoids orphan PaymentIntents from link previews and bots). Amount = amount the client chose (full balance by default; partial allowed if Company enables, see [4.9](#49-partial-payments-overpayments-and-multi-invoice-payments-mvp)).
-- Metadata on every PaymentIntent: `rootline_tenant_id`, `rootline_payment_attempt_id`, `rootline_invoice_ids` (comma-separated, max 10, longer lists in Rootline only), `rootline_client_id`, `rootline_env`. Description: "Invoice 10482 - Greenleaf Landscapes". Dynamic statement descriptor suffix: invoice number or service abbreviation (e.g., `MULCH 10482`).
+- Metadata on every PaymentIntent: `rootline_tenant_id`, `rootline_payment_attempt_id`, `rootline_invoice_ids` (comma-separated, max 10, longer lists in Rootline only), `rootline_client_id`, `rootline_env`. Description: "Invoice 10482 - Greenleaf Grounds Co.". Dynamic statement descriptor suffix: invoice number or service abbreviation (e.g., `MULCH 10482`).
 - `receipt_email` is not set; Rootline sends branded receipts (with photos and the Company's logo) to avoid duplicate Stripe receipts. Company can opt into Stripe receipts.
 - Idempotency key on create: `pi:create:{payment_attempt_id}`. Re-clicks reuse the open PaymentIntent for that invoice/amount/client within 24 hours.
 - **Surcharge or ACH-discount computation** happens after the client selects a method and before confirmation, using a ConfirmationToken (client creates it; server inspects `payment_method_preview` for type, card funding and country, recomputes the final amount, updates the PaymentIntent, then confirms). See [4.10](#410-surcharging-convenience-fees-and-ach-incentives-v1).
@@ -557,7 +557,7 @@ Surcharging is legal in most US states but banned or capped in several, and netw
 
 ### 4.14 Payment links, QR codes and pay-by-text [MVP]
 
-- Every invoice, statement and payment request gets a **Rootline pay link** on the Company's portal domain: `https://pay.greenleaflandscapes.com/i/7Gk2Qx` (white-label custom domain per [06](06-customer-portal.md); fallback `https://<slug>.rootline.app/pay/...`).
+- Every invoice, statement and payment request gets a **Rootline pay link** on the Company's portal domain: `https://portal.greenleafgrounds.com/i/7Gk2Qx` (white-label custom domain per [06](06-customer-portal.md); fallback `https://<slug>.rootline.app/pay/...`).
 - Link token: random 128-bit, stored hashed, scoped to one payable object, expires when the object is paid or voided, or after 180 days (statement links regenerate monthly). No login required to pay; viewing other invoices requires login or a one-time code.
 - **QR codes** printed on PDF invoices, mailed statements and door hangers ("Scan to pay your fall cleanup"), and displayed in the crew app for clients who prefer to pay on their own phone.
 - **Pay-by-text:** SMS with the link, sent only to Contacts with TCPA-compliant consent and 10DLC-registered numbers ([16](16-marketing-growth-communications.md)).
@@ -849,7 +849,7 @@ The Company owns its payouts. Rootline reads, explains and reconciles them, and 
 
 | Dispute reason | Playbook emphasis |
 |----------------|-------------------|
-| `fraudulent`, `unrecognized` | Signature, IP and device match, account history, prior payments, descriptor explanation ("GREENLEAF* MOW is Greenleaf Landscapes, your weekly mowing provider since 2023"). |
+| `fraudulent`, `unrecognized` | Signature, IP and device match, account history, prior payments, descriptor explanation ("GREENLEAF* MOW is Greenleaf Grounds Co., your weekly mowing provider since 2023"). |
 | `product_not_received` (service not performed) | GPS-verified visit timeline, timestamped photos, crew roster, delivery receipts of completion notices. |
 | `product_unacceptable` (quality) | Signed scope, before/after photos, communications showing remediation offered (e.g., re-edge beds at no charge), warranty terms. |
 | `subscription_canceled` (agreement cancellation) | Agreement terms with cancellation notice period, date of cancellation request, visits performed before it. |
@@ -1557,11 +1557,11 @@ sequenceDiagram
 
 ```text
 +---------------------------------------------------------------------------------------+
-| Greenleaf Landscapes            Settings > Payments                    [?] Help       |
+| Greenleaf Grounds Co.           Settings > Payments                    [?] Help       |
 +---------------------------------------------------------------------------------------+
 | STRIPE CONNECTION                                                                     |
 |  Status:  (*) ACTIVE - action needed by Jun 14                                        |
-|  Account: Greenleaf Landscapes LLC  acct_...7Qw2   Country: US   Currency: USD        |
+|  Account: Greenleaf Grounds Co.     acct_...7Qw2   Country: US   Currency: USD        |
 |  Mode:    Connected via Stripe (you own this account)   [Open Stripe Dashboard ->]    |
 |                                                                                       |
 |  ! Stripe needs: Business representative ID document (due Jun 14, 11 days)            |
@@ -1588,7 +1588,7 @@ sequenceDiagram
 
 ```text
 +------------------------------------+
-| [logo] Greenleaf Landscapes        |
+| [logo] Greenleaf Grounds Co.       |
 |------------------------------------|
 | Invoice 10482          Due Jun 10  |
 | 14 Birch Ln - Spring cleanup       |
@@ -1655,7 +1655,7 @@ sequenceDiagram
 | EVIDENCE PACKET (auto-built 6 min after dispute)           | PREVIEW (PDF, 9 pages, 3.1MB) |
 |  [x] Signed agreement 2026 Maintenance (e-sign cert)       | +---------------------------+ |
 |  [x] Visit log Apr 28: Crew Red, 8:02-8:51 AM, GPS inside  | | Service Evidence Report   | |
-|      property boundary (map)                               | | Greenleaf Landscapes      | |
+|      property boundary (map)                               | | Greenleaf Grounds Co.     | |
 |  [x] 6 before/after photos (timestamped, geotagged)        | | Timeline ...              | |
 |  [x] "Visit complete" SMS delivered Apr 28 8:53 AM         | | [map] [photos]            | |
 |  [x] Portal: client viewed invoice May 1 (IP match)        | +---------------------------+ |
@@ -1696,7 +1696,7 @@ sequenceDiagram
 
 ```text
 +------------------------------------+
-| [logo] Greenleaf Landscapes        |
+| [logo] Greenleaf Grounds Co.       |
 |------------------------------------|
 | Proposal P-2291  Backyard refresh  |
 | Option chosen: BETTER   $18,400.00 |
@@ -2005,8 +2005,8 @@ erDiagram
 | `invoicing.invoice.issued` | [07](07-invoicing-billing-contracts.md) | Create pay link; schedule autopay attempt and pre-notification |
 | `invoicing.invoice.voided` / `.credit_memo.issued` | 07 | Cancel open attempts; prompt refund if paid |
 | `proposals.proposal.accepted` | [03](03-crm-sales-estimating-proposals.md) | Start deposit flow |
-| `field.visit.completed` | [05](05-field-crew-mobile-app.md) | Enable field collection; attach evidence to related payments |
-| `projects.phase.completed` | [14](14-service-line-modules.md) | Trigger milestone installment |
+| `visit.completed` | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md) | Enable field collection; attach evidence to related payments |
+| `phase.completed` / `milestone.reached` ([04](04-scheduling-dispatch-routing.md) Job phases and milestones), `project_phase.completed` ([14](14-service-line-modules.md) design-build projects) | [04](04-scheduling-dispatch-routing.md), [14](14-service-line-modules.md) | Trigger milestone installment (the plan's `trigger` names the phase or milestone; whichever event arrives first for it fires the installment once) |
 | `agreements.agreement.renewed` / `.canceled` | 07 | Keep or end autopay scope |
 | `clients.client.merged` | CRM | Merge customer refs (same Stripe Customer kept; other detached after migration) |
 | `tenant.lifecycle_changed` (to `restricted`, `suspended`, `winter_mode` or `churned`) | [19](19-platform-admin-portal.md) | Restricted, suspended or Winter Mode: client pay links, statement pay and autopay keep working (payments-only mode in `suspended`; never disable client pay links). Churned: export package, offline instructions on pay pages, scheduled deauthorization (4.25) |
@@ -2200,7 +2200,7 @@ Targets are internal goals for Rootline, not industry benchmarks. Formal KPI def
 4. **Monthly "Your Payments, Explained" report [V1].** Plain-English PDF/email: what clients paid, what Stripe charged, effective rate by method, what ACH saved you, Rootline's cut ($0.00), disputes and outcomes, and the dollars autopay collected while you slept.
 5. **"Thank your crew" moments [V1].** Post-visit message with a finished-job photo and optional tip; crew sees tips and client kudos in the app; owner sees which crews earn the most gratitude (retention signal for [15](15-team-hr-payroll.md)).
 6. **HOA split-pay [V2].** An HOA board approves an entrance-bed refresh; Rootline splits a share to each homeowner with individual pay links while the HOA guarantees the remainder, all reconciled to one Job.
-7. **Gift a Service [V2].** Homeowners gift "a spring cleanup for Mom" via a gift link; treated as a prepaid credit with gift-card law checks per state/province (expiry and dormancy rules).
+7. **Gift a Service [V1].** Homeowners gift "a spring cleanup for Mom" via a gift link; treated as a prepaid gift credit with gift-card law checks per state/province (expiry and dormancy rules). Scheduled for V1 (V1.3 in [24](24-roadmap-feature-catalog.md) section 4.6, item 24) once the gift-card law matrix ([16](16-marketing-growth-communications.md) open question 17) is done. The payment is a direct charge on the Company's connected Stripe account, sold through the website gift certificates in [16](16-marketing-growth-communications.md) 4.25, held as a `gift_credit` balance in [07](07-invoicing-billing-contracts.md)'s client wallet (4.7) and posted by 07's rule P29 (sold: Dr 1050 Stripe Clearing, Cr 2170 Gift Credit Liability; redeemed: Dr 2170, Cr 1200).
 8. **Neighborhood batch discount at checkout [V2].** When three neighbors on the same street prepay aeration and overseeding, all get a route-density discount; payments confirm the route ([04](04-scheduling-dispatch-routing.md)).
 9. **Retainage-aware commercial payments [V1].** Commercial invoices with retainage (e.g., 10% held until punch list) show retainage receivable and a "release retainage" payment request when conditions are met ([07](07-invoicing-billing-contracts.md)).
 10. **Mechanics lien deadline tracker for unpaid installs [V2].** For unpaid install jobs, show state/province lien notice deadlines and generate preliminary notices with counsel-approved templates ([07](07-invoicing-billing-contracts.md)).

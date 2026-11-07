@@ -451,7 +451,7 @@ State law requires commercial applicators to keep specific records; fields vary 
 | Applicator signature | Finger signature + attestation "Applied according to label" | Yes |
 
 Validations and rules:
-- **Wind gate:** if confirmed wind speed > the product label maximum or Company threshold (default 10 mph for liquid sprays; verify per label), the app warns and requires a reason to proceed; restricted-use products with a label wind max block submission over that limit.
+- **Wind gate:** label limits are hard blocks for every product, restricted-use or general-use (the label is the law; rule owned by [14](14-service-line-modules.md) 4.1.8). If confirmed wind speed exceeds the product label maximum, submission is blocked with no override; the technician can switch to a granular alternative mix if the round template allows, or mark the step `weather_hold`. If wind is at or below the label maximum but above a stricter Company threshold (default 10 mph for liquid sprays; verify per label), the app warns and `crew_lead` or `ops_manager` can override up to the label maximum with a reason (`guardrail.overridden`); the override is stored on the application record.
 - **Rain gate [V1]:** if rain probability > 60% in the label's rainfast window (e.g., 2 hours), warn.
 - **Fertilizer blackout rules [V1]:** jurisdiction rules (e.g., local summer nitrogen/phosphorus bans in some Florida counties, phosphorus restrictions in several states; verify per locality) warn or block for fertilizer products during restricted dates or near water bodies.
 - **Customer sensitivity:** client flags ("No chemicals - organic only", "Child with allergies - pre-notify 24 h") block chemical steps unless the visit's program explicitly overrides with office approval.
@@ -558,7 +558,7 @@ Outputs by category and Company rules:
 
 **4.11.2 Transcription and translation [MVP].** Server-side via the AI Gateway ([17](17-ai-copilot-automation.md)): speech-to-text with language auto-detect (English/Spanish, code-switching tolerant), then LLM translation to the reader's language with a landscaping glossary (e.g., "orillar" -> "edge", "mantillo"/"mulch" -> "mulch", "desbrozadora" -> "string trimmer", "aspersor" -> "sprinkler head"; glossary is Company-extendable). Display shows original transcript, translation, and audio playback. On-device transcription [V2] for offline-first users on capable devices.
 
-**4.11.3 Structured extraction [V1].** The LLM extracts actionable items from voice notes and proposes them as one-tap actions: "Client asked to skip next week" -> propose visit skip request to office; "Need 2 more yards of mulch for the back beds" -> propose material request; "Rotor broken in zone 3" -> propose Spot it. Nothing is executed without a tap.
+**4.11.3 Structured extraction [MVP office-side extraction via A4 in 17; V1 crew-side one-tap action proposals].** At [MVP], synced voice notes are processed office-side by the A4 Field-Note Agent ([17](17-ai-copilot-automation.md) 4.5.5), which summarizes them, extracts typed issues and drafts Opportunities for the office; the crew member sees no proposals in the app. At [V1], the same extraction schema runs for the crew member and the LLM proposes actionable items as one-tap actions in the app: "Client asked to skip next week" -> propose visit skip request to office; "Need 2 more yards of mulch for the back beds" -> propose material request; "Rotor broken in zone 3" -> propose Spot it. Nothing is executed without a tap.
 
 **4.11.4 Read-aloud [V1].** Text-to-speech of client notes, scope and safety instructions in the user's language for low-literacy users and hands-busy situations.
 
@@ -607,7 +607,7 @@ App features:
 
 **4.13.5 Telematics [V1].** For Companies with fleet telematics (e.g., Samsara, Geotab, Verizon Connect, Linxup; verify partner APIs) Rootline imports vehicle location, ignition and engine hours, and uses vehicle-based geofence events to corroborate drive/job segments. Where telematics exists, phone GPS sampling can be reduced to save battery (4.20). OEM mower telematics (e.g., Husqvarna Fleet Services, verify) [V2].
 
-**4.13.6 Fuel log [V1].** Gallons, price, odometer, receipt photo (OCR); fuel card import (WEX/Fleetcor-type cards, [V2], verify).
+**4.13.6 Fuel log [V1].** Gallons, price, odometer, receipt photo (OCR); fuel card import (WEX/Fleetcor-type cards, [V1], specified in [13](13-operations-inventory-equipment.md) 4.14.9 and [09](09-accounting-ledger-integrations.md) BK-05; verify each program's data export).
 
 ### 4.14 Crew chat, announcements and push notifications
 
@@ -1046,7 +1046,7 @@ sequenceDiagram
 1. Crew lead opens "Collect payment" on a visit/invoice; app checks permission, cap, device eligibility, and connectivity.
 2. App asks Rootline for a Terminal connection token; Rootline creates it on the Company's connected account.
 3. App discovers the Tap to Pay reader on the device and connects using the Company's Terminal Location (connected account).
-4. Rootline creates a PaymentIntent on the connected account (direct charge) for the invoice amount, with optional application fee and metadata (company_id, invoice_id, visit_id, collected_by).
+4. Rootline creates a PaymentIntent on the connected account (direct charge) for the invoice amount, with optional application fee and the standard Rootline metadata set by [08](08-payments-stripe.md) 4.6 (`rootline_tenant_id`, `rootline_payment_attempt_id`, `rootline_invoice_ids`, `rootline_client_id`, `rootline_env`), plus `rootline_visit_id` and `rootline_collected_by` for field collections.
 5. App collects the payment method (client taps card or wallet) and processes the payment.
 6. Device shows "Approved - posting"; the server marks the invoice paid only on the connected account's `payment_intent.succeeded` webhook; receipt sent.
 
@@ -1085,10 +1085,11 @@ flowchart TD
     B -->|Yes| D{"Client chem sensitivity flag?"}
     D -->|Yes| E["Block unless office override on file"]
     D -->|No| F["Begin application: weather auto-filled"]
-    F --> G{"Wind above label or company limit?"}
-    G -->|"Yes - restricted use"| H["Block submission"]
-    G -->|"Yes - general use"| I["Warn and require reason"]
-    G -->|No| J["Select zones on property map (area auto-summed)"]
+    F --> G{"Wind above product label maximum?"}
+    G -->|"Yes - any product"| H["Block submission: granular alternative or weather_hold"]
+    G -->|No| G2{"Wind above stricter Company threshold?"}
+    G2 -->|Yes| I["Warn; crew_lead or ops_manager override with reason, up to label max"]
+    G2 -->|No| J["Select zones on property map (area auto-summed)"]
     I --> J
     J --> K["Rate within label range, mix calculator"]
     K --> L["Posting and notification checklist with photo"]
@@ -1467,11 +1468,11 @@ Offline, the AI line reads "Will be classified when online" and the fix-it-now b
 
 ## 7. Data model
 
-Field-owned entities (server tables mirror these; shared entities such as Visit, Job, Property, Client, Employee, Crew, Equipment, PriceBookItem are defined in [20](20-architecture-security.md) and their owning module docs). All tables carry `tenant_id` (company_id) with row-level security, `created_at`, `updated_at`, `version`, and for client-created rows a client-generated UUIDv7 `id` and `origin_device_id`.
+Field-owned entities (server tables mirror these; shared entities such as Visit, Job, Property, Client, Employee, Crew, Equipment, PriceBookItem are defined in [20](20-architecture-security.md) and their owning module docs). All tables carry `tenant_id` (the Company's tenant key, per the conventions in [20](20-architecture-security.md) 7.1) with row-level security, `created_at`, `updated_at`, `version`, and for client-created rows a client-generated UUIDv7 `id` and `origin_device_id`.
 
 | Entity | Purpose | Key fields |
 |---|---|---|
-| `device` | Enrolled device | id, company_id, mode (personal/crew/kiosk), platform, os_version, app_version, managed (bool), assigned_vehicle_id, last_sync_at, revoked_at |
+| `device` | Enrolled device | id, tenant_id, mode (personal/crew/kiosk), platform, os_version, app_version, managed (bool), assigned_vehicle_id, last_sync_at, revoked_at |
 | `bucket_checkpoint` (server-tracked per device/bucket; mirrors local `_bucket_checkpoint`) | Change-log position | device_id, bucket_id, checkpoint_lsn, updated_at |
 | `sync_issue` | Rejected or conflicted mutation needing attention (the server side of the device's `_conflict` rows) | id, device_id, mutation_id, entity_type, entity_id, reason_code, server_state_json, resolution, resolved_by |
 | `time_punch` | Append-only punch event | id, employee_id, crew_id, type (clock_in/segment_change/clock_out), segment_type, visit_id, punched_by, method (self/crew_punch/pin/geofence_auto), device_time, trusted_time, hlc, lat, lng, accuracy_m, mock_flag, supersedes_id, reason |
@@ -1546,7 +1547,7 @@ erDiagram
 
     VISIT {
         uuid id PK
-        uuid company_id FK
+        uuid tenant_id FK
         uuid property_id FK
         uuid crew_id FK
         text status
@@ -1719,7 +1720,7 @@ All endpoints are tenant-scoped by token; the sync API is the only write path fo
 | `sync.conflict_detected` (emitted by the sync server when a field mutation conflicts, for example completed after cancel) | Ops inbox and needs-attention queue [04](04-scheduling-dispatch-routing.md) |
 | `time.punched`, `time.segment_changed`, `time.clocked_out`, `timesheet.crew_approved`, `attestation.signed`, `premium_pay.flagged` | Payroll [15](15-team-hr-payroll.md), job costing [09](09-accounting-ledger-integrations.md) |
 | `media.uploaded`, `media.published_to_client` (a `client_visible` asset finished uploading, or an asset was marked client-visible) | Portal visit and project feeds [06](06-customer-portal.md), AI photo QA [17](17-ai-copilot-automation.md) |
-| `material.used`, `plant.installed` | Inventory [13](13-operations-inventory-equipment.md), job costing [09](09-accounting-ledger-integrations.md), warranties [14](14-service-line-modules.md) |
+| `material.used`, `plant.installed` | Inventory [13](13-operations-inventory-equipment.md), job costing [09](09-accounting-ledger-integrations.md), plant warranty records [13](13-operations-inventory-equipment.md) 4.17 (client warranty terms and claims applied by the Warranty Engine in [14](14-service-line-modules.md) 4.5.7) |
 | `chemical_application.recorded` (on applicator signature; name per the event registry in [20](20-architecture-security.md)), `chemical_application.amended` | Compliance reports [14](14-service-line-modules.md), client notices [16](16-marketing-growth-communications.md), portal application records [06](06-customer-portal.md) |
 | `signature.captured` | Contracts/change orders [03](03-crm-sales-estimating-proposals.md) |
 | `field_payment.recorded` (check/cash), `field_payment.card_initiated` | AR [07](07-invoicing-billing-contracts.md), ledger [09](09-accounting-ledger-integrations.md) |
@@ -1805,7 +1806,7 @@ All AI goes through the AI Gateway with credit metering, tenant isolation and hu
 | Client note translation and summary | Standing instructions translated; "recent communications" summarized for crews | [MVP]/[V1] |
 | Spot-it classification and scope drafting | Vision + LLM classify the issue, match Price Book items, draft scope and price range | [MVP] (classify), [V1] (pricing) |
 | End-of-day report drafting | Summarizes the day's records and voice notes into the report | [V1] |
-| Structured extraction from voice | "Skip next week", "need more mulch" -> proposed actions | [V1] |
+| Structured extraction from voice | Office-side issue extraction and draft Opportunities by the A4 Field-Note Agent ([17](17-ai-copilot-automation.md) 4.5.5) at [MVP]; crew-side one-tap proposals ("Skip next week", "need more mulch" -> proposed actions) at [V1] | [MVP]/[V1] |
 | Photo QA before leaving site | Vision model checks after photos for debris on hard surfaces, missed edging, uneven stripes; prompts "Blow the driveway again?" Advisory only | [V2] |
 | Receipt, meter and ticket OCR | Field purchase receipts (4.6.6) at [MVP]; hour meters, dump tickets and fuel receipts at [V1] | [MVP]/[V1] |
 | Plant, weed, pest and disease ID | Photo ID cross-referenced with the Plant KB and region ([12](12-plant-knowledge-base.md)); suggests program adjustments | [V1] (online), [V2] (on-device) |

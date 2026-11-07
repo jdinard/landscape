@@ -808,7 +808,7 @@ journey
 
 **Standard actions:** `read`, `create`, `update`, `delete` (soft delete/archive), `export`.
 
-**Domain actions** (only where defined for a resource): `assign`, `send`, `approve`, `approve_internal`, `sign`, `void`, `refund`, `post`, `reconcile`, `lock`, `unlock`, `complete`, `dispatch`, `optimize`, `collect`, `generate` (AI), `impersonate`, `merge`, `renew`, `respond`, `publish`, plus the resource-specific actions named in the catalog below (for example `assign_role`, `grant`, `connect`, `run`, `record_offline_acceptance`, `write_off`, `configure`, `use`).
+**Domain actions** (only where defined for a resource): `assign`, `send`, `approve`, `approve_internal`, `sign`, `void`, `refund`, `post`, `reconcile`, `lock`, `unlock`, `complete`, `dispatch`, `optimize`, `collect`, `generate` (AI), `impersonate`, `merge`, `renew`, `respond`, `publish`, plus the resource-specific actions named in the catalog below (for example `assign_role`, `grant`, `connect`, `run`, `record_offline_acceptance`, `write_off`, `configure`, `use`, `cancel`, `adjust`, `manage`, `resolve`, `as_built`, `as_built_publish`).
 
 **Resource catalog** (abbreviated; the full list is generated from code and shown in the role editor):
 
@@ -816,19 +816,19 @@ journey
 |---|---|---|
 | Company admin | `company.settings`, `user`, `role`, `org_unit`, `legal_entity`, `integration`, `stripe_connection`, `api_key`, `automation`, `audit_log`, `data_export`, `rootline_subscription`, `security_policy`, `support_access` | `user.assign_role`, `stripe_connection.connect`, `support_access.grant`, `data_export.run` |
 | CRM | `lead`, `opportunity`, `client`, `client.contact`, `property`, `site_assessment`, `inbox.conversation` | `lead.assign`, `client.merge`, `inbox.conversation.send` |
-| Sales | `estimate`, `estimate.line`, `proposal`, `change_order`, `service_agreement`, `price_book`, `production_rate` | `proposal.send`, `proposal.approve_internal`, `proposal.record_offline_acceptance`, `change_order.approve_internal`, `service_agreement.renew` |
-| Design | `design`, `mockup`, `tenant_palette`, `plant_kb` (read), `takeoff` | `mockup.generate`, `design.share` |
+| Sales | `estimate`, `estimate.line`, `proposal`, `change_order`, `service_agreement`, `price_book`, `production_rate` | `proposal.send`, `proposal.approve_internal`, `proposal.record_offline_acceptance`, `change_order.approve_internal`, `service_agreement.renew`, `service_agreement.cancel` ([Invoicing](07-invoicing-billing-contracts.md) section 9) |
+| Design | `design`, `mockup`, `tenant_palette`, `plant_kb` (read), `takeoff` | `mockup.generate`, `design.share`, `design.as_built` (record as-built changes), `design.as_built_publish` (publish the as-built version) ([Design Studio](10-design-studio.md) section 9) |
 | Operations | `job`, `visit`, `route`, `crew`, `equipment`, `inventory`, `purchase_order`, `vendor`, `subcontract_order`, `checklist`, `chemical_application`, `incident` | `visit.dispatch`, `route.optimize`, `visit.complete`, `purchase_order.approve` |
 | Time and people | `time_entry`, `timesheet`, `employee`, `certification`, `training`, `payroll_export`, `expense` | `timesheet.approve`, `payroll_export.run` |
-| Billing | `invoice`, `payment`, `refund`, `credit_memo`, `statement`, `deposit`, `collections_case`, `dispute`, `payout` | `invoice.send`, `invoice.void`, `payment.collect`, `payment.refund`, `collections_case.write_off`, `dispute.respond` (evidence submitted to the Company's own Stripe account) |
-| Ledger | `ledger.account`, `ledger.journal_entry`, `ledger.period`, `bank_account`, `bank_reconciliation`, `bill`, `bill_payment`, `financial_report`, `tax_setting`, `accounting_sync` | `journal_entry.post`, `period.lock`, `period.unlock`, `bill_payment.approve` |
+| Billing | `invoice`, `billing_run`, `payment`, `refund`, `credit_memo`, `statement`, `deposit`, `collections_case`, `dispute`, `payout` | `invoice.send`, `invoice.void`, `billing_run.post` (approve and issue a Billing Run batch, [Invoicing](07-invoicing-billing-contracts.md)), `payment.collect`, `payment.refund`, `collections_case.write_off`, `dispute.respond` (evidence submitted to the Company's own Stripe account) |
+| Ledger | `ledger.account`, `ledger.journal_entry`, `ledger.period`, `ledger.control_account`, `ledger.posting_rule`, `wip`, `info_return`, `bank_account`, `bank_reconciliation`, `bill`, `bill_payment`, `financial_report`, `tax_setting`, `accounting_sync` | `journal_entry.post`, `period.lock`, `period.unlock`, `ledger.control_account.adjust` (manual lines on subledger control accounts, rule L13 in [Ledger](09-accounting-ledger-integrations.md)), `ledger.posting_rule.manage`, `wip.post`, `info_return.manage` (1099 and T5018 workspace), `accounting_sync.resolve`, `bill_payment.approve` |
 | Marketing | `campaign`, `review`, `website`, `booking_page`, `referral`, `consent`, `gift_certificate`, `marketplace_connection` (the full Growth sub-resource list and defaults are in [Marketing](16-marketing-growth-communications.md) section 9) | `campaign.send`, `review.respond`, `website.publish`, `referral.approve`, `consent.export` |
 | Reporting | `dashboard`, `report`, `report.schedule` | `report.export` |
 | AI | `copilot`, `ai_agent`, `ai_budget` | `copilot.use`, `ai_agent.configure`, `ai_agent.approve_action` |
 
 **Rules:**
 1. **Dependencies are explicit and auto-granted in the editor with a notice:** `X.update` implies `X.read`; `invoice.send` requires `invoice.read` and `field.price.read`; `payment.refund` requires `payment.read`. The editor refuses to save inconsistent roles; the API validates again.
-2. **Danger flags:** some permissions are marked `sensitive` and show a red badge plus a confirmation: `stripe_connection.*`, `bank_account.update`, `vendor.banking.update`, `data_export.run`, `user.assign_role`, `role.update`, `period.unlock`, `security_policy.update`, `support_access.grant`, `api_key.create`.
+2. **Danger flags:** some permissions are marked `sensitive` and show a red badge plus a confirmation: `stripe_connection.*`, `bank_account.update`, `vendor.banking.update`, `data_export.run`, `user.assign_role`, `role.update`, `period.unlock`, `ledger.control_account.adjust`, `ledger.posting_rule.manage`, `security_policy.update`, `support_access.grant`, `api_key.create`.
 3. **Owner-only permissions** cannot be granted to any other role: `stripe_connection.connect` / `disconnect` (covers both the Connect OAuth path and pasting restricted API keys on the advanced path, per [Payments](08-payments-stripe.md)), `rootline_subscription.cancel`, `company.delete`, `ownership.transfer`, `security.lockdown` (section 14, item 13), and `security_policy.update` when SSO is enforced. Multiple users can hold `owner` (partners); see 5.18.6 for partner-dispute protections.
 4. **Permission keys are stable API.** Renames ship as aliases for 2 major versions; tenants' custom roles are migrated automatically, and a changelog entry appears in the role editor.
 5. **This document is the canonical permission catalog.** Sibling docs sometimes use illustrative spellings. They map one-to-one, and the code generator registers them as aliases so nobody has to rename prose:
@@ -958,7 +958,7 @@ Rootline ships nine tenant role templates matching the personas. Templates are v
 | `office_manager` | Front office: CRM, scheduling, invoicing, collections, team admin (no role editing), no Ledger P&L by default | Web, mobile | Office | Required |
 | `estimator` | Own pipeline, Estimates and Proposals; cost and margin on own Estimates; branch lead pool | Web, tablet | Office | Required |
 | `designer` | Design Studio, Mockups, Plant KB, prices (no cost or margin by default) | Web, tablet | Office + Designer entitlement | Required |
-| `ops_manager` | Branch operations: Jobs, Visits, dispatch, Crews, equipment, timesheet approval, job cost (hours and cost; margin per setting) | Web, mobile | Office | Required |
+| `ops_manager` | Branch operations: Jobs, Visits, dispatch, Crews, equipment, timesheet approval, job cost (hours and cost; margin per setting), as-built reconciliation and publishing (`design.as_built`, `design.as_built_publish`); `mockup.generate` is off by default and a Company can enable it for account managers who sell enhancements ([AI Mockups](11-ai-design-mockups.md) 5.9) | Web, mobile | Office | Required |
 | `crew_lead` | Crew app: crew Visits, crew time edits, checklists, chemical logs, field change-order drafts, optional field payments | Mobile, kiosk | Field (billed only when active) | App PIN or biometrics |
 | `technician` | Crew app: own time, crew Visits (limited), photos, checklists | Mobile, kiosk | Field (billed only when active) | Kiosk PIN or app PIN |
 | `bookkeeper` | Ledger, AR/AP, bank rec, reports, payroll export, read-only ops drill-down | Web | Free bookkeeper seat (1 per Company; more when linked to a verified Accountant Partner firm) | Required |
@@ -1123,9 +1123,11 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 | Mode | What it allows | Consent | Default duration | Priority |
 |---|---|---|---|---|
 | **Metadata view** | Tenant profile, plan, usage, feature flags, error logs (PII-redacted), sync health, integration status, user list (names, roles, last active) | None (covered by ToS; logged) | n/a | [MVP] |
-| **View as user (read-only)** | See the app exactly as a specific user sees it (that user's permissions, never more). Writes are blocked at the API layer | Tenant grant by owner or office_manager (`support_access.grant`), per ticket or standing read-only consent (opt-in) | 72 h per grant; each session max 60 min | [MVP] |
-| **Act as user (read-write)** | Perform actions as the user, e.g. fix a Route or re-run an import | Explicit per-ticket grant with `write` scope; owner approval required | 24 h; each session max 30 min | [MVP] |
+| **View as user (read-only)** | See the app exactly as a specific user sees it (that user's permissions, never more). Writes are blocked at the API layer | Tenant grant with scope `read_only` by owner or office_manager (`support_access.grant`), per ticket or standing read-only consent (opt-in, reconfirmed by the owner every 90 days) | 72 h per grant by default, maximum 7 days; each session max 60 min | [MVP] |
+| **Act as user (read-write)** | Perform actions as the user, e.g. fix a Route or re-run an import | Explicit per-ticket grant with scope `read_write`; owner approval required | 24 h by default, maximum 72 h; each session max 30 min | [MVP] |
 | **Break-glass** | Engineer access to production data for incident response or data repair (SQL via audited bastion, scoped to one tenant) | Two-person rule: `platform_owner` approval (or a second designated approver if the founder is unavailable) with a legal or security reason code, as in [Platform Admin](19-platform-admin-portal.md); tenant notified within 24 h unless legally prohibited | 30-120 min, auto-revoked | [MVP] |
+
+**Grant scopes.** Each grant names one scope: `read_only` ("view as user"), `read_write` ("act as user"), or one of the task scopes `billing_setup`, `ledger` and `migration`. The task scopes use the same consent model, banners and logs and are approved only by an `owner` (`migration` adds a `bookkeeper` co-sign for financial objects; `ledger` is an explicit opt-in). Their default and maximum durations and session caps are set in [Platform Admin](19-platform-admin-portal.md) PA-051 and enforced as described in [Architecture](20-architecture-security.md).
 
 **Impersonation rules:**
 1. Support can only impersonate users whose role is equal to or lower than the granting user's (an office_manager cannot grant access to "view as owner").
@@ -1136,7 +1138,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
    - bulk exports;
    - sending messages to Clients (unless explicitly granted per ticket);
    - deleting records (soft-delete only, flagged).
-3. Every request carries `actor_id` (staff), `subject_id` (impersonated user) and `ticket_id`. The UI shows an unmissable orange banner "Viewing as Miguel Hernández - Rootline Support (Maya) - Ticket 4821 - ends in 42 min".
+3. Every request carries `actor_id` (staff), `subject_id` (impersonated user) and `ticket_id`. The UI shows an unmissable orange banner (the Clay impersonation band, token `color.banner.impersonation` in [UX](21-ux-design-system-sitemaps.md) section 8.3, deliberately not the red danger color) "Viewing as Miguel Hernández - Rootline Support (Maya) - Ticket 4821 - ends in 42 min".
 4. **Tenant transparency:** Settings > Security > Support access log lists every session (who, when, duration, mode, ticket, pages and records touched). Owners get an email summary after each session.
 5. Copilot is disabled inside impersonation sessions to avoid confusing attribution [MVP].
 6. **Viewing the portal as a Client contact** [V1] is allowed only when the Company grants it for a named contact on a ticket (e.g. "Jennifer can't see her Mockups"). Payment-method, signature and contact-management screens render as placeholders. Rootline support never contacts a Company's Clients directly; the Company owns that relationship.
@@ -1219,7 +1221,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 | Crew device (per person on the shared tablet) | Back to the PIN picker after 2 min idle | Device enrollment, renewable | Same as crew session | Personal screens need the PIN every time |
 | Yard kiosk [V1] | 30 s per user interaction | Device certificate valid 1 year, renewable | 7 days of punches queued | PIN reset requires supervisor PIN |
 | Sub portal (full) [V1] | 8 h | 14 days | n/a | Banking, tax info and bill submission (MFA) |
-| Customer Portal | 30 days rolling on a trusted device; 7 days idle for commercial `billing` and `primary` contacts (Company can shorten to 1 day), per [Customer Portal](06-customer-portal.md) | 90 days | n/a | Signing, payment, contact changes (OTP if last verification more than 10 min ago) |
+| Customer Portal | 30 days rolling on a trusted device; 7 days idle for commercial `billing` and `primary` contacts (Company can shorten to 1 day), per [Customer Portal](06-customer-portal.md) | 90 days | n/a | Per the proof ladder in [Customer Portal](06-customer-portal.md) 4.2.5: signing above the threshold (default $10,000) or under a non-matching name, paying with a saved method, adding or removing payment methods, changing autopay, contact changes and Property Record export or transfer (one-time code to the on-file email or phone, or a passkey, if the last proof is more than 10 min old). Paying the linked invoice or deposit with a newly entered card or bank account needs no extra proof |
 | Accountant Hub | 8 h | 14 days | n/a | Period unlock, journal entry delete, employee PII |
 | Platform Admin | 30 min | 8 h | n/a | Every tenant-touching privileged action (hardware key tap) |
 
@@ -2175,6 +2177,7 @@ erDiagram
 | `proposal.record_offline_acceptance` (paper or verbal, with upload and reason) | X/a | X/a | X/o | - | X/b | - | - | - | - |
 | `change_order` | RWDX/a | RWX/a | RWX/o | R/o | RWX/b | W/c draft, no price | - | R/a | W/o request |
 | `service_agreement` (incl. renew) | RWDX/a | RWDX/a | RWX/o | - | R/b | - | - | R/a | - |
+| `service_agreement.cancel` (cancellation terms per [Invoicing](07-invoicing-billing-contracts.md)) | X/a | X/a | - | - | W/b request | - | - | - | - |
 | `price_book` | RWD/a | RW/a | R/a | R/a | R/a | R/a names only | R/a names only | R/a | - |
 | `production_rate` | RW/a | R/a | R/a | - | RW/b | - | - | R/a | - |
 
@@ -2183,7 +2186,9 @@ erDiagram
 | Capability | owner | office_manager | estimator | designer | ops_manager | crew_lead | technician | bookkeeper | subcontractor |
 |---|---|---|---|---|---|---|---|---|---|
 | `design` | RWD/a | R/a | RW/o + R/b | RWD/o + R/a | R/b | R/c plan sheets | R/c plan sheets | - | R/o shared sheets |
-| `mockup.generate` (spends AI credits) | X/a | X/a | X/o | X/o | - | - | - | - | - |
+| `mockup.generate` (spends AI credits) | X/a | X/a | X/o | X/o | X/b cfg (account managers who sell enhancements) | - | - | - | - |
+| `design.as_built` (record as-built changes) | X/a | X/a | - | X/o | X/b | X/c | W/c photos and notes | - | X/o own trade layer |
+| `design.as_built_publish` (publish the as-built version) | X/a | X/a | - | X/o | X/b | - | - | - | - |
 | `tenant_palette` | RWD/a | R/a | R/a | RWD/a | R/a | - | - | - | - |
 | `ai_budget` (credit caps) | RWX/a | R/a | - | - | - | - | - | R/a | - |
 
@@ -2225,6 +2230,7 @@ erDiagram
 | `invoice` | RWDX/a | RWDX/a | R/o | - | RW/b draft | - (cfg field invoice) | - | RWDX/a | - |
 | `invoice.send` | X/a | X/a | - | - | X/b cfg | - | - | X/a | - |
 | `invoice.void` | X/a | X/a <=lim | - | - | - | - | - | X/a | - |
+| `billing_run` (prepare and review) and `billing_run.post` (issue the batch) | RWX/a | RWX/a | - | - | - | - | - | RWX/a | - |
 | `payment.collect` (field, through Company Stripe) | X/a | X/a | X/o | - | X/b | X/c cfg <=lim | X/c cfg <=lim | - | - |
 | `payment.record` (manual check, cash) | X/a | X/a | - | - | - | X/c cfg | - | X/a | - |
 | `payment.refund` | X/a | X/a <=lim | - | - | - | - | - | X/a <=lim | - |
@@ -2243,12 +2249,17 @@ erDiagram
 | `ledger.account` (Chart of Accounts) | RWD/a | - | - | - | - | - | - | RWD/a | - |
 | `ledger.journal_entry` | RWDX/a | - | - | - | - | - | - | RWDX/a | - |
 | `ledger.period.lock` / `unlock` | X/a | - | - | - | - | - | - | X/a | - |
+| `ledger.control_account.adjust` (rule L13 in [Ledger](09-accounting-ledger-integrations.md); step-up) | X/a | - | - | - | - | - | - | X/a | - |
+| `ledger.posting_rule.manage` (posting-rule overrides; step-up) | X/a | - | - | - | - | - | - | X/a | - |
+| `wip.post` (post the WIP schedule) | X/a approve | - | - | - | - | - | - | X/a | - |
+| `info_return.manage` (1099 and T5018 workspace and filing) | RWX/a | RW/a | - | - | - | - | - | RWX/a | R/o own forms |
 | `bank_account`, `bank_reconciliation` | RWX/a | - | - | - | - | - | - | RWX/a | - |
 | `bank_account.update` (Ledger and bill-pay accounts; Stripe payout banks change only in the Company's Stripe dashboard) | X/a dual control | - | - | - | - | - | - | - | - |
 | `financial_report` (P&L, balance sheet, cash flow) | R/a | - cfg | - | - | R/b cfg branch P&L | - | - | R/a | - |
 | `job_cost_report` | R/a | R/a | R/o | - | R/b | hours-only scorecard | - | R/a | - |
 | `tax_setting` | RW/a | R/a | - | - | - | - | - | RW/a | - |
 | `accounting_sync` (QuickBooks, Xero) | RWX/a | R/a | - | - | - | - | - | RWX/a | - |
+| `accounting_sync.resolve` (resolve sync errors) | X/a | - cfg | - | - | - | - | - | X/a | - |
 
 **Marketing, reporting and AI**
 
@@ -2293,8 +2304,8 @@ See the matrix in 5.11. Additional rules:
 | Tenant directory and metadata (plan, usage, health) | RW | R | - | R | R |
 | Tenant lifecycle: create, suspend, reactivate | X | X suspend for abuse, with reason | - | X suspend for non-payment | - |
 | Tenant deletion (after retention) | X dual control | - | - | - | X execution only |
-| Tenant data: view as user (consented) | X | X | - | - | X with ticket |
-| Tenant data: act as user (consented, write) | X | X owner-approved grant | - | - | X owner-approved grant |
+| Tenant data: view as user (consented, `read_only` scope) | X | X | - | - | X with ticket |
+| Tenant data: act as user (consented, `read_write` scope) | X | X owner-approved grant | - | - | X owner-approved grant |
 | Break-glass production data access | approve | - | - | - | request |
 | Tenants' Client payments and payouts | **impossible by design** (held in each Company's Stripe; metadata only: connection status) | metadata | - | metadata | metadata |
 | Rootline SaaS billing: invoices, credits, refunds | RWX | R | - | RWX (refunds over $1,000 dual control) | - |

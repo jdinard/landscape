@@ -311,16 +311,16 @@ Modules map to product domains and to Postgres schemas. A module **owns** its ta
 | `crm` | Clients, properties, contacts, tags, notes, communication preferences, consent | client, property, contact, consent_record, property_access_info | `client.created`, `property.geocoded` | [03](03-crm-sales-estimating-proposals.md) |
 | `sales` | Leads, opportunities, site assessments, estimates, proposals, e-sign, change orders, renewals | lead, opportunity, site_assessment, estimate, estimate_line, proposal, proposal_option, signature, change_order | `proposal.sent`, `proposal.accepted` | [03](03-crm-sales-estimating-proposals.md) |
 | `catalog` | Price Book items, assemblies/kits, production rates, labor burden, overhead model, tax categories | price_book_item, assembly, production_rate, cost_profile | `price_book_item.updated` | [03](03-crm-sales-estimating-proposals.md), [13](13-operations-inventory-equipment.md) |
-| `ops` | Jobs, phases, service agreements, visits, recurrence rules, crews, routes, dispatch, checklists | job, job_phase, service_agreement, visit, recurrence_rule, crew, crew_member, route, route_stop, checklist_run | `visit.scheduled`, `visit.completed` | [04](04-scheduling-dispatch-routing.md), [14](14-service-line-modules.md) |
-| `field` | Device registry, sync scopes, field forms, chemical application logs, safety incidents, GPS | device, sync_cursor, chemical_application, safety_incident, location_ping | `chemical_application.recorded` | [05](05-field-crew-mobile-app.md) |
-| `people` | Employees, certifications, pay rates, time entries, timesheets, payroll export | employee, certification, pay_rate, time_entry, timesheet, payroll_run_export | `timesheet.approved` | [15](15-team-hr-payroll.md) |
-| `billing` | Invoices, credit memos, statements, deposits, retainage, AR, dunning, sales tax | invoice, invoice_line, credit_memo, statement, tax_calculation, dunning_run | `invoice.issued`, `invoice.overdue` | [07](07-invoicing-billing-contracts.md) |
+| `ops` | Jobs, phases, service schedules (materialized from agreements), visits, recurrence rules, crews, routes, dispatch, checklists | job, job_phase, service_schedule, visit, recurrence_rule, crew, crew_member, route, route_stop, checklist_run | `visit.scheduled`, `visit.completed` | [04](04-scheduling-dispatch-routing.md), [14](14-service-line-modules.md) |
+| `field` | Device registry, sync scopes, field forms, time punches, chemical application logs, safety incidents, GPS | device, sync_cursor, sync_issue, chemical_application, safety_incident, location_ping | `chemical_application.recorded`, `sync.conflict_detected` | [05](05-field-crew-mobile-app.md) |
+| `people` | Employees, credentials (licenses and certifications), pay rates, time segments, timesheets, payroll export | employee, credential, pay_rate, time_segment, timesheet, payroll_batch | `timesheet.approved`, `payroll_batch.exported` | [15](15-team-hr-payroll.md) |
+| `billing` | Service agreements (lifecycle, billing schedules, renewals), invoices, deposit requests, credit memos, statements, retainage, AR, dunning, sales tax | service_agreement, invoice, invoice_line, credit_memo, statement, tax_calculation, dunning_run | `agreement.activated`, `invoice.issued`, `invoice.overdue` | [07](07-invoicing-billing-contracts.md) |
 | `payments` | Stripe connections (OAuth/restricted keys), payment intents, payments, refunds, disputes, payouts | payment_account, payment, payment_allocation, refund, dispute, payout, stripe_event | `payment.succeeded`, `dispute.created` | [08](08-payments-stripe.md) |
 | `ledger` | Chart of accounts, journal entries/lines, periods, posting rules, bank feeds, reconciliation, AP, job costing, WIP | ledger_account, journal_entry, journal_line, accounting_period, posting_rule, bank_transaction, bill, vendor_credit | `journal_entry.posted`, `period.closed` | [09](09-accounting-ledger-integrations.md) |
-| `inventory` | Materials, stock, purchase orders, vendors, subcontractor agreements, equipment, fleet, maintenance | item_stock, purchase_order, vendor, equipment, equipment_assignment, maintenance_record | `purchase_order.received` | [13](13-operations-inventory-equipment.md) |
-| `design` | Designs, versions, options, layers, objects, takeoffs, exports | design, design_version, design_option, design_object, takeoff_line | `design.version_published`, `takeoff.generated` | [10](10-design-studio.md) |
-| `mockup` | AI mockups, generation jobs, prompts, derivatives, plan-to-mockup sync | mockup, mockup_job, mockup_variant | `mockup.generated` | [11](11-ai-design-mockups.md) |
-| `kb` (global) | Plants, taxonomy, traits, regions, plant region profiles, palettes, nursery availability; tenant overlays | plant, plant_trait, region, plant_region_profile, plant_palette, nursery_listing, tenant_plant_overlay | `kb.release_published` | [12](12-plant-knowledge-base.md) |
+| `inventory` | Materials, stock, purchase orders, vendors, subcontractor agreements, equipment, fleet, maintenance | item, stock_balance, stock_movement, purchase_order, vendor, asset, tool_checkout, maintenance_work_order | `ops.po.sent`, `ops.receipt.posted`, `ops.pm.due` (the `ops.*` namespace of [13](13-operations-inventory-equipment.md) belongs to this module, not to `ops`) | [13](13-operations-inventory-equipment.md) |
+| `design` | Designs, versions, options, layers, objects, takeoffs, exports | design, design_version, design_option, design_object, takeoff_line | `design.version_published`, `design.takeoff_updated` | [10](10-design-studio.md) |
+| `mockup` | AI mockups, generation jobs, prompts, derivatives, plan-to-mockup sync | mockup (one row per rendered variant), mockup_job, mockup_region | `mockup.generated` | [11](11-ai-design-mockups.md) |
+| `kb` (global) | Plants, taxonomy, traits, regions, plant region profiles, palettes, nursery availability; tenant overlays | plant, plant_trait_value, region, plant_region_profile, plant_palette, nursery_listing, tenant_plant_overlay | `kb.release_published` | [12](12-plant-knowledge-base.md) |
 | `media` | Uploads, EXIF/GPS, derivatives, albums, signed access | media_asset, media_derivative, media_link | `media.processed` | Section 4.12 |
 | `comms` | Notifications, templates, inbox threads, SMS/email/push, consent enforcement, 10DLC registration | message, thread, template, notification_preference, sms_registration | `message.delivered`, `message.inbound_received` | [16](16-marketing-growth-communications.md) |
 | `portal` | Client portal sessions, client requests, approvals, portal branding config | portal_session, client_request, approval | `client_request.submitted` | [06](06-customer-portal.md) |
@@ -331,6 +331,8 @@ Modules map to product domains and to Postgres schemas. A module **owns** its ta
 | `reporting` | Read models, KPI materializations, report definitions, exports | report_definition, kpi_snapshot, export_job | `export.ready` | [18](18-reporting-analytics.md) |
 | `platform` (global) | Platform staff, Rootline's own SaaS catalog and subscriptions (plans, add-ons, meters, usage records), partners, homeowner marketplace, feature flags, support tickets, support access grants, DSAR cases | staff_user, plan, tenant_subscription, usage_record, partner, flag, support_case, support_access_grant, dsar_case | `subscription.plan_changed`, `support_access.approved` | [19](19-platform-admin-portal.md), [22](22-business-model-pricing-gtm.md) |
 | `audit` | Append-only audit trail, tamper-evident chains | audit_event | n/a (sink) | Section 4.24 |
+
+**Entity names and aliases.** Entity names in this table follow the owning module docs. Earlier drafts of this table used summary names that some docs still map, and the schema registry keeps them as aliases: `equipment` = `asset`, `item_stock` = `stock_balance` (the on-hand projection of `stock_movement`), `maintenance_record` = `maintenance_work_order`, `equipment_assignment` = `tool_checkout` ([13](13-operations-inventory-equipment.md) section 7.1); `certification` = `credential`, `time_entry` = `time_segment` (derived from the punch events in [05](05-field-crew-mobile-app.md)), `payroll_run_export` = `payroll_batch` ([15](15-team-hr-payroll.md) section 7.1); `plant_trait` = `plant_trait_value` ([12](12-plant-knowledge-base.md)); `mockup_variant` = a `mockup` row, one per rendered variant, produced by a `mockup_job` ([11](11-ai-design-mockups.md)). The canonical pesticide record is `chemical_application` (lines in `chemical_application_product`, corrections as amendment records) in the `field` module ([05](05-field-crew-mobile-app.md)); [14](14-service-line-modules.md) calls the same sealed record `application_record` (with `application_line` and `application_revision`), and those names are registered aliases. The agreement entity is `service_agreement`, owned by `billing` ([07](07-invoicing-billing-contracts.md)); `ops` owns the Service Schedules materialized from it ([04](04-scheduling-dispatch-routing.md)).
 
 **Module rules (enforced in CI):**
 
@@ -702,17 +704,25 @@ CREATE TABLE platform.outbox_event (
 |---|---|---|---|
 | `tenant.provisioned` / `tenant.lifecycle_changed` (carries `from`, `to`, `policy_version`) | tenancy | iam, comms, platform billing, sync (access class), cache invalidation | No |
 | `membership.created` / `membership.role_changed` / `membership.revoked` | iam | field (bucket reset), audit | Yes |
-| `lead.created` / `lead.converted` | sales | automation, comms, growth | Yes |
-| `opportunity.stage_changed` | sales | reporting, automation | Yes |
-| `estimate.approved_internal` | sales | reporting | Yes |
-| `proposal.sent` / `proposal.viewed` / `proposal.accepted` / `proposal.declined` / `proposal.expired` | sales | ops (job creation), billing (deposit), comms, automation, ai | Yes |
+| `lead.created` / `lead.status_changed` (registered alias: `lead.converted` = `lead.status_changed` with `to = converted`, emitted in the same transaction as `opportunity.created`) | sales | automation, comms, growth | Yes |
+| `opportunity.created` / `opportunity.stage_changed` | sales | reporting, automation | Yes |
+| `estimate.approved` (registered alias: `estimate.approved_internal`) | sales | reporting, proposal builder | Yes |
+| `proposal.sent` / `proposal.viewed` / `proposal.signed` (one per signer) / `proposal.accepted` / `proposal.executed` / `proposal.signature_lapsed` / `proposal.declined` / `proposal.expired` | sales | billing (`pending_deposit` shells and Deposit Request on `accepted`, activation on `executed`, voiding on `signature_lapsed`), payments (deposit flow), ops (Jobs schedulable on `executed`), design (version lock and `sold`), inventory (purchasing on `executed`), comms, automation, ai. Lifecycle and payloads owned by [03](03-crm-sales-estimating-proposals.md) section 8.2 | Yes |
 | `change_order.approved` | sales | ops, billing, ledger (WIP) | Yes |
 | `job.created` / `job.completed` / `job.canceled` | ops | billing, ledger (job costing), reporting | Yes |
-| `service_agreement.activated` / `service_agreement.renewal_due` | ops | billing, comms, sales (renewal proposal) | Yes |
-| `visit.scheduled` / `visit.rescheduled` / `visit.started` / `visit.completed` / `visit.skipped` | ops / field | billing (per-visit invoicing), comms (on-my-way and completion notices), people (time allocation), ledger (job cost), portal | Yes |
-| `route.optimized` | ops | field (bucket update), realtime | No |
-| `chemical_application.recorded` | field | compliance reports, portal (lawn-care notice), reporting | Yes |
-| `time_entry.recorded` / `timesheet.approved` | people | ledger (labor cost), payroll export | Yes |
+| `job.phase_changed` / `phase.completed` / `milestone.reached` / `project.completed` (registered alias: `project_phase.completed` from [14](14-service-line-modules.md)) | ops | billing (milestone invoices), payments (milestone installments), portal (project tracker), service lines (warranties) | Yes |
+| `agreement.activated` / `agreement.amended` / `agreement.suspended` / `agreement.resumed` / `agreement.renewal_due` / `agreement.renewed` / `agreement.canceled` (registered aliases: `service_agreement.*`; lifecycle owned by [07](07-invoicing-billing-contracts.md) section 8.3) | billing | ops (Service Schedules), comms, sales (renewal proposal), payments (autopay scope), automation | Yes |
+| `visit.scheduled` / `visit.rescheduled` / `visit.assigned` / `visit.unassigned` / `visit.dispatched` | ops | field (crew app sync), comms (notifications), portal, inventory (reservations, load-outs), service lines (round instances), people (payroll allocation forecast) | `visit.scheduled` and `visit.rescheduled` only ([04](04-scheduling-dispatch-routing.md) section 8.5) |
+| `visit.en_route` / `visit.arrived` / `visit.started` / `visit.paused` / `visit.departed` | ops / field | comms (on-my-way notices), portal (live status), ETA, reporting | No |
+| `visit.completed` / `visit.partially_completed` / `visit.skipped` / `visit.canceled` / `visit.missed` | ops / field | billing (per-visit invoicing, agreement counters), people (time allocation), ledger (job cost), portal, reporting | `visit.completed` and `visit.skipped` only ([04](04-scheduling-dispatch-routing.md) section 8.5) |
+| `visit.verified` | ops | billing (per-visit invoicing and the exception queue) | No |
+| `crew.assignment_changed` | ops | field (crew roster and PIN cache), people (acting crew-lead pay) | No |
+| `eta.updated` | ops | portal, live-tracking link | No |
+| `weather.alert_raised` / `weather.delay_declared` | ops | dispatcher, field (crew app banners), comms, portal banner, inventory (holding-yard care, rain-day PM), reporting (weather flags) | `weather.delay_declared` only ([04](04-scheduling-dispatch-routing.md) section 8.5) |
+| `route.optimized` / `route.published` | ops | field (bucket update), realtime, inventory (load-out regeneration) | `route.published` only |
+| `sync.conflict_detected` | field (sync engine, 4.11.5) | ops (needs-attention queue, for example completed after cancel) | No |
+| `chemical_application.recorded` / `chemical_application.amended` (registered alias: `application_record.sealed` from [14](14-service-line-modules.md); emitted when the applicator-signed record is accepted and sealed server-side) | field | compliance reports and client notices (service lines), portal (lawn-care notice), inventory (product decrement), reporting | Yes |
+| `time.punched` / `time.segment_changed` (field) and `timesheet.approved` (people) (registered alias: `time_entry.recorded` = `timesheet.approved` for postings, per [15](15-team-hr-payroll.md) section 8.3) | field / people | ledger (labor cost), payroll export | `timesheet.approved` only |
 | `invoice.issued` / `invoice.voided` / `invoice.overdue` / `invoice.paid` | billing | ledger, comms, portal, integrations (QBO), automation | Yes |
 | `credit_memo.issued` | billing | ledger, integrations | Yes |
 | `payment.succeeded` / `payment.failed` / `payment.refunded` | payments | billing (allocation), ledger, comms, integrations | Yes |
@@ -720,9 +730,9 @@ CREATE TABLE platform.outbox_event (
 | `payout.paid` | payments | ledger (clearing to bank), reconciliation | Yes |
 | `journal_entry.posted` / `period.closed` / `period.reopened` | ledger | reporting, integrations, audit | Yes (`ledger:read` scope) |
 | `bank_transaction.imported` / `bank_transaction.matched` | ledger | reconciliation UI, ai (categorization) | No |
-| `purchase_order.sent` / `purchase_order.received` | inventory | ledger (AP, inventory), ops | Yes |
-| `equipment.maintenance_due` | inventory | comms, ops | Yes |
-| `design.version_published` / `takeoff.generated` | design | sales (estimate lines), mockup, portal | Yes |
+| `ops.po.sent` / `ops.receipt.posted` (registered aliases: `purchase_order.sent` / `purchase_order.received`) | inventory | ledger (commitments, GRNI, AP match), ops (deliveries) | Yes |
+| `ops.pm.due` (registered alias: `equipment.maintenance_due`) | inventory | comms, ops (dispatch availability) | Yes |
+| `design.version_published` / `design.takeoff_updated` | design | sales (estimate lines), mockup, portal | Yes |
 | `mockup.generated` / `mockup.failed` | mockup | portal, comms, ai (credits) | Yes |
 | `kb.release_published` | kb | search indexer, design (plant availability badges), cache invalidation | No (tenant notice only) |
 | `media.processed` | media | portal, ai (auto-tagging), design (site photos) | No |
@@ -733,6 +743,8 @@ CREATE TABLE platform.outbox_event (
 | `ai.credit_threshold_reached` | ai | comms (owner), platform billing | No |
 | `integration.sync_failed` | integrations | comms (owner/bookkeeper), platform support | No |
 | `dsar.case_opened` / `dsar.case_completed` | platform | audit, comms | No |
+
+**Naming and aliases.** The module docs own their event names and payloads; this catalog registers one canonical name per event in the `packages/events` schema registry. Where sibling docs use a different spelling, the registry records it as an **alias** that resolves to the same schema and the same event id, so a consumer subscribed to either name receives one delivery. The alias tables live with the owning module ([03](03-crm-sales-estimating-proposals.md) section 8.2, [07](07-invoicing-billing-contracts.md) section 8.3, [13](13-operations-inventory-equipment.md) section 8.2, [14](14-service-line-modules.md) section 8.2, [15](15-team-hr-payroll.md) section 8.3). Module-namespaced spellings (`payments.payment.succeeded`, `invoicing.invoice.issued`, `proposals.proposal.accepted`) are aliases of the short names above. The `ops.*` events of [13](13-operations-inventory-equipment.md) (`ops.po.*`, `ops.receipt.posted`, `ops.pm.*`, `ops.asset.*` and so on) belong to the **`inventory` module** and publish on its topic; the `ops.` prefix is that doc's namespace for operations-inventory events, not the scheduling `ops` module (schema) in 4.3.
 
 ### 4.10 Durable workflows (Temporal) [MVP]
 
@@ -751,8 +763,8 @@ CREATE TABLE platform.outbox_event (
 
 | Workflow | Trigger | Steps (abridged) | Timers / signals | Priority |
 |---|---|---|---|---|
-| `ProposalAcceptedWorkflow` | `proposal.accepted` | Create Job (+ phases from proposal options) → create deposit invoice (for example, 30% of a $18,400 paver patio) → send payment link → **wait for `payment.succeeded` signal** → mark Job "Ready to schedule" → notify `ops_manager` → if design attached, generate install packet (plan PDF, plant list, takeoff) | Reminders at day 2 and day 5. At day 10, escalate to estimator. Cancel on `proposal.revoked` | [MVP] |
-| `AgreementBillingWorkflow` | `service_agreement.activated` | For each billing period (for example, 8 equal installments Apr-Nov for a $3,360 season maintenance plan): draft invoice → apply autopay with saved payment method (off-session PaymentIntent on the Company's Stripe) → on failure, dunning sub-workflow (retry day 3, 5, 7; SMS + email) → post to ledger via events | Durable monthly timers, pause/resume signals, early-termination signal with proration | [MVP] |
+| `ProposalAcceptedWorkflow` | `proposal.accepted` | Billing creates the Service Agreement, Work Order and Project shells (+ phases from proposal options) in `pending_deposit` with their billing schedules; nothing is schedulable yet ([03](03-crm-sales-estimating-proposals.md) section 4.8) → create a **Deposit Request** (a `DEP-` document, not a revenue invoice; for example, 30% of an $18,400 paver patio = $5,520) on the Company's connected account → send payment link → **wait for `payment.succeeded` signal**; when paid, the ledger posts 1050 Stripe Clearing to 2150 Customer Deposits (`billing.P2`, [07](07-invoicing-billing-contracts.md), [09](09-accounting-ledger-integrations.md)) → sales emits `proposal.executed` → shells become active and Jobs enter the "Ready to schedule" queue ([04](04-scheduling-dispatch-routing.md)), purchasing tasks fire → notify `ops_manager` → if design attached, generate install packet (plan PDF, plant list, takeoff). Proposals with no deposit emit `proposal.accepted` and `proposal.executed` together and skip the wait | Deposit-chaser reminders at day 2 and day 5; at day 10, escalate to estimator. In "required to sign" mode the payment window is 72 h (configurable 24-168 h), after which `proposal.signature_lapsed` voids the shells. Ends on `proposal.executed`; cancels on `proposal.declined`, `proposal.expired`, `proposal.signature_lapsed` or when a revision supersedes the version | [MVP] |
+| `AgreementBillingWorkflow` | `agreement.activated` (alias `service_agreement.activated`) | For each billing period (for example, 8 equal installments Apr-Nov for a $3,360 season maintenance plan): draft invoice → apply autopay with saved payment method (off-session PaymentIntent on the Company's Stripe) → on failure, retry per [08](08-payments-stripe.md) section 4.15 (soft card declines on day 1, 3, 7 and 14; no retry on hard declines; ACH R01/R09 re-presented at most twice) with the failed-payment notices (SMS + email), then hand off to the [07](07-invoicing-billing-contracts.md) dunning policy → post to ledger via events | Durable monthly timers, pause/resume signals, early-termination signal with proration | [MVP] |
 | `SnowEventWorkflow` | Forecast ≥ 2 in, or a manual "Storm declared" | Pre-alert crews and salt inventory → when the observed trigger (≥ 2 in) is met, generate visits for every snow contract by priority tier (hospitals and HOA entrances first) → optimize routes → monitor completions → repeat pushes every N inches → post-event: per-push / per-event / seasonal billing per contract | Signals: `trigger_met`, `additional_push`, `storm_ended`. Timers for re-push checks | [V1] |
 | `MockupGenerationWorkflow` | User requests a mockup | Reserve AI credits → preprocess (segmentation, depth) → GPU generation (4 variants) → safety and quality checks → upscale → store derivatives → commit credits (or refund on failure) → notify | Activity timeouts 120 s with heartbeat. Cancel signal from UI | [MVP] |
 | `AccountingSyncWorkflow` | Integration connected | Initial backfill (chunked) → loop: wait for outbound events or inbound webhook signals → push/pull with idempotency → every 15 min poll for changes → continue-as-new daily | Signals: `pause`, `resync_object`, `mapping_changed` | [MVP] |
@@ -767,9 +779,9 @@ The crew app experience is specified in [Crew mobile app](05-field-crew-mobile-a
 
 #### 4.11.1 Client storage
 
-- **SQLite** on device (Expo SQLite in WAL mode, encrypted with SQLCipher; confirm the SQLCipher build option on the target Expo SDK during the Q1 spike). The database key lives in iOS Keychain or Android Keystore. It is wrapped by a server-issued device key held on the device under an **offline lease** (default 14 days, renewed on every successful sync). Crews can work offline for two weeks, and a revoked device whose remote wipe never runs loses access to its local file once the lease expires. On expiry the app hides data but keeps the mutation queue intact. The next sync either renews the lease or, for a revoked device, accepts one final flush of the queue before wiping, as in [05](05-field-crew-mobile-app.md) section 4.21.8. Field work is never destroyed by a timer. This closes the open choice left in [05](05-field-crew-mobile-app.md). Tables mirror the sync-able subset of server entities, plus `_mutation_queue`, `_bucket_checkpoint` and `_conflict` tables.
+- **SQLite** on device (Expo SQLite in WAL mode, encrypted with SQLCipher; confirm the SQLCipher build option on the target Expo SDK during the Q1 spike). The database key lives in iOS Keychain or Android Keystore. It is wrapped by a server-issued device key held on the device under an **offline lease** (default 14 days, renewed on every successful sync). The working offline limit is the **7-day offline grace** owned by [02](02-personas-roles-permissions.md) section 5.16: the app warns from day 5, and after 7 days without reaching the server new work is locked until the user re-authenticates, with the exceptions and warnings described in [05](05-field-crew-mobile-app.md) section 4.0.2. The 14-day lease is only the **cryptographic backstop** behind that grace: a revoked or lost device whose remote wipe never runs loses access to its local file once the lease expires, even if the app-level lock was bypassed. On expiry the app hides data but keeps the mutation queue intact. The next sync either renews the lease or, for a revoked device, accepts one final flush of the queue before wiping, as in [05](05-field-crew-mobile-app.md) section 4.21.8. Field work is never destroyed by a timer. This closes the open choice left in [05](05-field-crew-mobile-app.md). Tables mirror the sync-able subset of server entities, plus `_mutation_queue`, `_bucket_checkpoint` and `_conflict` tables.
 - The UI reads **only** from local SQLite (reactive queries). The network is never on the render path. Every action is a local write plus an enqueued mutation, completing in < 100 ms.
-- Storage budget: ≤ 200 MB structured data. Media cache ≤ 1 GB LRU (thumbnails for the next 7 days' properties are prefetched on Wi-Fi). Offline map tiles for today's route area are prefetched [V1].
+- Storage budget: ≤ 200 MB structured data. Media cache ≤ 1 GB LRU (thumbnails for the next 7 days' properties are prefetched on Wi-Fi). Offline map tiles follow the split in [05](05-field-crew-mobile-app.md) sections 4.1.2 and 4.21.3: the vector base map for the route corridor (2 km buffer, today and tomorrow) is prefetched [MVP], and satellite tiles arrive with offline map packs [V1]. Tiles live in the map SDK's offline region, not in a sync bucket, and count against the media cache.
 
 #### 4.11.2 Sync buckets (what a device holds)
 
@@ -875,7 +887,7 @@ flowchart LR
 
 | Capability | Behavior and rules | Priority |
 |---|---|---|
-| Task-based routing | Tasks such as `copilot.chat`, `estimate.draft_from_notes`, `proposal.write_scope`, `inbox.classify`, `kb.answer`, `layout.generate`, `mockup.render`, `review.reply_draft`, `receipt.extract`. Each task maps to a model chain in the **model registry** (primary + fallback + max cost), e.g. classification on a Haiku-tier model, chat and drafting on a Sonnet-tier model, multi-step planning and layout reasoning on an Opus-tier model. As of Nov 2026 the current models are Claude Haiku 5.5 ($0.10 / $0.50 per million input/output tokens, for prompts up to 100K tokens), Sonnet 5.5 ($2 / $10), Opus 5.5 ($4 / $20) and the Fable 5.1 top tier ($10 / $50) ([Claude docs](https://platform.claude.com/docs); verify before committing). **Rules:** (1) the registry pins exact model IDs, never "latest" aliases, so a provider release never silently changes behavior or cost; (2) a model swap is a registry change that must pass the task's eval suite at ≥ baseline before rollout; (3) each task also pins an **effort level**. Current Claude models think adaptively and bill thinking as output tokens, so `effort: low` on classification and extraction routes is the main cost lever after caching; (4) Fable-tier models require 30-day provider-side data retention (not zero-retention eligible), so the registry marks them **ineligible for tasks that carry Confidential data** unless the DPA analysis approves it | [MVP] |
+| Task-based routing | Tasks such as `copilot.chat`, `estimate.draft_from_notes`, `proposal.write_scope`, `inbox.classify`, `kb.answer`, `review.reply_draft`, `receipt.extract`, plus the mockup and layout routes whose task keys are owned by the [AI mockups route table](11-ai-design-mockups.md) (`restyle.preview`, `restyle.hd`, `restyle.4k`, `p2p.harmonize`, `layout.plan`, `chat.design_agent` and so on). Each task maps to a model chain in the **model registry** (primary + fallback + max cost), e.g. classification on a Haiku-tier model, chat and drafting on a Sonnet-tier model, and layout planning on a Sonnet-tier model that escalates to an Opus-tier model after repeated validation failure. As of Nov 2026 the current models are Claude Haiku 5.5 ($0.10 / $0.50 per million input/output tokens, for prompts up to 100K tokens), Sonnet 5.5 ($2 / $10), Opus 5.5 ($4 / $20) and the Fable 5.1 top tier ($10 / $50) ([Claude docs](https://platform.claude.com/docs); verify before committing). **Rules:** (1) the registry pins exact model IDs, never "latest" aliases, so a provider release never silently changes behavior or cost; (2) a model swap is a registry change that must pass the task's eval suite at ≥ baseline before rollout; (3) each task also pins an **effort level**. Current Claude models think adaptively and bill thinking as output tokens, so `effort: low` on classification and extraction routes is the main cost lever after caching; (4) Fable-tier models require 30-day provider-side data retention (not zero-retention eligible), so the registry marks them **ineligible for tasks that carry Confidential data** unless the DPA analysis approves it | [MVP] |
 | Structured outputs | Every task that feeds code (estimate lines, takeoff suggestions, layout JSON) uses JSON-schema-constrained output and strict tool schemas. Outputs are validated again server-side before use | [MVP] |
 | Grounding and retrieval | Retrieval over tenant data uses **the same policy engine as the user** (E8) through pgvector embeddings that live in tenant-scoped, RLS-protected tables. Plant answers are grounded in the Plant KB with citations to KB records | [MVP] |
 | Dimension-aware layout | Layout tasks receive the property geometry (meters, from the Design), setbacks, utilities and constraints. Generated layouts must pass a **geometry validator** (no plant within 2 ft of the foundation for shrubs over 6 ft mature width, no trees under power lines, no overlaps, spacing ≥ mature-spread rules) before display. See [11](11-ai-design-mockups.md) | [V1] |
@@ -966,7 +978,7 @@ The built-in general ledger is specified functionally in [Accounting, ledger and
 |---|---|---|
 | L1 | Every journal entry has ≥ 2 lines and Σ debits = Σ credits per entry, per currency | Lines store `amount_minor bigint` (positive = debit, negative = credit) with `CHECK (amount_minor <> 0)`. A **deferred constraint trigger** at commit asserts `SUM(amount_minor) = 0` grouped by currency and `COUNT(*) >= 2` |
 | L2 | Posted entries are immutable | `rootline_app` has no `UPDATE`/`DELETE` grant on `ledger.journal_line`. A trigger rejects updates to `journal_entry` where `status = 'posted'` except the `reversed_by_id` link. Corrections are **reversing entries** only |
-| L3 | Entries post only into open periods | Trigger checks `accounting_period.status` for `(tenant_id, entry_date)`: `open` allows posting; `soft_closed` requires the `period.post_soft_closed` permission flag set in the transaction context; `locked` rejects. Reopening a locked period requires `owner` + step-up and is audited |
+| L3 | Entries post only into open periods | Trigger checks `accounting_period.status` for `(tenant_id, entry_date)`: `open` allows posting; `soft_closed` requires the `period.post_soft_closed` permission flag set in the transaction context; `locked` rejects. Reopening a locked period (`locked → soft_closed`, permission `ledger.period.unlock`) requires an approved `approval_request` of type `period_reopen` in the transaction context plus step-up: the `owner`, or a `bookkeeper` under the owner's reopen policy (by default the bookkeeper's request routes to the owner). Periods older than 90 days, and any period in a locked fiscal year, need two distinct approvers. Every reopen is audited and notifies the owner ([09](09-accounting-ledger-integrations.md) section 4.1.5, [02](02-personas-roles-permissions.md)) |
 | L4 | Exactly-once posting from events | Unique `(tenant_id, posting_key)` on `journal_entry`, where `posting_key` is a deterministic **business key** built by the posting rule, never the event id. Examples: `invoice:{invoice_id}:issue`, `invoice:{invoice_id}:void`, `stripe_bt:{balance_transaction_id}:{posting_rule_version}` (as in [08](08-payments-stripe.md)), `payout:{payout_id}:settle`. Because the event id is excluded, a bug that emits `invoice.issued` twice under two different event ids still cannot double-post. The second insert hits the constraint and is logged as an `L4_duplicate_attempt` metric (Section 12). Reversals use their own key (`...:reverse:{n}`) |
 | L5 | Gapless, sequential journal numbers per tenant | Assigned at post time from `ledger.sequence` rows locked `FOR UPDATE` in the posting transaction (gapless because the transaction either commits with the number or rolls back) |
 | L6 | Lines reference active, postable (non-header) accounts of the same tenant | Composite FK `(tenant_id, account_id)` + trigger on `is_postable` and `is_active` |
@@ -1769,10 +1781,10 @@ erDiagram
   CREW ||--o{ CREW_MEMBER : includes
   EMPLOYEE ||--o{ CREW_MEMBER : "assigned as"
   MEMBERSHIP |o--o| EMPLOYEE : "linked to"
-  EMPLOYEE ||--o{ TIME_ENTRY : records
-  VISIT ||--o{ TIME_ENTRY : "allocated to"
+  EMPLOYEE ||--o{ TIME_SEGMENT : works
+  VISIT ||--o{ TIME_SEGMENT : "allocated to"
   VISIT ||--o{ CHEMICAL_APPLICATION : logs
-  EQUIPMENT }o--o| CREW : "assigned to"
+  ASSET }o--o| CREW : "assigned to"
   JOB ||--o{ INVOICE : bills
   CLIENT ||--o{ INVOICE : owes
   INVOICE ||--o{ INVOICE_LINE : contains
@@ -1950,14 +1962,14 @@ erDiagram
     string pay_type
     string status
   }
-  TIME_ENTRY {
+  TIME_SEGMENT {
     uuid id PK
     uuid tenant_id FK
     uuid employee_id FK
     uuid visit_id FK
     timestamptz started_at
     timestamptz ended_at
-    string entry_type
+    string segment_type
   }
   CHEMICAL_APPLICATION {
     uuid id PK
@@ -1968,12 +1980,12 @@ erDiagram
     string rate_unit
     string applicator_license
   }
-  EQUIPMENT {
+  ASSET {
     uuid id PK
     uuid tenant_id FK
-    string kind
-    string serial_no
-    numeric engine_hours
+    string asset_class
+    string serial_vin
+    string status
   }
   INVOICE {
     uuid id PK
@@ -2447,11 +2459,11 @@ erDiagram
 
 | Entity | Notable rules |
 |---|---|
-| `client` | `kind ∈ {person, organization}`. Commercial clients (`client_commercial`) have many properties and contacts with roles (`billing`, `approver`, `site_contact`). Merge tool keeps an alias table so external refs and history follow the survivor |
+| `client` | `kind ∈ {person, organization}`. Commercial clients (`client_commercial`) have many properties and contacts. Each portal contact holds exactly one contact scope per Client (`primary`, `co_owner`, `approver`, `billing`, `property_contact`, `viewer`), optionally narrowed to a subset of properties; scope keys are owned by [02](02-personas-roles-permissions.md) section 5.11 and detailed in [06](06-customer-portal.md) section 3.3. Merge tool keeps an alias table so external refs and history follow the survivor |
 | `property` | Geocoded on create (rooftop precision preferred); `region_id` derived from the point (Plant KB region); `time_zone` from geocode. Access info lives in `crm.property_access_info` (Restricted, encrypted) |
-| `visit` | State machine `unscheduled → scheduled → dispatched → in_progress → completed / skipped / canceled`. `version` for optimistic concurrency and sync. `service_date` is a property-local date |
+| `visit` | Canonical state machine owned by [04](04-scheduling-dispatch-routing.md) section 4.1.3: `unscheduled → scheduled → dispatched → en_route → on_site → in_progress (paused) → completed / partially_completed / skipped / canceled / missed`. For coarse reporting, `en_route`, `on_site` and `paused` roll up to `in_progress` and `partially_completed` rolls up to `completed` with a flag, giving `unscheduled → scheduled → dispatched → in_progress → completed / skipped / canceled`. Terminal field states win over office states after offline sync (4.11.5). `version` for optimistic concurrency and sync. `service_date` is a property-local date |
 | `proposal` | Immutable once sent: edits create a new revision (`proposal_revision`). The signed PDF hash is stored for e-sign evidence ([03](03-crm-sales-estimating-proposals.md)) |
-| `invoice` | Number sequence per tenant (gapless, like L5). Status `draft → issued → partially_paid → paid / void / written_off`. Issued invoices are immutable except status and allocations. Corrections go through credit memos |
+| `invoice` | Number sequence per tenant (gapless, like L5), assigned on approval. Stored `status ∈ {draft, pending_approval, approved, issued, partially_paid, paid, credited, written_off, void}` per [07](07-invoicing-billing-contracts.md) section 4.4.1 (`issued` is shown as **Sent**, and `invoice.issued` fires on that transition). `overdue`, `viewed` and `disputed` are **derived flags** stored for querying, not statuses; payment status is computed from allocations. Issued invoices are immutable except status and allocations. Corrections go through credit memos |
 | `journal_entry` | See L1-L12. `source_type/source_id` link to the business document. `chain_hash` for tamper evidence |
 | `design_version` | The scene graph is stored as a versioned JSON document in S3 (`scene_uri`) plus an indexed projection (`design_object`) for takeoffs and queries. Published versions are immutable |
 | `plant` / `plant_region_profile` | Global, versioned by **KB release**. Tenants pin designs to a release, so a curator update never silently changes a sent proposal ([12](12-plant-knowledge-base.md)) |
@@ -2468,7 +2480,7 @@ This section summarizes Section 4 for quick reference.
 | Public API | REST/JSON, OpenAPI 3.1, TypeIDs, dated versions, cursor pagination, idempotency keys, RFC 9457 errors, published rate limits, sandbox | 4.7 |
 | Auth for integrators | API keys (scoped, hashed), OAuth 2.1 apps with PKCE, marketplace review | 4.7.3 |
 | Outbound webhooks | Standard Webhooks signatures, retries for 3 days, replay, SSRF-safe egress, thin or snapshot payloads | 4.7.4 |
-| Inbound webhooks | Stripe (`/connect`, `/platform`, `/v2` thin events, `/rak/{endpoint_id}`, `/billing` for Rootline's own account), Twilio (status, inbound SMS, voice), Postmark (delivery, bounces, inbound mail), Intuit/Xero (change notifications), Plaid (transactions updates) via the isolated `webhook-ingest` role: verify → persist → ack → process | 4.19 |
+| Inbound webhooks | Stripe (`/webhooks/stripe/connect`, `/platform`, `/v2` thin events, `/direct/{endpoint_token}` for restricted-key Companies, `/saas` for Rootline's own account; paths per [08](08-payments-stripe.md) section 4.22), Twilio (status, inbound SMS, voice), Postmark (delivery, bounces, inbound mail), Intuit/Xero (change notifications), Plaid (transactions updates) via the isolated `webhook-ingest` role: verify → persist → ack → process | 4.19 |
 | Connectors | QBO, QBD (Web Connector), Xero, Plaid, payroll, calendars, Regrid, weather, Zapier/Make, supplier catalogs | 4.8 |
 | Events | Outbox → SNS/SQS (MVP) → MSK (V1), CloudEvents envelope, JSON Schema registry, ~45 core event types | 4.9 |
 | Public API quotas | Per-minute token bucket per API client + daily `api_calls` quota per tenant aligned with [22](22-business-model-pricing-gtm.md) | 4.7.5 |
@@ -2503,7 +2515,7 @@ Full role definitions are in [02](02-personas-roles-permissions.md). The matrice
 | Offline device data | F | F | S | S | F | S (crew buckets) | S (crew buckets) | - | S (assigned only) | - | - |
 | Remote wipe device | F | F | - | - | F | - | - | - | - | - | - |
 | Post manual journal entries / close periods | F | - | - | - | - | - | - | F | - | - | - |
-| Reopen locked period | F (step-up) | - | - | - | - | - | - | C (owner approval) | - | - | - |
+| Reopen locked period | F (step-up) | - | - | - | - | - | - | C (step-up; owner approval unless the owner's reopen policy delegates it; two approvers over 90 days) | - | - | - |
 | AI credit budgets and AI residency settings | F | R | - | - | - | - | - | R | - | - | - |
 | Change data region | C (support case) | - | - | - | - | - | - | - | - | - | - |
 
@@ -2553,7 +2565,7 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | Edge case | Handling |
 |---|---|
 | A user belongs to two tenants in different regions (a bookkeeper serving a US and a Canadian Company) | Login discovers both. Sessions are per region. Switching tenants re-authenticates against the other regional stack (SSO-like handoff with a signed, single-use token) |
-| Crew device offline for 9 days (vacation, phone in glovebox) | Pushes still apply (idempotent). Visits whose state has moved on produce `applied_with_transform` or rejections surfaced to the office. If the pull checkpoint exceeds retention, the device gets a bucket snapshot reset |
+| Crew device offline for 9 days (vacation, phone in glovebox) | The 7-day offline grace ([02](02-personas-roles-permissions.md) section 5.16) has lapsed, so new work is locked until the user re-authenticates; queued work is kept, and PIN-verified punches and the emergency screen stay available ([05](05-field-crew-mobile-app.md) section 4.0.2). The 14-day device-key lease has not expired. After re-authentication, pushes still apply (idempotent). Visits whose state has moved on produce `applied_with_transform` or rejections surfaced to the office. If the pull checkpoint exceeds retention, the device gets a bucket snapshot reset |
 | Device clock wrong by hours | HLC ordering. Server receipt time is recorded. Time punches flagged when skew > 5 min. Payroll uses reviewed values |
 | The same photo uploaded twice over flaky networks | SHA-256 dedupe returns the existing asset id |
 | Two office users edit the same visit simultaneously | ETag/version conflict → `412` → UI shows a merge dialog with the other user's change |
@@ -2681,7 +2693,7 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | Q15 | Does each Claude model tier in the AI Gateway registry offer a **Canadian** inference geography (Claude API `inference_geo` or Amazon Bedrock in ca-central-1)? Which image models can run in Canada? | Per-task matrix; disable or disclose where none exists | AI lead + legal | Before CA launch |
 | Q16 | Who maintains the per-jurisdiction quiet-hours and messaging-cap table (4.16), and how often is it reviewed? | Outside counsel annually + compliance-feed vendor | Security and Compliance + legal | MVP GA |
 | Q17 | Escrow agent and legal structure for the vendor-continuity escrow (Section 13, idea 15) | Software escrow agent / trust structure | `platform_owner` + legal | V1 |
-| Q18 | Device-key offline lease length (4.11.1): 14 days is a guess that trades revoked-device exposure against seasonal workers whose phones sit idle | 7 / 14 / 30 days, per-tenant setting with a ceiling | Platform + Operations and Field | MVP month 2 |
+| Q18 | Device-key offline lease length (4.11.1): 14 days is a guess for the cryptographic backstop behind the 7-day working grace in [02](02-personas-roles-permissions.md) section 5.16. It trades revoked-device exposure against seasonal workers whose phones sit idle | 7 / 14 / 30 days, per-tenant setting with a ceiling, never shorter than the 7-day grace | Platform + Operations and Field | MVP month 2 |
 
 ---
 

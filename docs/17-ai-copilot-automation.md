@@ -134,7 +134,7 @@ Anecdotal upside: one acquisition-entrepreneur case study claims an AI reception
 
 > **Competitive edge: QuickBooks and Xero AI agents.** Accounting-native agents can categorize a $1,240 SiteOne charge to "Materials". They cannot tell that it was the 26 yards of mulch delivered to the Delgado job on the day Crew 3 logged 9.5 hours there, because the visit, the crew time and the takeoff live in another system. Rootline's bookkeeping and AP agents code the same transaction to **job, phase and cost type** using the PO, the delivery the crew lead logged, and the estimate's material lines. The result is job costing that is right the day the bank line arrives, not after a month-end cleanup. Rootline also matches Stripe payouts against balance transactions it already posted from the Company's own connected account ([Architecture](20-architecture-security.md) section 4.19), which a generic bank-feed categorizer can only guess at.
 
-> **Competitive edge: the bolt-on economy.** A commercial firm on Aspire or LMN pays separately for AP automation (Vergo), site-issue capture (SiteDNA), measurement (SiteRecon, Attentive) and an AI receptionist. Each bolt-on has its own login, its own copy of the client list and no access to the others' data. Rootline's AP agent (A9), field-note agent (A4), estimating agent (A6) and receptionist (A23) share one Action Layer, one audit log and one credit meter. A field issue spotted by a crew becomes a priced enhancement proposal with photos in one approval tap, with no re-keying between products.
+> **Competitive edge: the bolt-on economy.** A commercial firm on Aspire or LMN pays separately for AP automation (Vergo), site-issue capture (SiteDNA), measurement (SiteRecon, Attentive) and an AI receptionist. Each bolt-on has its own login, its own copy of the client list and no access to the others' data. Rootline's AP agent (A9), field-note agent (A4), estimating agent (A6) and receptionist (A23) share one Action Layer, one audit log and one set of published meters (AI credits, plus `voice_ai_minutes` for the receptionist). A field issue spotted by a crew becomes a priced enhancement proposal with photos in one approval tap, with no re-keying between products.
 
 ---
 
@@ -636,7 +636,7 @@ The Arbiter is implemented as a tool wrapper around `messages.send*`, so no path
 | A20 | **Snow Event** | Monitors storms, pre-staging, trigger dispatch at 2-inch accumulation, per-push tallies for billing | NWS forecast; plow-site sensors | L2 | V2 |
 | A21 | **Procurement** | Turns approved jobs into vendor POs grouped by vendor and delivery date, with availability checks | Job created; materials short | L2 | V1 |
 | A22 | **Portal Assistant** | Client-facing Q&A and requests inside the white-label portal | Client chat | L2 for requests; L4 for read answers | V1 (see [Customer Portal](06-customer-portal.md)) |
-| A23 | **AI Receptionist (voice and SMS)** | Answers calls and texts and books assessments | Inbound call or SMS | L2 to L3 | MVP (after-hours lead capture) / V1 (full) (owned by [Marketing](16-marketing-growth-communications.md); metered in receptionist minutes, not credits) |
+| A23 | **AI Receptionist (voice and SMS)** | Answers calls and texts and books assessments | Inbound call or SMS | L2 to L3 | V1, per [Roadmap](24-roadmap-feature-catalog.md) section 4.6 #12; at MVP, calls get call tracking, voicemail with transcription and missed-call text-back instead ([Marketing](16-marketing-growth-communications.md) 4.19) (owned by [Marketing](16-marketing-growth-communications.md) section 4.18; metered in `voice_ai_minutes`, not credits) |
 | A24 | **Design Assistant** | Dimension-aware layout and planting suggestions | Designer request | T1 | V1 (owned by [AI Design](11-ai-design-mockups.md)) |
 | A25 | **Hiring Assistant** | Drafts job posts, schedules interviews, summarizes applications. **No ranking or rejection** | Applicant received | L2 | V2; application summaries and translation V1 (owned by [Team and HR](15-team-hr-payroll.md) AI-2) |
 | A26 | **KB Curation (platform)** | Drafts Plant Region Profiles and dedupes taxonomy for curators | Curator queue | L1 (curator approves) | V1 (owned by [Plant KB](12-plant-knowledge-base.md)) |
@@ -903,7 +903,7 @@ The Automation Builder is how non-technical owners encode "how we do things here
 | Jobs and schedule | `job.created`, `job.status_changed`, `visit.scheduled`, `visit.started`, `visit.completed`, `visit.skipped`, `route.published`, `job.cost_overrun` (threshold) [V1] |
 | Agreements | `agreement.activated`, `agreement.renewal_due` (N days), `agreement.cancelled`, `agreement.paused` |
 | Billing | `invoice.created`, `invoice.sent`, `invoice.viewed`, `invoice.overdue` (N days), `payment.succeeded`, `payment.failed`, `deposit.received`, `dispute.opened` (from the Stripe connected-account webhook) |
-| Field | `note.created`, `photo.uploaded`, `checklist.exception`, `chemical_application.logged`, `issue.reported` |
+| Field | `note.created`, `media.uploaded` ([05](05-field-crew-mobile-app.md) 8.3), `checklist.exception`, `chemical_application.recorded` (name per the event registry in [20](20-architecture-security.md)), `issue.reported` |
 | Clients | `client.created`, `client.tag_added`, `portal.request_submitted`, `review.received` [MVP Google, V1 others], `nps.response` [MVP] |
 | People | `employee.hired`, `certification.expiring` (N days), `timesheet.submitted`, `absence.reported` |
 | Inventory and purchasing | `inventory.below_reorder`, `po.received`, `bill.created` [V1] |
@@ -1247,7 +1247,7 @@ Each agent has a **model card and eval card** in the AI Ops console showing vers
 | Deterministic automations (no AI steps) | 0 | Unlimited within rate limits |
 | Dispute evidence packet (A28) | 4 | Proposed. Document assembly plus a narrative draft; owned by [Payments](08-payments-stripe.md) |
 | Call or voicemail transcription and summary (human-answered calls) | 2 | Per the rate card |
-| AI receptionist call handling | Not credits | Its own published per-minute meter (`voice_ai_minutes`) that includes telephony, speech and LLM, per [Business Model](22-business-model-pricing-gtm.md). This supersedes the "credits per minute plus telephony" wording in [Marketing](16-marketing-growth-communications.md) |
+| AI receptionist call handling | Not credits | Its own published per-minute meter (`voice_ai_minutes`) that includes telephony, speech and LLM, per [Business Model](22-business-model-pricing-gtm.md) section 4.4 and [Marketing](16-marketing-growth-communications.md) 4.18.4 |
 | Policy replay (section 4.4.5) | Quoted before run | Same basis as an agent task run (10-30 per 30 days replayed, estimate) |
 
 **Settlement rules** follow the credit ledger rules in [Business Model](22-business-model-pricing-gtm.md) section 4.4.1. Each action places a hold for its quoted credits. The hold is released in full on a provider failure, safety refusal or timeout, and a user-cancelled agent run settles only completed steps. Included credits do not roll over; purchased packs last 12 months. A grounding-check failure that suppresses a narrative (section 4.2.6) is charged at the read-only rate, never more.
@@ -1300,7 +1300,7 @@ Every AI-originated or AI-assisted action creates an immutable `ai_action` audit
 - Outbound drafts are checked for profanity, discriminatory language, unverifiable promises ("guaranteed weed-free"), legal claims, medical or pesticide-safety claims ("safe for kids and pets immediately"; the label governs re-entry), and competitor disparagement.
 - The Company Brain banned-phrases list is enforced.
 - The AI never writes customer reviews, testimonials or "client quotes" for marketing, and never invents before-and-after claims. Marketing copy can only quote real, consented reviews by ID (see section 11.2).
-- Images generated for marketing are labeled as AI-generated in metadata, and mockups are watermarked "Concept rendering" on client-facing exports (see [AI Design](11-ai-design-mockups.md)).
+- Images generated for marketing are labeled as AI-generated in metadata, and mockups carry the visible "AI artist rendering" badge (the canonical string owned by [AI Design](11-ai-design-mockups.md) AIM-FID-07), plus C2PA Content Credentials and an invisible watermark, on client-facing exports.
 
 ---
 
@@ -2190,7 +2190,7 @@ erDiagram
 
 ### 8.2 Events consumed
 
-This module subscribes to **all domain events** via the outbox and event bus, because any event can trigger an automation. Key ones for agents: `lead.created`, `message.received`, `note.created`, `photo.uploaded`, `visit.completed`, `invoice.overdue`, `payment.succeeded`, `bank_transaction.imported`, `document.received`, `agreement.renewal_due`, `job.cost_overrun`, `absence.reported`, `weather.forecast_updated`, `chemical_application.logged`.
+This module subscribes to **all domain events** via the outbox and event bus, because any event can trigger an automation. Key ones for agents: `lead.created`, `message.received`, `note.created`, `media.uploaded` ([05](05-field-crew-mobile-app.md) 8.3), `visit.completed`, `invoice.overdue`, `payment.succeeded`, `bank_transaction.imported`, `document.received`, `agreement.renewal_due`, `job.cost_overrun`, `absence.reported`, `weather.forecast_updated`, `chemical_application.recorded` ([20](20-architecture-security.md) registry; emitted by [05](05-field-crew-mobile-app.md) on applicator signature).
 
 ### 8.3 Events emitted
 

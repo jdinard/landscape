@@ -308,7 +308,8 @@ The KPI Dictionary [MVP] is published in-app (searchable, with examples) and in 
 |--------------|----------------------|-----|
 | Base measures, financial KPIs on earned/billed/collected views, AR and DSO, labor productivity, operations (visits, on-time, callbacks), sales funnel, CARR and renewal, backlog | [MVP] | Inputs come from MVP modules: estimating, scheduling, crew app time capture, invoicing, BYO Stripe, Ledger Essentials |
 | `revenue_recognized`, `overhead_pct_revenue`, `net_operating_margin_pct`, `overhead_recovery_rate`, `dpo`, `operating_cash_flow` | [MVP] for Companies on the built-in Ledger or a reconciled QuickBooks/Xero sync; hidden otherwise | Need GL data |
-| Equipment and fleet metrics (4.3.8), materials usage vs. estimate | [V1] | Equipment, telematics and inventory issue tracking are V1 in [Operations](13-operations-inventory-equipment.md) |
+| Materials usage vs. estimate; `equipment_utilization_pct` from manual meter readings | [MVP] for branches with the inputs | In [Operations](13-operations-inventory-equipment.md), `issue_to_job` and `return_from_job` movements (4.3.1) are MVP in Light mode (memo quantities) and carry into Standard mode when it ships ([Roadmap](24-roadmap-feature-catalog.md) section 4.6 #6 retags Standard to V1.0), and the asset registry, manual meters, DVIR and the rate calculator are MVP (4.19). Branches in Off mode have no issues, so usage vs. estimate shows "coming with inventory" |
+| Other equipment and fleet metrics (4.3.8): actual `equipment_cost_per_hour`, `equipment_recovery_pct`, `vehicle_cost_per_mile`, `fuel_per_route_hour`, `downtime_hours` | [V1] | They need the parts of [Operations](13-operations-inventory-equipment.md) that are V1: telematics, fuel cards, actuals-based rates and usage to job cost (4.14.7-4.14.9, 4.19); downtime comes from PM schedules and work orders, which [Roadmap](24-roadmap-feature-catalog.md) section 4.6 #7 retags to V1.0 |
 | Snow metrics, `cac_by_lead_source`, `ltv`, `ltv_to_cac`, retention cohorts (GRR, NRR), people and safety (4.3.9), estimate accuracy | [V1] | Snow module, campaign cost capture, 2+ seasons of history, HR records and closed jobs |
 | `ebitda_adjusted`, empirical cohort LTV | [V2] | Need add-back workflow and 3+ seasons of cohorts |
 
@@ -531,8 +532,8 @@ Standard reports ship pre-built, are permission-aware, support every global filt
 | Compliance | Pesticide / fertilizer application log | Product, EPA registration number, rate, area, applicator license, weather at application; exportable for state recordkeeping ([Crew app](05-field-crew-mobile-app.md), [Service lines](14-service-line-modules.md)) | MVP |
 | Compliance | Certification and license expiry | Applicator licenses, CDL, ISA certifications, crew training | V1 |
 | Equipment | Equipment cost per hour and recovery | Asset and class level | V1 |
-| Equipment | Maintenance due and downtime | From [Operations](13-operations-inventory-equipment.md) | V1 |
-| Inventory | Materials usage vs. estimate | Mulch yards, stone tons, plants: estimated vs. issued vs. returned | V1 |
+| Equipment | Maintenance due and downtime | From [Operations](13-operations-inventory-equipment.md) PM schedules and work orders (V1.0 per [Roadmap](24-roadmap-feature-catalog.md) section 4.6 #7) | V1 |
+| Inventory | Materials usage vs. estimate | Mulch yards, stone tons, plants: estimated vs. issued vs. returned (branches in Light or Standard inventory mode; [Operations](13-operations-inventory-equipment.md) 4.3.1) | MVP |
 | Plants | Plant warranty replacements | By plant, nursery, region, crew, install month | V1 |
 | People | Turnover, overtime, safety (TRIR) | | V1 |
 | Marketing | Campaign performance | Leads, opportunities, revenue by campaign | V1 |
@@ -710,7 +711,7 @@ Direct method, week by week:
 
 #### 4.9.4 Scenario planner [V2]
 
-What-if sliders on a driver-based model: price increase % by service line (with churn elasticity estimated from the Company's own past renewals and, if opted in, a cohort-level elasticity prior), crew count, wage rate change, overtime policy, fuel price, new service line launch. **Antitrust guardrail:** the cohort prior is a historical, aggregated response curve (renewal rate vs. the Company's *own* percentage price change); it never contains or reveals other Companies' prices, and no pricing feature in Rootline uses other Companies' non-public prices as inputs (same rule as [Pricing and GTM](22-business-model-pricing-gtm.md), see 11.2). Outputs: revenue, GP, NOI, cash low point, capacity utilization. Owners save scenarios and compare side by side, for example "6% maintenance price increase plus one added crew" vs. "status quo".
+What-if sliders on a driver-based model: price increase % by service line (with churn elasticity estimated from the Company's own past renewals and, if opted in, a cohort-level elasticity prior), crew count, wage rate change, overtime policy, fuel price, new service line launch. **Antitrust guardrail:** the cohort prior is a historical, aggregated response curve (renewal rate vs. the Company's *own* percentage price change); it never contains or reveals other Companies' prices, and no pricing feature in Rootline uses other Companies' non-public prices, or data derived from them (including Pulse indices), as inputs (same rule as [Pricing and GTM](22-business-model-pricing-gtm.md), see 11.2). Outputs: revenue, GP, NOI, cash low point, capacity utilization. Owners save scenarios and compare side by side, for example "6% maintenance price increase plus one added crew" vs. "status quo".
 
 ### 4.10 Natural-language analytics via Copilot [MVP certified answers, V1 exploratory mode and "why" analysis]
 
@@ -1574,7 +1575,7 @@ The analytics module owns two kinds of data: **configuration and outputs in Post
 | `scenario` | `tenant_id`, `name`, `driver_overrides` (jsonb), `base_forecast_run_id` | V2 |
 | `production_rate_observation` | `tenant_id`, `task_code`, `job_id`, `visit_id`, `quantity`, `unit`, `man_hours`, `crew_size`, `condition_tags`, `quantity_source`, `observed_on` | |
 | `production_rate_suggestion` | `tenant_id`, `task_code`, `current_rate`, `suggested_rate`, `n_obs`, `n_jobs`, `ci_low`, `ci_high`, `status`, `decided_by`, `decision_reason` | Accepted suggestion creates a rate version in Estimating |
-| `benchmark_consent` | `company_id` (= `tenant_id`), `consent_version`, `peer_benchmarks`, `external_aggregates`, `consented_by`, `consented_at`, `revoked_at` | Single source of truth shared with [Pricing and GTM](22-business-model-pricing-gtm.md) (same entity and field names); changes emit `benchmark_consent.changed` and take effect at the next release |
+| `benchmark_consent` | `tenant_id` (the Company; tenant key per [Architecture](20-architecture-security.md) section 7.1), `consent_version`, `peer_benchmarks`, `external_aggregates`, `consented_by`, `consented_at`, `revoked_at` | Single source of truth shared with [Pricing and GTM](22-business-model-pricing-gtm.md) (same entity and field names); changes emit `benchmark_consent.changed` and take effect at the next release |
 | `benchmark_contributor_group` | `id`, `member_tenant_ids`, `basis` (`common_owner`, `shared_tax_id`, `shared_stripe_account`, `franchise_unit`), `reviewed_by` | Platform-level; merges related companies into one contributor (4.11.2) |
 | `benchmark_release` | `period`, `computed_at`, `published_at`, `config_hash` | Platform-level |
 | `benchmark_cell` | `geo_region_id`, `size_band`, `service_mix`, `client_mix` | Fixed lattice |

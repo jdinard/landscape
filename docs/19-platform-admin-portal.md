@@ -595,8 +595,9 @@ The Plant KB is specified in [12 - Plant Knowledge Base](12-plant-knowledge-base
 - License registry: each dataset and image has license type (public domain, CC BY, CC BY-SA, CC BY-NC, commercial license, owned), attribution text, allowed uses (display, derivative, AI training, print in proposals), expiry date and contract link.
 - Enforcement: the KB API returns attribution strings for any image displayed; images with non-commercial or expired licenses are blocked from proposal PDFs and the Customer Portal; a takedown workflow removes an asset platform-wide within 24 hours and logs it.
 
-**PA-076 Nursery availability feed operations [V2]**
+**PA-076 Nursery availability feed operations [V1]**
 - Monitor nursery and distributor availability feed ingestion (freshness, error rates, SKU match rate to KB plants) and manage partner nurseries' feed credentials; details in [12](12-plant-knowledge-base.md) and [13](13-operations-inventory-equipment.md).
+- Tags follow [12](12-plant-knowledge-base.md) section 4.11: Nursery Connect uploads, forwarded availability lists, line parsing and matching, the nursery directory, regional aggregates and availability in workflows (KB-NUR-01 to KB-NUR-05) are [V1]; partner API, punchout and EDI feed credentials and brand availability feeds are [V2]; demand signals to growers (KB-NUR-06) stay [V2].
 
 ### 4.8 Global content and templates
 
@@ -629,7 +630,7 @@ The Plant KB is specified in [12 - Plant Knowledge Base](12-plant-knowledge-base
 AI strategy is defined in [17](17-ai-copilot-automation.md) and the AI Gateway in [20](20-architecture-security.md). The console gives operators control over it.
 
 **PA-090 Model routing configuration [MVP]**
-- Routing table keyed by **AI task** (e.g., `copilot.chat`, `proposal.draft`, `estimate.takeoff_assist`, `mockup.render`, `mockup.inpaint`, `layout.generate`, `plant.recommend`, `kb.enrich`, `doc.extract_invoice`, `support.triage`, `receptionist.voice`).
+- Routing table keyed by **AI task** (e.g., `copilot.chat`, `proposal.write_scope`, `estimate.draft_from_notes`, `inbox.classify`, `receipt.extract`, `kb.enrich`, `kb.answer`, `support.triage`, `receptionist.voice`, plus the mockup and layout routes whose task keys are owned by the route table in [11](11-ai-design-mockups.md) section 8.2: `restyle.preview`, `restyle.economy`, `restyle.hd`, `restyle.4k`, `p2p.harmonize`, `layout.plan`, `chat.design_agent` and so on). Task keys follow the AI Gateway task list in [20](20-architecture-security.md) section 4.13; the console edits routes, it does not invent task names.
 - Per task: primary provider/model, fallback chain, max tokens/resolution, timeout, temperature, safety settings, data-handling constraints (e.g., `no_training`, `zero_retention_required`, `region=us|ca`), cost ceiling per call, plan-based quality tier (e.g., `business` gets higher-resolution mockups).
 - Changes are versioned, flag-gated and can be rolled out by percentage (section 4.5) with eval gates (PA-092).
 - Provider health panel: latency, error rate, rate-limit headroom, and automatic failover status per provider.
@@ -1407,21 +1408,21 @@ flowchart TD
 +----------------------------------------------------------------------------------------------+
 | TASK                 MODEL ROUTE (primary > fallback)     p95     err    cost/call  KILL     |
 | copilot.chat         claude-mid > claude-small            3.1s    0.2%   $0.011     [on ]    |
-| proposal.draft       claude-frontier                      9.8s    0.4%   $0.042     [on ]    |
-| mockup.render        flux-controlnet > gemini-image       21s     1.9%   $0.090     [deg]    |
-| layout.generate      claude-frontier + OR solver          34s     0.8%   $0.150     [on ]    |
-| plant.recommend      claude-small + KB retrieval          1.4s    0.1%   $0.003     [on ]    |
+| proposal.write_scope claude-mid > claude-frontier         9.8s    0.4%   $0.042     [on ]    |
+| restyle.preview      gemini-image > flux-kontext          21s     1.9%   $0.090     [deg]    |
+| layout.plan          claude-mid > frontier + solver       34s     0.8%   $0.150     [on ]    |
+| kb.answer            claude-small + KB retrieval          1.4s    0.1%   $0.003     [on ]    |
 +----------------------------------------------------------------------------------------------+
 | EVALS (last run)            score   gate     | ANOMALIES                                     |
-| plant.recommend region-fit  99.4%   >=99%  ok | TNT-48877 mockups 2,300 in 48h (12x norm)    |
-| proposal.draft scope match  93.1%   >=92%  ok |   [Throttle] [Contact] [Open risk case]      |
-| mockup.fidelity (judge)     4.2/5   >=4.0  ok | Prompt injection attempts: 7 (blocked)       |
-| takeoff.extract qty error   3.8%    <=5%   ok |                                              |
+| kb.answer region-fit        99.4%   >=99%  ok | TNT-48877 mockups 2,300 in 48h (12x norm)    |
+| proposal.write_scope match  93.1%   >=92%  ok |   [Throttle] [Contact] [Open risk case]      |
+| restyle.preview fidelity    4.2/5   >=4.0  ok | Prompt injection attempts: 7 (blocked)       |
+| estimate.draft_from_notes   3.8%    <=5%   ok |                                              |
 | [Prompt registry]  [Routing config]  [Credit rate card]  [Moderation queue (12)]             |
 +----------------------------------------------------------------------------------------------+
 ```
 
-Route labels are tier aliases resolved by the AI Gateway ([20](20-architecture-security.md)): `claude-frontier`, `claude-mid` and `claude-small` map to the current Anthropic Claude models for each tier, and `flux-controlnet` and `gemini-image` to the image models chosen per task, so a model upgrade is a routing change behind an eval gate, not a code change. Credit revenue is allocated at a blended $0.021 per credit, inside the $0.017-$0.025 range in [22](22-business-model-pricing-gtm.md) section 7.4.
+Route labels are tier aliases resolved by the AI Gateway ([20](20-architecture-security.md)): `claude-frontier`, `claude-mid` and `claude-small` map to the current Anthropic Claude models for each tier, and `gemini-image` and `flux-kontext` to the image models chosen per task, so a model upgrade is a routing change behind an eval gate, not a code change. Task keys are the AI Gateway's ([20](20-architecture-security.md) section 4.13); the mockup and layout keys (`restyle.preview`, `layout.plan`) come from the route table in [11](11-ai-design-mockups.md) section 8.2, which holds the canonical primary and fallback models for those routes. The `estimate.draft_from_notes` eval score is the quantity error rate on the 200 handwritten site-measurement notes in the golden set (PA-092), and the `restyle.preview` fidelity row is the judge score on the mockup-fidelity golden set. Credit revenue is allocated at a blended $0.021 per credit, inside the $0.017-$0.025 range in [22](22-business-model-pricing-gtm.md) section 7.4.
 
 ### 6.8 Wireframe: Tenant directory (saved view)
 
@@ -1469,7 +1470,7 @@ Route labels are tier aliases resolved by the AI Gateway ([20](20-architecture-s
 +----------------------------------------------------------------------------------------------+
 ```
 
-Region publication is requested by `platform_curator` and approved by `platform_owner` (section 9). Critical traits (invasiveness, toxicity, deer-resistance claims, hardiness) cannot be bulk-accepted and need a second curator (PA-070, PA-073).
+Region publication is requested by a `platform_curator` and approved by a senior `platform_curator` (or `platform_owner`, who holds full rights), per [12](12-plant-knowledge-base.md) section 9.1 and section 9 here. Critical traits (invasiveness, toxicity, deer-resistance claims, hardiness) cannot be bulk-accepted and need a second curator (PA-070, PA-073).
 
 ### 6.10 Wireframe: Connected Account Health board
 
@@ -2147,7 +2148,7 @@ Legend: **F** full, **R** read, **Q** request (needs approval), **A** approve (s
 | Beta programs | F | F (enroll) | - | - | F |
 | Plant KB: edit, review | F | - | F | - | - |
 | Plant KB: publish critical traits | F | - | F (second curator) | - | - |
-| Region builder publish | A | - | Q | - | - |
+| Region builder publish | F | - | Q (curator) / A (senior curator, per [12](12-plant-knowledge-base.md) section 9.1) | - | - |
 | License registry and takedowns | F | - | F | - | - |
 | Templates: edit and publish forked | F | F | F (plant/design templates) | F (COA templates) | - |
 | Templates: publish subscribed (legal) | A | Q | - | Q | - |

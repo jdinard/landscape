@@ -11,8 +11,8 @@
 - **Decision 3, one engine, two speeds:** Quick Quote (about 2 minutes, at most 5 inputs) and the full cost builder are the same `estimate_version` priced by the same production rates, kits and budget; the public instant quote ([V1]) uses a pricing rule generated from the same cost model ([EST-11](#est-11-quick-quote-mode-mvp), [EST-12](#est-12-recurring-maintenance-pricing-mvp)).
 - **Decision 4, geometry is shared:** property measurements and Design Studio takeoffs feed kit inputs directly, so a polygon edit reprices the job ([INTEL-01](#intel-01-property-measurement-profile-mvp-manual--parcel--ai-turf-v1-other-ai-classes), [EST-17](#est-17-takeoff-from-design-studio-mvp-basic-v1-live-sync)).
 - **Decision 5, money flows to the Company:** deposits are direct charges on the Company's own connected Stripe account and post Dr 1050 Stripe Clearing / Cr 2150 Customer Deposits under the posting rules owned by [09](09-accounting-ledger-integrations.md); AI never sets a price.
-- **MVP:** unified Lead inbox and core channels (forms, phone and SMS, email and marketplace email parsing, crew upsells, the visualizer widget), CRM records, pipelines and kanban, mobile assessments, parcel data and AI turf measurement, the Company Budget wizard, production rates, kits, Quick Quote, Price Book, Good/Better/Best proposals with e-sign and deposits, conversion to Jobs, basic change orders and renewals.
-- **Later:** [V1] online booking with instant quotes, AI receptionist intake, native LSA and Angi APIs, referral rewards, AI-assisted estimate drafts, AI measurement of beds and hardscape, HOA multi-signer approvals, financing, bulk enhancement campaigns, commercial bids and RFPs, commissions, smart follow-ups; [V2] photo-first estimating, living proposals and CRM sync connectors; [V3] bounded auto-quoting.
+- **MVP:** unified Lead inbox and core channels (forms, phone and SMS, email and marketplace email parsing, crew upsells, the visualizer widget), CRM records, pipelines and kanban, mobile assessments, parcel data and AI turf measurement, the Company Budget wizard, production rates, kits, Quick Quote, Price Book, Good/Better/Best proposals with e-sign and deposits, conversion to Jobs, basic change orders and renewals, and AI help that runs through the agents in [17](17-ai-copilot-automation.md): lead triage and first replies, estimate drafts from notes, voice memos and photos, proposal writing and Copilot commands.
+- **Later:** [V1] online booking with instant quotes, AI receptionist intake, native LSA and Angi APIs, referral rewards, structured voice-to-scope, aerial-measured AI estimate drafts, AI measurement of beds and hardscape, HOA multi-signer approvals, financing, bulk enhancement campaigns, commercial bids and RFPs, commissions, smart follow-ups; [V2] photo-first estimating, living proposals and CRM sync connectors; [V3] bounded auto-quoting.
 - **Differentiators:** Jobber's speed with LMN's math, proposals built from the same object graph as the design (each tier swaps its own mockup, plan and plant list), measurement native to the platform, and HOA quorum signing bound to a proposal version.
 - **Key cross-links:** permissions in [02](02-personas-roles-permissions.md); booking, instant-quote gating and the AI receptionist in [16](16-marketing-growth-communications.md); deposits in [08](08-payments-stripe.md); billing after conversion in [07](07-invoicing-billing-contracts.md); takeoffs in [10](10-design-studio.md); mockups in [11](11-ai-design-mockups.md); credit prices in [22](22-business-model-pricing-gtm.md).
 
@@ -332,7 +332,7 @@ Rules: conditional logic (if "Existing irrigation?" = yes show irrigation sectio
 
 #### ASSESS-04 Voice-to-scope [V1]
 
-The estimator dictates while walking ("Front beds about 600 square feet, 3 inch mulch, remove the 3 dead boxwoods on the left, client wants something with color, full sun"). Speech-to-text (English/Spanish), then the Copilot structures it into scope items with quantities, linked to photos taken during the dictation window. Output is a **draft** scope list the estimator confirms (see [17](17-ai-copilot-automation.md)).
+The estimator dictates while walking ("Front beds about 600 square feet, 3 inch mulch, remove the 3 dead boxwoods on the left, client wants something with color, full sun"). Speech-to-text (English/Spanish), then the Copilot structures it into scope items with quantities, linked to photos taken during the dictation window. Output is a **draft** scope list the estimator confirms (see [17](17-ai-copilot-automation.md)). Before this ships, at [MVP], a voice memo recorded during the assessment is transcribed and passed to the A6 Estimating Agent as scope context for an estimate draft (EST-18); it does not yet produce the structured, photo-linked scope list.
 
 #### ASSESS-05 Assessment-to-estimate handoff [MVP]
 
@@ -794,7 +794,11 @@ Rules:
 - Manual overrides on linked lines are preserved, marked "manual", and not overwritten by sync.
 - Design Options (e.g., "Option A natural stone", "Option B pavers") map to estimate option groups, which map to proposal tiers.
 
-#### EST-18 AI estimating [V1 assisted drafts, V2 photo-first, V3 bounded auto-quote]
+<a id="est-18-ai-estimating-v1-assisted-drafts-v2-photo-first-v3-bounded-auto-quote"></a>
+
+#### EST-18 AI estimating [MVP drafts from notes, voice memos and photos; V1 aerial-measured drafts; V2 photo-first; V3 bounded auto-quote]
+
+**Phasing.** At [MVP] the A6 Estimating Agent ([17](17-ai-copilot-automation.md) 4.5.7) drafts an estimate from assessment notes, a voice memo transcript and site photos used as scope context, with quantities taken from measurements already on the Property (manual, parcel or AI turf per INTEL-01 and INTEL-03). This is the "Estimate or proposal draft" action on the [22](22-business-model-pricing-gtm.md) rate card (8 credits). At [V1] the agent runs the aerial measurement pipeline, so quantities come from freshly segmented aerial geometry in a Design draft. At [V2] photos become the primary measurement source (AI-5, AI-6). At [V3] bounded auto-quote (AI-15) can send without review. Every stage produces a draft the estimator reviews; no stage sets a price.
 
 AI produces a **draft estimate** from one or more of: property intel measurements, site photos, assessment answers and voice notes, client-entered dimensions ("backyard is 40 x 60 ft, I want a 12 x 16 patio and a bed along the fence"), and Design takeoffs. The pipeline:
 
@@ -1760,7 +1764,7 @@ erDiagram
 | USGS 3DEP | Elevation/slope for difficulty multipliers and grading | [V1] | Public data; pre-processed tiles |
 | Nearmap / EagleView | High-resolution, recent aerials for measurement | [V1] | Tenant-paid add-on or pass-through |
 | Segmentation and depth models | AI auto-measure (turf), then other classes and photo measurement | [MVP] turf, [V1] other classes and photo measurement | Via the AI Gateway ([17](17-ai-copilot-automation.md)); metered per [22](22-business-model-pricing-gtm.md) |
-| Anthropic Claude (via AI Gateway) | Proposal writing (MVP); voice-to-scope, RFP extraction, AI estimating drafts, dedupe assist (V1) | [MVP] / [V1] | Prompt and response logging with PII redaction policies |
+| Anthropic Claude (via AI Gateway) | Proposal writing, lead triage and first replies, estimate drafts from notes, voice memos and photos (A6 in [17](17-ai-copilot-automation.md)) and Copilot commands (MVP); structured voice-to-scope, aerial-measured estimate drafts, RFP extraction, dedupe assist (V1) | [MVP] / [V1] | Prompt and response logging with PII redaction policies |
 | Google Ads API (Local Services) | Pull LSA leads and message threads | [V1] (LSA notification emails are parsed at [MVP]) | Verify current API resources and access requirements |
 | Angi, Thumbtack, Yelp, Houzz, Nextdoor | Lead ingest | [MVP] generic email parse; [V1] Angi push API, Thumbtack API where granted and per-source parsers; [V2] other APIs | Partner programs vary; verify |
 | Twilio | SMS/voice for auto-response and follow-ups, 10DLC | [MVP] | Shared with [16](16-marketing-growth-communications.md) |
@@ -1786,6 +1790,8 @@ Events are written to the transactional outbox and published to the event bus. P
 | `opportunity.created` / `opportunity.stage_changed` | Stage moves | Automations, forecast |
 | `opportunity.won` / `opportunity.lost` | Terminal stage | Reporting, commissions, nurture |
 | `site_visit.scheduled` / `site_visit.completed` | Calendar and assessment | Scheduling board, notifications |
+| `client.created` / `client.merged` | Client created (lead conversion, import or manual entry); two Clients merged under the merge semantics in LEAD-03 | Automations ([17](17-ai-copilot-automation.md)); Invoicing re-points balances on merge ([07](07-invoicing-billing-contracts.md)); Payments merges Stripe Customer references ([08](08-payments-stripe.md)) |
+| `property.created` / `property.updated` / `property.geocoded` / `property.address_changed` | Property record created; access notes, hazards or other Property fields edited; address geocoded to a rooftop point and parcel; service address edited (triggers a new geocode) | Design Studio pre-builds the site model ([10](10-design-studio.md)); Plant KB computes Site Context and Region ([12](12-plant-knowledge-base.md)); the crew app refreshes property scope and highlights changed notes ([05](05-field-crew-mobile-app.md)) |
 | `property.measurement_updated` | New measurement version | Design Studio base layer, open estimates |
 | `estimate.approved` | Version approved | Proposal builder |
 | `estimate.below_floor_requested` | Approval needed | Owner notification |
@@ -1807,7 +1813,7 @@ Events are written to the transactional outbox and published to the event bus. P
 |---|---|---|
 | `proposal.approved` | `proposal.accepted` | [17 - AI and automation](17-ai-copilot-automation.md) recipes R1 and R2 |
 | `proposals.proposal.accepted` | `proposal.accepted` (module-namespaced form) | [08 - Payments](08-payments-stripe.md) |
-| `sales.proposal.signed` | `proposal.signed` (module-namespaced form) | [13 - Operations](13-operations-inventory-equipment.md); purchasing should key non-refundable special orders off `proposal.executed` |
+| `clients.client.merged` | `client.merged` (module-namespaced form) | [08 - Payments](08-payments-stripe.md) |
 | `estimate.approved_internal` | `estimate.approved` | [17](17-ai-copilot-automation.md) |
 | `proposal.lost` | `proposal.declined`; when the whole Opportunity is lost, `opportunity.lost` also fires | [18 - Reporting](18-reporting-analytics.md) |
 | `lead.converted` | `lead.status_changed` with `to = converted` (the same transaction also emits `opportunity.created`) | [20 - Architecture](20-architecture-security.md) event catalog |
@@ -1842,7 +1848,8 @@ sequenceDiagram
 | `payment.succeeded` / `payment.failed` ([08](08-payments-stripe.md)) | Execute proposal or flag failed deposit |
 | `design.takeoff_updated` ([10](10-design-studio.md)) | Show takeoff diff on linked estimate sections |
 | `mockup.generated` ([11](11-ai-design-mockups.md)) | Attach to Opportunity media; offer to proposal |
-| `plant.region_profile_changed` ([12](12-plant-knowledge-base.md)) | Re-check draft estimates (sent proposals stay snapshotted) |
+| `kb.profile_updated` ([12](12-plant-knowledge-base.md)) | Re-check draft estimates (sent proposals stay snapshotted) |
+| `kb.regulatory_status_changed` / `kb.regulatory_listing_enacted` ([12](12-plant-knowledge-base.md)) | Flag draft estimates and unsigned proposals that include affected plants; signed proposals keep the legal check date snapshotted at `proposal.signed` ([12](12-plant-knowledge-base.md)) |
 | `job.completed` + `job_cost.finalized` ([09](09-accounting-ledger-integrations.md)) | Estimate-vs-actual record; production rate calibration samples |
 | `vendor.price_list_imported` ([13](13-operations-inventory-equipment.md)) | Cost update and impact report |
 | `call.completed` / `message.received` ([16](16-marketing-growth-communications.md)) | Lead creation or timeline entry |
@@ -1930,7 +1937,7 @@ All AI runs through the provider-agnostic AI Gateway, is metered in published AI
 |---|---|---|---|---|
 | AI-1 | Lead triage and first reply | [MVP] (runs as the A2 Inbox Triage and A3 Lead Follow-up agents in [17](17-ai-copilot-automation.md)) | LLM classifies intent, service, urgency, spam; drafts a personalized first reply in the lead's language | Auto-send only for templated intents the tenant enables; others are drafts |
 | AI-2 | Dedupe assist | [V1] | Embedding similarity on names/addresses for fuzzy cases (e.g., "Bob & Sue Miller" vs "Robert Miller") | Suggest only; never auto-merge below the rules threshold |
-| AI-3 | Voice-to-scope | [V1] | Speech-to-text (en/es) then structured scope with quantities linked to photos | Draft list; estimator confirms each item |
+| AI-3 | Voice-to-scope | [V1] (at [MVP], a recorded voice memo is transcribed and used as scope context by the A6 Estimating Agent in [17](17-ai-copilot-automation.md), per EST-18) | Speech-to-text (en/es) then structured scope with quantities linked to photos taken during the dictation window (ASSESS-04) | Draft list; estimator confirms each item |
 | AI-4 | Aerial auto-measure | [MVP] turf, [V1] other classes | Segmentation on aerial imagery clipped to parcel; per-polygon confidence | Under 0.75 requires human verification; public firm prices need 0.85 or higher ([16](16-marketing-growth-communications.md)) |
 | AI-5 | Photo measurement | [V2] | Depth estimation plus reference objects, or phone LiDAR | Shown as estimates with error bars; "verify on site" flag |
 | AI-6 | Photo-to-estimate draft | [V2] | Vision model identifies conditions (overgrown beds, dead shrubs, bare turf) and maps them to price book items with quantities | Draft only; confidence and "why" per line |
@@ -1941,7 +1948,7 @@ All AI runs through the provider-agnostic AI Gateway, is metered in published AI
 | AI-11 | Follow-up timing and copy | [V1] | Picks send time from engagement history; writes nudges referencing viewed options | Consent and quiet hours enforced; human can review queue |
 | AI-12 | Renewal recommendations | [V1] | Combines job-costing margin, health score and market index into recommended escalators and scope changes | Owner approval above cap |
 | AI-13 | Win-probability pricing advisor | [V2] | Per-tenant model of win probability vs price, scope and client features | Shown as model estimate with confidence band; never auto-applied; no protected-class proxies |
-| AI-14 | Copilot commands | [V1] | Natural language actions: "Draft spring cleanup proposals for all Maple Ridge properties at last year's scope +5%" | Creates drafts and a review grid; bulk send needs confirmation |
+| AI-14 | Copilot commands | [MVP] (single-record and bulk drafts, per the acceptance scenarios in [17](17-ai-copilot-automation.md) 4.2.3 and the confirmation tiers in 4.3) | Natural language actions: "Draft spring cleanup proposals for all Maple Ridge properties at last year's scope +5%" | Creates drafts and a review grid; bulk actions over 25 records require typing the count to confirm; bulk send needs confirmation |
 | AI-15 | Bounded auto-quote | [V3] | Instant quotes sent without human review for configured services when all inputs are high-confidence and within bands | Tenant opt-in; daily cap; margin floor; automatic human review sampling |
 | AI-16 | Plan-set takeoff (`BID-09`) | [V2] | Document understanding reads scaled L-sheets and plant schedules into a Takeoff with sheet citations | Scale confirmed by the estimator; schedule vs symbol-count mismatches over 2% flagged; never prices directly |
 

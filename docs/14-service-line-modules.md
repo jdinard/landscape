@@ -353,7 +353,7 @@ Every completed application produces an immutable **Application Record**. Requir
 
 Rules:
 - **Rule packs** are curated per jurisdiction (state, province, and county or municipality where local ordinances exist) by `platform_curator`, versioned, with effective dates and a "last verified" date. Each pack declares: required record fields, retention period (e.g., two years for Maine commercial applicators per the [Maine BPC document](https://www.maine.gov/dacf/php/pesticides/documents2/bd_mtgs/Jun22/6-CA-Caribou-CC.pdf); other states differ), sign posting rules, registry rules, customer notice rules, reporting obligations (some states require annual use reports), and fertilizer blackout dates. Tenants cannot edit a platform pack but can add stricter Company rules.
-- Records are immutable from the applicator's signature in the crew app ([05](05-field-crew-mobile-app.md) 4.7.1) and are sealed (`application_record.sealed`) when the Visit closes. Corrections create a new **record revision** with reason, author and timestamp; the original remains visible in the audit trail. This matches how regulators expect corrections to be made (no silent edits).
+- Records are immutable from the applicator's signature in the crew app ([05](05-field-crew-mobile-app.md) 4.7.1). The record is the `chemical_application` entity, and the crew app emits `chemical_application.recorded` when the signed record reaches the server (entity and event names per the registry in [20](20-architecture-security.md)). On that event this module validates the record against the rule pack version it was captured under and seals it (status `sealed`, with a `record_hash`) no later than the Visit's close. Corrections create a new **record revision** (`chemical_application_revision`, emitted as `chemical_application.amended`) with reason, author and timestamp; the original remains visible in the audit trail. This matches how regulators expect corrections to be made (no silent edits).
 - **Export formats:** state-specific CSV/PDF where agencies publish a format; a generic "regulator view" PDF per date range, applicator or product; annual use summaries by active ingredient.
 - **Federal note:** USDA's recordkeeping program for restricted-use pesticides applies to private (agricultural) applicators; commercial lawn applicators are generally governed by state rules (verify per state). Rootline's RUP handling therefore lives in state rule packs.
 
@@ -1124,9 +1124,9 @@ This module never writes journal entries. It emits domain events (section 8.2) a
 | Scenario | Fact emitted here | Ledger rule (09) | Entry (simplified, tax lines omitted) |
 |---|---|---|---|
 | Lawn program prepaid: 5 rounds at USD 62, 5% prepay discount = USD 294.50 | `program_enrollment.created` (billing mode prepay) | `billing.P4`/`P9` prepaid season invoice; `payments.charge` | Dr 1200 AR 294.50 / Cr 2200 Deferred Revenue 294.50; on payment Dr 1050 Stripe Clearing / Cr 1200 AR |
-| Each prepaid round completed | `application_record.sealed` -> `visit.completed` | `billing.P5` recognition per occurrence | Dr 2200 Deferred Revenue 58.90 / Cr 4400 Lawn Care and PHC Revenue 58.90 |
+| Each prepaid round completed | `chemical_application.recorded` (record sealed here) -> `visit.completed` | `billing.P5` recognition per occurrence | Dr 2200 Deferred Revenue 58.90 / Cr 4400 Lawn Care and PHC Revenue 58.90 |
 | Pay-per-round client | `visit.completed` -> invoice | `billing.P1` | Dr 1200 AR 62.00 / Cr 4400 62.00 |
-| Product applied from truck stock | `application_record.sealed` (product lines) -> stock issue | `inventory.IN3` issue to job | Dr 5240 Materials - Fertilizer and Chemicals (job) / Cr 1330 Inventory - Fertilizer and Chemicals |
+| Product applied from truck stock | `chemical_application.recorded` (product lines) -> stock issue | `inventory.IN3` issue to job | Dr 5240 Materials - Fertilizer and Chemicals (job) / Cr 1330 Inventory - Fertilizer and Chemicals |
 | Seasonal snow contract USD 9,600 in 6 installments | Agreement installment schedule (storm events do not change the billing, only the cap counters) | `billing.P4` installment invoice; `billing.P6` ratable recognition by weighted season curve; `billing.P7` contract asset when earned exceeds billed | Each installment: Dr 1200 AR 1,600 / Cr 2200 Deferred Revenue 1,600; month-end: Dr 2200 / Cr 4600 Snow and Ice Revenue at the curve's share |
 | Per-push or per-event snow invoice | `storm_event.closed` -> approved event invoices | `billing.P1` | Dr 1200 AR / Cr 4600 Snow and Ice Revenue, per site-event line |
 | Salt applied | `snow_service_log.recorded` (material usage) | `inventory.IN3` | Dr 5260 Materials - Salt and Deicers (site job) / Cr 1345 Inventory - Salt and Deicers |
@@ -1454,8 +1454,8 @@ sequenceDiagram
     participant Ctrl as Controller
     participant Sched as Scheduler
     participant Client
-    Crew->>Compliance: Seal application record
-    Compliance->>Rules: application_record.sealed
+    Crew->>Compliance: Signed record (chemical_application.recorded)
+    Compliance->>Rules: Record validated and sealed
     Rules->>Ctrl: Suspend turf zones 1 4 5 for 24h
     Ctrl-->>Rules: Suspended
     Rules->>Compliance: Log hold on the record
@@ -1849,15 +1849,17 @@ erDiagram
 
 ### 7.2 Application Compliance Engine
 
+The application record is the `chemical_application` entity of the `field` module in [20](20-architecture-security.md), captured and signed in the crew app ([05](05-field-crew-mobile-app.md) section 7); its product lines are `chemical_application_product` (as in 05) and its corrections are `chemical_application_revision`. This module owns the compliance fields, guardrail evaluations, rule pack versions and sealing rules on it.
+
 ```mermaid
 erDiagram
     product_label ||--o{ product_active_ingredient : "contains"
     product_mix ||--o{ product_mix_line : "has"
     product_label ||--o{ product_mix_line : "used in"
-    visit ||--o{ application_record : "produces"
-    application_record ||--o{ application_line : "lists"
-    application_record ||--o{ application_revision : "corrected by"
-    application_record ||--o{ guardrail_evaluation : "checked by"
+    visit ||--o{ chemical_application : "produces"
+    chemical_application ||--o{ chemical_application_product : "lists"
+    chemical_application ||--o{ chemical_application_revision : "corrected by"
+    chemical_application ||--o{ guardrail_evaluation : "checked by"
     rule_pack ||--o{ rule_pack_rule : "defines"
     registry_list ||--o{ registry_entry : "contains"
     registry_entry ||--o{ notification_log : "notified via"
@@ -1903,7 +1905,7 @@ erDiagram
         numeric rate
         text rate_unit
     }
-    application_record {
+    chemical_application {
         uuid id PK
         uuid tenant_id FK
         uuid visit_id FK
@@ -1929,18 +1931,18 @@ erDiagram
         text status
         text record_hash
     }
-    application_line {
+    chemical_application_product {
         uuid id PK
-        uuid application_record_id FK
+        uuid chemical_application_id FK
         uuid product_label_id FK
         text product_snapshot
         numeric rate
         numeric amount_used
         text amount_unit
     }
-    application_revision {
+    chemical_application_revision {
         uuid id PK
-        uuid application_record_id FK
+        uuid chemical_application_id FK
         jsonb before_values
         jsonb after_values
         text reason
@@ -1948,7 +1950,7 @@ erDiagram
     }
     guardrail_evaluation {
         uuid id PK
-        uuid application_record_id FK
+        uuid chemical_application_id FK
         text rule_code
         jsonb inputs
         text outcome
@@ -2623,7 +2625,7 @@ erDiagram
     cross_module_rule ||--o{ cross_module_rule_hit : "fires as"
     visit ||--o{ cross_module_rule_hit : "affected by"
     equipment ||--o{ equipment_calibration : "calibrated by"
-    equipment_calibration ||--o{ application_record : "used in"
+    equipment_calibration ||--o{ chemical_application : "used in"
     holiday_display ||--o{ holiday_circuit : "powered by"
     holiday_circuit ||--o{ holiday_item : "feeds"
     cross_module_rule {
@@ -2726,7 +2728,7 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 | `program_enrollment.created` / `.renewed` / `.canceled` | enrollment, billing mode, price | Billing, ledger (prepay liability), marketing |
 | `round_instance.window_opened` | round, region, count | Round Planner alerts, Copilot brief |
 | `round_instance.blocked` / `.unblocked` | reasons (notices, license) | Ops dashboard |
-| `application_record.sealed` | record id, jurisdiction, products, applicator | Compliance reports, client notice, inventory decrement, invoicing |
+| `chemical_application.recorded` (emitted by the crew app on the applicator's signature, [05](05-field-crew-mobile-app.md) 8.3; this module seals the record and drives these consumers) / `chemical_application.amended` | record id, jurisdiction, products, applicator | Compliance reports, client notice, inventory decrement, invoicing |
 | `guardrail.overridden` | rule, inputs, actor, reason | Compliance dashboard, owner alert |
 | `registry_notice.sent` / `.failed` | channel, recipient, visit | Compliance log, retry |
 | `soil_test.results_ingested` | values, recommendation | Proposal automation |
@@ -2757,12 +2759,11 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 | Spelling elsewhere | Canonical event here | Where it appears |
 |---|---|---|
 | `round_instance.ready` | `round_instance.window_opened` or `round_instance.unblocked`, whichever leaves the instance `window_open` and unblocked | [04](04-scheduling-dispatch-routing.md) 8.4 |
-| `chemical_application.recorded` | `application_record.sealed` | [20](20-architecture-security.md) event catalog |
-| `chemical_application.signed` | Crew signature captured in [05](05-field-crew-mobile-app.md); sealing (`application_record.sealed`) follows server-side validation against the rule pack | [05](05-field-crew-mobile-app.md) 8.3 |
+| `application_record.sealed`, `chemical_application.signed` (retired spellings) | `chemical_application.recorded`, the [20](20-architecture-security.md) registry name emitted by the crew app ([05](05-field-crew-mobile-app.md) 8.3); sealing is a status on the record (4.1.4), not a separate event | Earlier drafts of this doc and of [13](13-operations-inventory-equipment.md) 8.3 |
 
 ### 8.3 Events consumed
 
-`proposal.accepted` ([03](03-crm-sales-estimating-proposals.md); creates projects, enrollments, snow terms), `visit.completed` ([04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md); round instance and record sealing), `chemical_application.signed` ([05](05-field-crew-mobile-app.md); starts record sealing), `invoice.paid` ([07](07-invoicing-billing-contracts.md); prepay balances, holiday deposit confirmations), `employee.certification_expiring` / `employee.certification_expired` ([15](15-team-hr-payroll.md); gates applicators, testers, assessors), `ops.stock.below_reorder` ([13](13-operations-inventory-equipment.md); salt, products), `weather.alert_raised` ([04](04-scheduling-dispatch-routing.md) weather service), `design.sold` and `design.as_built_published` ([10](10-design-studio.md); takeoffs for projects, as-built irrigation and lighting layers).
+`proposal.accepted` ([03](03-crm-sales-estimating-proposals.md); creates projects, enrollments, snow terms), `visit.completed` ([04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md); round instance and record sealing), `chemical_application.recorded` and `chemical_application.amended` ([05](05-field-crew-mobile-app.md); validate and seal the record), `invoice.paid` ([07](07-invoicing-billing-contracts.md); prepay balances, holiday deposit confirmations), `employee.certification_expiring` / `employee.certification_expired` ([15](15-team-hr-payroll.md); gates applicators, testers, assessors), `ops.stock.below_reorder` ([13](13-operations-inventory-equipment.md); salt, products), `weather.alert_raised` ([04](04-scheduling-dispatch-routing.md) weather service), `design.sold` and `design.as_built_published` ([10](10-design-studio.md); takeoffs for projects, as-built irrigation and lighting layers).
 
 ### 8.4 Public API and tenant webhooks [V1]
 

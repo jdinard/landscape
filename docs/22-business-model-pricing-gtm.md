@@ -256,7 +256,8 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | CRM, leads, opportunities, client and property records | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | [MVP] |
 | Estimates with production rates, Price Book | L (1 price book, 200 items) | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | [MVP] |
 | Proposals with options/tiers, e-signature, deposits | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | [MVP] |
-| Change orders, agreement renewals | - | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | [V1] |
+| Change orders and agreement renewals, basic (office and field change orders with signature and price delta, fixed escalators, auto-renewal with notice rules) | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md), [07](07-invoicing-billing-contracts.md) | [MVP] (24 section 4.6 #13) |
+| Change orders and renewals, full (verbal-emergency change orders, CPI and margin-target escalators, renewal review grid) | - | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | [V1] |
 | Scheduling, dispatch board, recurring visits | Y | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) | [MVP] |
 | Single-crew route ordering | Y | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) | [MVP] |
 | Multi-crew route optimization (VRP) | - | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) | [V1] |
@@ -270,7 +271,8 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | Ledger Essentials: double-entry GL, auto-posting, 1 bank feed, P&L/BS | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [MVP] |
 | Ledger Plus: AP and bills, unlimited bank feeds, bank rec, 1099 tracking, budgets | A | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [MVP] |
 | Ledger Advanced: WIP / percent-complete, classes and departments, multi-entity, consolidations | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) | [V1] |
-| QuickBooks Online / Xero sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [MVP] |
+| QuickBooks Online sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [MVP] |
+| Xero sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [V1] (V1.2 per 24 section 4.6 #5) |
 | QuickBooks Desktop sync (Web Connector) | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) | [V1] |
 | Design Studio 2D + takeoffs to estimate | A | Y (1 seat) | Y (3 seats) | Y | [10](10-design-studio.md) | [MVP] |
 | Design Studio 3D, sun/shade, growth-over-time | - | A | Y | Y | [10](10-design-studio.md) | [V1] |
@@ -278,21 +280,27 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | Dimension-aware AI layout generation | - | Y (credits) | Y (credits) | Y | [11](11-ai-design-mockups.md) | [V1] |
 | Plant KB search, region profiles, palettes | Y | Y | Y | Y | [12](12-plant-knowledge-base.md) | [MVP] |
 | Nursery availability, wholesale ordering links | - | Y | Y | Y | [12](12-plant-knowledge-base.md) | [V1] |
-| Inventory, purchasing, vendor bills | - | L (1 yard) | Y (multi-location) | Y | [13](13-operations-inventory-equipment.md) | [V1] |
-| Equipment and fleet maintenance | - | L (25 assets) | Y | Y | [13](13-operations-inventory-equipment.md) | [V1] |
-| Service line modules: lawn/PHC, irrigation, lighting, hardscape projects | Y | Y | Y | Y | [14](14-service-line-modules.md) | [MVP] |
+| Inventory, purchasing, vendor bills | L (Off mode: Price Book materials, receipts to jobs) | L (1 yard; Light, Standard from V1) | Y (multi-location; Advanced mode from V1) | Y | [13](13-operations-inventory-equipment.md) | [MVP] Off and Light modes, per-job buy lists, POs, receiving, 2-way bill match; [V1] Standard and Advanced modes, purchasing workbench, 3-way match (24 section 4.6 #6) |
+| Equipment and fleet | L (registry, manual meters and DVIR, up to 10 assets) | L (25 assets) | Y | Y | [13](13-operations-inventory-equipment.md) | [MVP] asset registry, manual meters, DVIR, rate calculator; [V1] PM schedules and work orders, telematics, fuel cards (24 section 4.6 #7) |
+| Service line modules: lawn/PHC, irrigation, lighting, hardscape projects | Y | Y | Y | Y | [14](14-service-line-modules.md) | [MVP] (landscape lighting [V1], per [14](14-service-line-modules.md) section 4.0.1) |
 | Snow and ice module | A | A | A | Y | [14](14-service-line-modules.md) | [V1] |
 | Tree care module (ANSI A300 notes, crane/climb tasks) | A | A | Y | Y | [14](14-service-line-modules.md) | [V2] |
 | Team, timesheets, certifications, training | L | Y | Y | Y | [15](15-team-hr-payroll.md) | [MVP] |
 | Payroll (embedded partner) | A | A | A | A | [15](15-team-hr-payroll.md) | [V1] |
 | Payroll export (ADP, Gusto, QuickBooks Payroll, etc.) | Y | Y | Y | Y | [15](15-team-hr-payroll.md) | [MVP] |
 | Website builder | A | A | Y (1 site) | Y | [16](16-marketing-growth-communications.md) | [V1] |
-| Online booking, review requests, referral program | L | Y | Y | Y | [16](16-marketing-growth-communications.md) | [V1] |
-| Campaigns (email/SMS), unified inbox | L (inbox only) | Y | Y | Y | [16](16-marketing-growth-communications.md) | [V1] |
-| AI receptionist (voice) | A | A | Y (200 min) | Y | [16](16-marketing-growth-communications.md) | [V1] |
+| Review requests (no gating) and NPS | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | [MVP] (24 section 4.6 #11) |
+| Referral program with rewards | L | Y | Y | Y | [16](16-marketing-growth-communications.md) | [V1] (24 section 4.6 #11; referral as a manually entered lead source at [MVP]) |
+| Online booking and instant quotes | L | Y | Y | Y | [16](16-marketing-growth-communications.md) | [V1] (V1.2 per 24 section 4.6 #9; turf auto-measure for internal estimating stays [MVP]) |
+| Unified inbox (SMS, email, chat, calls, portal) | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | [MVP] |
+| Campaigns, basic (segments, one-off email/SMS with price blocks, prebuilt journeys) | L (one-off campaigns and prebuilt journeys) | Y | Y | Y | [16](16-marketing-growth-communications.md) | [MVP] basic (24 section 4.6 #10) |
+| Journey builder (multi-step campaigns), landing pages, multi-touch attribution (Advanced Marketing add-on) | A | A | Y | Y | [16](16-marketing-growth-communications.md) | [V1] |
+| Call tracking, call recording and transcription, missed-call text-back | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | [MVP] basic, [V1] full |
+| AI receptionist (voice) | A | A | Y (200 min) | Y | [16](16-marketing-growth-communications.md) | [V1] (V1.2 per 24 section 4.6 #12; until then, call tracking, voicemail with transcription and missed-call text-back cover after-hours calls) |
 | Copilot (chat, drafting) | Y (credits) | Y | Y | Y | [17](17-ai-copilot-automation.md) | [MVP] |
 | Automation builder | L (5 active rules) | L (50) | Y (unlimited) | Y | [17](17-ai-copilot-automation.md) | [MVP] |
-| AI agents (scheduling agent, collections agent) | - | L | Y | Y | [17](17-ai-copilot-automation.md) | [V1] |
+| MVP agents: Daily Owner Briefing, Inbox Triage, Lead Follow-up, Field-Note, Estimating from notes (A1-A4, A6), collections reminders (A5) | Y (credits) | Y (credits) | Y (credits) | Y | [17](17-ai-copilot-automation.md) | [MVP] |
+| V1 agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A21) | - | L | Y | Y | [17](17-ai-copilot-automation.md) | [V1] |
 | Standard dashboards | Y | Y | Y | Y | [18](18-reporting-analytics.md) | [MVP] |
 | Report builder (scheduled delivery ships at [MVP]) | - | Y | Y | Y | [18](18-reporting-analytics.md) | [V1] |
 | Benchmarking (opt-in peer comparisons) | - | Y | Y | Y | [18](18-reporting-analytics.md) | [V1] |
@@ -301,7 +309,8 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | Data warehouse export (data shares), multi-company rollup | - | - | A | Y | [18](18-reporting-analytics.md) | [V2] |
 | Custom roles (granular permissions) | - | L (2 custom roles) | Y | Y | [02](02-personas-roles-permissions.md) | [MVP] |
 | Multi-branch / divisions | - | - | Y | Y | [02](02-personas-roles-permissions.md) | [V1] |
-| SSO (SAML/OIDC), SCIM | - | - | - | Y | [20](20-architecture-security.md) | [V1] |
+| SSO (SAML/OIDC) | - | - | - | Y | [02](02-personas-roles-permissions.md), [20](20-architecture-security.md) | [V1] (V1.2 per 24 section 4.6 #16) |
+| SCIM provisioning | - | - | - | Y | [02](02-personas-roles-permissions.md) | [V2] (24 section 4.6 #16) |
 | Public API and webhooks | L (read-only, 10k calls/day) | Y (50k/day) | Y (250k/day) | Custom | [20](20-architecture-security.md) | [MVP] core objects, [V1] full surface and daily quotas |
 | Sandbox tenant | - | - | A | Y | [20](20-architecture-security.md) | [V1] |
 | Dedicated database option | - | - | - | A | [20](20-architecture-security.md) | [V2] |
@@ -361,14 +370,16 @@ Rules:
 | `ai_credits` | credit | 300 / 2,000 / 6,000 per month | Packs: 1,000 for $25. 5,000 for $100. 20,000 for $340. Optional auto top-up | Soft stop at 0 with a one-click pack purchase. Owner can enable auto top-up with a monthly ceiling | [MVP] |
 | `sms_segments` | outbound segment (MMS = 3 segments) | 500 / 2,500 / 8,000 | $0.02 per segment overage, or 5,000-segment pack for $79 | Overage billed. Hard cap at the owner's configured monthly ceiling (default 3x included) | [MVP] |
 | `voice_ai_minutes` | AI receptionist minute (rounded up per call) | 0 / 0 / 200 | Add-on: $49/mo for 100 min, then $0.39/min | Overage billed. Ceiling configurable. Once the ceiling is hit, calls fall back to voicemail with transcription | [V1] |
-| `voice_minutes` | Click-to-call and call-tracking minutes | 300 / 1,000 / 3,000 | $0.03/min | Overage billed | [V1] |
+| `voice_minutes` | Call-tracking, forwarded and click-to-call minutes | 300 / 1,000 / 3,000 | $0.03/min | Overage billed | [MVP] call tracking and forwarding; [V1] click-to-call softphone ([16](16-marketing-growth-communications.md) 4.19) |
 | `storage_gb` | GB-month | 50 / 250 / 1,000 | $5 per additional 100 GB-month | Soft. Warned at 90%. Old photo originals can move to cold storage | [MVP] |
-| `marketing_emails` | email sent via campaigns | 2,000 / 10,000 / 50,000 | $1 per 1,000 | Overage billed | [V1] |
-| `parcel_lookups` | parcel boundary/attribute lookup | 100 / 500 / 2,000 | $0.10 per lookup | Soft, fair use | [MVP] |
+| `marketing_emails` | email sent via campaigns | 2,000 / 10,000 / 50,000 | $1 per 1,000 | Overage billed | [MVP] (basic campaigns ship at MVP) |
+| `parcel_lookups` | parcel boundary/attribute lookup; one AI auto-measure run per parcel and imagery date counts as one lookup (re-runs on the same imagery are cached and free) | 100 / 500 / 2,000 | $0.10 per lookup | Soft, fair use | [MVP] |
 | `premium_imagery` | high-res aerial pull (Nearmap/EagleView-class) | 0 / 0 / 0 | Cost plus 20%, shown before purchase | Explicit per-pull confirmation | [V1] |
 | `api_calls` | request | 10k / 50k / 250k per day | Enterprise only | Hard rate limit with HTTP 429 | [V1] |
 
-**AI receptionist minutes are their own meter, not AI credits.** [16](16-marketing-growth-communications.md) describes receptionist usage as "credits per minute plus telephony". The decision here is simpler for the buyer: one published per-minute price (`voice_ai_minutes`) that already includes telephony, speech recognition, speech synthesis and the LLM. A call shows as "6 min" on the meter, never as a mix of credits and carrier charges. Transcription and summaries of ordinary (human-answered) calls remain credit actions (4.4.1).
+**AI receptionist minutes are their own meter, not AI credits.** The decision here is simple for the buyer: one published per-minute price (`voice_ai_minutes`) that already includes telephony, speech recognition, speech synthesis and the LLM, as [16](16-marketing-growth-communications.md) section 4.18.4 and [17](17-ai-copilot-automation.md) section 4.11.5 also state. A call shows as "6 min" on the meter, never as a mix of credits and carrier charges. Transcription and summaries of ordinary (human-answered) calls and voicemails remain credit actions (4.4.1).
+
+**AI auto-measure is metered as a parcel lookup, not in credits.** Turf auto-measure ([03](03-crm-sales-estimating-proposals.md) INTEL-03, [MVP]) and the instant-quote measurement pipeline ([16](16-marketing-growth-communications.md) 4.3.2) consume one `parcel_lookups` unit per parcel and imagery date. The segmentation runs on self-hosted models at a fraction of a cent, so a separate credit price would only add noise. The V1 classes (beds, hardscape, commercial) use the same meter; high-resolution imagery is the separate `premium_imagery` pull. The [V1] aerial-measured estimate draft (A6 in [17](17-ai-copilot-automation.md)) adds estimate-drafting work on top of the measurement and is quoted before it runs like an agent task (planning estimate 25-60 credits).
 
 #### Messaging and telephony fee policy [MVP]
 
@@ -403,7 +414,11 @@ A credit is a unit of AI work that is published and stable. The raw provider cos
 | Dimension-aware AI layout (3 to-scale options into Design Studio) | 60 | Uses the property dimensions the user entered and Plant KB constraints | [V1] |
 | Plant palette recommendation for a bed or design | 3 | | [MVP] |
 | Document understanding (vendor bill, receipt, PO) per page | 2 | Feeds AP in the [Ledger](09-accounting-ledger-integrations.md) | [V1] |
-| Call or voicemail transcription + summary | 2 | Separate from AI receptionist minutes | [V1] |
+| Call or voicemail transcription + summary | 2 | Separate from AI receptionist minutes. Ships with call tracking and voicemail transcription ([16](16-marketing-growth-communications.md) 4.19) | [MVP] |
+| Daily Owner Briefing (A1 in [17](17-ai-copilot-automation.md)) | 2 (+1 for the audio version) | Text briefing with three one-tap decisions | [MVP] |
+| Inbox triage per inbound message (A2) | 0.5 | Small-model classification plus a draft reply. Fractional credits accrue on the credit ledger and settle daily, rounded up | [MVP] |
+| Lead follow-up conversation, full nurture (A3) | 3-6 | Charged per conversation as it runs; shown on the agent's run log and limited by per-agent caps | [MVP] |
+| Field voice note per minute (A4: speech-to-text, EN/ES translation, extraction) | 1 | | [MVP] |
 | Agent task run (e.g., "draft next week's routes and flag weather conflicts") | 10-30, quoted before run | The agent quotes an upper bound and the user approves it | [V1] |
 | Marketing content (blog, social post set, landing-page copy) | 5 | | [V1] |
 | Homeowner-app lead enrichment and qualification | 0 to Company | Paid by Rootline from marketplace revenue | [V1] |
@@ -411,10 +426,10 @@ A credit is a unit of AI work that is published and stable. The raw provider cos
 | Seasonal or growth-over-time set (4 renders: spring, summer, fall, "in 3 years") | 30 | | [V1] |
 | Night mood render (basic relight) / physically based night lighting | 20 / 40 | [11](11-ai-design-mockups.md) AIM-GEN-E | [V1] / [V2] |
 | Design assistant chat turn ([11](11-ai-design-mockups.md) AIM-GEN-D) | 1 (question or clarification) / 2 (turn that commits a plan edit) | Re-renders are charged separately and quoted first | [V1] |
-| Website visualizer preview set (a homeowner on the Company's own website, [16](16-marketing-growth-communications.md)) | 24 | Drawn from the Company's pool. The Company sets a monthly cap for the widget (default 600 credits). Anonymous visitors get 1 preview set; more after phone verification. The widget ships at MVP per [11](11-ai-design-mockups.md) AIM-AUD-01 | [MVP] |
+| Website visualizer preview set (a homeowner on the Company's own website, [16](16-marketing-growth-communications.md)) | 24 | Drawn from the Company's pool. The Company sets a monthly cap for the widget (default 600 credits). The default is deliberately small: at the visitor mix in [11](11-ai-design-mockups.md) section 8.6 (about 41 credits per visitor) it funds only about 15 visitors a month, so owners raise it and fund it with packs for spring campaigns (one-tap "raise cap" from the cap alert). On Starter (300 included credits) the setup wizard recommends funding the widget from purchased packs only, so it cannot use up the office's allowance. Anonymous visitors get 1 teaser set; more after one-time-code verification, per the gate modes in [11](11-ai-design-mockups.md) AIM-AUD-01. The widget ships at MVP behind the `verify_first` gate for design partners (24 section 4.6 #14) | [MVP] |
 | Immersive 3D walkthrough capture (photo scan to navigable scene) | 600 | GPU-heavy. Quoted before run. Phased by [11](11-ai-design-mockups.md) (Mode F) | [V3] |
 
-**One credit unit across all docs.** At pack prices one credit sells for $0.017-$0.025. [11](11-ai-design-mockups.md) drafted its action costs in an illustrative $0.10 unit (for example "restyle preview set, 4 credits") and proposed a one-month rollover. Both are superseded by this rate card: convert at 1 doc-11 unit = about 4-5 Rootline credits, and included credits do **not** roll over (rule 2 below), because rollover makes the monthly allotment a growing liability on Rootline's balance sheet and complicates breakage accounting (14.5). Purchased packs last 12 months, which covers the seasonal pattern (heavy mockup use Feb-May) that rollover was meant to solve.
+**One credit unit across all docs.** At pack prices one credit sells for $0.017-$0.025. Every module that meters AI ([11](11-ai-design-mockups.md), [16](16-marketing-growth-communications.md), [17](17-ai-copilot-automation.md)) prices its actions in this unit and maps them to this rate card, which wins any conflict; a module's proposed price is not billable until it is listed here. Included credits do **not** roll over (rule 2 below), because rollover makes the monthly allotment a growing liability on Rootline's balance sheet and complicates breakage accounting (14.5). Purchased packs last 12 months, which covers the seasonal pattern (heavy mockup use Feb-May) without a rollover.
 
 **Who pays for what in the homeowner funnels.** Two different homeowner surfaces exist and are paid differently: the website visualizer on the **Company's own site** draws credits from that Company's pool because the leads belong to the Company; **Rootline Home** (5.3) is paid by Rootline and recovered through lead fees and Homeowner Plus, so it never touches a Company's credits.
 
@@ -445,7 +460,7 @@ A credit is a unit of AI work that is published and stable. The raw provider cos
 | **QuickBooks Desktop connector** | $29/mo | Grow (included in Pro) | Web Connector sync | Support burden | [V1] |
 | **Snow & Ice module** | **$99/mo billed Nov-Mar only** ($495 per season); $79/mo in season on annual plans ($395 per season) | All | Storm events, trigger depths (e.g., 2-inch push trigger), per-push / per-event / seasonal billing, salt and ice-melt logs, timestamped photo proof for slip-and-fall defense, weather feeds | Regional | [V1] |
 | **Tree Care module** | $59/mo | Starter, Grow (included in Pro) | Tree inventory, ANSI A300-aligned work specs, risk notes, crane/climb job types | Specialty | [V2] |
-| **Advanced Marketing** | $79/mo | Starter, Grow | Multi-step campaigns, segmentation, landing pages, attribution | Overlaps third-party tools | [V1] |
+| **Advanced Marketing** | $79/mo | Starter, Grow (included in Pro) | Journey builder (multi-step campaigns), advanced segmentation, landing pages, multi-touch attribution. Basic segments, one-off campaigns, prebuilt journeys and first/last-touch attribution are in every plan from MVP (4.2.1) | Overlaps third-party tools | [V1] |
 | **Extra storage** | $5 per 100 GB-month | All | Photo- and video-heavy companies | Variable cost | [MVP] |
 | **Premium aerial imagery** | Cost + 20% per pull | Grow, Pro, Ent. | High-res aerial (Nearmap/EagleView-class) for measurement | Third-party per-use cost | [V1] |
 | **Sandbox tenant** | $99/mo | Pro (Ent. included) | Copy of config + anonymized sample data for training and testing | Infra cost | [V1] |
@@ -471,6 +486,7 @@ Add-on rules:
 | **Demo company** | Every trial can toggle a fully populated sample Company ("Greenleaf Grounds Co.", 120 clients, a year of visits, designs, invoices, GL) to explore before importing their own data | [MVP] |
 | **SMS in trial** | Disabled until the Company submits 10DLC brand and campaign registration (started on day 1 from a guided form). Email and push work immediately. See [Marketing](16-marketing-growth-communications.md) | [MVP] |
 | **Trial end** | Choose a plan, or the tenant drops into a **read-only** state for 60 days (exports allowed), then archive | [MVP] |
+| **Module add-on trial** | A paying Company can trial a service-line module its plan does not include (for example Tree Care or Snow & Ice) for **30 days**, once per module per Company. The length is operator-configurable (the operator manages entitlements and trials in the [admin console](19-platform-admin-portal.md)). No charge during the trial; the add-on bills from conversion. At expiry with open commitments (a live storm event, enrolled programs) the module winds down instead of switching off, so no client work is stranded. Separate from the account trial above, during which every module the trial plan includes is simply available. Mechanics in [14](14-service-line-modules.md) section 4.0.3 | [MVP] mechanism; the first paid service-line add-ons ship at [V1] |
 | **Spring-Ready Guarantee** | Companies that sign an annual Grow or Pro plan by **Feb 15** and complete the onboarding checklist are guaranteed live (imported, crews on app, first invoices sent) by **Mar 31**, or the first 3 months are free | [V1] |
 | **Founding Customer program** | The first 100 paying Companies in the beachhead regions get 25% off base plan list price for as long as they stay subscribed, plus a seat on the Customer Advisory Board | [MVP] |
 
@@ -569,12 +585,12 @@ Rules:
 |---|---|---|---|
 | In-app benchmarks | Opted-in Companies (Grow+) | Compare your labor efficiency, gross margin by service line, AR days, close rate, price per 1,000 sq ft mowing, mulch install price per cubic yard against peers by region and size band | Included. Opt-in required to *see* peers ("give to get") |
 | State of the Landscape Industry report | Public | Annual report: wage trends, pricing trends, seasonality, adoption of practices | Free (marketing asset), co-branded with associations |
-| Pulse Indices | Distributors, manufacturers, OEMs, investors, associations | Monthly regional indices: maintenance price index, install backlog weeks, labor rate index, materials price index (mulch, stone, sod), snow event volume | $1,000-$5,000/mo subscriptions (estimate; validate with 5 design partners) |
+| Pulse Indices | Distributors, manufacturers, OEMs, investors, associations | Quarterly regional indices (release cadence per [18](18-reporting-analytics.md) section 4.11.4; monthly only after privacy and counsel review): maintenance price index, install backlog weeks, labor rate index, materials price index (mulch, stone, sod), snow event volume | $1,000-$5,000/mo subscriptions (estimate; validate with 5 design partners) |
 
 Privacy and antitrust guardrails (all [V1], required before any external sale):
 1. **Opt-in** at the Company level by `owner` only. Separate opt-ins for (a) in-app peer benchmarks and (b) inclusion in external aggregated products. Both revocable. Revocation excludes the Company from the next publication cycle.
-2. **Aggregation thresholds:** each published cell needs ≥ 10 contributing Companies, and no single Company may contribute > 25% of the cell's weight. Otherwise the cell is suppressed.
-3. **Lag and historic only:** external indices publish data at least 60 days old, describe historic averages only, never forward-looking prices, and never per-competitor figures. This lowers the risk of the benchmarks being used to coordinate prices; counsel must review (see 14.4).
+2. **Aggregation thresholds:** each published cell needs ≥ 10 contributing Companies, no single Company may contribute > 25% of the cell's weight, and the top two no more than 40% (the full disclosure-control rules are in [18](18-reporting-analytics.md) section 4.11.4). Otherwise the cell is suppressed.
+3. **Lag and historic only:** external indices publish data at least 60 days old (at least 3 months for any price or wage index, per [18](18-reporting-analytics.md) section 4.11.7), describe historic averages only, never forward-looking prices, and never per-competitor figures. This lowers the risk of the benchmarks being used to coordinate prices; counsel must review (see 14.4).
 4. **No re-identification:** licensees agree contractually not to re-identify. Rootline audits output for small-cell leakage.
 
 ### 5.3 Homeowner freemium AI design app ("Rootline Home") and lead marketplace ("Rootline Match")
@@ -2097,7 +2113,7 @@ All platform actions in this module are audit-logged with actor, reason code, be
 ### 14.4 Data products: privacy and antitrust
 
 - **Privacy:** Aggregated, opt-in, k-anonymized outputs only (section 5.2.2). Homeowner app data is governed by its own privacy policy (CCPA/CPRA, PIPEDA, and Quebec's Law 25 for Quebec residents). Homeowner data is shared with a Company only after explicit consent to be contacted.
-- **Antitrust:** Sharing pricing information among competitors can raise antitrust concerns. US agencies withdrew older "safe harbor" guidance on information exchanges in 2023 (verify). Rootline Pulse publishes only historic, aggregated, lagged data with minimum-contributor thresholds, never forward-looking prices or per-competitor views. AI pricing suggestions inside a Company's estimates ([03](03-crm-sales-estimating-proposals.md)) must **never** use other Companies' non-public prices as direct inputs. The live precedent is the US Department of Justice's 2024 suit against RealPage, whose rent-pricing software was alleged to pool landlords' nonpublic pricing data; several states have since legislated against shared pricing algorithms (for example California's 2025 amendments to its Cartwright Act; verify scope and status of both). A landscape price-recommendation engine fed by peers' live prices would sit in the same frame, so it is a hard product rule, not a counsel preference. Legal counsel signs off before V1 benchmark launch.
+- **Antitrust:** Sharing pricing information among competitors can raise antitrust concerns. US agencies withdrew older "safe harbor" guidance on information exchanges in 2023 (verify). Rootline Pulse publishes only historic, aggregated, lagged data with minimum-contributor thresholds, never forward-looking prices or per-competitor views. AI pricing suggestions inside a Company's estimates ([03](03-crm-sales-estimating-proposals.md)) must **never** use other Companies' non-public prices, or data derived from them (including Pulse indices), as inputs. The live precedent is the US Department of Justice's 2024 suit against RealPage, whose rent-pricing software was alleged to pool landlords' nonpublic pricing data; several states have since legislated against shared pricing algorithms (for example California's 2025 amendments to its Cartwright Act; verify scope and status of both). A landscape price-recommendation engine fed by peers' live prices would sit in the same frame, so it is a hard product rule, not a counsel preference. Legal counsel signs off before V1 benchmark launch.
 - **Lead marketplace:** Contractor licensing checks where states license landscape or irrigation contractors (verify per state), referral and success-fee legality per state, consent records, and no steering based on protected characteristics.
 
 ### 14.5 Rootline's own revenue recognition (for finance; verify with auditors)

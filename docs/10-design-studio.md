@@ -1059,6 +1059,7 @@ The **live design geometry** lives in the CRDT document (RDD) per Design Option 
 | `design_phase` | Phasing | `design_id`, `name`, `target_season`, `target_year`, `sequence`, `project_phase_id` |
 | `design_object` | Projection of every object | `design_version_id` (or head), `object_id` (ULID, stable), `type`, `layer_key`, `phase_id`, `status` (existing, proposed, remove, transplant), `geom` (PostGIS, site-local and WGS84), `area_sqft`, `length_ft`, `props` (jsonb), `price_book_item_id` |
 | `plant_placement` | Projection for plants (fast schedules and reports) | `design_object_id`, `plant_id`, `plant_region_profile_id`, `size_spec`, `qty`, `spacing_in`, `pattern`, `planting_mix_id` (nullable), `design_year_basis`, `kb_release_id` (KB release pinned at send, per [12](12-plant-knowledge-base.md)), `override_reason` |
+| `plant_instance` | Installed plant on the Property's living map (rail R-02 in [23](23-innovation-moonshots.md#42-rails-what-mvp-and-v1-must-build-so-the-moonshots-stay-possible)). A sold `plant_placement` becomes a `plant_instance` at install and keeps the same stable object ULID. Rows are created when the install Job completes, from the sold version's placements [MVP], and corrected by crew install logging (`plant.installed`; the crew app's `installed_plant` record in [05](05-field-crew-mobile-app.md) 4.6.3 writes to this row) and by as-built reconciliation (DS-CON-04) [V1] | `property_id`, `object_id` (the placement's ULID; a new ULID only for plants added in the field), `plant_placement_id`, `sold_version_id`, `as_built_version_id` (nullable), `job_id`, `plant_id` (KB), `cultivar`, `size_spec` (container size), `qty`, `install_date`, `source_vendor_id`, `tag_code`, `location_point`, `warranty_end` (from the Warranty Engine, [14](14-service-line-modules.md) 4.5.7), `status` (installed, establishment_check, healthy, declining, dead, replaced, removed), `replaced_by_instance_id` |
 | `takeoff` | Quantities snapshot for a version or head | `design_option_id`, `design_version_id`, `rule_set_version`, `computed_at`, `totals` (jsonb: price, cost, margin) |
 | `takeoff_line` | One quantity line | `takeoff_id`, `price_book_item_id`, `qty`, `unit`, `waste_pct`, `rounding`, `source_object_ids` (uuid array), `phase_id`, `override_qty`, `override_by` |
 | `takeoff_rule` | Mapping from object to item and formula | `object_type`, `match` (jsonb predicate on props), `price_book_item_id`, `formula`, `waste_pct`, `rounding`, `active`, `version` |
@@ -1099,6 +1100,8 @@ erDiagram
     design_object ||--o| plant_placement : "may be"
     plant ||--o{ plant_placement : "placed as"
     plant_region_profile ||--o{ plant_placement : "rated by"
+    plant_placement ||--o{ plant_instance : "installed as"
+    property ||--o{ plant_instance : "has installed"
     design_version ||--o| takeoff : "quantified by"
     takeoff ||--|{ takeoff_line : "has"
     price_book_item ||--o{ takeoff_line : "priced as"
@@ -1197,6 +1200,20 @@ erDiagram
         int spacing_in
         text override_reason
     }
+    plant_instance {
+        uuid id PK
+        uuid tenant_id FK
+        uuid property_id FK
+        text object_id
+        uuid plant_placement_id FK
+        uuid sold_version_id FK
+        uuid plant_id FK
+        text size_spec
+        date install_date
+        uuid source_vendor_id FK
+        date warranty_end
+        text status
+    }
     takeoff {
         uuid id PK
         uuid tenant_id FK
@@ -1273,6 +1290,7 @@ erDiagram
 ### 7.3 Data rules
 
 - **Stable object IDs** (ULIDs) persist across versions and options. They are the basis for estimate line provenance, version diffs, option propagation, as-built reconciliation and comment anchoring.
+- **Plant instances (rail R-02):** when the install Job completes, each sold `plant_placement` becomes a `plant_instance` with the same object ULID. Field substitutions update `plant_id`, `cultivar` and `size_spec` on the instance and are recorded as `as_built_change` rows; the sold version is never rewritten. A dead, removed or replaced plant is soft-deleted with a reason (`removed`, `died`, `replaced`, per rail R-01), and a replacement is a new instance linked by `replaced_by_instance_id`. Portal care guides ([06](06-customer-portal.md)), warranty records ([14](14-service-line-modules.md) 4.5.7, [13](13-operations-inventory-equipment.md) 4.17.3), PHC programs and the plant outcomes loop ([23](23-innovation-moonshots.md) M-29) all key on `plant_instance`.
 - **Projection consistency:** `design_object` rows for immutable versions are written once. Head projections are eventually consistent (10 s debounce) and labeled as such in the API.
 - **Price snapshots:** `takeoff` for shared or sold versions stores unit prices at snapshot time, so later Price Book changes never alter a sent proposal.
 - **Site model immutability:** a version's `site_model_version` is pinned. Adopting new imagery creates a new site model version and requires a design re-save to adopt it.
@@ -1347,7 +1365,8 @@ Events are published through the transactional outbox to the event bus ([20](20-
 | `proposal.executed` | Freeze the pinned version as `sold` and emit `design.sold` |
 | `proposal.expired` / `proposal.declined` | Release a lock if present; move the design to `archived` when the Opportunity is lost |
 | `change_order.approved` | Promote the change-order version to `sold`; the crew app shows the "Revised" construction set |
-| `job.completed` | Prompt as-built capture for `ops_manager` and `crew_lead` |
+| `job.completed` | Prompt as-built capture for `ops_manager` and `crew_lead`; for install Jobs, create `plant_instance` rows from the sold version's plant placements (rail R-02) |
+| `plant.installed` ([05](05-field-crew-mobile-app.md)) | Update the matching `plant_instance` (same object ULID) with installed quantity, substitution, source nursery, tag and location; a field-added plant creates a new instance and an `as_built_change` |
 | `mockup.generated` | Attach to design version, presentation deck and portal |
 
 ### 8.3 Public API and webhooks

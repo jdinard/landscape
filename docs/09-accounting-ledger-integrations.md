@@ -269,7 +269,7 @@ The phasing reflects one opinion: **the ledger engine runs for every tenant from
 | Reversals, not edits | Correcting an entry creates a reversing entry (mirror lines, same dimensions, `reverses_entry_id`) and, usually, a corrected replacement entry. Both link to the original and to the reason. | Reversal API is the only mutation path; UI shows original, reversal and replacement as a struck-through stack. |
 | Periods and locks | Each legal entity has fiscal years and monthly periods with states `open`, `soft_closed`, `locked`. Posting dates must fall in a postable period. | Trigger on period state ([20](20-architecture-security.md) L3); late events redirect to the first open period with the original `service_date` kept (4.1.5). |
 | Multi-currency | One functional currency per legal entity (USD or CAD); lines can carry a transaction currency, rate and rate source. | [20](20-architecture-security.md) L9 plus 4.1.6. |
-| Idempotent posting from domain events | A domain event processed twice, or the same business fact emitted twice under two different event IDs, produces one entry. | Unique `(tenant_id, posting_key)` where `posting_key` is a deterministic **business key** built by the rule from the source document, never from the event ID: `invoice:{invoice_id}:issue`, `invoice:{invoice_id}:void`, `stripe_bt:{balance_transaction_id}`, `payout:{payout_id}:settle`, `timesheet:{time_entry_id}:approve:{revision}` ([20](20-architecture-security.md) L4). The event ID is used only for consumer-inbox deduplication. Keys should not include the rule version, so a replay after a pack update cannot mint a second key for the same fact (open question 16). |
+| Idempotent posting from domain events | A domain event processed twice, or the same business fact emitted twice under two different event IDs, produces one entry. | Unique `(tenant_id, posting_key)` where `posting_key` is a deterministic **business key** built by the rule from the source document, never from the event ID: `invoice:{invoice_id}:issue`, `invoice:{invoice_id}:void`, `stripe_bt:{balance_transaction_id}`, `payout:{payout_id}:settle`, `timesheet:{time_segment_id}:approve:{revision}` ([20](20-architecture-security.md) L4). The event ID is used only for consumer-inbox deduplication. Keys should not include the rule version, so a replay after a pack update cannot mint a second key for the same fact (open question 16). |
 | Gapless numbering | Journal numbers are sequential per legal entity with no gaps, which auditors and some tax authorities expect. | Sequence row locked in the posting transaction ([20](20-architecture-security.md) L5). |
 | Tamper evidence | Each entry is hash-chained to the previous one per tenant; daily chain heads anchored to write-once storage. | [20](20-architecture-security.md) L8. |
 | Money is integers | Amounts in minor units; rounding at line level; tax rounding per jurisdiction. | [20](20-architecture-security.md) L10. |
@@ -747,7 +747,7 @@ The registry below is the canonical list. Rule keys are namespaced by the module
 | `billing.P25` Void | `invoice.voided` | Exact reversal of P1 | | Same period if open, else first open period |
 | `billing.P33` Offline payment (check, cash, Interac e-Transfer, wire) | `payment.succeeded` with an offline method (field collection per [08](08-payments-stripe.md) 4.20) | 1060 Undeposited Funds (office), 1065 Cash in Transit (crew lead dimension) or 1010 (wire, e-Transfer) | 1200 AR; 2180 for any excess | Overlaps `payments.field_receipt` and `payments.office_receipt` below; one posting key per payment, so whichever module emits first wins |
 | `billing.P34` Returned payment (ACH R01/NSF, PAD return, bounced check) | `payment.returned` | 1200 AR (invoice reopened) | 1050 Stripe Clearing, or 1010 / 1060 for checks | Bank return fee to 6160; any NSF fee to the client only if disclosed and lawful ([07](07-invoicing-billing-contracts.md)) |
-| `billing.P35` Deposit refunded on a cancelled job | `refund.completed` against a deposit | 2150 Customer Deposits | 1050 or 1010 | Any contracted cancellation fee or non-returnable special-order material kept: Dr 2150, Cr 4300 (or 7500) |
+| `billing.P35` Deposit refunded on a canceled job | `refund.completed` against a deposit | 2150 Customer Deposits | 1050 or 1010 | Any contracted cancellation fee or non-returnable special-order material kept: Dr 2150, Cr 4300 (or 7500) |
 | `billing.P37` Prepaid value forfeited at season close (breakage) | Season-close job on an agreement with forfeiture terms | 2200 Deferred Revenue | 4100-4800 revenue | Only when signed terms state forfeiture; otherwise a P11 credit |
 | `billing.P38` / `billing.P39` Card surcharge / payment-method discount [V1] | `payment.succeeded` with surcharge or discount | 1050 / 4920 Payment Method Discounts | 4950 Card Surcharge Income / 1200 AR | Rules owned by [08](08-payments-stripe.md) 4.10 |
 | `billing.P42` Dormant credit escheated [V1] | Unclaimed property report approved by `owner` | 2180 Customer Credits | 2190 Unclaimed Property Payable | Then Dr 2190 / Cr 1010 when remitted to the state; stale vendor checks follow the same path after the void (Dr 1010 / Cr 2000, then Dr 2000 / Cr 2190) |
@@ -819,10 +819,10 @@ The registry below is the canonical list. Rule keys are namespaced by the module
 | Rule | Trigger | Debit | Credit | Notes |
 |---|---|---|---|---|
 | `equipment.EQ1` Usage charged to job | `ops.equipment.usage_recorded` | 5310 Equipment Charged to Jobs J | 5390 Equipment Cost Recovery | Net zero in COGS; drives job cost and over/under recovery |
-| `assets.FA1` Asset placed in service | Asset record activated from a bill, loan or cash purchase | 15xx Asset Cost | 2000 AP, 2610 Loan, 1010, or 1599 | Capitalization threshold check |
+| `assets.FA1` Asset placed in service | `ops.asset.placed_in_service` ([13](13-operations-inventory-equipment.md)): asset record activated from a bill, loan or cash purchase | 15xx Asset Cost | 2000 AP, 2610 Loan, 1010, or 1599 | Capitalization threshold check |
 | `assets.FA2` Depreciation run | Month-end depreciation run (book) | 5350 Depreciation - Field Equipment (asset dim) or 6430 (non-job assets) | 1591-1597 Accumulated Depreciation | One entry per run, one line per asset class and division |
-| `assets.FA3` Disposal or sale | `asset.disposed` | 1010/1200 (proceeds); 159x (accumulated) | 15xx (cost); 7300 gain or loss (either side) | Trade-in = sale plus purchase |
-| `assets.FA4` Casualty or theft | `asset.disposed` (casualty) | 159x; insurance receivable; 7300 loss | 15xx | Linked to the loss ledger ([13](13-operations-inventory-equipment.md)) |
+| `assets.FA3` Disposal or sale | `ops.asset.disposed` | 1010/1200 (proceeds); 159x (accumulated) | 15xx (cost); 7300 gain or loss (either side) | Trade-in = sale plus purchase |
+| `assets.FA4` Casualty or theft | `ops.asset.disposed` (casualty) | 159x; insurance receivable; 7300 loss | 15xx | Linked to the loss ledger ([13](13-operations-inventory-equipment.md)) |
 | `loans.LN1` Loan payment | Bank line matched to loan schedule | 2610-2630 principal; 7400 interest | 1010 | Split from the amortization schedule; variance flagged |
 | `loans.LN2` Line-of-credit draw / repayment | Bank line matched | 1010 / 2510 | 2510 / 1010 | |
 | `loans.LN3` Current-portion reclass | Year-end (or each period-end for interim statements) | 2610-2630 | 2520 Current Portion | Auto-reverses |
@@ -1059,7 +1059,7 @@ Invoices, payments, credits, statements, write-offs and collections are specifie
 
 **Priority:** [MVP] bills, vendor credits and recorded payments; [V1] approval workflow, payment batches, printed checks, NACHA files and positive pay; [V2] embedded bill pay.
 
-Bill intake, AI extraction, duplicate detection and the 2-way/3-way match engine are specified in [13](13-operations-inventory-equipment.md) 4.11. The ledger owns the bill as an accounting document and everything after matching.
+Bill intake ([MVP] basic, AI extraction [V1] through the A9 AP Agent in [17](17-ai-copilot-automation.md)), duplicate detection and the 2-way/3-way match engine are specified in [13](13-operations-inventory-equipment.md) 4.11. The ledger owns the bill as an accounting document and everything after matching.
 
 **Bill lifecycle [MVP basic, V1 approvals]**
 
@@ -1244,7 +1244,7 @@ flowchart TD
 #### 4.6.4 Receipt capture and matching [MVP]
 
 - **Channels**: crew app photo (offline-capable, [05](05-field-crew-mobile-app.md)), web upload, forwarding to a per-Company receipts address, e-receipts from suppliers, SMS photo reply to an "ask" question.
-- **Extraction**: merchant, date, total, tax, tip, payment card last four, and line items (AI document understanding via the AI Gateway, [17](17-ai-copilot-automation.md)).
+- **Extraction**: [MVP] rules-based OCR of merchant, date, total, tax, tip and payment card last four, with no LLM extraction (AI2 basic); [V1] line items and harder layouts through AI document understanding via the AI Gateway ([17](17-ai-copilot-automation.md); AI2, metered per page in [22](22-business-model-pricing-gtm.md)).
 - **Matching**: to card or bank lines by card last four, exact amount (or amount within a tip tolerance for meals), date within 3 days; to bills when a receipt is actually a vendor invoice.
 - **Missing receipt chase**: tenant policy (default: receipts required for card spend of $25 or more; IRS substantiation rules for some expense categories start at $75, verify) creates reminders to the cardholder for 3, 7 and 14 days, then escalates to the `office_manager`.
 - **Retention**: receipt images stay attached to the journal entry for the record-retention period ([20](20-architecture-security.md)); electronic records are kept in a form that meets IRS and CRA electronic record-keeping expectations (verify Rev. Proc. 97-22 and CRA guidance).
@@ -1454,6 +1454,8 @@ The tracker explains the 5.2-point gap: 350 fewer billable hours ($7,350 less re
 Monthly and year-to-date by account, account group, division and branch, with variance in dollars and percent, a flex-budget option (budget restated at actual billable hours for variable lines such as field wages, fuel and materials), and AI commentary for the largest variances ("Fuel is $3,120 over budget in June: price per gallon up 9% and engine hours up 6% vs plan").
 
 #### 4.9.4 Cash forecast [V1]
+
+This is the same forecast engine as the 13-week cash flow forecast in [Reporting](18-reporting-analytics.md) section 4.9.1, not a second model: 18 owns the analytics behavior (P10-P50-P90 ranges, backtest, alerting and the dashboard), and this section owns the ledger inputs (bank, Stripe, AR, AP, payroll, loan, tax and recurring-entry schedules), the seasonal 12-month view and the ledger-side scenarios. Predicted pay dates come from the one payment-timing model (AI9).
 
 - **13-week direct forecast**: opening cash (bank balances plus Stripe available and pending) plus receipts (open AR by predicted pay date from each client's payment history; scheduled autopay and agreement installments; deposits on approved proposals) minus disbursements (AP by due date and scheduled batches; payroll from scheduled hours x rates plus taxes per pay calendar; loan payments from schedules; sales tax due dates; recurring entries such as rent and insurance; equipment on order) = ending cash per week, against a minimum cash threshold.
 - **Seasonal 12-month forecast** showing the winter trough: "Cash bottoms at $38,200 in the week of February 15; line of credit headroom $150,000."
@@ -1832,7 +1834,7 @@ sequenceDiagram
 ### 5.3 A card purchase in the field becomes a coded, reconciled expense [MVP]
 
 1. Crew lead Luis buys 6 bags of quick-set concrete at a big-box store on the shop card ($86.40) and snaps the receipt in the crew app, offline ([05](05-field-crew-mobile-app.md), [13](13-operations-inventory-equipment.md) 4.4.4).
-2. The receipt syncs; extraction reads merchant, total, tax and items; the app's job context suggests J-2291 Phase 2.
+2. The receipt syncs; rules-based OCR reads merchant, date, total and tax (line items are added by AI extraction from [V1], AI2); the app's job context suggests J-2291 Phase 2.
 3. Two days later the card line arrives through Plaid; Rootline matches it to the receipt (last four, amount, date) and proposes Dr 5210 J-2291 / Cr 2040 Credit Card.
 4. Beth confirms with one click and accepts "Always code this merchant's receipts with job context to materials".
 5. At month end, the card statement reconciles with this line already cleared.
@@ -2265,7 +2267,7 @@ The owner is a reader (design principle 7): three numbers, one sentence, and a d
 
 ## 7. Data model
 
-All tables live in the `ledger` schema (integrations tables in `integrations`), carry `tenant_id` with row-level security ([20](20-architecture-security.md)), and most carry `legal_entity_id`. Money is `bigint` minor units with an ISO currency code; rates are `numeric(18,8)`; quantities `numeric(18,4)`. Shared entities owned elsewhere are referenced, not copied: `client`, `property`, `job`, `visit`, `agreement` ([04](04-scheduling-dispatch-routing.md), [07](07-invoicing-billing-contracts.md)), `invoice`, `credit_memo` ([07](07-invoicing-billing-contracts.md)), `payment`, `balance_entry`, `payout` ([08](08-payments-stripe.md)), `vendor`, `stock_movement`, `asset`, `purchase_order`, `receipt` ([13](13-operations-inventory-equipment.md)), `employee`, `time_entry` ([15](15-team-hr-payroll.md)), `legal_entity`, `org_unit` ([02](02-personas-roles-permissions.md)).
+All tables live in the `ledger` schema (integrations tables in `integrations`), carry `tenant_id` with row-level security ([20](20-architecture-security.md)), and most carry `legal_entity_id`. Money is `bigint` minor units with an ISO currency code; rates are `numeric(18,8)`; quantities `numeric(18,4)`. Shared entities owned elsewhere are referenced, not copied: `client`, `property`, `job`, `visit`, `agreement` ([04](04-scheduling-dispatch-routing.md), [07](07-invoicing-billing-contracts.md)), `invoice`, `credit_memo` ([07](07-invoicing-billing-contracts.md)), `payment`, `balance_entry`, `payout` ([08](08-payments-stripe.md)), `vendor`, `stock_movement`, `asset`, `purchase_order`, `receipt` ([13](13-operations-inventory-equipment.md)), `employee`, `time_segment` (the `time_entry` of [20](20-architecture-security.md)'s module map) ([15](15-team-hr-payroll.md)), `legal_entity`, `org_unit` ([02](02-personas-roles-permissions.md)).
 
 ### 7.1 Entities
 
@@ -2483,7 +2485,7 @@ erDiagram
 | Exchange-rate source (Bank of Canada daily rates; commercial fallback) | FX | Daily pull (verify licensing) | [V1] |
 | Sales tax compliance partner (Avalara Returns or a Stripe Tax filing partner, per [07](07-invoicing-billing-contracts.md) 4.5.5) | Automated sales tax filing and remittance | Partner API | [V1] |
 | Embedded payables partner | Bill pay by ACH, check, virtual card | Partner API; funds move from the Company's bank | [V2] |
-| AI Gateway ([17](17-ai-copilot-automation.md)) | Receipt and bill extraction, categorization, mapping, narratives | Internal | [MVP]/[V1] |
+| AI Gateway ([17](17-ai-copilot-automation.md)) | Chart and integration mapping and sync-error explanations [MVP]; LLM receipt and bill extraction (MVP uses rules-based OCR outside the gateway), AI categorization and narratives [V1] | Internal | [MVP]/[V1] |
 | Stripe ([08](08-payments-stripe.md)) | Balance transactions and payouts | Via the payments module only, never directly | [MVP] |
 
 ### 8.2 Domain events consumed
@@ -2494,10 +2496,10 @@ erDiagram
 | Agreement recognition events, month-end billing jobs | billing | `billing.P5`-`P8` |
 | `payment.succeeded`, `payment.returned`, `payment.refunded` (08's `payments.refund.completed`), `dispute.created` (08's `payments.dispute.opened`), `dispute.closed`, `payout.paid`, `payout.failed`, balance-entry events | payments ([08](08-payments-stripe.md)) | `payments.*`, `billing.P33`-`P35`, `P38`, `P39` |
 | `ops.receipt.posted`, `ops.stock.moved`, `ops.stock.count_posted`, `ops.bill.matched`, `ops.disposal.recorded`, `ops.equipment.usage_recorded`, `ops.warranty.claim_resolved`, `ops.vendor.compliance_changed`, `ops.lien_waiver.signed`, `ops.po.approved` (commitments) | operations ([13](13-operations-inventory-equipment.md)) | `inventory.*`, `ap.AP2`-`AP5`, `equipment.EQ1`, `warranty.WR2`; holds; commitments |
-| `timesheet.approved`, `time_entry.recorded` | people ([15](15-team-hr-payroll.md)) | `labor.*`, `prepaid.PP2` |
+| `timesheet.approved` | people ([15](15-team-hr-payroll.md)) | `labor.*`, `prepaid.PP2` (the older `time_entry.recorded` name is registered in [15](15-team-hr-payroll.md) section 8 only as an alias of `timesheet.approved`; live segment edits before approval are not posted) |
 | `change_order.approved`, `job.completed`, `job.canceled` | sales and ops ([03](03-crm-sales-estimating-proposals.md), [04](04-scheduling-dispatch-routing.md)) | Revised job budgets, WIP inclusion, job close-out |
 | `visit.completed`, `visit.skipped` | ops | Job cost hours, accrual candidates (C11) |
-| `asset.placed_in_service`, `asset.disposed` | operations | `assets.FA1`, `FA3`, `FA4` |
+| `ops.asset.placed_in_service`, `ops.asset.disposed` | operations ([13](13-operations-inventory-equipment.md); 13 section 8 registers the unprefixed `asset.*` spellings as aliases) | `assets.FA1`, `FA3`, `FA4` |
 
 ### 8.3 Domain events emitted
 
@@ -2589,7 +2591,7 @@ All AI runs through the AI Gateway with tenant isolation, prompt and model versi
 | ID | Opportunity | How it works | Priority |
 |---|---|---|---|
 | AI1 | **Bank and card categorization** | Merchant, MCC, amount, tenant history, receipt lines and crew job context produce account, dimensions and splits with confidence and a reason (4.6.3) | [V1] (rules [MVP]) |
-| AI2 | **Receipt and bill extraction** | Document understanding for receipts, vendor invoices, sub invoices, dump tickets and nursery pick tickets; PO and job detection | [MVP] basic, [V1] line items |
+| AI2 | **Receipt and bill extraction** | Document understanding for receipts, vendor invoices, sub invoices, dump tickets and nursery pick tickets; PO and job detection. **[MVP] basic** means manual or rules-based intake with no LLM extraction and no AI credits: a dedicated OCR pass reads header fields (merchant or vendor, date, total, tax, card last four, invoice and PO numbers) through deterministic rules and per-vendor templates, and the user confirms or keys the rest. **[V1]** adds LLM document understanding (header and line items, sub invoices, scale and dump tickets), metered at 2 credits per page on [22](22-business-model-pricing-gtm.md)'s rate card; bill-side extraction runs as the A9 AP Agent in [17](17-ai-copilot-automation.md) and matches [13](13-operations-inventory-equipment.md) 4.11.1 (Bill intake [MVP basic, V1 AI]) | [MVP] basic (rules/OCR, no LLM), [V1] AI extraction |
 | AI3 | **Chart and integration mapping** | Maps a QuickBooks chart, items and tax codes to Rootline roles during migration and sync setup, with confidence | [MVP] |
 | AI4 | **Close copilot** | Runs checks, nudges assignees, drafts flux commentary ("Dump fees up 41% vs April: 3 more demolition jobs; per-ton rate unchanged"), assembles the close binder | [V1] |
 | AI5 | **Anomaly and fraud detection** | Duplicate bills across channels; vendor bank details changed shortly before a large payment; payments to a vendor sharing an employee's address or bank account; purchases split just under approval limits; round-dollar manual entries at odd hours; sudden fuel spikes per card | [V1] |
@@ -2710,7 +2712,7 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 | CPA channel | Tenants with an outside accountant connected | 60% of Mode A and B tenants |
 | Migration | Assisted migrations tying on first proof run | 90% |
 | Migration | Median migration elapsed time | Under 2 working days |
-| Business | Tenants reporting a cancelled QuickBooks subscription | Tracked in onboarding and renewal surveys |
+| Business | Tenants reporting a canceled QuickBooks subscription | Tracked in onboarding and renewal surveys |
 
 ---
 

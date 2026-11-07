@@ -186,7 +186,7 @@ Each mode below is a `billing_schedule.type`. A Company can mix modes per client
   - Optional **delay window** (default 2 hours) so the crew lead can correct quantities before the invoice goes out.
   - Lines: the visit's services at agreement/price-book prices, plus any add-ons logged in the field (e.g., "extra 3 bags of leaf debris haul-away: $15 each") which require `office_manager` approval if the client's settings say "no unapproved add-ons".
   - **Autopay clients** are charged at send (or on due date if the Company prefers), using the saved PaymentMethod on the Company's Stripe account ([08](08-payments-stripe.md)).
-  - Visits that are `skipped` or `cancelled` produce no line by default; a configurable **trip charge** (e.g., $35 when the gate was locked and the client was notified) creates a Billable Item instead.
+  - Visits that are `skipped` or `canceled` produce no line by default; a configurable **trip charge** (e.g., $35 when the gate was locked and the client was notified) creates a Billable Item instead.
 - **Edge cases**: visit completed across midnight (bill on start date); crew splits property across two days (one visit, two time segments, one invoice line); visit re-opened after invoice sent (creates a supplemental invoice or credit memo, never edits the sent invoice).
 
 #### 4.2.2 Batched invoicing (weekly / bi-weekly / monthly / custom) [MVP]
@@ -263,7 +263,7 @@ The flagship residential and small-commercial maintenance model: "30 weekly mows
   - Deposit amount: % of proposal (default 30%), fixed amount, or "materials cost + X%". Minimums and maximums configurable. Some US states limit home-improvement deposits for consumer contracts (California's home improvement rules are a frequently cited example: 10% or $1,000, whichever is less, for contracts subject to them). Rootline ships a platform-maintained rule table that warns the estimator when a deposit exceeds a jurisdiction's cap for residential home-improvement work (verify per state; maintained by `platform_finance`).
   - **Application methods**: `apply_to_first_invoice`, `apply_pro_rata` (each progress invoice consumes deposit in proportion to its share of contract value), `apply_to_final_invoice` (common for "deposit holds your spot"), `manual`.
   - Deposit application appears as a negative line on the invoice ("Less deposit received Mar 3, DEP-1042: -$11,550.00") and reduces the amount due, not the taxable amount.
-  - Unapplied deposits on cancelled jobs: refund (full or less a cancellation fee and the cost of non-returnable special-order materials, if contracted; posting P35), or convert to client credit. Requires `owner` approval, or `office_manager` within the refund limit ($500 per refund by default, [02](02-personas-roles-permissions.md) 5.6); the Stripe refund itself follows [08](08-payments-stripe.md) 4.16.
+  - Unapplied deposits on canceled jobs: refund (full or less a cancellation fee and the cost of non-returnable special-order materials, if contracted; posting P35), or convert to client credit. Requires `owner` approval, or `office_manager` within the refund limit ($500 per refund by default, [02](02-personas-roles-permissions.md) 5.6); the Stripe refund itself follows [08](08-payments-stripe.md) 4.16.
   - Design retainer rule: "credit design fee toward installation if install is signed within 90 days" creates an automatic credit line on the first install invoice.
 - **Canada**: under the GST/HST rules a deposit is generally not treated as consideration until it is applied to the supply, which matches the liability treatment; tax is charged when the deposit is applied (verify with the Company's accountant).
 
@@ -385,11 +385,11 @@ stateDiagram-v2
     Active --> Expiring: renewal window opens
     Expiring --> Renewed: auto-renew or client accepts renewal
     Expiring --> Ended: term ends without renewal
-    Active --> Cancelling: cancellation requested
-    Cancelling --> Cancelled: effective date reached and final settlement posted
+    Active --> Canceling: cancellation requested
+    Canceling --> Canceled: effective date reached and final settlement posted
     Renewed --> [*]
     Ended --> [*]
-    Cancelled --> [*]
+    Canceled --> [*]
     Declined --> [*]
 ```
 
@@ -429,9 +429,9 @@ Rules:
   - plus `early_termination_fee` (fixed, % of remaining ACV, or "recapture of prepay/multi-year discount"; must be in signed terms; capped by the rule table where jurisdictions restrict)
   - plus/minus `unreturnable_costs` (e.g., special-order materials already purchased for this client)
   - = **final invoice** (positive) or **credit/refund** (negative).
-- **Proration methods** for fixed-season or subscription lines: `by_occurrence` (default for visit-based lines), `by_day`, `by_month`, `by_season_weight` (a weight curve, e.g., mowing season weights Apr 10%, May 16%, Jun 16%, Jul 14%, Aug 13%, Sep 13%, Oct 12%, Nov 6%, so cancelling at the end of June correctly earns 42% of the season, not 3/8).
+- **Proration methods** for fixed-season or subscription lines: `by_occurrence` (default for visit-based lines), `by_day`, `by_month`, `by_season_weight` (a weight curve, e.g., mowing season weights Apr 10%, May 16%, Jun 16%, Jul 14%, Aug 13%, Sep 13%, Oct 12%, Nov 6%, so canceling at the end of June correctly earns 42% of the season, not 3/8).
 - **Worked example, commercial early termination**: a 3-year $64,800/year HOA maintenance contract signed with a 4% multi-year discount and a termination clause of "60 days' notice; recapture of the multi-year discount on work delivered". The HOA board terminates effective Jun 30 of year 2. Earned in year 2 through Jun 30 (the contract's weight curve places 52% of annual value in January-June, because spring cleanup, mulch and the heaviest mowing months fall there) = $33,696; billed (6 of 12 level installments) = $32,400; discount recapture = the stored list price ($67,500/year) minus the contract price ($64,800/year) = $2,700 per contract year x 1.52 contract years delivered = $4,104 => final invoice $1,296 + $4,104 = **$5,400**, with the calculation attached and the clause quoted. Without a signed recapture clause the engine refuses to add the fee and shows why.
-- Future visits after the effective date are cancelled in the schedule ([04](04-scheduling-dispatch-routing.md)); open installment invoices after the effective date are voided (if unsent) or credited.
+- Future visits after the effective date are canceled in the schedule ([04](04-scheduling-dispatch-routing.md)); open installment invoices after the effective date are voided (if unsent) or credited.
 - **Client cooling-off rights**: residential agreements signed in the client's home, and in some jurisdictions remote or online contracts, may carry a statutory cancellation window (for example, the US FTC Cooling-Off Rule gives buyers three business days to cancel certain sales made at the buyer's home, and Canadian provinces set cancellation periods for direct-sales and distance contracts; verify scope, thresholds and periods per jurisdiction). Estimators who sign agreements on a tablet at the kitchen table trigger the in-home rule; the proposal records the signing location ([03](03-crm-sales-estimating-proposals.md)). Agreements with an open cooling-off window cannot charge deposits beyond what the rule table allows, and a cancellation inside the window refunds in full (P35) with no fee.
 - **Property sold**: option to **transfer** the agreement to the new owner (new client, same property) with a new signature, carrying the earned-value position forward or settling with the seller.
 
@@ -440,7 +440,7 @@ Rules:
 | Change | Engine behavior |
 |---|---|
 | Add a service line (e.g., add mosquito control from June) | New line with occurrences from effective date; ACV increases; remaining installments re-leveled (or added as separate per-visit billing, per Company preference). Requires client signature for residential (portal one-click accept) unless amount < Company threshold and terms allow office-confirmed changes. |
-| Remove a service line | Future occurrences cancelled; earned value to date stays; remaining installments re-leveled; credit if already billed ahead. |
+| Remove a service line | Future occurrences canceled; earned value to date stays; remaining installments re-leveled; credit if already billed ahead. |
 | Change frequency (weekly -> bi-weekly in drought, or vice versa) | Recalculate planned occurrences; for `fixed_season` lines a frequency change is a price change and requires amendment. |
 | Change price | New version with effective date; prior occurrences keep old price. |
 | Change billing (installments -> per-visit, or change billing day) | Close the current schedule at the effective date with a mini true-up; open the new schedule. |
@@ -448,7 +448,7 @@ Rules:
 
 #### 4.3.7 Skipped visits and credits [MVP]
 
-Every planned occurrence ends in a terminal state: `completed`, `rescheduled` (still counts toward the season), `skipped_weather`, `skipped_dormancy` (drought/heat), `skipped_client_request`, `skipped_access` (locked gate, dog in yard), `missed_company` (crew failure), `skipped_company_hold` (service hold for non-payment, 4.3.8), `cancelled_by_amendment`.
+Every planned occurrence ends in a terminal state: `completed`, `rescheduled` (still counts toward the season), `skipped_weather`, `skipped_dormancy` (drought/heat), `skipped_client_request`, `skipped_access` (locked gate, dog in yard), `missed_company` (crew failure), `skipped_company_hold` (service hold for non-payment, 4.3.8), `canceled_by_amendment`.
 
 Credit policy matrix (Company defaults, overridable per agreement):
 
@@ -713,7 +713,7 @@ The invoice prints a tax summary by jurisdiction and treatment, the certificate 
 | **Credit memo** (`CM-`) | Price correction, service complaint, skipped-visit credit, returned materials, true-up in client's favor, goodwill. | References original invoice(s) and lines; reason code required (`pricing_error`, `service_quality`, `skipped_visit`, `true_up`, `goodwill`, `returned_goods`, `tax_correction`, `dispute_settlement`); tax reverses proportionally through the engine; disposition: `apply_to_invoice`, `hold_as_credit`, `refund`. Approval required above threshold (default $250) or for goodwill reason. |
 | **Supplemental (debit) invoice** | Under-billed amount discovered after send (extra 2 yd3 of mulch installed). | New invoice referencing the original; same tax treatment. |
 | **Void** | Wrong client, duplicate, sent in error, no payment allocated. | Full reversal entry; number retained; client notified if already sent ("Please disregard INV-00412"). |
-| **Refund** | Overpayment, credit balance refund, cancelled job deposit, dispute settlement. | Executed on the Company's Stripe account against the original PaymentIntent when possible (partial allowed, within card network refund windows) or by check/ACH-out recorded manually; approval by `owner` or `office_manager`; refund reason; ledger posting in 4.11. Refunds of Stripe-processed payments are initiated through [08](08-payments-stripe.md). |
+| **Refund** | Overpayment, credit balance refund, canceled job deposit, dispute settlement. | Executed on the Company's Stripe account against the original PaymentIntent when possible (partial allowed, within card network refund windows) or by check/ACH-out recorded manually; approval by `owner` or `office_manager`; refund reason; ledger posting in 4.11. Refunds of Stripe-processed payments are initiated through [08](08-payments-stripe.md). |
 | **Write-off** | Uncollectible balance, small residual, bankruptcy, settled dispute. | Reason code; approval matrix (e.g., `office_manager` up to $100, `owner` above); method `direct` (Bad Debt Expense) or `allowance` (against Allowance for Doubtful Accounts, if the Company uses it; [09](09-accounting-ledger-integrations.md)); sales-tax bad-debt adjustment recorded; client flagged (optional "do not service" until paid); recovery of a written-off amount reverses through "Bad debt recovered". |
 | **Small-balance auto write-off** | Residuals under a threshold (default $1.00, configurable to $10) from rounding or partial payments. | Automatic; contra-revenue `Small balance adjustments`; listed in a monthly report. |
 
@@ -827,7 +827,7 @@ The Billing Run is the office manager's month-end cockpit. It must handle 1,000+
    | Property not geocoded / tax jurisdiction unknown | Fix address (map picker). |
    | Amount anomaly vs client history | Review lines; accept. |
    | Client has no deliverable channel | Add email or enable mail. |
-   | Agreement suspended or cancelling | Hold or bill final. |
+   | Agreement suspended or canceling | Hold or bill final. |
    | Autopay method expired / Stripe account disconnected | Send as regular invoice; notify client. |
    | Accounting period closed for service date | Post in current period (auto) with note. |
    | Possible duplicate (same property, service, date) | Merge or exclude. |
@@ -852,8 +852,8 @@ stateDiagram-v2
     Posted --> Completed: report saved
     Completed --> Reopened: stragglers found
     Reopened --> Gathering: pick up new items only
-    Draft --> Abandoned: cancelled before send
-    Exceptions --> Abandoned: cancelled before send
+    Draft --> Abandoned: canceled before send
+    Exceptions --> Abandoned: canceled before send
     Completed --> [*]
     Abandoned --> [*]
 ```
@@ -906,7 +906,7 @@ Default accounts used by billing: `1010 Operating checking` (`bank:operating`), 
 | P32 | Seasonal snow installment / recognition | Installment: 1200. Recognition: 2200 | Installment: 2200. Recognition: 4600 Snow and ice | Installment via P4; ratable recognition over the season months via P6. |
 | P33 | Offline payment recorded: check, cash, Interac e-Transfer, wire | 1060 Undeposited funds (office), 1065 Cash in transit (crew-collected, crew lead dimension) or 1010 (wire or e-Transfer straight to bank) | 1200 AR (allocated); 2180 (excess) | Bank deposit later posts Dr 1010, Cr 1060 and is matched in bank rec. |
 | P34 | Payment returned after success: ACH R01/NSF, PAD return, bounced check | 1200 AR (invoice reopened) | 1050 Stripe clearing (or 1010 / 1060 for checks) | A returned-payment fee, only if disclosed in signed terms and lawful, is a separate P1 line to 7500 Other income. Allocation reverses; dunning restarts at the invoice's real age. |
-| P35 | Deposit refunded on a cancelled job | 2150 Customer deposits | 1050 Stripe clearing (or 1010) | Any contracted cancellation fee or non-returnable special-order material kept from the deposit posts Dr 2150, Cr 4300 (or 7500, Company setting) plus tax where the fee is taxable. |
+| P35 | Deposit refunded on a canceled job | 2150 Customer deposits | 1050 Stripe clearing (or 1010) | Any contracted cancellation fee or non-returnable special-order material kept from the deposit posts Dr 2150, Cr 4300 (or 7500, Company setting) plus tax where the fee is taxable. |
 | P36 | Early-termination fee or discount clawback invoiced on cancellation | 1200 AR | Revenue of the agreement's division (or 7500, Company setting); tax per engine | Only when the fee is in signed terms (4.3.5). |
 | P37 | Unearned prepaid value forfeited at season close | 2200 Deferred revenue | 4100-4800 revenue (breakage) | Only when signed terms state forfeiture (4.2.4); otherwise P11 credit. |
 | P38 | Card surcharge collected [V1] | 1050 Stripe clearing | 4950 Card surcharge income; tax where the surcharge is taxable | Rules owned by [08](08-payments-stripe.md) 4.10. |
@@ -1062,7 +1062,7 @@ sequenceDiagram
 1. Client requests cancellation in the portal on Jul 15 (moving). Agreement notice period: 14 days; effective Jul 29.
 2. Engine computes: earned through Jul 29 (completed visits + cleanup + fertilizer apps) vs billed; no early-termination fee for "property sold" reason (Company policy).
 3. Office reviews the settlement preview; option to **transfer** the agreement to the buyer is offered (the buyer gets an invite).
-4. On the effective date: future visits cancelled, unsent installments voided, final settlement posted. In the Hernandez example the client has been billed $1,598.31 (7 installments) against $1,491.00 earned, so the settlement is a $107.31 credit, refunded to the card on file; had the client been on an April-start calendar, the same cancellation would have produced a final invoice instead.
+4. On the effective date: future visits canceled, unsent installments voided, final settlement posted. In the Hernandez example the client has been billed $1,598.31 (7 installments) against $1,491.00 earned, so the settlement is a $107.31 credit, refunded to the card on file; had the client been on an April-start calendar, the same cancellation would have produced a final invoice instead.
 5. Exit survey and "win-back" Automation at next season start ([16](16-marketing-growth-communications.md)).
 
 ```mermaid
@@ -1576,7 +1576,7 @@ REST + webhooks, versioned (`/v1`), idempotency keys on all POSTs ([20](20-archi
 
 ### 8.3 Domain events
 
-Emitted through the transactional outbox ([20](20-architecture-security.md)); webhook-subscribable by tenants unless marked internal. Names follow the canonical event catalog in [20](20-architecture-security.md) 4.9 (`invoice.issued`, `credit_memo.issued`, `payment.succeeded` and so on). Two naming notes for implementers: [08](08-payments-stripe.md) refers to the same events with module prefixes (`invoicing.invoice.issued`, `payments.payment.succeeded`), and [20](20-architecture-security.md) lists the agreement events as `service_agreement.activated` / `service_agreement.renewal_due`; these are the same events as `agreement.activated` / `agreement.renewal_due` below and must resolve to one registered name per event in the schema registry.
+Emitted through the transactional outbox ([20](20-architecture-security.md)); webhook-subscribable by tenants unless marked internal. Names follow the canonical event catalog in [20](20-architecture-security.md) 4.9 (`invoice.issued`, `credit_memo.issued`, `payment.succeeded` and so on). Two naming notes for implementers: [08](08-payments-stripe.md) refers to the same events with module prefixes (`invoicing.invoice.issued`, `payments.payment.succeeded`), and [20](20-architecture-security.md) lists the agreement events as `service_agreement.activated` / `service_agreement.renewal_due`; these are the same events as `agreement.activated` / `agreement.renewal_due` below and must resolve to one registered name per event in the schema registry. Cancellation keys use the US spelling `canceled` everywhere (agreement state `Canceled`, event `agreement.canceled`, occurrence state `canceled_by_amendment`), matching the canonical Job and Visit `canceled` state in [04](04-scheduling-dispatch-routing.md) and [20](20-architecture-security.md).
 
 | Event | Emitted when | Key consumers |
 |---|---|---|
@@ -1588,7 +1588,7 @@ Emitted through the transactional outbox ([20](20-architecture-security.md)); we
 | `invoice.voided` / `.written_off` / `.disputed` / `.client_approved` / `.client_rejected` | Adjustments; commercial AP decisions (4.4.8) | Ledger (09 binds write-offs to its `collections_case.written_off` trigger; same fact), collections, terms clock |
 | `credit_memo.issued`, `refund.requested` | Adjustments | Ledger, payments (08) |
 | `agreement.signed` / `.activated` / `.amended` / `.suspended` / `.resumed` | Lifecycle | Scheduling (04), portal, comms |
-| `agreement.renewal_due` (N days before term end) / `.renewal_notice_due` (statutory notice deadline) / `.renewed` / `.cancelled` / `.season_closed` / `.transferred` | Lifecycle | Renewal agent and automations (17), marketing (16), reporting (18), payments (08: keep or end autopay scope) |
+| `agreement.renewal_due` (N days before term end) / `.renewal_notice_due` (statutory notice deadline) / `.renewed` / `.canceled` / `.season_closed` / `.transferred` | Lifecycle | Renewal agent and automations (17), marketing (16), reporting (18), payments (08: keep or end autopay scope) |
 | `billing_run.ready` / `.completed` | Batch | Notifications, reporting |
 | `late_fee.assessed` / `.waived` | Fees (09 registers P20 under the alias `invoice.finance_charge_assessed`) | Ledger, portal |
 | `client.credit_hold_set` / `.credit_hold_released` | Credit limit or past-due rule (4.9.6) | Sales (03: proposal approval gate), ops |
@@ -1606,6 +1606,7 @@ Consumed events:
 | `visit.completed` / `.skipped` / `.verified` | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md) | Billable items, earned value, credits |
 | `timesheet.approved`, `material.used`, `equipment.usage_logged` | [15](15-team-hr-payroll.md), [13](13-operations-inventory-equipment.md) | T&M billable items |
 | `milestone.reached`, `phase.completed` | [04](04-scheduling-dispatch-routing.md) | Milestone invoices |
+| `project_phase.completed` | [14](14-service-line-modules.md) | Progress billing for design-build projects (percent complete per phase feeds milestone and SOV lines) |
 | `snow_event.closed` | [14](14-service-line-modules.md) | Snow billable items |
 | `payment.succeeded` / `.failed` / `.refunded`, `dispute.created` / `.closed`, `payout.paid` | [08](08-payments-stripe.md) | Allocations, dunning, ledger |
 | `payment.pending` (ACH/PAD in flight) / `payment.returned` (R01, NSF, PAD return) | [08](08-payments-stripe.md) | Pending badge and dunning pause; on return, reopen invoice (P34) and restart dunning at real age |
@@ -1675,7 +1676,7 @@ All AI runs through the AI Gateway, is metered in AI credits, and follows the gu
 | AI8 | **Renewal pricing assistant** | Proposes escalators per client using margin, visit cost drift, churn risk and local market data; drafts the renewal letter. | Owner approves the batch. | V1 |
 | AI9 | **Cash-flow forecast** | 13-week cash forecast from installments, open AR with predicted pay dates, seasonal patterns, snow probability; feeds [18](18-reporting-analytics.md). | Forecast ranges, not points. | V1 |
 | AI10 | **Dispute summarizer** | Builds a dispute packet from visits, GPS, photos, signatures and messages for client conversations and Stripe chargeback evidence ([08](08-payments-stripe.md)). | Human submits. | V1 |
-| AI11 | **Season recap video/letter** | Generates a short season recap for each residential client (visits, before/after photo collage, what's planned next year) attached to the final installment and renewal notice. | Client can opt out. | V2 |
+| AI11 | **Season recap video/letter** | Renders each residential client's season recap as a short video and a printed or PDF letter (visits, before/after photo collage, what's planned next year from the renewal quote) attached to the final installment and renewal notice. The recap data and the Season in Review card are owned by [Reporting](18-reporting-analytics.md#4142-residential-your-season-v1) section 4.14.2 ("Your Season", V1), and the AI-written narrative and renewal hook are idea 7 in [17](17-ai-copilot-automation.md) section 13; this module adds only the video and letter rendering and their attachment to billing documents. | Client can opt out. | V2 |
 | AI12 | **Remittance matching** | Reads remittance emails, check images and ACH addenda to auto-apply commercial payments across many invoices. | Confidence threshold; low-confidence goes to a queue. | V1 |
 | AI13 | **Exemption certificate reader** | Reads an uploaded resale, nonprofit or capital-improvement certificate (PDF or phone photo), extracts type, number, jurisdictions, signer and expiry, checks it against the client name and the engine's validation service, and pre-fills the vault record. | Bookkeeper or office confirms before the certificate changes any tax; low-confidence fields are highlighted. | V1 |
 | AI14 | **Billing Run briefing** | Writes the run summary the office manager reads first: "312 invoices, $86,410; 22 drought skips credited; 3 clients over credit limit; Oak Ridge PO 92% consumed; Nguyen anomaly explained by a signed T&M ticket". Groups exceptions by root cause (e.g., 4 unverified visits all from one crew whose phone was offline). | Read-only; every claim links to the underlying record. | V1 |

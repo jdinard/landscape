@@ -756,28 +756,28 @@ Many design-build Companies charge for design and credit the fee toward the inst
 
 ### 4.7 AI credits for this module [MVP]
 
-Credits are the platform-wide AI metering unit ([17](17-ai-copilot-automation.md)). The **credit unit, pack prices, plan allotments, expiry and refund rules are owned by [22](22-business-model-pricing-gtm.md) section 4.4** and are not redefined here. As of that doc: packs of 1,000 credits for $25, 5,000 for $100 and 20,000 for $340 (so **1 credit is about $0.017-$0.025**). Included credits are 300 (Starter), 2,000 (Grow) and 6,000 (Pro) per month, with no rollover of included credits. The price of an action is committed for at least 12 months, and changes need 60 days' notice. This section maps each design action to that rate card. Rows marked "Yes" use the published price in [22](22-business-model-pricing-gtm.md) 4.4.1, which wins any conflict; rows marked "New (proposed)" are proposals for 22 to adopt and are not billable until 22 lists them. Costs are shown before every action, and owners set monthly caps and per-user and per-role limits.
+Credits are the platform-wide AI metering unit ([17](17-ai-copilot-automation.md)). The **credit unit, pack prices, plan allotments, expiry and refund rules are owned by [22](22-business-model-pricing-gtm.md) section 4.4** and are not redefined here. As of that doc: packs of 1,000 credits for $25, 5,000 for $100 and 20,000 for $340 (so **1 credit is about $0.017-$0.025**). Included credits are 300 (Starter), 2,000 (Grow) and 6,000 (Pro) per month, with no rollover of included credits. The price of an action is committed for at least 12 months, and changes need 60 days' notice. This section maps each design action to that rate card. Rows marked "Yes" use the published price and priority tag in [22](22-business-model-pricing-gtm.md) 4.4.1, which wins any conflict; every billable action in this module is now on that list. Any new action this module proposes later is not billable until 22 lists it. Costs are shown before every action, and owners set monthly caps and per-user and per-role limits.
 
 | Action | Credits | In 22's list? | Notes |
 |---|---|---|---|
 | Scene analysis (per photo) | 0 | - | Bundled; cheap and needed for everything |
 | Plan overlay preview (Mode B lite) | 0 | - | Client-side render |
 | Restyle preview set (4 variants, about 1 MP) | 40 | Yes ("Photo mockup set") | Pro restyles in the field and in the office |
-| Website visualizer preview set (widget: a 2-variant teaser for anonymous visitors, 4-variant sets after verification) | 24 | Yes ("Website visualizer preview set") | Drawn from the Company's pool under the widget cap (AIM-AUD-01); economy route first (8.2). 22 tags this row [V1]; this module ships the website widget at [MVP] |
-| Restyle "more like this" (2 variants) | 20 | New (proposed) | |
+| Website visualizer preview set (widget: a 2-variant teaser for anonymous visitors, 4-variant sets after verification) | 24 | Yes ("Website visualizer preview set") | [MVP]. Drawn from the Company's pool under the widget cap (AIM-AUD-01); economy route first (8.2) |
+| Restyle "more like this" (2 variants) | 20 | Yes (Restyle "more like this") | [MVP]. Part of the photo restyle flow (Mode A) |
 | Mockup refinement (inpaint or edit one area) | 10 | Yes ("Mockup refinement") | |
 | Re-render of changed areas after a plan edit (plan-to-photo) | 8 | Yes (plan-to-photo re-render) | Targeted region re-render (AIM-SYNC-03) |
-| HD final (single image, 2-4 MP via upscale and detail pass) | 20 | Yes ("High-resolution render or upscale") | 22 tags this [V1]; this module needs it at [MVP] for the field restyle flow |
-| Presentation 4K re-render (vendor 4K tier) | 20 | Yes (same 2K-4K line) | Optional; print boards and large screens. The vendor 4K route can exceed the 22 7.4 cost guardrail at 20 credits, so the self-hosted upscale route is the default and open question 1 proposes a separate 4K line |
+| HD final (single image, 2-4 MP via upscale and detail pass) | 20 | Yes ("High-resolution render or upscale") | [MVP]; needed for the field restyle flow. Self-hosted upscale route by default (`restyle.hd`) |
+| Presentation 4K re-render (vendor 4K tier) | 40 | Yes ("Presentation 4K re-render") | [V1]. Optional; print boards and large screens. A separate line from the HD final because the vendor 4K route breaches the 22 7.4 cost guardrail at 20 credits; the 20-credit HD final keeps the self-hosted upscale route |
 | Plan-to-photo render (per photo, preview) | 20 | Yes ("Plan-to-photo render") | Cheaper than a restyle set, so pros never avoid the more accurate mode because of cost |
 | Plan-to-photo HD | 40 | Composite (plan-to-photo 20 + high-resolution render 20) | |
 | AI layout generation (3 options with overlay previews) | 60 | Yes ("Dimension-aware AI layout") | Includes LLM planning, HOA parsing, solver, validation and up to 2 repairs |
 | Plant palette recommendation for a bed | 3 | Yes | |
-| Design assistant chat turn | 1 (question or clarification), 2 (turn that commits a plan edit) | New (proposed; aligns with Copilot Q&A = 1) | Re-renders charged separately and quoted first |
+| Design assistant chat turn | 1 (question or clarification), 2 (turn that commits a plan edit) | Yes ("Design assistant chat turn"; aligns with Copilot Q&A = 1) | [V1]. Re-renders charged separately and quoted first |
 | Seasonal set (4 seasons) | 30 | Yes ("Seasonal or growth-over-time set") | |
 | Growth set (install day, 1, 3, 5 years) | 30 | Yes ("Seasonal or growth-over-time set") | |
-| Night mood (V1) / physically based night lighting (V2) | 20 / 40 | New (proposed) | |
-| 3D splat walkthrough (V3) | 600 | Yes ("Immersive 3D walkthrough capture") | Async; GPU-heavy; quoted before run. 22 tags this row [V2]; this module phases it [V3] (AIM-GEN-F) |
+| Night mood (V1) / physically based night lighting (V2) | 20 / 40 | Yes ("Night mood render" / physically based night lighting) | [V1] / [V2] (AIM-GEN-E) |
+| 3D splat walkthrough (V3) | 600 | Yes ("Immersive 3D walkthrough capture") | [V3] (AIM-GEN-F). Async; GPU-heavy; quoted before run |
 
 **Refunds and fairness** (rules from [22](22-business-model-pricing-gtm.md) 4.4.1, applied here): the hold is released in full on provider error, timeout or safety refusal, and when automatic QA retries are exhausted (repeated refusals of a user's uploads are handled by the abuse controls in 11.2, not by charging credits). If a user marks a mockup or layout "unusable" within 10 minutes with a reason code, 50% of its credits are refunded, up to 10 such refunds per user per month. The reason codes feed the eval set (8.7). Duplicate submissions within 10 s are deduplicated, not double charged.
 
@@ -1637,7 +1637,7 @@ All model calls (LLM, image, vision, embeddings, self-hosted GPU) go through the
 | `restyle.preview` | Google Gemini image editing (Flash tier) with multi-image references | FLUX.1 Kontext [pro] via BFL API; then self-hosted SDXL/FLUX inpaint + ControlNet | Low latency and cost, strong instruction following, accepts reference images |
 | `restyle.economy` | Self-hosted open-weight instruction-editing model with a permissive license (Qwen-Image-Edit class, released under Apache-2.0 as of 2025, verify) + SAM masks + reference images | `restyle.preview` | Widget teaser sets and `batch` renders at a fraction of vendor per-image prices; promoted only if it matches `restyle.preview` on the golden set for house preservation and plant identity |
 | `restyle.hd` | Self-hosted super-resolution of the chosen preview plus a low-strength detail pass (the 20-credit HD final) | Gemini image (higher-resolution tier) or FLUX Kontext [max] | Keeps the variant the user picked (no re-roll) and costs a few cents |
-| `restyle.4k` | Gemini image 4K tier or FLUX Kontext [max] | OpenAI image editing | Presentation 4K re-render (20 credits on the high-resolution line; see 4.7) |
+| `restyle.4k` | Gemini image 4K tier or FLUX Kontext [max] | OpenAI image editing | Presentation 4K re-render (40 credits on its own [V1] line; see 4.7) |
 | `p2p.harmonize` | Self-hosted diffusion img2img with depth + edge ControlNet and IP-Adapter | Gemini image editing with control images as references | Needs pixel-level control of masks and IDs |
 | `p2p.generate` | Self-hosted ControlNet + IP-Adapter + regional prompts, per-plant LoRA | Vendor editing model | Identity control for plants without sprites |
 | `upscale` | Self-hosted super-resolution | Vendor upscaler | Cheap |
@@ -1720,7 +1720,7 @@ Targets are proposals; they gate GA for each mode and are monitored per route.
 | "More like this" (2 variants) | 2 x $0.039 + QA | about $0.09 | 20 | $0.34-$0.50 | 74-82% |
 | Mockup refinement (inpaint one area) | 1 masked edit $0.04-0.045 + QA, or self-hosted about $0.01 | about $0.01-0.05 | 10 | $0.17-$0.25 | 71-96% |
 | HD final | Self-hosted super-resolution + low-strength detail pass, about 5 GPU-s + QA | about $0.01 (vendor 2K fallback $0.10-0.13) | 20 | $0.34-$0.50 | about 97% (fallback 62-80%; fallback only during outages) |
-| Presentation 4K re-render | Vendor 4K tier $0.15-0.24 + QA $0.01 | about $0.16-0.25 | 20 | $0.34-$0.50 | 26-68%. **Watch item:** above the 45% cost guardrail in [22](22-business-model-pricing-gtm.md) 7.4 at the lowest per-credit (largest-pack) price; default to the self-hosted upscale route and see open question 1 |
+| Presentation 4K re-render | Vendor 4K tier $0.15-0.24 + QA $0.01 | about $0.16-0.25 | 40 | $0.68-$1.00 | 63-84%. Priced at 40 because at 20 credits the vendor 4K route was above the 45% cost guardrail in [22](22-business-model-pricing-gtm.md) 7.4; at 40 the worst case is about 37% |
 | Plan-to-photo preview | Projection CPU + harmonize about 8 GPU-s ($0.007) + sprites + QA $0.02 + repair inpaint 30% of the time | about $0.04-0.10 | 20 | $0.34-$0.50 | 71-92% |
 | Plan-to-photo changed-area re-render | Region re-render of changed instances + boundary harmonize + QA | about $0.01-0.05 | 8 | $0.14-$0.20 | 63-95% |
 | Plan-to-photo HD | Preview path at higher resolution + super-resolution | about $0.06-0.15 | 40 (20 + 20) | $0.68-$1.00 | 78-94% |
@@ -2090,7 +2090,7 @@ Definitions feed [Reporting and Analytics](18-reporting-analytics.md) and the pl
 
 ## 14. Open questions
 
-1. **Action prices and widget subsidy:** most actions in 4.7 now use the [22](22-business-model-pricing-gtm.md) rate card; four remain proposals (restyle "more like this", design assistant chat turns, night renders, and a separate vendor 4K line at about 40 credits because the vendor 4K route breaches the 7.4 cost guardrail at 20). Should 22 adopt them? Should 22 also move the website visualizer preview set and the HD final to [MVP] to match this module's phasing? And should Rootline subsidize the first 500 widget credits a month for Grow tenants as a growth investment, since widget leads also feed Rootline Match? (Owner: [22](22-business-model-pricing-gtm.md).)
+1. **Widget subsidy (action prices resolved):** every action in 4.7 now uses the [22](22-business-model-pricing-gtm.md) 4.4.1 rate card. 22 adopted restyle "more like this" (20), design assistant chat turns (1/2), night renders (20/40) and a separate vendor 4K line (40, [V1]), and tags the website visualizer preview set and the HD final [MVP] and the 3D walkthrough [V3], matching this module's phasing. Still open: should Rootline subsidize the first 500 widget credits a month for Grow tenants as a growth investment, since widget leads also feed Rootline Match? (Owner: [22](22-business-model-pricing-gtm.md).)
 2. **Default image route:** benchmark Gemini image editing vs FLUX Kontext vs self-hosted pipelines on the golden set for plant identity and house preservation before MVP; decide whether MVP plan-to-photo should ship earlier using vendor editing with control images.
 3. **Render-pack production:** in-house photography vs grower partnerships vs AI-generated sprites curated by horticulturists. What mix gets 300 plants render-ready before V1, and at what cost?
 4. **Fidelity score visibility:** should homeowners see the fidelity grade, or is the badge plus disclaimer enough? Showing it is more honest but may confuse.

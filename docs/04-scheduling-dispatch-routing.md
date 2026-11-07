@@ -240,7 +240,7 @@ stateDiagram-v2
 | Deposit paid | Projects (on), work orders over $2,500 (on), recurring (off) | `payments.deposit.received` for the required amount (event name as registered by [08](08-payments-stripe.md)); see deposit rules below | [08](08-payments-stripe.md), [06](06-customer-portal.md) |
 | Signed and unpaid allowed | Recurring maintenance | Proposal signed | [06](06-customer-portal.md) (signed_unpaid does not block recurring by default) |
 | Materials available | Projects, installs with plant lists | All PO lines `received` or delivery `confirmed` with ETA before phase start | [13](13-operations-inventory-equipment.md) |
-| Dig ticket clear (811 / Canadian one-call) | Any task with excavation deeper than the Company threshold (default 12 in) | Ticket status `clear` and within its validity window | [14](14-service-line-modules.md) |
+| Dig ticket clear (811 / Canadian one-call) | Any task with excavation deeper than the Company threshold (default 12 in) | Ticket status `clear_to_dig` (Dig Ticket entity owned by [14](14-service-line-modules.md) 4.5.6) and the ticket covers the visit date within its validity window | [14](14-service-line-modules.md) |
 | Permit issued | Projects flagged `permit_required` | Permit record `issued` | [14](14-service-line-modules.md) |
 | HOA/architectural approval | Projects flagged by the estimator | Approval document attached | [03](03-crm-sales-estimating-proposals.md) |
 | Design sold | Projects created from a Design | Design version frozen as `sold` | [10](10-design-studio.md) |
@@ -344,7 +344,7 @@ stateDiagram-v2
 | `skipped` with `no_access`, `dog_loose`, `vehicle_blocking`, `client_not_present` | `skipped_access` (photo required by [05](05-field-crew-mobile-app.md)) |
 | `skipped` with `equipment_failure`, `ran_out_of_time`, `crew_shortage`; or `missed` closed as skipped | `missed_company` (triggers a quality alert) |
 | `skipped` with `company_hold` (service suspended for non-payment) | `skipped_company_hold` (never credited) |
-| `canceled` with `schedule_removed` or `agreement_amended` | `cancelled_by_amendment` |
+| `canceled` with `schedule_removed` or `agreement_amended` | `canceled_by_amendment` |
 | `skipped` with `other` (free text required) | The office must reclassify before the next billing run; anything still `other` at billing maps to `missed_company`, so ambiguity never costs the client |
 | Holiday handling (4.2.7) | A Visit moved by `slide_week`, `shift_next`, `shift_previous` or `compress` maps to `rescheduled`. Under the `skip` policy, if the agreement lists the holiday in `excluded_holidays`, no occurrence is generated at all (RRULE exception), so nothing maps; otherwise the skip maps to `missed_company` because the client was promised that visit |
 
@@ -609,7 +609,7 @@ Skills are Company-defined tags on employees with optional jurisdiction, categor
 
 **Rules:**
 - A requirement is either on the **Visit** (someone on the crew must have it), on the **crew lead** (the lead must have it), **all members** (everyone on site must have it, e.g., background-checked staff at schools), or a **task role** (the person assigned to a specific line, e.g., the chipper operator or the applicator, must have it; the crew app shows that line only on that person's device as "yours").
-- Expiry is evaluated on the **service date**, not today. A license expiring May 31 makes all assigned June round Visits fail validation on publish, and an alert goes to the owner 30 days before expiry ([15](15-team-hr-payroll.md) emits `certification.expiring`).
+- Expiry is evaluated on the **service date**, not today. A license expiring May 31 makes all assigned June round Visits fail validation on publish, and an alert goes to the owner 30 days before expiry ([15](15-team-hr-payroll.md) emits `employee.certification_expiring`).
 - The validation message names the gap: "Visit V-60012 needs `pesticide_applicator` (MN, turf) - nobody on Crew 3 on Jun 2 qualifies. Swap Dani from Crew 1 (licensed) or move to Crew 1."
 
 #### 4.4.2 Crew templates and daily rosters [MVP]
@@ -2499,7 +2499,7 @@ Events are published through the transactional outbox to the event bus as CloudE
 | Event | Producer | Effect here |
 |---|---|---|
 | `proposal.accepted` | [03](03-crm-sales-estimating-proposals.md) | Create Jobs, gates, tentative placements |
-| `service_agreement.activated` / `.suspended` / `.reactivated` / `.canceled` (registered in [07](07-invoicing-billing-contracts.md) as `agreement.activated` / `.suspended` / `.resumed` / `.cancelled`; one name per event in the schema registry of [20](20-architecture-security.md)) | [07](07-invoicing-billing-contracts.md) | Create Service Schedules; pause/resume materialization and apply hold rules (4.2.4); cancel future Visits |
+| `service_agreement.activated` / `.suspended` / `.reactivated` / `.canceled` (registered in [07](07-invoicing-billing-contracts.md) as `agreement.activated` / `.suspended` / `.resumed` / `.canceled`; one name per event in the schema registry of [20](20-architecture-security.md)) | [07](07-invoicing-billing-contracts.md) | Create Service Schedules; pause/resume materialization and apply hold rules (4.2.4); cancel future Visits |
 | `agreement.amended` | [07](07-invoicing-billing-contracts.md) | Split or edit Service Schedules from the effective date ("This and following" scope, 4.2.4) |
 | `payments.deposit.received` | [08](08-payments-stripe.md) | Satisfy deposit gate (4.1.2 deposit rules) |
 | `payments.payment.pending` / `payments.payment.returned` / `payments.refund.completed` (when the payment is a deposit) | [08](08-payments-stripe.md) | Deposit gate `pending_clearing` / `reopened` (4.1.2) |
@@ -2507,7 +2507,7 @@ Events are published through the transactional outbox to the event bus as CloudE
 | `round_instance.window_opened` / `round_instance.unblocked` | [14](14-service-line-modules.md) | Eligible for Round Planner scheduling; `round_instance.blocked` removes it until notices or licenses clear |
 | `storm_event.state_changed` | [14](14-service-line-modules.md) | Activate/deactivate storm routing |
 | `dig_ticket.status_changed`, `permit.status_changed` | [14](14-service-line-modules.md) | Gate updates; validity-window checks |
-| `delivery.status_changed`, `equipment.status_changed` | [13](13-operations-inventory-equipment.md) | Dependency warnings; reservation conflicts; breakdown flow |
+| `ops.delivery.status_changed`, `ops.asset.status_changed` (canonical `ops.*` names of the `inventory` module; the short spellings `delivery.status_changed` and `equipment.status_changed` are registered aliases, [13](13-operations-inventory-equipment.md) section 8) | [13](13-operations-inventory-equipment.md) | Dependency warnings; reservation conflicts; breakdown flow |
 | `pto.approved`, `availability.changed`, `employee.certification_expiring`, `employee.certification_expired`, `employee.terminated` | [15](15-team-hr-payroll.md) | Crew Day capacity; skill validation; roster cleanup. Same-day call-outs are recorded on the Crew Day roster by the crew lead or office (section 9, `crew_day.roster`) |
 | `growth.booking_requested` | [16](16-marketing-growth-communications.md) | Create Visits from online bookings, best-day for recurring |
 | `portal.reschedule_requested`, `portal.skip_requested`, `portal.pause_requested` | [06](06-customer-portal.md) | Client-driven changes (4.2.8) |

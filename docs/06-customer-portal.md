@@ -283,7 +283,7 @@ Design principle: **the link is the login for the action; a session is for brows
 | Approve a commercial enhancement within the approver's limit | Yes | Step-up when the amount exceeds the Client's approval step-up setting (default $5,000) |
 | Add or remove payment methods; change autopay; add or remove Contacts; change own email or phone; export, share or transfer the Property Record | No | Full session plus step-up, every time |
 
-[02](02-personas-roles-permissions.md) states a blanket "step-up OTP for paying". This doc narrows that to saved methods for the reason given in the table. Doc 02 should be aligned to this table.
+This table is the single proof-ladder rule for the platform. [02](02-personas-roles-permissions.md) follows it in its homeowner journey (4.5) and its authentication table (5.14): paying the linked invoice with a newly entered card or bank account needs no code, and step-up applies to saved-method payments, signatures above the threshold or under a non-matching name, and contact, autopay and payment-method changes.
 
 #### 4.2.6 Self-registration and access requests [MVP]
 - Company setting: `invite_only` (default), `match_on_file` (a person can sign in if their email or mobile matches a Contact), or `open_request` (anyone can request access; the request lands in the office queue with name, address and relationship).
@@ -437,7 +437,7 @@ Designs are authored in the [Design Studio (10)](10-design-studio.md); mockups c
 - Photos are KB-licensed images curated by `platform_curator` ([12](12-plant-knowledge-base.md)); each has license and attribution metadata respected in the UI.
 
 #### 4.5.3 AI mockups and before/after slider [MVP]
-- Gallery of published mockups per Design Option: each is paired with the original property photo.
+- Gallery of published mockups per Design Option: a mockup is published to the portal when the estimator or designer attaches it to the proposal option (`mockup.attached_to_proposal` in [11](11-ai-design-mockups.md)); each is paired with the original property photo.
 - **Before/after slider:** draggable divider (keyboard-operable with arrow keys, screen-reader labeled "Comparison slider, 50 percent after"), plus "Before", "After", and "Side by side" toggles.
 - A required caption on every AI image: "AI rendering for illustration. Plants shown at about 3 years of growth; actual appearance varies." (maturity year comes from the mockup metadata). This disclaimer is non-removable by Companies to limit misrepresentation risk ([11](#11-edge-cases-compliance-and-risks)).
 - Pinch-zoom to 3x on mockups, with resolution sufficient for a phone (min 2048 px long edge).
@@ -594,7 +594,7 @@ Architecture, Stripe objects and money flows are specified in [08 - Payments (St
 - **Season installment plans**: an annual program billed in equal installments (e.g. a $1,620 lawn program billed as 9 monthly charges of $180 from March to November) with a disclosed schedule and autopay requirement.
 - **Prepay discount**: pay the full season upfront for a Company-set discount (e.g. 5%), common in lawn programs; creates a prepayment credit consumed by visit invoices.
 - **Hardship plan request** [V1]: client proposes a plan for an overdue balance (e.g. 3 payments); `office_manager` approves; dunning pauses while the plan is current.
-- Plan states: `proposed`, `active`, `delinquent`, `completed`, `cancelled`.
+- Plan states: `proposed`, `active`, `delinquent`, `completed`, `canceled` (US spelling for all state and event keys, matching the canonical `canceled` Job and Visit state in [04](04-scheduling-dispatch-routing.md)).
 - **Credit guardrail:** in the US, a business that regularly extends consumer credit payable in more than four installments may be a "creditor" under Regulation Z. Following [07](07-invoicing-billing-contracts.md), season plans default to client-ahead calendars, where installments do not trail completed services, and never carry finance charges unless the Company has configured disclosed terms. Hardship plans are capped at 4 installments by default; the cap can be raised only with an explicit Company acknowledgment.
 
 #### 4.9.5 Financing [V1]
@@ -1859,7 +1859,7 @@ erDiagram
 | `change_order.approved` / `declined` | delta amount and days | Jobs, invoicing |
 | `approval.requested` / `approval.step_decided` / `approval.completed` | amounts, budget impact, PO | Proposals, notifications, budgets |
 | `payment_method.added` / `removed` | method type, last 4 | Payments, collections |
-| `autopay.enrolled` / `changed` / `cancelled` | scope, timing, cap | Invoicing ([07](07-invoicing-billing-contracts.md)); [08](08-payments-stripe.md) confirms the mandate and emits the authoritative `payments.autopay.enrolled` / `.disabled` |
+| `autopay.enrolled` / `changed` / `canceled` | scope, timing, cap | Invoicing ([07](07-invoicing-billing-contracts.md)); [08](08-payments-stripe.md) confirms the mandate and emits the authoritative `payments.autopay.enrolled` / `.disabled` |
 | `payment_plan.requested` / `activated` | schedule | Collections |
 | `service_request.submitted` | category, urgency, pin, attachments | CRM, dispatch, Copilot triage |
 | `portal.skip_requested` / `portal.reschedule_requested` / `portal.pause_requested` | visit or property, requested dates, reason, contact | Scheduling client-driven changes ([04](04-scheduling-dispatch-routing.md) 4.2.8) |
@@ -1879,7 +1879,7 @@ erDiagram
 |-------|--------|---------------|
 | `proposal.published` | [03](03-crm-sales-estimating-proposals.md) | Build proposal read model; issue action tokens; send notifications |
 | `design.version_published` | [10](10-design-studio.md) | Compile viewer bundle; update design tab |
-| `mockup.generated` / `mockup.approved` | [11](11-ai-design-mockups.md) | Add to gallery (approved only) |
+| `mockup.attached_to_proposal` / `mockup.generated` | [11](11-ai-design-mockups.md) | Add to the proposal option's gallery only once the mockup is attached to that option (`mockup.attached_to_proposal`; attachment is the Company's approval for client viewing). A mockup that is only `mockup.generated` never appears in the portal; the event refreshes metadata (fidelity grade, maturity year) for mockups already attached |
 | `plant.updated` | [12](12-plant-knowledge-base.md) | Refresh cached plant cards |
 | `visit.scheduled` / `rescheduled` / `en_route` / `arrived` / `completed` / `partially_completed` / `skipped` / `canceled` | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md) | Update visits, ETA, summaries, notifications |
 | `eta.updated`, `weather.delay_declared` | [04](04-scheduling-dispatch-routing.md) | Live ETA page; weather notice card and banner |
@@ -2158,7 +2158,7 @@ Targets below are **internal design targets (estimates), not industry statistics
 10. **Competitive gaps.** Aspire's, SynkedUP's and Yardbook's client portal specifics are described at listing level only (verify); a hands-on teardown (demo accounts or customer interviews) is recommended before finalizing the competitive matrix in [01](01-market-landscape.md).
 11. **Native app timing.** What PWA push adoption on iOS triggers the move to native wrappers?
 12. **Proof-ladder thresholds.** Is $10,000 the right default above which signing needs a code? Should commercial approvals have a lower default ($5,000 proposed)? And is a fuzzy name match between the typed signature and the addressed Contact strong enough below the threshold? Validate with counsel and with step-up abandonment data (Section 12).
-13. **Contact-scope defaults versus doc 02.** This doc now follows [02](02-personas-roles-permissions.md) (`property_contact`; `co_owner` cannot manage contacts; payment-method management off by default for `co_owner`). Doc 02's blanket "step-up OTP for paying" needs updating to the narrower rule in 4.2.5 (saved methods only).
+13. **Contact-scope defaults versus doc 02 (resolved).** This doc follows [02](02-personas-roles-permissions.md) on contact scopes (`property_contact`; `co_owner` cannot manage contacts; payment-method management off by default for `co_owner`), and 02 now follows the proof ladder in 4.2.5 (no blanket step-up for paying; step-up only for saved-method payments, larger or mismatched signatures, and contact, autopay and payment-method changes). No open item remains; kept here so the numbering of later questions stays stable.
 14. **Passkey related origins.** If related-origin support is still incomplete in Firefox and some embedded browsers at launch, do we register custom-domain Companies' passkeys on the custom domain instead and accept re-enrollment on later domain changes?
 15. **External books mode and dunning.** How stale can the accounting sync get before automated overdue reminders pause for every Client of that Company (proposed: 60 minutes)?
 
