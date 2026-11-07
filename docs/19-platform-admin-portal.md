@@ -310,7 +310,7 @@ Rules:
 - Schema migrations roll out **cell by cell, canary cell first**; the console's deploy panel shows which cells are on which schema version so support knows whether a bug report is cell-specific.
 
 **PA-019 Sandbox and demo tenants [MVP]**
-- One-click creation of a **demo tenant** using the same seed generator as the in-trial sample Company "Greenleaf Landscape Co." ([22](22-business-model-pricing-gtm.md) section 4.6), at a selectable scale: `standard` (120 clients, the trial sample) or `large` for sales demos to commercial prospects (180 residential and 22 commercial clients including two HOAs with multi-board approvals, 260 Properties with real-looking synthetic addresses in a chosen metro), weekly mowing agreements April-November, a 5-step fertilizer program, three paver patio projects, a snow agreement set with 2-inch triggers, a seeded price book, two designs and a populated ledger. Used for sales demos, training and QA.
+- One-click creation of a **demo tenant** using the same seed generator as the in-trial sample Company "Greenleaf Grounds Co." ([22](22-business-model-pricing-gtm.md) section 4.6), at a selectable scale: `standard` (120 clients, the trial sample) or `large` for sales demos to commercial prospects (180 residential and 22 commercial clients including two HOAs with multi-board approvals, 260 Properties with real-looking synthetic addresses in a chosen metro), weekly mowing agreements April-November, a 5-step fertilizer program, three paver patio projects, a snow agreement set with 2-inch triggers, a seeded price book, two designs and a populated ledger. Used for sales demos, training and QA.
 - Demo tenants are flagged `is_demo`, excluded from all revenue and health metrics, cannot send real SMS or email (sinks to a test inbox) and auto-delete after 30 days of inactivity.
 - **Customer sandbox [V1]:** paying Companies on higher plans can request a sandbox copy of their own configuration (price book, templates, automations; no client PII) to test automations safely.
 
@@ -391,7 +391,7 @@ Rootline bills Companies through **its own** Stripe account (Stripe Billing), co
 
 **PA-032 Add-ons [MVP]**
 - Catalog per [22](22-business-model-pricing-gtm.md) section 4.5, for example: Design Studio seat, Design Studio 3D [V1], AI Receptionist [V1], Website + Online Booking [V1], Ledger Plus, Ledger Advanced [V1], QuickBooks Desktop connector [V1], Snow and Ice module, Tree Care module [V2], Advanced Marketing [V1], Premium aerial imagery (cost + 20% per pull) [V1], Sandbox tenant [V1], Premium Success [V1], Archive plan [V1]. Each add-on grants entitlements and can carry its own included usage.
-- **Seasonal add-ons:** an add-on can declare `billable_months` (the Snow and Ice module is billed only November-March). The billing engine skips the line in other months without the tenant doing anything, and the console shows "dormant until Nov 1" rather than "canceled".
+- **Seasonal add-ons:** an add-on can declare a `billing_months_mask` ([22](22-business-model-pricing-gtm.md) 4.5; the Snow and Ice module is billed only November-March). The billing engine skips the line in other months without the tenant doing anything, and the console shows "dormant until Nov 1" rather than "canceled".
 - An add-on that a higher tier includes is removed automatically on upgrade with prorated credit; removing an add-on makes its data read-only, never deleted.
 
 **PA-033 Usage-based billing: AI credits, SMS, voice, email, storage [MVP]**
@@ -439,7 +439,7 @@ Rootline bills Companies through **its own** Stripe account (Stripe Billing), co
 Entitlements answer **"has this tenant paid for it?"**; flags answer **"is this code path turned on for them right now?"** They share an evaluation service but are managed and audited separately.
 
 **PA-040 Entitlement model [MVP]**
-- Entitlement types: `boolean` (feature on/off, e.g., `design_studio.3d`), `limit` (numeric cap, e.g., `seats.office = 5`, `properties.max = 2000`), `quota` (metered per period, e.g., `ai_credits.monthly = 500`), `tier` (enumerated level, e.g., `support.level = priority`).
+- Entitlement types: `boolean` (feature on/off, e.g., `design_studio.3d`), `limit` (numeric cap, e.g., `seats.office = 5`, `properties.max = 2000`), `quota` (metered per period, e.g., `ai_credits.monthly = 2000` on Grow), `tier` (enumerated level, e.g., `support.level = priority`).
 - Resolution order: global default -> plan -> add-ons (additive) -> organization override -> tenant override (with expiry) -> kill switch (can only remove).
 - Downgrade behavior defined per entitlement: `hide`, `read_only` (default for data-bearing features, e.g., designs stay viewable but not editable), or `grace_days` (e.g., 30 days to export).
 - Every entitlement change emits `entitlement.changed` with tenant, key, old and new value; the tenant app subscribes to update UI without reload.
@@ -494,7 +494,7 @@ Entitlements answer **"has this tenant paid for it?"**; flags answer **"is this 
 
 **PA-052 Impersonation ("view as user") sessions [MVP]**
 - Staff with an active grant can start a session **as a specific tenant user** (to reproduce role-specific issues, e.g., what a `crew_lead` sees) or as a synthetic "Rootline Support" user with the grant's scope.
-- UI: persistent orange banner "Rootline Support (Maria G.) is viewing as Jose R. (crew_lead) - read-only - ends 3:40 pm - [End session]" on the support side; tenant users see a subtle indicator in the app header and the event appears in the Support Access Log.
+- UI: persistent orange banner (the Clay impersonation band, token `color.banner.impersonation` in [21](21-ux-design-system-sitemaps.md) section 8.3) "Rootline Support (Maria G.) is viewing as Jose R. (crew_lead) - read-only - ends 3:40 pm - [End session]" on the support side; tenant users see a subtle indicator in the app header and the event appears in the Support Access Log.
 - Hard restrictions during impersonation regardless of scope: cannot change login email, password, MFA, owner, Stripe connection, bank feed connections or API keys; cannot send messages to clients (SMS/email) unless scope `read_write` **and** the action is explicitly confirmed with a second dialog; cannot sign proposals or approve on behalf of clients; cannot create charges or refunds; cannot export bulk client data.
 - Every request made in the session is tagged `actor=staff:<id>`, `on_behalf_of=user:<id>`, `grant_id` in the tenant's own domain audit log ([20](20-architecture-security.md)), so tenant-side history shows "Changed by Rootline Support on behalf of Jose R.".
 - Blocked in addition, per [02](02-personas-roles-permissions.md): reading `employee_pii` (SSN/SIN, pay details) and `vendor_banking` fields, and hard deletes (any delete in a session is a soft delete flagged "deleted by Rootline Support").
@@ -715,7 +715,7 @@ Bring-your-own-Stripe architecture is defined in [08](08-payments-stripe.md). Th
 > **Competitive edge - the Company keeps its money and its cards:** when payments run through a software vendor's own platform account, saved client cards stay behind if the Company switches; one competitor's Jobber migration guide notes that clients must re-enter payment details after switching ([Rebolt](https://help.rebolthq.com/en/articles/14063025-jobber-migration-guide)). With bring-your-own Stripe, the Company owns the account, the payouts, the disputes and the saved payment methods. The Operator Console still gives Rootline enough oversight (health, webhooks, dispute rates) to prevent problems before they hit the Company's cash flow.
 
 **PA-112 Webhook health [MVP]**
-- One panel per Stripe endpoint defined in [08](08-payments-stripe.md): `/webhooks/stripe/connect` (all connected-account money events), `/webhooks/stripe/platform` (application fees and platform-level account events), `/webhooks/stripe/v2` (Accounts v2 thin events, always re-fetched), `/webhooks/stripe/rak/{endpoint_id}` (advanced restricted-key accounts, per-account secrets) and `/webhooks/stripe/billing` (Rootline's own SaaS billing account, a separate service). Metrics per endpoint: events received per minute, processing lag (p95), failures by event type, signature verification failures (possible attack or misconfiguration), duplicate deliveries absorbed by idempotency, dead-letter queue size.
+- One panel per Stripe endpoint defined in [08](08-payments-stripe.md): `/webhooks/stripe/connect` (all connected-account money events), `/webhooks/stripe/platform` (application fees and platform-level account events), `/webhooks/stripe/v2` (Accounts v2 thin events, always re-fetched), `/webhooks/stripe/direct/{endpoint_token}` (advanced restricted-key accounts, per-account secrets) and `/webhooks/stripe/saas` (Rootline's own SaaS billing account, a separate service). Metrics per endpoint: events received per minute, processing lag (p95), failures by event type, signature verification failures (possible attack or misconfiguration), duplicate deliveries absorbed by idempotency, dead-letter queue size.
 - Tools: replay a Stripe event by ID for a tenant (re-fetch from Stripe API, never trust stored payload), reprocess dead-lettered events after a fix, backfill a tenant's account state.
 
 **PA-113 Dispute and fraud rate monitoring [V1]**
@@ -1509,6 +1509,8 @@ All platform-admin entities live in a dedicated `platform` schema that is **not*
 
 ### 7.1 Tenants, subscriptions and entitlements
 
+The SaaS catalog, subscription and metering tables live in the `platform` module, entitlement resolution in `tenancy` and the AI credit balance in `ai` ([20](20-architecture-security.md) section 4.3); their commercial spec is [22](22-business-model-pricing-gtm.md) section 10.1, and names here match it (`tenant_subscription`, `plan.code`, `subscription_item`, `credit_ledger_entry`, `entitlement_override`). This diagram shows the subset the console reads and writes, alongside the platform-only tenant records.
+
 ```mermaid
 erDiagram
     ORGANIZATION ||--o{ TENANT : groups
@@ -1516,9 +1518,9 @@ erDiagram
     TENANT ||--o{ TENANT_NOTE : has
     TENANT ||--o{ TENANT_HEALTH_SNAPSHOT : scored
     TENANT ||--o{ TENANT_TAG : tagged
-    TENANT ||--|| SUBSCRIPTION : bills
-    SUBSCRIPTION ||--o{ SUBSCRIPTION_ITEM : contains
-    PLAN ||--o{ SUBSCRIPTION : priced_by
+    TENANT ||--|| TENANT_SUBSCRIPTION : bills
+    TENANT_SUBSCRIPTION ||--o{ SUBSCRIPTION_ITEM : contains
+    PLAN ||--o{ TENANT_SUBSCRIPTION : priced_by
     PLAN ||--o{ PLAN_ENTITLEMENT : grants
     ADDON ||--o{ PLAN_ENTITLEMENT : grants
     SUBSCRIPTION_ITEM }o--|| PRICE_VERSION : uses
@@ -1537,7 +1539,7 @@ erDiagram
         uuid organization_id FK
         string lifecycle_state
         timestamp state_changed_at
-        string plan_key
+        string plan_code
         string country
         string currency
         string data_residency
@@ -1572,7 +1574,7 @@ erDiagram
         jsonb components
         jsonb top_factors
     }
-    SUBSCRIPTION {
+    TENANT_SUBSCRIPTION {
         uuid id PK
         uuid tenant_id FK
         string stripe_subscription_id
@@ -1594,7 +1596,7 @@ erDiagram
     }
     PLAN {
         uuid id PK
-        string key
+        string code
         string name
         boolean is_public
         int trial_days
@@ -2227,7 +2229,7 @@ Guardrails: the Copilot never sees tenant content without an active grant; write
 | 5 | Office manager tries to approve a `read_write` or `ledger` grant, or a grant to view as `owner` | Not possible: approval endpoint checks scope and the role ceiling (PA-051); attempt is logged and the request is re-routed to the owner |
 | 6 | Staff member abuses impersonation | Grants are scoped and logged; anomaly detection on access patterns; tenant-visible log; disciplinary policy; quarterly review of sessions sampled |
 | 7 | Tenant disconnects Rootline from Stripe mid-season | `account.application.deauthorized` -> portal pay buttons become "Contact us to pay", owner and CSM alerted; no charges attempted |
-| 8 | Restricted API key (advanced mode) revoked or under-scoped | Hourly key health check; failing key raises tenant alert; portal falls back to "Contact us" |
+| 8 | Restricted API key (advanced mode) revoked or under-scoped | Daily key probe ([08](08-payments-stripe.md) 4.21) plus immediate handling of any `401` from Stripe; failing key raises tenant alert; portal falls back to "Contact us" |
 | 9 | Deletion request conflicts with tax retention | Restrict instead of delete; record exception; notify requester with legal basis |
 | 10 | Legal hold on a tenant scheduled for deletion | Lifecycle blocked at `pending_deletion`; nightly job skips; hold visible to compliance only |
 | 11 | Flag service unreachable | SDKs use last known values; new features default off; kill switches default to last known state; crew app offline defaults safe |

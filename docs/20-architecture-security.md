@@ -295,7 +295,7 @@ Modules map to product domains and to Postgres schemas. A module **owns** its ta
 | Module (schema) | Responsibilities | Owned entities (examples) | Emits (examples) | Spec doc |
 |---|---|---|---|---|
 | `iam` | Users, sessions, MFA, SSO, memberships, roles, permissions, API keys, OAuth apps | user, membership, role, permission_grant, session, api_client, oauth_grant, sso_connection | `user.invited`, `membership.role_changed` | [02](02-personas-roles-permissions.md) |
-| `tenancy` | Company lifecycle, plan, entitlements, settings, region/cell placement, branding, custom domains | tenant, tenant_settings, entitlement, custom_domain, cell_assignment | `tenant.provisioned`, `tenant.suspended` | [19](19-platform-admin-portal.md) |
+| `tenancy` | Company lifecycle, plan, entitlements, settings, region/cell placement, branding, custom domains | tenant, tenant_settings, entitlement, entitlement_override, custom_domain, cell_assignment | `tenant.provisioned`, `tenant.suspended` | [19](19-platform-admin-portal.md) |
 | `crm` | Clients, properties, contacts, tags, notes, communication preferences, consent | client, property, contact, consent_record, property_access_info | `client.created`, `property.geocoded` | [03](03-crm-sales-estimating-proposals.md) |
 | `sales` | Leads, opportunities, site assessments, estimates, proposals, e-sign, change orders, renewals | lead, opportunity, site_assessment, estimate, estimate_line, proposal, proposal_option, signature, change_order | `proposal.sent`, `proposal.accepted` | [03](03-crm-sales-estimating-proposals.md) |
 | `catalog` | Price Book items, assemblies/kits, production rates, labor burden, overhead model, tax categories | price_book_item, assembly, production_rate, cost_profile | `price_book_item.updated` | [03](03-crm-sales-estimating-proposals.md), [13](13-operations-inventory-equipment.md) |
@@ -317,7 +317,7 @@ Modules map to product domains and to Postgres schemas. A module **owns** its ta
 | `ai` | Copilot conversations, agent runs, tool registry, AI credit ledger, prompt registry | ai_conversation, agent_run, ai_usage_event, credit_balance | `ai.credit_threshold_reached` | [17](17-ai-copilot-automation.md) |
 | `integrations` | Connector framework, OAuth token vault, sync runs, external refs | integration_connection, sync_run, external_ref, sync_error | `integration.sync_failed` | Section 4.8 |
 | `reporting` | Read models, KPI materializations, report definitions, exports | report_definition, kpi_snapshot, export_job | `export.ready` | [18](18-reporting-analytics.md) |
-| `platform` (global) | Platform staff, SaaS subscriptions, feature flags, support tickets, impersonation grants, DSAR cases | staff_user, saas_subscription, flag, support_case, access_grant, dsar_case | `access_grant.approved` | [19](19-platform-admin-portal.md) |
+| `platform` (global) | Platform staff, Rootline's own SaaS catalog and subscriptions (plans, add-ons, meters, usage records), partners, homeowner marketplace, feature flags, support tickets, support access grants, DSAR cases | staff_user, plan, tenant_subscription, usage_record, partner, flag, support_case, support_access_grant, dsar_case | `subscription.changed`, `support_access.approved` | [19](19-platform-admin-portal.md), [22](22-business-model-pricing-gtm.md) |
 | `audit` | Append-only audit trail, tamper-evident chains | audit_event | n/a (sink) | Section 4.24 |
 
 **Module rules (enforced in CI):**
@@ -434,6 +434,7 @@ stateDiagram-v2
   PastDue --> Active: paid
   Restricted --> Active: paid
   Restricted --> Suspended: day 30 unpaid
+  Active --> Suspended: risk or terms enforcement
   Suspended --> Active: paid or resolved
   Suspended --> Churned: day 60 unpaid
   Active --> WinterMode: owner schedules pause
@@ -442,9 +443,10 @@ stateDiagram-v2
   PendingCancellation --> Active: owner reverses
   PendingCancellation --> Churned: paid period ends
   Churned --> Active: reactivates within 90 days
-  Churned --> Archived: buys Archive plan
+  Churned --> ArchivePlan: buys Archive plan
+  ArchivePlan --> Active: reactivates
   Churned --> PendingDeletion: day 90 export window ends
-  Archived --> PendingDeletion: Archive plan ends
+  ArchivePlan --> PendingDeletion: Archive plan ends
   PendingDeletion --> Deleted: deletion workflow completes
   Deleted --> [*]
 ```
@@ -461,7 +463,7 @@ stateDiagram-v2
 | `winter_mode` [V1] | Active (reduced entitlements) | 2 editable office users, others read-only. No new proposals, designs or AI generation | Off, except users of the Snow module | **Invoicing, autopay, portal and client payments stay on** | Full read, writes limited to billing objects | Included credits paused | Retained |
 | `pending_cancellation` | Active | Full until the paid period ends | Full | Full | Full | Per plan | Retained |
 | `churned` | Offboarding | Export center only (90-day export window) | Disabled after final upload | Payments-only mode until at least day 90 after the first failed Rootline payment (non-payment path), then "Contact the Company to pay" | Disabled | Off | Retained; full export available |
-| `archived` [V1] | Offboarding (records only) | Read-only invoices, ledger, chemical records and photos for `owner` and `bookkeeper` | Disabled | Disabled | Disabled | Off | Retained while the Archive plan is paid |
+| `archive_plan` [V1] | Offboarding (records only) | Read-only invoices, ledger, chemical records and photos for `owner` and `bookkeeper` | Disabled | Disabled | Disabled | Off | Retained while the Archive plan is paid |
 | `pending_deletion` | Offboarding | No access. Final notice with an export link 14 days before deletion | Disabled | Disabled | Disabled | Off | Retained; legal hold blocks deletion |
 | `deleted` | Purged | None | None | None | None | None | Hard-deleted except legally retained financial records (pseudonymized), the tombstone and audit archives (Object Lock). Backups age out within 35 days (4.26) |
 
@@ -978,8 +980,8 @@ Architecture and product flows are in [Payments (Stripe)](08-payments-stripe.md)
 | `/webhooks/stripe/connect` | All Companies connected via Connect (Rootline platform's Connect webhook endpoint; each event carries the `account` id) | Platform Connect endpoint secret (Secrets Manager) | The `account` id is mapped to a tenant via `payment_account` (unique index: one `acct_` per tenant). Unknown accounts go to a **quarantine table** and alert, because they are often a leftover connection after tenant deletion |
 | `/webhooks/stripe/platform` | Events on Rootline's Connect platform account (application fees, platform-level account events) | Platform endpoint secret | Low volume |
 | `/webhooks/stripe/v2` | Accounts v2 **thin events** via an event destination | Event-destination secret | Thin payloads carry ids only, so the object is **always** re-fetched |
-| `/webhooks/stripe/rak/{endpoint_id}` | Companies on the restricted-key ("advanced mode") path. Rootline creates the endpoint in the Company's own account via the API at connect time | Per-tenant signing secret, KMS-encrypted | The `endpoint_id` selects the secret; the signature proves the source |
-| `/webhooks/stripe/billing` | **Rootline's own Stripe account** (subscription billing for Companies) | Separate secret, separate service role | Handled by the `platform` billing module only. Never mixed with Company money |
+| `/webhooks/stripe/direct/{endpoint_token}` | Companies on the restricted-key ("advanced mode") path. Rootline creates the endpoint in the Company's own account via the API at connect time | Per-tenant signing secret, KMS-encrypted | The URL token identifies the tenant and selects the secret; the signature proves the source |
+| `/webhooks/stripe/saas` | **Rootline's own Stripe account** (subscription billing for Companies) | Separate secret, separate service role | Handled only by the SaaS billing code in the `platform` module. Never mixed with Company money |
 
 **Processing rules:**
 
@@ -1133,7 +1135,7 @@ Service control policies deny resource creation outside approved regions per acc
 4. Ciphertext is stored in `payments.payment_credential`. The table is readable only by the `payments` module's database role, the only module whose code path holds the decrypt permission.
 5. Decryption happens only inside the payments worker, just in time, and the plaintext is never logged, returned by any API (only `rk_live_...abcd` is displayed) or sent to AI. CloudTrail records every `Decrypt` with the context.
 6. Rootline creates the webhook endpoint in the Company's account and stores its signing secret the same way.
-7. Rotation reminder at 90 days. A `401` from Stripe triggers the revoked flow (4.19 step 9). A "Disconnect and delete key" action destroys the ciphertext and data key.
+7. Rotation reminder every 180 days and on staff offboarding events ([08](08-payments-stripe.md) 4.21), plus a daily permission probe. A `401` from Stripe triggers the revoked flow (4.19 step 9). A "Disconnect and delete key" action destroys the ciphertext and data key.
 
 The preferred path remains **Stripe Connect OAuth/account links**, where Rootline stores no per-tenant secret at all ([08](08-payments-stripe.md)).
 
@@ -1154,10 +1156,11 @@ Modes, durations and approvers below are those defined in [02](02-personas-roles
 |---|---|---|---|
 | **Infrastructure JIT** (no tenant data: cluster config, queues, deploys) | Ticket + reason + second engineer | 1-4 h | Time-boxed IAM role assumption via the IdP; SSM Session Manager recording; no `Decrypt` on `secrets-tenant` or `core-db` data keys |
 | **Metadata view** | None (covered by ToS; logged) | n/a | Admin console reads only the PII-free tenant directory, usage meters and redacted logs |
-| **View as user (read-only)** | Tenant grant by `owner` or `office_manager` (`support_access.grant`), per ticket or as standing read-only consent | 72 h per grant by default, configurable from 1 h to 14 days; each session max 60 min | Session token carries `impersonation=true`, `grant_id` and the impersonated membership. **E2 rejects every non-GET** for read-only grants. E5 masks Restricted fields whatever the user's permissions |
-| **Act as user (read-write)** | Per-ticket grant with `write` scope; `owner` approval | 24 h; each session max 30 min | As above, plus money-moving commands (`payment.*`, `refund.*`, Stripe connection changes, payout settings) are hard-blocked by policy for `actor_type = platform_staff` |
+| **View as user (read-only)** | Tenant grant by `owner` or `office_manager` (`support_access.grant`), per ticket or as standing read-only consent | 72 h per grant by default, maximum 7 days (standing consent is reconfirmed by the owner every 90 days); each session max 60 min | Session token carries `impersonation=true`, `grant_id` and the impersonated membership. **E2 rejects every non-GET** for read-only grants. E5 masks Restricted fields whatever the user's permissions |
+| **Act as user (read-write)** | Per-ticket grant with `read_write` scope; `owner` approval | 24 h; each session max 30 min | As above, plus money-moving commands (`payment.*`, `refund.*`, Stripe connection changes, payout settings) are hard-blocked by policy for `actor_type = platform_staff` |
 | **Break-glass** (data repair or incident, SQL via audited bastion, one tenant) | Two-person rule: `platform_owner` approval (or a designated second approver) with a legal or security reason code | 30-120 min, auto-revoked | Temporary database role scoped by RLS to one `tenant_id`, all statements logged with `pgaudit`, session recorded. Tenant notified within 24 h unless legally prohibited, followed by a written post-incident report |
 
+- Scope-specific grants (`billing_setup`, `ledger`, `migration`, the last up to 14 days) follow the same enforcement; their approvers and durations are defined in [19](19-platform-admin-portal.md) PA-051.
 - No standing production database access exists for any human.
 - Every impersonated page view and action is written to the tenant-visible audit log as `actor_type = platform_staff`, with `on_behalf_of_user_id` and `grant_id`.
 
@@ -1518,7 +1521,7 @@ sequenceDiagram
 ### 5.6 Support access with tenant consent [MVP]
 
 1. The owner reports "Route optimization ignores my crew's lunch break" and clicks "Grant Rootline support access (read-only, 72 h)".
-2. `platform.access_grant` is created with scope `view_as_user` (read-only), the impersonated membership, an expiry and the requesting ticket id. An `access_grant.approved` audit event is written.
+2. `platform.support_access_grant` is created with scope `read_only` ("view as user"), the impersonated membership, an expiry and the requesting ticket id. A `support_access.approved` audit event is written.
 3. A `platform_support` agent opens the tenant from the admin console. The session is tagged `impersonation=true`, Restricted fields stay masked and money-moving actions are blocked.
 4. Every page view and action is logged into the tenant's audit log with the agent's name. The owner sees it under Settings → Security → Audit log.
 5. The grant expires automatically, or the owner revokes it early.
@@ -2294,7 +2297,7 @@ erDiagram
   DEVICE ||--o{ APPLIED_MUTATION : pushes
   SYNC_CHANGE }o--o{ DEVICE : "pulled by"
   AI_USAGE_EVENT }o--|| CREDIT_BALANCE : debits
-  ACCESS_GRANT ||--o{ AUDIT_EVENT : "covers"
+  SUPPORT_ACCESS_GRANT ||--o{ AUDIT_EVENT : "covers"
 
   TENANT_DIRECTORY {
     uuid tenant_id PK
@@ -2409,7 +2412,7 @@ erDiagram
     numeric available
     numeric reserved
   }
-  ACCESS_GRANT {
+  SUPPORT_ACCESS_GRANT {
     uuid id PK
     uuid tenant_id FK
     uuid staff_user_id FK

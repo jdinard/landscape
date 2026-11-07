@@ -1180,15 +1180,15 @@ flowchart TB
 | What does your software really cost?                                          |
 +------------------------------------------------------------------------------+
 | 1. Your tools today                         | Your results (ranges, estimates) |
-|  Field service  [Jobber Grow     v] $199-299 |  Today      $ 860 - $ 990 / mo   |
-|  Extra users    [ 5 ] x $29                  |  Rootline   $ 393 / mo (Grow)    |
-|  Design tool    [PRO Landscape+  v] $90      |  ----------------------------    |
-|  Accounting     [QuickBooks Plus v] $115     |  July bill  today $990  RL $413  |
-|  Reviews/market [Marketing Suite v] $79      |  Jan bill   today $990  RL $393  |
+|  Field service  [Jobber Grow     v] $199-299 |  Today      $ 668 - $ 768 / mo   |
+|  Extra users    [ 5 ] x $29                  |  Rootline   $ 298 - $ 308 / mo   |
+|  Design tool    [PRO Landscape+  v] $90      |  (Grow annual + website add-on)  |
+|  Accounting     [QuickBooks Plus v] $115     |  July  today $668-768  RL $308   |
+|  Reviews/market [Marketing Suite v] $79      |  Jan   today $668-768  RL $298   |
 |  Website        [ other         v] $40       |                                  |
 | 2. Your crew    July: office [3] field [11]  |  Processing on your own Stripe   |
 |                 Jan:  office [3] field [ 4]  |  with ACH steering: save about   |
-| 3. Payments     Card volume/yr [$1,200,000]  |  $8,000 - $14,000 / yr           |
+| 3. Payments     Card volume/yr [$1,200,000]  |  $6,000 - $11,000 / yr           |
 |                 ACH volume/yr  [$  300,000]  |                                  |
 |  Prices last seen 2026-10; edit any number   |  [See the details] [Start trial] |
 +------------------------------------------------------------------------------+
@@ -1258,7 +1258,7 @@ erDiagram
     text website
   }
   capability {
-    text key PK
+    text capability_key PK
     text group_name
     text definition
     int sort_order

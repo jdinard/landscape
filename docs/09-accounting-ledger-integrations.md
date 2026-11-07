@@ -131,6 +131,7 @@ No landscape or field-service product in our research keeps a real general ledge
 | "My vendors and bills live somewhere else." | Aspire reads vendors from the accounting system; Vergo sells AP automation for it ([Aspire](https://www.youraspire.com/features/purchasing), [Vergo](https://www.getvergo.com/learn/best-ap-automation-software-for-landscape-companies-using-aspire)). | Rootline owns the vendor master ([13](13-operations-inventory-equipment.md)) and the AP subledger with 3-way match and bill approval ([4.5.2](#452-accounts-payable-bills-approvals-and-bill-pay)). |
 | "I priced with overhead recovery but never know if I recovered it." | LMN teaches FLH/SORS/MORS for pricing ([LMN help](https://intercom.help/lmn/en/articles/15939065-how-lmn-calculates-overhead-labor-burden-and-profit-in-estimates)); actual recovery lives in spreadsheets. | Overhead recovery tracker with seasonal pacing, fed by actual billable hours and actual overhead from the GL ([4.9.2](#492-overhead-recovery-tracker-v1)). |
 | "QuickBooks Desktop isn't supported." | Jobber ([QBO FAQ](https://help.getjobber.com/es/articles/quickbooks-integration-faqs/)); FieldEdge's niche is built on it ([R1](research/R1-field-service-platforms.md)). | Desktop via Web Connector [V1], plus a one-way migration path to native books ([4.17.3](#4173-quickbooks-desktop-via-web-connector-v1), [4.18](#418-migration-from-quickbooks-and-opening-balances)). |
+| "QuickBooks keeps getting more expensive, and Desktop is being pushed to Online." | Intuit's repeated price increases, the end of new US sales of several Desktop editions after 2024 and the 2025 App Partner Program are background facts in [R4](research/R4-industry-payments-accounting.md) sections 21 and 23 (verify); forum complaint quotes were not retrieved, so this is an **interview hypothesis**, not evidence. | Native books that replace the subscription (Ledger Plus), a Desktop-to-native migration kit, and a QuickBooks mirror for CPAs who are not ready ([4.17](#417-accounting-integrations), [4.18](#418-migration-from-quickbooks-and-opening-balances)). |
 | "Snow seasons wreck my books." Seasonal contracts, per-push billing and salt inventory straddle fiscal years. | Snow bookkeeping guidance discusses seasonal deferral under ASC 606 and per-push triggers ([Beancount](https://beancount.io/blog/2026/06/03/snow-removal-plowing-ice-management-contractor-bookkeeping-asc-606-seasonal-deferred-revenue-per-push-trigger-section-179-plow-truck-salt-spreader-sima-asca-revenue-per-truck-hour-kpi-guide)). | Seasonal recognition curves, per-event accruals and a snow "risk ledger" per site ([4.8](#48-revenue-recognition-wip-and-deferred-revenue), [13](#13-beyond-the-brief-extra-ideas)). |
 
 ### 2.4 The gap we exploit
@@ -241,7 +242,7 @@ The phasing reflects one opinion: **the ledger engine runs for every tenant from
 | Entitlement ([22](22-business-model-pricing-gtm.md) codes) | Feature IDs from the index above | Notes |
 |---|---|---|
 | **Ledger Essentials** (all tiers) | LG-01, LG-02 registry, COA-01, COA-02 core dimensions (division, branch, job, phase, cost type, property), PR-01, SL-AR, SL-INV, SL-PR file import, BK-01 (one feed), BK-03, JC-01, RR-01, RP-01, CL-01 basic, AH-01, AU-01, TX-01, IN-QBO, MG-01 | Division and branch stay required dimensions in every package because posting rules and job cost depend on them; what [22](22-business-model-pricing-gtm.md) calls "classes and departments" in Advanced maps to the `department` dimension, dimension policies (COA-03) and custom dimensions |
-| **Ledger Plus** (`ledger_plus`) | SL-AP, SL-1099, BK-01 unlimited feeds, BK-02, BK-04, BU-01, BU-02, BU-03, RP-02, CL-01 full, AH-02, YE-01, SL-FA, SL-LN, IN-XERO, IN-PAY APIs, IN-TAX | The "drop QuickBooks" package; included from Grow up per [22](22-business-model-pricing-gtm.md) |
+| **Ledger Plus** (`ledger_plus`) | SL-AP, SL-1099, BK-01 unlimited feeds, BK-02, BK-04, BK-05, BU-01, BU-02, BU-03, RP-02, CL-01 full, AH-02, YE-01, SL-FA, SL-LN, IN-XERO, IN-PAY APIs, IN-TAX | The "drop QuickBooks" package; included from Grow up per [22](22-business-model-pricing-gtm.md) |
 | **Ledger Advanced** (`ledger_advanced`) | RR-02 WIP and percentage-of-completion, JC-02, JC-03, COA-03, COA-04, custom dimensions, ME-01, ME-02, LG-03, LG-04 | Design-build, commercial and multi-entity firms |
 | QuickBooks Desktop connector (`qbd_connector`) | IN-QBD | Add-on below Pro |
 
@@ -663,6 +664,8 @@ Per account and dimension: `required`, `optional`, `forbidden`, with a default v
 
 #### 4.2.6 Crosswalk to codes used in 07 and 08
 
+**Priority:** [MVP] (role aliases must resolve before the first payments posting).
+
 Earlier drafts of [07](07-invoicing-billing-contracts.md) used provisional account numbers before this chart existed. [07](07-invoicing-billing-contracts.md) 4.11 now uses the canonical codes below directly; [08](08-payments-stripe.md) 4.17.1 still uses the provisional "07 key" numbers plus payments-only additions, and some of its role keys are spelled differently. Posting rules bind to roles, so the crosswalk below is the binding: the engine resolves an 08 role alias to the canonical role, and any worked entry in 07 or 08 reads correctly with the canonical code substituted.
 
 | Canonical role (this doc) | Role alias in [08](08-payments-stripe.md) | Provisional code (early 07 drafts) | Code in [08](08-payments-stripe.md) 4.17 | Canonical default |
@@ -988,7 +991,7 @@ Reyes Outdoor Living (Charlotte, NC) in May 2027. The Thompson backyard (paver p
 
 **What these entries mean to Dana Reyes.** The Thompson job's May cost so far (E2-E6, E10) is visible by phase within seconds of each event; the deposit never touched revenue; the Stripe fee is an expense, not a short payment; the payroll entry reconciles field labor already charged to jobs with what Gusto actually paid; and the $550 overtime variance plus the $356 burden variance are visible instead of being buried inside job costs. At month end the WIP schedule ([4.8.3](#483-percentage-of-completion-and-the-wip-schedule-v1)) adjusts install revenue to percentage of completion.
 
-**Sales tax and dispute outcomes (E19-E21).** Reyes's entries above omit sales tax. The next two entries switch to Summit Grounds in Columbus, Ohio, because Ohio taxes landscaping and lawn care services (verify current Ohio Department of Taxation guidance), which makes the tax lines visible. The third entry closes the Reyes dispute from E12. Rates are illustrative and must come from the tax engine in [07](07-invoicing-billing-contracts.md) 4.5.
+**Sales tax and dispute outcomes (E19-E21).** Reyes's entries above omit sales tax. The next two entries switch to Summit Grounds in Columbus, Ohio, because Ohio taxes landscaping and lawn care services (verify current Ohio Department of Taxation guidance), which makes the tax lines visible. Summit runs Mode C (flow 5.6), so E19 and E20 post to Rootline's operational subledger and push to QuickBooks Online as an invoice and a sales tax payment; the arithmetic is identical in Mode A. The third entry closes the Reyes dispute from E12. Rates are illustrative and must come from the tax engine in [07](07-invoicing-billing-contracts.md) 4.5.
 
 **E19 - June 30. Monthly batch invoice to Crossroads PM for the Maple Court property** (`billing.P1`). Four weekly mows at $385.00 ($1,540.00) and 18 cubic yards of mulch installed at $68.00 ($1,224.00), all taxable. Illustrative Franklin County combined rate 8.00%: state 5.75% ($158.93), county 1.25% ($34.55) and transit authority 1.00% ($27.64), total $221.12 (verify current rates). Ohio's state department collects the county and transit portions, so there is **one agency** sub-account (2101 Ohio Department of Taxation) with **jurisdiction detail** on each tax line for the return. In states with home-rule cities that self-administer sales tax (Colorado, Louisiana, Alabama; verify), the same invoice would post to two or more agency sub-accounts.
 
@@ -1041,6 +1044,8 @@ Invoices, payments, credits, statements, write-offs and collections are specifie
 - **Customer deposits and credits schedule**: deposits held per open proposal or job, credits per client, oldest first; credits older than the state's dormancy period appear in the **unclaimed property** report with the client's last known state ([08](08-payments-stripe.md) compliance table).
 
 #### 4.5.2 Accounts payable: bills, approvals and bill pay
+
+**Priority:** [MVP] bills, vendor credits and recorded payments; [V1] approval workflow, payment batches, printed checks, NACHA files and positive pay; [V2] embedded bill pay.
 
 Bill intake, AI extraction, duplicate detection and the 2-way/3-way match engine are specified in [13](13-operations-inventory-equipment.md) 4.11. The ledger owns the bill as an accounting document and everything after matching.
 
@@ -1482,6 +1487,8 @@ Management dashboards, KPI definitions and the report builder belong to [18](18-
 
 ### 4.11 Period close
 
+**Priority:** [MVP] checklist with C1-C8, C18, C21 and sign-off; [V1] the full 24-check list, close calendar, readiness score and AI flux commentary.
+
 Close is a **checklist with automated checks**, generated for each legal entity on day 1 of the new month (the bookkeeper can start it earlier for a continuous close). Each check runs automatically on open and again on demand; hard checks block locking, soft checks require a note to waive.
 
 | # | Check | Automated test | Type |
@@ -1540,6 +1547,8 @@ Delegated access, the firm model and revocation are specified in [02](02-persona
 - **Auditor access** [V1]: a time-boxed read-only custom role with evidence download and sampling export (random or monetary-unit sample of entries with their evidence) [V2].
 
 ### 4.14 Year-end
+
+**Priority:** [V1] (year lock, retained earnings roll-forward and the year-end calendar); the optional closing entry for exports is [V1]; prior-period adjustment flags are [MVP] because they follow from period locks.
 
 | When | Step | Owner |
 |---|---|---|
@@ -2724,7 +2733,7 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 
 1. **Bank feed timing.** This doc and [08](08-payments-stripe.md) and [13](13-operations-inventory-equipment.md) treat Plaid bank feeds as [MVP]; the connector catalog in [20](20-architecture-security.md) lists Plaid as [V1]. Native books (Mode A) are not credible without feeds and reconciliation, so the recommendation is MVP; if feeds slip, Mode A should launch only with file import and design partners.
 2. **L1 wording.** [20](20-architecture-security.md) L1 says entries balance "per currency". This doc proposes functional-currency balance for all entries plus transaction-currency balance for single-currency entries, with explicit FX lines (4.1.6). Agree and update L1, or adopt a trading-account method that balances every currency.
-3. **Native ledger in every tier? (largely resolved by [22](22-business-model-pricing-gtm.md)).** [22](22-business-model-pricing-gtm.md) puts Ledger Essentials in every tier, Ledger Plus from Grow up and Ledger Advanced at Pro (mapping in 4.0). Remaining question: [22](22-business-model-pricing-gtm.md) lists "classes and departments" under Advanced, but division and branch are required dimensions for every tenant here. Proposed wording for [22](22-business-model-pricing-gtm.md): "department dimension, custom dimensions and dimension policies" in Advanced; division and branch reporting in all tiers.
+3. **Native ledger in every tier? (largely resolved by [22](22-business-model-pricing-gtm.md)).** [22](22-business-model-pricing-gtm.md) puts Ledger Essentials in every tier, Ledger Plus from Grow up and Ledger Advanced at Pro (mapping in 4.0). Remaining question: [22](22-business-model-pricing-gtm.md) lists "classes and departments" under Advanced, but division and branch are required dimensions for every tenant here. Proposed wording for [22](22-business-model-pricing-gtm.md): "department dimension, custom dimensions and dimension policies" in Advanced; division and branch reporting in all tiers. Second issue: [22](22-business-model-pricing-gtm.md) places bank reconciliation in Ledger Plus, but a Company cannot credibly run native books (Mode A) without reconciling its bank. Recommendation: Essentials tenants either get single-account reconciliation (BK-04 for their one feed) or default to Mode C with QuickBooks or Xero as the book of record until they upgrade.
 4. **Canadian aggregator.** Plaid's Canadian institution coverage for business accounts must be validated with design partners; a Canadian-specialist aggregator may be needed at launch.
 5. **Shared vs per-entity chart.** [02](02-personas-roles-permissions.md) says each legal entity has its own chart; this doc defaults to a shared chart with entity restrictions for easier consolidation. Confirm with the CPA advisory board.
 6. **Cash-basis demand.** How many target Companies report on the cash basis to their CPA? If most do, the derived cash-basis view should move from [V2] to [V1].

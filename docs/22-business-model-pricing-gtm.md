@@ -4,7 +4,7 @@
 
 **Related docs:** [Market landscape](01-market-landscape.md) - [Personas and RBAC](02-personas-roles-permissions.md) - [Payments (BYO Stripe)](08-payments-stripe.md) - [Ledger and integrations](09-accounting-ledger-integrations.md) - [Design Studio](10-design-studio.md) - [AI design and mockups](11-ai-design-mockups.md) - [Plant Knowledge Base](12-plant-knowledge-base.md) - [Service line modules](14-service-line-modules.md) - [Team, HR, payroll](15-team-hr-payroll.md) - [Marketing and growth](16-marketing-growth-communications.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Platform admin portal](19-platform-admin-portal.md) - [Architecture and security](20-architecture-security.md) - [UX and sitemaps](21-ux-design-system-sitemaps.md) - [Innovation moonshots](23-innovation-moonshots.md) - [Roadmap and feature catalog](24-roadmap-feature-catalog.md)
 
-**Reading note on numbers.** Competitor prices below are "as of November 2026, verify". They come from third-party pricing trackers and review sites, which often disagree with each other. Vendor pricing pages could not be fetched directly during this research pass. A November 2026 review pass cross-checked this doc against the raw research in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and against the sibling module docs, and corrected several internal inconsistencies in the revenue model (section 7.7). Claude model prices in section 7.4 match Anthropic's published model table as of October 2026. Every Rootline price, cost and conversion figure in this doc is a **proposed value or a labeled estimate**, not a measured fact. All of them are meant to be tested and replaced with real data during the beta.
+**Reading note on numbers.** Competitor prices below are "as of November 2026, verify". They come from third-party pricing trackers and review sites, which often disagree with each other, and are cross-checked against the raw research in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and the sibling module docs. Claude model prices in section 7.4 match Anthropic's published model table as of October 2026. Every Rootline price, cost and conversion figure in this doc is a **proposed value or a labeled estimate**, not a measured fact. All of them are meant to be tested and replaced with real data during the beta.
 
 **What this doc decides for other docs.** This doc is the pricing authority. Where a sibling doc proposed a commercial number or deferred a decision here, this doc settles it: the AI credit rate card and allotments ([11](11-ai-design-mockups.md), [17](17-ai-copilot-automation.md)), how SMS, 10DLC and AI receptionist minutes are charged ([16](16-marketing-growth-communications.md)), the pay-as-you-grow application fee ([08](08-payments-stripe.md) option B), the dunning timings the tenant lifecycle uses ([19](19-platform-admin-portal.md)), and the plan codes the catalog uses (section 4.2.2).
 
@@ -76,8 +76,8 @@ Published list prices for landscape and field-service software are inconsistent 
 | **SynkedUP** | Standard listed at $399/user/mo on Capterra. Another listing shows $297. Annual billing saves 10% ([Capterra](https://www.capterra.com/p/228695/SynkedUP/pricing/), [Software Advice](https://www.softwareadvice.com/landscaping/synkedup-profile/)) | Per user (as listed) | Reviewers rate it highly on value for money (4.9 overall, 5.0 value on Capterra as of Oct 2026) | Demo-led, coaching-heavy |
 | **Arborgold** | Reported "starts at $150 per user" (third-party mention, verify) | Per user | Tree-care focused | Demo-led |
 | **Yardbook** | Core product free. Paid tiers reported at about $15-$60/mo ([Toolradar](https://toolradar.com/tools/yardbook/pricing), [FieldServiceSoftware.io](https://fieldservicesoftware.io/software/yardbook/)) | Free core | Monetizes premium features | Self-serve |
-| **ServiceTitan** | Quote-based. Not verified in this research pass | Per technician (commonly reported, verify) | Owns Aspire, so landscaping is reached through Aspire | Enterprise sales |
-| **Copilot CRM** | List prices not verified in this research pass (verify on vendor site before external use). Positioned as all-in-one lawn and landscape software (CRM, scheduling, routing, estimates, invoicing, payments, client portal) with a separate "Field Force" crew app ([Copilot CRM help](https://help.copilotcrm.com/en/articles/12141481-what-is-copilot-crm)) | Not verified | Not verified | Self-serve and demo |
+| **ServiceTitan** | Quote-based (verify) | Per technician (commonly reported, verify) | Owns Aspire, so landscaping is reached through Aspire | Enterprise sales |
+| **Copilot CRM** | List prices not verified (verify on vendor site before external use). Positioned as all-in-one lawn and landscape software (CRM, scheduling, routing, estimates, invoicing, payments, client portal) with a separate "Field Force" crew app ([Copilot CRM help](https://help.copilotcrm.com/en/articles/12141481-what-is-copilot-crm)) | Not verified | Not verified | Self-serve and demo |
 | **PRO Landscape+ (Drafix)** (design tool, part of the stack we replace) | About $90/mo or $900/yr ([Capterra](https://www.capterra.com/p/126135/PRO-Landscape/), [GetApp](https://www.getapp.com/all-software/a/pro-landscape/)) | Per license | Reviewers ask for more native plants suited to their zone ([10](10-design-studio.md)) | Self-serve and demo |
 | **Deep Lawn** (instant-quote widget) | Reported $75-$95/mo, needs a separate CRM ([extruct profile](https://www.extruct.ai/hub/deeplawn-com), [MyQuoteIQ](https://myquoteiq.com/best-ai-estimating-software-lawn-care-2026/)) | Per account | Point tool | Self-serve |
 
@@ -93,7 +93,7 @@ Published list prices for landscape and field-service software are inconsistent 
 
 ### 2.2 Payments economics in the category
 
-Many SMB field-service platforms (Jobber and Housecall Pro among them) offer their own embedded payments product, where processing is part of the vendor's revenue. Exact rates vary by vendor and plan and were not verified in this pass. Rootline's architecture is deliberately different. Each Company connects its **own** Stripe account, and Rootline creates **direct charges** on that account:
+Many SMB field-service platforms (Jobber and Housecall Pro among them) offer their own embedded payments product, where processing is part of the vendor's revenue. Exact rates vary by vendor and plan (verify). Rootline's architecture is deliberately different. Each Company connects its **own** Stripe account, and Rootline creates **direct charges** on that account:
 
 - On direct charges with Standard-style connected accounts, the connected account pays Stripe's processing fees directly, and Stripe charges no Connect fees to the account or the platform under that fee-payer setting ([Stripe: fee behavior on connected accounts](https://docs.stripe.com/connect/direct-charges-fee-payer-behavior)).
 - A platform **may** add an `application_fee_amount` to a direct charge. That fee comes on top of Stripe's fees and is paid to the platform ([Stripe: direct charges](https://docs.stripe.com/connect/direct-charges), [Stripe: application fees](https://docs.stripe.com/connect/application-fees), [Stripe: collect application fees](https://docs.stripe.com/connect/saas/tasks/app-fees)).
@@ -114,7 +114,7 @@ The honest headline is "your account, your rate, your data, and nothing added by
 
 ### 2.3 What users complain about (pricing and buying experience)
 
-Sources: review-site summaries and pricing trackers cited above, plus the synthesized pain points in [R2](research/R2-landscape-specific-platforms.md) section 15 and [R1](research/R1-field-service-platforms.md). Forum-level (Reddit, LawnSite, Facebook group) complaints were not re-retrieved in this pass. R2 records recurring themes (three to five tools glued together with spreadsheets, software built for HVAC that does not understand seasons, dread of switching in spring) as unverified; collect verbatim quotes during the 6.10 interviews before using them in marketing.
+Sources: review-site summaries and pricing trackers cited above, plus the synthesized pain points in [R2](research/R2-landscape-specific-platforms.md) section 15 and [R1](research/R1-field-service-platforms.md). Forum-level (Reddit, LawnSite, Facebook group) complaints are not independently sourced here (verify). R2 records recurring themes (three to five tools glued together with spreadsheets, software built for HVAC that does not understand seasons, dread of switching in spring) as unverified; collect verbatim quotes during the 6.10 interviews before using them in marketing.
 
 | Complaint theme | Evidence | Rootline response |
 |---|---|---|
@@ -1202,7 +1202,7 @@ flowchart TD
   K --> L["Emit billing.invoice_paid or billing.invoice_failed"]
 ```
 
-Rules: the true-up is idempotent per `(company_id, period, meter_key)`. If an owner disputes a field-seat count within the 72-hour preview window, the app lists the active users and the qualifying evidence (login, time entry, visit). `platform_support` can waive overage, with a reason code.
+Rules: the true-up is idempotent per `(tenant_id, period, meter_key)`. If an owner disputes a field-seat count within the 72-hour preview window, the app lists the active users and the qualifying evidence (login, time entry, visit). `platform_support` can waive overage, with a reason code.
 
 ### 8.5 Pay-as-you-grow application fee on a client payment (opt-in only)
 
@@ -1544,13 +1544,13 @@ Rules: monthly plans only; 4 months in any rolling 12 (4.7). The resume date can
 
 ## 10. Data model
 
-Billing, entitlements and metering live in a `billing` domain module of the modular monolith ([20-architecture-security.md](20-architecture-security.md)). The marketplace, partner and data-product entities live in a `growth` module. Tenant-scoped tables carry `company_id` and Postgres row-level security. Platform-scoped tables (plans, partners, data customers, homeowner accounts) are **not** tenant-scoped and are reachable only from platform roles and dedicated services. Stripe IDs are stored for reconciliation, but Rootline's tables are the source of truth for entitlements. Stripe is the source of truth for money collected on Rootline's own invoices.
+Rootline's own SaaS catalog, subscriptions and metering live in the global `platform` module of the modular monolith, entitlement resolution in the `tenancy` module and the AI credit balance in the `ai` module ([20-architecture-security.md](20-architecture-security.md) section 4.3). (The tenant-facing `billing` module in 20 is client invoicing from [07](07-invoicing-billing-contracts.md) and never holds Rootline's own subscription data.) The marketplace, partner and data-product entities are platform-scoped and also live in `platform`; accepted Rootline Match leads land in the Company's `crm` module as Leads. Tenant-scoped tables carry `tenant_id` (the Company) and Postgres row-level security; the ERDs below call the tenant entity `tenant`. Platform-scoped tables (plans, partners, data customers, homeowner accounts) are **not** tenant-scoped and are reachable only from platform roles and dedicated services. Stripe IDs are stored for reconciliation, but Rootline's tables are the source of truth for entitlements. Stripe is the source of truth for money collected on Rootline's own invoices.
 
 ### 10.1 Subscriptions, entitlements, metering and credits
 
 ```mermaid
 erDiagram
-  company ||--o| tenant_subscription : has
+  tenant ||--o| tenant_subscription : has
   plan ||--o{ plan_price : priced_as
   plan ||--o{ plan_entitlement : grants
   entitlement_def ||--o{ plan_entitlement : defines
@@ -1559,17 +1559,17 @@ erDiagram
   entitlement_def ||--o{ addon_entitlement : defines
   tenant_subscription }o--|| plan : on
   tenant_subscription ||--o{ subscription_item : contains
-  company ||--o{ entitlement_override : receives
-  company ||--o{ seat_snapshot : records
-  company ||--o{ usage_record : emits
-  company ||--o{ usage_period_total : aggregates
-  company ||--o{ credit_pack : buys
-  company ||--o{ credit_ledger_entry : logs
+  tenant ||--o{ entitlement_override : receives
+  tenant ||--o{ seat_snapshot : records
+  tenant ||--o{ usage_record : emits
+  tenant ||--o{ usage_period_total : aggregates
+  tenant ||--o{ credit_pack : buys
+  tenant ||--o{ credit_ledger_entry : logs
   credit_pack ||--o{ credit_ledger_entry : funds
-  company ||--o{ credit_budget : sets
-  company ||--o{ discount_grant : receives
+  tenant ||--o{ credit_budget : sets
+  tenant ||--o{ discount_grant : receives
 
-  company {
+  tenant {
     uuid id PK
     string name
     string country_code
@@ -1633,7 +1633,7 @@ erDiagram
   }
   tenant_subscription {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     uuid plan_id FK
     string status
     string billing_interval
@@ -1656,7 +1656,7 @@ erDiagram
   }
   entitlement_override {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     string feature_key
     int limit_value
     string reason
@@ -1665,7 +1665,7 @@ erDiagram
   }
   seat_snapshot {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     date period_start
     string seat_type
     int included_count
@@ -1674,7 +1674,7 @@ erDiagram
   }
   usage_record {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     string meter_key
     numeric quantity
     timestamp occurred_at
@@ -1683,7 +1683,7 @@ erDiagram
   }
   usage_period_total {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     string meter_key
     date period_start
     numeric included_qty
@@ -1693,7 +1693,7 @@ erDiagram
   }
   credit_pack {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     int credits_purchased
     int credits_remaining
     timestamp purchased_at
@@ -1702,7 +1702,7 @@ erDiagram
   }
   credit_ledger_entry {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     uuid credit_pack_id FK
     string entry_type
     int credits
@@ -1715,14 +1715,14 @@ erDiagram
   }
   credit_budget {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     string scope_type
     string scope_ref
     int monthly_cap
   }
   discount_grant {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     string discount_type
     numeric percent_off
     int amount_off_cents
@@ -1743,25 +1743,25 @@ Key field semantics:
 
 ```mermaid
 erDiagram
-  company ||--o{ payment_pricing_config : configures
-  company ||--o{ application_fee_record : incurs
+  tenant ||--o{ payment_pricing_config : configures
+  tenant ||--o{ application_fee_record : incurs
   partner ||--o{ partner_referral : sources
-  company ||--o| partner_referral : attributed_by
+  tenant ||--o| partner_referral : attributed_by
   partner_referral ||--o{ partner_commission : accrues
   partner ||--o{ partner_payout : receives
   homeowner_account ||--o{ homeowner_project : creates
   homeowner_project ||--o| marketplace_lead : becomes
   marketplace_lead ||--o{ lead_offer : offered_as
-  company ||--o{ lead_offer : receives
+  tenant ||--o{ lead_offer : receives
   lead_offer ||--o| lead_dispute : may_have
-  company ||--o| match_settings : configures
+  tenant ||--o| match_settings : configures
   data_customer ||--o{ api_credential : holds
   data_customer ||--o{ data_usage_record : emits
-  company ||--o| benchmark_consent : grants
+  tenant ||--o| benchmark_consent : grants
 
   payment_pricing_config {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     string model
     int fee_bps
     int fee_cap_cents
@@ -1771,7 +1771,7 @@ erDiagram
   }
   application_fee_record {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     uuid client_payment_id FK
     string stripe_application_fee_id
     int amount_cents
@@ -1792,7 +1792,7 @@ erDiagram
   partner_referral {
     uuid id PK
     uuid partner_id FK
-    uuid company_id FK
+    uuid tenant_id FK
     string attribution_type
     timestamp attributed_at
     timestamp qualified_at
@@ -1845,7 +1845,7 @@ erDiagram
   lead_offer {
     uuid id PK
     uuid marketplace_lead_id FK
-    uuid company_id FK
+    uuid tenant_id FK
     int offer_rank
     int fee_cents
     string status
@@ -1863,7 +1863,7 @@ erDiagram
   }
   match_settings {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     bool enabled
     string service_area_geojson_ref
     string service_lines
@@ -1895,7 +1895,7 @@ erDiagram
   }
   benchmark_consent {
     uuid id PK
-    uuid company_id FK
+    uuid tenant_id FK
     bool peer_benchmarks
     bool external_aggregates
     uuid consented_by
@@ -1908,7 +1908,7 @@ Validation rules (selected):
 - `payment_pricing_config.fee_bps` ≤ 100 (1%) and `fee_cap_cents` ≤ 2,500 unless `model = enterprise_custom`. Only one active config per Company. Changes take effect at 00:00 Company local time on the next day and never apply retroactively to existing PaymentIntents.
 - `lead_offer`: at most 3 offers per `marketplace_lead`. `offer_rank = 1` must expire before rank 2 is created, unless the homeowner explicitly asks for multiple quotes.
 - `marketplace_lead.consent_text_version` must reference an approved consent text version that names the receiving Companies or the category.
-- `partner_referral`: one active attribution per Company. Unique on `company_id`.
+- `partner_referral`: one active attribution per Company. Unique on `tenant_id`.
 - `benchmark_consent` changes are evented and honored at the next aggregation run.
 
 ---
@@ -1934,12 +1934,12 @@ Validation rules (selected):
 
 | API | Shape | Notes |
 |---|---|---|
-| `entitlements.check(company_id, feature_key)` | Returns `{allowed, limit, used, remaining, enforcement, reason}` | p99 < 5 ms from Redis cache. Cache invalidated on `entitlements.changed`. **Fail-open** for `never_block` features, fail-closed for paid growth features when the cache and DB are both unavailable |
-| `entitlements.snapshot(company_id)` | Full map for clients | Web app loads it at session start. Crew app caches it offline for up to 7 days |
+| `entitlements.check(tenant_id, feature_key)` | Returns `{allowed, limit, used, remaining, enforcement, reason}` | p99 < 5 ms from Redis cache. Cache invalidated on `entitlements.changed`. **Fail-open** for `never_block` features, fail-closed for paid growth features when the cache and DB are both unavailable |
+| `entitlements.snapshot(tenant_id)` | Full map for clients | Web app loads it at session start. Crew app caches it offline for up to 7 days |
 | `credits.quote(action_key, params)` | Credit cost before run | Used by every AI surface |
 | `credits.hold / settle / release` | Idempotent by `idempotency_key` | Holds auto-release after 30 minutes if not settled |
 | `usage.record(meter_key, qty, idempotency_key, source_ref)` | Append-only | Called by SMS, voice, storage, parcel services |
-| `billing.preview(company_id)` | Next invoice preview, itemized | Powers 9.4 |
+| `billing.preview(tenant_id)` | Next invoice preview, itemized | Powers 9.4 |
 | `catalog.public()` | Public plans, prices and add-ons by currency | Feeds the marketing site pricing page |
 
 ### 11.3 Domain events
@@ -1948,11 +1948,11 @@ Validation rules (selected):
 
 | Event | Payload highlights | Typical consumers |
 |---|---|---|
-| `subscription.trial_started` | company_id, trial_ends_at, source, partner_code | CRM, lifecycle messaging |
+| `subscription.trial_started` | tenant_id, trial_ends_at, source, partner_code | CRM, lifecycle messaging |
 | `subscription.activated` | plan_code, interval, currency, ARR value | CRM, analytics, partner commissions |
 | `subscription.plan_changed` | from/to plan, effective_at, proration | Entitlements, CRM, analytics |
 | `subscription.status_changed` | from/to status (`past_due`, `restricted`, `suspended`, `winter_mode`, `canceled`) | UI banners, notifications, CS health |
-| `entitlements.changed` | company_id, changed feature keys | All modules (cache bust) |
+| `entitlements.changed` | tenant_id, changed feature keys | All modules (cache bust) |
 | `seat.snapshot_recorded` | seat_type, active_count, billed_count | Billing, analytics |
 | `usage.threshold_crossed` | meter_key, percent (50/80/100) | Notifications, CS |
 | `ai_credits.settled` / `ai_credits.released` | action_key, credits, raw_cost_usd | AI ops margin dashboards ([19](19-platform-admin-portal.md)) |
@@ -1963,7 +1963,7 @@ Validation rules (selected):
 | `match.region_throttled` / `match.region_restored` | region_id, cost_per_accepted_lead, eligible_company_count | Rootline Home render budgets (5.3.4), sales waitlist targeting |
 | `application_fee.recorded` / `application_fee.refunded` | amount, client_payment_id | Company Ledger posting, platform revenue |
 | `partner.referral_attributed` / `partner.commission_accrued` | partner_id, amounts | Partner portal |
-| `lead.offered` / `lead.accepted` / `lead.declined` / `lead.disputed` / `lead.dispute_resolved` | lead_id, company_id, fee | CRM module (creates Lead + Design), billing |
+| `lead.offered` / `lead.accepted` / `lead.declined` / `lead.disputed` / `lead.dispute_resolved` | lead_id, tenant_id, fee | CRM module (creates Lead + Design), billing |
 | `benchmark_consent.changed` | flags | Analytics pipeline ([18](18-reporting-analytics.md)) |
 
 **Consumed:** `user.role_changed`, `user.deactivated` (seat recount), `crew_app.session_started`, `time_entry.created`, `visit.status_changed` (active field seats), `sms.sent`, `voice.call_completed`, `ai.action_completed`, `storage.object_created` (meters), `stripe_account.connected` (onboarding milestone), `proposal.sent`, `invoice.paid_online` (activation and PQL scoring).
@@ -2211,7 +2211,7 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 
 ## Sources
 
-**Research limitation.** Direct fetching of vendor pricing pages was blocked by network restrictions in this research environment, and the shared web-search budget ran out after 12 queries. Competitor figures therefore come from third-party pricing trackers and review sites, which often conflict with each other (conflicts are noted inline). Reddit, LawnSite and Facebook complaint mining, trade-show dates, Stripe list rates, Twilio rates, image-model prices and market-size counts were **not** verified in this pass and are marked "verify" or "estimate". **Review pass (November 2026):** live web search and vendor sites were unavailable to the reviewer as well, so the review cross-checked figures against sources already retrieved in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and the sibling module docs, added those sources below, and marked legal developments recalled without a retrieved source (FCC one-to-one consent vacatur, the RealPage case, California's pricing-algorithm amendments, Canadian surcharging rules, Stripe Billing and ACH list prices, QuickBooks Online list price) as "verify". Before external use, re-verify against vendor pages and the research reports in [research/](research/) ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [R3](research/R3-design-ai-plant-data.md), [R4](research/R4-industry-payments-accounting.md)).
+**Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. Competitor figures come from third-party pricing trackers and review sites, which often conflict with each other (conflicts are noted inline), cross-checked against [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md) and the sibling module docs. Forum complaint mining (Reddit, LawnSite, Facebook), trade-show dates, Stripe list rates, Twilio rates, image-model prices, market-size counts and legal developments cited without a linked source (FCC one-to-one consent vacatur, the RealPage case, California's pricing-algorithm amendments, Canadian surcharging rules, Stripe Billing and ACH list prices, QuickBooks Online list price) are marked "verify" or "estimate". Before external use, re-verify against vendor pages and the research reports in [research/](research/) ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [R3](research/R3-design-ai-plant-data.md), [R4](research/R4-industry-payments-accounting.md)).
 
 Competitor pricing and packaging (as of 2026; verify):
 - Jobber: [OneCrew - Jobber pricing 2026](https://www.getonecrew.com/post/jobber-pricing), [FieldProxy - Jobber pricing](https://www.fieldproxy.ai/fsm-software-pricing/jobber), [CostBench - Jobber plans](https://costbench.com/software/field-service-management/jobber/), [CostBench - Jobber price change Feb 2026](https://costbench.com/changelog/jobber-price-increase-2026-02-3/), [ContractorToolStack - Jobber pricing](https://contractortoolstack.com/software/jobber/pricing/), [SchedulingKit - Jobber pricing](https://schedulingkit.com/pricing-guides/jobber-pricing), [QuoteIQ - Jobber pricing breakdown 2026](https://myquoteiq.com/jobber-pricing-breakdown-2026/), [Carly - Jobber AI Receptionist](https://www.usecarly.com/blog/jobber-ai-receptionist/), [Jobber Help Center - AI Receptionist](https://help.getjobber.com/hc/en-us/articles/39633841574423), [Jobber Community - AI Receptionist pricing question](https://community.getjobber.com/discussions/spring-feature-announcement/customer-q-ai-receptionist-is-the-pricing-im-seeing-on-my-grow-plan-permanent-/2436), [FieldCamp - Jobber review](https://fieldcamp.ai/reviews/jobber), [Toolradar - Jobber vs Yardbook](https://toolradar.com/compare/jobber-vs-yardbook)
