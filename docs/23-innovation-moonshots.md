@@ -638,7 +638,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 #### M-06 Fleet electrification planner
 
-**Headline phase:** [V2]. A [V1] slice provides battery management and electrification reporting ([13](13-operations-inventory-equipment.md) items 4.15 and 9).
+**Headline phase:** [V2]. A [V1] slice provides battery management and electrification reporting ([13](13-operations-inventory-equipment.md) section 4.14.11, "Electric equipment and charging management"). This card is the full specification of the electrification planner listed as idea 9 in [13](13-operations-inventory-equipment.md) section 13.
 
 **Problem.** California's SORE rules and a spreading patchwork of local gas leaf-blower restrictions are pushing the industry toward battery equipment (section 2.3; verify jurisdiction details). Commercial Clients increasingly ask for low-noise, low-emission service. Owners lack decision support: which machines to switch, when, at what total cost, with what charging setup, and whether batteries will last a 10-hour summer day.
 
