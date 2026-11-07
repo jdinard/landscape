@@ -1082,7 +1082,7 @@ Predictions are computed by the Python ML service (see [Architecture](20-archite
 | Calculations | "How many yards for 40 by 6 at 3 inches?" | "¿Cuántas yardas para 40 por 6 a tres pulgadas?" | `calc.volume` | MVP |
 | Ask the office | "Tell Dana the client wants a quote for lights" | "Dile a Dana que la clienta quiere cotización de luces" | `messages.internal` plus field-note agent | MVP |
 | Safety incident | "Report injury" | "Reportar lesión" | Opens the incident flow (structured form, never voice-only) | MVP |
-| Plant ID | "What is this plant?" with a photo | "¿Qué planta es esta?" | Plant ID against the KB [V2] (see [Plant KB](12-plant-knowledge-base.md)) | V2 |
+| Plant ID | "What is this plant?" with a photo | "¿Qué planta es esta?" | Plant ID by photo against the KB ([Plant KB](12-plant-knowledge-base.md) KB-SRCH-04 ships the camera flow at V1; this voice trigger is V2) | V2 |
 
 **Rules:** voice commands that write data still go through tools with the technician's permissions. Chemical logs and incident reports always open a structured form pre-filled from voice that requires a tap to submit, because regulatory records need explicit confirmation. Crew members can review and delete their own recordings within 24 hours. Audio is retained for 30 days by default (configurable 0-365) and transcripts per Company record retention. Recording is never enabled in the background.
 

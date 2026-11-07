@@ -799,6 +799,7 @@ Ranked by size of prize and how hard each is for incumbents to copy [E].
 | 11 | **Offline-first, Spanish-first crew experience** | Unverified across vendors | Thin mobile clients over web-first backends | Labor productivity, retention of a 44.5% Hispanic workforce ([Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers)) | 2 | Crew app ([05](05-field-crew-mobile-app.md)) | [MVP] |
 | 12 | **Cross-tenant benchmarks with exact KPI definitions** | Wilson360 partner surveys | Benchmarks are surveys with inconsistent definitions | Owner engagement, pricing confidence | 4 (needs ledger-grade data at scale) | Opt-in anonymized benchmarks ([18](18-reporting-analytics.md)) | [V2] |
 | 13 | **Homeowner demand engine that feeds local Companies** | Yardzen (design plus referral); consumer AI apps | Consumer apps have no installer; marketplaces own the client | Design-ready leads | 4 | Rootline Home and Match ([22](22-business-model-pricing-gtm.md), [23](23-innovation-moonshots.md)) | [V1]-[V2] |
+| 14 | **Compliance-driven design-build** (turf conversions before 2027 water deadlines, equipment electrification) | Landscape architects with manual takeoffs; utility rebate portals | Needs measured turf, Region-rated xeric palettes, phased pricing and rebate paperwork in one flow; ops tools have no design and design tools have no rules | HOA and commercial conversions in California and Southern Nevada; residential rebate jobs ([section 2.5](#25-regulatory-and-structural-forces-that-reshape-demand)) | 4 | Design Studio, jurisdiction rule packs, commercial portal ([10](10-design-studio.md), [12](12-plant-knowledge-base.md), [06](06-customer-portal.md)) | [V1] |
 
 ```mermaid
 flowchart TB
@@ -826,7 +827,7 @@ The diagram is the moat in one picture: every arrow is a re-keying step or a syn
 
 ## 8. Why now
 
-Eight forces converged in 2024-2026. Any one would help; together they open a window that will narrow as incumbents finish integrating their acquisitions and bolt AI onto their stacks (section 10).
+Eight forces converged in 2024-2026, reinforced by the dated regulatory shifts in section 2.5 (shown as F9 in the diagram below). Any one would help; together they open a window that will narrow as incumbents finish integrating their acquisitions and bolt AI onto their stacks (section 10).
 
 | # | Force | What changed | Evidence | What it enables for Rootline | How long the window stays open [E] |
 |---|---|---|---|---|---|
@@ -839,7 +840,7 @@ Eight forces converged in 2024-2026. Any one would help; together they open a wi
 | 7 | **Labor is the binding constraint** | H-2B capped at 66,000 a year; landscaping commonly the largest H-2B occupation; about 44.5% of landscaping workers Hispanic; burdened labor about 43% of net revenue | [S] [USCIS](https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-2b-non-agricultural-workers/cap-count-for-h-2b-nonimmigrants), [Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers), [Wilson 360](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark); [B] H-2B share | When a Company cannot hire a fifth crew, revenue per man-hour is the only growth lever: tighter routes, faster estimates, fewer return trips, no re-typing, Spanish-first crew tools | Structural; persists |
 | 8 | **Open geodata and climate data matured** | USGS 3DEP 1 m elevation, public-domain NAIP imagery, the 2023 USDA Plant Hardiness Zone Map, EPA ecoregions, parcel APIs | [B] ([R3](research/R3-design-ai-plant-data.md) s3.3.6, s4.2) | Measurement as a by-product of onboarding a Property, at near-zero marginal cost; Region definitions the operator can curate | Long; the data is public, the curation is not |
 
-**Two supporting shifts.** Homeowners were trained by marketplaces to expect firm prices from an address (LawnStarter reports under 0.2% of mowing jobs needed repricing ([LawnStarter](https://www.lawnstarter.com/blog/lawnstarter/how-does-lawnstarter-instant-quote-work/)) [S, company-reported]), and by Jobber's Client Hub to approve and pay in one click ([Jobber help](https://help.getjobber.com/en/articles/what-do-your-clients-see-in-client-hub/)) [S]. The table stakes are known; differentiation has moved up the funnel to design, plants and trust.
+**Three supporting shifts.** First, regulation turned compliance into a dated buying trigger: nonfunctional-turf limits from 2027, California's zero-emission small-engine rules, pesticide notification and restricted actives, and federal overtime reporting from tax year 2025 (section 2.5). Second and third, homeowners were trained by marketplaces to expect firm prices from an address (LawnStarter reports under 0.2% of mowing jobs needed repricing ([LawnStarter](https://www.lawnstarter.com/blog/lawnstarter/how-does-lawnstarter-instant-quote-work/)) [S, company-reported]), and by Jobber's Client Hub to approve and pay in one click ([Jobber help](https://help.getjobber.com/en/articles/what-do-your-clients-see-in-client-hub/)) [S]. The table stakes are known; differentiation has moved up the funnel to design, plants and trust.
 
 ```mermaid
 flowchart LR
@@ -851,6 +852,7 @@ flowchart LR
   F6["QuickBooks cost and Desktop sunset"] --> W
   F7["Labor scarcity"] --> W
   F8["Open geodata"] --> W
+  F9["Dated regulation (turf water, small engines, pesticides, overtime)"] --> W
   W --> R["Rootline MVP in two beachhead Regions"]
 ```
 
@@ -932,6 +934,7 @@ Likelihood and impact are analyst judgments over a 24-month horizon from MVP lau
 | T10 | **Stripe changes Connect economics or policies** for full-dashboard accounts | Low | High | Unknown | Stripe pricing and Connect docs changes | Provider abstraction in payments; restricted-key advanced path; Stripe partner relationship ([08](08-payments-stripe.md)) |
 | T11 | **Contractor roll-ups acquire Rootline customers** and move them to the parent's ERP | Medium | Medium in S4 | Ongoing | M&A announcements in beachhead Regions | Multi-entity ledger and branch dimensions so roll-ups can standardize on Rootline; target independents competing with roll-ups |
 | T12 | **Housing or construction downturn** cuts design-build demand | Medium | Medium | Cyclical | Housing starts, remodeling indices, deposit volumes in Rootline | Recurring maintenance, programs and snow keep tenants busy; Winter Mode and active-seat billing reduce churn pressure |
+| T13 | **General-purpose AI agents glue the old stack together**: owners connect Jobber, QuickBooks and a design tool to an AI assistant through APIs and connectors, so "one system" matters less | Medium-high | Medium | 12-24 months | Incumbents shipping MCP servers or agent connectors; owners describing agent-built workflows in forums; marketplace apps that sync design exports into FSM quotes | Agents can move records between tools; they cannot create shared geometry, a Region-rated plant record or a ledger that ties job cost to the books. Make Rootline the best system for agents to act on: public API and MCP server with full permission parity ([17](17-ai-copilot-automation.md) G9, [V1]), so the owner's own agent strengthens the Rootline record instead of replacing it |
 
 ```mermaid
 quadrantChart
@@ -954,6 +957,7 @@ quadrantChart
     T10 Stripe policy: [0.15, 0.80]
     T11 Rollup churn: [0.55, 0.36]
     T12 Downturn: [0.45, 0.55]
+    T13 Agent glue: [0.66, 0.58]
 ```
 
 ### 10.2 How each incumbent is likely to respond to Rootline specifically
@@ -1194,13 +1198,13 @@ flowchart TB
 +--------------------------------------------------------------------------------------------+
 | Filter: Group [All v]  Segment [S2 design-build v]  Show: [x] stale  [x] unknown           |
 +--------------------------------------------------------------------------------------------+
-| Capability                         | JB | LMN | ASP | SO | RG | SA | PRO | ... | Rootline   |
-|------------------------------------+----+-----+-----+----+----+----+-----+-----+------------|
-| Production-rate estimating (MORS)  | o  |  *  |  *  | ~  | o  | o  |  o  |     | * MVP      |
-| To-scale 2D design studio          | o  |  o  |  o  | o  | o  | o  |  *  |     | * MVP      |
-| Region-aware plant KB              | o  |  o  |  o  | o  | o  | o  |  ~  |     | * MVP      |
-| Company-owned processor account    | ~  |  o! |  ?  | ?  | ?  | o  |  -  |     | * MVP      |
-| QuickBooks Desktop sync            | o  |  *? |  ?  | *? | ?  | ?  |  -  |     | * V1       |
+| Capability                         | JB | LMN | ASP | SO | RG | SA | PRO | ... | Rootline  |
+|------------------------------------+----+-----+-----+----+----+----+-----+-----+-----------|
+| Production-rate estimating (MORS)  | o  |  *  |  *  | ~  | o  | o  |  o  |     | * MVP     |
+| To-scale 2D design studio          | o  |  o  |  o  | o  | o  | o  |  *  |     | * MVP     |
+| Region-aware plant KB              | o  |  o  |  o  | o  | o  | o  |  ~  |     | * MVP     |
+| Company-owned processor account    | ~  |  o! |  ?  | ?  | ?  | o  |  -  |     | * MVP     |
+| QuickBooks Desktop sync            | o  |  *? |  ?  | *? | ?  | ?  |  -  |     | * V1      |
 +--------------------------------------------------------------------------------------------+
 | Legend: * full  ~ partial  o none  ? unknown  ! stale claim (verify_by passed)             |
 | Cell click -> claim panel:                                                                 |
@@ -1213,10 +1217,10 @@ flowchart TB
 **Wireframe 2: public Total Cost of Tools calculator.**
 
 ```text
-+------------------------------------------------------------------------------+
-| What does your software really cost?                                          |
-+------------------------------------------------------------------------------+
-| 1. Your tools today                         | Your results (ranges, estimates) |
++---------------------------------------------------------------------------------+
+| What does your software really cost?                                            |
++---------------------------------------------------------------------------------+
+| 1. Your tools today                          | Your results (ranges, estimates) |
 |  Field service  [Jobber Grow     v] $199-299 |  Today      $ 668 - $ 768 / mo   |
 |  Extra users    [ 5 ] x $29                  |  Rootline   $ 298 - $ 308 / mo   |
 |  Design tool    [PRO Landscape+  v] $90      |  (Grow annual + website add-on)  |
@@ -1228,31 +1232,31 @@ flowchart TB
 | 3. Payments     Card volume/yr [$1,200,000]  |  $6,000 - $11,000 / yr           |
 |                 ACH volume/yr  [$  300,000]  |                                  |
 |  Prices last seen 2026-10; edit any number   |  [See the details] [Start trial] |
-+------------------------------------------------------------------------------+
-| Competitor prices are third-party list prices as of the date shown. Verify.  |
-+------------------------------------------------------------------------------+
++---------------------------------------------------------------------------------+
+| Competitor prices are third-party list prices as of the date shown. Verify.     |
++---------------------------------------------------------------------------------+
 ```
 
 **Wireframe 3: tenant onboarding switch step.**
 
 ```text
-+----------------------------------------------------------------------+
-| Welcome to Rootline. Where are you coming from?        Step 2 of 6   |
-+----------------------------------------------------------------------+
-| Field service / scheduling: (o) Jobber  ( ) LMN  ( ) Service Autopilot|
-|                             ( ) Real Green  ( ) Aspire  ( ) Other ___ |
-| Accounting:                 (o) QuickBooks Online  ( ) Desktop  ( ) Xero|
-| Design:                     (o) PRO Landscape+  ( ) SketchUp  ( ) None |
-| Card payments today:        (o) Jobber Payments  ( ) My own Stripe     |
-+----------------------------------------------------------------------+
-| Your switch plan                                                     |
-|  1. Export clients, properties, recurring visits from Jobber (guide) |
-|  2. Connect or create your Stripe account (about 10 minutes)         |
-|  3. Re-collect saved cards: 214 autopay clients -> portal campaign   |
-|     with optional ACH incentive                                      |
-|  4. Keep QuickBooks in sync, or switch to Rootline Ledger later      |
-|  [Start import dry run]                     [Skip, I'll do it later] |
-+----------------------------------------------------------------------+
++----------------------------------------------------------------------------+
+| Welcome to Rootline. Where are you coming from?               Step 2 of 6  |
++----------------------------------------------------------------------------+
+| Field service / scheduling: (o) Jobber  ( ) LMN  ( ) Service Autopilot     |
+|                             ( ) Real Green  ( ) Aspire  ( ) Other ____     |
+| Accounting:                 (o) QuickBooks Online  ( ) Desktop  ( ) Xero   |
+| Design:                     (o) PRO Landscape+  ( ) SketchUp  ( ) None     |
+| Card payments today:        (o) Jobber Payments  ( ) My own Stripe         |
++----------------------------------------------------------------------------+
+| Your switch plan                                                           |
+|  1. Export clients, properties, recurring visits from Jobber (guide)       |
+|  2. Connect or create your Stripe account (about 10 minutes)               |
+|  3. Re-collect saved cards: 214 autopay clients -> portal campaign         |
+|     with optional ACH incentive                                            |
+|  4. Keep QuickBooks in sync, or switch to Rootline Ledger later            |
+| [Start import dry run]                            [Skip, I'll do it later] |
++----------------------------------------------------------------------------+
 ```
 
 ### 12.5 Data model

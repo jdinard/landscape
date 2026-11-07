@@ -916,7 +916,7 @@ Scale planning (estimate): 5,000 tenants averaging 2-3 million analytic rows per
 | SQL API (semantic) | Postgres-wire endpoint exposing semantic views, not raw tables, for Power BI, Tableau, Looker Studio, Metabase and Excel; row-level and field-level security enforced | V1, Pro and Enterprise |
 | Power BI and Tableau templates | Prebuilt template reports (owner pack, ops pack) connecting to the SQL API | V2 |
 | Data shares | Nightly (or hourly) share of the documented star schema to the customer's Snowflake account (secure data sharing), BigQuery (Analytics Hub listing), Databricks (Delta Sharing) or an S3 Parquet/Iceberg drop | V2, Enterprise (Pro as a paid add-on; pricing open, see section 14) |
-| Multi-company rollup | Consolidated analytics across multiple Rootline Companies owned by one group (franchises, multi-brand owners, private-equity consolidators). ServiceTitan offers a comparable "rollup reporting" for multi-tenant customers ([ServiceTitan docs](https://help.servicetitan.com/construction/docs/access-benchmark-reports-in-rollup-reporting)). | V2, Enterprise |
+| Multi-company rollup | Consolidated analytics across multiple Rootline Companies owned by one group (franchises, multi-brand owners, private-equity consolidators). ServiceTitan offers a comparable "rollup reporting" for multi-tenant customers ([ServiceTitan docs](https://help.servicetitan.com/construction/docs/access-benchmark-reports-in-rollup-reporting)). Owner-level consolidated dashboards for an Organization (standard KPIs recomputed across its Companies, no cross-tenant record access) ship at V1 with Organizations ([Personas and permissions](02-personas-roles-permissions.md) section 5.9, [Platform admin](19-platform-admin-portal.md) PA-015). The warehouse rollup with intercompany eliminations, franchise KPI rollups and custom cross-Company reports is V2. | V1 dashboards; V2 full rollup, Enterprise |
 | Schema contract | Versioned schema docs; breaking changes announced 6 months ahead with parallel old and new views | V2 |
 
 ### 4.14 Embedded analytics for client portals
@@ -999,7 +999,8 @@ Tier names and commercial terms are owned by [Pricing and GTM](22-business-model
 | Metrics API, semantic SQL API for BI tools | - | - | Y | Y | [V1] |
 | WIP schedule | - | - | Y | Y | [V1] (requires Ledger Advanced) |
 | Scenario planner, seasonal ML forecast | - | - | Y | Y | [V2] |
-| Data shares, multi-company rollup, external embedding | - | - | A | Y | [V2] |
+| Organization consolidated dashboards (multi-company owners) | - | - | Y | Y | [V1] |
+| Data shares, full multi-company rollup, external embedding | - | - | A | Y | [V2] |
 
 Legend: Y = included, L = limited, A = paid add-on, - = not available. Downgrades never delete saved reports or history; gated features become read-only with an upgrade prompt.
 

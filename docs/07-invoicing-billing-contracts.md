@@ -1348,12 +1348,12 @@ All tables carry `tenant_id` (Company) with Postgres row-level security, `create
 | `credit_memo` | id, number, client_id, reason_code, amount, tax_amount, disposition, status, approved_by, journal_entry_id | Credits. |
 | `credit_application` | id, source_type (credit_memo, wallet, deposit), source_id, invoice_id, amount, applied_at | Applications. |
 | `client_wallet_entry` | id, client_id, balance_type (credit, unapplied, deposit, prepaid_season, gift), amount, related_type, related_id | Typed balances (sum by type). |
-| `refund` | id, client_id, source_type, source_id, amount, method (stripe, check, ach), stripe_refund_id, reason, approved_by | Refunds. |
+| `refund` | id, client_id, source_type, source_id, amount, method (stripe, check, ach), stripe_refund_id, reason, approved_by | Owned by the `payments` module ([08](08-payments-stripe.md) 7.1, [20](20-architecture-security.md)); listed with the fields billing reads and links to credit memos. |
 | `write_off` | id, invoice_id, amount, tax_amount, method (direct, allowance), reason_code, approved_by, recovered_amount | Write-offs. |
 | `late_fee_policy` | id, type, amount, percent_monthly, grace_days, min_fee, max_fee, frequency, compounding, applies_to, disclosure_text | Policy. |
 | `late_fee_assessment` | id, invoice_id, policy_id, amount, assessed_on, waived, waived_reason | Fees. |
 | `dunning_policy` / `dunning_step` | id, name, segment; step: day_offset, channel, template_id, action (remind, fee, hold, task, agent) | Sequences. |
-| `collection_case` | id, client_id, status, stage, assigned_to, agent_enabled, dispute_reason, opened_at, closed_at | Collections. |
+| `collections_case` | id, client_id, status, stage, assigned_to, agent_enabled, dispute_reason, opened_at, closed_at | Collections (resource name `collections_case` per [02](02-personas-roles-permissions.md) 5.2). |
 | `promise_to_pay` | id, case_id, amount, promised_date, source (office, agent, portal), status | Promises. |
 | `payment_plan` / `payment_plan_installment` | id, client_id, total, installments, autopay_method_id, status (`current`, `broken`); installment: due_date, amount, status | One shared entity, defined in [08](08-payments-stripe.md) 7.1; this module creates collections plans for past-due balances (`plan_type = collections`, 4.9.4) alongside 08's milestone and calendar plans. |
 | `statement` | id, number, client_id, type, period_from, period_to, opening_balance, closing_balance, document_id | Snapshots. |
@@ -1397,8 +1397,8 @@ erDiagram
     BILLING_SCHEDULE_ENTRY |o--o| INVOICE : becomes
     PURCHASE_ORDER ||--o{ INVOICE : referenced_by
     BILLING_GROUP ||--o{ INVOICE : groups
-    COLLECTION_CASE ||--o{ PROMISE_TO_PAY : records
-    CLIENT ||--o{ COLLECTION_CASE : subject_of
+    COLLECTIONS_CASE ||--o{ PROMISE_TO_PAY : records
+    CLIENT ||--o{ COLLECTIONS_CASE : subject_of
     PROJECT ||--|{ SOV_LINE : defines
     PROJECT ||--o{ PAY_APPLICATION : requests
     PAY_APPLICATION ||--|{ PAY_APP_LINE : details
