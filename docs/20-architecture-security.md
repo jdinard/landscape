@@ -309,7 +309,7 @@ Modules map to product domains and to Postgres schemas. A module **owns** its ta
 | `iam` | Users, sessions, MFA, SSO, memberships, roles, permissions, API keys, OAuth apps | user, membership, role, permission_grant, session, api_client, oauth_grant, sso_connection | `user.invited`, `membership.role_changed` | [02](02-personas-roles-permissions.md) |
 | `tenancy` | Company lifecycle, plan, entitlements, settings, region/cell placement, branding, custom domains | tenant, tenant_settings, entitlement, entitlement_override, custom_domain, cell_assignment | `tenant.provisioned`, `tenant.suspended` | [19](19-platform-admin-portal.md) |
 | `crm` | Clients, properties, contacts, tags, notes, communication preferences, consent | client, property, contact, consent_record, property_access_info | `client.created`, `property.geocoded` | [03](03-crm-sales-estimating-proposals.md) |
-| `sales` | Leads, opportunities, site assessments, estimates, proposals, e-sign, change orders, renewals | lead, opportunity, site_assessment, estimate, estimate_line, proposal, proposal_option, signature, change_order | `proposal.sent`, `proposal.accepted` | [03](03-crm-sales-estimating-proposals.md) |
+| `sales` | Leads, opportunities, site assessments, estimates, proposals, e-sign, change orders, renewals | lead, opportunity, site_assessment, estimate, estimate_line, proposal, proposal_option, signature, change_order | `proposal.sent`, `proposal.accepted`, `proposal.executed` | [03](03-crm-sales-estimating-proposals.md) |
 | `catalog` | Price Book items, assemblies/kits, production rates, labor burden, overhead model, tax categories | price_book_item, assembly, production_rate, cost_profile | `price_book_item.updated` | [03](03-crm-sales-estimating-proposals.md), [13](13-operations-inventory-equipment.md) |
 | `ops` | Jobs, phases, service schedules (materialized from agreements), visits, recurrence rules, crews, routes, dispatch, checklists | job, job_phase, service_schedule, visit, recurrence_rule, crew, crew_member, route, route_stop, checklist_run | `visit.scheduled`, `visit.completed` | [04](04-scheduling-dispatch-routing.md), [14](14-service-line-modules.md) |
 | `field` | Device registry, sync scopes, field forms, time punches, chemical application logs, safety incidents, GPS | device, sync_cursor, sync_issue, chemical_application, safety_incident, location_ping | `chemical_application.recorded`, `sync.conflict_detected` | [05](05-field-crew-mobile-app.md) |
@@ -719,7 +719,8 @@ CREATE TABLE platform.outbox_event (
 | `crew.assignment_changed` | ops | field (crew roster and PIN cache), people (acting crew-lead pay) | No |
 | `eta.updated` | ops | portal, live-tracking link | No |
 | `weather.alert_raised` / `weather.delay_declared` | ops | dispatcher, field (crew app banners), comms, portal banner, inventory (holding-yard care, rain-day PM), reporting (weather flags) | `weather.delay_declared` only ([04](04-scheduling-dispatch-routing.md) section 8.5) |
-| `route.optimized` / `route.published` | ops | field (bucket update), realtime, inventory (load-out regeneration) | `route.published` only |
+| `route.optimized` / `route.published` / `route.changed_after_publish` | ops | field (bucket update, crew app push), realtime, inventory (load-out regeneration) | `route.published` only |
+| `visit.late_risk` / `schedule.diff_proposed` / `schedule.diff_applied` / `capacity.threshold_crossed` | ops | dispatcher and owner alerts, ai (Copilot inbox), audit, sales (capacity throttle) | No |
 | `sync.conflict_detected` | field (sync engine, 4.11.5) | ops (needs-attention queue, for example completed after cancel) | No |
 | `chemical_application.recorded` / `chemical_application.amended` (registered alias: `application_record.sealed` from [14](14-service-line-modules.md); emitted when the applicator-signed record is accepted and sealed server-side) | field | compliance reports and client notices (service lines), portal (lawn-care notice), inventory (product decrement), reporting | Yes |
 | `time.punched` / `time.segment_changed` (field) and `timesheet.approved` (people) (registered alias: `time_entry.recorded` = `timesheet.approved` for postings, per [15](15-team-hr-payroll.md) section 8.3) | field / people | ledger (labor cost), payroll export | `timesheet.approved` only |
@@ -732,7 +733,7 @@ CREATE TABLE platform.outbox_event (
 | `bank_transaction.imported` / `bank_transaction.matched` | ledger | reconciliation UI, ai (categorization) | No |
 | `ops.po.sent` / `ops.receipt.posted` (registered aliases: `purchase_order.sent` / `purchase_order.received`) | inventory | ledger (commitments, GRNI, AP match), ops (deliveries) | Yes |
 | `ops.pm.due` (registered alias: `equipment.maintenance_due`) | inventory | comms, ops (dispatch availability) | Yes |
-| `design.version_published` / `design.takeoff_updated` | design | sales (estimate lines), mockup, portal | Yes |
+| `design.version_published` / `design.takeoff_updated` (head takeoff changed, debounced 10 s; [10](10-design-studio.md) section 8.2) | design | sales (estimate lines and takeoff diff banner), mockup (staleness), inventory (pending buy lines), portal | Yes |
 | `mockup.generated` / `mockup.failed` | mockup | portal, comms, ai (credits) | Yes |
 | `kb.release_published` | kb | search indexer, design (plant availability badges), cache invalidation | No (tenant notice only) |
 | `media.processed` | media | portal, ai (auto-tagging), design (site photos) | No |
@@ -2482,7 +2483,7 @@ This section summarizes Section 4 for quick reference.
 | Outbound webhooks | Standard Webhooks signatures, retries for 3 days, replay, SSRF-safe egress, thin or snapshot payloads | 4.7.4 |
 | Inbound webhooks | Stripe (`/webhooks/stripe/connect`, `/platform`, `/v2` thin events, `/direct/{endpoint_token}` for restricted-key Companies, `/saas` for Rootline's own account; paths per [08](08-payments-stripe.md) section 4.22), Twilio (status, inbound SMS, voice), Postmark (delivery, bounces, inbound mail), Intuit/Xero (change notifications), Plaid (transactions updates) via the isolated `webhook-ingest` role: verify → persist → ack → process | 4.19 |
 | Connectors | QBO, QBD (Web Connector), Xero, Plaid, payroll, calendars, Regrid, weather, Zapier/Make, supplier catalogs | 4.8 |
-| Events | Outbox → SNS/SQS (MVP) → MSK (V1), CloudEvents envelope, JSON Schema registry, ~45 core event types | 4.9 |
+| Events | Outbox → SNS/SQS (MVP) → MSK (V1), CloudEvents envelope, JSON Schema registry, ~100 core event types in the 4.9.3 catalog plus registered aliases for sibling-doc spellings | 4.9 |
 | Public API quotas | Per-minute token bucket per API client + daily `api_calls` quota per tenant aligned with [22](22-business-model-pricing-gtm.md) | 4.7.5 |
 | Workflows | Temporal Cloud per region; proposal, agreement billing, snow, mockups, sync, onboarding, close, DSAR, warranty | 4.10 |
 | Service RPC | Connect-gRPC to optimizer, GPU and vision services | 4.7.1 |
