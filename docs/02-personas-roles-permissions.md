@@ -112,7 +112,7 @@ The facts below shape positioning but are not confirmed in public documentation.
 
 Personas are composites built from research patterns and industry norms. Names, companies and quotes are **illustrative**, not real people or survey data. Two reference Companies recur throughout this document and the rest of the doc set:
 
-- **Reyes Outdoor Living** (Charlotte, NC). Residential design-build plus maintenance. About 22 people at peak (April-November), 9 in winter. Revenue mix is roughly 55% installs, 35% maintenance, 10% enhancements (illustrative). One location. Owner-led sales.
+- **Reyes Outdoor Living** (Naperville, IL). Residential design-build plus maintenance. About 22 people at peak (April-November), 9 in winter. Revenue mix is roughly 55% installs, 35% maintenance, 10% enhancements (illustrative). One location. Owner-led sales.
 - **Summit Grounds Group** (Columbus, OH). Commercial maintenance, snow and ice, and irrigation. Three branches (Columbus, Dayton, Cincinnati), about 140 people at peak including H-2B seasonal crews, 45 in winter (snow crews plus subs). Clients are property management firms, HOAs, retail centers and office parks.
 
 ### 3.1 Persona map
@@ -148,7 +148,7 @@ Personas are composites built from research patterns and industry norms. Names, 
 | Frustrations (anticipated) | Context-switching between Stripe, the support tool, the data warehouse, the AI provider consoles and the KB. Not knowing which tenants are about to churn. Being the only person who can approve risky actions |
 | Devices | MacBook, iPhone; Platform Admin console on mobile for approvals (break-glass, refunds, tenant suspensions) |
 | Tech comfort | 5 |
-| Peak season day (April) | 6:30 am: phone glance at the overnight health digest (signups, failed tenant Stripe webhooks, AI credit burn, P1 tickets). 8:00 standup. 9:00-12:00 sales demos with 30-person companies. 1:00 reviews curator queue: 312 Plant Region Profile changes for the Southeast Piedmont Region, bulk-approves 290 and sends 22 back. 3:00 approves a break-glass request from engineering for a tenant data repair (consent attached). 5:00 reviews AI mockup cost per generation by model. 9:00 pm reads NPS verbatims |
+| Peak season day (April) | 6:30 am: phone glance at the overnight health digest (signups, failed tenant Stripe webhooks, AI credit burn, P1 tickets). 8:00 standup. 9:00-12:00 sales demos with 30-person companies. 1:00 reviews curator queue: 312 Plant Region Profile changes for the West Michigan Region, bulk-approves 290 and sends 22 back. 3:00 approves a break-glass request from engineering for a tenant data repair (consent attached). 5:00 reviews AI mockup cost per generation by model. 9:00 pm reads NPS verbatims |
 | Winter day (January) | Roadmap and pricing work; trade shows (e.g. regional green-industry expos); curates the spring Plant Palettes; runs the annual access review for platform staff; renews SOC 2 evidence |
 | Success looks like | One console answers "how is the business, who needs help, what is risky". Every privileged action is two clicks plus a reason, and none is invisible |
 | Quote (illustrative) | "I want to see everything, but I never want to touch a customer's data without them knowing." |
@@ -165,7 +165,7 @@ Personas are composites built from research patterns and industry norms. Names, 
 | Devices | Laptop, headset |
 | Tech comfort / language | 4; EN and ES (takes Spanish crew-lead calls directly) |
 | Peak day | 60% of tickets are crew-app logins and route questions between 6 and 9 am Eastern. Uses "View as user" (read-only, consented) to reproduce issues; escalates data fixes to engineering |
-| Winter day | Onboarding sprints: 15-20 new Companies a week migrating from other tools before spring |
+| Winter day | Onboarding rush: 15-20 new Companies a week migrating from other tools before spring |
 | Success | Consent granted in one tap by the customer. Read-only view reproduces the bug. No access to pay rates or SSNs is needed, and none is given |
 | Quote (illustrative) | "Let me see what Miguel sees, not what the owner sees." |
 
@@ -182,7 +182,7 @@ Personas are composites built from research patterns and industry norms. Names, 
 | Winter day | Builds next season's Plant Palettes; updates invasive lists after state legislative sessions |
 | Access needs | Full write to the Plant KB and Regions. **Zero** tenant business data (they never need to see a Client or invoice). May see aggregated, anonymized "plant usage by Region" analytics |
 | Success | Each Region release ships with zero unresolved source conflicts; designers stop asking "will this survive here?"; plant warranty callbacks attributable to bad KB data trend toward zero |
-| Quote (illustrative) | "If we say a Leyland cypress does fine in Charlotte, someone's going to come back to me with a dead hedge and Seiridium canker photos." |
+| Quote (illustrative) | "If we say a Leyland cypress does fine in Columbus, someone's going to come back to me with a dead hedge and winter-burn photos." |
 
 #### 3.2.4 Platform Finance (`platform_finance`) - "Tom"
 
@@ -267,7 +267,7 @@ Personas are composites built from research patterns and industry norms. Names, 
 | Frustrations | Re-drawing in three tools; plant lists that ignore deer pressure or local hardiness; pricing surprises after the client falls in love with the design |
 | Devices | Desktop with pen tablet; iPad for client presentations |
 | Tech comfort / language | 4-5; EN |
-| Winter day (February, her peak) | 8:00 opens the design queue: 11 spring installs waiting. Pulls the parcel and aerial base for the Thompson lot, traces the house footprint and existing oak drip line. 10:00 builds a foundation bed from the Piedmont "deer-pressure, part shade" Plant Palette, swaps a Knock Out rose for a native Virginia sweetspire after the KB flags deer browse. 11:30 generates 6 AI Mockups from Jennifer's yard photos (uses 18 AI credits of her 400 monthly budget). 1:00 hands the takeoff to Jake (42 plants, 6 cubic yards of mulch, 280 sq ft of pavers). 3:00 client presentation on iPad with "client-facing mode" on, so no cost or markup shows. 5:00 revisions from two other clients |
+| Winter day (February, her peak) | 8:00 opens the design queue: 11 spring installs waiting. Pulls the parcel and aerial base for the Thompson lot, traces the house footprint and existing oak drip line. 10:00 builds a foundation bed from the Chicagoland "deer-pressure, part shade" Plant Palette, swaps a Knock Out rose for a native fragrant sumac after the KB flags deer browse. 11:30 generates 6 AI Mockups from Jennifer's yard photos (uses 18 AI credits of her 400 monthly budget). 1:00 hands the takeoff to Jake (42 plants, 6 cubic yards of mulch, 280 sq ft of pavers). 3:00 client presentation on iPad with "client-facing mode" on, so no cost or markup shows. 5:00 revisions from two other clients |
 | Summer day (June) | Fewer new designs. Walks two installs with Miguel's crew to resolve plant substitutions (the nursery is out of 3-gallon 'Little Lime' hydrangeas). Updates the as-built Design from crew photos. Drafts fall planting proposals |
 | Access needs | Designs, Mockups, Plant KB, Price Book items (prices yes, cost optional per Company setting), AI credits within a monthly budget, Client contact info for her assigned projects only |
 | Success | One tool from base plan to Mockup to takeoff; the Proposal price lands inside the Client's budget band on the first try |
@@ -734,7 +734,7 @@ journey
       Review 3 at-risk tenants flagged by AI: 4: Founder, Support
     section Midday
       Demo to 30-person company: 5: Founder
-      Curator release for Southeast Piedmont palette: 5: Founder, Curator
+      Curator release for West Michigan palette: 5: Founder, Curator
       AI model cost review per mockup: 3: Founder, Engineer
     section Afternoon
       Approve SaaS credit for storm-affected tenant: 4: Founder, Finance
@@ -1692,14 +1692,14 @@ Rules: rows with a blocking check (expired pesticide license, visa end date befo
 +--------------------------------------------------------------------------------------------+
 | Client company            | Close status | Unreconciled | AR > 90 d | Sales tax due | Lock  |
 |---------------------------+--------------+--------------+-----------+---------------+-------|
-| Reyes Outdoor Living      | 6 / 9 steps  | 23 lines     | $4,180    | NC May 20     | Mar   |
-| Greenway Lawn Co.         | Done         | 0            | $0        | SC May 20     | Apr   |
-| Piedmont Tree & Turf      | 2 / 9 steps  | 141 lines    | $12,920 ! | NC May 20     | Feb ! |
-| Carolina Snow Pros        | Not started  | 8 lines      | $640      | -             | Mar   |
+| Reyes Outdoor Living      | 6 / 9 steps  | 23 lines     | $4,180    | IL May 20     | Mar   |
+| Greenway Lawn Co.         | Done         | 0            | $0        | IN May 20     | Apr   |
+| Fox Valley Tree & Turf    | 2 / 9 steps  | 141 lines    | $12,920 ! | IL May 20     | Feb ! |
+| Lakeshore Snow Pros       | Not started  | 8 lines      | $640      | -             | Mar   |
 | ... 10 more                                                                                 |
 +--------------------------------------------------------------------------------------------+
 | Access: each row opens that Company under its own delegation grant. Expiring soon:          |
-|   Carolina Snow Pros grant ends Apr 30 (tax-season grant)  [Ask owner to extend]            |
+|   Lakeshore Snow Pros grant ends Apr 30 (tax-season grant)  [Ask owner to extend]           |
 +--------------------------------------------------------------------------------------------+
 ```
 
@@ -2418,7 +2418,7 @@ See the matrix in 5.11. Additional rules:
 | Time to first clock-in | Minutes from invite sent to first successful punch for field users | Median under 10 minutes |
 | Kiosk punch time | Tap name to confirmation | p50 under 4 s, p95 under 8 s |
 | Crew login support tickets | Tickets tagged login/PIN per 100 active field users per month | Under 1 |
-| MFA coverage | Share of office-role users with MFA enrolled | 100% where required; at least 60% passkey adoption by V1+12 months |
+| MFA coverage | Share of office-role users with MFA enrolled | 100% where required; at least 60% passkey adoption among office-role users in Companies past their first year on Rootline |
 | Deprovisioning latency | Time from termination action to last successful API call by that user | Under 1 s online; under 1 sync cycle offline |
 | Permission friction | `access.denied` events per active user per week (sampled), split by "expected" vs "followed by access request" | Falling over time; under 2 per user per week |
 | Custom role adoption | Share of Companies with at least one custom role | 20-40% (a sign the templates fit; too high means templates are wrong) |

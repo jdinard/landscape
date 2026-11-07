@@ -1046,7 +1046,7 @@ Weighted for the Great Lakes launch: trees and sedges up, succulents and cacti d
 | Great Lakes-native and pollinator palettes | 900 or more plants native to at least one Wave 1 ecoregion | `native_status` (KB-RGN-07), `pollinator_value` |
 | Rain gardens and bioswales on clay | 150 or more plants placed in rain-garden bottom, slope or rim zones, with wet and drought tolerance cited | `drainage`, `wet_tolerance`, `drought_tolerance`; palette sub-zones (KB-PAL-01) |
 
-**KB-SEED-04 First Regions (founder decision: Great Lakes launch) [MVP Wave 1, V1 Wave 2, Wave 3 later]**
+**KB-SEED-04 First Regions (founder decision: Great Lakes launch) [MVP Wave 1, V1 Wave 2, V2 Wave 3]**
 - **Decision.** The founder chose the Great Lakes as Rootline's launch region: a single US launch cluster, replacing the earlier default of two beachhead clusters (Great Lakes and Ohio Valley plus the higher-scoring of Front Range Colorado or Mid-Atlantic Piedmont). The macro-region keeps its name, "Great Lakes and Ohio Valley". This answers the beachhead question in [22](22-business-model-pricing-gtm.md) section 6.2 ("where is the founder's plant knowledge strongest?") and open question 1 in section 14.
 - **Wave 1 [MVP]: six curated Regions at Excellent.** Each is built with a KB-RGN-03 recipe from EPA Level III and IV ecoregions intersected with 2023 USDA zones and metro extents. Together they span roughly zones 5a-6b on the 2023 map, with lake-moderated pockets. The ecoregion mapping and zones below are planning assumptions to verify per Region before publishing.
 
@@ -1061,10 +1061,10 @@ Weighted for the Great Lakes launch: trees and sedges up, succulents and cacti d
 
 - Outside the six Regions, macro-region profiles for "Great Lakes and Ohio Valley" give Good coverage where Wave 1 profiles generalize; everywhere else starts at Basic (KB-RGN-09).
 - **Design partners.** The 5 field-alpha Companies and the 20 Season 0 beta design partners ([22](22-business-model-pricing-gtm.md), [24](24-roadmap-feature-catalog.md)) are all in Wave 1 Regions, so the candidate list, guest raters, search evaluations and early failure reports all come from Great Lakes work.
-- **Wave 2 [V1]: brought to Excellent.**
-  - **Southern Ontario Golden Horseshoe** (Toronto, Hamilton, Niagara) ships with the Canada launch at V1.2. It inherits Great Lakes and Ohio Valley profiles, then adds Ontario legal lists (KB-RGN-08) and Canadian hardiness zones (stored separately, never converted).
-  - **Cincinnati-Dayton**, **Indianapolis**, **Western New York** (Buffalo-Rochester) and **Erie/Pittsburgh** sit inside or beside the macro-region (verify boundaries), so they start at Good through inheritance and need Region-level ratings, palettes and photos to reach Excellent.
-- **Wave 3 (later): the second US cluster,** chosen on traction with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. Front Range Colorado, Mid-Atlantic Piedmont, North Texas and the Pacific Northwest remain candidates. The xeric, succulent and fire-wise depth held back from the MVP seed (KB-SEED-03), and the evidence from that cluster's regional programs (KB-PRP-05), arrive with it.
+- **Wave 2 [V1]: extend within the region and across the border.**
+  - **Southern Ontario Golden Horseshoe** (Toronto, Hamilton, Kitchener-Waterloo, Niagara) ships with the Canada launch at V1.2, at Excellent. It inherits Great Lakes and Ohio Valley profiles, then adds Ontario legal lists (KB-RGN-08) and Canadian hardiness zones (stored separately, never converted).
+  - **Cincinnati-Dayton**, **Indianapolis**, **Western New York** (Buffalo-Rochester) and **Erie/Pittsburgh** sit inside or beside the macro-region (verify boundaries), so they open at Good through inheritance and are raised to Excellent one Region at a time, as Region-level ratings, palettes and photos meet the KB-RGN-09 criteria.
+- **Wave 3 [V2]: the second US cluster,** chosen later, based on traction, with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. Front Range Colorado, Mid-Atlantic Piedmont, North Texas and the Pacific Northwest remain candidates. The xeric, succulent and fire-wise depth held back from the MVP seed (KB-SEED-03), and the evidence from that cluster's regional programs (KB-PRP-05), arrive with it.
 - **After the waves:** further curated Regions are added cluster by cluster. Until then, macro-region profiles and the Basic tier (zone, sun, water and legal checks) cover every other Property.
 
 **KB-SEED-05 Twenty-week seed plan (plus a prior growing season for photos) [MVP]**
@@ -2377,7 +2377,7 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 | Category | Metric | Definition | Target |
 |---|---|---|---|
 | Coverage | Plants at Silver or better | Count of published plants with completeness of 75 or more | 3,000 at MVP; 6,000 at V1 |
-| Coverage | Region coverage tier | Regions at Excellent, Good, Basic | All 6 Wave 1 Great Lakes Regions Excellent at MVP; Wave 2 Regions, including the Golden Horseshoe, Excellent in V1 |
+| Coverage | Region coverage tier | Regions at Excellent, Good, Basic | All 6 Wave 1 Great Lakes Regions Excellent at MVP; Golden Horseshoe Excellent at the Canada launch (V1); other Wave 2 Regions Good or better in V1 |
 | Coverage | Profile coverage of used plants | Share of plant placements in a Region that have a published profile there | 95% or more in Excellent Regions |
 | Quality | Audit error rate | Errors found per 100 audited values (quarterly sample of 300 plants) | Under 2 non-critical; 0 critical |
 | Quality | Unresolved conflicts | Open conflicting candidates on selected traits | Under 1% of values |
@@ -2436,7 +2436,7 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 
 ## 14. Open questions
 
-1. **Beachhead Regions (resolved, founder decision):** the launch region is the Great Lakes, a single US launch cluster in the macro-region "Great Lakes and Ohio Valley". Six Wave 1 Regions launch at Excellent [MVP], Wave 2 follows in V1, and the second US cluster (Wave 3) is chosen later on traction with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. The 3,000-plant mix is re-weighted for Great Lakes needs (KB-SEED-03, KB-SEED-04).
+1. **Beachhead Regions (resolved, founder decision):** the launch region is the Great Lakes, a single US launch cluster in the macro-region "Great Lakes and Ohio Valley". Six Wave 1 Regions launch at Excellent [MVP], Wave 2 follows in V1, and the second US cluster (Wave 3, [V2]) is chosen later, based on traction, with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. The 3,000-plant mix is re-weighted for Great Lakes needs (KB-SEED-03, KB-SEED-04).
 2. **Data licenses:** which extension services, botanic gardens and brands will license data or photos, at what cost, and with what attribution? Counsel must confirm the facts-versus-expression policy and the source plan in 4.6.
 3. **WUCOLS and AHS heat zones:** what are the current terms for commercial use, and do we need written permission?
 4. **Backbone choice for display:** WCVP/POWO as primary with WFO cross-reference is assumed; does any partner (for example a Canadian data source) require a different backbone?

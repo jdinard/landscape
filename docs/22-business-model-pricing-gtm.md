@@ -272,7 +272,7 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | Ledger Plus: AP and bills, unlimited bank feeds, bank rec, 1099 tracking, budgets | A | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [MVP] |
 | Ledger Advanced: WIP / percent-complete, classes and departments, multi-entity, consolidations | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) | [V1] |
 | QuickBooks Online sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [MVP] |
-| Xero sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [V1] (V1.2 per 24 section 4.6 #5) |
+| Xero sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | [V1] (24 section 4.6 #5) |
 | QuickBooks Desktop sync (Web Connector) | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) | [V1] |
 | Design Studio 2D + takeoffs to estimate | A | Y (1 seat) | Y (3 seats) | Y | [10](10-design-studio.md) | [MVP] |
 | Design Studio 3D, sun/shade, growth-over-time | - | A | Y | Y | [10](10-design-studio.md) | [V1] |
@@ -292,12 +292,12 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | Website builder | A | A | Y (1 site) | Y | [16](16-marketing-growth-communications.md) | [V1] |
 | Review requests (no gating) and NPS | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | [MVP] (24 section 4.6 #11) |
 | Referral program with rewards | L | Y | Y | Y | [16](16-marketing-growth-communications.md) | [V1] (24 section 4.6 #11; referral as a manually entered lead source at [MVP]) |
-| Online booking and instant quotes | L | Y | Y | Y | [16](16-marketing-growth-communications.md) | [V1] (V1.2 per 24 section 4.6 #9; turf auto-measure for internal estimating stays [MVP]) |
+| Online booking and instant quotes | L | Y | Y | Y | [16](16-marketing-growth-communications.md) | [V1] (24 section 4.6 #9; turf auto-measure for internal estimating stays [MVP]) |
 | Unified inbox (SMS, email, chat, calls, portal) | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | [MVP] |
 | Campaigns, basic (segments, one-off email/SMS with price blocks, prebuilt journeys) | L (one-off campaigns and prebuilt journeys) | Y | Y | Y | [16](16-marketing-growth-communications.md) | [MVP] basic (24 section 4.6 #10) |
 | Journey builder (multi-step campaigns), landing pages, multi-touch attribution (Advanced Marketing add-on) | A | A | Y | Y | [16](16-marketing-growth-communications.md) | [V1] |
 | Call tracking, call recording and transcription, missed-call text-back | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | [MVP] basic, [V1] full |
-| AI receptionist (voice) | A | A | Y (200 min) | Y | [16](16-marketing-growth-communications.md) | [V1] (V1.2 per 24 section 4.6 #12; until then, call tracking, voicemail with transcription and missed-call text-back cover after-hours calls) |
+| AI receptionist (voice) | A | A | Y (200 min) | Y | [16](16-marketing-growth-communications.md) | [V1] (24 section 4.6 #12; until then, call tracking, voicemail with transcription and missed-call text-back cover after-hours calls) |
 | Copilot (chat, drafting) | Y (credits) | Y | Y | Y | [17](17-ai-copilot-automation.md) | [MVP] |
 | Automation builder | L (5 active rules) | L (50) | Y (unlimited) | Y | [17](17-ai-copilot-automation.md) | [MVP] |
 | MVP agents: Daily Owner Briefing, Inbox Triage, Lead Follow-up, Field-Note, Estimating from notes (A1-A4, A6), collections reminders (A5) | Y (credits) | Y (credits) | Y (credits) | Y | [17](17-ai-copilot-automation.md) | [MVP] |
@@ -310,7 +310,7 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | Data warehouse export (data shares), multi-company rollup | - | - | A | Y | [18](18-reporting-analytics.md) | [V2] |
 | Custom roles (granular permissions) | - | L (2 custom roles) | Y | Y | [02](02-personas-roles-permissions.md) | [MVP] |
 | Multi-branch / divisions | - | - | Y | Y | [02](02-personas-roles-permissions.md) | [V1] |
-| SSO (SAML/OIDC) | - | - | - | Y | [02](02-personas-roles-permissions.md), [20](20-architecture-security.md) | [V1] (V1.2 per 24 section 4.6 #16) |
+| SSO (SAML/OIDC) | - | - | - | Y | [02](02-personas-roles-permissions.md), [20](20-architecture-security.md) | [V1] (24 section 4.6 #16) |
 | SCIM provisioning | - | - | - | Y | [02](02-personas-roles-permissions.md) | [V2] (24 section 4.6 #16) |
 | Public API and webhooks | L (read-only, 10k calls/day) | Y (50k/day) | Y (250k/day) | Custom | [20](20-architecture-security.md) | [MVP] core objects, [V1] full surface and daily quotas |
 | Sandbox tenant | - | - | A | Y | [20](20-architecture-security.md) | [V1] |
@@ -472,7 +472,7 @@ A credit is a unit of AI work that is published and stable. The raw provider cos
 
 Add-on rules:
 - Add-ons follow the subscription's billing interval and currency, and are prorated on add and remove.
-- **Snow Lite (included in every tier) [MVP].** Great Lakes firms commonly run snow and ice in winter, and the Season 0 beta and GA both fall in snow season, so a basic snow scope ships at MVP: crew-app storm visit logging per site with timestamped GPS photos and notes, a basic snow site list with priority order, per-push / per-application invoices generated from those logs, and a per-site PDF proof-of-service export (no hash sealing). It is an entitlement on every plan, not an add-on, and carries no seasonal charge. Until the Snow & Ice add-on launches, Snow Lite is the whole snow offer; after that, Snow Lite stays included and the add-on adds the full module (storm events from weather data, trigger depths, per-event and seasonal billing, salt logs, sealed proof packets). When a Company adds the add-on, its Snow Lite site list becomes the starting snow site list and past storm visits stay on the Property timeline as history (they are not re-sealed as proof packets), so nothing is re-entered. Module mechanics in [14](14-service-line-modules.md) section 4.3.0.
+- **Snow Lite (included in every tier) [MVP].** Great Lakes firms commonly run snow and ice in winter, and owners evaluate and switch software in the winter months when snow is running, so a basic snow scope ships at MVP: crew-app storm visit logging per site with timestamped GPS photos and notes, a basic snow site list with priority order, per-push / per-application invoices generated from those logs, and a per-site PDF proof-of-service export (no hash sealing). It is an entitlement on every plan, not an add-on, and carries no seasonal charge. Until the Snow & Ice add-on launches, Snow Lite is the whole snow offer; after that, Snow Lite stays included and the add-on adds the full module (storm events from weather data, trigger depths, per-event and seasonal billing, salt logs, sealed proof packets). When a Company adds the add-on, its Snow Lite site list becomes the starting snow site list and past storm visits stay on the Property timeline as history (they are not re-sealed as proof packets), so nothing is re-entered. Module mechanics in [14](14-service-line-modules.md) section 4.3.0.
 - **Seasonal add-ons** (Snow & Ice) carry a `billing_months` mask. Outside those months the add-on stays enabled (read-only history, storm planning, pre-season contract renewals) at $0. Season price: $99 x 5 = $495 on monthly plans; $79 x 5 = $395 on annual plans, billed as one seasonal charge on Nov 1 or in 5 monthly installments. Companies that want an even monthly budget can spread the seasonal charge over 12 months ($395 / 12 = $32.92/mo); the total never exceeds the seasonal price. The mask is per Company, so a Company in a region with an October or April snow risk can extend it by one month at the same monthly rate.
 - **Snow carve-out in dunning.** A Company in `restricted` or `suspended` (8.2) with an active snow agreement keeps crew dispatch and per-push logging (Snow Lite storm visit logging included) during a forecast event, capped at 72 hours per event, exactly as specified in [19](19-platform-admin-portal.md). Blocking plowing on a commercial lot over a Rootline invoice would create slip-and-fall liability for the Company's client.
 - An add-on that a higher tier includes is removed automatically when the Company upgrades, with prorated credit.
