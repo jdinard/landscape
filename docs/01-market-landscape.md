@@ -1417,3 +1417,297 @@ erDiagram
 | Importer field mapping | Map unknown export columns to Rootline fields with confidence scores | Dry run and diff review mandatory | [MVP] |
 
 ---
+
+## 13. Metrics and KPIs
+
+Market-level metrics tell the founder whether the positioning is working; program metrics tell whether the intelligence base is trustworthy. Targets are proposals [E].
+
+| Metric | Definition | Target | Why it matters |
+|---|---|---|---|
+| Win rate by competitor | Won / (won + lost) for opportunities where the competitor was named, per quarter | ≥ 35% vs Jobber, ≥ 30% vs LMN in beachhead Regions by end of Year 1 | Tests the battlecards and pillars against real deals |
+| Switch-source mix | Share of new paying Companies by previous primary tool (MI-07) | Jobber and LMN together ≥ 50% of Year-1 logos | Confirms the switching windows in section 8 |
+| Beachhead share | Paying Companies in beachhead Regions / ICP firms in those Regions (from MI-13) | ≥ 3% by end of Year 2 | Tests the beachhead thesis before broad expansion |
+| Archetype mix | Share of paying Companies by archetype A-E | C ≥ 40% of Grow and Pro logos in Year 1 | Ensures the product is not pulled toward the easiest buyers |
+| Time to first invoice for switchers | Days from trial start to first invoice paid on the Company's own Stripe account | Median ≤ 10 days | Answers the "it took forever to get running" pain (rank 5) |
+| Card re-collection rate | Autopay clients re-enrolled within 30 days of a switch / autopay clients at the previous vendor | ≥ 70% | The scariest step of a payments migration |
+| TCO calculator conversion | Trials started / calculator completions | ≥ 12% | Validates the total-cost message |
+| Net saving shown | Share of ICP calculator runs that show a net monthly saving | ≥ 70% (mirrors [22](22-business-model-pricing-gtm.md) goal G1) | If below, pricing or packaging is wrong |
+| Competitive churn | Logos lost to a named competitor / all logos, trailing 12 months | ≤ 4% per year | Early warning for threats T1-T3 |
+| Pain-point coverage | Share of the top 15 pain points with a shipped Rootline answer | 10 of 15 at MVP, 15 of 15 by V1 | Keeps the roadmap honest to the evidence |
+| Claim freshness | Published claims within `verify_by` / all published claims | 100% (stale claims auto-hidden) | Legal safety and credibility |
+| Matrix unknown rate | "?" cells / all competitor cells in the matrix | Fall from about 30% today to ≤ 10% within 6 months of launch | Better evidence for product and sales decisions |
+| Win/loss coverage | Closed opportunities with a reason code / all closed | ≥ 90% | Without reasons, win rates explain nothing |
+
+---
+
+## 14. Edge cases, compliance and risks
+
+### 14.1 Comparative claims and competitor content
+
+| Risk | Rule | Owner |
+|---|---|---|
+| False or misleading comparative advertising (US Lanham Act section 43(a), FTC comparative-advertising policy; Canada's Competition Act misleading-representation provisions) [B, counsel to confirm] | Only verified `S` claims reach public pages; each carries a date and citation; absences are phrased as "we could not find documentation as of <date>"; legal review before first publication; 5-business-day correction SLA | `platform_owner` |
+| Trademark misuse | Competitor names in plain text for identification only; no logos, no implied endorsement, no competitor names in paid-search ad copy without counsel sign-off | `platform_owner` |
+| Review-site content | Short quotes with links, consistent with each site's terms; no bulk scraping of G2, Capterra, Reddit or LawnSite; licensed data where available | `platform_support` |
+| Website scraping and access | Public pages only, robots.txt respected, no login-gated content, no fake accounts, no trials opened under false identity to extract product details | `platform_engineer` |
+| Competitor confidential information | Never solicit or use confidential materials from former competitor employees or customers (contracts, internal docs, rate cards marked confidential) | All staff |
+| Using competitor APIs for migration | Only customer-authorized access permitted by the competitor's developer terms; default to the customer's own export files ([19](19-platform-admin-portal.md) open question) | `platform_engineer` |
+| Antitrust | Price observations come from public sources only; never exchange pricing intentions with competitors; cross-tenant benchmarks are opt-in, ratio-based and k-anonymous ([18](18-reporting-analytics.md)) | `platform_owner` |
+| Defamation | No statements about competitors' financial health, security or legal compliance unless from public filings or official sources | `platform_owner` |
+
+### 14.2 Data handling in the prospect tools
+
+- **Fee X-ray uploads** contain merchant identifiers and possibly partial card data. Redact at extraction, store only derived numbers, delete source files after 30 days, never use for model training without explicit consent ([20](20-architecture-security.md)).
+- **TCO calculator inputs** are anonymous until the prospect chooses to share contact details; no third-party ad pixels on the results step.
+- **Switch-source declarations** are optional and never inferred from email, bank feeds or browsing behavior.
+
+### 14.3 Market and strategy risks
+
+| Risk | Likelihood | Mitigation |
+|---|---|---|
+| **The market model overstates reachable firms** (establishments vs firms, low software adoption at 1-9 employees) | Medium | Replace with CBP/SUSB/StatCan pulls (MI-13) before external decks; size the beachhead bottom-up from association and license lists |
+| **The beachhead is too narrow** (residential design-build in two Regions) | Medium | Archetype B as primary follow-on at MVP; Region scorecard in [22](22-business-model-pricing-gtm.md) section 6.2 |
+| **Seasonal buying**: firms will not switch between March and October | High | Sell and migrate November-February; spring go-live guarantee (section 15, idea 3); trade-show calendar (January) |
+| **Payments lock-in at the previous vendor slows switching** | High | Card re-collection kit, ACH incentive, re-enrollment tracker |
+| **Scope risk**: building eight differentiators at once delays MVP | High | [24](24-roadmap-feature-catalog.md) phasing; parity features shipped before delight features in each module |
+| **Curation cost** of the Plant KB exceeds plan | Medium | Launch with about 1,500 curated species and cultivars in beachhead Regions ([R3](research/R3-design-ai-plant-data.md) s6.1); coverage badges elsewhere |
+| **AI cost or quality disappoints** | Medium | Model routing behind the AI Gateway, golden-set benchmarks, metered credits ([11](11-ai-design-mockups.md), [17](17-ai-copilot-automation.md)) |
+| **Evidence base partly unverified** (this document's [B] items) | Certain today | Appendix E verification pass before any investor or public use |
+
+---
+
+## 15. Beyond the brief: extra ideas
+
+1. **"State of Landscape Software" annual report [V1].** Publish the sourced capability matrix, price ranges and anonymized switch-source data once a year. It becomes the reference trade press cites, and Rootline defines the comparison criteria.
+2. **Landscape Data Portability Pledge [MVP].** A short public commitment: full data export in documented formats at any time, the Company owns its Stripe account and card vault, no exit fees. Invite other vendors to sign. Incumbents that depend on lock-in cannot sign without changing their model, which makes the pledge a positioning weapon at near-zero cost.
+3. **Spring Go-Live Guarantee [MVP].** Companies that sign by February 1 get a migration completed and crews trained before March 15, or the first three months free. Turns the seasonal buying risk into a deadline that pulls deals into winter.
+4. **Live redesign booth at trade shows [MVP, GTM].** At MANTS, CENTS, Mid-Am, Landscape Ontario Congress and ProGreen EXPO, owners bring a phone photo of a client's yard; in 6 minutes they leave with a to-scale plan, a Region-valid plant list, an AI mockup and a priced estimate. The demo is the differentiator.
+5. **Processor Fee X-ray as a standalone lead magnet [V1].** Already specified as MI-11; worth promoting on its own because payments pain is the most specific complaint after acquisitions.
+6. **Convergence watch for sales [V1].** When Granum, ServiceTitan, Xplor or WorkWave announce a forced migration or product convergence, sales gets a playbook and a list of tenants' competitors in that pool (from public signals only).
+7. **Open estimating interchange format [V2].** Publish an open JSON schema for production rates, kits and budgets with importers for LMN-style and Aspire-style data ([R2](research/R2-landscape-specific-platforms.md) s18). If Rootline defines the format, every future switch gets easier.
+8. **CPA channel program [V1].** Many landscape firms use the same handful of regional CPAs. Give CPAs free seats, a multi-client hub and a "books health score" ([R4](research/R4-industry-payments-accounting.md) s29); one CPA can influence a dozen switches.
+9. **Sunset rescue program [V1].** When a legacy product is retired or forced to the cloud (CLIP, BOSS LM or a desktop edition, status to verify), offer a free migration and a price match for a year.
+10. **Regional Plant Performance Report [V2].** Opt-in, anonymized install outcomes by cultivar and Region become an annual public report and a PR asset that no software-only competitor can produce ([R3](research/R3-design-ai-plant-data.md) s6.3).
+11. **"Price check" for owners [V2].** With opt-in benchmarks, an owner sees where their mulch-per-yard, weekly-mow and patio-per-square-foot prices sit against their Region and size band, which turns benchmarking into a weekly habit.
+12. **Association data partnerships [V1].** State landscape associations and pesticide-applicator license lists help size each Region and reach firms; offer associations member discounts and co-branded education in return.
+
+---
+
+## 16. Open questions
+
+| # | Question | Why it matters | Owner | Needed by |
+|---|---|---|---|---|
+| Q1 | Can we complete 20 interviews per archetype (A-E) in the two candidate beachhead Regions before MVP scope freeze? | Validates the top 15 pain points and the willingness to switch | `platform_owner` | Before MVP scope freeze |
+| Q2 | Which Regions does the founder's plant knowledge cover best? | Beachhead choice depends on Plant KB quality ([22](22-business-model-pricing-gtm.md) 6.2) | `platform_owner`, `platform_curator` | Before curation starts |
+| Q3 | Is [22](22-business-model-pricing-gtm.md)'s Year-5 base case (about 12% of the theoretical pool) realistic, or should the base case be re-anchored to measured beachhead win rates? | Investor credibility | `platform_finance` | After 6 months of beta |
+| Q4 | Publish named comparison pages at launch, or wait until claims are verified in a follow-up research pass? | Legal and reputational exposure vs search traffic | `platform_owner` | Before marketing site launch |
+| Q5 | After Jobber and LMN, which switch kit comes next: Service Autopilot (payments pain), SingleOps (Granum convergence) or Real Green (lawn programs)? | Importer roadmap | `platform_engineer`, GTM | MVP plus 3 months |
+| Q6 | Partner with a measurement vendor until native AI takeoff ships, or build only? | Time to parity on measurement | `platform_owner` | Before V1 planning |
+| Q7 | Is snow a [V1] commitment for snow-belt beachheads or a [V2] module? | Archetype E timing | `platform_owner` | Before V1 planning |
+| Q8 | Should Rootline offer a free Solo tier against Yardbook, or keep Starter as the floor? | Top-of-funnel economics vs support cost | `platform_owner`, `platform_finance` | Before pricing page |
+| Q9 | Should Rootline license review-site data for pain-point mining, or rely on its own interviews and win/loss? | Evidence quality vs cost | GTM | V1 |
+| Q10 | Fund a verification research pass (search budget plus vendor domains allowlisted) to clear Appendix E? | Many matrix cells and prices are [B] or [S3P] | `platform_owner` | Before any investor deck |
+
+---
+
+## Appendices
+
+### Appendix A: R1, general field-service platforms
+
+[R1-field-service-platforms.md](research/R1-field-service-platforms.md). Jobber in depth (pricing tiers and add-ons, Client Hub, online booking, Jobber Payments on Stripe, the QuickBooks Online sync model and its limits, routing complaints, AI products), plus Housecall Pro, ServiceTitan, Workiz, FieldEdge, ServiceM8, FieldPulse, Kickserv, GorillaDesk, Service Fusion, Markate, Zuper and Thryv. A 14-competitor feature matrix, pricing benchmark, payments and accounting comparisons, 15 pain points and 15 lessons.
+
+### Appendix B: R2, landscape-specific platforms
+
+[R2-landscape-specific-platforms.md](research/R2-landscape-specific-platforms.md). Aspire, BOSS LM, LMN, SynkedUP, SingleOps, Arborgold, Real Green, Service Autopilot, Copilot CRM, Yardbook, CLIP, LawnPro, QuoteIQ; measurement tools (PropertyIntel, SiteRecon, Attentive.ai, Beam AI); snow software and SIMA/ASCA standards; consumer marketplaces; design services. Consolidation timeline, switching windows, migration notes per competitor, 16 synthesized pain points and the white-space table this document builds on.
+
+### Appendix C: R3, design tools, AI mockup technology and plant data
+
+[R3-design-ai-plant-data.md](research/R3-design-ai-plant-data.md). PRO Landscape+, DynaSCAPE, Vectorworks Landmark, Land F/X, SketchUp, Realtime Landscaping, Structure Studios and consumer apps; how designs fail to connect to estimating; image, segmentation and depth models with license traps and costs per image; more than 40 plant data sources with commercial-reuse verdicts; a 20-item build, license and partner plan.
+
+### Appendix D: R4, industry economics, payments and accounting
+
+[R4-industry-payments-accounting.md](research/R4-industry-payments-accounting.md). Market size and shape (labeled ranges), seasonality and cash flow, margins and labor (Wilson 360, H-2B), field pricing models, Stripe Connect controller properties and Accounts v2, charge types and application fees, ACH and surcharging rules, how competitors monetize payments, QuickBooks Online, Desktop and Xero integration realities, Intuit pricing changes, ledger architecture and landscaping-specific accounting.
+
+### Appendix E: verification checklist for this document
+
+Every item below must be confirmed before external use. Items consolidate the checklists in R1 section 19, R2 section 20, R3 section 7 and R4 section 30.
+
+| # | Item | Where to verify |
+|---|---|---|
+| E1 | US employer establishments and firms by employee band (NAICS 561730); nonemployer counts; industry revenue | Census CBP, SUSB, Nonemployer Statistics, Economic Census; IBISWorld summary |
+| E2 | Canadian establishment counts by band (NAICS 56173) | Statistics Canada Canadian Business Counts |
+| E3 | BLS employment and wages for SOC 37-3011; H-2B landscaping share and FY2026 supplemental visas | BLS OEWS; DOL OFLC disclosure data; USCIS |
+| E4 | Service-line revenue mix and net margins by firm size | Lawn & Landscape State of the Industry; NALP; Wilson 360 |
+| E5 | Jobber 2026 list prices, included users, AI Receptionist price, route-optimization tier, offline and Spanish support | getjobber.com pricing and help center |
+| E6 | Housecall Pro, Workiz, ServiceTitan pricing and AI packaging | Vendor sites, ServiceTitan filings |
+| E7 | LMN and SingleOps pricing after the Granum merger; LMN Pay portability and partial refunds | golmn.com, singleops.com, Granum statements |
+| E8 | Aspire current processor, accounting integrations, retainage, pricing | youraspire.com, guide.youraspire.com |
+| E9 | Service Autopilot acquisition date and tiers; Real Green ownership timeline and chemical-record depth | Xplor and WorkWave press; vendor sites |
+| E10 | Copilot CRM, Yardbook, QuoteIQ, GorillaDesk, Yeti feature sets and prices | Vendor sites |
+| E11 | Spanish crew UI and documented offline behavior at each vendor | App stores, help centers |
+| E12 | QuickBooks Online list prices, Desktop retirement dates, App Partner Program metering | quickbooks.intuit.com, developer.intuit.com |
+| E13 | Stripe US and Canada pricing (cards, ACH, PAD, instant payouts) | stripe.com/pricing |
+| E14 | Image-model prices and licenses (Gemini image, GPT Image, FLUX Kontext, SDXL, Qwen-Image) | Vendor pricing pages and model cards |
+| E15 | Direct Reddit (r/landscaping, r/lawncare) and LawnSite quotes for each pain point in section 6 | reddit.com, lawnsite.com |
+| E16 | Comparative-advertising and trademark rules for comparison pages in the US and Canada | Counsel |
+
+---
+
+## Sources
+
+All links below were retrieved by research agents during this research run (November 2026) and are cited inline above; this document re-cites them because its own searches were refused when the run-wide search budget ran out, and fetches to ibisworld.com and bls.gov were blocked by the network allowlist. Prices and plan names are time-sensitive: as of Nov 2026, verify. Items marked "not opened" are primary references named for verification only.
+
+**Industry, labor and market**
+- Lawn & Landscape, Wilson 360 2024 benchmark: https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark
+- Total Landscape Care, how to properly cost a job: https://www.totallandscapecare.com/business/article/15034644/how-to-properly-cost-a-job
+- Data USA, landscaping and groundskeeping workers: https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers
+- USCIS, H-2B cap count: https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-2b-non-agricultural-workers/cap-count-for-h-2b-nonimmigrants
+- DOL WHD, H-2B program: https://www.dol.gov/agencies/whd/immigration/h2b
+- ISED, financial performance data for NAICS 56173: https://ised-isde.canada.ca/app/ixb/cis/performance/56173
+- Census County Business Patterns program page (not opened): https://www.census.gov/programs-surveys/cbp.html
+- Finviz, Aspire report on commercial landscapers and AI: https://finviz.com/news/401821/aspire-report-finds-commercial-landscapers-prioritizing-growth-as-businesses-navigate-operational-complexity
+- Weed Man, prepay and referral discounts: https://weedman.com/blog/prepay-and-referral-discounts
+- LawnPro, level billing: https://lawnprosoftware.com/features/level-billing
+- Beyond Pesticides, state lawn-pesticide notification laws: https://beyondpesticides.org/assets/media/documents/lawn/factsheets/STATE%20NOTFICATION%20LAWS%20-%20LAWN.pdf
+- SIMA, effective in-season documentation: https://resources.sima.org/snow-and-ice-resource-center/effective-in-season-documentation
+- SIMA, Aspire for snow: https://resources.sima.org/snow-and-ice-resource-center/unlock-profitability-and-efficiency-with-aspire
+- Axios, homeowners using AI for landscape design (May 2026): https://www.axios.com/local/washington-dc/2026/05/08/landscape-design-ai
+- LawnStarter, how the instant quote works: https://www.lawnstarter.com/blog/lawnstarter/how-does-lawnstarter-instant-quote-work/
+
+**Ownership and deals**
+- TechCrunch, ServiceTitan acquires Aspire: https://techcrunch.com/2021/06/30/servicetitan-acquires-aspire-to-move-into-landscaping-raises-200m-at-a-9-5b-valuation
+- Aspire blog, acquisition closed: https://www.youraspire.com/blog/aspire-to-be-acquired-by-servicetitan
+- PrivSource, Aspire acquires Go iLawn and LandOne: https://www.privsource.com/acquisitions/deal/x7SXDx
+- Landscape Management, Aspire launches PropertyIntel: https://www.landscapemanagement.net/aspire-software-launches-new-propertyintel-measuring-and-estimating-tool/
+- Attentive.ai, LMN partnership: https://attentive.ai/blog/lmn-and-attentive-ai-announce-strategic-partnership
+- Landscape Management, LMN and Attentive partner: https://www.landscapemanagement.net/lmn-and-attentive-partner-to-integrate-products/
+- Green Industry Pros, Granum launches LMN Pay experience: https://www.greenindustrypros.com/business-management/software/product/22963124/granum-granum-launches-lmn-pay-experience
+- Landscape Management, LMN by Granum with Stripe: https://www.landscapemanagement.net/lmn-by-granum-launches-new-financial-infrastructure-platform-in-partnership-with-stripe/
+- ServiceTitan press, Pantheon 2025 AI: https://www.servicetitan.com/press/servicetitan-introducing-the-next-evolution-of-ai-at-pantheon-2025-keynote
+- ServiceTitan docs, Atlas: https://help.servicetitan.com/docs/atlas
+
+**Jobber**
+- Jobber Help, what clients see in Client Hub: https://help.getjobber.com/en/articles/what-do-your-clients-see-in-client-hub/
+- Jobber Help, online booking: https://help.getjobber.com/en/articles/online-booking/
+- Jobber, Google Local Services Ads integration: https://getjobber.com/integrations/google-local-services-ads/
+- Jobber Help, QuickBooks integration FAQs: https://help.getjobber.com/es/articles/quickbooks-integration-faqs/
+- Jobber Help, common QuickBooks sync errors: https://help.getjobber.com/hc/en-us/articles/10466688449431-Common-QuickBooks-Sync-Errors-and-How-to-Fix-Them
+- Jobber Help, measuring property distance and size: https://help.getjobber.com/es/articles/how-to-measure-property-distance-and-size/
+- Jobber Help, instant payouts: https://help.getjobber.com/en/articles/instant-payouts/
+- Jobber, ACH on us: https://www.getjobber.com/ach-on-us/
+- Jobber Community, routing with real driving directions: https://community.getjobber.com/discussions/job-details-scheduling/how-does-jobber-calculate-routes-and-can-it-use-real-driving-directions-instead-/8663/replies/9863
+- Jobber Community, Google reviews only vs Marketing Suite: https://community.getjobber.com/discussions/marketing-tools/google-reviews-only-for-marketing-suite/3726
+- Jobber Community, looking for landscape design software: https://community.getjobber.com/discussions/operations-forum/looking-for-landscape-design-software--training/8084
+- Jobber Community, adding credit card fees to invoices: https://community.getjobber.com/discussions/invoicing-getting-paid/advice-adding-the-credit-card-service-fee-to-invoices/1228/replies/8669
+- Jobber Product Updates, Marketing Suite: https://productupdates.getjobber.com/71315-meet-the-easier-way-to-grow-your-business-with-marketing-suite
+- PR Newswire, Jobber launches Copilot: https://prnewswire.com/news-releases/jobber-launches-copilot-the-first-of-several-ai-powered-products-aimed-at-making-home-service-business-ownership-simpler-than-ever-before-302264047.html
+- destinationCRM, Jobber launches Receptionist: https://www.destinationcrm.com/Articles/CRM-News/CRM-Across-the-Wire/Jobber-Launches-Receptionist-171139.aspx
+- Lawn & Landscape, Jobber adds new AI-powered features: https://www.lawnandlandscape.com/news/jobber-adds-new-ai-powered-features
+- TechRadar, Jobber CRM review: https://www.techradar.com/pro/software-services/jobber-crm-review
+- Stripe case study, Jobber and 200k home service professionals: https://www.casestudies.com/company/stripe/case-study/jobber-and-stripe-help-200k-home-service-professionals-save-on-payment-fees
+- OneCrew, Jobber pricing 2026 (S3P): https://www.getonecrew.com/post/jobber-pricing
+- Fieldproxy, Jobber pricing 2026 (S3P): https://www.fieldproxy.ai/fsm-software-pricing/jobber
+- Costbench, Jobber price change Feb 2026 (S3P): https://costbench.com/changelog/jobber-price-increase-2026-02-3/
+- FieldCamp, Jobber reviews (S3P): https://fieldcamp.ai/reviews/jobber-reviews/
+- PaymentProviders.io, Stripe vs Jobber Payments fees (S3P): https://paymentproviders.io/compare/stripe-vs-jobber-payments?focus=fees
+
+**Housecall Pro, Workiz**
+- Housecall Pro, payment processing: https://www.housecallpro.com/features/payment-processing/
+- Housecall Pro, February 2026 product updates: https://www.housecallpro.com/resources/february-2026-product-updates/
+- Housecall Pro Help, Wisetack consumer financing: https://help.housecallpro.com/en/articles/3836042-wisetack-consumer-financing-overview
+- Fieldproxy, Housecall Pro pricing (S3P): https://www.fieldproxy.ai/fsm-software-pricing/housecall-pro
+- ContractorToolStack, Housecall Pro pricing (S3P): https://contractortoolstack.com/software/housecall-pro/pricing/
+- ServiceAgent, Workiz pricing 2026 (S3P): https://serviceagent.ai/blogs/workiz-pricing/
+- Carly, Workiz AI (S3P): https://www.usecarly.com/blog/workiz-ai/
+
+**Aspire**
+- Aspire, estimating: https://www.youraspire.com/features/estimating
+- Aspire, purchasing: https://www.youraspire.com/features/purchasing
+- Aspire, invoicing: https://www.youraspire.com/industries/landscape-business-software/invoicing
+- Aspire, equipment: https://www.youraspire.com/features/equipment
+- Aspire, property measurement: https://www.youraspire.com/go/landscape-estimating-property-measurement
+- Aspire guide, branch-to-branch subcontract work: https://guide.youraspire.com/docs/workflow-for-managing-branch-to-branch-subcontract-work
+- Aspire blog, proving service delivery: https://www.youraspire.com/blog/prove-service-delivery-data-ends-disputes
+- Aspire blog (2019), online payments with CardConnect: https://www.youraspire.com/blog/your-customers-can-pay-online-with-aspire-in-version-5.0-0
+- Aspire marketplace, Wilson360: https://marketplace.youraspire.com/partners/wilson360.md
+- Landscape Management (Sept 2020), Aspire implementation case: https://editions.mydigitalpublication.com/article/Aspire+Software/3753265/671715/article.html
+- Capterra, Aspire: https://www.capterra.com/p/161544/Aspire/
+- Capterra, Aspire reviews page 3: https://www.capterra.com/p/161544/Aspire/reviews/?page=3
+- Capterra, Aspire reviews page 4: https://www.capterra.com/p/161544/Aspire/reviews/?page=4
+- Capterra, Aspire review 7184990: https://www.capterra.com/p/161544/Aspire/reviews/7184990/
+- GetApp UK, Aspire reviews: https://www.getapp.co.uk/reviews/9108/aspire
+- AppGoblin, legacy Aspire Crew Mobile listing: https://appgoblin.info/apps/1392810365
+- Slashdot, PropertyIntel listing: https://slashdot.org/software/p/PropertyIntel/
+- FieldServiceSoftware.io, Aspire (S3P): https://fieldservicesoftware.io/software/aspire/
+- CostBench, Aspire (S3P): https://costbench.com/software/lawn-care-software/aspire-landscape/
+- Vergo, AP automation for Aspire users: https://www.getvergo.com/learn/best-ap-automation-software-for-landscape-companies-using-aspire
+- SiteDNA: https://sitedna-marketing-site.pages.dev/
+
+**LMN, SingleOps, SynkedUP, Arborgold**
+- LMN Help, overhead, labor burden and profit: https://intercom.help/lmn/en/articles/15939065-how-lmn-calculates-overhead-labor-burden-and-profit-in-estimates
+- LMN Help, user permissions: https://intercom.help/lmn/en/articles/17699017-lmn-user-permissions
+- LMN blog, Crew 2.0: https://golmn.com/blog/introducing-lmn-crew-2-0-crew-for-all
+- LMN release note, Feb 2026: https://support.golmn.com/hc/en-us/articles/46786137574683
+- Turf Magazine, LMN integrates SiteOne: https://turfmagazine.com/lmn-integrates-siteone-landscape-supply-in-2021-software/
+- Capterra, LMN reviews: https://www.capterra.com/p/142064/LMN/reviews/
+- Capterra, LMN pricing (S3P): https://www.capterra.com/p/142064/LMN/pricing/
+- G2, LMN: https://www.g2.com/products/lmn
+- GetApp, LMN: https://www.getapp.com/industries-software/a/lmn/
+- CostBench, LMN (S3P): https://costbench.com/software/lawn-care-software/lmn-landscape/
+- Merchant Cost Consulting, LMN Pay Stripe migration (single third-party opinion): https://merchantcostconsulting.com/lower-credit-card-processing-fees/lmn-pay-stripe-migration/
+- Supergood, LMN API report card (S3P): https://supergood.ai/api-report-card/lmn
+- SingleOps docs, purchase orders: https://docs.singleops.com/hc/articles/43339572958491
+- SingleOps, tree inventory: https://singleops.com/features/tree-inventory
+- Casestudies.com, SingleOps CHOP Nashville: https://www.casestudies.com/company/singleops/case-study/chop-nashvilles-proposals-are-incredible
+- ITQlick, SingleOps pricing (S3P): https://www.itqlick.com/singleops/pricing
+- SynkedUP, features: https://synkedup.com/features/
+- SynkedUP Help, user roles: https://help.synkedup.com/en/articles/14756763-how-user-roles-work-in-synkedup
+- Capterra, SynkedUP pricing (S3P): https://www.capterra.com/p/228695/SynkedUP/pricing/
+- Arborgold, customer portal: https://arborgold.com/customer-portal/
+- Arborgold Help, crew permissions: https://help.arborgold.com/en/articles/permissions-in-arborgold-crew
+- Arborgold, pricing page (S3P): https://arborgold.com/?p=17837
+
+**Real Green, Service Autopilot, Copilot CRM, Yardbook, QuoteIQ, LawnSite**
+- RealGreen, billing and invoicing: https://realgreen.com/features/landscape-billing-invoice-software
+- RealGreen, customer portal: https://realgreen.com/features/lawn-care-customer-portal
+- RealGreen, Measurement Assistant: https://www.realgreen.com/measurement_assistant.html
+- Capterra, RealGreen reviews page 5: https://www.capterra.com/p/78106/Service-Assistant/reviews/?page=5
+- Software Advice AU, RealGreen Service Assistant: https://www.softwareadvice.com.au/software/361337/service-assistant
+- Softwarefinder, RealGreen (S3P): https://softwarefinder.com/fleet-management-software/realgreen-by-workwave
+- IntegrateIQ, RealGreen vs FieldRoutes (S3P): https://integrateiq.com/comparisons/realgreen-vs-fieldroutes/
+- GetApp, Service Autopilot reviews: https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/
+- Capterra, Service Autopilot reviews: https://www.capterra.com/p/122075/Service-Autopilot/reviews/
+- Capterra, Service Autopilot reviews page 3: https://www.capterra.com/p/122075/Service-Autopilot/reviews/?page=3
+- G2, Service Autopilot reviews page 3: https://g2.com/products/service-autopilot/reviews?page=3
+- Capterra, LawnPro vs Service Autopilot: https://www.capterra.com/compare/105508-122075/LawnPro-vs-Service-Autopilot
+- Software Advice, Service Autopilot profile: https://www.softwareadvice.com/landscaping/service-autopilot-profile/
+- CostBench, Service Autopilot (S3P): https://costbench.com/software/lawn-care-software/service-autopilot/
+- Copilot CRM, Ohio lawn care page: https://www.copilotcrm.com/lawn-care/ohio
+- Toolradar, Yardbook pricing (S3P): https://toolradar.com/tools/yardbook/pricing
+- QuoteIQ Help, AI Smart Import: https://intercom.help/quoteiq/en/articles/14442924-ai-smart-import-migrate-your-data-from-any-crm-in-minutes
+- LawnSite, Jobber business management software review: https://www.lawnsite.com/threads/jobber-business-management-software-review.392517/
+- Agiled, snow removal software (competitor-written): https://agiled.app/blog/best-client-management-software-for-snow-removal
+- Yeti Software: https://yetisoftware.com/
+
+**Design tools, AI and plants**
+- Capterra, PRO Landscape: https://www.capterra.com/p/126135/PRO-Landscape/
+- Capterra UK, PRO Landscape: https://www.capterra.co.uk/software/126135/pro-landscape
+- Green Industry Pros, PRO Landscape+ AI designer suite: https://www.greenindustrypros.com/business-management/software/product/22961404/pro-landscape-pro-landscape-launches-aibased-designer-suite
+- Land F/X, planting schedules: https://www.landfx.com/docs/planting/schedules.html
+- Land F/X, irrigation features: https://www.landfx.com/irrigationfeatures
+- Vectorworks help, creating schedules automatically: https://app-help.vectorworks.net/2015/NNA/eng/VW2015_Guide/Worksheets/Creating_Schedules_Automatically.htm
+- JackMacBiz, design app re-keying costs (anecdotal): https://jackmacbiz.github.io/blog/2026-06-13-why-your-current-landscape-design-app-is-wasting-8-hours-per/
+- Penn State Extension, AI garden design: https://extension.psu.edu/ai-garden-design-intelligent-choices
+- Cognitive Future, AI landscape design tools (S3P): https://cognitivefuture.ai/best-ai-tools-for-landscape-design/
+- Fast.io, best AI for landscape design 2026 (S3P): https://www.fast.io/resources/best-ai-for-landscape-design-2026.md
+- AI Tools Bakery, iScape review (S3P): https://aitoolsbakery.com/blog/iscape-review/
+- BenchLM, Gemini image pricing (S3P): https://benchlm.ai/media-pricing/nano-banana
+- BFL help, FLUX pricing (S3P): https://help.bfl.ai/articles/7424166364-wip-welcome-to-the-forest
+
+**Payments and Stripe**
+- Stripe docs, migrate to controller properties: https://docs.stripe.com/connect/migrate-to-controller-properties
+- Stripe docs, Accounts v2: https://docs.stripe.com/connect/accounts-v2
+- Stripe docs, direct charges fee payer behavior: https://docs.stripe.com/connect/direct-charges-fee-payer-behavior
+- Stripe docs, application fees: https://docs.stripe.com/connect/application-fees
+- Stripe docs, OAuth: https://docs.stripe.com/connect/oauth
+- Dodo Payments, Stripe ACH fees (S3P): https://dodopayments.com/blogs/stripe-ach-fees/

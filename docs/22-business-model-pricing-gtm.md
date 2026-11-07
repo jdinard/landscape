@@ -281,13 +281,15 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. T
 | Automation builder | L (5 active rules) | L (50) | Y (unlimited) | Y | [17](17-ai-copilot-automation.md) | [MVP] |
 | AI agents (scheduling agent, collections agent) | - | L | Y | Y | [17](17-ai-copilot-automation.md) | [V1] |
 | Standard dashboards | Y | Y | Y | Y | [18](18-reporting-analytics.md) | [MVP] |
-| Report builder, scheduled reports | - | Y | Y | Y | [18](18-reporting-analytics.md) | [V1] |
+| Report builder (scheduled delivery ships at [MVP]) | - | Y | Y | Y | [18](18-reporting-analytics.md) | [V1] |
 | Benchmarking (opt-in peer comparisons) | - | Y | Y | Y | [18](18-reporting-analytics.md) | [V1] |
-| Forecasting, data warehouse export | - | - | Y | Y | [18](18-reporting-analytics.md) | [V2] |
+| 13-week cash and capacity forecasts | - | - | Y | Y | [18](18-reporting-analytics.md) | [V1] |
+| Scenario planner, seasonal ML forecast | - | - | Y | Y | [18](18-reporting-analytics.md) | [V2] |
+| Data warehouse export (data shares), multi-company rollup | - | - | A | Y | [18](18-reporting-analytics.md) | [V2] |
 | Custom roles (granular permissions) | - | L (2 custom roles) | Y | Y | [02](02-personas-roles-permissions.md) | [MVP] |
 | Multi-branch / divisions | - | - | Y | Y | [02](02-personas-roles-permissions.md) | [V1] |
 | SSO (SAML/OIDC), SCIM | - | - | - | Y | [20](20-architecture-security.md) | [V1] |
-| Public API and webhooks | L (read-only, 10k calls/day) | Y (50k/day) | Y (250k/day) | Custom | [20](20-architecture-security.md) | [V1] |
+| Public API and webhooks | L (read-only, 10k calls/day) | Y (50k/day) | Y (250k/day) | Custom | [20](20-architecture-security.md) | [MVP] core objects, [V1] full surface and daily quotas |
 | Sandbox tenant | - | - | A | Y | [20](20-architecture-security.md) | [V1] |
 | Dedicated database option | - | - | - | A | [20](20-architecture-security.md) | [V2] |
 | Franchise rollup (franchisor console, royalty reporting) | - | - | - | Y [V2] | Section 5.4 | [V2] |
@@ -449,7 +451,7 @@ Add-on rules:
 | **Free trial** | 14 days of Grow features. No card required. Field seats unlimited. 500 AI credits. Payments live once Stripe is connected (it is the Company's own account) | [MVP] |
 | **Winter trial** | Trials started between Nov 1 and Feb 28 default to **30 days**, because buyers are evaluating during the planning season | [MVP] |
 | **Earned extension** | +14 days if the trial completes 4 of 6 onboarding milestones (import clients, connect Stripe, send a proposal, schedule a visit, invite a crew member, connect bank feed) | [MVP] |
-| **Demo company** | Every trial can toggle a fully populated sample Company ("Greenleaf Landscape Co.", 120 clients, a year of visits, designs, invoices, GL) to explore before importing their own data | [MVP] |
+| **Demo company** | Every trial can toggle a fully populated sample Company ("Greenleaf Grounds Co.", 120 clients, a year of visits, designs, invoices, GL) to explore before importing their own data | [MVP] |
 | **SMS in trial** | Disabled until the Company submits 10DLC brand and campaign registration (started on day 1 from a guided form). Email and push work immediately. See [Marketing](16-marketing-growth-communications.md) | [MVP] |
 | **Trial end** | Choose a plan, or the tenant drops into a **read-only** state for 60 days (exports allowed), then archive | [MVP] |
 | **Spring-Ready Guarantee** | Companies that sign an annual Grow or Pro plan by **Feb 15** and complete the onboarding checklist are guaranteed live (imported, crews on app, first invoices sent) by **Mar 31**, or the first 3 months are free | [V1] |
@@ -1123,7 +1125,7 @@ Dunning exceptions [MVP]:
 - **No crew-facing billing messages:** crew users never see Rootline billing banners in any state.
 - **Grace on request:** `platform_finance` may extend `past_due` by up to 14 days once per 12 months with a reason code (for example, a stolen card).
 
-State names: the values below are `tenant_subscription.status`. [19](19-platform-admin-portal.md) maps them to the platform-level tenant lifecycle (for example `cancel_pending` = `pending_cancellation`, `canceled` = `churned`, `archive_plan` = `archived`, and `archived` here = subscription closed, data in `pending_deletion` there). Keep that mapping table in 19 as the single source when either doc changes.
+State names: the values below are `tenant_subscription.status`. [19](19-platform-admin-portal.md) maps them to the platform-level tenant lifecycle (for example `trialing` = `trial`, `cancel_pending` = `pending_cancellation`, `canceled` = `churned`, `archive_plan` = `archive_plan`, and `archived` here = subscription closed, with the tenant in `pending_deletion` or `deleted` there). Keep that mapping table in 19 as the single source when either doc changes.
 
 ```mermaid
 stateDiagram-v2
@@ -1406,7 +1408,7 @@ Rules: competitor price defaults come from a `platform_finance`-maintained table
 
 ```text
 +---------------------------------------------------------------------------------------------+
-| Settings / Plan & Billing                                            Greenleaf Landscape Co. |
+| Settings / Plan & Billing                                             Greenleaf Grounds Co. |
 +---------------------------------------------------------------------------------------------+
 | PLAN  Grow - Annual (USD)   Renews Mar 1, 2028   Price locked until Mar 1, 2029  [Change plan] |
 | Founding Customer -25% applied                                                              |
