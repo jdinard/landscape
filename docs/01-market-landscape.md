@@ -1,6 +1,6 @@
 # 01 - Market Landscape and Competitive Analysis
 
-> Rootline enters a large, fragmented, seasonal and labor-constrained industry whose software has split into three camps that do not talk to each other: horizontal home-service apps (Jobber, Housecall Pro) that are easy but shallow, landscape ERPs and estimating suites (Aspire, LMN, SingleOps, Real Green, Service Autopilot) that are deep but dated, consolidating and payment-locked, and design tools (PRO Landscape+, DynaSCAPE, Vectorworks, consumer AI apps) that draw well but never price, schedule, bill or account for the work. Every one of them outsources the books to QuickBooks and nearly every one monetizes payments through an account the landscaper does not control. This document is the definitive market analysis for the Rootline proposal. It sizes and segments the market, defines the five business archetypes Rootline serves, maps 17 competitors against 53 capabilities, benchmarks pricing, ranks the top 15 user pain points with evidence, identifies the white space, explains why the window is open now, collects 45 ideas worth stealing (and how Rootline improves each), war-games the incumbents' likely responses, and closes with the positioning statement and messaging pillars the rest of the doc set uses. It also specifies the small "market intelligence" capability inside the Platform Admin console that keeps this analysis current after launch.
+> Rootline enters a large, fragmented, seasonal and labor-constrained industry whose software has split into three camps that do not talk to each other: horizontal home-service apps (Jobber, Housecall Pro) that are easy but shallow, landscape ERPs and estimating suites (Aspire, LMN, SingleOps, Real Green, Service Autopilot) that are deep but dated, consolidating and payment-locked, and design tools (PRO Landscape+, DynaSCAPE, Vectorworks, consumer AI apps) that draw well but never price, schedule, bill or account for the work. Every one of them outsources the books to QuickBooks and nearly every one monetizes payments through an account the landscaper does not control. This document is the definitive market analysis for the Rootline proposal. It sizes and segments the market, defines the five business archetypes Rootline serves, maps 17 competitors against 53 capabilities, benchmarks pricing, ranks the top 15 user pain points with evidence, identifies the white space, maps the dated regulatory forces (turf-water deadlines, small-engine rules, pesticide rules, overtime reporting) that turn compliance into a buying trigger, explains why the window is open now, collects 45 ideas worth stealing (and how Rootline improves each), war-games the incumbents' likely responses, and closes with the positioning statement and messaging pillars the rest of the doc set uses. It also specifies the small "market intelligence" capability inside the Platform Admin console that keeps this analysis current after launch.
 
 | Field | Value |
 |---|---|
@@ -263,15 +263,15 @@ Software is rarely bought for its own sake in this industry; it is bought when s
 | R1 | **Small-engine electrification and local equipment ordinances** | California requires most newly manufactured small off-road engines (mowers, blowers, trimmers) sold in the state to be zero-emission from model year 2024, generators later; existing gas equipment can still be used and repaired. Many municipalities restrict gas leaf blowers or power-equipment hours | [S] [CARB SORE program](https://ww2.arb.ca.gov/our-work/programs/small-off-road-engines-sore) (verify scope); [B] local ordinances | All in California and in cities with blower restrictions; A and B feel it first (replacement cycles are short) | Battery run-time and charging capacity become routing constraints; ordinance warnings appear on the visit ("gas blowers banned in this city"); an equipment-electrification ROI view uses real hours from the fleet register | [13](13-operations-inventory-equipment.md) [V1], [05](05-field-crew-mobile-app.md) warnings [V1], [23](23-innovation-moonshots.md) electrification planner [V2] |
 | R2 | **Nonfunctional-turf water limits and turf-conversion deadlines** | California AB 1572 phases out potable-water irrigation of nonfunctional turf on commercial, industrial, institutional and HOA common-area properties starting in 2027; Nevada AB 356 (2021) bars Colorado River water for nonfunctional turf in the Las Vegas valley from 2027 | [S] [California AB 1572](https://leginfo.legislature.ca.gov/faces/billNavClient.xhtml?bill_id=202320240AB1572); [B] Nevada dates (verify per property class) | D (HOAs and commercial sites with a hard deadline), C (residential conversions with utility rebates) | A deadline-driven conversion wave: every affected HOA and commercial site needs a measured turf inventory, a xeric planting plan from Region-rated plants, a priced phased proposal and the rebate paperwork. This is exactly the design-to-estimate loop incumbents do not have | [10](10-design-studio.md) rebate packet, [11](11-ai-design-mockups.md) compliance strip, [12](12-plant-knowledge-base.md) jurisdiction packs [V1] |
 | R3 | **Pesticide notification, posting and restricted actives** | About 21-23 states plus DC have lawn-pesticide notification laws; New York's Birds and Bees Protection Act phases out many neonicotinoid uses on turf and ornamentals; several Canadian provinces restrict cosmetic pesticide use, so Canadian lawn programs run on permitted products | [S] [Beyond Pesticides](https://beyondpesticides.org/assets/media/documents/lawn/factsheets/STATE%20NOTFICATION%20LAWS%20-%20LAWN.pdf); [B] New York and provincial dates (verify) | B and the lawn divisions of C, D and E | Records pre-filled from the visit, neighbor-notification registries, restricted actives blocked by effective date with a priced substitution; Canadian rule packs at launch, not as an afterthought | [14](14-service-line-modules.md) Application Compliance Engine [MVP] |
-| R4 | **Federal overtime reporting and 1099 thresholds** | The One Big Beautiful Bill Act (Public Law 119-21, July 2025) created temporary deductions for tax years 2025-2028 covering the premium portion of qualified overtime, which employers report separately; the 1099-NEC and 1099-MISC threshold rises from $600 to $2,000 for payments made after December 31, 2025 | [S] [Congress.gov H.R. 1](https://www.congress.gov/bill/119th-congress/house-bill/1), [IRS Form 1099-NEC](https://www.irs.gov/forms-pubs/about-form-1099-nec) (verify current instructions) | B-E: peak-season crews routinely work 50-60 hour weeks, so the overtime premium is material | Time tracked per Visit must split the FLSA premium so the payroll export can report it; subcontractor 1099 thresholds are dated parameters, not constants. Generic FSM time sheets that export only total hours create year-end work | [15](15-team-hr-payroll.md) RULE-09 [MVP], [09](09-accounting-ledger-integrations.md), [13](13-operations-inventory-equipment.md) [MVP] |
+| R4 | **Federal overtime reporting and 1099 thresholds** | The One Big Beautiful Bill Act (Public Law 119-21, July 2025) created temporary deductions for tax years 2025-2028 covering the premium portion of qualified overtime, which employers report separately; the 1099-NEC and 1099-MISC threshold rises from $600 to $2,000 for payments made after December 31, 2025 | [S] [Congress.gov H.R. 1](https://www.congress.gov/bill/119th-congress/house-bill/1), [IRS Form 1099-NEC](https://www.irs.gov/forms-pubs/about-form-1099-nec) (verify current instructions) | B-E: peak-season crews commonly work well over 40 hours a week from April to November [B], so the overtime premium is material | Time tracked per Visit must split the FLSA premium so the payroll export can report it; subcontractor 1099 thresholds are dated parameters, not constants. Generic FSM time sheets that export only total hours create year-end work | [15](15-team-hr-payroll.md) RULE-09 [MVP], [09](09-accounting-ledger-integrations.md), [13](13-operations-inventory-equipment.md) [MVP] |
 | R5 | **Seasonal labor supply** | The H-2B cap stays at 66,000 a year with supplemental releases that vary by fiscal year; stepped-up worksite immigration enforcement in 2025-2026 was widely reported to tighten seasonal labor; Canada tightened the low-wage stream of its Temporary Foreign Worker Program in 2024 | [S] [USCIS cap count](https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-2b-non-agricultural-workers/cap-count-for-h-2b-nonimmigrants); [B] enforcement and TFWP changes (verify with trade press and IRCC) | All with crews; E most (two seasons to staff) | Productivity features become the growth plan (section 8, force 7); H-2B and work-authorization status tracking from the payroll provider; Spanish-first training so new hires are productive in week one | [15](15-team-hr-payroll.md) H-2B workspace [V1], [05](05-field-crew-mobile-app.md) [MVP] |
 | R6 | **Business texting registration** | US carriers require A2P 10DLC brand and campaign registration for application-to-person texting; unregistered traffic is filtered or blocked | [S] [Twilio ISV 10DLC onboarding](https://www.twilio.com/docs/messaging/compliance/a2p-10dlc/onboarding-isv-api.md) | A and B (they text from personal phones today) | Rootline registers each Company's brand and campaigns as an ISV during onboarding, so "on my way" and rain-day texts are delivered; a reason to consolidate texting into the platform | [16](16-marketing-growth-communications.md) [MVP] |
 | R7 | **Card surcharging rules** | Visa caps US surcharges at the lesser of cost of acceptance or 3%; debit cannot be surcharged; Connecticut, Massachusetts and Maine ban surcharges; Canada caps at 2.4%; several states changed rules in 2025-2026 | [S] [AFS Law on Visa's cap](https://www.afslaw.com/perspectives/alerts/visa-reduces-its-merchant-surcharge-cap-3-effective-april-15-2023-merchants), [LawPay state list](https://www.lawpay.com/about/blog/credit-card-surcharge-rules/), [R4](research/R4-industry-payments-accounting.md) section 15 | All; owners already ask how to add card fees ([Jobber Community](https://community.getjobber.com/discussions/invoicing-getting-paid/advice-adding-the-credit-card-service-fee-to-invoices/1228/replies/8669)) | A jurisdiction-aware surcharge or bank-payment-discount setting on the Company's own Stripe account, with ACH steering as the safer default | [08](08-payments-stripe.md) [V1] |
-| R8 | **French-language requirements in Quebec** | The Charter of the French Language, as amended by Bill 96, raises French requirements for commercial documents and software offered in Quebec | [S] [LégisQuébec, Charter of the French Language](https://www.legisquebec.gouv.qc.ca/en/document/cs/C-11); legal review required | Any Company with Quebec Properties | Canadian launch Regions should be English-Canada (Ontario, BC, Alberta) until French portal and documents ship; Quebec is a gated V1-V2 market, not a launch market | [21](21-ux-design-system-sitemaps.md) Quebec rule [V1] |
+| R8 | **French-language requirements in Quebec** | The Charter of the French Language, as amended by Bill 96, raises French requirements for commercial documents and software offered in Quebec | [S] statute: [LégisQuébec, Charter of the French Language](https://www.legisquebec.gouv.qc.ca/en/document/cs/C-11); [B] interpretation for software and documents, legal review required | Any Company with Quebec Properties | Canadian launch Regions should be English-Canada (Ontario, BC, Alberta) until French portal and documents ship; Quebec is a gated V1-V2 market, not a launch market | [21](21-ux-design-system-sitemaps.md) Quebec rule [V1] |
 
 **So what [E].** Each force is a dated, local rule. Incumbents handle them, if at all, with custom fields and owner memory. Rootline already has the machinery to turn them into product: Regions curated by `platform_curator`, jurisdiction rule packs with citations and effective dates ([12](12-plant-knowledge-base.md), [14](14-service-line-modules.md)), and a change monitor (section 12, MI-05). The same packs power three buying triggers: a compliance deadline (R2, R3), a payroll year-end (R4) and an equipment replacement cycle (R1).
 
-> **Competitive edge (regulation).** Real Green and GorillaDesk keep chemical records for lawn programs, and Aspire tracks snow service, but no competitor in the section 4.4 matrix ties a dated jurisdiction rule to the design, the estimate, the visit and the payroll export at once. When an HOA in Henderson, Nevada must replace 40,000 sq ft of irrigated ornamental turf before 2027, Rootline's estimator measures it from the aerial, swaps in Region-rated xeric plants, prices a three-phase conversion with the rebate packet attached, and the board approves it in the commercial portal. Every competitor needs at least three tools for that job.
+> **Competitive edge (regulation).** Real Green and GorillaDesk keep chemical records for lawn programs, and Aspire tracks snow service, but no competitor in the section 4.4 matrix ties a dated jurisdiction rule to the design, the estimate, the visit and the payroll export at once. When an HOA in Henderson, Nevada (illustrative) must replace 40,000 sq ft of irrigated ornamental turf before the 2027 deadline, Rootline's estimator measures it from the aerial, swaps in Region-rated xeric plants, prices a three-phase conversion with the rebate packet attached, and the board approves it in the commercial portal. Every competitor in the matrix needs at least three tools for that job today [E].
 
 ---
 
@@ -469,23 +469,23 @@ quadrantChart
     quadrant-2 Residential full lifecycle
     quadrant-3 Residential ops tools
     quadrant-4 Commercial ops and ERP
-    Yardbook: [0.10, 0.10]
-    PRO Landscape: [0.18, 0.24]
-    QuoteIQ: [0.14, 0.22]
-    Copilot CRM: [0.20, 0.20]
-    Workiz: [0.28, 0.15]
-    Housecall Pro: [0.24, 0.27]
-    Jobber: [0.27, 0.31]
-    GorillaDesk: [0.33, 0.18]
-    Service Autopilot: [0.36, 0.28]
-    Real Green: [0.40, 0.33]
-    Arborgold: [0.43, 0.31]
-    SingleOps: [0.47, 0.36]
-    SynkedUP: [0.33, 0.38]
-    LMN: [0.53, 0.42]
+    Yardbook: [0.06, 0.04]
+    PRO Landscape: [0.18, 0.09]
+    QuoteIQ: [0.07, 0.17]
+    Copilot CRM: [0.20, 0.19]
+    Workiz: [0.40, 0.08]
+    Housecall Pro: [0.30, 0.24]
+    Jobber: [0.22, 0.31]
+    GorillaDesk: [0.33, 0.15]
+    Service Autopilot: [0.42, 0.29]
+    Real Green: [0.32, 0.36]
+    Arborgold: [0.49, 0.33]
+    SingleOps: [0.43, 0.40]
+    SynkedUP: [0.20, 0.40]
+    LMN: [0.56, 0.42]
     ServiceTitan: [0.70, 0.36]
-    Aspire: [0.85, 0.46]
-    Yeti: [0.82, 0.14]
+    Aspire: [0.86, 0.43]
+    Yeti: [0.82, 0.10]
     Rootline MVP: [0.30, 0.86]
     Rootline V1: [0.56, 0.93]
 ```
@@ -494,7 +494,7 @@ quadrantChart
 |---|---|---|
 | Residential ops tools (bottom left) | Yardbook, Copilot CRM, QuoteIQ, Workiz, Housecall Pro, Jobber, GorillaDesk, Service Autopilot; PRO Landscape+ sits here because it designs and proposes but runs nothing after the signature | Crowded, price-competitive, AI arriving as receptionists |
 | Center of the ops half | Real Green, Arborgold, SingleOps, SynkedUP, LMN | Deeper landscape math, programs and job costing push them higher in the ops half; still no design, plants or books, so none crosses 0.5 |
-| Commercial ops and ERP (bottom right) | ServiceTitan, Aspire, Yeti | Enterprise pricing and implementations; Aspire is the highest point in the ops half (0.46) because of estimating, purchasing and job-cost depth, but it has no design studio, stops at QuickBooks and sells measurement separately |
+| Commercial ops and ERP (bottom right) | ServiceTitan, Aspire, Yeti | Enterprise pricing and implementations; Aspire is the highest point in the ops half (0.43) because of estimating, purchasing and job-cost depth, but it has no design studio, stops at QuickBooks and sells measurement separately |
 | **Residential full lifecycle (top left)** | **Empty until Rootline** | The beachhead: design-to-books for residential design-build-maintain firms |
 | Commercial full lifecycle (top right) | Empty; Aspire is closest | Rootline's V1-V2 expansion once commercial parity ships |
 
@@ -945,19 +945,19 @@ quadrantChart
     quadrant-2 Monitor closely
     quadrant-3 Watch list
     quadrant-4 Manage tactically
-    T1 Jobber deeper: [0.80, 0.82]
-    T2 ServiceTitan down market: [0.50, 0.72]
-    T3 Granum design: [0.65, 0.78]
-    T4 Design partnerships: [0.50, 0.50]
-    T5 AI native low end: [0.82, 0.45]
-    T6 BYO payments copied: [0.30, 0.48]
-    T7 Price war: [0.55, 0.42]
-    T8 Intuit moves: [0.32, 0.52]
-    T9 Consumer AI marketplace: [0.48, 0.46]
-    T10 Stripe policy: [0.15, 0.80]
-    T11 Rollup churn: [0.55, 0.36]
-    T12 Downturn: [0.45, 0.55]
-    T13 Agent glue: [0.66, 0.58]
+    T1 Jobber deeper: [0.85, 0.86]
+    T2 ServiceTitan: [0.50, 0.70]
+    T3 Granum design: [0.68, 0.79]
+    T4 Design partners: [0.46, 0.36]
+    T5 AI low end: [0.86, 0.38]
+    T6 BYO payments: [0.20, 0.29]
+    T7 Price war: [0.58, 0.29]
+    T8 Intuit: [0.24, 0.56]
+    T9 Consumer AI: [0.46, 0.21]
+    T10 Stripe policy: [0.14, 0.84]
+    T11 Rollup churn: [0.63, 0.13]
+    T12 Downturn: [0.40, 0.60]
+    T13 Agent glue: [0.70, 0.58]
 ```
 
 ### 10.2 How each incumbent is likely to respond to Rootline specifically
@@ -978,6 +978,7 @@ quadrantChart
 | **One shared geometry and record from parcel to plow plan to ledger** | Every new module reuses it; incumbents would need to rebuild their data model | 2-4 years |
 | **Ledger as system of record** | Years of books history are the stickiest data a Company owns; CPAs build processes around it | 2-3 years to build; trust takes longer |
 | **Trust from owning nothing of the Company's money** | Competitors cannot copy without giving up their profit pool | Economically blocked |
+| **Curated jurisdiction rule packs per Region** (pesticide notification and restricted actives, turf-water limits, equipment ordinances, wage rules) | Each pack carries citations, effective dates and a watcher; every new tenant in a Region benefits from packs already verified, and packs feed design, estimating, visits and payroll at once (section 2.5) | 2-3 years per country, because the work is curation, not code |
 | **Cross-tenant benchmarks and plant performance network** | Needs ledger-grade data at scale with exact KPI definitions | 3+ years after scale |
 | **AI pipelines and model routing** | Commodity models; the conditioning data is the moat, not the generator | 6-18 months (least durable on its own) |
 

@@ -49,7 +49,7 @@ Related documents: [Personas and RBAC](02-personas-roles-permissions.md), [CRM a
 | G2 | Answer any business question in plain English with **correct, cited** numbers | 98%+ of answers on the golden metrics set match the reporting module exactly (the release gate in section 4.11.4); 0 tolerance for invented numbers |
 | G3 | Let people act on what they see: "reschedule", "draft", "send", "chase" | 40%+ of weekly active users run at least one Copilot action per week |
 | G4 | Deliver agents that are trusted enough to graduate from "draft" to "act and notify" | 30%+ of agent instances at autonomy level L3 or higher after 90 days, with acceptance-without-edit at 90% or more |
-| G5 | Give owners a no-code automation builder that 80% of non-technical users can use | Median time to publish a first recipe under 5 minutes; 10+ active automations per paying company |
+| G5 | Give owners a no-code automation builder that 80% of non-technical users can use | Median time to publish a first recipe under 5 minutes; 10+ active automations per paying Grow or Pro company (Starter is limited to 5 active rules by [Pricing](22-business-model-pricing-gtm.md) section 4.2.1) |
 | G6 | Make the crew app hands-free in English and Spanish | 50%+ of field notes captured by voice in companies with Spanish-first crews |
 | G7 | Run AI at a healthy margin and with transparent cost | AI gross margin of 60% or more on credits; zero surprise overage bills (soft stop at the allowance by default; overage only via packs or opt-in auto top-up) |
 | G8 | Be the safest AI in the category | Zero cross-tenant data exposure; zero unapproved outbound customer messages or payments caused by prompt injection; every AI action traceable in under 30 seconds |
@@ -638,7 +638,7 @@ The Arbiter is implemented as a tool wrapper around `messages.send*`, so no path
 | A22 | **Portal Assistant** | Client-facing Q&A and requests inside the white-label portal | Client chat | L2 for requests; L4 for read answers | V1 (see [Customer Portal](06-customer-portal.md)) |
 | A23 | **AI Receptionist (voice and SMS)** | Answers calls and texts and books assessments | Inbound call or SMS | L2 to L3 | MVP (after-hours lead capture) / V1 (full) (owned by [Marketing](16-marketing-growth-communications.md); metered in receptionist minutes, not credits) |
 | A24 | **Design Assistant** | Dimension-aware layout and planting suggestions | Designer request | T1 | V1 (owned by [AI Design](11-ai-design-mockups.md)) |
-| A25 | **Hiring Assistant** | Drafts job posts, schedules interviews, summarizes applications. **No ranking or rejection** | Applicant received | L2 | V2 (see [Team and HR](15-team-hr-payroll.md)) |
+| A25 | **Hiring Assistant** | Drafts job posts, schedules interviews, summarizes applications. **No ranking or rejection** | Applicant received | L2 | V2; application summaries and translation V1 (owned by [Team and HR](15-team-hr-payroll.md) AI-2) |
 | A26 | **KB Curation (platform)** | Drafts Plant Region Profiles and dedupes taxonomy for curators | Curator queue | L1 (curator approves) | V1 (owned by [Plant KB](12-plant-knowledge-base.md)) |
 | A27 | **Support Agent (platform)** | Answers tenant support tickets from docs and tenant-consented diagnostics | Ticket created | L2 | V1 (owned by [Platform Admin](19-platform-admin-portal.md)) |
 | A28 | **Dispute Evidence** | Assembles a Stripe dispute evidence packet (signed proposal, GPS-stamped visit photos, completion notices, portal activity) per reason-code playbook, for human review and submission on the Company's own connected account | `charge.dispute.created` from the connected account | L2 (submission is T3; never auto-submitted) | MVP (owned by [Payments](08-payments-stripe.md) section 4.19) |
@@ -924,7 +924,7 @@ Every action is a registered tool and inherits its risk tier. At **publish time*
 - Each published **Automation Version** compiles to a Temporal workflow definition. Delays use durable timers, so a "wait 30 days" survives deploys.
 - **Idempotency:** a run is keyed by `(automation_version_id, trigger_event_id)`, so duplicate events never double-run.
 - **Ordering:** runs for the same record are serialized when the automation is marked `serialize_per_record` (default on for billing automations).
-- **Loop prevention:** every domain event carries a `causation_chain`. An automation cannot be triggered by an event its own run caused (direct recursion), and the chain depth is capped at 5 automations. The platform guard in [Architecture](20-architecture-security.md) section 7.2 also applies: one automation may not fire more than 3 times for the same aggregate within 10 minutes. Runs that hit either cap stop and alert the automation owner.
+- **Loop prevention:** every domain event carries a `causation_chain`. An automation cannot be triggered by an event its own run caused (direct recursion), and the chain depth is capped at 5 automations. The platform guard in [Architecture](20-architecture-security.md) section 7.2.1 also applies: one automation may not fire more than 3 times for the same aggregate within 10 minutes. Runs that hit either cap stop and alert the automation owner.
 - **Rate limits:** a per-tenant default of 1,000 automation actions per hour and 200 outbound messages per hour (raisable by the platform operator). Bulk sends spread over time to respect carrier throughput and 10DLC limits.
 - **Error handling:** per-action retry policy (default 3 retries with exponential backoff for transient errors). Then either fail the run, skip and continue, or follow an "on error" branch. Failed runs appear in a run log with a "Retry from failed step" button.
 - **Versioning:** editing a published automation creates a new draft version. In-flight runs continue on their original version unless the user chooses "migrate in-flight runs" (supported only when steps are compatible).
@@ -1819,7 +1819,7 @@ All tables carry `tenant_id` (RLS-enforced), `created_at`, `updated_at` and `cre
 | `agent_instance` | Tenant configuration of an agent | agent_definition_key, pinned_version, principal_id, sponsor_user_id, policy_json, autonomy_json, budget_credits, scope_filters, status |
 | `agent_run` | One execution | agent_instance_id, trigger_event_id, temporal_workflow_id, goal_ref, state, steps_count, credits_used, started_at, ended_at, outcome |
 | `agent_step` | Step in a run | run_id, seq, kind (plan, tool, wait, approval, message), tool_call_id, proposal_id, notes |
-| `automation` | Automation container (the `automation_rule` named in [Architecture](20-architecture-security.md) section 7.2; its rule JSON is held per `automation_version`, and its loop guard applies to `automation_run`) | name, owner_user_id, status (draft, active, paused, archived), current_version_id, serialize_per_record |
+| `automation` | Automation container (the `automation_rule` named in [Architecture](20-architecture-security.md) section 7.2.1; its rule JSON is held per `automation_version`, and its loop guard applies to `automation_run`) | name, owner_user_id, status (draft, active, paused, archived), current_version_id, serialize_per_record |
 | `automation_version` | Immutable published definition | automation_id, version, definition_json, highest_tier, published_by, published_at, compiled_workflow_ref |
 | `automation_run` | Execution | version_id, trigger_event_id, subject_ref, state, causation_depth, started_at, ended_at, error |
 | `automation_step_run` | Step execution | run_id, step_key, status, attempt, output_json, credits |
@@ -2336,7 +2336,7 @@ This document owns the AI *platform*. The table maps where each module applies i
 
 ### 11.2 Compliance considerations
 
-Items marked "verify" were not re-checked against primary sources in this research pass and need legal review before launch (see section 14).
+Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation and legal review before launch (see section 14).
 
 | Area | Requirement and design response |
 |------|--------------------------------|
@@ -2385,7 +2385,7 @@ Items marked "verify" were not re-checked against primary sources in this resear
 | Bank categorization straight-through | Auto-accepted or accepted unedited ÷ total | 80% at 90 days |
 | AP straight-through | Bills approved unedited ÷ bills | 70% at V1 launch |
 | Voice note share | Field notes by voice ÷ all field notes (Spanish-first crews) | 50% |
-| Automations per tenant | Active automations | 10+ |
+| Automations per tenant | Active automations (Grow and Pro; Starter is capped at 5) | 10+ |
 | Recipe install rate | Tenants installing at least 3 recipes in their first 30 days | 70% |
 
 ### 12.2 Quality and safety
