@@ -173,3 +173,771 @@ Role keys follow [02](02-personas-roles-permissions.md). Running examples: **Rey
 7. "Know if I am on pace to recover overhead in a slow spring." (owner)
 8. "Move off QuickBooks in January without losing my opening balances." (owner, CPA)
 
+---
+
+## 4. Feature specification
+
+### 4.0 Feature index and phasing
+
+The phasing reflects one opinion: **the ledger engine runs for every tenant from MVP**, because AR, deferred revenue, Stripe clearing, job costing and WIP need it even when QuickBooks is the book of record ([20](20-architecture-security.md) L12). What phases in is the breadth that lets a Company drop QuickBooks entirely.
+
+| ID | Feature | Section | Priority |
+|---|---|---|---|
+| LG-01 | Ledger engine: append-only journal, balanced entries, reversals, periods and locks, idempotent posting | 4.1 | [MVP] |
+| LG-02 | Posting-rule registry with versioning, preview and simulation | 4.1.4 | [MVP] registry, [V1] simulation UI |
+| LG-03 | Multi-currency (USD/CAD), realized FX | 4.1.6 | [V1] |
+| LG-04 | Unrealized FX revaluation with auto-reversal | 4.1.6 | [V1] |
+| LG-05 | Manual, recurring, auto-reversing and accrual entries with approvals | 4.1.9 | [MVP] manual, [V1] recurring and approvals |
+| COA-01 | Landscape Chart of Accounts templates by business type, account roles | 4.2 | [MVP] |
+| COA-02 | Dimensions: division, branch, department, job, phase, cost type, property, custom | 4.2.4 | [MVP] core, [V1] custom |
+| COA-03 | Dimension policies per account | 4.2.5 | [V1] |
+| COA-04 | Statistical accounts (man-hours, properties, acres) | 4.2.2 | [V1] |
+| PR-01 | Automatic posting rules for billing, payments, AP, inventory, labor, equipment, assets, loans, WIP, FX | 4.3 | [MVP] billing/payments/AP/inventory/labor, [V1] remainder |
+| SL-AR | AR subledger tie-out, aging, allowance provisioning | 4.5.1 | [MVP], allowance [V1] |
+| SL-AP | Bills, vendor credits, approval workflow, payment batches, check printing, positive pay | 4.5.2 | [MVP] bills and payments recorded, [V1] approvals and checks, [V2] embedded bill pay |
+| SL-1099 | 1099-NEC/MISC tracking and e-file; T5018/T4A | 4.5.3 | [V1] tracking and files, [V1] e-file via partner |
+| SL-INV | Inventory valuation subledger, GRNI, PPV | 4.5.4 | [MVP] |
+| SL-FA | Fixed assets, multiple books, depreciation, disposals | 4.5.5 | [V1] |
+| SL-LN | Loans, lines of credit, amortization, seasonal schedules | 4.5.6 | [V1] |
+| SL-PR | Payroll journal import and labor allocation | 4.5.7 | [MVP] file import, [V1] API |
+| BK-01 | Bank and card feeds via Plaid; file import (CSV, OFX/QFX, CAMT.053) | 4.6.1 | [MVP] |
+| BK-02 | AI-assisted categorization and rules | 4.6.3 | [MVP] rules, [V1] AI |
+| BK-03 | Receipt capture and matching | 4.6.4 | [MVP] |
+| BK-04 | Reconciliation workspace | 4.6.5 | [MVP] |
+| JC-01 | Job costing by job, phase, cost type; applied labor and burden | 4.7 | [MVP] |
+| JC-02 | Equipment cost allocation and over/under recovery | 4.7.3 | [V1] |
+| JC-03 | Commitments and projected cost at completion | 4.7.5 | [V1] |
+| RR-01 | Deferred revenue for agreements (posting from [07](07-invoicing-billing-contracts.md)) | 4.8.2 | [MVP] |
+| RR-02 | WIP schedule, percentage-of-completion, over/under billing, loss provisions | 4.8.3 | [V1] |
+| RR-03 | Tax-basis views (cash, completed contract) | 4.8.5 | [V2] |
+| BU-01 | Budgets by account, division and month; versions | 4.9 | [V1] (Company Budget for estimating is [MVP] in [03](03-crm-sales-estimating-proposals.md)) |
+| BU-02 | Overhead recovery tracker | 4.9.2 | [V1] |
+| BU-03 | 13-week and seasonal cash forecast | 4.9.4 | [V1] |
+| RP-01 | Core statements, aging, trial balance, GL detail, sales tax liability | 4.10 | [MVP] |
+| RP-02 | Budget vs actual, cash flow statement, report packages | 4.10 | [V1] |
+| CL-01 | Period close checklist with automated checks | 4.11 | [MVP] basic, [V1] full |
+| AH-01 | Accountant access (delegated) | 4.12 | [MVP] |
+| AH-02 | Accountant Hub (multi-client) and client-question workflow | 4.12 | [V1] |
+| AU-01 | Audit trail, hash chain, explain-this-number | 4.13 | [MVP] |
+| YE-01 | Year-end close, retained earnings, tax exports | 4.14 | [V1] |
+| ME-01 | Multi-entity books inside one Company, intercompany | 4.15 | [V1] |
+| ME-02 | Consolidation with eliminations; Organization-level consolidation | 4.15 | [V1] in-Company, [V2] cross-tenant |
+| TX-01 | Sales tax payable by agency, use-tax accrual, GST/HST ITCs | 4.16 | [MVP] US, [V1] Canada |
+| IN-QBO | QuickBooks Online connector (external_sync and mirror modes) | 4.17.2 | [MVP] |
+| IN-QBD | QuickBooks Desktop via Web Connector | 4.17.3 | [V1] |
+| IN-XERO | Xero connector | 4.17.4 | [V1] |
+| IN-INT | Sage Intacct connector | 4.17.5 | [V2] |
+| IN-LT | Long-tail accounting via unified API vendor | 4.17.6 | [V2] |
+| IN-PAY | Payroll journal connectors (Gusto, ADP, QuickBooks Payroll, Canadian providers) | 4.17.7 | [MVP] files, [V1] APIs |
+| IN-TAX | Tax-prep exports (TB with tax lines, GIFI) | 4.17.8 | [V1] |
+| MG-01 | QuickBooks migration with opening balances | 4.18 | [MVP] QBO, [V1] QBD and Xero |
+
+### 4.1 Ledger engine
+
+#### 4.1.1 Engine principles [MVP]
+
+| Principle | Rule | How it is enforced |
+|---|---|---|
+| Append-only journal | A posted journal entry and its lines can never be updated or deleted. | No `UPDATE`/`DELETE` grant on journal lines for the application role; trigger rejects updates to posted headers except the reversal link ([20](20-architecture-security.md) L2). |
+| Every entry balances | Sum of functional-currency amounts across lines is zero; at least two lines; no zero lines. | Deferred constraint trigger at commit ([20](20-architecture-security.md) L1); see 4.1.6 for multi-currency semantics. |
+| Reversals, not edits | Correcting an entry creates a reversing entry (mirror lines, same dimensions, `reverses_entry_id`) and, usually, a corrected replacement entry. Both link to the original and to the reason. | Reversal API is the only mutation path; UI shows original, reversal and replacement as a struck-through stack. |
+| Periods and locks | Each legal entity has fiscal years and monthly periods with states `open`, `soft_closed`, `locked`. Posting dates must fall in a postable period. | Trigger on period state ([20](20-architecture-security.md) L3); late events redirect to the first open period with the original `service_date` kept (4.1.5). |
+| Multi-currency | One functional currency per legal entity (USD or CAD); lines can carry a transaction currency, rate and rate source. | [20](20-architecture-security.md) L9 plus 4.1.6. |
+| Idempotent posting from domain events | A domain event processed twice produces one entry. | Unique key `(tenant_id, source_type, source_id, posting_rule_id, source_event_id)` ([20](20-architecture-security.md) L4). |
+| Gapless numbering | Journal numbers are sequential per legal entity with no gaps, which auditors and some tax authorities expect. | Sequence row locked in the posting transaction ([20](20-architecture-security.md) L5). |
+| Tamper evidence | Each entry is hash-chained to the previous one per tenant; daily chain heads anchored to write-once storage. | [20](20-architecture-security.md) L8. |
+| Money is integers | Amounts in minor units; rounding at line level; tax rounding per jurisdiction. | [20](20-architecture-security.md) L10. |
+| Rules are versioned | Each entry records the posting-rule version that produced it; rule edits never rewrite history. | [20](20-architecture-security.md) L11. |
+
+**Proposed ledger invariants L13-L18** (to be added to [20](20-architecture-security.md) 4.18; they are accounting rules the database can enforce):
+
+| # | Invariant | Enforcement |
+|---|---|---|
+| L13 | **Control accounts are posted only by their subledger.** AR, AP, inventory, fixed asset cost and accumulated depreciation, deferred revenue, customer deposits, Stripe clearing and loan principal accounts reject manual journal lines unless the line references a subledger object (client, vendor, item, asset, agreement, loan) and the user holds `ledger.control_account.adjust`. | Account flag `is_control`, trigger checks `source_type` or the explicit adjustment permission flag in the transaction context. |
+| L14 | **Required dimensions are present.** Lines on accounts with a dimension policy of `required` (for example all 5xxx direct-cost accounts require `division`; job-cost accounts require `job_id` or the explicit `unassigned` marker) cannot post without them. | Policy table per account; trigger validates the line's dimension set. |
+| L15 | **One book of record per legal entity.** In `external_sync` mode, native statements are watermarked "Operational subledger, not book of record"; period locks mirror the external system's closing date. | Tenant and entity setting; report renderer and lock synchronizer read it. |
+| L16 | **Suspense must be zero to lock.** A period cannot move to `locked` while any suspense or clearing account flagged `must_clear_at_close` has a non-zero balance, unless the `owner` signs an override with a reason. | Close checklist hard check plus period-state trigger. |
+| L17 | **Reversals mirror exactly.** A reversing entry has the same line count, accounts, dimensions and currencies as the original with negated amounts, and an entry can be reversed at most once. | Trigger compares the line sets; unique index on `reverses_entry_id`. |
+| L18 | **Intercompany balances net to zero.** For every pair of legal entities, due-from in one equals due-to in the other in functional currency at all times (per currency for cross-currency pairs). | Intercompany postings are generated as linked pairs in one transaction; nightly proof. |
+
+#### 4.1.2 Journal entry types and lifecycle [MVP]
+
+| Entry type | Created by | Typical example | Approval |
+|---|---|---|---|
+| `system` | Posting engine from a domain event | Invoice 10482 issued; Stripe payout po_...; stock issue to job | None (rule-governed) |
+| `manual` | User | Reclassify $1,200 of fuel from Admin to Snow | Per approval policy (4.1.9) |
+| `adjusting` | Bookkeeper or CPA during close | Accrue December dump fees not yet billed | Flagged "accountant adjustment" when posted by a firm user |
+| `accrual` | Engine or template, with `auto_reverse_on` | Unbilled revenue (07 P8), unbilled sub work | Auto |
+| `reversing` | Engine (from reversal action or auto-reversal) | Day-1 reversal of last month's accrual | Inherits |
+| `recurring` | Template schedule | Monthly prepaid insurance amortization $4,350 | First instance approved, then auto |
+| `revaluation` | FX revaluation run | Revalue open USD AR for a CAD Company | Auto, reviewed at close |
+| `wip` | WIP schedule post | Over/under billings for open installs | Bookkeeper posts after review |
+| `depreciation` | Depreciation run | May depreciation, all field equipment | Auto after first review |
+| `opening` | Migration | Opening trial balance at 2027-01-01 | Owner and accountant sign-off |
+| `closing` | Year-end (optional, see 4.14) | Close P&L to retained earnings for export | Accountant |
+| `consolidation` | Consolidation run | Eliminate intercompany equipment rental | Accountant |
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> PendingApproval: "submit (manual over threshold)"
+    Draft --> Posted: "post (system or under threshold)"
+    PendingApproval --> Posted: "approve"
+    PendingApproval --> Draft: "reject with comment"
+    Draft --> Discarded: "discard"
+    Posted --> Reversed: "reverse (creates reversing entry)"
+    Reversed --> [*]
+    Posted --> [*]
+    Discarded --> [*]
+```
+
+Rules:
+
+- Drafts are mutable and do not affect balances; drafts older than 30 days raise a close-checklist warning.
+- Posting assigns the journal number, chain hash and `posted_at`; the `entry_date` (accounting date) is user- or rule-supplied and must be in a postable period.
+- A reversal's `entry_date` defaults to the original date if that period is open, otherwise to the first open period; the UI explains which.
+- A posted entry can carry **annotations** (comments, attachments, tags) after posting; annotations are versioned and never change amounts.
+
+#### 4.1.3 The posting engine [MVP]
+
+The posting engine is the `ledger` module's consumer of domain events from the transactional outbox ([20](20-architecture-security.md) section 4.9). It never calls other modules to "fetch the truth" at posting time beyond reading the event's referenced document version, so a replay months later produces the identical entry.
+
+```mermaid
+flowchart LR
+    EV["Domain event from outbox (invoice.issued, payment.succeeded, ops.stock.moved...)"] --> DD["Dedupe on source event id"]
+    DD --> RS["Resolve posting rule version effective on event date"]
+    RS --> DEP{"Dependencies posted? (e.g., invoice before its payment)"}
+    DEP -->|"No"| HOLD["Hold in pending_posting with timeout alert"]
+    HOLD --> DEP
+    DEP -->|"Yes"| BUILD["Build lines via account roles and dimension mapping"]
+    BUILD --> PER{"Entry date period postable?"}
+    PER -->|"locked or soft_closed"| REDIR["Redirect to first open period, keep service_date, add audit note"]
+    PER -->|"open"| VAL["Validate: balance, dimension policies, control accounts"]
+    REDIR --> VAL
+    VAL -->|"fails"| SUS["Post to suspense with task, never drop"]
+    VAL -->|"passes"| POST["Insert entry and lines in one transaction, update balance buckets"]
+    POST --> OUT["Emit journal_entry.posted"]
+    SUS --> OUT
+```
+
+Behaviors and rules:
+
+1. **Ordering and dependencies.** Each rule declares dependencies (for example `payments.charge` depends on the invoice or deposit request it allocates to). Out-of-order events wait in `pending_posting` (up to 24 hours by default) and raise a bookkeeper task if the dependency never arrives. Payments that arrive for invoices that will never exist (a payment link with no invoice) post to `customer_credits` instead.
+2. **Batching.** High-volume rules (07 P5 per-visit recognition, labor accruals, equipment usage) post as **daily summarized entries** per legal entity, one line per dimension combination, while the subledger keeps per-document detail. A 140-person Summit Grounds June day produces about 30 summarized labor lines rather than 1,200 entries.
+3. **Back-dated events.** A crew app that syncs a completed visit three weeks later, after March is locked, posts into April with `service_date = 2027-03-28` and a note. Job cost and operational reports use `service_date`; the GL uses `entry_date`. The close checklist for April lists "late events from locked periods" so the CPA can decide whether to reopen.
+4. **Rule failures never block the business.** If a rule cannot resolve an account role (a Company deleted its "Dump fees" account), the line posts to suspense (`1099 Suspense`) with a task and the event keeps flowing. Invoices are never blocked from sending because accounting setup is incomplete.
+5. **Re-posting after correction.** If a source document is corrected (credit memo, voided invoice, reversed stock movement), the source module emits a new event and the engine posts the reversal or delta. The engine never mutates its own past output.
+6. **Mode awareness.** In `external_sync` mode the engine still posts natively (operational subledger) and the integration layer decides what to push ([4.17](#417-accounting-integrations)).
+
+#### 4.1.4 Posting rules as data [MVP registry, V1 simulation UI]
+
+- A **posting rule** has: `rule_key` (for example `billing.P1`, `inventory.IN3`), name, triggering event type(s), conditions (expression over event payload: service line, client tax status, billing mode), line templates (account role, amount expression, sign, dimension mapping), dependencies, batching policy, and effective dates.
+- **Rule packs.** The platform ships versioned packs (US Standard, Canada Standard, Lawn Care Program, Design-Build POC). The Platform Operator publishes pack versions from the admin console ([19](19-platform-admin-portal.md)); tenants inherit updates unless they have overridden a rule, in which case they get a diff and a one-click accept.
+- **Tenant overrides** [V1]: a bookkeeper can change which account role a rule line uses (for example "post Stripe fees to 6150 per payout instead of per payment", which [08](08-payments-stripe.md) already exposes as a setting), or add a condition ("snow revenue from HOA clients goes to 4620 even when invoiced per push"). Overrides create a new rule version effective from a chosen date; they never apply retroactively.
+- **Preview and simulation** [V1]: before activating a rule change, the bookkeeper sees the entries it would have produced for last month's events side by side with what actually posted, and the P&L difference. Activation requires `ledger.posting_rule.manage` and step-up authentication.
+- **Explainability.** Every system journal line links to the rule version and to the event; the "Why this entry?" panel renders the rule in plain English: "Rule billing.P1 v3: when an invoice is issued, debit Accounts Receivable for the total and credit revenue by service line and sales tax payable by agency."
+
+#### 4.1.5 Accounting periods, fiscal years and locks [MVP]
+
+- **Fiscal year** per legal entity, any start month (many landscapers use calendar years; some snow-heavy companies use a May-April fiscal year so a winter is not split across two years; Rootline supports both). 52-53 week years are [V2].
+- **Periods** are calendar months by default; 13-period years are [V2].
+- **States:**
+
+| State | Who can post | Typical use |
+|---|---|---|
+| `open` | System and users with posting permissions | Current and prior month during close |
+| `soft_closed` | System events are redirected to the next open period; users with `period.post_soft_closed` can post adjusting entries | Month under CPA review |
+| `locked` | Nobody; system events redirect | Closed and reported months |
+
+- **Transitions:** `open -> soft_closed` (bookkeeper), `soft_closed -> locked` (bookkeeper or owner, after hard checks in 4.11), `locked -> soft_closed` (reopen: `owner` or `bookkeeper` with `period.unlock`, step-up auth, reason required; periods older than 90 days need dual control per [02](02-personas-roles-permissions.md) 5.6). Every reopen notifies the owner and the connected accountant firm and is listed on the next close checklist.
+- **Lock date sync.** In `external_sync` or mirror mode, Rootline's lock state for a period is pushed to the external system's closing date (QBO "close the books" date where supported, verify API support) or pulled from it, depending on which is the book of record.
+- **Subledger cut-off.** Locking a period also freezes subledger documents dated in it: invoices, bills, stock movements and time entries dated in a locked period cannot be created or edited; the source modules offer "post in next open period" instead ([13](13-operations-inventory-equipment.md) already follows this).
+
+#### 4.1.6 Multi-currency and FX [V1]
+
+Scope at launch: US Companies in USD, Canadian Companies in CAD, with cross-border billing and bank accounts in the other currency (Windsor snow contractor billing a Detroit property manager in USD, per [08](08-payments-stripe.md) Example 8).
+
+- **Functional currency** per legal entity, fixed at creation.
+- **Transaction currency** per document (invoice, bill, bank account, Stripe balance). Lines store `amount_txn_minor`, `currency`, `fx_rate`, `fx_rate_source`, `fx_rate_date` and `amount_minor` (functional).
+- **Rates.** Daily reference rates from a configured source (Bank of Canada daily exchange rates for CAD entities is the natural default; a commercial rate API as fallback; verify licensing). Manual override per document with permission and audit. Rate types: `spot` (transaction date), `closing` (period end, for revaluation), `average` (period average, for consolidation translation [V2]).
+- **Realized FX** posts at settlement: the difference between the functional amount at the document rate and at the settlement rate goes to `7910 Realized FX Gain/Loss`. When Stripe converts currency, the balance transaction's actual converted amount is the settlement amount ([08](08-payments-stripe.md) 4.17).
+- **Unrealized FX revaluation** runs at period end for monetary balances in foreign currency (open AR and AP, foreign-currency bank accounts, foreign Stripe clearing): it posts the difference to `7920 Unrealized FX Gain/Loss` as an `accrual` entry that auto-reverses on day 1 of the next period.
+- **Balancing semantics.** [20](20-architecture-security.md) L1 is implemented as: every entry balances to zero in functional currency; single-currency entries also balance in their transaction currency; multi-currency entries (FX settlement, revaluation, foreign-currency transfers) carry an explicit FX line and are validated in functional currency. This is a proposed clarification of L1's "per currency" wording (open question 2).
+- **Rounding.** Functional-currency rounding residues from conversion post to `7930 FX Rounding` (never more than 1 minor unit per line; larger residues fail validation).
+
+**Worked revaluation (illustrative rates).** The Windsor Company has a USD 4,000.00 invoice open at month end, booked at 1.3700 (CAD 5,480.00). The closing rate is 1.3850, so the receivable is worth CAD 5,540.00:
+
+| Account | Debit (CAD) | Credit (CAD) |
+|---|---:|---:|
+| 1200 Accounts Receivable (USD 4,000.00 revalued) | 60.00 | |
+| 7920 Unrealized FX Gain/Loss | | 60.00 |
+
+Auto-reversed on the first day of the next month; when the client pays, realized FX is computed against the original 1.3700 rate as in [08](08-payments-stripe.md) Example 8.
+
+#### 4.1.7 Balances, performance and correctness checks [MVP]
+
+- **Balance buckets.** Each posting increments `account_balance_bucket(tenant, entity, account, period, day, currency)` inside the posting transaction. Trial balance, balance sheet and P&L read buckets; dimensional reports read the analytics replica ([18](18-reporting-analytics.md)). Hot accounts (Stripe clearing on a busy autopay day) use day-level buckets to limit row contention.
+- **Nightly proofs** ([20](20-architecture-security.md) L7): buckets equal the sum of lines; trial balance nets to zero per entity; each control account equals its subledger (AR aging, AP aging, inventory valuation, fixed asset register net book value, deferred revenue by agreement, customer deposits by client, loan principal by loan, Stripe clearing vs Stripe's reported balance). Any drift opens a `ledger_integrity_case`, pages on-call and shows a red badge on the tenant's close checklist.
+- **Property-based tests** generate random event sequences (invoices, partial payments, refunds, credit memos, disputes, voids, stock moves, bill matches, payroll imports, reversals across locked periods) and assert every invariant on every build ([20](20-architecture-security.md) 4.29).
+
+#### 4.1.8 Manual, recurring and accrual entries [MVP manual, V1 recurring and approvals]
+
+- **Manual JE editor.** Spreadsheet-style grid; account search by number, name or alias ("dump" finds 5510); dimension columns appear only when the account's policy needs them; running balance indicator; paste from Excel; attach support; "auto-reverse on" date.
+- **Approval policy** [V1]: thresholds per entry type, for example manual entries over $5,000 or touching equity need `owner` approval; accountant adjustments need none but notify the owner. Self-approval is never allowed above the threshold.
+- **Recurring templates** [V1]: monthly, quarterly, annual, or season-only (April-November) schedules; fixed or formula amounts (for example "1/12 of the annual insurance premium"); end date or occurrence count; skip-a-month.
+- **Allocation entries** [V1]: allocate a shared cost by a driver: yard rent by square feet per division, the operations manager's salary by division man-hours, shop labor by asset hours. Drivers can be statistical accounts (4.2.2), so "allocate June shop overhead by June engine hours" is one click.
+- **Accrual helpers** [V1]: "accrue unbilled sub work" (open sub work orders with completion but no bill), "accrue dump fees" (disposal tickets without vendor bills, from [13](13-operations-inventory-equipment.md)), "accrue wages since last payroll" (approved time after the last pay period end). Each produces an auto-reversing accrual with line-level support.
+
+### 4.2 Chart of Accounts and dimensions
+
+#### 4.2.1 Template philosophy [MVP]
+
+1. **Account roles, not numbers.** Posting rules bind to roles (`ar_control`, `revenue:maintenance`, `cogs_materials`); each template binds roles to accounts. A Company that wants AR at 1100 instead of 1200 renumbers freely.
+2. **Cost type by account, division by dimension.** Direct costs are split into the five cost types every landscaper and LMN user thinks in (labor, materials, equipment, subcontractors, dump and disposal fees) plus other direct costs, and **division is a required dimension** on every revenue and direct-cost line. A five-division company therefore has about 75 accounts, not 250.
+3. **Expanded "divisional accounts" option.** For Companies that mirror to QuickBooks Simple Start or Essentials (no classes) or to Xero with both tracking categories already used, the template can expand revenue and direct-cost accounts per division (4110 Maintenance Labor, 4310 Design-Build Labor...). The posting engine handles both shapes because it maps role plus division to an account.
+4. **CPA-friendly numbering.** Four-digit ranges in the familiar order: 1xxx assets, 2xxx liabilities, 3xxx equity, 4xxx revenue, 5xxx direct costs, 6xxx overhead, 7xxx other income and expense, 8xxx income taxes, 9xxx statistical.
+
+#### 4.2.2 Default landscape Chart of Accounts [MVP]
+
+System accounts (marked **S**) carry an account role and cannot be deleted, only renamed or renumbered. Control accounts (marked **C**) are posted only by their subledger (L13).
+
+**Assets**
+
+| Code | Account | Role | Notes |
+|---|---|---|---|
+| 1010 | Operating Checking | `bank:operating` S | One per real bank account; Plaid-linked |
+| 1020 | Payroll Checking | `bank:payroll` | Optional; Gusto/ADP debits |
+| 1030 | Tax Reserve Savings | `bank:reserve` | Optional "Profit First"-style reserve ([13](#13-beyond-the-brief-extra-ideas)) |
+| 1040 | Petty Cash | `cash:petty` | |
+| 1050 | Stripe Clearing - USD | `stripe_clearing:USD` S C | Per [08](08-payments-stripe.md) 4.17 |
+| 1051 | Stripe Clearing - CAD | `stripe_clearing:CAD` S C | |
+| 1055 | Stripe Reserve Held | `stripe_reserve` S C | |
+| 1060 | Undeposited Funds | `undeposited_funds` S | Checks and cash awaiting deposit |
+| 1065 | Cash in Transit (crew-held) | `cash_in_transit` S | Per crew lead dimension |
+| 1075 | Disputed Payments Receivable | `disputed_receivable` S C | |
+| 1099 | Suspense - Unclassified | `suspense` S | Must be zero to lock (L16) |
+| 1200 | Accounts Receivable | `ar_control` S C | |
+| 1205 | Retainage Receivable | `retainage_receivable` S C | Commercial installs ([07](07-invoicing-billing-contracts.md) P12) |
+| 1210 | Unbilled Receivables - Agreements | `unbilled_receivable` S | Contract asset for agreements (07 P7, P8) |
+| 1215 | Underbillings (Costs and Estimated Earnings in Excess of Billings) | `underbillings` S | WIP, 4.8.3 |
+| 1220 | Allowance for Doubtful Accounts | `allowance_doubtful` S | Contra-asset |
+| 1230 | Vendor Claims Receivable | `vendor_claims` | Nursery guarantee claims, RTVs ([13](13-operations-inventory-equipment.md)) |
+| 1235 | Pallet Deposits Receivable | `pallet_deposits` | |
+| 1240 | Employee Advances | `employee_advances` | |
+| 1260 | GST/HST and QST Recoverable (ITCs) | `itc_recoverable` S | Canadian entities |
+| 1310 | Inventory - Hardscape and Aggregates | `inventory:hardscape` S C | Pavers, wall block, stone, base |
+| 1315 | Inventory - Mulch, Soil and Compost | `inventory:bulk` S C | Bunkers, by the cubic yard |
+| 1320 | Inventory - Plants (Holding Yard) | `inventory:plants` S C | |
+| 1330 | Inventory - Fertilizer and Chemicals | `inventory:chemicals` S C | Lot-tracked in Advanced mode |
+| 1340 | Inventory - Irrigation and Lighting Parts | `inventory:parts` S C | Truck stock included |
+| 1345 | Inventory - Salt and Deicers | `inventory:salt` S C | Season-straddling |
+| 1350 | Inventory - Shop Parts | `inventory:shop` S C | Filters, blades, belts |
+| 1360 | Inventory - Fuel | `inventory:fuel` S C | Yard tanks |
+| 1370 | Inventory in Transit | `inventory:transit` S C | Branch transfers [V1] |
+| 1410 | Prepaid Insurance | `prepaid:insurance` | Amortized monthly |
+| 1420 | Prepaid H-2B Program Costs | `prepaid:h2b` | Amortized over the season ([13](#13-beyond-the-brief-extra-ideas)) |
+| 1430 | Prepaid Expenses - Other | `prepaid:other` | Software, licenses, registrations |
+| 1510 | Trucks and Trailers | `fa_cost:vehicles` S C | |
+| 1520 | Mowers and Landscape Equipment | `fa_cost:mowers` S C | |
+| 1530 | Heavy Equipment | `fa_cost:heavy` S C | Skid steers, mini excavators |
+| 1540 | Snow Equipment | `fa_cost:snow` S C | Plows, spreaders, pushers |
+| 1550 | Shop Tools and Equipment | `fa_cost:shop` S C | |
+| 1560 | Office Furniture and IT | `fa_cost:office` S C | |
+| 1570 | Buildings and Yard Improvements | `fa_cost:buildings` S C | Bunkers, fencing, lighting |
+| 1580 | Land | `fa_cost:land` S C | Never depreciated |
+| 1590-1597 | Accumulated Depreciation (one per class above) | `accum_depr:{class}` S C | Contra-asset |
+| 1599 | Assets Not Yet in Service | `fa_cip` S C | Deposits on a truck on order |
+| 1610 | Security Deposits | `deposits_paid` | |
+| 1620 | Right-of-Use Assets | `rou_assets` | Lease accounting [V2] |
+| 1910 | Intercompany Receivable - {entity} | `ic_due_from:{entity}` S C | Multi-entity (4.15) |
+
+**Liabilities**
+
+| Code | Account | Role | Notes |
+|---|---|---|---|
+| 2000 | Accounts Payable | `ap_control` S C | |
+| 2010 | Retainage Payable - Subcontractors | `retainage_payable` S C | [13](13-operations-inventory-equipment.md) |
+| 2020 | Goods Received Not Invoiced | `grni` S C | Receipts without bills |
+| 2030 | Accrued Expenses | `accrued_expenses` | Dump fees, utilities, sub work |
+| 2040-2049 | Credit Cards (one per card program) | `credit_card:{card}` | Amex, Visa, WEX/fuel cards |
+| 2101-2149 | Sales Tax Payable - {agency} | `sales_tax_payable:{agency}` S | Per state/county/city agency ([07](07-invoicing-billing-contracts.md)) |
+| 2120 | Use Tax Payable | `use_tax_payable` S | Contractor-as-consumer purchases |
+| 2125 | GST/HST Payable | `gst_hst_payable` S | Canadian entities |
+| 2126 | QST Payable | `qst_payable` S | Quebec supplies |
+| 2150 | Customer Deposits | `customer_deposits` S C | |
+| 2160 | Tips Payable | `tips_payable` S | Cleared by payroll |
+| 2170 | Gift Credit Liability | `gift_credit` S | [07](07-invoicing-billing-contracts.md) P29 |
+| 2180 | Customer Credits and Unapplied Cash | `customer_credits` S C | |
+| 2200 | Deferred Revenue - Service Agreements | `deferred_revenue` S C | Contract liability per agreement |
+| 2210 | Overbillings (Billings in Excess of Costs and Estimated Earnings) | `overbillings` S | WIP, 4.8.3 |
+| 2215 | Accrued Losses on Contracts | `contract_loss_accrual` S | Loss jobs, 4.8.4 |
+| 2310 | Accrued Wages | `accrued_wages` S | Applied labor (4.7.2) |
+| 2320 | Payroll Taxes Payable | `payroll_taxes_payable` S | |
+| 2330 | Benefits and Deductions Payable | `payroll_deductions_payable` | 401(k), garnishments, health |
+| 2350 | Accrued PTO | `accrued_pto` | |
+| 2360 | Payroll Clearing (Net Pay) | `payroll_clearing` S | Must clear to zero |
+| 2380 | Backup Withholding Payable | `backup_withholding` | [V2], 4.5.3 |
+| 2390 | Applied Labor Burden Clearing | `applied_burden` S | Over/under-applied burden |
+| 2410 | Warranty Reserve | `warranty_reserve` S | Plant and install warranties |
+| 2420 | Accrued Workers' Compensation | `accrued_wc` | Premium audits |
+| 2510 | Line of Credit | `loc:{loan}` S C | |
+| 2520 | Current Portion of Long-Term Debt | `ltd_current` S | Year-end reclass |
+| 2610 | Equipment Loans | `loan_principal:{loan}` S C | One sub-account per note |
+| 2620 | Vehicle Loans | `loan_principal:{loan}` S C | |
+| 2630 | Notes Payable - Bank/SBA | `loan_principal:{loan}` S C | |
+| 2640 | Lease Liabilities | `lease_liability` | [V2] |
+| 2650 | Loans from Shareholders | `shareholder_loans` | |
+| 2910 | Intercompany Payable - {entity} | `ic_due_to:{entity}` S C | |
+
+**Equity**
+
+| Code | Account | Role | Notes |
+|---|---|---|---|
+| 3000 | Owner's Capital / Common Stock | `equity:capital` | Entity-type aware labels |
+| 3100 | Owner Contributions | `equity:contributions` | |
+| 3200 | Owner Draws / Distributions | `equity:draws` | S-corp distributions vs LLC draws labeled by entity type |
+| 3300 | Retained Earnings | `retained_earnings` S | Computed roll-forward (4.14) |
+| 3400 | Cumulative Translation Adjustment | `cta` S | Consolidation of a CAD entity into a USD parent [V2] |
+| 3900 | Opening Balance Equity | `opening_balance_equity` S | Must be zero after migration (4.18) |
+
+**Revenue** (division dimension required; sub-accounts optional)
+
+| Code | Account | Role | Typical landscape revenue |
+|---|---|---|---|
+| 4100 | Maintenance Revenue | `revenue:maintenance` S | Weekly mowing rounds April-November, contract maintenance, spring and fall cleanups, bed maintenance |
+| 4200 | Enhancements Revenue | `revenue:enhancements` S | Mulch by the cubic yard, seasonal color, small plantings sold to maintenance clients |
+| 4300 | Design-Build and Installation Revenue | `revenue:install` S | Paver patios, walls, plantings, grading, drainage |
+| 4350 | Design Fees | `revenue:design` S | Design Studio plans and consultations, often credited against the install |
+| 4400 | Lawn Care and Plant Health Care Revenue | `revenue:lawn_phc` S | 5-step fertilizer programs, grub control, aeration and overseeding, tree and shrub care |
+| 4500 | Irrigation Revenue | `revenue:irrigation` S | Spring start-ups, winterizations (blow-outs), repairs, installs |
+| 4600 | Snow and Ice Revenue | `revenue:snow` S | Seasonal contracts, per-push at 2-inch triggers, per-application salting |
+| 4700 | Landscape Lighting Revenue | `revenue:lighting` S | |
+| 4800 | Tree Care Revenue | `revenue:tree` S | |
+| 4910 | Discounts and Allowances | `discounts_allowances` S | Contra-revenue; credit memo reason codes |
+| 4920 | Payment Method Discounts | `payment_method_discounts` S | ACH incentive ([08](08-payments-stripe.md) 4.10) |
+| 4930 | Small Balance Adjustments | `small_balance_adj` S | [07](07-invoicing-billing-contracts.md) P24 |
+| 4950 | Card Surcharge Income | `surcharge_income` S | [08](08-payments-stripe.md) 4.10 |
+
+**Direct costs (cost of revenue)** (division required; job required where marked J)
+
+| Code | Account | Role | Notes |
+|---|---|---|---|
+| 5110 | Field Wages | `cogs_labor` S J | Applied from approved time (4.7.2) |
+| 5120 | Field Labor Burden | `cogs_burden` S J | Payroll taxes, workers' comp, benefits, PTO at standard rates |
+| 5180 | Non-billable Field Time | `cogs_labor_nonbillable` S | Rain-outs, yard time, training, callbacks (cost code required) |
+| 5190 | Field Labor Variance | `labor_variance` S | Actual payroll vs applied (OT premium, bonuses) |
+| 5195 | Labor Burden Variance | `burden_variance` S | Over/under-applied burden closed monthly |
+| 5210 | Materials - Hardscape and Aggregates | `cogs_materials:hardscape` S J | |
+| 5220 | Materials - Plants | `cogs_materials:plants` S J | |
+| 5230 | Materials - Mulch, Soil and Compost | `cogs_materials:bulk` S J | |
+| 5240 | Materials - Fertilizer and Chemicals | `cogs_materials:chemicals` S J | |
+| 5250 | Materials - Irrigation and Lighting Parts | `cogs_materials:parts` S J | |
+| 5260 | Materials - Salt and Deicers | `cogs_materials:salt` S J | |
+| 5270 | Purchase Price Variance | `ppv` S | Stock lines billed above or below receipt cost |
+| 5280 | Inventory Shrink and Adjustments | `shrink` S | Count variances, scrap |
+| 5290 | Plant Losses (Holding Yard) | `plant_loss` S | Unless covered by a nursery guarantee |
+| 5310 | Equipment Charged to Jobs | `equipment_applied` S J | Rate card x usage (4.7.3) |
+| 5320 | Equipment Rental | `cogs_equipment_rental` S J | Day rentals billed by vendors |
+| 5330 | Fuel - Field Vehicles and Equipment | `equipment_fuel` S | Actual cost |
+| 5340 | Repairs and Maintenance - Field Equipment | `equipment_repairs` S | Shop labor and parts, outside repairs |
+| 5350 | Depreciation - Field Equipment | `equipment_depreciation` S | From fixed asset runs |
+| 5360 | Equipment Insurance, Registration and Licensing | `equipment_ownership_other` S | |
+| 5390 | Equipment Cost Recovery | `equipment_recovery` S | Contra; credit side of 5310 |
+| 5410 | Subcontractors | `cogs_subs` S J | Install, snow, tree, electrical subs |
+| 5510 | Dump and Tipping Fees | `cogs_disposal:dump` S J | Per ton or per load |
+| 5520 | Green Waste and Spoils Disposal | `cogs_disposal:green` S J | |
+| 5530 | Hauling and Delivery | `cogs_disposal:hauling` S J | Delivery charges not capitalized to inventory |
+| 5610 | Permits, Inspections and Locates | `cogs_other:permits` S J | |
+| 5620 | Small Tools and Job Supplies | `cogs_other:supplies` S J | |
+| 5630 | Job Travel and Lodging | `cogs_other:travel` S J | Out-of-town installs, storm response |
+| 5710 | Warranty Expense | `warranty_expense` S | Reserve accrual and true-up |
+| 5990 | Provision for Contract Losses | `contract_loss_expense` S | 4.8.4 |
+
+**Overhead (operating expenses)** (department dimension optional; division optional for allocation)
+
+| Code | Account | Code | Account |
+|---|---|---|---|
+| 6010 | Office and Admin Salaries | 6210 | Rent - Office and Yard |
+| 6020 | Sales and Estimating Salaries | 6220 | Utilities |
+| 6030 | Commissions | 6230 | Yard and Shop Maintenance |
+| 6040 | Officer Compensation | 6240 | Telephone and Internet |
+| 6050 | Payroll Taxes and Benefits - Admin | 6310 | General Liability Insurance |
+| 6110 | Advertising and Marketing | 6320 | Commercial Auto Insurance |
+| 6120 | Lead Generation and Referral Fees | 6330 | Umbrella and Other Insurance |
+| 6130 | Software and Subscriptions | 6410 | Admin Vehicle Fuel and Repairs |
+| 6150 | Merchant Processing Fees (S) | 6430 | Depreciation - Non-Job Assets (S) |
+| 6152 | Rootline Platform Fees (S) | 6510 | Accounting and Legal |
+| 6155 | Dispute Fees (S) | 6520 | Licenses, Permits and Certifications (applicator licenses) |
+| 6156 | Financing Merchant Fees (S) | 6530 | Dues and Memberships (NALP, SIMA, state associations) |
+| 6160 | Bank Fees | 6540 | Training and Education |
+| 6170 | Bad Debt Expense (S) | 6610 | Office Supplies and Postage |
+| 6180 | Collection Agency Fees | 6640 | Meals |
+| 6190 | Interest Expense - Operating | 6990 | Miscellaneous |
+
+**Other income and expense, taxes, statistics**
+
+| Code | Account | Role |
+|---|---|---|
+| 7100 | Interest Income | `interest_income` |
+| 7200 | Finance Charge Income | `finance_charge_income` S ([07](07-invoicing-billing-contracts.md) P20) |
+| 7300 | Gain or Loss on Disposal of Assets | `fa_disposal_gain_loss` S |
+| 7400 | Interest Expense - Debt | `interest_expense` S |
+| 7500 | Other Income (rebates, insurance recoveries) | `other_income` |
+| 7910 | Realized FX Gain/Loss | `realized_fx` S |
+| 7920 | Unrealized FX Gain/Loss | `unrealized_fx` S |
+| 7930 | FX Rounding | `fx_rounding` S |
+| 7950 | Cash Over/Short | `cash_over_short` S |
+| 8100 | Income Tax Expense (C-corporations) | `income_tax_expense` |
+| 9010 | Billable Field Man-Hours (statistical) | `stat:billable_hours` [V1] |
+| 9020 | Total Field Man-Hours (statistical) | `stat:total_hours` [V1] |
+| 9030 | Properties Under Agreement (statistical) | `stat:properties` [V1] |
+| 9040 | Acres Maintained / Square Feet Installed (statistical) | `stat:area` [V1] |
+| 9050 | Equipment Engine Hours (statistical) | `stat:engine_hours` [V1] |
+
+Statistical accounts hold non-monetary quantities posted by the same engine (approved billable hours per division per day), so ratios such as revenue per man-hour, overhead per billable hour and gross profit per man-hour ([18](18-reporting-analytics.md)) can be computed inside the ledger, budgeted and allocated against.
+
+#### 4.2.3 Template variants [MVP: three; V1: all]
+
+| Template | For | Differences from the default |
+|---|---|---|
+| **Full-service multi-division** (default) | Reyes-style design-build plus maintenance | As above |
+| **Lawn care and PHC** | Real Green-style program companies | Revenue sub-accounts per program step (round 1 pre-emergent... round 5 winterizer), prepay discount contra account, chemical inventory as the main stock, applicator license costs in overhead; deferred revenue as a headline account |
+| **Residential maintenance** | 2-10 truck mow-and-blow operations | Fewer accounts (no WIP, no retainage, no heavy equipment); single bank; owner draws prominent |
+| **Design-build** | Install-heavy firms | WIP accounts on by default, retainage, contract loss accounts, design fee revenue, warranty reserve |
+| **Commercial maintenance plus snow** | Summit Grounds-style | Snow sub-accounts (seasonal, per-push, per-application, salt sales), salt inventory, subcontractor-heavy snow COGS, branch dimension required |
+| **Tree care** | Arborgold/SingleOps-style | Crane and climbing equipment, wood disposal, PHC injections |
+| **Canada overlay** | Any Canadian entity | GST/HST/QST accounts and ITCs, CCA tax book classes, T5018 tracking, CAD functional currency |
+
+Templates are selected in onboarding from three questions (what do you sell, do you do installs over $10,000, do you plow snow). The CPA can import a firm-standard template instead (4.12).
+
+#### 4.2.4 Dimensions [MVP core, V1 custom]
+
+| Dimension | Meaning | Source | Mapping to QBO / Xero / Intacct |
+|---|---|---|---|
+| `legal_entity` | Separate books (4.15) | Org settings ([02](02-personas-roles-permissions.md) 5.9) | Separate QBO company / Xero org / Intacct entity |
+| `division` | Profit center: Maintenance, Enhancements, Design-Build, Lawn/PHC, Irrigation, Snow, Lighting, Tree | Service line on the Price Book item, job or agreement | QBO **Class**; Xero tracking category 1; Intacct department or class |
+| `branch` | Operating location | Job's selling branch ([02](02-personas-roles-permissions.md) cross-branch rules) | QBO **Location**; Xero tracking category 2; Intacct location |
+| `department` | Overhead cost center: Admin, Sales, Shop, Yard, Field Supervision | Employee home department, bill line | QBO class or location (configurable); Intacct department |
+| `job` / `phase` / `cost_type` / `cost_code` | Job costing (4.7) | Job, Project phase, cost type from the line, cost code from the estimate assembly | QBO sub-customer or Project plus item; Xero not natively (tracking or description); Intacct project and task |
+| `client` / `property` | Who and where | Document | QBO customer and sub-customer |
+| `agreement` | Service Agreement | Billing ([07](07-invoicing-billing-contracts.md)) | Memo or Intacct contract |
+| `vendor` / `employee` / `asset` / `item` / `crew` | Subledger and operational references | Source document | Entity refs where the target supports them |
+| Custom (up to 5) [V1] | Tenant-defined: salesperson, region, program, storm event | User-defined lists | Intacct user-defined dimensions; otherwise memo |
+
+A **storm event** custom dimension is pre-seeded for snow Companies: every push, salt application, sub ticket and overtime hour from the "January 14-15 storm" rolls up to a per-storm P&L.
+
+#### 4.2.5 Dimension policies [V1]
+
+Per account and dimension: `required`, `optional`, `forbidden`, with a default value rule. Examples: 5xxx requires `division`; job-cost accounts require `job_id` or `unassigned`; balance-sheet accounts forbid `job` except retainage, deposits and WIP accounts; 6xxx allows `department`. The policy table is enforced by L14 and drives which columns appear in entry and categorization screens.
+
+#### 4.2.6 Crosswalk to codes used in 07 and 08
+
+[07](07-invoicing-billing-contracts.md) and [08](08-payments-stripe.md) used illustrative account numbers before this chart existed. Posting rules bind to roles, so the crosswalk below is the binding; those docs' entries read correctly with the canonical codes substituted.
+
+| Role | Code in 07 | Code in 08 | Canonical default (this doc) |
+|---|---|---|---|
+| `bank:operating` | 1000 | 1010 | **1010** |
+| `stripe_clearing:USD` | 1050 | 1050 | **1050** |
+| `ar_control` | 1100 | 1200 | **1200** |
+| `retainage_receivable` | 1105 | n/a | **1205** |
+| `unbilled_receivable` | 1110 | n/a | **1210** |
+| `disputed_receivable` | 1120 | 1075 | **1075** |
+| `allowance_doubtful` | 1190 | n/a | **1220** |
+| `sales_tax_payable:{agency}` | 2100 | n/a | **2101-2149** |
+| `customer_deposits` | 2200 | 2150 | **2150** |
+| `deferred_revenue` | 2210 | n/a | **2200** |
+| `customer_credits` | 2220 | 2180 | **2180** |
+| `gift_credit` | 2230 | n/a | **2170** |
+| `tips_payable` | 2300 | 2160 | **2160** |
+| `discounts_allowances` | 4900 | 4950 (Sales Returns and Allowances) | **4910** |
+| `small_balance_adj` | 4910 | n/a | **4930** |
+| `surcharge_income` | n/a | 4910 | **4950** |
+| `payment_method_discounts` | n/a | 4960 | **4920** |
+| `merchant_fees` | 6100 | 6150 | **6150** |
+| `bad_debt` | 6200 | 6170 | **6170** |
+| `realized_fx` | 7100 | 7910 | **7910** |
+| `finance_charge_income` | 7200 | n/a | **7200** |
+| `suspense` | n/a | 1099 | **1099** |
+
+#### 4.2.7 Chart maintenance rules [MVP]
+
+- **Create**: code unique per entity; type and normal balance required; parent (header) accounts are not postable (L6); new accounts inherit dimension policy from the parent.
+- **Rename/renumber**: free at any time; history follows the account ID. Mirror and sync mappings update automatically.
+- **Archive**: allowed only with zero balance in all open periods and no active posting-rule binding; archived accounts still report historically.
+- **Merge** [V1]: posts a reclass entry moving the balance (and, optionally, re-tagging future postings) from A to B; never rewrites historical lines.
+- **Change account type** (for example expense to COGS): allowed only when the account has no posted lines; otherwise create a new account and reclass.
+- **Import/export**: CSV and the QBO account list format; AI maps a foreign chart to roles during migration (4.18).
+
+### 4.3 Automatic posting rules
+
+The registry below is the canonical list. Rule keys are namespaced by the module that emits the triggering event: `billing.P1`-`billing.P32` are the rules specified in [07](07-invoicing-billing-contracts.md) 4.11 (bound here to canonical roles), `payments.*` follow Stripe reporting categories as specified in [08](08-payments-stripe.md) 4.17, and the remaining namespaces are specified in this document. Codes are the canonical defaults from 4.2.2; the engine resolves them through account roles. "J" means the line carries job, phase and cost-type dimensions; every revenue and direct-cost line carries `division` and `branch`.
+
+#### 4.3.1 Revenue, billing and AR [MVP]
+
+| Rule | Trigger event | Debit | Credit | Timing and granularity |
+|---|---|---|---|---|
+| `billing.P1` Invoice issued | `invoice.issued` (per-visit, batch, T&M, milestone, snow per push) | 1200 AR (total) | 4100-4800 revenue by division (net of line discounts); 2101+ sales tax payable per agency | At issue; one entry per invoice |
+| `billing.P2` Deposit paid | `payment.succeeded` allocated to a deposit request | 1050 Stripe Clearing (via `payments.charge`) | 2150 Customer Deposits | At payment |
+| `billing.P3` Deposit applied | `invoice.issued` with deposit application | 2150 Customer Deposits | 1200 AR | With P1 |
+| `billing.P4` / `billing.P9` Installment or prepaid season invoice | `invoice.issued` with agreement billing | 1200 AR | 2200 Deferred Revenue (per agreement); 2101+ tax | At issue |
+| `billing.P5` Deferred revenue recognition (per occurrence) | `visit.completed` on a leveled or prepaid agreement line | 2200 Deferred Revenue | 4100/4400/4500... revenue at unit value | Daily summarized entry with per-agreement detail |
+| `billing.P6` Ratable recognition (fixed-season lines, seasonal snow) | Month-end job | 2200 Deferred Revenue | Revenue by weighted season curve | Month-end |
+| `billing.P7` / `billing.P8` Contract asset reclass and unbilled accrual | Month-end job | 1210 Unbilled Receivables | 2200 Deferred Revenue (P7) or revenue (P8) | Auto-reverses day 1 |
+| `billing.P12` Progress invoice with retainage | `invoice.issued` (progress) | 1200 AR (net due); 1205 Retainage Receivable | 4300 revenue (gross earned this period); 2101+ tax | At issue |
+| `billing.P13` Retainage release | `invoice.issued` (release) | 1200 AR | 1205 Retainage Receivable | At issue |
+| `billing.P18` Credit memo | `credit_memo.issued` | 4xxx revenue or 4910 Discounts and Allowances (by reason code); 2101+ tax | 1200 AR (applied) or 2180 Customer Credits (held) | At issue |
+| `billing.P20` Finance charge | `invoice.finance_charge_assessed` | 1200 AR | 7200 Finance Charge Income | At assessment |
+| `billing.P21` / `billing.P22` Write-off | `collections_case.written_off` | 6170 Bad Debt (direct) or 1220 Allowance | 1200 AR | At approval |
+| `billing.P25` Void | `invoice.voided` | Exact reversal of P1 | | Same period if open, else first open period |
+| `ar.AR1` Allowance provisioning [V1] | Month-end aging-based calculation | 6170 Bad Debt | 1220 Allowance | Month-end; percentage by aging bucket (default 1% current, 5% 31-60, 15% 61-90, 40% over 90; illustrative, tenant-set) |
+| `warranty.WR1` Warranty reserve accrual [V1] | `invoice.issued` with install lines | 5710 Warranty Expense | 2410 Warranty Reserve | Percentage of install plant and hardscape revenue (tenant default; Plant KB mortality data can suggest a rate, [13](#13-beyond-the-brief-extra-ideas)) |
+| `warranty.WR2` Warranty replacement [V1] | `ops.warranty.claim_resolved` | 2410 Warranty Reserve | 1320 Plants inventory, 2000 AP, 2310 Accrued Wages (replacement labor at cost) | At resolution |
+
+#### 4.3.2 Payments and cash [MVP]
+
+| Rule | Trigger | Debit | Credit | Notes |
+|---|---|---|---|---|
+| `payments.charge` | Stripe balance transaction `charge` | 1050/1051 Stripe Clearing (gross) | 1200 AR, 2150 Deposits, 2160 Tips, 4950 Surcharge, 2180 Unapplied (per allocation) | Per payment ([08](08-payments-stripe.md) 4.17.2) |
+| `payments.fee` | Fee lines of a balance transaction; standalone `fee` | 6150 Merchant Fees (6152 for application fees) | 1050/1051 | Per payment (default) or per payout |
+| `payments.refund` | `refund` | 1200 AR (after credit memo) or 2180/2150 | 1050/1051 | Paired with `billing.P18` |
+| `payments.dispute` | `dispute` | 1075 Disputed Receivable; 6155 Dispute Fees | 1050/1051 | |
+| `payments.dispute_reversal` | `dispute_reversal` (won) | 1050/1051 | 1075 (and 6155 if fee returned) | |
+| `payments.dispute_lost` | `dispute.closed` lost | 1200 AR (reopen) or 6170 Bad Debt | 1075 | Company setting |
+| `payments.payout` | `payout` | 1010 Operating Checking | 1050/1051 | Proven against the payout's balance transactions first |
+| `payments.payout_reversal` | Failed payout | 1050/1051 | 1010 | Owner alerted |
+| `payments.reserve` | Reserve held / released | 1055 / 1050 | 1050 / 1055 | |
+| `payments.other_adjustment` | Unknown category | 1099 Suspense | 1050/1051 | Task; never dropped |
+| `payments.field_receipt` | Cash or check collected in the field | 1065 Cash in Transit (crew lead) | 1200 AR | [08](08-payments-stripe.md) 4.20.2 |
+| `payments.office_receipt` | Check received in office | 1060 Undeposited Funds | 1200 AR | |
+| `payments.handover` | Crew cash handed to office | 1060 | 1065 | Variance to 7950 only with `owner` approval |
+| `payments.bank_deposit` | Deposit slip recorded or bank line matched | 1010 | 1060 | One deposit, many checks |
+
+#### 4.3.3 Purchasing, AP and inventory [MVP unless tagged]
+
+| Rule | Trigger | Debit | Credit | Notes |
+|---|---|---|---|---|
+| `inventory.IN1` Receipt to stock | `ops.receipt.posted` (stock location) | 13xx Inventory (at PO cost) | 2020 GRNI | [13](13-operations-inventory-equipment.md) 4.3.1 |
+| `inventory.IN2` Receipt to job | `ops.receipt.posted` (job-direct PO) | 52xx Materials J | 2020 GRNI | Hits job cost on receipt, not on bill |
+| `inventory.IN3` Issue to job | `ops.stock.moved` type `issue_to_job` | 52xx Materials J (at moving average) | 13xx Inventory | Daily summarized per job and item category |
+| `inventory.IN4` Return from job | `return_from_job` | 13xx | 52xx J | At original issue cost or restock value |
+| `inventory.IN5` Adjustment / count variance | `adjustment`, `count_variance` | 5280 Shrink (loss) or 13xx (gain) | 13xx or 5280 | Reason code required |
+| `inventory.IN6` Plant loss | `plant_loss` | 5290 Plant Losses, or 1230 Vendor Claims if under nursery guarantee | 1320 | |
+| `inventory.IN7` Vendor return [V1] | `vendor_return` | 1230 Vendor Claims | 13xx | Cleared by vendor credit |
+| `inventory.IN8` Branch transfer [V1] | `transfer` between branches | 1370 In Transit | 13xx (from) | Then 13xx (to) / 1370 on arrival |
+| `inventory.IN9` Fuel issued to equipment | Fuel issue from yard tank | 5330 Fuel (asset dim) | 1360 | Off-road fuel tagged for excise credit ([13](#13-beyond-the-brief-extra-ideas)) |
+| `inventory.IN10` Shop parts to work order | Parts issued on equipment WO | 5340 Repairs (asset dim) | 1350 | |
+| `ap.AP1` Non-PO bill | `ledger.bill.posted` | 5xxx/6xxx/1xxx per line (dims); 1260 ITC (Canada); use tax via AP9 | 2000 AP | Dumps, utilities, insurance, software |
+| `ap.AP2` Bill matched to stock receipt | `ops.bill.matched` | 2020 GRNI (receipt value); 5270 PPV (difference) | 2000 AP | PPV credit when billed below receipt |
+| `ap.AP3` Bill matched to job-direct receipt | `ops.bill.matched` | 2020 GRNI; price variance and landed cost to 52xx J | 2000 AP | Job is costed at what was paid |
+| `ap.AP4` Subcontractor bill with retainage | `ledger.bill.posted` (sub work order) | 5410 Subcontractors J | 2000 AP (net); 2010 Retainage Payable | [13](13-operations-inventory-equipment.md) sub work orders |
+| `ap.AP5` Sub retainage release | Final acceptance plus lien waiver | 2010 | 2000 | Pay-when-paid link to client retainage |
+| `ap.AP6` Bill payment | `ledger.bill_payment.released` | 2000 AP | 1010 (check/ACH) or 2040 (card) | Check number, ACH trace |
+| `ap.AP7` Early-pay discount taken | Payment within discount terms | 2000 AP | Original cost account (or 5270 for stock) | 2/10 net 30 |
+| `ap.AP8` Vendor credit | `ledger.vendor_credit.posted` | 2000 AP | Original account, 1230 or 52xx J | Applied to future bills or refunded |
+| `ap.AP9` Use tax accrual | Bill line flagged taxable-but-untaxed | Cost account of the line | 2120 Use Tax Payable | Contractor-as-consumer states ([07](07-invoicing-billing-contracts.md)) |
+| `ap.AP10` Card transaction categorized | Bank feed line on a card account | Expense/asset per categorization | 2040 Credit Card | Or matched to an existing bill |
+| `ap.AP11` Card statement paid | Bank line matched | 2040 | 1010 | |
+
+#### 4.3.4 Labor, payroll and burden [MVP unless tagged]
+
+| Rule | Trigger | Debit | Credit | Notes |
+|---|---|---|---|---|
+| `labor.LB1` Job time approved | `timesheet.approved` (job-coded time) | 5110 Field Wages J (hours x employee base rate); 5120 Field Labor Burden J (wages x standard burden %) | 2310 Accrued Wages; 2390 Applied Burden Clearing | Daily summarized; also posts hours to 9010 |
+| `labor.LB2` Non-billable field time | `timesheet.approved` (yard, rain, training, callback codes) | 5180 Non-billable Field Time; 5120 | 2310; 2390 | Cost code required |
+| `labor.LB3` Overtime premium [V1] | `timesheet.approved` with OT hours | 5110 J (premium portion, if "allocate OT to jobs" is on) or 5190 | 2310 | Company policy |
+| `payroll.PR1` Payroll journal imported | `payroll_import.posted` | 2310 Accrued Wages (applied wages for the period); 5190 Field Labor Variance (difference); 6010-6040 admin wages; 2160 Tips Payable (tips paid as wages) | 2360 Payroll Clearing (net); 2320 Payroll Taxes Payable (withholdings); 2330 Deductions Payable | Per pay run |
+| `payroll.PR2` Employer taxes | Same import | 2390 Applied Burden Clearing (field share); 6050 (admin share) | 2320 | Split by wage share |
+| `payroll.PR3` Payroll funding | Bank lines matched (net pay, tax impound, 401k) | 2360; 2320; 2330 | 1020 Payroll Checking | Payroll provider debits |
+| `payroll.PR4` Burden costs incurred | Workers' comp, health, PTO bills or accruals | 2390 (field share) | 2000, 2420, 2350 | Keeps actual burden in the clearing account |
+| `payroll.PR5` Burden true-up | Month-end | 5195 Burden Variance | 2390 (or the reverse) | Clears 2390 to zero monthly |
+| `prepaid.PP2` H-2B program amortization [V1] | `timesheet.approved` for H-2B workers | 5120 Field Labor Burden J | 1420 Prepaid H-2B | Per-hour rate = program cost / budgeted season hours |
+
+#### 4.3.5 Equipment, fixed assets and loans [V1 unless tagged]
+
+| Rule | Trigger | Debit | Credit | Notes |
+|---|---|---|---|---|
+| `equipment.EQ1` Usage charged to job | `ops.equipment.usage_recorded` | 5310 Equipment Charged to Jobs J | 5390 Equipment Cost Recovery | Net zero in COGS; drives job cost and over/under recovery |
+| `assets.FA1` Asset placed in service | Asset record activated from a bill, loan or cash purchase | 15xx Asset Cost | 2000 AP, 2610 Loan, 1010, or 1599 | Capitalization threshold check |
+| `assets.FA2` Depreciation run | Month-end depreciation run (book) | 5350 Depreciation - Field Equipment (asset dim) or 6430 (non-job assets) | 1591-1597 Accumulated Depreciation | One entry per run, one line per asset class and division |
+| `assets.FA3` Disposal or sale | `asset.disposed` | 1010/1200 (proceeds); 159x (accumulated) | 15xx (cost); 7300 gain or loss (either side) | Trade-in = sale plus purchase |
+| `assets.FA4` Casualty or theft | `asset.disposed` (casualty) | 159x; insurance receivable; 7300 loss | 15xx | Linked to the loss ledger ([13](13-operations-inventory-equipment.md)) |
+| `loans.LN1` Loan payment | Bank line matched to loan schedule | 2610-2630 principal; 7400 interest | 1010 | Split from the amortization schedule; variance flagged |
+| `loans.LN2` Line-of-credit draw / repayment | Bank line matched | 1010 / 2510 | 2510 / 1010 | |
+| `loans.LN3` Current-portion reclass | Year-end (or each period-end for interim statements) | 2610-2630 | 2520 Current Portion | Auto-reverses |
+| `loans.LN4` Interest accrual | Month-end, payments not yet due | 7400 | 2030 | Auto-reverses |
+| `prepaid.PP1` Prepaid amortization [MVP] | Recurring template | 6310/6320 etc. | 1410/1430 | Monthly |
+
+#### 4.3.6 Revenue recognition, WIP, FX, tax and intercompany [V1 unless tagged]
+
+| Rule | Trigger | Debit | Credit | Notes |
+|---|---|---|---|---|
+| `wip.WP1` Underbilling | WIP schedule posted | 1215 Underbillings J | 4300 revenue J | Auto-reverses day 1 |
+| `wip.WP2` Overbilling | WIP schedule posted | 4300 revenue J | 2210 Overbillings J | Auto-reverses day 1 |
+| `wip.WP3` Loss provision | WIP schedule detects projected loss | 5990 Provision for Contract Losses J | 2215 Accrued Losses | Adjusted each period; released at completion |
+| `fx.FX1` Realized FX | Settlement in a different rate than booking | 7910 (loss) | 7910 (gain) | Inside the settlement entry |
+| `fx.FX2` Unrealized revaluation | Period-end run | Monetary account or 7920 | 7920 or monetary account | Auto-reverses |
+| `tax.TX1` Sales tax remittance [MVP] | Filing marked paid / bank line matched | 2101+ per agency | 1010 | Vendor discounts for timely filing post to 7500 |
+| `tax.TX2` GST/HST/QST return | Return filed | 2125, 2126 | 1260 ITCs; 1010 (net payable) or the reverse for a refund | Canada |
+| `interco.IC1` Cross-entity service | Visit by entity B's crew on entity A's job, or equipment loaned across entities | Entity A: 5110/5310 J; Entity B: 1910 Due From A | Entity A: 2910 Due To B; Entity B: 5390 recovery or 4xxx intercompany revenue | Generated as a linked pair (L18) |
+| `close.CL1` Suspense clearing | Bookkeeper reclass | Correct account | 1099 | Required before lock |
+
+### 4.4 Worked journal entries: one month at Reyes Outdoor Living
+
+Reyes Outdoor Living (Charlotte, NC) in May 2027. The Thompson backyard (paver patio and seat wall, $18,400 proposal, journey 4.1 in [02](02-personas-roles-permissions.md)) is mid-build; maintenance agreements are in full swing. Sales tax is omitted for clarity (handled in [07](07-invoicing-billing-contracts.md)); all amounts are illustrative. Payments-side entries reuse the numbers from [08](08-payments-stripe.md) 4.17.3 so the two documents agree.
+
+**E1 - May 3. 30% ACH deposit on the Thompson proposal** (`payments.charge`, `billing.P2`, `payments.fee`). ACH fee 0.8% capped at $5.00 (illustrative).
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 1050 Stripe Clearing - USD | | 5,520.00 | |
+| 2150 Customer Deposits | Client Thompson, Job J-2291 | | 5,520.00 |
+| 6150 Merchant Processing Fees | | 5.00 | |
+| 1050 Stripe Clearing - USD | | | 5.00 |
+
+**E2 - May 5. Job-direct receipt of hardscape materials** (`inventory.IN2`). 620 sq ft of pavers at $4.10 ($2,542.00), 18 tons of #57 stone and paver base at $38.00 ($684.00), 12 bags of polymeric sand at $31.00 ($372.00).
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 5210 Materials - Hardscape and Aggregates | J-2291, Phase 2 Hardscape, cost type Materials, Design-Build | 3,598.00 | |
+| 2020 Goods Received Not Invoiced | Vendor: hardscape supplier, PO 4471 | | 3,598.00 |
+
+**E3 - May 9. Supplier bill matched with a $95.00 delivery charge** (`ap.AP3`). The PO had no delivery line; the charge is within the $75-per-bill freight tolerance only after approval by the `ops_manager`, and is landed to the job ([13](13-operations-inventory-equipment.md) 4.11.2).
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 2020 Goods Received Not Invoiced | PO 4471 | 3,598.00 | |
+| 5210 Materials - Hardscape and Aggregates | J-2291, Phase 2, Materials (landed freight) | 95.00 | |
+| 2000 Accounts Payable | Vendor bill 88213, due Jun 8 | | 3,693.00 |
+
+**E4 - May 12. 12 cubic yards of double-shredded hardwood mulch issued from the yard bunker** (`inventory.IN3`) at the moving-average cost of $28.50 per yard.
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 5230 Materials - Mulch, Soil and Compost | J-2291, Phase 3 Planting and Beds, Materials | 342.00 | |
+| 1315 Inventory - Mulch, Soil and Compost | Branch: Charlotte yard | | 342.00 |
+
+**E5 - May 12. Crew timesheet approved** (`labor.LB1`). Four-person crew, 9.5 hours each on Phase 2 = 38 hours; average base wage $24.00 = $912.00; standard burden 28% = $255.36. Statistical account 9010 Billable Field Man-Hours +38.
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 5110 Field Wages | J-2291, Phase 2, Labor | 912.00 | |
+| 5120 Field Labor Burden | J-2291, Phase 2, Labor burden | 255.36 | |
+| 2310 Accrued Wages | Pay period May 10-23 | | 912.00 |
+| 2390 Applied Labor Burden Clearing | | | 255.36 |
+
+**E6 - May 12. Equipment charged to the job** (`equipment.EQ1`). Compact track loader 6.5 engine hours at $52.00 ($338.00) and the dump trailer one day at $45.00, rates from the equipment rate card ([13](13-operations-inventory-equipment.md) 4.14.7).
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 5310 Equipment Charged to Jobs | J-2291, Phase 2, Equipment; assets CTL-03, TRL-07 | 383.00 | |
+| 5390 Equipment Cost Recovery | Assets CTL-03, TRL-07 | | 383.00 |
+
+**E7 - May 15. Mobilization progress invoice (40% = $7,360.00) with the deposit applied** (`billing.P1`, `billing.P3`).
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 1200 Accounts Receivable | Thompson, Inv 10511 | 7,360.00 | |
+| 4300 Design-Build and Installation Revenue | J-2291, Design-Build | | 7,360.00 |
+| 2150 Customer Deposits | Thompson | 5,520.00 | |
+| 1200 Accounts Receivable | Thompson, Inv 10511 | | 5,520.00 |
+
+**E8 - May 18. Thompson pays the $1,840.00 balance by card in the portal** (`payments.charge`, `payments.fee`). Fee at an illustrative 2.9% + $0.30 = $53.66.
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 1050 Stripe Clearing - USD | | 1,840.00 | |
+| 1200 Accounts Receivable | Thompson, Inv 10511 | | 1,840.00 |
+| 6150 Merchant Processing Fees | | 53.66 | |
+| 1050 Stripe Clearing - USD | | | 53.66 |
+
+**E9 - May 20. Stripe payout of $1,786.34 lands in the bank** (`payments.payout`), auto-matched to the Plaid bank line two business days later.
+
+| Account | Debit | Credit |
+|---|---:|---:|
+| 1010 Operating Checking | 1,786.34 | |
+| 1050 Stripe Clearing - USD | | 1,786.34 |
+
+**E10 - May 21. Low-voltage lighting subcontractor bill, $2,400.00 with 10% retainage** (`ap.AP4`).
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 5410 Subcontractors | J-2291, Phase 4 Lighting, Subcontractor | 2,400.00 | |
+| 2000 Accounts Payable | Sub: lighting contractor | | 2,160.00 |
+| 2010 Retainage Payable - Subcontractors | Sub: lighting contractor, J-2291 | | 240.00 |
+
+**E11 - May 22. Goodwill credit memo and partial refund on a spring cleanup** (`billing.P18`, `payments.refund`; [08](08-payments-stripe.md) Example 5). Edging redone poorly; $200.00 credited and refunded to the card.
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 4910 Discounts and Allowances | Maintenance; reason "quality goodwill" | 200.00 | |
+| 1200 Accounts Receivable | Client Martin, Inv 10482 | | 200.00 |
+| 1200 Accounts Receivable | Client Martin | 200.00 | |
+| 1050 Stripe Clearing - USD | | | 200.00 |
+
+**E12 - May 24. Dispute on a $650.00 fall cleanup paid last November** (`payments.dispute`; [08](08-payments-stripe.md) Example 7). Illustrative $15.00 dispute fee.
+
+| Account | Debit | Credit |
+|---|---:|---:|
+| 1075 Disputed Payments Receivable | 650.00 | |
+| 6155 Dispute Fees | 15.00 | |
+| 1050 Stripe Clearing - USD | | 665.00 |
+
+**E13 - May 29. Biweekly payroll journal imported from Gusto for May 10-23** (`payroll.PR1`, `payroll.PR2`). Gross wages $48,600.00 (field $41,200.00, office $7,400.00). Applied field wages accrued from approved time for the period were $40,650.00, so $550.00 (overtime premium and a crew bonus) is variance. Employee withholdings: federal $4,860.00, FICA $3,717.90, state $2,187.00; 401(k) $972.00; net pay $36,863.10. Employer FICA $3,717.90 plus FUTA/SUTA $680.00 = $4,397.90, split by wage share: field $3,728.26, office $669.64.
+
+| Account | Debit | Credit |
+|---|---:|---:|
+| 2310 Accrued Wages (clears applied field wages) | 40,650.00 | |
+| 5190 Field Labor Variance | 550.00 | |
+| 6010 Office and Admin Salaries | 7,400.00 | |
+| 2360 Payroll Clearing (net pay) | | 36,863.10 |
+| 2320 Payroll Taxes Payable (employee withholdings) | | 10,764.90 |
+| 2330 Benefits and Deductions Payable (401k) | | 972.00 |
+| 2390 Applied Labor Burden Clearing (employer taxes, field share) | 3,728.26 | |
+| 6050 Payroll Taxes and Benefits - Admin | 669.64 | |
+| 2320 Payroll Taxes Payable (employer taxes) | | 4,397.90 |
+| **Totals** | **52,997.90** | **52,997.90** |
+
+**E14 - May 29. Gusto debits the payroll account** (`payroll.PR3`), matched from the bank feed as three debits totaling $52,997.90.
+
+| Account | Debit | Credit |
+|---|---:|---:|
+| 2360 Payroll Clearing | 36,863.10 | |
+| 2320 Payroll Taxes Payable | 15,162.80 | |
+| 2330 Benefits and Deductions Payable | 972.00 | |
+| 1020 Payroll Checking | | 52,997.90 |
+
+**E15 - May 31. Deferred revenue recognized on maintenance agreements** (`billing.P5`). May's completed occurrences across 61 leveled and prepaid agreements recognized $18,420.00, posted as daily summarized entries (one month shown). The Hernandez prepaid agreement contributed 5 mows at $52.25 ($55.00 list less the 5% prepay factor, per [07](07-invoicing-billing-contracts.md) 4.2.4) = $261.25.
+
+| Account | Dimensions | Debit | Credit |
+|---|---|---:|---:|
+| 2200 Deferred Revenue - Service Agreements | Per agreement (61 lines in detail) | 18,420.00 | |
+| 4100 Maintenance Revenue | Maintenance, Charlotte | | 18,420.00 |
+
+**E16 - May 31. Monthly depreciation run, book basis** (`assets.FA2`). Includes the 60-inch zero-turn from [13](13-operations-inventory-equipment.md) 4.14.7 ($14,000 cost, $3,000 salvage, 4 years straight-line = $229.17 per month) and a compact track loader ($68,500 cost, $20,500 salvage, 6 years = $666.67 per month).
+
+| Account | Debit | Credit |
+|---|---:|---:|
+| 5350 Depreciation - Field Equipment (by asset and division) | 2,845.84 | |
+| 6430 Depreciation - Non-Job Assets (office IT) | 312.50 | |
+| 1591 Accumulated Depreciation - Trucks and Trailers | | 1,650.00 |
+| 1592 Accumulated Depreciation - Mowers and Landscape Equipment | | 529.17 |
+| 1593 Accumulated Depreciation - Heavy Equipment | | 666.67 |
+| 1596 Accumulated Depreciation - Office Furniture and IT | | 312.50 |
+
+**E17 - May 31. Equipment loan payment matched from the bank feed** (`loans.LN1`). The track loader was financed with $60,000.00 at 6.9% APR over 48 months: payment $1,433.99; first-month interest $345.00; principal $1,088.99.
+
+| Account | Debit | Credit |
+|---|---:|---:|
+| 2610 Equipment Loans - CTL-03 note | 1,088.99 | |
+| 7400 Interest Expense - Debt | 345.00 | |
+| 1010 Operating Checking | | 1,433.99 |
+
+**E18 - May 31. Labor burden true-up** (`payroll.PR4`, `payroll.PR5`). In May, applied burden credited to 2390 totaled $11,860.40. Actual burden debited to 2390: employer taxes on two field payrolls $7,456.52, workers' compensation accrual $3,710.00 (`Cr 2420`), field health premiums $1,050.00 (`Cr 2000`) = $12,216.52. Burden was under-applied by $356.12, which means the 28% standard rate is slightly low for May; the variance closes to the P&L and the overhead and burden review in [4.9](#49-budgets-overhead-recovery-and-forecasts) flags it.
+
+| Account | Debit | Credit |
+|---|---:|---:|
+| 5195 Labor Burden Variance | 356.12 | |
+| 2390 Applied Labor Burden Clearing | | 356.12 |
+
+**What these entries mean to Dana Reyes.** The Thompson job's May cost so far (E2-E6, E10) is visible by phase within seconds of each event; the deposit never touched revenue; the Stripe fee is an expense, not a short payment; the payroll entry reconciles field labor already charged to jobs with what Gusto actually paid; and the $550 overtime variance plus the $356 burden variance are visible instead of being buried inside job costs. At month end the WIP schedule ([4.8.3](#483-percentage-of-completion-and-the-wip-schedule-v1)) adjusts install revenue to percentage of completion.
+

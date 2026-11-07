@@ -571,3 +571,290 @@ Resources come from the asset register in [13](13-operations-inventory-equipment
 
 > **Competitive edge.** Aspire tracks equipment for maintenance and costing; Jobber and Housecall Pro do not schedule equipment at all. Rootline treats a skid steer, a trailer's deck slots and a gate width as scheduling constraints, which is what stops a crew from arriving at a backyard with a mower that does not fit through the gate.
 
+### 4.6 Dispatch board
+
+The dispatch board is the office's cockpit (route `/schedule/board` in [21](21-ux-design-system-sitemaps.md), where the day-view wireframe 18.4 lives). This section specifies its behavior.
+
+#### 4.6.1 Views [MVP unless tagged]
+
+| View | Layout | Best for |
+|---|---|---|
+| **Day (Gantt by crew)** | Rows = crews (plus subcontractors, non-crew staff and resource lanes), x-axis = time 5:00-21:00 (zoomable), cards sized by on-site duration, drive gaps shown as thin connectors with minutes | Morning adjustments, mid-day recovery |
+| **3-day** | Same as Day, 3 columns | Rain-day shifting |
+| **Week (crew x day)** | Rows = crews, columns = days; each cell shows stop count, scheduled vs available hours, utilization bar, first/last stop, weather chip; expand a cell to see its sequence | Weekly balancing, holiday slides |
+| **Season calendar** | Month grid with counts per day by service type and capacity band | Owner and ops planning |
+| **Map** | Routes as colored polylines (one color per crew), numbered stops, unassigned pins, depots, dump/supply sites, live crew positions (4.10), zone overlays, weather radar layer [V1] | Spatial reasoning, "who is closest" |
+| **Split** | Board + map side by side (>= 1536 px screens show board, map and unassigned tray simultaneously per [21](21-ux-design-system-sitemaps.md)) | Default for ops managers |
+| **List** | Sortable table of Visits with all attributes; bulk edit | Auditing, exports |
+| **Resources** [V1] | Rows = equipment units, bars = reservations | Skid steer and aerator contention |
+| **People** [V1] | Rows = employees, bars = Crew Day membership, time off, non-crew events | Payroll-heavy weeks, sick days |
+| **Project Gantt** [V1] | Rows = projects and phases, dependency arrows (4.11) | Design-build scheduling |
+
+Filters persist per user: branch, pool, crew, service type, status, flags (late risk, unassigned, conflicts, locked), client type. Saved filter sets ("Install crews only", "Lawn applications this week").
+
+#### 4.6.2 Unassigned tray [MVP]
+
+A left-hand tray lists the backlog (4.3.3) for the visible date range: unscheduled Visits, missed Visits, rain-displaced Visits, partial-visit returns, portal requests awaiting approval and tentatively placed Jobs awaiting gates. Each card shows client, service, crew-hours, due window, gates and skill/equipment needs. Sort by urgency score by default. Cards can be dragged onto a crew lane, a specific position in a route, a day cell (week view) or the map (drop on a route polyline inserts at the cheapest position on that route). A WCAG 2.5.7-compliant alternative exists for every drag: select the card, then click a target slot, or use "Move to..." ([21](21-ux-design-system-sitemaps.md) section 18.4).
+
+#### 4.6.3 Drop behaviors and validation [MVP]
+
+| Drop target | Result |
+|---|---|
+| Crew lane (Day view), empty area | Visit is appended; the board immediately shows a **suggested insertion position** (cheapest insertion) as a ghost; Enter accepts, Esc keeps at end |
+| Between two stops | Explicit sequence position; sets `lock = sequence` only if the user holds Shift (otherwise the optimizer may still reorder) |
+| Time axis position with Alt | Sets a `fixed_time` appointment at that time |
+| Day cell (Week view) | Changes date; crew stays unless dropped on another crew's row |
+| Another crew | Reassigns crew; validation runs for skills, equipment, capacity |
+| Unassigned tray | Unschedules (`scheduled -> unscheduled`) with reason prompt if the client was already notified |
+| Map route polyline | Cheapest insertion into that route |
+
+Every drop runs the **validator** in the browser (instant) and on the server (authoritative). Results are tiered:
+
+| Tier | Display | Examples | Can the user proceed? |
+|---|---|---|---|
+| **Block** | Red outline, drop rejected with message | Missing hard skill or license; equipment class unavailable; Property or Resource blackout; dig ticket not clear; visit outside a round's compliance window; crew lane is a subcontractor who has not accepted | No |
+| **Override** | Orange, modal asks for reason | Exceeds crew shift by > 60 min; client time window violated; visit outside its due window; off-zone placement; spacing rule violated for non-compliance services; holiday placement | Yes, with `schedule.override` permission and a reason (audited) |
+| **Warn** | Yellow badge on card | Crew > 100% of productive capacity; drive between stops > 25 min; no on-site crew member speaks client's preferred language; weather risk on that day | Yes |
+| **Info** | Gray | "Client was notified for Tuesday; a change notice will be sent" | Yes |
+
+Validator response time budget: < 50 ms in browser for single-card checks against the loaded week; server confirmation < 300 ms p95 ([20](20-architecture-security.md) section 4.28).
+
+#### 4.6.4 Multi-select and bulk actions [MVP]
+
+Shift-click, lasso on map and "select all filtered" allow bulk: move to date, reassign crew, lock/unlock, skip with reason, cancel, change duration budget, add a note to crew, send a custom message to affected clients (through [16](16-marketing-growth-communications.md) templates), print route sheets, and **Optimize selection** (runs the optimizer only over selected crews/days). Bulk changes over 10 Visits always go through a ScheduleDiff preview.
+
+#### 4.6.5 Visit card anatomy [MVP]
+
+Uses the `VisitCard` component from [21](21-ux-design-system-sitemaps.md): service abbreviation (MW, FC, AER+OS, RND3, IRR-W), client short name, time window, duration bar, crew chip, status color, and flag icons: gate code present, dog on property, chemicals, first visit, locked, presence required, late risk, weather risk, conflict, client-confirmed, notes for crew. Hover/focus shows the full card: address, last visit notes, crew-hours budget vs learned, price, special instructions.
+
+#### 4.6.6 Non-crew calendar events [MVP]
+
+Estimator site assessments, design consultations, client walkthroughs, inspections, shop days, training and safety meetings appear on the board as non-crew events in an individual's lane or the "Sales and design" group ([03](03-crm-sales-estimating-proposals.md) section on site visits). They consume the person's time, so a crew lead booked for a 7:00 safety meeting starts the route at 7:30. Two-way calendar sync with Google Calendar and Microsoft 365 for office roles [V1] (busy/free only by default, details opt-in).
+
+#### 4.6.7 Draft and published schedule [MVP]
+
+- Schedules are **drafts** until published. Published days are pushed to crew devices as `dispatched`.
+- **Auto-publish** for tomorrow at 15:00 tenant-local (Company setting, range 12:00-20:00). Load-out lists in [13](13-operations-inventory-equipment.md) are generated from the published route and regenerate until their 05:00 lock.
+- Changes to a published day are **late changes**: the crew device receives a delta push, the crew app highlights "Route changed: +1 stop, 2 reordered" and the change log records who/why. Late changes after 05:00 also notify the crew lead by push.
+- **Unpublish** is allowed until the first Visit of that Crew Day starts.
+- The board shows a publish status per Crew Day: Draft, Published, Started, Completed.
+
+#### 4.6.8 Collaboration and concurrency [MVP]
+
+- Presence avatars per day and per crew; a live "ghost" of another dispatcher's drag so two people do not move the same visit ([21](21-ux-design-system-sitemaps.md)).
+- Each Visit has a `version` (optimistic concurrency). If a save conflicts, the server returns the current state and the board shows "Ana moved this to Crew 3 a moment ago - keep hers or apply yours?".
+- Scenarios (4.8.8) are private until promoted, so planning does not collide with live dispatch.
+
+#### 4.6.9 Performance [MVP]
+
+- Board state is held in a local store (normalized Visits, Crew Days, Routes for the visible range plus one buffer week) hydrated from a delta API and kept fresh by server-sent events/WebSocket topics per tenant-branch-day ([20](20-architecture-security.md) section 4.20).
+- Virtualized rendering: a Week view with 40 crews and 3,000 Visits renders in < 1.5 s on a mid-range laptop and scrolls at 60 fps (target).
+- Drag interactions do not wait for the network; rollback animates if the server rejects.
+
+#### 4.6.10 Route sheets and exports [MVP]
+
+Printable route sheet per Crew Day (PDF, English/Spanish per crew lead preference): stops in order with address, service lines, time windows, gate codes (only if the Company allows printing access secrets; default off, shows "see app"), notes, map thumbnail, material load-out summary. CSV/ICS export of Visits for a date range. For crews without smartphones, the route sheet is the fallback.
+
+#### 4.6.11 Undo and audit [MVP]
+
+Every change is recorded in `schedule_change` with actor (user, automation, AI agent, client, system), before/after, reason and ScheduleDiff id. Undo (Ctrl/Cmd+Z) reverts the last change or the last applied diff as a whole, if no dependent field events (start/complete) occurred. Notifications already sent are not unsent; undo sends a correction only if the original notice went out (Company setting: "Send correction notices", default on).
+
+### 4.7 Territories, zones and route days
+
+#### 4.7.1 Zones [MVP]
+
+- A **Zone** is a polygon (drawn on the map, generated from ZIP/postal codes, subdivisions, or a radius) assigned to a branch, one or more route days, and optionally preferred crews.
+- Properties are auto-assigned to zones by point-in-polygon at geocode (PostGIS). Properties outside any zone go to "Unzoned" and get the nearest zone suggested.
+- Zones carry stats: properties, weekly crew-hours, revenue per week, average drive minutes between stops.
+- Zones can overlap only if they have different route days (e.g., a dense suburb split into Tuesday-A and Thursday-B by street).
+
+#### 4.7.2 Master routes [MVP]
+
+A **Master Route** is the season template for a zone-day-crew: ordered list of recurring Properties with expected arrival times. Daily routes are generated from it (only that day's due Visits, skipping non-due bi-weekly ones) and then lightly re-optimized for the day's additions and removals, with a strong stability penalty toward the master order. The board shows **drift**: "Tuesday Crew 1 differs from master by 6 stops (3 adds, 2 skips, 1 move)". Re-mastering is an explicit action (monthly or after big sales pushes) that runs the territory or week solver and proposes a new master.
+
+#### 4.7.3 Territory design solver [V1]
+
+For seasonal planning (February, or after acquiring a competitor's route list):
+- **Inputs:** all recurring Properties with weekly crew-hours, client day locks, A/B parity, crews and their working days and depots, desired balance tolerance (default +/- 10% hours per crew-day), maximum allowed client day changes (default 15% of clients).
+- **Method:** capacitated clustering (balanced k-medoids on road-time distance) to produce zone-day clusters, followed by a week-plan VRP per cluster to verify feasibility; iterated to reduce cross-zone overlap. Runs async; target 120 s for 2,000 properties and 10 crews, up to 10 minutes for 10,000 properties (progress bar, emails when done).
+- **Outputs:** proposed zone-day map, per-day hours and drive estimates, list of clients whose day changes with a draft notice, before/after KPIs (total weekly drive hours, average stop gap minutes, revenue per drive hour).
+- **Migration plan:** changes can be effective from a chosen week; clients get notice with configurable lead time (default 14 days).
+
+#### 4.7.4 A/B week balancing [MVP]
+
+Bi-weekly clients are assigned parity A or B. The territory solver and the "best day" recommender balance hours so week A and week B loads on the same day differ by no more than 10% (Company setting). Display: the week view shows "Tue (A)" and capacity per parity.
+
+#### 4.7.5 New client slotting, "best day" [MVP]
+
+When a new recurring client is sold (in [03](03-crm-sales-estimating-proposals.md)), booked online ([16](16-marketing-growth-communications.md)), or entered by the office, Rootline runs **cheapest insertion** of the new Property's Visit (duration, skills, equipment) into each candidate master route within the zone's days (and adjacent zones within 10 minutes' drive), and returns the top 3 options:
+
+```text
+Best service day for 418 Willow Ln (weekly mow, 0.75 crew-h)
+1. Tuesday, Crew 1 - adds 4 min drive, stop between #11 and #12, Tue load 92% -> 95%
+2. Thursday, Crew 3 - adds 7 min drive, Thu load 81% -> 84%
+3. Tuesday, Crew 3 - adds 9 min drive, Tue load 88% -> 91%
+[Assign option 1]   [Waitlist if all > 100%]
+```
+
+Target response < 1.5 s p95 (cached master-route matrices). The same API powers the portal's "Your crew will visit on Tuesdays" ([16](16-marketing-growth-communications.md)) and the AI receptionist.
+
+### 4.8 Route optimization engine
+
+The engine is a Python service using **Google OR-Tools' vehicle routing solver** behind Connect-gRPC, stateless and horizontally scaled ([20](20-architecture-security.md) section 4.17; [OR-Tools routing](https://developers.google.com/optimization/routing)). This section specifies the product-level problem it solves.
+
+#### 4.8.1 Optimization modes
+
+| Mode | Problem class | Typical size | Time limit (per [20](20-architecture-security.md)) | Priority |
+|---|---|---|---|---|
+| `sequence` | Re-order one Crew Day (TSP with time windows, breaks, dump stops) | 10-40 stops | 5 s | [MVP] |
+| `insertion` | Best position(s) for 1-20 new Visits across candidate Crew Days | 1-20 visits x up to 30 routes | 1.5 s | [MVP] |
+| `day_plan` | Assign and sequence a day's Visits across all crews of a branch (VRPTW with skills, capacities, breaks) | 50-800 stops, 2-40 crews | 30 s | [V1] |
+| `week_plan` | Assign flexible Visits to days and crews within a week, then sequence (periodic VRP, decomposed) | 200-4,000 stops | 120 s async | [V1] |
+| `territory` | Seasonal zones and master routes (4.7.3) | 500-10,000 properties | 120 s to 10 min async | [V1] |
+| `repair` | Mid-day re-optimization from crews' current positions and progress (4.10.8) | Remaining stops of 1-10 crews | 5-10 s | [V1] |
+| `storm` | Priority-ordered snow routing with re-service loops (4.9.6) | 20-500 sites | 30 s, repeated | [V1] |
+
+#### 4.8.2 Constraint catalogue
+
+| Constraint | Hard/soft (default) | Modeling note (OR-Tools; verify API details against the current release) | Priority |
+|---|---|---|---|
+| Start and end at depot (yard); per-crew depot | Hard | Vehicle start/end nodes | [MVP] |
+| Start at crew lead's home (take-home trucks) | Hard per crew setting | Per-vehicle start node | [V1] |
+| Shift start/end, max shift length | Hard end at shift + max OT (default 2 h); soft beyond shift | Time dimension with vehicle-specific ranges; soft upper bound cost on end cumul | [MVP] |
+| Service duration (crew-size adjusted, 4.1.4) | Hard | Transit callback = travel + service time at the from-node | [MVP] |
+| Client time window (`between`, `fixed_time`) | `fixed_time` hard; `between` soft by default (Company setting can make hard) | Cumul range or soft bounds with lateness penalty | [MVP] |
+| Access window (gate staffed hours, HOA quiet hours, school hours, municipal noise ordinance earliest start) | Hard | Cumul range | [MVP] |
+| Lunch/meal break | Hard (where law requires, e.g., meal start before end of the 5th hour of work in California per [15](15-team-hr-payroll.md)); otherwise soft window 11:00-13:00, 30 min | Vehicle break intervals on the time dimension | [MVP] |
+| Skills and licenses | Hard | Allowed-vehicles per node | [MVP] single crew check, [V1] assignment |
+| Equipment class (aerator, skid steer, deck width vs gate width) | Hard | Allowed-vehicles per node, computed from Crew Day units | [V1] |
+| Crew size minimum | Hard | Allowed-vehicles per node | [V1] |
+| Debris capacity (leaf cleanup cu yd) with dump runs | Hard | Capacity dimension; dump sites as optional reload nodes (duplicated, penalty-free disjunctions) that reset load via slack | [V1] |
+| Material pickup at supply house before visits that need it (mulch, stone, plants) | Hard precedence when material is not loaded at the yard | Pickup-and-delivery pairs on the same vehicle with pickup before delivery | [V1] |
+| Spray tank refills (gallons) | Hard | Capacity + reload nodes at the yard or water source | [V1] |
+| Salt reload (tons) during storms | Hard | Capacity + reload at salt depot | [V1] |
+| Day lock, crew lock, sequence lock | Hard | Fixed vehicle; precedence or fixed rank | [MVP] |
+| Stability vs master route / previous plan | Soft | Penalty on changed vehicle or rank; warm start from previous routes | [MVP] |
+| Zone adherence | Soft | Penalty when assigned crew/day differs from zone | [V1] |
+| Max single drive leg (default 25 min) | Soft | Arc cost surcharge above threshold | [V1] |
+| Crew workload balance | Soft | Global span cost coefficient | [V1] |
+| Overtime cost | Soft | End-time soft upper bound at shift end | [MVP] |
+| Optional visits (fillers, upsells, flexible backlog) | Soft | Disjunction with drop penalty scaled by priority | [V1] |
+| Battery equipment energy budget | Hard | Energy dimension with charging stops | [V2] |
+| Traffic-dependent travel time | Soft (approximated) | Time-of-day bucketed matrices chosen by planned departure | [V1] |
+
+Gate codes are not constraints; they are restricted access data shown on device for dispatched Visits only ([20](20-architecture-security.md)). What matters for routing is the access window (e.g., "community gate staffed 08:00-16:00; after hours needs the resident") and the Property's trailer-parking note.
+
+#### 4.8.3 Travel-time matrices [MVP]
+
+- **Source:** Google Routes or Mapbox matrix APIs (provider chosen per region and cost; [20](20-architecture-security.md)). Per-request element limits and traffic-aware limits differ by provider and change; verify current limits before sizing batches.
+- **Time-of-day buckets:** `early` (05:00-07:00), `am_peak` (07:00-09:30), `midday` (09:30-15:00), `pm_peak` (15:00-18:30), `evening` (18:30-22:00), `night` (22:00-05:00, used for snow). The solver uses the bucket of the planned departure time for each arc (piecewise approximation).
+- **Truck-and-trailer factor:** car travel times are multiplied by a Company-tunable factor (default 1.10) plus a fixed 2-minute park-and-unload buffer per stop (accounted in setup time). [V2]: learn per-crew factors from breadcrumbs.
+- **Caching:** Redis keys by `(geohash7 origin, geohash7 destination, bucket)` for 14 days ([20](20-architecture-security.md)). Weekly recurring routes hit the cache almost entirely; the estimate in [20](20-architecture-security.md) is a 60-80% reduction in matrix API cost.
+- **Pruning:** for `day_plan` and larger, only the k = 30 nearest neighbors per stop (by haversine) plus depots and dump sites are fetched from the provider; other arcs use a haversine-times-detour-factor estimate (default 1.35) with a high cost so the solver rarely uses them. This bounds API calls from O(n^2) to O(n x k). A 600-stop day costs about 18,000 + 2 x 600 depot arcs rather than 360,000 elements (estimate).
+- **Fallback:** if the provider is down or quota is exhausted, haversine-with-detour estimates are used and the plan is labeled "Approximate drive times" in the diff.
+
+#### 4.8.4 Objective function [MVP basic, V1 full]
+
+The solver minimizes a weighted sum in **minute-equivalent cost units**. Defaults (Company-tunable via presets, advanced users can edit weights):
+
+| Term | Default weight | Notes |
+|---|---|---|
+| Drive minutes | 1.0 per minute | Primary cost |
+| Overtime minutes (beyond shift end) | 1.5 per minute | Reflects 1.5x pay |
+| Soft time-window lateness | 2.0 per minute late | Early arrival waits (no penalty) unless the window is `between` and early arrival is disallowed |
+| Dropped optional visit | P1 10,000; P2 3,000; P3 1,000; P4 500; P5 300 | Never drops P1/P2 unless infeasible; dropped visits listed with reasons |
+| Stability: changed day | 60 per visit | Recurring visits only |
+| Stability: changed crew | 30 per visit | |
+| Stability: sequence rank change | 2 per rank moved | Capped at 20 per visit |
+| Zone violation | 20 per visit | |
+| Drive leg > 25 min | 1.0 per minute above 25 | |
+| Workload imbalance | 0.2 x (max route span - min route span) | Only in `day_plan` and above |
+
+**Presets:** "Minimize drive" (stability x 0.3), "Keep routes stable" (default), "Finish early" (overtime weight 3.0, adds end-time cost), "Balance crews" (imbalance x 3), "Storm" (lateness on priority-1 sites x 10, stability 0).
+
+#### 4.8.5 Route stability [MVP]
+
+Residential maintenance clients notice when their mowing day changes; commercial clients notice when the crew arrives at a different time. Stability rules:
+- The previous published plan (or the Master Route) is passed as a **warm start** so local search begins from the known solution.
+- Stability penalties (4.8.4) apply against the anchor.
+- A **route-day change** for a recurring client is never made by the daily optimizer; only `week_plan` or `territory` modes, or a human, can change the day, and they produce client-notice drafts.
+- The diff shows a "Stability" KPI: % of stops unchanged in crew, day and +/- 2 positions.
+
+#### 4.8.6 Insertion and best-slot heuristics [MVP]
+
+For single or small batches, a dedicated insertion service evaluates every feasible position in candidate routes (within the Visit's flexibility window and zone days), computing marginal drive minutes, lateness, capacity and stability cost. It returns ranked options with explanations. This powers drag ghosts (4.6.3), "best day" (4.7.5), backlog auto-slot (4.3.3), portal booking availability (4.13) and Copilot answers ("Can we fit the Garcia cleanup this week?").
+
+#### 4.8.7 Locks and pins [MVP]
+
+| Lock | Meaning | Solver encoding |
+|---|---|---|
+| `crew` | Must stay with this crew, any day within flexibility | Fixed vehicle set |
+| `day` | Must stay on this date, any crew | Only that day's vehicles allowed |
+| `time` | Must start within +/- 10 min of its set time | Hard cumul range |
+| `sequence` | Keep relative order with its neighbors (e.g., "do the Smiths right after the Joneses, same driveway") | Precedence constraints with adjacency |
+| `full` | Do not move at all | Node fixed to vehicle and rank; removed from search where possible |
+| Route lock | Entire Crew Day frozen (e.g., a commercial route with contract SLA times) | Vehicle excluded from optimization; its stops still count for capacity and equipment |
+
+Locks show a padlock on cards and can be set by drag modifiers, the card menu or bulk actions. Copilot and automations respect locks as hard constraints (rule also stated in [17](17-ai-copilot-automation.md) agent A7).
+
+#### 4.8.8 What-if scenarios [V1]
+
+- **Create** a scenario from the board for a date range and set of crews/branches. The scenario copies Visits, Crew Days and reservations into a sandbox.
+- **Levers:** remove or add a crew; change shift hours; mark equipment down; toggle a constraint (e.g., allow Saturday); change objective preset; inject demand (e.g., "add 40 fall cleanups" or "sell the Ridgeview HOA account"); apply a weather playbook.
+- **Run** the appropriate mode; scenarios run on the async queue with progress.
+- **Compare** up to 3 scenarios side by side: total drive hours, overtime hours, dropped visits, late visits, stability %, revenue per drive hour, utilization by day, client notices required, cost delta in dollars (labor at loaded rates, fuel estimate at Company's $/mile setting).
+- **Promote** a scenario to a ScheduleDiff on the live schedule. If the live schedule changed since the scenario was created, a three-way merge runs: non-conflicting changes apply, conflicting Visits are listed for manual choice.
+- Limits: 10 active scenarios per user, auto-expire after 14 days (Company setting), not visible to crews or clients.
+
+#### 4.8.9 Route density metrics [MVP]
+
+Definitions shared with [18](18-reporting-analytics.md) (metric keys in backticks):
+
+| Metric | Definition | Typical use |
+|---|---|---|
+| `stops_per_route_hour` | Completed stops / (route end - route start) in hours | Density across crews and days |
+| `drive_time_pct` | Drive minutes / (route end - route start) | Target < 20% for mowing routes (Company target) |
+| `route_density_onsite_ratio` | On-site minutes / (on-site + drive minutes) | Primary density KPI in [18](18-reporting-analytics.md) |
+| `revenue_per_drive_hour` | Revenue of completed visits / drive hours | Pricing and territory decisions |
+| `revenue_per_route_hour` | Revenue / route hours | Crew productivity and price checks |
+| `avg_stop_gap_minutes` | Mean drive minutes between consecutive stops | Territory compactness |
+| `marginal_drive_cost` per stop | Drive minutes saved if this stop were removed (computed by the solver) | Spotting the "$45 mow 22 miles away" outliers |
+| `deadhead_minutes` | Depot-to-first-stop + last-stop-to-depot | Depot placement, take-home truck decisions |
+| `route_stability_pct` | Stops unchanged in crew, day and +/- 2 positions vs prior week | Client experience |
+| `zone_purity_pct` | Stops on their zone day | Territory hygiene |
+
+Every route in the Day view shows a density chip (e.g., "On-site 78% / Drive 16% / $212 per drive hour"). Stops with marginal drive cost above a threshold (default 12 minutes) get a "low density" badge linking to a re-price or swap suggestion.
+
+> **Competitive edge.** Real Green and GorillaDesk sell on route density for lawn treatment; Jobber users report straight-line ordering. Rootline makes density a measured, per-stop number (marginal drive cost) tied to pricing in [03](03-crm-sales-estimating-proposals.md) and to the "neighbor bundle" offers in [06](06-customer-portal.md), so the owner can see exactly which clients cost more to serve than they pay.
+
+#### 4.8.10 Solver architecture and performance targets [MVP]
+
+- **Search strategy:** first solution by parallel cheapest insertion (or path cheapest arc for single routes), then guided local search with a time limit (OR-Tools routing search parameters; verify names against the release in use). Warm start from the previous plan when one exists.
+- **Decomposition:** large problems are split by branch depot and zone clusters; each sub-problem solves in parallel; a cross-cluster pass handles border stops. Snow `storm` mode solves per priority tier.
+- **Determinism:** fixed random seed per run; identical inputs produce identical outputs (important for support and testing).
+- **Fallback:** on timeout or infeasibility the service returns the best feasible solution found or a greedy insertion plan, flagged in the diff ("Partial optimization: 30 s limit reached; estimated 4% from best"). Infeasible visits are never silently dropped; each is returned with a machine-readable reason (`no_skill`, `no_equipment`, `window_infeasible`, `capacity`, `access_window`, `locked_conflict`).
+- **Run records:** every run stores inputs hash, parameters, solver version, duration, objective breakdown and solution; viewable by `platform_engineer` with tenant consent for support ([19](19-platform-admin-portal.md)).
+
+**Performance targets**
+
+| Scenario | Size | Target (p95 wall time) | Quality target |
+|---|---|---|---|
+| Single crew re-sequence | 30 stops | 2 s (limit 5 s) | Within 2% of a 60 s run on the benchmark set |
+| Best-slot insertion | 1 visit, 30 candidate routes | 1.5 s | Exact cheapest insertion |
+| Day plan | 300 stops, 12 crews | 15 s (limit 30 s) | Within 5% of a 10-minute run |
+| Day plan, large | 800 stops, 40 crews, 2 depots | 30 s | Within 7% of a 10-minute run |
+| Week plan | 2,000 stops, 15 crews | 120 s async | Within 8% of a 30-minute run |
+| Territory | 5,000 properties, 20 crews | 10 min async | Hours balance within +/- 10% per crew-day |
+| Mid-day repair | 3 crews, 25 remaining stops | 5 s | Feasible with all P1-P2 kept |
+| Storm re-route cycle | 300 sites, 25 trucks | 20 s, repeat every 15 min | All priority-1 sites within SLA where feasible |
+| Matrix fetch (cache miss) | 600 stops pruned | 8 s | n/a |
+| Matrix fetch (warm cache) | 600 stops | 300 ms | n/a |
+
+Quality targets are measured nightly against a benchmark suite of anonymized, synthetic tenant-shaped instances (residential mowing, mixed commercial, fall cleanups with dump runs, rounds with licensing, storm) plus standard VRPTW instances (Solomon-style) as a sanity check.
+
+#### 4.8.11 Explainability [MVP basic, V1 full]
+
+- "Why here?" on any stop: the binding constraints (time window, skill, equipment, lock, access window), the next-best position and its cost difference ("Moving to Crew 3 would add 11 min drive and miss the 10:00 window").
+- Diff summary in plain language, generated deterministically from the objective breakdown (with optional Copilot rewording): "Saves 47 minutes of driving across 3 crews. Two clients change position by more than 2 stops. Crew 2 finishes 25 minutes earlier."
+- Dropped visit report with reasons and one-click fixes ("Add a licensed applicator to Crew 3 on Tuesday").
+

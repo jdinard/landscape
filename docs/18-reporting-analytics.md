@@ -239,7 +239,7 @@ For `ops_manager` (and `owner`). Focus: today, this week, and jobs at risk.
 
 #### 4.2.3 Sales dashboard [MVP]
 
-For `estimator` (own data by default) and `owner`/`office_manager` (all reps).
+For `estimator` (own data by default) and `owner`/`office_manager` (all reps). Wireframe: 6.9.
 
 - **Close rate** by count and by value, by rep, service line and lead source [`close_rate_count`, `close_rate_value`].
 - **Average ticket** [`average_ticket_won`] and **average agreement value** [`average_agreement_value`].
@@ -261,7 +261,7 @@ Mobile-first in the [Crew app](05-field-crew-mobile-app.md), in English and Span
 
 #### 4.2.5 Bookkeeper Close Cockpit [V1]
 
-For `bookkeeper` and `owner`. Shows month-end readiness and data integrity:
+For `bookkeeper` and `owner`. Shows month-end readiness and data integrity (wireframe 6.10):
 
 - **Close status** per accounting period: `open`, `in_close`, `ready_for_review`, `closed`, `reopened` (state machine in [section 5.7](#57-month-end-close-status-bookkeeper)).
 - **Checklist with auto-checks:** all bank and credit card accounts reconciled through period end; Stripe payouts matched to deposits ([Payments](08-payments-stripe.md)); AR subledger ties to GL control account; AP subledger ties to GL; payroll journal posted for all pay dates in period; inventory valuation adjustment posted; WIP / over-under-billing adjustment posted; deferred revenue for prepaid programs adjusted; depreciation posted; sales tax liability reconciled to tax report; no unposted or draft transactions dated in period; no uncategorized transactions.
@@ -592,7 +592,7 @@ A drag-and-drop builder over semantic-layer **explores** (curated, joined data m
 | Save report | Private, shared with roles, or shared with named users. Ownership transfers when a user is deactivated. | MVP |
 | Folders and favorites | Company folders ("Weekly ops", "Month-end") | MVP |
 | Export | CSV, XLSX (formatted, with a definitions sheet listing metric formulas), PDF (branded), PNG of chart | MVP |
-| Scheduled email delivery | Daily, weekly (choose weekday), monthly (day N or last business day), seasonal (for example every Monday April-November). Time zone-aware. Recipients must be users with access or explicit external email addresses (owner/office_manager only). | MVP |
+| Scheduled email delivery | Daily, weekly (choose weekday), monthly (day N or last business day), seasonal (for example every Monday April-November). Time zone-aware. Recipients must be users with access or explicit external email addresses (owner/office_manager only). Grow and above (4.18); Starter receives only the Monday digest. | MVP |
 | Conditional delivery | "Send only if" a condition is met (for example AR over 90 days exceeds $5,000; jobs at risk exist) | V1 |
 | Report bursting | One schedule, many personalized outputs: each crew lead gets their crew's report; each commercial client gets their properties' service report; each estimator gets their pipeline | V1 |
 | Delivery channels | Email (Postmark/SendGrid), in-app inbox, push, Slack and Microsoft Teams (V1), SFTP and S3 (V2, for lenders and franchise groups) | MVP/V1/V2 |
@@ -717,6 +717,8 @@ The Copilot ([AI Copilot](17-ai-copilot-automation.md)) answers questions such a
 
 **Spanish support:** questions in Spanish are answered in Spanish with the same metric definitions (the Dictionary carries Spanish names and synonyms).
 
+Wireframe: 6.12 shows a certified answer with its assumptions, freshness, provisional-period warning and follow-up actions.
+
 > **Competitive edge:** Jobber Copilot and ServiceTitan's Atlas show that owners want to ask their software questions in plain language. But an assistant over generic field-service data can only report what was logged, with definitions it chooses on the fly. Rootline's Copilot compiles every certified answer from the same KPI Dictionary that drives dashboards and benchmarks. "Gross margin on mulch" therefore means burdened labor, issued materials and allocated equipment, reconciled to the ledger, whether it appears in the answer, the report or the peer comparison. Every number is traceable, uncertified exploration is labeled as such, and the answer ends in an action (accept a production rate, open a re-price list).
 
 ### 4.11 Industry benchmarking (the moat) [V1 beta, V2 full]
@@ -742,7 +744,7 @@ Benchmarking is the feature competitors without a large, structured, landscape-s
 | Financial metrics | Accounting period closed in the built-in ledger (or synced and reconciled QuickBooks/Xero) and Data Health score ≥ 70 |
 | Exclusions | Demo, sandbox and test tenants; companies flagged by the anomaly engine for data corruption; companies under platform investigation |
 | One contributor per ownership group | Companies under common ownership (multi-company rollups, franchise units of one franchisee, linked Stripe or tax IDs, same billing account) are merged into **one contributor** before thresholds are applied, so a 6-brand owner cannot count as 6 peers or slip under the dominance rule |
-| Anti-Sybil | A contributor must be a paying subscriber with a connected Stripe account and real collected volume in the quarter. This makes "create 9 fake tenants to isolate a competitor" expensive and detectable; tenants created within 30 days of a release cannot be the 10th member that makes a cell publishable |
+| Anti-Sybil | A contributor must be a paying subscriber with a connected Stripe account and real collected volume in the quarter. Combined with the 6-month tenure rule, this makes "create 9 fake tenants to isolate a competitor" slow, expensive and detectable; the clean room also flags cells whose membership changed by more than 30% between releases for manual review before publishing |
 
 #### 4.11.3 Peer cohorts (fixed lattice)
 
@@ -929,11 +931,11 @@ A simple, delightful summary: visits completed, a photo timeline (before and aft
 - **Branding:** inherits the Company's portal theme, logo and custom domain.
 - **External embedding** [V2]: signed-URL iframes so a property management company can embed a Rootline scorecard in its own owner portal. Integration targets among property-management and facilities platforms are to be validated with customers.
 
-> **Competitive edge:** Commercial maintenance contracts are won and kept on proof of performance. Most field-service tools stop at emailing a visit summary. Rootline gives the property manager a live, branded portfolio scorecard with snow SLA evidence and spend-vs-budget tracking, so the landscaper looks like the most professional vendor the board has.
+> **Competitive edge:** Commercial maintenance contracts are won and kept on proof of performance. Most field-service tools stop at emailing a visit summary; our research found no multi-property dashboard or HOA-board approval routing in Jobber's client hub, and Aspire lists a client portal but publishes no detail on what a property manager can see there ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md); verify in a demo). Rootline gives the property manager a live, branded portfolio scorecard with snow SLA evidence and spend-vs-budget tracking, so the landscaper looks like the most professional vendor the board has.
 
 ### 4.15 Platform operator analytics [MVP basics, V1 full]
 
-Specified in [Platform admin](19-platform-admin-portal.md); summarized here because it runs on the same data platform:
+Specified in [Platform admin](19-platform-admin-portal.md) (PA-140 to PA-145 and the operator Copilot, PA-190); summarized here because it runs on the same data platform. Operator metrics share the metric-definition format of 4.1.1, so board-deck numbers and console numbers match:
 
 - **Tenant health score** (usage depth, Data Health, payments connected, seats active, support tickets, NPS) and churn risk.
 - **Adoption funnels:** onboarding steps, first proposal, first invoice paid, first design, first AI mockup, first benchmark view.
@@ -2203,6 +2205,18 @@ Competitors and user feedback (prices and plan names as of November 2026; verify
 - [WorkWave, "RealGreen: Making the most of your reports, Report Options 101" (2026 training deck)](https://documents.workwave.com/workwave/beyond-service/2026/realgreen-making-the-most-of-your-reports-report-options-101.pdf)
 - [SynkedUP, "Average man-hour rate for landscape jobs"](https://synkedup.com/average-man-hour-rate-for-landscape-jobs/)
 
+Added in the editorial review (cited from the consolidated research reports [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md); pages not re-opened in this pass, verify before external use):
+
+- [PR Newswire, "Jobber launches Copilot, the first of several AI-powered products..." (2024)](https://prnewswire.com/news-releases/jobber-launches-copilot-the-first-of-several-ai-powered-products-aimed-at-making-home-service-business-ownership-simpler-than-ever-before-302264047.html)
+- [Fieldproxy, Jobber pricing tracker](https://www.fieldproxy.ai/fsm-software-pricing/jobber) and [OneCrew, Jobber pricing](https://www.getonecrew.com/post/jobber-pricing) (third-party; Plus tier "custom reports" and "profit alerts")
+- [ServiceTitan press, "Introducing the next evolution of AI at Pantheon 2025" (Atlas)](https://www.servicetitan.com/press/servicetitan-introducing-the-next-evolution-of-ai-at-pantheon-2025-keynote)
+- [Supergood, "API report card: LMN" (third-party)](https://supergood.ai/api-report-card/lmn)
+- [Finviz, "Aspire report finds commercial landscapers prioritizing growth..." (2026 survey of 1,020 leaders; vendor-run)](https://finviz.com/news/401821/aspire-report-finds-commercial-landscapers-prioritizing-growth-as-businesses-navigate-operational-complexity)
+- [Attentive.ai, "LMN and Attentive.ai announce strategic partnership" (also documents the LMN-SingleOps merger)](https://attentive.ai/blog/lmn-and-attentive-ai-announce-strategic-partnership)
+- [SynkedUP, Estimating features](https://synkedup.com/features/estimating/) and [Capterra, SynkedUP](https://www.capterra.com/p/228695/SynkedUP/)
+- [Copilot CRM Help, "What is Copilot CRM?"](https://help.copilotcrm.com/en/articles/12141481-what-is-copilot-crm)
+- [Toolradar, Yardbook pricing (third-party)](https://toolradar.com/tools/yardbook/pricing)
+
 Industry benchmarks and definitions:
 
 - [Lawn & Landscape, "Wilson 360: 2024 landscape industry benchmark"](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)
@@ -2217,4 +2231,12 @@ Standards and regulatory references (not fetched in this pass; verify current te
 - [OSHA, recordable incident rate formula (incidents × 200,000 / hours worked)](https://www.osha.gov/)
 - [US Department of Justice, withdrawal of health-care antitrust policy statements (February 2023)](https://www.justice.gov/opa/pr/justice-department-withdraws-outdated-enforcement-policy-statements)
 
-**Research constraints for this doc:** in this research pass, vendor help centers for ServiceTitan, Aspire and LMN could not be fetched directly from the research environment, so statements about them rely on search-result excerpts of those pages. The shared web-search budget ran out before Arborgold, Yardbook, Copilot CRM and SynkedUP reporting features could be researched in depth; the competitor matrix marks those cells "verify". Cross-check against [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) before external use.
+Background references used without fetching (verify current text and status with counsel before relying on them):
+
+- US DOJ civil antitrust suit against RealPage (filed August 2024) concerning pricing software built on competitors' non-public data, and any subsequent settlement.
+- FTC and DOJ, "Antitrust Guidelines for Business Activities Affecting Workers" (January 2025), including the discussion of wage and benefit information exchanges.
+- FTC withdrawal of its health-care enforcement policy statements (July 2023), following the DOJ withdrawal listed above.
+
+Sibling Rootline docs relied on for consistency: [Payments](08-payments-stripe.md) (card and ACH settlement timing), [AI Copilot](17-ai-copilot-automation.md) (`metrics.query`, exploratory SQL, release gates), [Architecture](20-architecture-security.md) (data platform phasing and module names), [UX and design system](21-ux-design-system-sitemaps.md) (Today home, manager mode) and [Pricing and GTM](22-business-model-pricing-gtm.md) (tiers, Rootline Pulse, `benchmark_consent`).
+
+**Research constraints for this doc:** in the original research pass, vendor help centers for ServiceTitan, Aspire and LMN could not be fetched directly from the research environment, so statements about them rely on search-result excerpts of those pages. During the editorial review the shared web-search budget was already exhausted and vendor and government domains were not reachable, so the review filled the remaining competitor cells (SynkedUP, Arborgold, Copilot CRM, Yardbook, AI analytics at Jobber and ServiceTitan) from evidence already cited in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md), and labeled background-knowledge statements as such. Cells still marked "verify" need a live check before external use.

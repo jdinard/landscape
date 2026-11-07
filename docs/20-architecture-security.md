@@ -391,9 +391,9 @@ A 60-crew commercial maintenance company importing 40,000 properties must not sl
 | API requests | Token bucket per tenant **and** per API client in Redis | Web app: 50 req/s per user burst 100. Public API: see 4.7.5 | [MVP] |
 | DB statement time | `SET LOCAL statement_timeout` per request class | Interactive 5 s, report 30 s, export runs on replica/lake | [MVP] |
 | Heavy reads | Report builder and exports run on Aurora reader endpoints or the lake, never the writer | n/a | [MVP] |
-| Background work | Temporal task-queue fairness: per-tenant concurrency caps on activities | 10 concurrent activities per tenant per queue (Pro 25) | [MVP] |
+| Background work | Temporal task-queue fairness: per-tenant concurrency caps on activities | Concurrent activities per tenant per queue: Starter 10, Grow 15, Pro 25, Enterprise negotiated | [MVP] |
 | Bulk imports | Chunked (1,000 rows per transaction), throttled, run in `bulk` lane | ≤ 200 rows/s per tenant | [MVP] |
-| AI | Credit budgets + per-tenant concurrent stream caps | 5 concurrent copilot streams per tenant (Pro 20) | [MVP] |
+| AI | Credit budgets + per-tenant concurrent stream caps | Concurrent copilot streams per tenant: Starter 5, Grow 10, Pro 20 | [MVP] |
 | GPU | Per-tenant concurrent mockup jobs, interactive vs batch lanes | 3 interactive, 10 batch | [MVP] |
 | Webhooks out | Per-endpoint concurrency, backoff | 10 in-flight per endpoint | [MVP] |
 | Tenant heat score | Composite of CPU-ms, rows read and IOPS attributed by `app.tenant_id` (pg_stat_statements + sampled tracing) | Alert at > 5% of cell capacity | [V1] |
@@ -480,7 +480,7 @@ Details of personas and journeys live in [Personas and permissions](02-personas-
 
 | Persona group | Primary login | Second factor | Session | Notes | Priority |
 |---|---|---|---|---|---|
-| Company staff (`owner`, `office_manager`, `estimator`, `designer`, `ops_manager`, `bookkeeper`) | Email + password (Argon2id, min 12 chars, breached-password check via k-anonymity range API), **passkeys (WebAuthn)**, Google/Microsoft OIDC | TOTP, passkey, SMS OTP (fallback only). **MFA mandatory for `owner` and `bookkeeper`** and for any role holding `payment:refund`, `ledger:*` or `api_key:create` | HttpOnly, Secure, SameSite=Lax cookie. 12 h idle, 14 day absolute. Re-auth (step-up) for sensitive actions | Tenant setting can enforce MFA for all staff | [MVP] |
+| Company staff (`owner`, `office_manager`, `estimator`, `designer`, `ops_manager`, `bookkeeper`) | Email + password (Argon2id, min 12 chars, breached-password check via k-anonymity range API), **passkeys (WebAuthn)**, Google/Microsoft OIDC | TOTP, passkey, SMS OTP (fallback only). **MFA mandatory for `owner` and `bookkeeper`** and for any role holding `payment.refund`, `ledger.*` or `api_key.create` | HttpOnly, Secure, SameSite=Lax cookie. 12 h idle, 14 day absolute. Re-auth (step-up) for sensitive actions | Tenant setting can enforce MFA for all staff | [MVP] |
 | Enterprise SSO | SAML 2.0 / OIDC per tenant (Okta, Microsoft Entra ID, Google Workspace, JumpCloud), with domain verification (DNS TXT) and JIT provisioning by IdP group. **SCIM 2.0** provisioning and deprovisioning follows at [V2], as specified in [02](02-personas-roles-permissions.md) | Delegated to the IdP | Same as staff, plus IdP session max | Via a self-hostable SAML/OIDC broker or a vendor broker, chosen for residency (ADR-016). A **local owner account protected by a hardware key** is kept for IdP outages | [V1] (SCIM [V2]) |
 | Field (`crew_lead`, `technician`) | Phone number + SMS OTP *or* email magic link at first device login. Then a device-bound refresh token and a **4-6 digit app PIN or biometric** | Device binding counts as possession. PIN/biometric as the knowledge/inherence factor | Refresh token in Keychain/Keystore, 30 day rolling, revocable per device | **Shared crew device mode** [V1]: one tablet per truck; each crew member clocks in with a personal PIN; all mutations are attributed per person | [MVP] |
 | `subcontractor` | Email invite, password or passkey | **MFA mandatory** | 8 h idle | Sees only assigned work orders. Client contact data masked by default | [MVP] |
@@ -498,7 +498,7 @@ Details of personas and journeys live in [Personas and permissions](02-personas-
 
 ### 4.6 Authorization: RBAC + ABAC and enforcement points [MVP]
 
-**Model.** Permissions are strings `resource:action` (for example `invoice:issue`, `estimate:view_cost`, `client:view_contact`, `visit:complete`, `ledger:post_manual`, `period:reopen`, `payment:refund`, `api_key:create`). A **Role** is a named bundle of permissions with an optional **scope** per permission: `own`, `assigned`, `crew`, `branch` or `all`. Built-in roles map to the role keys in [02](02-personas-roles-permissions.md). Custom roles are composed from the same catalog. Attribute-based conditions refine access:
+**Model.** Permissions are strings `resource.action`, using the canonical key catalog and dot notation of [02](02-personas-roles-permissions.md) (for example `invoice.issue`, `estimate.view_cost`, `client.view_contact`, `visit.complete`, `ledger.post_manual`, `period.reopen`, `payment.refund`, `api_key.create`). A **Role** is a named bundle of permissions with an optional **scope** per permission: `own`, `assigned`, `crew`, `branch` or `all`. Built-in roles map to the role keys in [02](02-personas-roles-permissions.md). Custom roles are composed from the same catalog. Attribute-based conditions refine access:
 
 - **Subject attributes:** role(s), `employee_id`, `crew_ids`, `branch_ids`, MFA age, device trust, `actor_type` (user, api_client, automation, ai_agent, platform_staff).
 - **Resource attributes:** `tenant_id`, `branch_id`, `assigned_crew_id`, `owner_membership_id`, `amount_minor`, `status`, `sensitivity`.
@@ -509,7 +509,7 @@ Details of personas and journeys live in [Personas and permissions](02-personas-
 Example policy (crew leads may complete only visits assigned to their crew, and only within the visit date window):
 
 ```text
-permit (principal, action == Action::"visit:complete", resource is Visit)
+permit (principal, action == Action::"visit.complete", resource is Visit)
 when {
   principal.roles.contains("crew_lead") &&
   principal.crew_ids.contains(resource.assigned_crew_id) &&
@@ -526,7 +526,7 @@ when {
 | E2 | API middleware | Authentication, tenant resolution (session, custom domain, token claims), API-key or OAuth scope check, rate limits | Request rejected before business logic |
 | E3 | Application service layer (policy engine) | RBAC + ABAC decision per command or query. Row scoping (`assigned`, `crew`, `branch`) is applied as query predicates generated from the decision | Wrong-role access inside the tenant |
 | E4 | Database RLS | Tenant isolation only (kept simple and fast) | Cross-tenant access impossible even with an app bug |
-| E5 | Field-level serializers | Masks by permission: costs and margins hidden without `estimate:view_cost`; client phone and email hidden without `client:view_contact`; gate codes need `property:view_access_codes` | Sensitive fields leak in API responses |
+| E5 | Field-level serializers | Masks by permission: costs and margins hidden without `estimate.view_cost`; client phone and email hidden without `client.view_contact`; gate codes need `property.view_access_codes` | Sensitive fields leak in API responses |
 | E6 | Object storage | Short-lived (5 min) presigned GET URLs issued only after an E3 check. Tenant-prefixed keys. No public buckets except marketing assets | Media leakage via guessed URLs |
 | E7 | Search | Tenant filter plus permission-derived filter (for example, a subcontractor only sees assigned jobs) | Search results reveal hidden records |
 | E8 | AI tools | Copilot and agents act **as the invoking user**. Every tool call passes E2-E7. AI cannot escalate privileges (4.13) | Prompt injection obtains data the user cannot see |
@@ -561,8 +561,8 @@ when {
 
 #### 4.7.3 Authentication for the public API
 
-- **API keys** [MVP]: created by members with `api_key:create` (step-up required), scoped to a permission subset and optionally an IP allowlist and an expiry. Shown once. Stored as HMAC-SHA256 with a server-side pepper (keys have 192 bits of entropy, so a slow hash adds nothing). Last-used timestamp and IP are shown. Leaked-key scanning via GitHub secret-scanning partner registration of the `rl_live_` prefix [V1].
-- **OAuth 2.1 apps** [V1]: authorization code + PKCE, granular scopes (`clients:read`, `invoices:write`, `visits:read`, `ledger:read`), consent screen showing the scopes in plain language, refresh-token rotation with reuse detection (reuse revokes the whole grant). A marketplace review is required to list publicly. Unlisted apps work for the tenant that created them.
+- **API keys** [MVP]: created by members with `api_key.create` (step-up required), scoped to a permission subset and optionally an IP allowlist and an expiry. Shown once. Stored as HMAC-SHA256 with a server-side pepper (keys have 192 bits of entropy, so a slow hash adds nothing). Last-used timestamp and IP are shown. Leaked-key scanning via GitHub secret-scanning partner registration of the `rl_live_` prefix [V1].
+- **OAuth 2.1 apps** [V1]: authorization code + PKCE, granular scopes (`clients:read`, `invoices:write`, `visits:read`, `ledger:read`). Scopes use colon notation `resource:read|write` and are deliberately coarser than the dot-notation permission keys of 4.6: a token's effective rights are the intersection of its scopes and the approving user's permissions. A consent screen shows the scopes in plain language. Refresh tokens rotate with reuse detection (reuse revokes the whole grant). A marketplace review is required to list publicly. Unlisted apps work for the tenant that created them.
 
 #### 4.7.4 Webhooks (outbound) [MVP]
 
@@ -585,7 +585,7 @@ Published and predictable, unlike opaque query-cost budgets. Two independent lim
 | Enterprise | 3,000 req/min | 6,000 | 50 | Negotiated | 10 |
 | Sandbox | 60 req/min | 120 | 5 | 5,000 | 1 |
 
-**Counting rules [V1]:** webhook deliveries, OAuth token exchanges, `GET /v1/openapi.json`, sandbox traffic and requests rejected with `401` or `429` do **not** count against the daily quota. One bulk upsert of up to 1,000 rows counts as **10** calls, so bulk is always the cheaper path, deliberately. The quota resets at 00:00 in the tenant's time zone. At 80% of quota the owner and the API client's developer contact get an email. At 100% the API returns `429` with `code: daily_quota_exceeded` until reset, but `GET` requests on objects referenced by an already-delivered webhook (fetch-after-thin-event) stay allowed, so integrations that follow the recommended pattern never deadlock.
+**Counting rules [V1]:** webhook deliveries, OAuth token exchanges, `GET /v1/openapi.json`, sandbox traffic and requests rejected with `401` or `429` do **not** count against the daily quota. One bulk upsert of up to 1,000 rows counts as **10** calls, so bulk is always the cheaper path, deliberately. The quota resets at 00:00 in the tenant's time zone. At 80% of quota the owner and the API client's developer contact get an email. At 100% the API returns `429` with `code: daily_quota_exceeded` until reset, but `GET` requests on an object named in a webhook delivered to that API client in the last 24 h stay allowed (checked against the `webhook_delivery` log), so integrations that follow the recommended fetch-after-thin-event pattern never deadlock.
 
 Responses carry `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset` headers (per-minute bucket), `Rootline-Daily-Quota-Remaining`, and `Retry-After` on `429`. Webhooks and `updated_since` lists are the documented alternative to polling.
 
@@ -794,7 +794,7 @@ Conflicts are resolved by **entity semantics**, not one global rule. Hybrid logi
 | Visit status | **State-machine merge**: apply the transition if it is valid from the *current server state*. `completed` dominates `scheduled`/`in_progress`. If the office canceled while the crew completed offline, keep `completed`, flag a `billing_review` task and notify the office | Office cancels the Thursday mow at 7:10 because of rain. The crew had already mowed at 7:05 with no signal. Result: completed + "Review: canceled visit was performed" |
 | Visit notes, comments | **Append-only** entries. No conflict possible | Two crew members add notes offline; both appear |
 | Checklist items | Per-item **last-writer-wins by HLC** | "Blow off hardscape" checked by both; no conflict |
-| Time punches | **Append-only events** (clock_in, break_start, clock_out) with device time, server receipt time and GPS. Timesheets are *derived* server-side. Edits after approval need `timesheet:edit_approved` | A punch made offline at 6:58 syncs at 12:40 and keeps 6:58, flagged if the device clock was skewed > 5 min against the HLC |
+| Time punches | **Append-only events** (clock_in, break_start, clock_out) with device time, server receipt time and GPS. Timesheets are *derived* server-side. Edits after approval need `timesheet.edit_approved` | A punch made offline at 6:58 syncs at 12:40 and keeps 6:58, flagged if the device clock was skewed > 5 min against the HLC |
 | Chemical application logs | **Append-only, immutable**. Corrections are amendment records referencing the original (regulatory recordkeeping) | A wrong product rate is fixed by an amendment, and the original stays visible to auditors |
 | Photos / media | Immutable. Deduplicated by SHA-256 | Retries never create duplicates |
 | Property access info (gate code, notes) | Field-level LWW by HLC, with full **history visible** and conflict highlight | The crew updates the gate code while the office edits it too. The latest wins and both are kept in history |
@@ -952,7 +952,7 @@ The built-in general ledger is specified functionally in [Accounting, ledger and
 |---|---|---|
 | L1 | Every journal entry has ≥ 2 lines and Σ debits = Σ credits per entry, per currency | Lines store `amount_minor bigint` (positive = debit, negative = credit) with `CHECK (amount_minor <> 0)`. A **deferred constraint trigger** at commit asserts `SUM(amount_minor) = 0` grouped by currency and `COUNT(*) >= 2` |
 | L2 | Posted entries are immutable | `rootline_app` has no `UPDATE`/`DELETE` grant on `ledger.journal_line`. A trigger rejects updates to `journal_entry` where `status = 'posted'` except the `reversed_by_id` link. Corrections are **reversing entries** only |
-| L3 | Entries post only into open periods | Trigger checks `accounting_period.status` for `(tenant_id, entry_date)`: `open` allows posting; `soft_closed` requires the `period:post_soft_closed` permission flag set in the transaction context; `locked` rejects. Reopening a locked period requires `owner` + step-up and is audited |
+| L3 | Entries post only into open periods | Trigger checks `accounting_period.status` for `(tenant_id, entry_date)`: `open` allows posting; `soft_closed` requires the `period.post_soft_closed` permission flag set in the transaction context; `locked` rejects. Reopening a locked period requires `owner` + step-up and is audited |
 | L4 | Exactly-once posting from events | Unique `(tenant_id, posting_key)` on `journal_entry`, where `posting_key` is a deterministic **business key** built by the posting rule, never the event id. Examples: `invoice:{invoice_id}:issue`, `invoice:{invoice_id}:void`, `stripe_bt:{balance_transaction_id}:{posting_rule_version}` (as in [08](08-payments-stripe.md)), `payout:{payout_id}:settle`. Because the event id is excluded, a bug that emits `invoice.issued` twice under two different event ids still cannot double-post. The second insert hits the constraint and is logged as an `L4_duplicate_attempt` metric (Section 12). Reversals use their own key (`...:reverse:{n}`) |
 | L5 | Gapless, sequential journal numbers per tenant | Assigned at post time from `ledger.sequence` rows locked `FOR UPDATE` in the posting transaction (gapless because the transaction either commits with the number or rolls back) |
 | L6 | Lines reference active, postable (non-header) accounts of the same tenant | Composite FK `(tenant_id, account_id)` + trigger on `is_postable` and `is_active` |
@@ -1155,7 +1155,7 @@ Modes, durations and approvers below are those defined in [02](02-personas-roles
 | **Infrastructure JIT** (no tenant data: cluster config, queues, deploys) | Ticket + reason + second engineer | 1-4 h | Time-boxed IAM role assumption via the IdP; SSM Session Manager recording; no `Decrypt` on `secrets-tenant` or `core-db` data keys |
 | **Metadata view** | None (covered by ToS; logged) | n/a | Admin console reads only the PII-free tenant directory, usage meters and redacted logs |
 | **View as user (read-only)** | Tenant grant by `owner` or `office_manager` (`support_access.grant`), per ticket or as standing read-only consent | 72 h per grant by default, configurable from 1 h to 14 days; each session max 60 min | Session token carries `impersonation=true`, `grant_id` and the impersonated membership. **E2 rejects every non-GET** for read-only grants. E5 masks Restricted fields whatever the user's permissions |
-| **Act as user (read-write)** | Per-ticket grant with `write` scope; `owner` approval | 24 h; each session max 30 min | As above, plus money-moving commands (`payment:*`, `refund:*`, Stripe connection changes, payout settings) are hard-blocked by policy for `actor_type = platform_staff` |
+| **Act as user (read-write)** | Per-ticket grant with `write` scope; `owner` approval | 24 h; each session max 30 min | As above, plus money-moving commands (`payment.*`, `refund.*`, Stripe connection changes, payout settings) are hard-blocked by policy for `actor_type = platform_staff` |
 | **Break-glass** (data repair or incident, SQL via audited bastion, one tenant) | Two-person rule: `platform_owner` approval (or a designated second approver) with a legal or security reason code | 30-120 min, auto-revoked | Temporary database role scoped by RLS to one `tenant_id`, all statements logged with `pgaudit`, session recorded. Tenant notified within 24 h unless legally prohibited, followed by a written post-incident report |
 
 - No standing production database access exists for any human.
@@ -1663,6 +1663,38 @@ Architecture capabilities surface in a few product screens. Sitemaps are in [UX 
 |  Move plan: freeze ~6 min, 1.9M rows, window Sun 02:00 ET, owner approval: pending       |
 +------------------------------------------------------------------------------------------+
 ```
+
+### 6.5 Platform Admin → Integrity center [MVP]
+
+The founder's "is anything wrong with anyone's money or field data?" screen. Every row is metadata only (counts, ids, amounts, error codes). Opening a tenant's actual records requires a Support Access Grant (4.24.6).
+
+```text
++------------------------------------------------------------------------------------------+
+| Rootline Admin > Integrity center          Region: [US v]   Since: [24 h v]   [Runbooks] |
++------------------------------------------------------------------------------------------+
+| LEDGER (L1-L12)            | STRIPE WEBHOOKS             | CREW SYNC                     |
+| Unbalanced entries:    0   | Ingest p99: 140 ms          | Mutations applied 1st: 99.7%  |
+| L7 drift cases open:   2   | DLQ depth: 3 (2 tenants)    | Rejected (open): 41           |
+| L4 duplicate attempts: 17  | Unknown acct quarantine: 1  | Devices > 3 d unsynced: 12    |
+| Chain-head anchor: OK 02:00| Sig failures/min: 0.1       | Protocol < min version: 4     |
++----------------------------+-----------------------------+-------------------------------+
+| OPEN CASES                                                     Sort: [Severity v]        |
+| SEV  Type                Tenant (cell)              Detail                  Age   Owner  |
+| P1   L7 Stripe clearing  Greenway Lawn (us-2)       Drift $412.18 vs payout  3 h  Ana    |
+|      [Open case] [Diff balance txns vs ledger] [Resync payout po_...9Qx] [Request grant] |
+| P2   Webhook DLQ         BrightScapes (us-1)        charge.dispute.created   5 h  -      |
+|      [Replay event] [Resync object] [View handler trace]                                 |
+| P2   Accounting sync     Oak & Iron (us-3)          QBO: 6 records quarantined 3 d  -    |
+|      Reason: tax code "NY-Suffolk" unmapped   [Notify bookkeeper] [Open sync errors]     |
+| P3   Sync rejections     Metro Snow Pros (us-2)     14 visit.complete after cancel  -    |
+|      billing_review tasks: 14 open at tenant  [Nudge ops_manager]                        |
++------------------------------------------------------------------------------------------+
+| Every action above is a versioned Runbook Action: dry-run first, reason code required,   |
+| written to the platform audit log and, when tenant data is touched, the tenant's log.    |
++------------------------------------------------------------------------------------------+
+```
+
+**Rules [MVP]:** a P1 case (any L1, L2 or L7 breach, or cross-tenant canary failure) pages on-call immediately. Cases auto-close only when the underlying check passes twice in a row. A case open longer than 72 h escalates to `platform_owner`. Replay and resync actions are idempotent by design (4.19, L4), so pressing them twice is safe.
 
 ---
 
@@ -2421,9 +2453,10 @@ This section summarizes Section 4 for quick reference.
 | Public API | REST/JSON, OpenAPI 3.1, TypeIDs, dated versions, cursor pagination, idempotency keys, RFC 9457 errors, published rate limits, sandbox | 4.7 |
 | Auth for integrators | API keys (scoped, hashed), OAuth 2.1 apps with PKCE, marketplace review | 4.7.3 |
 | Outbound webhooks | Standard Webhooks signatures, retries for 3 days, replay, SSRF-safe egress, thin or snapshot payloads | 4.7.4 |
-| Inbound webhooks | Stripe (Connect, direct, SaaS endpoints), Twilio (status, inbound SMS, voice), Postmark (delivery, bounces, inbound mail), Intuit/Xero (change notifications), Plaid (transactions updates) via the isolated `webhook-ingest` role: verify → persist → ack → process | 4.19 |
+| Inbound webhooks | Stripe (`/connect`, `/platform`, `/v2` thin events, `/rak/{endpoint_id}`, `/billing` for Rootline's own account), Twilio (status, inbound SMS, voice), Postmark (delivery, bounces, inbound mail), Intuit/Xero (change notifications), Plaid (transactions updates) via the isolated `webhook-ingest` role: verify → persist → ack → process | 4.19 |
 | Connectors | QBO, QBD (Web Connector), Xero, Plaid, payroll, calendars, Regrid, weather, Zapier/Make, supplier catalogs | 4.8 |
 | Events | Outbox → SNS/SQS (MVP) → MSK (V1), CloudEvents envelope, JSON Schema registry, ~45 core event types | 4.9 |
+| Public API quotas | Per-minute token bucket per API client + daily `api_calls` quota per tenant aligned with [22](22-business-model-pricing-gtm.md) | 4.7.5 |
 | Workflows | Temporal Cloud per region; proposal, agreement billing, snow, mockups, sync, onboarding, close, DSAR, warranty | 4.10 |
 | Service RPC | Connect-gRPC to optimizer, GPU and vision services | 4.7.1 |
 | AI providers | Anthropic Claude (LLM), image models, segmentation and depth models, through the AI Gateway only | 4.13 |
@@ -2516,6 +2549,10 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | Tenant on a 30-day free trial uploads 20 GB of photos | Plan-based storage quotas with clear upgrade prompts. Trial abuse detection (many trials from the same payment fingerprint or device) |
 | Cross-border tenant (Company in Vermont serving clients in Quebec) | Region follows the Company, not the client. The DPA and Quebec PIA template are offered |
 | Period locked, but a late Stripe dispute arrives for a prior-month payment | Posts into the current open period with a reference to the original, never into the locked period. A report flag notes the prior-period impact |
+| Tenant enters `suspended` mid-snow-event at 2 a.m. | The `SnowEventWorkflow` keeps running. Crews keep completing pushes and syncing (rule 2 in 4.4.7), and per-push invoices still issue and remain payable. Only new campaigns and AI generation stop. Lifecycle transitions are deferred while a declared snow event is active for the tenant, up to 48 h |
+| Owner pastes a full `sk_live_` secret key into the restricted-key field | Rejected before storage, never logged. The UI explains how to create a restricted key. A security event is written, and Rootline recommends rolling the exposed key in Stripe because it has now been typed into a third-party form |
+| Two Rootline tenants try to connect the same Stripe `acct_` (a Company split into two entities) | The unique index blocks the second connection. A `platform_owner`-approved multi-entity exception can allow it ([08](08-payments-stripe.md)), with tenant routing by `metadata.rootline_tenant_id` on each object |
+| Accounts v2 thin event arrives for an object Rootline has never seen | The handler fetches the object and its parents (PaymentIntent before refund) and creates them in dependency order before applying the event (4.19) |
 | AI provider returns a malformed structured output | Schema validation fails → retry once with a repair prompt → fall back to a secondary model → surface "couldn't draft" to the user. Never persist invalid output |
 | Custom domain certificate fails renewal | 30-day pre-expiry alerts, automatic fallback to `{tenant}.rootline.app`, owner notified |
 
@@ -2528,7 +2565,7 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | CCPA/CPRA (California) and other US state privacy laws | Service provider for Company client data; controller for user data | DPA, DSAR tooling, no sale/share | [MVP]/[V1] |
 | PIPEDA, Quebec Law 25 | Canadian tenants and Canadian clients | Canadian residency, PIA template, privacy officer, breach records | [V1] |
 | GDPR | Limited (EU residents among clients, EU staff vendors). Design is GDPR-ready | DSAR, DPA, SCCs with subprocessors | [V1] |
-| TCPA / CTIA / A2P 10DLC | SMS from Companies to clients | Consent records, quiet hours, STOP handling, brand/campaign registration | [MVP] |
+| TCPA / CTIA / A2P 10DLC, state telephone-solicitation laws | SMS from Companies to clients | Consent records, revocation by any reasonable means applied immediately, per-jurisdiction quiet hours and caps, STOP handling, brand/campaign registration (4.16) | [MVP] |
 | CAN-SPAM / CASL | Marketing email (CASL requires express or implied consent in Canada) | Consent tracking, unsubscribe, sender identity | [MVP] |
 | State pesticide recordkeeping | Companies' application records | Immutable logs, per-state retention table, exports for regulators | [MVP] |
 | Employee monitoring notices (state laws) | GPS and time tracking | Notice acknowledgment in the crew app, clock-in-only tracking | [MVP] |
@@ -2566,6 +2603,11 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | Field | Median time from reconnect to fully synced | < 30 s |
 | Integrations | Accounting sync success rate (objects) | ≥ 99.0%; median error-to-resolution < 24 h |
 | Integrations | Outbound webhook first-attempt success | ≥ 98% |
+| Integrations | Accounting-sync quarantines older than 72 h (ADR-020) | 0 at steady state; each one is an Integrity center case |
+| Integrations | Clients with *all* invoices blocked by one sync error | 0 by design (the failure mode ADR-020 exists to prevent) |
+| Lifecycle | Field mutations rejected because of tenant billing state | 0 (enforcement rule 2 in 4.4.7) |
+| AI | Calls for Canadian tenants with recorded inference geography | 100% (audit evidence for 4.4.6 and Q15) |
+| Readiness | Active tenants with spring-readiness score ≥ 90% by March 15 (Section 13, idea 14) | ≥ 80% by V1+1 season (estimate) |
 | API | Public API p95 latency | < 300 ms |
 | API | Active third-party integrations (OAuth apps with ≥ 5 tenants) | 25 by end of V1 (estimate) |
 | Performance | Web LCP p75 / INP p75 | < 2.0 s / < 200 ms |
@@ -2595,6 +2637,11 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 11. **Field-network intelligence** [V2]. Aggregate (k-anonymized) crew-app connectivity maps show where offline happens. This informs prefetch strategies and could become a published "landscaper coverage map" content asset.
 12. **In-truck edge hub** [V3]. A rugged hub in each truck (Wi-Fi + LTE + satellite backhaul) runs a local sync relay: crew phones sync to the truck over Wi-Fi even in dead zones, the hub forwards over whatever backhaul exists, and it ingests equipment telematics (engine hours, mower blade hours, sprayer flow meters) into the same event stream. Rootline's sync protocol is already relay-friendly because mutations are idempotent and ordered per device.
 13. **Chaos day for customers** [V2]. An opt-in "simulate an outage" mode for training office staff on paper-fallback procedures. Run-sheets are printable from the crew app's local cache.
+14. **Spring-readiness pre-flight** [V1]. Every February (by region, keyed to the season-aware calendar in idea 5), the platform runs an automated per-tenant check of everything that silently breaks over winter. It checks that Stripe capabilities are still enabled, the 10DLC campaign is live, QuickBooks and Xero tokens are fresh, crew devices are on a supported app version, applicator licenses and certificates of insurance have not expired, recurring service agreements for the new season exist, and the price book was touched after last year's supplier increases. The owner gets a readiness score with one-click fixes. All the signals already exist (connector health, device registry, `certification`, `subcontract.coi_expires_on`). This turns April support tickets into February to-dos, during the period when the support team has the most slack.
+15. **Vendor-continuity escrow ("lifeboat")** [V1 escrow, V2 viewer]. Each night, every tenant's full-fidelity export (the "leave anytime" format in idea 2) is written to a separate escrow account and region under an agreement with a third-party escrow agent. If Rootline ever ceases operations, the agent releases each tenant's archive along with an open-source, offline "lifeboat" viewer (a static app over Parquet and media) that reads clients, properties, invoices, ledger, chemical records and photos. Commercial property managers, municipalities and lenders ask "what happens if you go under?". This answers them in writing and removes a real objection for 30-80 person firms choosing a young vendor.
+16. **"Verified books" close-assurance package** [V2]. When a bookkeeper closes a period, Rootline generates a signed package. It contains the trial balance, the L1-L12 invariant results for the period, the subledger-to-control tie-outs (AR, AP, Stripe clearing), the bank reconciliation status and the L8 chain-head digest anchored in Object Lock. A CPA, an equipment lender or an SBA loan officer can verify it without logging in. It turns the ledger's database-enforced integrity into something the owner can hand to a bank, and it seeds the fintech ideas in [23](23-innovation-moonshots.md) (equipment financing and working-capital offers underwritten on verified books).
+17. **Regulatory report adapters on the connector SDK** [V1/V2]. Pesticide-use reporting, state sales-tax returns and workers'-compensation payroll reports are "connectors" whose destination is a regulator format (file export first, e-filing where a state offers an API). They reuse the SDK's mapping, idempotency, error UX and audit (4.8), so adding a state is a mapping file plus tests, not a feature project. Formats and deadlines must be verified per state ([14](14-service-line-modules.md)).
+18. **Per-tenant reliability receipts** [V1]. Each month the owner gets a one-page statement covering their own experience, not the fleet average: API availability and p95 for their cell, sync success rate for their devices, webhook delivery success to their endpoints, any incidents that touched them with links to postmortems, and every Rootline staff access to their data. Incumbents publish only fleet status pages at best. Personal, honest reliability numbers build the trust that keeps a Company through a bad April.
 
 ---
 
@@ -2614,7 +2661,12 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | Q10 | GPU strategy break-even and vendor (serverless GPU vendors vs EKS) | Measure at 6 months post-MVP | AI lead | V1 |
 | Q11 | Policy engine: Cedar (WASM) performance at 1k decisions/s per task | Benchmark | Platform | MVP month 1 |
 | Q12 | Do we offer a public GraphQL API at V2 for partners building rich UIs? | REST-only / GraphQL read-only | API lead | V2 |
-| Q13 | Accounting provider API metering: how do current Intuit and Xero developer terms (call fees, tiers) affect sync design and pricing? | Research + vendor talks (see R4) | Money team | MVP GA |
+| Q13 | Accounting provider API metering: how do current Intuit and Xero developer terms (call fees, tiers) affect sync design and pricing? | Research + vendor talks (see R4); sizes the cost governor in 4.8 | Money team | MVP GA |
+| Q14 | When does Rootline move new connected accounts to Stripe Accounts v2 (and the `/webhooks/stripe/v2` thin-event path) versus v1 controller properties? | v2 at MVP where enabled / v1 at MVP then migrate (see [08](08-payments-stripe.md)) | Money team | MVP month 2 |
+| Q15 | Does each Claude model tier in the AI Gateway registry offer a **Canadian** inference geography (Claude API `inference_geo` or Amazon Bedrock in ca-central-1)? Which image models can run in Canada? | Per-task matrix; disable or disclose where none exists | AI lead + legal | Before CA launch |
+| Q16 | Who maintains the per-jurisdiction quiet-hours and messaging-cap table (4.16), and how often is it reviewed? | Outside counsel annually + compliance-feed vendor | Security and Compliance + legal | MVP GA |
+| Q17 | Escrow agent and legal structure for the vendor-continuity escrow (Section 13, idea 15) | Software escrow agent / trust structure | `platform_owner` + legal | V1 |
+| Q18 | Device-key offline lease length (4.11.1): 14 days is a guess that trades revoked-device exposure against seasonal workers whose phones sit idle | 7 / 14 / 30 days, per-tenant setting with a ceiling | Platform + Operations and Field | MVP month 2 |
 
 ---
 
@@ -2676,6 +2728,12 @@ Format: **Decision**, then the **Context and rationale**, **Alternatives conside
 **ADR-018: Postgres FTS + pgvector first; OpenSearch at V1.**
 *Decision:* As in 4.15. *Consequences:* Fewer moving parts at MVP; an indexing pipeline built when it is needed.
 
+**ADR-019: Tenant lifecycle timings come from a versioned billing policy; access is enforced from a cached access class.**
+*Context:* Dunning, trial and Winter Mode timings are business decisions owned by [22](22-business-model-pricing-gtm.md) and operated from [19](19-platform-admin-portal.md). Hard-coding "21 days" in the tenancy module would put docs and code out of sync within a quarter. *Decision:* The `tenancy` module reads timings from an immutable, versioned `billing_policy` published by `platform_finance` (two-person approval for changes). Access is enforced from a `tenant_access` projection at E2, sync and portal (4.4.7). Three rules are not configurable: field data is always accepted, client money is never blocked, and legal holds always win. *Alternatives:* Constants in code (deploy per policy change, drift); evaluating policy per request (latency, and a policy-service outage would lock out tenants). *Consequences:* Every tenant transition records the policy version that caused it, so a suspended Company can be shown exactly which rule applied.
+
+**ADR-020: Accounting sync quarantines per record and never blocks per client.**
+*Context:* The category's best-known sync failure mode is one bad client record blocking all of that client's invoices and payments ([Jobber help](https://help.getjobber.com/hc/en-us/articles/10466688449431-Common-QuickBooks-Sync-Errors-and-How-to-Fix-Them)). *Decision:* The sync engine computes the smallest dependent set of a failing object (4.8) and holds only that set. Everything else continues, and held objects retry automatically on `mapping_changed`. *Alternatives:* Strict dependency-order processing per client (simple, but blocks); best-effort with no dependency tracking (causes orphaned payments in QuickBooks). *Consequences:* The dependency graph per connector (Customer → Invoice → Payment → Deposit) must be declared in the Connector SDK and covered by connector tests. The bookkeeper sees an exception list instead of a frozen client.
+
 ---
 
 ## Sources
@@ -2705,6 +2763,28 @@ Format: **Decision**, then the **Context and rationale**, **Alternatives conside
 - ClickHouse, multi-tenant SaaS Postgres architecture: https://clickhouse.com/fr/resources/engineering/multi-tenant-saas-postgres-architecture
 - Hashnode, Postgres RLS for multi-tenant SaaS: https://hashnode.com/posts/postgres-row-level-security-for-multi-tenant-saas-a-setup-that-holds-up/6ac9181e52c978b433ae915b
 - DEV Community, PostgreSQL RLS in Go for multi-tenancy: https://dev.to/__8fa66572/postgresql-rls-in-go-architecting-secure-multi-tenancy-4ifm
+
+### Sources added in the review pass (Nov 2026; carried over from the sibling research reports and docs, which hold the original retrieval context)
+
+- Jobber Help Center, QuickBooks Online integration FAQs: https://help.getjobber.com/es/articles/quickbooks-integration-faqs/ (via [R1](research/R1-field-service-platforms.md))
+- Jobber Help Center, common QuickBooks sync errors and how to fix them: https://help.getjobber.com/hc/en-us/articles/10466688449431-Common-QuickBooks-Sync-Errors-and-How-to-Fix-Them (via R1)
+- Aspire guide, Aspire Mobile in the field: https://guide.youraspire.com/docs/aspire-mobile-in-the-field (via [R2](research/R2-landscape-specific-platforms.md))
+- Aspire guide, role-based security: https://guide.youraspire.com/docs/role-based-security (via R2)
+- Supergood, LMN API report card (third party): https://supergood.ai/api-report-card/lmn (via R2)
+- Merchant Cost Consulting, LMN Pay Stripe migration (single third-party opinion): https://merchantcostconsulting.com/lower-credit-card-processing-fees/lmn-pay-stripe-migration/ (via R2)
+- App Store, SA Team (Service Autopilot crew app): https://apps.apple.com/us/app/sa-team/id1366612097 (via R2)
+- GetApp, Service Autopilot reviews: https://www.getapp.com/operations-management-software/a/service-autopilot/reviews/ (via R2)
+- Capterra, Service Autopilot reviews: https://www.capterra.com/p/122075/Service-Autopilot/reviews/ (via R2)
+- Stripe, migrate to controller properties: https://docs.stripe.com/connect/migrate-to-controller-properties (via [08](08-payments-stripe.md))
+- Stripe, Accounts v2: https://docs.stripe.com/connect/accounts-v2 (via 08)
+
+### Background knowledge used in the review pass (not fetched: search budget exhausted and vendor hosts unreachable; verify before external use)
+
+- Anthropic Claude model lineup and list prices as of Nov 2026 (Haiku 5.5, Sonnet 5.5, Opus 5.5, Fable 5.1), adaptive thinking billed as output, the 50% Message Batches discount, the `inference_geo` parameter and the Fable-tier retention requirement: Claude platform documentation, https://platform.claude.com/docs
+- FCC 2024 TCPA consent-revocation order (revocation by any reasonable means; effective date and honoring window to be confirmed with counsel)
+- State telephone-solicitation laws with windows stricter than the federal 8 am-9 pm (for example, Florida's), to be confirmed per state in the quiet-hours table
+- AWS CloudFront multi-tenant distributions and distribution tenants ("CloudFront SaaS Manager", 2025)
+- PCI SSC January 2025 SAQ A revision for PCI DSS v4.0.1 (removal of 6.4.3 and 11.6.1 from SAQ A, new script-attack eligibility criterion), corroborated by the Akamai, Report URI, Adyen and SecurityMetrics sources above
 
 ### Reference documentation and standards (cited from background knowledge; not re-fetched in this pass, so verify current versions)
 

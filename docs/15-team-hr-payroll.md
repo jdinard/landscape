@@ -505,3 +505,251 @@ Punch capture is owned by the crew app ([05 section 4.5](05-field-crew-mobile-ap
 
 **TIME-08 Weekly timesheet acknowledgment and pay explainer [V1].** The employee sees a bilingual breakdown: "Regular 40.0 h x $21.00 = $840.00; Overtime 6.5 h x $32.18 = $209.17 (overtime rate includes your production bonus); Meal premium 1 x $21.45 = $21.45; Production bonus $62.00; Tips $35.00 (from 3 clients)." The employee can tap any line for an explanation in Spanish (Copilot, grounded in the rule pack text). Disputes route to the office.
 
+### 4.9 Pay rules engine and jurisdiction policy packs
+
+**RULE-01 Policy packs [MVP: Federal baseline + California + Washington + Oregon + Colorado + New York; V1: all US states + DC, Ontario, British Columbia, Alberta, Quebec; V2: city ordinances beyond sick leave].** A policy pack is a versioned, platform-maintained bundle (`platform_engineer` maintains the code, counsel-reviewed content is released through [19](19-platform-admin-portal.md)). It contains:
+- Workweek and overtime rules (weekly thresholds, daily thresholds, 7th-day rules, double time, alternative workweek schedules where adopted with proof of a valid election).
+- Meal and rest rules (windows, durations, waivers, premiums, on-duty meal agreements).
+- Reporting-time, split-shift and call-in pay.
+- Minimum wages (state, county, city; effective-dated, with scheduled increases loaded in advance).
+- Exempt salary thresholds.
+- Piece-rate rules (California Labor Code 226.2 separate pay).
+- Paid sick leave templates ([PTO-04](#47-availability-time-off-and-pto-accrual)).
+- Youth hour and task limits.
+- Final pay timing rules.
+- Pay-stub and notice requirements (used for validations and templates).
+- Heat rule thresholds ([SAFE-05](#415-safety-management)).
+
+Packs are evaluated by **work location of each segment** (a Nevada crew working a Lake Tahoe property in California gets California rules for those hours; verify multi-state rules with counsel). Each pack version has an effective date range, so recalculating an old week uses the pack in force that week. Companies can be **more generous** (e.g., OT after 8 hours in all states), never less, for locked statutory fields. A Company override of an unlocked field records who changed it and why.
+
+**RULE-02 Overtime calculation [MVP].** Per employee per workweek:
+1. Sum hours worked by day from approved segments (excluding unpaid meals).
+2. Apply daily thresholds first (where the pack has them), then weekly, then 7th-day rules, without double-counting hours (hours already paid as daily OT do not count again toward weekly OT; verify per state).
+3. Compute the **regular rate** for the week: `(sum of straight-time earnings for all hours at their rates + nondiscretionary bonuses allocated to the week + piece-rate earnings + shift differentials + commissions allocated to the week + other includable pay) / total hours worked`. Excludable items (expense reimbursements, discretionary bonuses, PTO pay for hours not worked, premiums already at 1.5x) are excluded per 29 CFR Part 778 (verify specifics).
+4. OT premium = `0.5 x regular rate x OT hours` for hours already paid at straight time (or `1.5 x` when straight time was not paid for those hours). Double time is handled analogously.
+5. **Multiple rates in a week** (e.g., $20/hour mowing and $24/hour irrigation): weighted average regular rate by default. "Rate in effect when OT was worked" is offered only where permitted by agreement (verify).
+
+Worked example (illustrative): a crew member paid $20.00/hour works 46 hours in a federal-only state and earns a $92 production bonus that week.
+- Straight time: 46 x $20.00 = $920.00. Bonus: $92.00.
+- Regular rate: ($920 + $92) / 46 = $22.00.
+- OT premium: 0.5 x $22.00 x 6 = $66.00.
+- Total: $1,078.00. A naive calculation (40 x $20 + 6 x $30 + $92 = $1,072) underpays by $6.00. Across 30 workers and 30 weeks that is about $5,400 of back wages plus potential liquidated damages. Rootline never makes this mistake.
+
+**RULE-03 Retroactive bonus OT true-up [V1].** A nondiscretionary bonus earned over several weeks (monthly production bonus, end-of-season retention bonus promised in April) is allocated to the workweeks in which it was earned (evenly per week or proportionally to hours; Company choice where permitted). An additional OT premium is computed for each week with OT hours: `bonus_allocated_to_week / hours_in_week x 0.5 x OT_hours_in_week`. California flat-sum bonuses follow the formula in *Alvarado v. Dart Container* (bonus divided by non-overtime hours, times 1.5 for OT hours; verify). Output: a `bonus_ot_trueup` pay item with a week-by-week audit table attached to the export.
+
+**RULE-04 Meal and rest premiums [MVP for CA].** Premium triggers come from timesheet evaluation (late, short or missed meals not validly waived) and from attestations ([05](05-field-crew-mobile-app.md)). At most one meal premium and one rest premium per workday (California; verify). Premium rate = regular rate of compensation for the workweek (*Ferra v. Loews Hollywood Hotel*, 2021; verify). Premiums are wages, so they appear on the export as distinct earnings codes and are excluded from regular-rate computation.
+
+**RULE-05 Minimum wage floor checks [MVP].** For each workweek (and each day where state law evaluates per hour or per day, verify), check that pay for all hours meets the applicable minimum for each work location. That matters for piece-rate, production pay, deductions and H-2B reimbursements. A shortfall creates a `min_wage_makeup` pay item and alerts the office.
+
+**RULE-06 Max hours, rest between shifts and fatigue [V1].** Company rules (e.g., no more than 14 hours in a day, 10 hours rest between shifts; for snow events "max 16 hours on, 8 off") plus legal limits (minors, CMV hours-of-service for CDL drivers in interstate commerce; verify applicability). Scheduling warnings when a planned route would breach them ([04](04-scheduling-dispatch-routing.md), [17](17-ai-copilot-automation.md) scheduling agent).
+
+**RULE-07 Rule pack test harness [MVP, platform-side].** Every pack ships with at least 50 fixture timesheets per jurisdiction with expected outputs. The fixtures include split weeks across pack versions, multi-state weeks, 7th-day scenarios, piece-rate weeks, bonus true-ups, meal waivers and minors. A release cannot publish if any fixture fails. Diffs between versions are shown to `platform_owner` with plain-language release notes that tenants see ("California minimum wage increase effective Jan 1 loaded").
+
+### 4.10 Compensation types
+
+**COMP-01 Pay rates [MVP].** Effective-dated pay rates per employee with dimensions: default rate, rate by labor class or work type (mowing $19, irrigation $23, chemical application $22, snow plowing $26), crew-lead differential, shift differential (night snow +$3), and prevailing-wage classification overrides. Resolution order for a segment: prevailing-wage classification rate (if certified job) -> work-type rate -> role differential added -> default rate.
+
+**COMP-02 Salary [MVP].** Exempt salary (annual amount, pay frequency, exempt classification test checklist: salary threshold, duties). Warning when a salaried crew lead is marked exempt, because manual-work-heavy crew leads rarely meet duties tests (verify). Non-exempt salaried with OT supported (fixed salary for a regular schedule, OT on the derived rate). The fluctuating workweek method is available only where permitted (not in California; verify).
+
+**COMP-03 Hourly [MVP].** Standard.
+
+**COMP-04 Piece rate [V1].** Piece definitions linked to Price Book services or production units: per lawn mowed by size band, per aeration, per lawn application, per bed edged (linear feet), per cubic yard of mulch installed, per tree planted by caliper, per snow push. Units come from completed Visits and crew-app quantities ([05](05-field-crew-mobile-app.md)). For crews, units are split among members by hours on the Visit (default) or equally. Rules:
+- FLSA: regular rate = total earnings / total hours, OT premium at 0.5x regular rate.
+- California Labor Code 226.2: rest and recovery periods paid separately at the average hourly rate, other nonproductive time (drive, shop, loading, waiting for parts) paid at no less than minimum wage, with separate pay-stub lines for each. Rootline derives productive vs nonproductive time from segment types automatically, which is the hardest part of piece-rate compliance in practice.
+
+Worked California example (illustrative; uses $16.90 as the minimum wage for illustration, verify current rate): an aeration technician completes 60 aerations at $12.00 = $720.00 in a week with 48 hours worked, of which 3.0 hours are rest periods and 5.0 hours are nonproductive (shop and loading, not drive between jobs if the Company treats drive as productive for that piece plan; configurable).
+- Nonproductive pay: 5.0 x $16.90 = $84.50.
+- Average hourly rate for rest pay: ($720.00 + $84.50) / (48 - 3) = $17.88.
+- Rest and recovery pay: 3.0 x $17.88 = $53.63.
+- Straight-time total: $858.13. Regular rate: $858.13 / 48 = $17.88. Weekly OT premium for 8 hours: 0.5 x $17.88 x 8 = $71.51 (daily OT evaluated per day in the real calculation).
+- Gross: $929.64, with stub lines "Piece earnings", "Nonproductive time", "Rest and recovery periods", "Overtime premium".
+
+**COMP-05 Production and efficiency bonuses (gain share) [V1].** The landscape-classic crew incentive: the crew shares the value of hours saved against the estimate budget.
+- Pool per Visit or per Job phase: `max(0, budgeted_hours - actual_hours) x pool_rate x share_pct`. Example: budget 6.0 crew-hours, actual 5.0, pool rate $30, share 30% gives $9.00.
+- **Quality gates** (all must pass): QA score at or above the threshold (e.g., 85; [05](05-field-crew-mobile-app.md)), no callback or redo within 7 days, no client complaint, required photos present. A later callback reverses the bonus with a visible reason, but only before payout.
+- **Safety and break neutrality (hard-coded):** legally required rest breaks and the meal period are **added to the budget** before comparison. Taking a break can never reduce a bonus, and skipping one can never increase it. Hours on Visits with an open safety incident or a heat procedure violation are excluded from the pool.
+- Caps: per Visit, per week, per person (e.g., max 20% of base pay).
+- Distribution: by hours worked on qualifying Visits (default), by role weight (crew lead 1.25x), or equal.
+- Visibility: the crew sees the rule in plain language and a live tally ("This week: $46 earned, $12 pending QA").
+- Payroll: weekly or per pay period as a nondiscretionary bonus, included in the regular rate (RULE-02/03).
+
+**COMP-06 Crew-lead pay [MVP].** Modes: higher base rate as a position; differential added only for segments where the employee is the acting crew lead that day (from crew assignment in [04](04-scheduling-dispatch-routing.md)); weekly lead stipend; crew-lead share of the production pool. Acting-lead detection is automatic, so a crew member who leads Crew 7 on Friday gets the differential for Friday's hours.
+
+**COMP-07 Sales commissions [V1].** Commission plans and events are defined in [03](03-crm-sales-estimating-proposals.md) (`COMM-01..03`). This module:
+- Receives `commission.earned` and `commission.clawed_back` events as pay items, timed by the plan's payout schedule (e.g., paid in the pay period after the client's payment clears).
+- Allocates commissions to workweeks for regular-rate purposes when the earner is non-exempt (inside sales reps who also run crews; verify allocation method).
+- Handles draws against commission (recoverable or non-recoverable), with balance tracking and minimum wage checks per workweek.
+- Requires a written, signed commission agreement for California employees (Labor Code 2751; verify), generated from the plan with e-signature.
+
+**COMP-08 Tips [MVP].** Tips from client payments ([08](08-payments-stripe.md)) and the portal ([06](06-customer-portal.md)) arrive as `payments.tip.allocated` with Visit and employees. Default allocation is by hours on the Visit. Rootline exports tips as credit-card tips (paid through payroll) and lets crew members report cash tips in the app. Rootline never applies a tip credit against minimum wage by default. Tips belong to the employees, and managers and owners cannot share in them where law prohibits it (FLSA tip retention rules; verify).
+
+**COMP-09 Reimbursements, allowances and stipends [MVP].** BYOD phone stipend (prompted in California setup per [05](05-field-crew-mobile-app.md)), mileage (rate configurable; the IRS standard rate is a common default; verify each year), boot allowance, tool allowance, per diem for out-of-town installs, H-2B reimbursements ([H2B-05](#44-h-2b-and-seasonal-worker-program-support)). Each maps to a provider earning code that marks taxable or non-taxable treatment (the provider is the tax authority of record).
+
+**COMP-10 On-call and snow event pay [V1].** Snow season standby: on-call stipend per night or per week. If on-call restrictions are heavy enough that the time counts as hours worked, the Company must pay it as such (fact-specific; verify). Rootline records the on-call roster and restrictions so the policy is explicit. Event call-out minimums (e.g., guaranteed 4 hours when called out for a 2-inch trigger push) are configurable pay rules. Night differential applies automatically by segment clock time.
+
+**COMP-11 Spot bonuses and recognition rewards [V1].** Manager-initiated bonuses ("$50 for staying late to finish the Patel patio before the storm"), referral bonuses, safety-reporting rewards ([SAFE-09](#415-safety-management)) and kudos-based rewards. Each needs an approver and a reason, and is flagged as discretionary or nondiscretionary. The UI explains the regular-rate impact, because promised bonuses are nondiscretionary.
+
+**COMP-12 Earning codes registry [MVP].**
+
+| Code | Description | Regular-rate inclusion | Typical provider mapping |
+|---|---|---|---|
+| `REG` | Regular hourly | Yes | Regular |
+| `OT` | Overtime 1.5x | Premium excluded | Overtime |
+| `DT` | Double time 2x | Premium excluded | Double overtime |
+| `PIECE` | Piece earnings | Yes | Piecework / custom |
+| `NONPROD` | CA piece-rate nonproductive time | Yes | Custom |
+| `RESTREC` | CA piece-rate rest and recovery | Yes (verify) | Custom |
+| `MEAL_PREM` / `REST_PREM` | Meal / rest premium | No | Custom |
+| `RPT_TIME` | Reporting-time pay | Verify | Custom |
+| `BONUS_PROD` | Production bonus (nondiscretionary) | Yes | Bonus (nondiscretionary) |
+| `BONUS_DISC` | Discretionary bonus | No | Bonus |
+| `BONUS_OT_TRUEUP` | Retro OT on bonus | Premium excluded | Overtime adjustment |
+| `COMM` | Commission | Yes (non-exempt) | Commission |
+| `LEAD_DIFF` / `SHIFT_DIFF` | Differentials | Yes | Custom |
+| `PW_DIFF` | Prevailing wage differential | Yes | Custom |
+| `PW_FRINGE_CASH` | Fringe paid in cash | Excluded for DBA OT (verify) | Custom |
+| `PTO` / `SICK` / `HOL` | Paid time off types | No | Provider PTO policies |
+| `TIP_CC` / `TIP_CASH` | Tips | No | Tips |
+| `REIMB_*` | Reimbursements | No | Reimbursement |
+| `H2B_VISA` / `H2B_INBOUND` / `H2B_RETURN` | H-2B reimbursements | No | Reimbursement (provider decides taxability) |
+| `GUARANTEE` | H-2B three-fourths shortfall | Verify | Custom |
+| `MIN_WAGE_MAKEUP` | Minimum wage make-up | Yes (verify) | Custom |
+
+### 4.11 Prevailing wage and certified payroll
+
+**PW-01 Prevailing wage projects [V1].** A Job ([03](03-crm-sales-estimating-proposals.md)) is flagged as prevailing wage with: governing law (federal Davis-Bacon and Related Acts for construction such as a park or school landscape install; federal Service Contract Act for grounds maintenance contracts with federal agencies; state prevailing wage laws; verify classification of maintenance work per state), wage determination number and date, classifications with base hourly rate and fringe rate per hour (e.g., "Landscape Laborer $28.40 + $9.15 fringe", illustrative), apprentice ratios [V2], certified payroll submission method, prime contractor contact.
+
+**PW-02 Segment classification [V1].** Segments on a PW job must carry a classification. The crew app asks the crew lead at segment start ("¿Clasificación? Laborer / Operator / Irrigation Fitter") with a default per employee and per task. Office corrects before approval. Mixed-classification days are split by segment. Without a classification the timesheet cannot be approved (TIME-02).
+
+**PW-03 Pay computation [V1].** For PW segments: pay at least the classification base rate. The fringe obligation is met by bona fide benefit contributions (credit computed per hour, with annualization of plan contributions across all hours worked including private work; verify DOL guidance) and/or a cash fringe. OT on DBA-covered work is 1.5x the basic rate plus straight fringe (fringe is not multiplied; verify). Differences from the employee's normal rate become `PW_DIFF` pay items.
+
+**PW-04 Certified payroll reports [V1].** Weekly per project: WH-347 format (PDF and data) with employee identifiers (last four of SSN only as the form permits; verify current form version), classification, hours per day, rates, gross, deductions (from payroll journal import), net, and the statement of compliance e-signed by the authorized signer. "No work performed" weeks are generated automatically. State formats: California DIR eCPR XML export (verify current schema), LCPtracker and similar CSV templates [V2]. Deductions and net pay come from the payroll provider's register import (PAY-08). Until that import arrives, the report shows "Draft - awaiting payroll register".
+
+**PW-05 Fringe benefit statements and apprentice tracking [V2].** Apprentice registration numbers, ratios per classification, and fringe statements for audits.
+
+> **Competitive edge:** Public-works landscaping (parks, schools, highway medians, federal grounds) pays well but is avoided by small firms because certified payroll is painful. Rootline makes it a weekly button. This is a revenue unlocker that sales can pitch ("bid public work with confidence"), and we found no landscape FSM that documents it [B].
+
+### 4.12 Labor burden and costing
+
+**BURD-01 Burden profiles [MVP].** A burden profile per labor class and state or province (e.g., "Maintenance Laborer - CA", "Irrigation Tech - CA", "Office - CA") with components:
+
+| Component | Input | Basis |
+|---|---|---|
+| Employer Social Security | 6.2% up to the annual wage base | Statutory (verify annual base) |
+| Employer Medicare | 1.45% | Statutory |
+| FUTA | 0.6% on first $7,000 per employee, plus credit reduction where applicable | Statutory (verify credit-reduction states yearly) |
+| SUTA | Company rate x state taxable wage base | Company's assigned rate |
+| Canada: CPP/QPP, EI (employer 1.4x employee premium), provincial health taxes (e.g., Ontario EHT above threshold) | Rates and maximums | Statutory (verify yearly) |
+| Workers' comp | Rate per $100 of payroll by class code x experience mod (or per hour worked in Washington's system) | Policy declarations |
+| General liability rated on payroll | % of payroll | Policy |
+| Health, dental, retirement match | $ per hour, per month or % | Plan |
+| Paid non-productive time | PTO, sick, holidays, paid training, rain-day reporting pay | Policies + history |
+| Uniforms, PPE, recruiting, H-2B program costs | $ per employee per season, amortized over expected hours | Actuals from Ledger and H-2B workspace |
+| Payroll service fees | $ per employee per month + base | Provider invoice |
+
+**BURD-02 Burden calculation [MVP].** Rootline computes burden **per productive hour** (the unit estimates and job costing use):
+
+Illustrative calculation (all rates are examples, not advice): a $20.00/hour laborer in California with 1,500 paid hours per season, of which 80 are non-productive (40 sick/PTO, 24 holiday, 16 training), so 1,420 productive hours.
+
+| Line | Amount |
+|---|---|
+| Productive wages (1,420 x $20) | $28,400 |
+| Non-productive paid time (80 x $20) | $1,600 |
+| Social Security 6.2% of $30,000 | $1,860 |
+| Medicare 1.45% | $435 |
+| FUTA 0.6% x $7,000 | $42 |
+| SUTA 3.4% x $7,000 (illustrative rate and base) | $238 |
+| Workers' comp, landscape gardening class at $5.50 per $100 (illustrative) | $1,650 |
+| General liability at 1.0% of payroll (illustrative) | $300 |
+| Uniforms and PPE | $250 |
+| Payroll service fees (allocated) | $54 |
+| **Total labor cost** | **$34,829** |
+| **Burden on productive wages** | **22.6%** |
+| **Burdened cost per productive hour** | **$24.53** |
+
+Add H-2B program costs (fees, agent, transport, recruiting) amortized over a worker's season hours, and burden for an H-2B worker can be several dollars per hour higher. The burden profile makes that visible instead of hiding it in overhead.
+
+**BURD-03 Seasonal burden curve [V1].** Wage-base caps front-load FUTA and SUTA. A $20/hour worker reaches a $7,000 base after 350 hours, about 8 weeks into the season. Rootline shows actual-period burden by month and offers job-costing modes: `annualized` (smoothed, default for estimates and job costing) or `actual_period` (true monthly cost, for cash and P&L analysis). The difference is posted as a burden variance in the Ledger ([09](09-accounting-ledger-integrations.md)).
+
+**BURD-04 Workers' comp class allocation [V1].** Each service or task type maps to a workers' comp class code per state (e.g., landscape gardening and tree trimming are distinct classes in NCCI states, commonly 0042 and 0106; verify per state and bureau, including California WCIRB codes). Hours by segment are allocated to classes. The **WC audit report** shows payroll by class with supporting hours, which the premium auditor needs before payroll can be split across classes for one employee (rules vary by state; verify). Where the state excludes the overtime premium from WC payroll (common under NCCI rules; verify), the report excludes it. Washington: quarterly hours by risk class export for L&I reporting (verify format).
+
+**BURD-05 Burdened labor rates to estimating [MVP].** Labor classes publish a burdened cost rate to the estimating engine ([03](03-crm-sales-estimating-proposals.md)). When a burden profile changes, estimators see "Labor cost rate updated from $24.10 to $24.53 on Mar 1" and open estimates are flagged for repricing if margin falls below target. This matches LMN's budget order: wage, then burden, then overhead, then profit ([LMN help](https://intercom.help/lmn/en/articles/15939065-how-lmn-calculates-overhead-labor-burden-and-profit-in-estimates)).
+
+**BURD-06 Actual-vs-estimated burden reconciliation [V1].** After payroll journal import, Rootline compares actual employer taxes, WC accruals and benefits to the burden applied in job costing for the period and shows the variance by labor class. If variance stays above 2 points for two months, the Copilot suggests updating the profile.
+
+**BURD-07 Labor cost simulator [V1].** "What if we raise all laborers $1.50/hour?" shows the effect on burdened cost, required price increase on maintenance contracts to hold margin, and the renewal letter draft for [07](07-invoicing-billing-contracts.md). See also [Beyond the brief](#13-beyond-the-brief-extra-ideas).
+
+### 4.13 Payroll integrations and pay period close
+
+**PAY-01 Pay calendars [MVP].** Multiple calendars per Company (weekly for field, biweekly or semi-monthly for office). Each has a workweek definition (FLSA fixed 168-hour period, e.g., Sunday 00:00 to Saturday 23:59 in the Company time zone), period start/end, timesheet cutoff (e.g., Monday 10:00), provider submission deadline (e.g., Tuesday 17:00 for Friday pay date with direct deposit lead time), and holiday shifts.
+
+**PAY-02 Pay period close wizard [MVP].** Steps with progress bar ([6.6](#66-wireframe-pay-period-close-wizard)):
+1. **Lock check:** all timesheets in the period approved at the required level, or listed as blockers.
+2. **Compute:** rule engine produces `pay_item` rows per employee (hours by earnings code and work location, amounts where Rootline computes them (bonuses, premiums, piece-rate, reimbursements), and rates).
+3. **Validate:** unmapped employees, unmapped earnings codes, terminated employees with hours, missing work locations, H-2B minimum-wage week-1 check, minors' hours, prevailing-wage classifications, negative values, period overlaps, duplicate submissions.
+4. **Preview:** totals by earnings code, by employee and by division, with comparison to the last period and to the forecast ("Gross +18% vs last week, expected: season ramp").
+5. **Approve:** by `owner`, `office_manager` or `bookkeeper` (`payroll_export.run`). Optional two-person rule for gross above a threshold.
+6. **Push / export:** API push or file. Idempotency key per batch. Partial failures are listed per employee with retry.
+7. **Confirm:** provider confirmation (API status or manual "Submitted in provider").
+8. **Post:** payroll journal import (PAY-08) closes the loop.
+
+**PAY-03 Connectors [MVP/V1/V2].**
+
+| Provider | Method | Data pushed | Data pulled | Priority |
+|---|---|---|---|---|
+| Gusto | Partner API (OAuth). Payroll hours and earnings per employee per payroll; employee create for onboarding hand-off ([Gusto developer docs](https://docs.gusto.com)) | Hours by earning type, bonuses, reimbursements, work address per employee (verify support for multiple work locations per period) | Employees, job/pay rates, PTO balances (verify), payroll totals for journal | [MVP] |
+| QuickBooks Online Payroll | QBO Accounting API **TimeActivity** entities (employee, customer/job, service item, hours, billable flag), which QBO Payroll can pull into paychecks; bonuses and other earnings entered in QBO Payroll or via file (verify) ([Intuit TimeActivity reference](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/timeactivity)) | Hours per employee per job per day | Employees, payroll JEs in QBO | [MVP] |
+| QuickBooks Desktop Payroll | Web Connector time-tracking transactions ([09](09-accounting-ledger-integrations.md) connector) | Time data | Employees | [V1] |
+| ADP Workforce Now | ADP Marketplace partner API for pay data input (verify program and endpoints) ([ADP developer portal](https://developers.adp.com)) | Pay data batch | Workers, rates | [V1] |
+| ADP RUN | Time import file (provider template) | Hours and earnings | Manual | [MVP] |
+| Paychex Flex | Paychex API (pay components / checks; verify) ([Paychex developer portal](https://developer.paychex.com)); file import fallback | Hours and earnings | Workers | [MVP] file, [V1] API |
+| Paylocity, Paycom, Paycor, isolved | Provider file templates; API via partner programs later | Hours and earnings | Optional via unified API | [V1] file, [V2] API |
+| Unified employment API (for example Finch) | Read roster, pay rates, pay statements across many providers (verify write capabilities) ([Finch developer docs](https://developer.tryfinch.com)) | Limited | Roster, rates, pay statements | [V1] evaluate |
+| Canada: Wagepoint, ADP Canada, Payworks, Ceridian Dayforce, QBO Payroll Canada | File templates first | Hours, earnings, vacation pay | Manual | [V1] |
+| Generic CSV builder | Column mapper with saved templates | Anything | n/a | [MVP] |
+
+**PAY-04 Mapping [MVP].** Employee mapping (provider employee ID, auto-match by email, phone or name with confirmation). Earnings code mapping (Rootline code -> provider earning type). Department or division mapping (for providers that support labor allocation). Work location mapping. Unmapped items block export with a fix-it link.
+
+**PAY-05 Corrections and off-cycle [MVP].** After export, corrections create an adjustment batch for the next period. Final pay: termination triggers an off-cycle export option with jurisdiction timing guidance. For example, California requires final wages immediately at involuntary termination and within 72 hours for a quit without notice (verify). The UI shows the deadline countdown and a "not legal advice" note. Retro pay (late-approved raises) is computed per affected week, including regular-rate effects.
+
+**PAY-06 Multi-state and local work-location allocation [V1].** Hours and earnings per work location (state, county, municipality) for each employee. This feeds providers that support per-location wages and produces a report for those that do not. Relevant for crews crossing state lines (e.g., Kansas City metro, the New York-New Jersey area, Lake Tahoe) and for local income taxes based on work location (e.g., Ohio municipalities, Pennsylvania local earned income tax; verify rules).
+
+**PAY-07 Payroll data quality guardrails [MVP].** Never export an employee whose rate in Rootline differs from the provider's rate by more than $0.01 without confirmation (where the provider exposes rates). Block hours for a hibernated or terminated employee outside their final period. Flag any employee with more than 80 hours in a weekly period. Detect duplicate batches by content hash.
+
+**PAY-08 Payroll journal import [V1] (manual entry [MVP]).** Import the payroll register or journal from the provider (API where available, CSV otherwise): gross by earnings code, employee taxes, employer taxes, deductions, net pay, employer benefit costs. Post to the Rootline Ledger when it is the system of record ([09](09-accounting-ledger-integrations.md)). Debits: wages expense by division (direct labor to COGS, office to G&A), employer taxes, benefits. Credits: net pay clearing (bank), tax liabilities, deduction liabilities. Tips Payable clears ([08](08-payments-stripe.md), [07](07-invoicing-billing-contracts.md) P30). Then **job cost true-up**: actual burden replaces estimated burden on the period's job costs in proportion to hours, if the Company chose actual-period costing.
+
+**PAY-09 Year-end and records [V1].** Hours and earnings history per employee per year (for the employee's "My records" view, [02](02-personas-roles-permissions.md)). Links to W-2 or T4 in the provider. ACA hours tracking for Applicable Large Employers (measurement periods, variable-hour seasonal employees; verify) [V2].
+
+### 4.14 Embedded payroll option
+
+**EMB-01 Embedded payroll (US) [V1 pilot, V2 GA].** For Companies that want one less system, Rootline offers payroll inside the app through a licensed embedded payroll partner. Candidates named in the brief are **Check** and **Gusto Embedded** ([Check](https://www.checkhq.com), [Gusto Embedded](https://embedded.gusto.com)). The partner computes taxes, moves money (debits the Company, pays employees and tax agencies), files payroll taxes and issues W-2s. Rootline provides the UI, time, pay rules, PTO and onboarding. **Rootline never holds wage funds** ([08](08-payments-stripe.md)).
+
+Scope:
+- Company onboarding (KYB) in the partner's hosted or embedded components: legal entity, EIN, state tax accounts, bank verification, signatory.
+- Employee onboarding: W-4 and state forms, direct deposit, I-9 Section 1 (if the partner supports it), in English and Spanish.
+- Payroll run: Rootline-computed pay items go straight into the partner's payroll draft. Partner computes taxes and net. Preview and approve in Rootline. Funding deadline countdown.
+- Off-cycle runs (final pay, bonuses, corrections).
+- Contractor payments (1099) for designers and consultants, if the partner supports it.
+- Pay stubs in the self-service app (bilingual rendering where the partner allows), tax forms, year-end.
+- Mid-year migration: prior YTD import from the old provider (quarter-start go-lives recommended).
+- Journal entries posted natively to the Ledger.
+
+**EMB-02 Partner selection criteria [V1 decision].** To be decided with diligence. Rootline will not publish a choice before contracts are signed.
+
+| Criterion | Why it matters |
+|---|---|
+| State coverage, local taxes, and multi-state support | Crews cross state and municipal lines |
+| White-label depth (APIs vs hosted components) | Bilingual, on-brand experience |
+| Piece-rate, CA premium and custom earning code support | Landscape pay is not standard hourly |
+| Same-day or next-day direct deposit and funding timelines | Seasonal workers live paycheck to paycheck |
+| Support model (who answers the tax notice call) | Office managers need one number |
+| Canada roadmap | US + Canada launch markets ([22](22-business-model-pricing-gtm.md)) |
+| Economics (per employee per month, revenue share) | Add-on pricing in [22](22-business-model-pricing-gtm.md) |
+| Liability allocation for tax errors and penalties | Must sit with the licensed partner |
+
+**EMB-03 Embedded payroll in Canada [V2-V3].** Depends on partner availability (verify). File-based exports until then.
+
+**EMB-04 Earned wage access [V2].** Through a partner, employees can access a portion of earned, approved wages before payday. Rootline supplies verified earned amounts from approved time (not unapproved punches). Fees are transparent and a no-fee option is preferred. Regulatory treatment of EWA varies by state (verify), so it is off by default.
+
+> **Competitive edge:** Horizontal FSMs mostly bolt on a payroll provider [B]. Rootline's embedded option is fed by a landscape-aware rules engine. Piece-rate rest pay, regular-rate bonus true-ups, H-2B reimbursements and prevailing-wage differentials arrive at the partner already computed. Neither generic payroll nor generic FSM software can do that.
+

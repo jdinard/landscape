@@ -86,7 +86,7 @@ The facts below shape positioning but were not confirmed in public documentation
 
 | Question | Why it matters | Where we would win if the answer is "no" |
 |---|---|---|
-| Does Jobber, LMN or Aspire offer SAML SSO, SCIM or enforced MFA for all staff, and on which plans? | Mid-market commercial firms (Summit-size) and PE-backed buyers ask for SSO and access evidence | SSO [V1] and SCIM [V2] on Pro, MFA on by default for every office role at MVP |
+| Does Jobber, LMN or Aspire offer SAML SSO, SCIM or enforced MFA for all staff, and on which plans? | Mid-market commercial firms (Summit-size) and PE-backed buyers ask for SSO and access evidence | SSO and SCIM [V1] on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md)), MFA on by default for every office role at MVP |
 | Can a tenant see when vendor support accessed their account? | Trust and SOC 2 evidence for commercial clients | Support access log and consent (5.13) |
 | Is there a customer-visible audit log of permission changes and exports? | Owners want to know who exported the Client list before a sales rep quit | Hash-chained audit log with saved alerts (5.17) |
 | How do Real Green, Copilot CRM and Yardbook model crew permissions? | Lawn-care switchers are a large segment | Field classes and crew windows (5.3, 5.4) |
@@ -1081,6 +1081,9 @@ Client contacts are not staff. Their permissions are relationship-based: **conta
   - submit a bill (invoice to the Company) against the PO;
   - upload COI and W-9 / T4A info;
   - view their bill payment status.
+- **Two ways in, matched to risk:**
+  - **Single-order links** [MVP]: an SMS or email link scoped to one `subcontract_order`. It allows view, accept or decline, check-in and check-out, photos and completion notes. It needs no account, expires 7 days after completion, and is revocable. A forwarded link exposes one Property's address and scope, never billing, banking or other orders. Gate codes still need a GPS check-in within 150 m of the Property (or office override).
+  - **Full sub portal** [V1]: all orders across Companies, bills, payment status, COI and W-9 / T4A uploads, and banking. Login is a passkey, or a password plus MFA; MFA is mandatory here, as in [Architecture](20-architecture-security.md). Idle timeout is 8 hours.
 - **Window:** access starts at assignment and ends 7 days after completion (configurable 0-90). Snow subs get **season-long standing orders** for assigned lots, with storm-event activation.
 - **Compliance gates:** the Company can block order acceptance if the sub's certificate of insurance is expired or their W-9 is missing ([Operations](13-operations-inventory-equipment.md)).
 - **Communication:** sub to Client communication goes through the Company's inbox by default (`subcontract.client_contact_allowed = false`).
@@ -1121,18 +1124,20 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 3. Every request carries `actor_id` (staff), `subject_id` (impersonated user) and `ticket_id`. The UI shows an unmissable orange banner "Viewing as Miguel Hernández - Rootline Support (Maya) - Ticket 4821 - ends in 42 min".
 4. **Tenant transparency:** Settings > Security > Support access log lists every session (who, when, duration, mode, ticket, pages and records touched). Owners get an email summary after each session.
 5. Copilot is disabled inside impersonation sessions to avoid confusing attribution [MVP].
+6. **Viewing the portal as a Client contact** [V1] is allowed only when the Company grants it for a named contact on a ticket (e.g. "Jennifer can't see her Mockups"). Payment-method, signature and contact-management screens render as placeholders. Rootline support never contacts a Company's Clients directly; the Company owns that relationship.
+7. **Founder access follows the same rules.** `platform_owner` sessions in tenant data use the same grants, banners and logs. The founder's only extra power is approving break-glass, which is itself logged and reviewed by a second person within 5 business days ([Platform Admin](19-platform-admin-portal.md)).
 
 ### 5.14 Authentication per persona [MVP unless tagged]
 
 | Persona / role | Primary method | Second factor / step-up | Options | Notes |
 |---|---|---|---|---|
 | `platform_*` | SSO through Rootline corporate IdP (OIDC) | FIDO2 hardware key or platform passkey, required | None | Separate realm; 8 h max session |
-| `owner`, `office_manager`, `bookkeeper` | Email + password, or Google / Microsoft / Apple sign-in, or passkey [V1] | **MFA required:** TOTP or passkey; SMS OTP only as fallback with a risk banner | Enforced SSO for tenants on SSO plans | Step-up for sensitive actions (5.16) |
-| `estimator`, `designer`, `ops_manager` | Same | MFA required by default (Company can relax to "recommended" only on Starter plan, with a warning) | | |
-| Enterprise tenants (all staff) | **SAML 2.0 / OIDC SSO** with Okta, Microsoft Entra ID, Google Workspace, JumpCloud [V1]; **SCIM 2.0** provisioning and deprovisioning [V2] | IdP-enforced MFA | JIT provisioning with default role mapping by IdP group | Break-glass local owner account retained (hardware key) for IdP outages |
-| `crew_lead`, `technician` (own phone) | Phone number + SMS/WhatsApp OTP (Twilio Verify) on first login, then a long-lived device session unlocked by **app PIN or device biometrics** | Re-OTP when the device changes, after 90 days, or on risk signals | Email login optional | Spanish UI by default if phone locale is ES |
-| `crew_lead`, `technician` (shared device) | **Kiosk PIN** (4-6 digits) on an enrolled, trusted device (5.15) | Optional photo capture at punch; NFC badge or QR badge [V1] | | PIN valid only on enrolled devices of the user's branch |
-| `subcontractor` | Magic link (email/SMS) or password | MFA required to change banking or tax info | Passkey [V1] | |
+| `owner`, `office_manager`, `bookkeeper` | Passkey (WebAuthn), email + password, or Google / Microsoft / Apple sign-in | **MFA required:** passkey or TOTP; SMS OTP only as fallback with a risk banner | Enforced SSO for tenants on SSO plans | Step-up for sensitive actions (5.16) |
+| `estimator`, `designer`, `ops_manager` | Same | MFA required by default (Company can relax to "recommended" only on the Starter plan, with a warning) | MFA can never be relaxed for anyone holding `payment.refund`, any `ledger.*` write, `api_key.create` or `stripe_connection.*`, per [Architecture](20-architecture-security.md) | |
+| Enterprise tenants (all staff) | **SAML 2.0 / OIDC SSO** with Okta, Microsoft Entra ID, Google Workspace, JumpCloud [V1]; **SCIM 2.0** provisioning and deprovisioning [V1], both on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md)) | IdP-enforced MFA | JIT provisioning with default role mapping by IdP group | Break-glass local owner account retained (hardware key) for IdP outages |
+| `crew_lead`, `technician` (own phone) | Phone number + SMS/WhatsApp OTP (Twilio Verify) on first login, then a device-bound refresh token (30-day rolling, per [Architecture](20-architecture-security.md)) unlocked by **app PIN or device biometrics** | Re-OTP when the device changes, after 90 days, or on risk signals | Email magic link optional | Spanish UI by default if phone locale is ES |
+| `crew_lead`, `technician` (shared device) | **Personal PIN** (4-6 digits) on an enrolled crew device [MVP] or yard shop kiosk [V1] (5.15) | Optional photo capture at punch [V1]; NFC badge or QR badge [V1] | | PIN valid only on enrolled devices of the user's branch |
+| `subcontractor` | Single-order link for field work (no account); passkey or password for the full sub portal | **MFA required** for the full sub portal, per [Architecture](20-architecture-security.md) | Passkey satisfies MFA | 8 h idle on the full portal |
 | `client_residential` | **Magic link** (email or SMS) or one-time code | Step-up OTP for signing, paying, saving cards, managing contacts | Passkey [V1]; password optional [V1]; Sign in with Apple/Google [V1] | Document links (single-document scope) need no login to *view* |
 | `client_commercial` | Magic link + passkey recommended | Step-up for approvals over policy threshold (configurable) | Client SSO for large property management firms [V2] | |
 
@@ -1144,8 +1149,10 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 - Enumeration-safe responses ("If an account exists, we sent a link").
 - Email-scanner protection: links open a confirm page; GET requests never consume the token, only a POST from the page does. This stops corporate mail scanners (common with commercial PMs) from burning tokens.
 
-**Passwords** (when used) follow NIST SP 800-63B guidance:
-- minimum 8 characters (12 recommended);
+**Passwords** (when used) follow NIST SP 800-63B guidance (revision 4 was finalized in 2025; verify against the final text):
+- minimum 12 characters for staff, who always have MFA (matches [Architecture](20-architecture-security.md));
+- minimum 15 characters when a password is the only factor, which in Rootline means only the optional Client portal password (revision 4 sets 15 for single-factor passwords; verify);
+- maximum length at least 64 characters, all Unicode allowed;
 - check against breached-password corpora;
 - no forced periodic rotation;
 - no composition rules;
@@ -1158,23 +1165,25 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 - Clients: magic link is recovery.
 - Platform staff: recovery only via the corporate IdP.
 
-### 5.15 Shared devices, kiosk mode and device trust [MVP; MDM V2]
+> **Competitive edge - no bearer links, no PIN at every login.** Jobber's own help center says anyone holding a Client Hub link sees what the client sees, and an Aspire reviewer describes a PIN at each portal login. Rootline splits the two needs. Viewing one document is instant from a scoped link, while money, signatures and contact changes need a 6-digit code or a passkey on the contact's own phone. A forwarded Crossroads email exposes one invoice, not 9 properties, and Jennifer never types a password.
+
+### 5.15 Shared devices, kiosk mode and device trust [MVP crew device; V1 yard kiosk and MDM]
 
 **Device registry:** every device that holds a Rootline session is recorded with:
 - device ID, platform and model, app version, user(s), first seen and last seen, IP and approximate geo, and trust level (`unknown`, `user_device`, `company_enrolled`, `kiosk`);
 - encryption state as reported by the OS.
 
-**Kiosk mode (shared crew tablets and yard terminals):**
+**Shared-device modes** follow the device modes in [Field Crew App](05-field-crew-mobile-app.md): a **crew device** (truck tablet or phone shared by one crew) is [MVP]; a **yard shop kiosk** (wall tablet for the whole branch) is [V1]. Both use the same enrollment and PIN rules:
 1. An `owner`, `office_manager` or `ops_manager` enrolls a device by scanning a one-time enrollment QR code from the web app. This binds the device to a Company and branch with a device certificate (key in iOS Keychain / Android Keystore).
-2. The kiosk home screen shows the branch's active employees (photo plus first name plus initial) or a search box. The user taps their name, enters a PIN and chooses Clock in, Clock out, Break or Switch job.
+2. The home screen shows the crew's members (crew device) or the branch's active employees (kiosk), as photo plus first name plus initial, or a search box. The user taps their name, enters a PIN and chooses Clock in, Clock out, Break or Switch job.
 3. PIN rules:
-   - 4-6 digits; no 1234, 0000 or birth-year patterns;
-   - 5 wrong attempts locks that user on that device for 15 minutes and notifies the crew lead;
+   - 4-6 digits, unique per user within the Company; no 1234, 0000 or birth-year patterns;
+   - 5 wrong attempts locks that user on that device for 5 minutes, doubling on each repeat lockout the same day, and notifies the crew lead (the base rule matches [Field Crew App](05-field-crew-mobile-app.md));
    - PIN reset by crew_lead (for their crew), ops_manager or office_manager.
-4. Optional **photo at punch** (anti-buddy-punching) stores a photo for human review only. No face templates or biometric matching unless the Company enables it **and** the employee consents where biometric privacy laws apply (e.g. Illinois BIPA); see 12.
+4. Optional **photo at punch** [V1] (anti-buddy-punching) stores a photo for human review only. No face templates or biometric matching. A consented face-verification option is no earlier than [V2], off by default, and requires the written-consent workflow where biometric privacy laws apply (e.g. Illinois BIPA); see 12.2.
 5. Optional **geofence** check: punches outside the yard or Property geofence are flagged, not blocked.
 6. **Crew session on a truck tablet:** the crew lead signs in (PIN plus device trust), and the tablet becomes a crew device for the day. Technicians can add photos and checklist items under their own identity by tapping their avatar and entering their PIN (attribution without full logins).
-7. Kiosk sessions auto-return to the home screen after 30 seconds of inactivity. No Client data is visible on the kiosk home screen.
+7. Yard kiosks return to the home screen 30 seconds after each interaction. Crew devices lock back to the "Who are you?" picker after 2 minutes idle (configurable), and personal screens (my pay, my messages) always need the PIN. No Client data is visible on either home screen.
 
 **Lost or stolen devices:**
 - An admin can **revoke** the device: tokens are invalidated and the next contact triggers a **remote wipe** of Rootline's local database (SQLite, cached photos, encryption key).
@@ -1182,16 +1191,20 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 
 **Risk signals** that trigger step-up: new device, impossible travel, TOR or anonymizer IP, or more than 3 failed MFA attempts [V1].
 
+**Managed devices (MDM)** [V1]: Companies that buy truck tablets in bulk can deploy through Apple Business Manager or Android Enterprise with managed app configuration (`device_mode`, `enrollment_token`), which pre-enrolls the device without the QR step ([Field Crew App](05-field-crew-mobile-app.md)). BYOD phones never need MDM.
+
 ### 5.16 Session policies [MVP defaults; V1 tenant-configurable]
 
 | Surface | Idle timeout (default) | Absolute lifetime | Offline grace | Step-up required for |
 |---|---|---|---|---|
-| Company web app | 8 h (configurable 15 min - 24 h) | 14 days with "remember this device", else 24 h | n/a | Viewing `employee_pii`; changing bank, Stripe, roles, security policy; exports; period unlock; refunds over $500 (re-auth if last auth more than 15 min ago) |
+| Company web app | 12 h (configurable 15 min - 24 h), per [Architecture](20-architecture-security.md) | 14 days on a remembered device, else 24 h | n/a | Viewing `employee_pii`; changing bank, Stripe, roles, security policy; exports; period unlock; refunds over $500; deleting Clients; editing closed periods (re-auth if the last authentication is more than 10 min old, per [Architecture](20-architecture-security.md)) |
 | Company mobile app (office roles) | App lock after 15 min background (biometric unlock) | 30 days refresh | 72 h of read-only cached data | Same as web |
-| Crew app (own device) | App PIN or biometric after 30 min background | 90 days refresh, device-bound | **7 days** of offline operation; after that, local data is locked until re-auth | n/a (no sensitive actions available) |
+| Crew app (own device) | App PIN or biometric after 30 min background | Device-bound refresh token, 30-day rolling; full re-OTP at least every 90 days | **7 days** of offline operation; after that, local data is locked until re-auth | n/a (no sensitive actions available) |
 | Crew app (truck tablet, crew session) | Ends at crew lead clock-out or 14 h, whichever comes first | 14 h | 7 days (device stays enrolled) | n/a |
-| Kiosk | 30 s per user interaction | Device certificate valid 1 year, renewable | 7 days of punches queued | PIN reset requires supervisor PIN |
-| Customer Portal | 30 days on trusted device | 90 days | n/a | Signing, payment, contact changes (OTP if last verification more than 10 min ago) |
+| Crew device (per person on the shared tablet) | Back to the PIN picker after 2 min idle | Device enrollment, renewable | Same as crew session | Personal screens need the PIN every time |
+| Yard kiosk [V1] | 30 s per user interaction | Device certificate valid 1 year, renewable | 7 days of punches queued | PIN reset requires supervisor PIN |
+| Sub portal (full) [V1] | 8 h | 14 days | n/a | Banking, tax info and bill submission (MFA) |
+| Customer Portal | 30 days rolling on a trusted device; 7 days idle for commercial `billing` and `primary` contacts (Company can shorten to 1 day), per [Customer Portal](06-customer-portal.md) | 90 days | n/a | Signing, payment, contact changes (OTP if last verification more than 10 min ago) |
 | Accountant Hub | 8 h | 14 days | n/a | Period unlock, journal entry delete, employee PII |
 | Platform Admin | 30 min | 8 h | n/a | Every tenant-touching privileged action (hardware key tap) |
 
@@ -1219,7 +1232,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 
 **Properties:**
 - **Append-only.** Each event is hash-chained per tenant per day, and the daily root hash is anchored in a separate write-once (object-lock) bucket, so tampering is detectable.
-- Event schema: `actor` (identity, membership, role at the time), `on_behalf_of` (impersonation subject), `tenant_id`, `entity_id`, `action`, `resource_type`, `resource_id`, `before` and `after` (diff, with sensitive fields hashed rather than stored), `reason`, `ip`, `user_agent`, `device_id`, `auth_method`, `request_id`, `timestamp`.
+- Event schema: `actor` (identity, membership, role at the time), `actor_type` (`user`, `api_client`, `automation`, `ai_agent`, `platform_staff`, matching [Architecture](20-architecture-security.md)), `on_behalf_of` (impersonation subject), `tenant_id`, `entity_id`, `action`, `resource_type`, `resource_id`, `before` and `after` (diff, with sensitive fields hashed rather than stored), `reason`, `ip`, `user_agent`, `device_id`, `auth_method`, `request_id`, `timestamp`.
 - **Tenant UI:** filter by user, resource, action, date; "Show everything Miguel did on May 14"; export CSV [MVP].
 - **Saved alerts** [V1]: e.g. "notify me when anyone exports Clients" or "when a refund over $1,000 is issued".
 - **SIEM export** [V2]: streaming to Splunk, Datadog or a customer S3 bucket for enterprise tenants.
@@ -1286,7 +1299,7 @@ stateDiagram-v2
    - final timesheet approval;
    - final pay export flag (state final-pay timing rules differ, so Rootline surfaces a reminder, not legal advice);
    - **access-secret rotation prompt:** "Luis had access to 34 gate codes in the last 30 days; notify Properties to rotate?" [V1].
-4. **Retention:** time and pay records retained per legal requirements (FLSA recordkeeping; configurable by jurisdiction). PII is minimized at archive (e.g. SSN purged once payroll obligations end).
+4. **Retention:** time and pay records are retained per legal requirements and configurable by jurisdiction. Federal FLSA rules require payroll records for at least 3 years and supplementary records such as time cards for at least 2 years ([29 CFR Part 516](https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-B/part-516); verify), and H-2B employers carry their own recordkeeping duties ([20 CFR 655 Subpart A](https://www.ecfr.gov/current/title-20/chapter-V/part-655/subpart-A); verify). Rootline's default is 7 years, which covers both plus typical tax-audit windows. PII is minimized at archive (e.g. SSN purged once payroll obligations end), while hours and pay amounts stay.
 
 #### 5.18.5 Office staff offboarding [MVP]
 - Same as 5.18.4, plus ownership reassignment of Opportunities, Clients (account manager), saved reports, Automations owned by the user (Automations run as a **service principal**, not the creator, to avoid breaking when people leave), and API keys.
@@ -1295,6 +1308,19 @@ stateDiagram-v2
 - **Ownership transfer:** the outgoing owner initiates, the incoming owner accepts, there is a 72-hour delay with notifications, and Rootline's billing owner and Stripe connection ownership are re-confirmed.
 - **Successor designation:** an owner can designate a successor (spouse, partner, attorney). If the owner is unreachable (death or incapacity), the successor can request access through a platform-verified process with documentation and a waiting period.
 - **Partner disputes:** with multiple owners, destructive actions (remove another owner, disconnect Stripe, delete Company, export all data) require dual control by default.
+
+#### 5.18.7 Minor workers (under 18) [V1]
+
+Summer crews often include 16- and 17-year-olds, and some Companies hire 14- and 15-year-olds for light work. Federal child-labor rules restrict what they may do: 14- and 15-year-olds may not operate power-driven lawn equipment such as mowers, trimmers and edgers and have daily and weekly hour limits, while Hazardous Occupations Orders bar 16- and 17-year-olds from tasks such as most driving on public roads and operating chainsaws and wood chippers. States add their own hour limits and work-permit rules ([DOL YouthRules](https://www.youthrules.gov/); verify the current rules with counsel and [Team, HR and Payroll](15-team-hr-payroll.md) before shipping). Rootline does not give legal advice; it makes the Company's own rules hard to break by accident.
+
+- **Derived flag, not raw DOB.** The date of birth stays in `employee_pii`. A daily job derives `age_band` (`under_16`, `16_17`, `adult`) and the field roles see only a badge: "Minor - restricted equipment".
+- **Equipment tagging.** Equipment and checklist items carry a `youth_restriction` category (`power_mower`, `string_trimmer`, `chainsaw`, `wood_chipper`, `skid_steer`, `public_road_driving`, `pesticide_application`). The Company reviews the default mapping at setup.
+- **Assignment checks.** Assigning a minor to a Visit whose checklist needs a restricted category produces a **block** for `under_16` and a **block or warning** (per the category's mapping) for `16_17`. Overrides need `ops_manager` or above, a reason, and are audited.
+- **Hour guardrails for `under_16`.** Scheduling warns when a Route would exceed the configured daily or weekly cap or fall outside the allowed time window. Punches are **never blocked** (blocking would create unrecorded work); a punch outside the window alerts the crew lead and ops manager instead.
+- **Work permits.** Where a state requires one, a work-permit document with an expiry is a required onboarding item, and expiry follows the same rules as certifications.
+- **Birthday rollover.** When a worker turns 16 or 18, restrictions lift automatically and the crew lead gets a note.
+
+> **Competitive edge - seasonal labor as a first-class lifecycle.** Jobber gates access by assigned seats per plan, and LMN historically sold a cheaper crew seat that could not punch in or upload photos (section 2.1). Neither has a "hibernated" state between active and deleted. Rootline treats the season as the unit: bulk onboarding in the worker's language, hibernation that costs $0 and keeps history and certifications, a February "coming back?" signal, one-tap rehire with the same PIN, and automatic gate-code rotation prompts when someone leaves. For a Company like Summit, whose headcount moves between about 45 and 140 people each year, that turns two weeks of admin twice a year into an afternoon.
 
 ### 5.19 Access reviews and governance [V1]
 
@@ -1476,7 +1502,7 @@ sequenceDiagram
 | Rehire returning crew wizard | Company web | office_manager, ops_manager | [MVP] |
 | Role list and role editor (permission grid, scopes, field classes, limits) | Company web | owner | [MVP] |
 | Role impact diff and "View as" simulator | Company web | owner, office_manager | [V1] |
-| Security settings: MFA policy, SSO/SCIM, session policy, IP allowlist, support access | Company web | owner | [MVP] / [V1] / [V2] |
+| Security settings: MFA policy, SSO/SCIM, session policy, IP allowlist, support access, Lockdown | Company web | owner | [MVP] / [V1] / [V2] |
 | Audit log viewer and saved alerts | Company web | owner, bookkeeper | [MVP] / [V1] |
 | Access review campaign | Company web | owner | [V1] |
 | Device management and kiosk enrollment | Company web + mobile | ops_manager, office_manager | [MVP] |
@@ -1539,7 +1565,7 @@ sequenceDiagram
 | Tyler Brooks      | technician  HIBERNATED| Columbus| M5   | -            | -   | Nov 21   |
 +-------------------------------------------------------------------------------------------+
 | Selected (12): [Hibernate effective date v] [Change Crew] [Reset PIN] [Sign out everywhere]|
-| Seats billed this month: 61 active (38 hibernated = $0)                                   |
+| Seats: 12 office + 45 active field + 4 free (CPA, subs) = 61. Hibernated 38 = $0          |
 +-------------------------------------------------------------------------------------------+
 ```
 
@@ -1610,7 +1636,54 @@ sequenceDiagram
  #############################################################################
 ```
 
-### 7.7 Notes on screens
+### 7.7 Wireframe: Rehire returning crew wizard (Company web) [MVP]
+
+```text
++--------------------------------------------------------------------------------------------+
+| Team > Rehire returning crew                      Season 2027   Branch [Columbus v]         |
+| 38 hibernated field workers  |  23 said "returning"  |  6 said "not returning"  |  9 no reply |
++--------------------------------------------------------------------------------------------+
+| [x] | Name           | Last crew | Last role  | Last rate | Suggested | Replied   | Checks     |
+|-----+----------------+-----------+------------+-----------+-----------+-----------+------------|
+| [x] | Luis Ramirez   | M3        | technician | $18.50    | $19.25    | Returning | OK         |
+| [x] | Jose Ortega    | M3        | technician | $17.75    | $18.50    | Returning | Visa date? |
+| [x] | Tyler Brooks   | M5        | technician | $16.00    | $16.75    | Returning | Minor: no  |
+| [ ] | Carlos Vega    | I2        | crew_lead  | $24.00    | $25.00    | Returning | Pest. lic. |
+|     |                |           |            |           |           |           | expired !  |
+| [ ] | Ana Ruiz       | M1        | technician | $17.25    | -         | No reply  | Phone?     |
++--------------------------------------------------------------------------------------------+
+| Start date [Mar 17 v]   Crew [keep last v]   Raise [suggested v]   Language [keep v]        |
+| Pay rates are visible to you because you hold field.pay_rate.read                          |
+|                                                                                            |
+| [ Preview welcome-back SMS (ES / EN) ]       [ Rehire 3 selected ]  [ Send reminder to 9 ] |
++--------------------------------------------------------------------------------------------+
+```
+
+Rules: rows with a blocking check (expired pesticide license, visa end date before the start date, missing phone) cannot be selected until resolved. Suggested raises come from the Company's raise policy (flat or percentage) and are hidden from users without `field.pay_rate.read`, who see the wizard without the rate columns.
+
+### 7.8 Wireframe: Accountant Hub client list (Accountant web) [V1]
+
+```text
++--------------------------------------------------------------------------------------------+
+| Liu & Partners CPAs - Accountant Hub        Karen Liu (firm_admin)     [Invite staff]       |
+| Close period: April 2027   Filter: [All clients v] [Assigned to me]   Search [            ] |
++--------------------------------------------------------------------------------------------+
+| Client company            | Close status | Unreconciled | AR > 90 d | Sales tax due | Lock  |
+|---------------------------+--------------+--------------+-----------+---------------+-------|
+| Reyes Outdoor Living      | 6 / 9 steps  | 23 lines     | $4,180    | NC May 20     | Mar   |
+| Greenway Lawn Co.         | Done         | 0            | $0        | SC May 20     | Apr   |
+| Piedmont Tree & Turf      | 2 / 9 steps  | 141 lines    | $12,920 ! | NC May 20     | Feb ! |
+| Carolina Snow Pros        | Not started  | 8 lines      | $640      | -             | Mar   |
+| ... 10 more                                                                                 |
++--------------------------------------------------------------------------------------------+
+| Access: each row opens that Company under its own delegation grant. Expiring soon:          |
+|   Carolina Snow Pros grant ends Apr 30 (tax-season grant)  [Ask owner to extend]            |
++--------------------------------------------------------------------------------------------+
+```
+
+Rules: every number in a row is computed by a per-tenant call made under that Company's delegation grant (5.10). There is no cross-tenant query. A Company that revokes the firm disappears from the list on the next refresh, and its cached tiles are purged.
+
+### 7.9 Notes on screens
 
 - The **Copilot side panel** is available on every staff screen and runs as the signed-in user (5.4, item 6).
 - Platform Admin screens are specified in [Platform Admin](19-platform-admin-portal.md). Sitemaps for all surfaces are in [UX and Sitemaps](21-ux-design-system-sitemaps.md).
@@ -1867,7 +1940,7 @@ erDiagram
         uuid client_id FK
         uuid property_id FK
         string applies_to
-        numeric threshold_amount
+        numeric min_amount
         int rule_order
         string mode
         numeric max_amount
@@ -1983,9 +2056,9 @@ erDiagram
 | WebAuthn / passkeys (FIDO2) | Passwordless staff and Client login, platform hardware keys | W3C WebAuthn standard. Discoverable credentials. Attestation not required except for platform staff (allowlist of security key models) | [V1] (platform staff: [MVP]) |
 | Google, Microsoft and Apple sign-in (OIDC) | Social and business sign-in for staff and Clients | Link to an existing identity only by verified email | [MVP] staff / [V1] Clients |
 | Enterprise SSO (SAML 2.0, OIDC) | Okta, Microsoft Entra ID, Google Workspace, JumpCloud | Build-vs-buy: use an SSO/SCIM broker or open-source SAML bridge to reach market faster; decision recorded in [Architecture](20-architecture-security.md) | [V1] |
-| SCIM 2.0 (RFC 7644) | User and group provisioning and deprovisioning | Group-to-role mapping table per tenant | [V2] |
+| SCIM 2.0 (RFC 7644) | User and group provisioning and deprovisioning | Group-to-role mapping table per tenant; aligned with [Architecture](20-architecture-security.md) and [Pricing](22-business-model-pricing-gtm.md) | [V1] |
 | Payroll providers (e.g. Gusto, ADP, Paychex, QuickBooks Payroll; Wagepoint and similar in Canada) | Onboarding handoff, employee sync, pay rates | Detail in [Team, HR and Payroll](15-team-hr-payroll.md) | [V1] |
-| MDM (Apple Business Manager, Jamf, Microsoft Intune, Android Enterprise) | Kiosk lockdown, managed app config, wipe | Optional for larger tenants | [V2] |
+| MDM (Apple Business Manager, Jamf, Microsoft Intune, Android Enterprise) | Kiosk lockdown, managed app config, wipe | Optional for larger tenants; same priority as [Field Crew App](05-field-crew-mobile-app.md) | [V1] |
 | Stripe (Company-owned accounts) | Only `owner` can connect or disconnect. Payment roles map to charge, refund and payout visibility | Stripe dashboard access is the Company's own business. Rootline never creates Stripe dashboard users | [MVP] |
 | Rootline corporate IdP (e.g. Google Workspace or Okta) | Platform staff SSO | Separate realm | [MVP] |
 
@@ -1997,7 +2070,7 @@ erDiagram
 | `POST /v1/users/{id}/hibernate`, `/reactivate`, `/deactivate` | Seasonal lifecycle | [V1] |
 | `GET/POST/PATCH /v1/roles` | Custom roles as code (export and import JSON) | [V1] |
 | `GET /v1/audit-events?since=` | Pull the audit log | [V1] |
-| `/scim/v2/Users`, `/scim/v2/Groups` | SCIM provisioning | [V2] |
+| `/scim/v2/Users`, `/scim/v2/Groups` | SCIM provisioning | [V1] |
 | `POST /v1/clients/{id}/contacts` with `contact_role` and `property_ids` | Manage Client contacts | [V1] |
 | API keys | Each key is bound to a **role** (default: a "Read-only integration" role), optional IP allowlist, expiry (max 1 year), last-used tracking. Keys can be created only by `owner` | [V1] |
 | OAuth apps (partner marketplace) | OAuth 2.0 authorization code + PKCE with scopes mapped to permissions. Consent screen lists data classes (e.g. "read Clients and Properties; never prices") | [V2] |
@@ -2077,6 +2150,7 @@ erDiagram
 | `estimate` | RWD/a | RW/a | RWD/o + R/b | R/o | RW/b | - | - | R/a | - |
 | `proposal.send` | X/a | X/a | X/o | X/o cfg | X/b | - | - | - | - |
 | `proposal.approve_internal` | X/a | X/a <=lim | - | - | X/b <=lim | - | - | - | - |
+| `proposal.record_offline_acceptance` (paper or verbal, with upload and reason) | X/a | X/a | X/o | - | X/b | - | - | - | - |
 | `change_order` | RWDX/a | RWX/a | RWX/o | R/o | RWX/b | W/c draft, no price | - | R/a | W/o request |
 | `service_agreement` (incl. renew) | RWDX/a | RWDX/a | RWX/o | - | R/b | - | - | R/a | - |
 | `price_book` | RWD/a | RW/a | R/a | R/a | R/a | R/a names only | R/a names only | R/a | - |
@@ -2137,6 +2211,8 @@ erDiagram
 | `statement` | RWX/a | RWX/a | R/o | - | R/b | - | - | RWX/a | - |
 | `bill` (vendor and sub bills) | RWD/a | RW/a | - | - | RW/b code to Jobs | - | - | RWD/a | W/o submit own |
 | `bill_payment.approve` | X/a | - | - | - | - | - | - | X/a <=lim | - |
+| `dispute.respond` (evidence to the Company's own Stripe) | X/a | X/a | - | - | - | - | - | X/a cfg | - |
+| `payout` (Stripe payouts and balance, read-only mirror) | R/a | R/a cfg | - | - | - | - | - | R/a | - |
 
 **Ledger**
 
@@ -2146,7 +2222,7 @@ erDiagram
 | `ledger.journal_entry` | RWDX/a | - | - | - | - | - | - | RWDX/a | - |
 | `ledger.period.lock` / `unlock` | X/a | - | - | - | - | - | - | X/a | - |
 | `bank_account`, `bank_reconciliation` | RWX/a | - | - | - | - | - | - | RWX/a | - |
-| `bank_account.update` (payout details) | X/a dual control | - | - | - | - | - | - | - | - |
+| `bank_account.update` (Ledger and bill-pay accounts; Stripe payout banks change only in the Company's Stripe dashboard) | X/a dual control | - | - | - | - | - | - | - | - |
 | `financial_report` (P&L, balance sheet, cash flow) | R/a | - cfg | - | - | R/b cfg branch P&L | - | - | R/a | - |
 | `job_cost_report` | R/a | R/a | R/o | - | R/b | hours-only scorecard | - | R/a | - |
 | `tax_setting` | RW/a | R/a | - | - | - | - | - | RW/a | - |
@@ -2172,7 +2248,7 @@ erDiagram
 | `cost` | RW | R | RW (own) | - cfg | R | - | - | R | - |
 | `margin` | R | - cfg | R (own) | - | - cfg (indicator) | - | - | R | - |
 | `budget_hours` | RW | RW | RW | R | RW | R | R | R | R own orders cfg |
-| `pay_rate` | RW | RW cfg | self | self | - cfg | self | self | R | - |
+| `pay_rate` | RW | RW (Company can remove) | self | self | - cfg | self | self | R | - |
 | `employee_pii` | RW step-up | RW step-up | self | self | - | crew emergency contacts | self | R step-up (payroll) | - |
 | `client_contact` | RW | RW | RW (own) | R (own) | RW (branch) | masked actions | masked actions | R billing | masked actions |
 | `client_financial` | R | RW | status chip | - | status chip | - | - | RW | - |
@@ -2215,7 +2291,7 @@ See the matrix in 5.11. Additional rules:
 | Tenant announcements and in-app messages | RWX | RW | - | - | - |
 | Anonymized aggregate analytics and benchmarks | R | R | R plant usage | R | R |
 
-> **Competitive edge - support you can see.** Incumbents generally do not expose to customers when support staff access their account. Rootline makes support access an owner-granted, time-boxed, read-only-by-default grant with a visible log. That is a trust feature commercial clients and auditors care about, and it costs almost nothing to build if designed in from day one.
+> **Competitive edge - support you can see.** We found no public documentation of a customer-visible support-access log at Jobber, LMN, Aspire or Housecall Pro (absence of evidence, so confirm on sales calls; see 2.4). Rootline makes support access an owner-granted, time-boxed, read-only-by-default grant with a visible log. That is a trust feature commercial clients and auditors care about, and it costs almost nothing to build if designed in from day one.
 
 ---
 
@@ -2258,6 +2334,14 @@ See the matrix in 5.11. Additional rules:
 | Clock drift or tampered device time | Server time is authoritative; punches flagged when drift exceeds 5 minutes; edits require reason and are audited (wage-and-hour defensibility) |
 | Company downgrades from a plan with SSO | SSO enforcement is lifted with a 14-day warning; users are prompted to create passkeys or passwords before cutover |
 | Impersonated user is deactivated mid-session | Impersonation session terminates immediately (subject perm_version bumped) |
+| Estimator shows the Proposal on his iPad in the driveway | Client-facing mode (5.4, item 9) drops cost, margin and internal notes from the session until he unlocks with Face ID; the homeowner never sees "materials cost $9,112" |
+| Office manager's email is phished and the attacker logs in from a new device | MFA blocks the password alone. If a session is stolen, new-device step-up blocks exports, refunds over $500 and role changes. The owner can hit Lockdown (section 14, item 13) to freeze sensitive actions tenant-wide in one tap |
+| Someone changes the payout bank inside the Company's Stripe dashboard | Rootline cannot block it (the Company owns the Stripe account) but alerts every owner by push, email and SMS and holds a banner until an owner confirms (5.6) |
+| Payout bank change on Rootline's side is requested by a vendor email | Vendor banking changes need dual control and a call-back confirmation checklist; bill runs to that vendor within 10 days of a change need owner approval (5.6) |
+| A 15-year-old summer hire is put on a mowing Route | Assignment blocked: `power_mower` is restricted for `under_16`; the ops manager sees why and picks a blower-and-cleanup task list instead (5.18.7) |
+| HOA switches management companies mid-season | The old firm's contacts lose access on the effective date; pending votes they cast stay in the ballot record; the new community manager is invited as `primary` by the HOA or the Company (5.11) |
+| A sub forwards a single-order link to a friend | The link shows one Property's address and scope only; gate codes still require an on-site GPS check-in; the Company can revoke the link (5.12) |
+| CPA firm staff member leaves the firm | The firm admin removes them in the Hub; access to every client Company ends at once because grants belong to the firm, not the person (5.10) |
 
 ### 12.2 Compliance mapping
 
@@ -2265,13 +2349,15 @@ See the matrix in 5.11. Additional rules:
 |---|---|
 | **SOC 2 Type II** (security, availability, confidentiality) | Least-privilege role templates; MFA enforcement; quarterly access reviews with evidence; timely deprovisioning (target under 1 hour for terminations, measured); immutable audit logs; platform staff JIT access with approvals; separation of duties for platform finance and engineering |
 | **PCI DSS (SAQ-A scope)** | No card data in Rootline; card entry only via Stripe Elements on the Company's account ([Payments](08-payments-stripe.md)); payment permissions govern actions, not card data |
-| **GDPR / CCPA-CPRA / PIPEDA / Quebec Law 25** | Data subject access and deletion requests for Clients and employees, routed via the owning Company (controller) with Rootline as processor; contact-level consent records; PII minimization at archive; purpose-limited support access; Canadian data residency option [V2] |
+| **GDPR / CCPA-CPRA / PIPEDA / Quebec Law 25** | Data subject access and deletion requests for Clients and employees, routed via the owning Company (controller) with Rootline as processor; contact-level consent records; PII minimization at archive; purpose-limited support access; Canadian data residency option [V2]. California's temporary CCPA exemptions for employee and business-contact data expired on January 1, 2023 (verify), so a California Company's crew records, applicant records and commercial-contact records carry access and deletion rights. The DSAR tool therefore covers `employee` and `client_contact` records, not only homeowners |
 | **TCPA / 10DLC / CASL** | Consent stored per contact per channel; roles never override consent; OTP and security messages use verification channels ([Marketing](16-marketing-growth-communications.md)) |
-| **Biometric privacy** (Illinois BIPA, Texas CUBI, Washington biometric law and similar) | Photo-at-punch stores images for human review only. Any face matching is off by default and requires written employee consent, a retention schedule and a destruction policy where these laws apply. Rootline provides consent templates (legal review required). Under BIPA, collecting biometric identifiers requires informed written consent and a published retention policy ([Illinois BIPA, 740 ILCS 14](https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=3004&ChapterID=57)) |
-| **FLSA and state wage-and-hour recordkeeping** | Original punches retained; edits create new versions with editor, reason and timestamp; employees can view their own hours |
+| **Biometric privacy** (Illinois BIPA, Texas CUBI, Washington biometric law and similar) | Photo-at-punch stores images for human review only. Any face matching is off by default and requires written employee consent, a retention schedule and a destruction policy where these laws apply. Rootline provides consent templates (legal review required). Under BIPA, collecting biometric identifiers requires informed written consent and a published retention policy ([Illinois BIPA, 740 ILCS 14](https://www.ilga.gov/legislation/ilcs/ilcs3.asp?ActID=3004&ChapterID=57)). A 2024 amendment (SB 2979) treats repeated collection from the same person by the same method as a single violation and lets an electronic signature count as the written release (verify). That lowers exposure but does not remove it. Colorado added biometric obligations that reach employers, effective July 1, 2025 (HB24-1130; verify). Rootline's position stays the same: no face templates by default anywhere |
+| **FLSA and state wage-and-hour recordkeeping** | Original punches retained; edits create new versions with editor, reason and timestamp; employees can view their own hours; retention defaults exceed the federal 3-year payroll and 2-year time-card minimums (5.18.4) |
+| **Child labor (FLSA youth employment rules and state rules)** | Derived age bands, equipment restriction categories, assignment blocks, hour-window alerts and work-permit tracking for workers under 18 (5.18.7) |
+| **NIST SP 800-63B (digital identity)** | Password rules, phishing-resistant factors (passkeys, FIDO2 keys for platform staff), SMS OTP only as a fallback, and no forced rotation (5.14) |
 | **Pesticide applicator certification and recordkeeping** (EPA certification standards under 40 CFR Part 171, plus state rules) | `chemical_application.create` requires a valid license on record for the category; "under supervision" allowed only where state rules permit and the supervising licensed applicator is recorded ([EPA - certification standards](https://www.epa.gov/pesticide-worker-safety/certification-standards-pesticide-applicators)) |
 | **E-signature (ESIGN Act, UETA; Canadian equivalents)** | Signature evidence: identity verification method, consent to electronic records, document hash, IP and timestamp, signer role and authority (approval policy) |
-| **H-2B program obligations** | Hibernation and visa end dates stored for workforce planning; Rootline does not process immigration paperwork, but keeps hours and pay records that support program recordkeeping ([DOL - H-2B](https://www.dol.gov/agencies/whd/immigration/h2b)) |
+| **H-2B program obligations** | Hibernation and visa end dates stored for workforce planning; Rootline does not process immigration paperwork, but keeps hours and pay records that support program recordkeeping ([DOL - H-2B](https://www.dol.gov/agencies/whd/immigration/h2b), [20 CFR 655 Subpart A](https://www.ecfr.gov/current/title-20/chapter-V/part-655/subpart-A)). The hours-guarantee tracker in section 14 (item 15) is an optional aid, not a compliance determination |
 
 ### 12.3 Risks and mitigations
 
@@ -2284,7 +2370,7 @@ See the matrix in 5.11. Additional rules:
 | Support impersonation misuse | Low | Severe (trust) | Consent, time-boxing, read-only default, banner, tenant log, quarterly review of all sessions by platform_owner |
 | Owner lockout (lost phone and MFA) | Medium | High | Multiple factors encouraged at setup (passkey + TOTP), recovery codes, verified recovery with delay |
 | Performance cost of fine-grained checks | Medium | Medium | Compiled grants, SQL-level scope predicates, cached relationship index; p95 under 5 ms authorization overhead target |
-| Seat-pricing gaming (sharing logins to avoid seats) | Medium | Low-Medium | Field seats priced by active users, so sharing has little upside; kiosk mode is free; concurrency anomaly detection |
+| Seat-pricing gaming (sharing logins to avoid seats) | Medium | Low-Medium | Field seats are cheap and billed only when active, so sharing has little upside. Shared devices themselves cost nothing, but every person who punches on one counts as an active field user ([Pricing](22-business-model-pricing-gtm.md) 4.3). Concurrency anomaly flags (one field login on more than 2 devices more than 15 km apart in a day) notify the office; no automatic billing |
 
 ---
 
@@ -2307,6 +2393,10 @@ See the matrix in 5.11. Additional rules:
 | Accountant Hub reach | CPA firms with 2+ Rootline clients; clients sourced via firms | Growth KPI shared with [GTM](22-business-model-pricing-gtm.md) |
 | Support access transparency | Share of impersonation sessions with a tenant-granted consent record | 100% (break-glass excluded and separately reported) |
 | Access reviews completed | Share of eligible tenants completing quarterly review | At least 80% |
+| Margin exposure | Share of non-owner, non-bookkeeper users holding `field.margin.read` | Under 10% of office users; a rising trend triggers a role-template review |
+| Termination-to-revocation (field) | Time from termination action to PIN hash removal on every kiosk and crew device | p95 under 15 minutes for online devices |
+| Seasonal admin time | Office minutes spent on the March rehire wave per 10 returning workers (measured from wizard open to last activation) | Under 15 minutes |
+| Youth-rule overrides | Overrides of minor-worker assignment blocks per 100 minor-worker Visits | Tracked; any sustained rise is shown to the owner |
 
 ---
 
@@ -2324,6 +2414,14 @@ See the matrix in 5.11. Additional rules:
 10. **Cross-company subcontractor identity** [V2]. Subs who work for many Rootline Companies get one inbox for all orders, one COI and W-9 upload shared with consent, and faster onboarding for Companies. This is a small network effect that makes Rootline the default for the sub ecosystem.
 11. **Lone-worker safety check-ins** [V2]. For irrigation techs and night snow operators working alone: timed check-ins with escalation to the crew lead, then the ops manager, then an emergency contact. Tied to the role and shift.
 12. **Succession and sale readiness** [V2]. A "data room" role for business sale due diligence: time-boxed, watermarked, read-only access for a buyer's analyst to financials and anonymized Client lists, with full access logging. This is relevant as private equity continues to consolidate the landscape industry (see [Market landscape](01-market-landscape.md)).
+
+The following ideas were added in review. Each closes a gap the founder did not ask about but owners will feel in their first season.
+
+13. **Lockdown button for a suspected compromise** [V1]. One owner action (step-up required) freezes every sensitive capability tenant-wide: exports, refunds, role and user changes, vendor-banking changes, API key creation, new integrations and Automation edits. It also signs out every non-owner web session. Field work keeps running: crews still punch, complete Visits and take photos, because blocking the field would cost a day of revenue. Lockdown expires after 24 hours unless renewed, shows a red banner to all office users, and creates a security event that Rootline support can see (metadata only). It answers the most likely real incident for a small Company, a phished office manager, with something an owner can do from a truck in 10 seconds.
+14. **Client-facing mode (shoulder-surf shield)** [V1]. Estimators and designers present on iPads in driveways and kitchens. One tap, or opening the Proposal presenter view, drops cost, margin, internal notes and the Client's AR status from the session until the user unlocks with Face ID or PIN (enforcement in 5.4, item 9). It costs little to build because it reuses the projection layer, and it fixes a real embarrassment: a homeowner reading "materials $9,112, margin 48%" over the rep's shoulder.
+15. **H-2B hours-guarantee and records tracker** [V1]. H-2B employers must offer a minimum share of the hours promised in the job order over each measurement period (the "three-fourths guarantee" in the H-2B rules; verify the current text of [20 CFR 655 Subpart A](https://www.ecfr.gov/current/title-20/chapter-V/part-655/subpart-A) with counsel). Rootline already holds the punches, the scheduled Visits and the rain-outs. A dashboard visible only to `owner`, `office_manager` and `bookkeeper` shows hours offered versus the guarantee for each H-2B worker per period, warns three weeks before a shortfall, and exports the hours records an auditor would ask for. Rain-heavy springs are exactly when Companies fall short without noticing. Coordinate with [Team, HR and Payroll](15-team-hr-payroll.md); the tracker is an aid, not legal advice.
+16. **Ephemeral access codes instead of permanent gate codes** [V3]. For Properties with smart locks, smart gate controllers or keypad garages that offer partner APIs, Rootline requests a code valid only for the Visit window and only for the assigned Crew, and revokes it at check-out. No static gate code ever sits on a device or in a departed worker's memory. Vendor API availability varies and some consumer brands restrict third-party access, so this starts with commercial gate systems and a short list of lock vendors (verify partner programs before committing).
+17. **Access health score** [V1]. A single 0-100 score on the owner's Security page, built from checks such as: MFA coverage, more than one `owner` or a named successor, dormant accounts, users who can see margin, users who can export Clients, kiosk devices not seen in 30 days, and open support grants. Every failed check has a one-click fix ("Hibernate 7 field users with no punches since October"). Owners who never open a role editor still get least privilege, and the score doubles as SOC 2-style evidence for commercial Clients who send vendor security questionnaires.
 
 ---
 

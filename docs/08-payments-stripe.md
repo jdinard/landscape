@@ -217,7 +217,7 @@ Scores: 5 = best for Rootline's strategy; criteria are equally weighted (doublin
 
 - **New Stripe accounts:** created through the API (Accounts v2 with the `merchant` configuration and full dashboard where generally available to Rootline; otherwise v1 `POST /v1/accounts` with the Standard-equivalent controller properties) and onboarded via **Account Links** (Stripe-hosted) or the **embedded account onboarding component** inside Rootline.
 - **Existing Stripe accounts:** linked via **Connect OAuth** (`read_write` scope). Rootline stores only the account ID (`acct_...`); it uses its own platform key with the `Stripe-Account` header rather than storing per-account OAuth access tokens.
-- **Why:** this is the only option where (1) the Company owns liability, KYC, payouts and disputes, (2) the Company keeps everything if it leaves, (3) Rootline can still take a transparent application fee if the business model ever wants one, and (4) Rootline carries the least regulatory and credit exposure. It is also exactly the promise competitors cannot make.
+- **Why:** this is the only option where (1) the Company owns liability, KYC, payouts and disputes, (2) the Company keeps everything if it leaves, (3) Rootline can still take a transparent application fee for Companies that opt into the pay-as-you-grow plan ([4.24](#424-platform-monetization-and-transparency)), and (4) Rootline carries the least regulatory and credit exposure. It is also exactly the promise competitors cannot make.
 - **Trade-off accepted:** onboarding is Stripe-branded and the Company sees Stripe's full Dashboard (more power, more complexity). We mitigate with embedded components and a "you never need to open Stripe" Rootline experience for day-to-day work.
 
 **Secondary path [V1]: Option D, "Advanced: restricted API key mode."** Offered only to Companies that refuse Connect (for example, an enterprise landscaper whose security team prohibits third-party OAuth grants, or a Company whose Stripe account is already connected to a platform policy that blocks additional connections). Gated by `owner` acknowledgment of the trade-offs: no application fees possible, Rootline must create and maintain a webhook endpoint on the account, key rotation is the Company's responsibility, and some features (embedded components, Connect-level monitoring) are unavailable. Keys are envelope-encrypted with KMS ([4.21](#421-key-and-secret-security-mvp)).
@@ -360,7 +360,7 @@ Online client payments use Stripe's **Payment Element** (an iframe-hosted, PCI-s
 | ACH Direct Debit with Financial Connections | `us_bank_account` | US | Up to ~4 business days to confirm ([Superdupr](https://superdupr.com/blog/ach-fees)) | 0.8% capped at $5 ([Dodo Payments](https://dodopayments.com/blogs/stripe-ach-fees/)) | Autopay, installs over $1,000, commercial | [MVP] |
 | Canadian pre-authorized debit | `acss_debit` | CA | Several business days | Verify CA pricing | Canadian autopay programs | [V1] |
 | Bank transfer to virtual account (ACH credit/wire) | `customer_balance` bank transfer | US (CA verify) | Same/next day on receipt | Verify | HOAs and property managers paying from AP | [V1] |
-| Tap to Pay on iPhone / Android | Terminal `card_present` | US, CA | As cards | In-person pricing differs from online (verify) | Pay-at-completion cleanups, cash routes | [V1] |
+| Tap to Pay on iPhone / Android | Terminal `card_present` | US, CA | As cards | In-person card pricing, possibly plus a per-transaction Tap to Pay fee (verify) | Pay-at-completion cleanups, cash routes | [V1] |
 | Card readers (e.g., Stripe Reader M2, WisePOS E, S700) | Terminal | US, CA | As cards | Hardware purchase plus in-person pricing | Office counter, garden-center style retail, trade shows | [V1] |
 | Interac debit in person | Terminal `interac_present` | CA | As cards | Verify | Canadian field collection | [V2] |
 | BNPL: Affirm, Klarna, Afterpay | `affirm`, `klarna`, `afterpay_clearpay` | Varies | Paid in full by provider | Higher percentage (verify) | $2,000-$15,000 residential installs | [V1] |
@@ -620,31 +620,31 @@ The built-in general ledger ([09](09-accounting-ledger-integrations.md)) treats 
 
 #### 4.17.1 Default accounts (keys match the posting table in 07; final chart of accounts in 09)
 
-Account keys below reuse the default posting keys already defined in [07, section on GL postings](07-invoicing-billing-contracts.md) (1000, 1050, 1100, 1120, 2200, 2220, 2300, 4900, 6100, 6200, 7100). Accounts that only payments needs are added as new keys or as sub-accounts of 07's parents, so 07's roll-ups still hold. The final chart, including Canadian GST/HST accounts, is owned by [09](09-accounting-ledger-integrations.md).
+Account keys below reuse the default posting keys already defined in [07, section on GL postings](07-invoicing-billing-contracts.md) (1000, 1050, 1100, 1120, 2200, 2220, 2300, 4900, 6100, 6200, 7100). Accounts that only payments needs are added as new keys or as sub-accounts of 07's parents, so 07's roll-ups still hold. The final chart, including Canadian GST/HST accounts, is owned by [09](09-accounting-ledger-integrations.md). Posting rules reference **account roles** (09's mechanism, e.g., `stripe_clearing:USD`, `ar_control`), never hard-coded numbers, so a Company can renumber its chart without breaking payments postings; the codes below are the default template mapping.
 
-| Code | Account | Type | Origin |
-|------|---------|------|--------|
-| 1000 | Operating bank | Asset | 07 key |
-| 1050 | Stripe clearing - USD | Asset | 07 key (USD) |
-| 1051 | Stripe clearing - CAD | Asset | New in 08 (V1, CAD balances) |
-| 1055 | Stripe reserve held | Asset | New in 08 |
-| 1060 | Undeposited funds (cash and checks) | Asset | New in 08 |
-| 1065 | Cash in transit (crew-held) | Asset | New in 08 |
-| 1090 | Payments suspense (must be zero at close) | Asset | New in 08 |
-| 1100 | Accounts receivable | Asset | 07 key |
-| 1120 | Disputed payments | Asset | 07 key |
-| 2200 | Customer deposits | Liability | 07 key |
-| 2220 | Customer credits and unapplied cash | Liability | 07 key |
-| 2300 | Tips payable | Liability | 07 key |
-| 4900 | Discounts and allowances | Contra-revenue | 07 key |
-| 4920 | Card surcharge income | Revenue | New in 08 (4910 is taken by 07's small balance adjustments) |
-| 4960 | Payment method discounts (ACH and autopay incentives) | Contra-revenue | New in 08 |
-| 6100 | Merchant fees (Stripe processing) | Expense | 07 key |
-| 6105 | Rootline application fees (pay-as-you-grow only) | Expense | Sub-account of 6100 |
-| 6110 | Dispute fees | Expense | Sub-account of 6100 (07 posts dispute fees to 6100; the sub-account keeps that roll-up) |
-| 6115 | Financing merchant fees | Expense | Sub-account of 6100 |
-| 6200 | Bad debt expense | Expense | 07 key |
-| 7100 | Realized FX gain/loss | Other income/expense | 07 key |
+| Code | Account role (09) | Account | Type | Origin |
+|------|-------------------|---------|------|--------|
+| 1000 | `operating_bank` | Operating bank | Asset | 07 key |
+| 1050 | `stripe_clearing:USD` | Stripe clearing - USD | Asset | 07 key (USD) |
+| 1051 | `stripe_clearing:CAD` | Stripe clearing - CAD | Asset | New in 08 (V1, CAD balances) |
+| 1055 | `stripe_reserve` | Stripe reserve held | Asset | New in 08 |
+| 1060 | `undeposited_funds` | Undeposited funds (cash and checks) | Asset | New in 08 |
+| 1065 | `cash_in_transit` | Cash in transit (crew-held) | Asset | New in 08 |
+| 1090 | `payments_suspense` | Payments suspense (must be zero at close) | Asset | New in 08 |
+| 1100 | `ar_control` | Accounts receivable | Asset | 07 key |
+| 1120 | `disputed_payments` | Disputed payments | Asset | 07 key |
+| 2200 | `customer_deposits` | Customer deposits | Liability | 07 key |
+| 2220 | `customer_credits` | Customer credits and unapplied cash | Liability | 07 key |
+| 2300 | `tips_payable` | Tips payable | Liability | 07 key |
+| 4900 | `discounts_allowances` | Discounts and allowances | Contra-revenue | 07 key |
+| 4920 | `card_surcharge_income` | Card surcharge income | Revenue | New in 08 (4910 is taken by 07's small balance adjustments) |
+| 4960 | `payment_method_discounts` | Payment method discounts (ACH and autopay incentives) | Contra-revenue | New in 08 |
+| 6100 | `merchant_fees` | Merchant fees (Stripe processing) | Expense | 07 key |
+| 6105 | `platform_application_fees` | Rootline application fees (pay-as-you-grow only) | Expense | Sub-account of 6100 |
+| 6110 | `dispute_fees` | Dispute fees | Expense | Sub-account of 6100 (07 posts dispute fees to 6100; the sub-account keeps that roll-up) |
+| 6115 | `financing_merchant_fees` | Financing merchant fees | Expense | Sub-account of 6100 |
+| 6200 | `bad_debt` | Bad debt expense | Expense | 07 key |
+| 7100 | `realized_fx` | Realized FX gain/loss | Other income/expense | 07 key |
 
 #### 4.17.2 Posting rules by balance transaction category
 
@@ -864,7 +864,7 @@ The Company owns its payouts. Rootline reads, explains and reconciles them, and 
 | Portal activity or prior undisputed payments from the same client/device | 10 |
 | Policy disclosure (refund, cancellation, warranty) accepted at signature | 10 |
 
-**Visa Compelling Evidence 3.0 for "fraudulent" claims [V1].** Visa's CE 3.0 rules let a merchant answer a "I did not make this payment" dispute by showing at least two prior undisputed transactions with the same cardholder, roughly 120-365 days old, that share key data elements (such as IP address, device ID, or customer account login) with the disputed one (verify current Visa thresholds). Rootline's portal records login account, device fingerprint and IP on every payment session. So for a weekly-mowing client paying through the portal for two seasons, the CE 3.0 packet is assembled automatically: prior payment IDs, matching elements and dates.
+**Visa Compelling Evidence 3.0 for "fraudulent" claims [V1].** Visa's CE 3.0 rules let a merchant answer an "I did not make this payment" dispute by showing at least two prior undisputed transactions with the same cardholder, roughly 120-365 days old, that share key data elements (such as IP address, device ID, or customer account login) with the disputed one (verify current Visa thresholds). Rootline's portal records login account, device fingerprint and IP on every payment session. So for a weekly-mowing client paying through the portal for two seasons, the CE 3.0 packet is assembled automatically: prior payment IDs, matching elements and dates.
 
 **Dispute prevention [V1]:** recognizable descriptors with Company phone, photo receipts after every paid Visit, autopay pre-notifications, one-click "Request a credit" in the portal (so unhappy clients ask the Company before their bank), and anomaly alerts for unusual refund/dispute patterns. **Card-network pre-dispute alerts [V2]:** evaluate network programs that let a merchant refund or share order details before a chargeback is filed (for example, Visa's Order Insight and Rapid Dispute Resolution, and Mastercard's Ethoca alerts), available through Stripe or partners (verify availability and per-alert cost for small merchants). A pre-dispute refund avoids the dispute fee and does not count toward the Company's dispute ratio.
 
@@ -1978,6 +1978,9 @@ erDiagram
 | `payments.client.payment_hold` / `.payment_hold_released` | client, days past due | Scheduling/dispatch ([04](04-scheduling-dispatch-routing.md)) |
 | `payments.tip.allocated` | visit, employees, amounts | Payroll exports ([15](15-team-hr-payroll.md)), crew app |
 | `payments.deposit.received` | proposal, job | Jobs, scheduling, purchasing |
+| `payments.approval.requested` / `.decided` [V1] | approval request, approver, decision | Customer portal notifications, CRM timeline |
+| `payments.account.balance_negative_forecast` | account, projected shortfall, date | Owner alerts, cash-flow forecast ([18](18-reporting-analytics.md)) |
+| `payments.fraud.card_testing_detected` | link or tenant scope, attempts, containment action | Owner alerts, platform fraud board ([19](19-platform-admin-portal.md)) |
 
 **Consumed:**
 
@@ -2060,6 +2063,8 @@ All AI features run through the AI Gateway ([17](17-ai-copilot-automation.md)), 
 | AI8 | **Deposit and method nudges** | Suggests deposit size from material cost and client risk; recommends ACH for large invoices; suggests offering financing when proposal total and client signals fit. | Suggestions only; fair-lending-safe (no protected-class signals; lender decides credit). | [V1] |
 | AI9 | **Cash-flow forecast** | Projects payouts for the next 14-60 days from scheduled autopay, open invoices, payment propensity, weather-driven visit changes ([04](04-scheduling-dispatch-routing.md)) and seasonality. | Shown with confidence bands; feeds [18](18-reporting-analytics.md). | [V2] |
 | AI10 | **Compliance rule watcher** | Monitors surcharge and payment-law sources and drafts proposed rule-set changes for platform staff review. | Never auto-publishes rules; platform_owner approval. | [V2] |
+| AI11 | **Switch Kit matcher** | Matches the previous processor's customer export (names, emails, billing addresses, last 4 and expiry) to Rootline Clients and Properties, proposing merges for "Bob and Linda Smith" vs "Smith, Robert" at the same address. | Human confirms every match below 0.9 confidence; never attaches a payment method to a Client without a matched contact identity. | [V1] |
+| AI12 | **Dispute outcome learning** | Learns from closed disputes per reason code which evidence elements correlate with wins for this Company and suggests capture changes ("add a photo of the gate latch for back-yard visits"). | Suggestions only; evidence score formula stays deterministic and versioned. | [V2] |
 
 ---
 
@@ -2120,7 +2125,7 @@ All AI features run through the AI Gateway ([17](17-ai-copilot-automation.md)), 
 | E23 | Company has Stripe's automated dispute handling on and Rootline also drafted a packet | Rootline detects existing evidence (`submission_count` > 0 or `has_evidence`), does not submit, and offers to attach its Service Evidence Report to the Company's Stripe response manually before `due_by`. |
 | E24 | Card-testing attack: 300 attempts in 20 minutes against one HOA statement link | Link locks after 5 failures; tenant-wide one-time-code mode switches on at 20 declines in 10 minutes; Radar blocks; owner gets a plain-English incident summary with the fee impact; platform admin sees it on the fraud board ([19](19-platform-admin-portal.md)). |
 | E25 | December: a mowing-only Company refunds $8,400 of unused season prepayments while incoming payments are near zero | Rootline warns 3 days ahead that refunds will push the Stripe balance negative; Stripe may debit the Company's bank (4.17.5); ledger posts the debit and matches the bank line. |
-| E26 | Commercial client pays through its AP platform with a single-use virtual card for 11 invoices | Office keys the payment as a card payment via a pay link the AP platform can open, or records it through the manual provider if the AP platform charges elsewhere; allocations come from the remittance email parsed by AI5; Level 2/3 data [V2] reduces the interchange where eligible. |
+| E26 | Commercial client's AP platform pays 11 invoices with a single-use virtual card | The office gives the AP platform a Rootline statement pay link (the card is charged through Stripe like any other card), or, if the AP platform pushes funds by ACH or check instead, records the receipt through the manual provider. Allocations come from the remittance email parsed by AI5. Level 2/3 data [V2] can lower interchange where eligible. |
 | E27 | Client pays a deposit, then the Company cannot start for 8 weeks because of a stone shortage | Deposit stays in 2200; client sees the delay notice and materials status in the portal; if the client cancels, refund follows the signed deposit terms with `owner` approval; the evidence packet is ready if the client disputes instead. |
 | E28 | Owner leaves Rootline mid-season | 4.25 churn rules: export package, 90 days of offline instructions on pay pages, Stripe access deauthorized after the window; saved methods remain chargeable from the Company's own Stripe Dashboard. |
 

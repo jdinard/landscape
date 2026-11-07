@@ -382,7 +382,7 @@ A credit is a unit of AI work that is published and stable. The raw provider cos
 | Estimate or proposal draft from site notes, photos or voice memo | 8 | Includes line-item mapping to the Price Book | [MVP] |
 | Photo mockup set (4 variants, ~1 MP) | 40 | Segmentation + depth + image generation. Plants constrained to the Region palette | [MVP] |
 | Mockup refinement (inpaint or edit one area) | 10 | | [MVP] |
-| High-resolution render or upscale (presentation-grade) | 10 | | [V1] |
+| High-resolution render or upscale (presentation-grade, 2K-4K) | 20 | Raised from an earlier draft of 10 credits: a 4K image from a premium image model can cost about $0.24 raw, more than 10 credits earn at pack prices (7.4) | [V1] |
 | Dimension-aware AI layout (3 to-scale options into Design Studio) | 60 | Uses the property dimensions the user entered and Plant KB constraints | [V1] |
 | Plant palette recommendation for a bed or design | 3 | | [MVP] |
 | Document understanding (vendor bill, receipt, PO) per page | 2 | Feeds AP in the [Ledger](09-accounting-ledger-integrations.md) | [V1] |
@@ -464,7 +464,7 @@ Add-on rules:
 | Upgrades | Immediate. Prorated charge. New entitlements effective instantly | [MVP] |
 | Downgrades | Effective at the end of the current period (monthly) or the term (annual). Entitlement check runs first and lists what will go read-only (e.g., "2 of your 3 designers lose edit access") | [MVP] |
 | Annual seat bank | On annual plans, removing a paid office seat mid-term creates a **seat credit** usable for a future seat in the same term. No refunds | [V1] |
-| Winter Mode | Monthly plans only. Up to 4 months in any rolling 12. Base price drops to 25% of plan list. Office seats limited to 2 editable users (others read-only). Field app off (except Snow module users). **Invoicing, autopay, portal, client payments, ledger, CRM read and inbox stay on.** No new proposals, designs or AI generation (included credits pause). One-click resume, prorated | [V1] |
+| Winter Mode | Monthly plans only. Up to 4 months in any rolling 12. Base price drops to 25% of plan list. Office seats limited to 2 editable users (others read-only, and extra office seats are not billed while paused). Field app off (except Snow module users). **Invoicing, autopay, portal, client payments, ledger, CRM read and inbox stay on.** No new proposals, designs or AI generation (included credits pause). One-click resume, prorated | [V1] |
 | Pause vs cancel | The cancel flow always offers Winter Mode (if eligible) and Archive. Cancellation must be completable online in the same number of steps as signup or fewer (see 14.3) | [MVP] |
 | Refunds | Monthly: none, cancel any time effective end of period. Annual: 30-day money-back guarantee from first annual charge. After that, no refunds except where law requires | [MVP] |
 | Price Lock Promise | Annual and annual-commit customers keep their list price for 24 months from first subscription. After that, increases are capped at 7% per year with at least 90 days' notice by email and in-app. Monthly customers get 60 days' notice. Grandfathered plan versions are honored in the entitlement engine | [MVP] |
@@ -572,7 +572,7 @@ Privacy and antitrust guardrails (all [V1], required before any external sale):
 
 #### 5.3.2 Lead qualification and routing rules
 
-1. **Qualification** (AI-assisted, with human-readable reasons): project scope (install vs maintenance), budget band, timeline, property ownership confirmed (self-attested + parcel match), contact verified (SMS one-time code), consent captured (express written consent for contact by up to N named Companies, logged with timestamp, IP and consent text version).
+1. **Qualification** (AI-assisted, with human-readable reasons): project scope (install vs maintenance), budget band, timeline, property ownership confirmed (self-attested + parcel match), contact verified (SMS one-time code), consent captured (express written consent for contact by up to N named Companies, logged with timestamp, IP and consent text version). The FCC's 2023 "one-to-one consent" rule for lead generators was vacated by a federal appeals court in January 2025 (verify current status), so naming each receiving Company is not a federal requirement today. We do it anyway: it is the strictest common standard, some states and carriers expect it, and it is the honest version of the product.
 2. **Eligibility of Companies:** Grow+ plan, Match enabled, service area polygon covers the property, service lines match the scope, response SLA ≥ 85% over the last 30 days, client review rating ≥ 4.3 (from [Marketing](16-marketing-growth-communications.md) review data, when available), license/insurance attested and documented.
 3. **Routing:** offered **exclusively to 1 Company** for 4 business hours, then, if not accepted, to **at most 2** more Companies (never more than 3 in total). The homeowner sees which Companies received it and can pick.
 4. **Ranking factors:** distance/route density (fits existing routes for maintenance leads), capacity (backlog weeks from [Scheduling](04-scheduling-dispatch-routing.md)), design-build capability for install leads, historical acceptance and win rates, homeowner preferences.
@@ -588,7 +588,30 @@ Privacy and antitrust guardrails (all [V1], required before any external sale):
 
 Guardrails: free replacement or credit for invalid leads (wrong contact, not the owner, outside service area, duplicate) when disputed within 7 days. AI pre-screens disputes and `platform_support` decides. Lead fees appear on the Company's Rootline invoice as a separate line. Companies set monthly lead budgets and pause anytime.
 
-> **Competitive edge - lead quality.** Traditional home-service lead marketplaces have been widely criticized by contractors for selling the same lead to several competitors. Rootline Match sells exclusive first-look leads, limits each lead to at most 3 Companies, refunds invalid leads, and the lead arrives **with a to-scale draft design, photos, dimensions and a stated budget**. Jobber, LMN and Aspire are back-office tools that do not run a design-led homeowner funnel in this form.
+> **Competitive edge - lead quality.** Traditional home-service lead marketplaces have been widely criticized by contractors for selling the same lead to several competitors. Rootline Match sells exclusive first-look leads, limits each lead to at most 3 Companies, refunds invalid leads, and the lead arrives **with a to-scale draft design, photos, dimensions and a stated budget**. Jobber, LMN and Aspire are back-office tools that do not run a design-led homeowner funnel in this form. Design services such as Yardzen sell a homeowner a picture and then a referral to an installer ([R2](research/R2-landscape-specific-platforms.md) section 11); Rootline Match hands the installer the editable design itself.
+
+#### 5.3.4 Rootline Home unit economics and guardrails (estimates) [V1]
+
+The base case (7.7) books $2.8M of lead revenue and $0.7M of Homeowner Plus revenue at Y5. This table shows what the funnel must look like for that to be true and what it costs Rootline, because the free app is paid for entirely by Rootline.
+
+| Funnel step or cost line (Y5, base case) | Assumption | Result |
+|---|---|---|
+| Homeowners creating at least 1 mockup in the year | Back-solved from the steps below | about 1.3M (roughly 1-2% of US and Canadian owner-occupied homes per year; estimate) |
+| "Get it installed" request rate | 6% of homeowners with a mockup (KPI in section 15) | about 78,000 requests |
+| Passes verification, ownership and scope checks | 85% | about 66,000 qualified leads |
+| Accepted by at least one eligible Company (up to 3 offers) | 90%; the rest hit supply gaps and feed the sales waitlist | about 60,000 accepted leads |
+| Lead revenue | $55 average fee x 85% net of refunds | about $2.8M |
+| AI cost of free usage | 2.5 mockup sets per homeowner at about $0.20 raw each, plus plant and budget calls | about $0.55-$0.75M |
+| Paid homeowner acquisition | Most traffic is organic (Plant Finder SEO, shared designs, Company referrals); paid budget capped | about $0.5M |
+| Verification, parcel checks, dispute handling, support | SMS codes, parcel lookups, about 2 FTE | about $0.2M |
+| **Contribution after direct costs** | Lead revenue + Plus $0.7M minus the lines above (direct costs about $1.25-$1.45M) | **about $2.05-$2.25M (about 59-64%)** |
+| Cost per accepted lead | Direct costs / accepted leads | **about $20-$25** against about $47 net fee |
+
+Guardrails that keep this from becoming a cash sink:
+- **Render budget per homeowner:** free tier capped at 3 mockup sets per month at preview resolution (about 0.5 MP). Full resolution only for Plus or after a "Get it installed" request. A homeowner who hits the cap sees the plant finder and saved designs, not an error.
+- **Verification before cost:** anonymous users get 1 preview set. Phone verification unlocks the rest. Automated traffic is rate-limited per device and IP.
+- **Kill switch per Region:** if a Region's trailing-30-day cost per accepted lead exceeds $35 (estimate), new free renders in that Region drop to 1 set per month until supply (eligible Companies) catches up. A Region with no eligible Companies runs the plant finder only.
+- **Channel-conflict rule:** Rootline never markets Rootline Home or Match to an existing client of a Company, and never uses a Company's client data to find homeowners (risk register, 14.6).
 
 ### 5.4 Partner ecosystem
 
@@ -699,10 +722,11 @@ The brief says to start "where the operator's plant knowledge is strongest". The
 |---|---|---|---|---|
 | **Jobber** | Brand, simplicity, huge ecosystem, polished mobile app, broad home-services base | Landscape depth (design studio, plant KB, production-rate estimating, chemical logs, snow), built-in GL, zero payment markup, active field seats | "How do you produce a to-scale design and takeoff today?" "Where do your books live and who reconciles?" "What do you pay per user in July vs January?" | Migration concierge + up to 3 months switching credit |
 | **Housecall Pro** | SMB marketing features, home-services breadth | Same as above. Landscape-native programs and recurring Service Agreements | "Can it run a season-long 5-step lawn program with chemical records?" | Same |
-| **LMN** | Landscape estimating and budgeting methodology, education content, established in the industry | Integrated design + AI mockups, built-in GL (no QuickBooks dependency), modern portal, published pricing, no implementation fee | "What does your client see when you present a design?" "How many tools between estimate and books?" | Free LMN import (production rates, price book, clients) |
+| **LMN (Granum)** | Landscape estimating and budgeting methodology, education content, established in the industry. Now one company with SingleOps | Integrated design + AI mockups, built-in GL (no QuickBooks dependency), modern portal, published pricing, no implementation fee, a payments account the Company owns | "What does your client see when you present a design?" "How many tools between estimate and books?" "If you left, would your saved cards and payout history come with you?" | Free LMN import (budgets, production rates, price book, clients). File-based, since LMN has no public REST API per a third-party report ([R2](research/R2-landscape-specific-platforms.md)) |
 | **Aspire** | Enterprise commercial depth, job costing, scale | Time-to-value (days, not months), SMB price, design-led residential sales, self-serve | "How long did implementation take and what did it cost?" | Not targeted at MVP. Compete in S4 at V1 |
-| **SingleOps / Arborgold** | Tree care and design-build workflows | Design studio + AI + plant KB + Ledger, broader service lines | "How are your designs and plant lists created?" | Import |
-| **Service Autopilot / Real Green** | Automation-heavy maintenance and lawn-care programs | Modern UX, design-build, Ledger, portal | "How much time do you spend maintaining automations?" | Import |
+| **SingleOps (Granum) / Arborgold** | Tree care and design-build workflows, strong proposals and client portal | Design studio + AI + plant KB + Ledger, broader service lines, no roadmap uncertainty from a post-merger product convergence | "How are your designs and plant lists created?" "What has Granum told you about SingleOps' roadmap next to LMN?" | Import (SingleOps export importer at V1) |
+| **Service Autopilot (Xplor) / Real Green (WorkWave)** | Automation-heavy maintenance and lawn-care programs, deep chemical-program heritage | Modern UX, design-build, Ledger, portal, choice of processor (your own Stripe) | "How much time do you spend maintaining automations?" "Did your processing rate change after the acquisition?" | Import + card re-collection campaign kit with an autopay incentive |
+| **Copilot CRM** | All-in-one lawn and landscape positioning for small residential firms (verify current packaging) | Design studio + plant KB + Ledger + estimating depth | "How do you price a paver patio or a planting plan today?" | Import |
 | **SynkedUP** | Coaching-led estimating, strong reviews on value | Integrated design + Ledger + crew app + AI at lower per-user cost | "What do you pay per user, and what's included?" | Import |
 | **Spreadsheets + QuickBooks + CAD** | "Free", familiar | Everything connected, less double entry | "How many hours a week does your office spend re-typing?" | Free onboarding |
 
@@ -717,10 +741,10 @@ Full battlecards live in the sales enablement wiki and are refreshed quarterly a
 | **YouTube and creators** | Sponsor lawn/landscape business channels (business-ops, design-build, Spanish-language channels). "Build a business on Rootline" series with real Companies. Affiliate program | 12% | Medium ($800-$1,500) | [MVP] |
 | **Trade shows** | Equip Exposition (Louisville, KY, typically October; verify dates), MANTS, CENTS, Mid-Am, Landscape Ontario Congress, ProGreen EXPO, state association shows. Booth demo: "Bring a photo of a client's yard, leave with a mockup and proposal." Speaking slots on pricing and margins | 12% | Medium-high ($1,500-$4,000) | [MVP] beachhead shows, [V1] national |
 | **Facebook groups and communities** | Founder and team participate as helpful practitioners in owner-run lawn and landscape business groups, Reddit (r/landscaping, r/lawncare) and LawnSite. Share free tools, never spam. Host a Rootline community (forum + monthly live Q&A) | 5% | Low | [MVP] |
-| **Switching campaigns + migration concierge** | Targeted campaigns around competitor price changes and renewal seasons. "Switch by Feb 15, live by spring" with the Spring-Ready Guarantee | 8% | Medium | [MVP] |
+| **Switching campaigns + migration concierge** | Targeted campaigns around competitor price changes and renewal seasons. "Switch by Feb 15, live by spring" with the Spring-Ready Guarantee. **Consolidation triggers** (section 2.1): when a vendor forces a payments re-onboarding (LMN Pay's move to Stripe), merges product lines (Granum), or changes processor terms (Service Autopilot), run a dated campaign: "You have to re-onboard payments anyway. Re-onboard to an account you own." Each campaign ships with the matching importer and a card re-collection kit (portal link, autopay incentive template) | 8% | Medium | [MVP] |
 | **Partners** (associations, CPAs, distributors, coaches) | Section 5.4 | 15% | Low-medium (rev share) | [V1] |
 | **Paid search and social** | Competitor and category keywords ("landscape design software", "landscaping estimating software"), retargeting of calculator users | 6% | Higher ($1,200-$2,500) | [MVP] limited |
-| **Outbound** | Inside sales to ICP lists built from public license and association data, with **email-first, compliant** outreach (CAN-SPAM; no cold texting or auto-dialed calls without consent under TCPA) | 5% | High ($2,500-$5,000) | [V1] |
+| **Outbound** | Inside sales to ICP lists built from public license and association data, with **email-first, compliant** outreach (CAN-SPAM; no cold texting or auto-dialed calls without consent under TCPA). In Canada, CASL requires consent for commercial email, so Ontario outbound runs through association and partner channels instead (14.3) | 5% | High ($2,500-$5,000) | [V1] |
 | **Customer referrals** | Give one month, get one month. Referral link in-app and in client-facing emails ("Powered by Rootline" footer, which Pro can remove) | 13% | Very low | [MVP] |
 
 ### 6.6 Seasonality of buying and the GTM calendar
@@ -827,6 +851,52 @@ flowchart LR
 | 4 | Cohort-based price tests on **new** regions or seasons (e.g., Grow at $249 vs $279 annual in different launch windows) | V1 | Elasticity |
 | 5 | AI credit consumption analysis: per-action cost vs credit price; credit-pack attach | Monthly | Credit prices, included allotments |
 | 6 | Win/loss interviews, 10 per month | Ongoing | Packaging fixes |
+| 7 | Pay-as-you-grow holdout test: offer it to a random half of eligible Starter trials in one launch window | V1 | Keep it only if Starter gross adds rise by about 4% or more (5.1.2) |
+| 8 | "2-minute bill test" in moderated usability sessions with 12 owners: can they predict their July and January bill from the pricing page alone? | Before GA, then after every packaging change | Pricing-page copy and calculator defaults (risk register, 14.6) |
+
+### 6.11 Launch sequence and stage gates
+
+The GTM expands only when the previous stage proves its numbers. Each gate is a decision for `platform_owner`, reviewed with the cohort dashboards in [19](19-platform-admin-portal.md).
+
+```mermaid
+flowchart LR
+  S0["Season 0: design-partner beta (20 Companies, 2 clusters)"] --> G0{"Gate 0 met?"}
+  G0 -- "Yes" --> S1["Season 1: GA in 2 beachhead clusters (Founding 100)"]
+  G0 -- "No" --> S0
+  S1 --> G1{"Gate 1 met?"}
+  G1 -- "Yes" --> S2["Season 2: add Ontario cluster, partners, national shows, Match pilot"]
+  G1 -- "No" --> FIX["Fix packaging or onboarding, repeat Season 1 playbook"]
+  FIX --> S1
+  S2 --> G2{"Gate 2 met?"}
+  G2 -- "Yes" --> S3["Season 3: US and Canada broad, commercial S4 push, Enterprise AE"]
+  G2 -- "No" --> S2
+```
+
+| Gate | Pass criteria (all required; proposed) | If missed |
+|---|---|---|
+| **Gate 0** (leave beta) | 15 of 20 design partners live through one full month-end close. Median migration ≤ 21 days. Crew app crash-free sessions ≥ 99.5%. At least 8 partners would pay list price (day-60 interview). No P1 data-integrity bug open | Extend beta by one season. Do not launch into a spring with a broken migration |
+| **Gate 1** (expand regions) | ≥ 120 paying Companies in the two clusters. Trial-to-paid ≥ 12% overall and ≥ 25% for ICP ≥ 70. Grow CAC payback ≤ 12 months on actual spend. 12-month logo retention forecast ≥ 80% for Grow. Design-led proposal share ≥ 30% | Stay in two clusters. Fix the weakest metric before adding a Region |
+| **Gate 2** (go broad) | Partner-sourced share of new ARR ≥ 15%. NRR ≥ 105% on the first full cohort. Plant KB "excellent" in at least 4 Regions. Onboarding capacity proven at 2x steady state (6.6) | Add Regions one at a time instead of going broad |
+
+### 6.12 GTM team and capacity plan (base case, estimates)
+
+The base case (7.7) only works if acquisition spend is staffed realistically. This table builds the Y1-Y3 go-to-market team from the gross-add targets and is the bottom-up source of the blended CAC used in 7.7. Loaded annual costs are estimates: AE $140k, SDR $85k, onboarding specialist $75k, seasonal onboarding specialist about $6.5k per month for 4 months, content/SEO or community lead $110k.
+
+| | Y1 | Y2 | Y3 |
+|---|---|---|---|
+| Gross new logos (from 7.7) | about 400 | about 1,170 | about 2,440 |
+| Sales-assisted share (Grow+ with ICP ≥ 70, about 45% of Grow+ deals) | about 30%, about 120 deals | about 29%, about 340 deals | about 29%, about 700 deals |
+| Account executives (about 50 closed deals per AE per year) | 2 + founder | 7 | 14 |
+| SDRs (1 per 2 AEs) | 1 | 4 | 7 |
+| Onboarding specialists, core + seasonal (Jan-Apr) | 3 + 3 | 6 + 7 | 12 + 14 |
+| CSMs: named (Pro and Enterprise) + pooled (Grow) | 1 + 0 | 3 + 2 | 8 + 5 |
+| Partner managers | founder | 2 | 4 |
+| Content, SEO, community and creator program | 2 | 4 | 6 |
+| Events, creators, paid, partner commissions, referral credits, tools | about $0.30M | about $0.68M | about $1.47M |
+| **Fully loaded acquisition spend (incl. onboarding, per the CAC definition in 7.1)** | **about $1.12M** | **about $3.07M** | **about $5.95M** |
+| **Implied blended CAC** | **about $2,800** | **about $2,620** | **about $2,440** |
+
+CSMs are post-sale and counted in COGS (7.3), not CAC; they are listed here so the hiring plan is in one place. Two consequences for the model: (1) Y1 is a founder-led, inefficient year, and acquisition spend exceeds recognized revenue; (2) blended CAC falls only as SEO, referrals, partners and the homeowner app take share from AEs and trade shows. If the channel mix in 6.5 does not shift that way by Y3, CAC stays near $2,600 and the base case needs about 6-13% more acquisition spend in Y3-Y5 (estimate).
 
 ---
 
@@ -869,11 +939,11 @@ Blended ARPA at the Y3 mix: 0.36 × 95 + 0.45 × 340 + 0.16 × 860 + 0.03 × 3,2
 
 | COGS line | Starter | Grow | Pro | Enterprise | Notes / assumptions |
 |---|---|---|---|---|---|
-| Processing of Rootline's own SaaS invoices (Stripe Billing + card/ACH fees) | $3.50 | $8.50 | $13 | $20 | Assumes card-heavy Starter (about 3.7% all-in) and ACH-heavy annual Pro/Ent. Stripe Billing and processing rates must be verified for Rootline's account |
+| Processing of Rootline's own SaaS invoices (Stripe Billing + card/ACH fees) | $3.50 | $8.50 | $13 | $20 | Assumes card-heavy Starter (about 3.7% all-in: card 2.9% + $0.30 plus a Stripe Billing fee of about 0.7% of billed volume on pay-as-you-go pricing, as of 2025, verify) and ACH-heavy annual Pro/Ent. Rates must be verified, and negotiated, for Rootline's account |
 | Cloud infra (compute, Postgres+PostGIS, Redis, Temporal, object storage, CDN, backups, observability) | $6 | $18 | $45 | $250 | Photo storage is the biggest per-tenant driver. Enterprise includes allocated dedicated resources |
 | Maps, geocoding, routing APIs, parcel data | $3 | $10 | $25 | $90 | Map tiles, satellite, geocoding, route matrix calls, Regrid-class parcel licensing amortized |
 | AI inference (included credits + receptionist where included) | $1 | $8 | $32 | $120 | See 7.4. Assumes 50-60% utilization of included credits |
-| SMS and voice (included allotments) | $3.30 | $18 | $57 | $150 | Assumes about $0.011 all-in per segment incl. carrier fees (estimate; verify) and 60-65% utilization |
+| SMS and voice (included allotments) | $3.30 | $18 | $57 | $150 | Assumes about $0.011 all-in per segment incl. carrier fees (estimate; verify) and 60-65% utilization. Click-to-call minutes are assumed at about $0.014/min and under 15% utilization, which adds about $2/mo on Grow and is inside this estimate's rounding. 10DLC one-time fees absorbed on annual Grow/Pro (4.4) are counted in CAC, not here |
 | Bank-feed aggregator | $1 | $3 | $6 | $20 | Plaid-class per-connection fees (estimate; verify contract) |
 | Other per-tenant third-party (e-sign, email, push, error tracking seats, tax engine) | $1 | $3 | $7 | $20 | |
 | Support and run-time CS (allocated) | $8 | $22 | $40 | $180 | Excludes pre-sale onboarding (counted in CAC) |
@@ -885,7 +955,7 @@ Blended ARPA at the Y3 mix: 0.36 × 95 + 0.45 × 340 + 0.16 × 860 + 0.03 × 3,2
 
 ### 7.4 AI cost model (per action, estimates)
 
-Model prices used: Anthropic API list prices as of October 2026 (verify before use). Claude Opus 5.5: $4 per million input tokens / $20 per million output tokens. Claude Sonnet 5.5: $2 / $10, with cache reads at $0.20 per million. Claude Haiku 5.5: $0.10 / $0.50 for prompts up to 100K tokens. Batch processing at 50% of list ([Anthropic pricing](https://www.anthropic.com/pricing)). Image generation and editing costs are **estimates** of $0.02-$0.08 per generated image across hosted FLUX-family, Gemini image and OpenAI image endpoints as of late 2026 (verify per vendor and resolution). The AI Gateway picks models per task ([17-ai-copilot-automation.md](17-ai-copilot-automation.md)).
+Model prices used: Anthropic API list prices as of October 2026 (verify before use). Claude Opus 5.5: $4 per million input tokens / $20 per million output tokens, cache reads $0.20 per million. Claude Sonnet 5.5: $2 / $10, cache reads $0.20 per million. Claude Haiku 5.5: $0.10 / $0.50 for prompts up to 100K tokens ($0.50 / $2.50 beyond 100K, so copilot prompts are kept under that line). Batch processing at 50% of list ([Anthropic pricing](https://www.anthropic.com/pricing)). Image generation and editing costs are **estimates** of $0.02-$0.08 per generated image at preview resolution (about 1 MP) across hosted FLUX-family, Gemini image and OpenAI image endpoints as of late 2026; presentation-grade 2K-4K images cost more (about $0.10-$0.24 per image per the vendor table in [11](11-ai-design-mockups.md); verify per vendor and resolution). The AI Gateway picks models per task ([17-ai-copilot-automation.md](17-ai-copilot-automation.md)).
 
 | Action | Credits | Credit revenue at $0.017-$0.025/credit | Raw cost estimate | Gross margin range | Cost drivers |
 |---|---|---|---|---|---|
@@ -942,15 +1012,19 @@ Years are counted from MVP general availability (see [24-roadmap-feature-catalog
 | Rootline Match lead revenue (run-rate) | - | $0.15M | $0.80M | $1.80M | $2.80M |
 | Homeowner Plus subscriptions | - | - | $0.10M | $0.35M | $0.70M |
 | Data products (Plant API + Pulse) | - | - | $0.20M | $0.60M | $1.20M |
-| Pay-as-you-grow application fees | - | $0.10M | $0.40M | $1.00M | $1.70M |
+| Pay-as-you-grow net effect (application fees minus the subscription discount; 5.1.2) | - | about $0.00M | -$0.02M | -$0.04M | -$0.06M |
 | Services (paid migrations, premium success, implementer marketplace) | $0.05M | $0.20M | $0.50M | $0.80M | $1.00M |
-| **Total run-rate revenue** | **$1.33M** | **$6.41M** | **$18.17M** | **$36.95M** | **$62.12M** |
+| **Total run-rate revenue** | **$1.33M** | **$6.31M** | **$17.75M** | **$35.91M** | **$60.36M** |
+| Recognized revenue in the year (approx. average of opening and closing run-rate) | $0.67M | $3.82M | $12.03M | $26.83M | $48.14M |
 | Blended monthly logo churn (assumption) | 2.5% | 2.2% | 2.0% | 1.8% | 1.7% |
 | Approx. gross new logos needed | about 400 | about 1,170 | about 2,440 | about 3,790 | about 5,080 |
-| Blended CAC (assumption) | $1,500 | $1,900 | $2,100 | $2,200 | $2,300 |
-| Implied acquisition spend | $0.60M | $2.22M | $5.12M | $8.34M | $11.68M |
+| Blended CAC (built bottom-up in 6.12 for Y1-Y3) | $2,800 | $2,620 | $2,440 | $2,350 | $2,300 |
+| Implied acquisition spend (incl. onboarding) | $1.12M | $3.07M | $5.95M | $8.91M | $11.68M |
+| Acquisition spend as % of recognized revenue | about 167% | about 80% | about 49% | about 33% | about 24% |
 
-How the derived rows were computed: gross new logos ≈ net adds + (average paying Companies in year × blended monthly churn × 12). Example for Y3: average (1,300 + 3,200)/2 = 2,250; churned ≈ 2,250 × 2.0% × 12 = 540; gross adds ≈ 1,900 + 540 = 2,440. Lead revenue at Y5 assumes 60,000 accepted leads/year × $55 average × 85% net of refunds ≈ $2.8M. Pay-as-you-grow at Y5 assumes 15% of 9,500 Companies × about $1,200/year in fees ≈ $1.7M.
+How the derived rows were computed: gross new logos ≈ net adds + (average paying Companies in year × blended monthly churn × 12). Example for Y3: average (1,300 + 3,200)/2 = 2,250; churned ≈ 2,250 × 2.0% × 12 = 540; gross adds ≈ 1,900 + 540 = 2,440. Lead revenue at Y5 assumes 60,000 accepted leads/year × $55 average × 85% net of refunds ≈ $2.8M; the homeowner funnel behind that number is in 5.3.4. Pay-as-you-grow at Y5 assumes 20% of Starter logos opt in (9,500 × 36% × 20% ≈ 684 Companies), each processing about $4,500/month online (below break-even, because of the switch-back nudge): fees ≈ $270/year against a $360/year discount, so the net is about -$90 × 684 ≈ -$0.06M. Subscription ARR is computed at list price, so the discount appears only on this line.
+
+**Corrections made in the November 2026 review.** An earlier draft booked $1.7M of pay-as-you-grow fees at Y5 by assuming opt-in Companies paid about $1,200/year in fees. That contradicts the plan's own switch-back nudge (a Company paying that much would be told to leave the plan), so it was replaced with the net line above. The same draft used a blended CAC of $1,500-$2,300, which was below the tier-mix-weighted CAC implied by the ceilings in 7.5 and could not pay for the team in 6.12; the CAC row is now built bottom-up. Net effect: Y5 total run-rate falls from about $62.1M to about $60.4M, and Y1-Y4 acquisition spend rises by $0.3M-$0.9M per year. Subscription ARR is unchanged.
 
 **Conservative and aggressive cases**
 
@@ -963,7 +1037,7 @@ How the derived rows were computed: gross new logos ≈ net adds + (average payi
 | Aggressive: paying Companies | 600 | 2,500 | 6,000 | 11,500 | 18,000 |
 | Aggressive: blended ARPA | $320 | $400 | $440 | $480 | $520 |
 | **Aggressive: subscription ARR** | **$2.30M** | **$12.00M** | **$31.68M** | **$66.24M** | **$112.32M** |
-| Aggressive: total incl. other lines (about 10-12% uplift from Y3) | $2.35M | $12.50M | $34.50M | $73.00M | $126.00M |
+| Aggressive: total incl. other lines (about 10-12% uplift from Y3) | $2.35M | $12.50M | $34.85M | $73.50M | $125.80M |
 
 **What has to be true:**
 
@@ -974,6 +1048,9 @@ How the derived rows were computed: gross new logos ≈ net adds + (average payi
 | Share of logos on Grow or above | 50% | 64% | 70% |
 | Homeowner app contribution to new logos by Y3 | 3% | 10% | 20% |
 | Regions at "excellent" Plant KB quality by Y3 | 4 | 8 | 15 |
+| Homeowners creating at least 1 mockup in Rootline Home in Y5 (5.3.4) | about 0.5M | about 1.3M | about 2.5M |
+| Starter logos on pay-as-you-grow at Y5 (net effect near zero in every case) | 10% | 20% | 30% |
+| Blended CAC at Y3 (6.12) | about $2,900 | about $2,440 | about $2,100 |
 | Geographic expansion | US beachhead + Ontario | US + Canada broad by Y3 | US + Canada by Y2, English-speaking international pilots by Y4 ([Moonshots](23-innovation-moonshots.md)) |
 
 TAM and SAM sizing (number of US and Canadian landscaping firms by employee band) belongs in [01-market-landscape.md](01-market-landscape.md) and must be built from official sources: US Census County Business Patterns for NAICS 561730 Landscaping Services, and Statistics Canada. Each scenario's Y5 logo count should be checked against that SAM before external use.
@@ -987,13 +1064,13 @@ TAM and SAM sizing (number of US and Canadian landscaping firms by employee band
 | AI raw costs +50% | Gross margin about -1 to -2 pts (AI is about 2-4% of revenue at included-credit utilization). Mitigated by re-routing and repricing rules in 7.4 |
 | SMS all-in cost +30% (carrier fees) | Gross margin about -1.5 pts on Grow. Mitigation: adjust included segments for new subscribers, push in-app and portal messaging over SMS |
 | CAC +30% | Grow payback 13.1 months, Pro 15.3 months. Mitigation: shift mix to partners and SEO |
-| Pay-as-you-grow uptake doubles (30%) | Net revenue per opt-in Company about +$840/year (fee about $1,200 minus about $360 subscription discount). Watch for trust perception |
+| Pay-as-you-grow uptake doubles (40% of Starter logos) | Net revenue about -$0.06M more at Y5, still roughly neutral. The plan earns its place only through conversion: at base-case uptake it must lift Starter gross adds by about 4% (about 75 more Starter logos a year at Y5, each worth about $820/year in gross profit) to cover the discount, and by about 8% at doubled uptake. Measured by the holdout test in 6.10 step 7 |
 | Zero-markup pledge removed (hypothetical 0.5% fee on all volume) | Large revenue gain, but it gives up the key differentiator. **Not recommended** |
 
 ### 7.9 Operating model implications (summary)
 
 - **Gross margin:** 72-74% at Y2, 77%+ at Y5 (targets).
-- **Sales and marketing:** about 35-45% of revenue in Y2-Y3, falling toward 25-30% by Y5 as organic, homeowner-app and partner channels scale (targets).
+- **Sales and marketing:** acquisition spend alone (7.7) exceeds recognized revenue in the founder-led Y1, is about 80% of recognized revenue in Y2 and about 50% in Y3, and falls to about 25% by Y5 as SEO, referrals, partners and the homeowner app scale. Total S&M including brand, community and partner programs runs about 5 points above those figures (targets). Investors should read Y1-Y2 as a funded build-out, not a steady state.
 - **R&D:** heavy in Y1-Y2 because of breadth (design studio, ledger, mobile offline, AI). Team plan in [24-roadmap-feature-catalog.md](24-roadmap-feature-catalog.md).
 - **Cash seasonality:** annual prepay is collected mostly Nov-Feb. Spring onboarding costs peak Feb-Apr. Plan cash with a winter-collections bias.
 
@@ -1038,7 +1115,14 @@ Dunning schedule [MVP]: Stripe Smart Retries (or a fixed retry schedule of day 1
 | 0-13 | `past_due` | Nothing (banners only) | Everything |
 | 14-29 | `restricted` | New AI generations, new campaigns, adding seats or add-ons, new Rootline Match leads | Scheduling, crew app, invoicing, client portal, **client payments**, Ledger, exports |
 | 30-59 | `suspended` | Office users read-only except invoicing, payments and AR. Crew app read-only (can view today's visits) | Client portal + client payments, exports, Ledger read |
-| 60 | `canceled` | Subscription ends | 90-day export window, then archive or purge per retention policy |
+| 60 | `canceled` | Subscription ends | 90-day export window, then archive or purge per retention policy. When reached through non-payment, the client portal stays in payments-only mode until at least day 90 after the first failed Rootline payment ([19](19-platform-admin-portal.md)), so the Company's clients can still pay open invoices into the Company's own Stripe |
+
+Dunning exceptions [MVP]:
+- **Snow carve-out:** during a forecast snow event, a `restricted` or `suspended` Company with an active snow agreement keeps crew dispatch and per-push logging for up to 72 hours per event (4.5 add-on rules; [19](19-platform-admin-portal.md)).
+- **No crew-facing billing messages:** crew users never see Rootline billing banners in any state.
+- **Grace on request:** `platform_finance` may extend `past_due` by up to 14 days once per 12 months with a reason code (for example, a stolen card).
+
+State names: the values below are `tenant_subscription.status`. [19](19-platform-admin-portal.md) maps them to the platform-level tenant lifecycle (for example `cancel_pending` = `pending_cancellation`, `canceled` = `churned`, `archive_plan` = `archived`, and `archived` here = subscription closed, data in `pending_deletion` there). Keep that mapping table in 19 as the single source when either doc changes.
 
 ```mermaid
 stateDiagram-v2
@@ -1056,10 +1140,13 @@ stateDiagram-v2
   suspended --> canceled : day 60 unpaid
   active --> winter_mode : owner schedules Winter Mode
   winter_mode --> active : resume or max 4 months reached
+  winter_mode --> past_due : invoice payment failed
   active --> cancel_pending : owner cancels at period close
   cancel_pending --> active : owner reverses cancellation
   cancel_pending --> canceled : period ends
+  canceled --> active : reactivated within 90 days
   canceled --> archive_plan : owner buys Archive plan
+  archive_plan --> active : reactivated
   canceled --> archived : 90 day export window ends
   archive_plan --> archived : Archive plan canceled
   archived --> [*]
@@ -1070,7 +1157,7 @@ stateDiagram-v2
 1. The user triggers "Generate 4 mockups". The UI shows "40 credits - balance 1,240".
 2. The AI service asks the Credit Ledger to **hold** 40 credits (fails fast if the balance is insufficient, then offers a pack purchase or a request to the owner).
 3. The AI Gateway runs the pipeline (segmentation, depth, planning, generation, QA).
-4. On success, the hold **settles** (ledger entry `consume`). On failure, it is **released** (no ledger debit). Partial agent runs settle only the steps completed.
+4. On success, the hold **settles** (ledger entry `settle`). On failure, it is **released** (no ledger debit). Partial agent runs settle only the steps completed.
 5. Usage is aggregated hourly into Stripe Billing meter events for any overage (packs are prepaid, so most usage is a ledger debit, not a meter).
 
 ```mermaid
@@ -1218,6 +1305,7 @@ The cancel flow must never take more steps than signup. The "Confirm cancellatio
 | AI credits drawer + pre-run confirmation | All AI surfaces | All office users | Cost transparency, pack purchase, budgets | [MVP] |
 | Payment pricing chooser (zero markup vs pay-as-you-grow) | Company web app | `owner` | Opt-in or out of the application fee model with a break-even view | [V1] |
 | Cancel and save flow | Company web app | `owner` | Section 8.8 | [MVP] |
+| Winter Mode scheduler | Company web app | `owner` | Schedule pause and resume, see what keeps working (9.8) | [V1] |
 | Rootline Match settings + lead inbox | Company web app | `owner`, `office_manager`, `estimator` | Service area, budget, lead acceptance, disputes | [V1] |
 | Partner portal | Partner web | Partners | Links, deal registration, commissions, assets | [V1] |
 | Rootline Home (homeowner app) | Web/PWA, later native | Homeowners | Mockups, plant finder, get it installed | [V1] |
@@ -1390,6 +1478,66 @@ Note on the preview math: the annual base is prepaid, so the August preview char
 | [Decline (reason)]                     [Accept - create lead + draft design]     |
 +---------------------------------------------------------------------------------+
 ```
+
+### 9.7 Client payments pricing chooser (owner only) [V1]
+
+The screen must make the cheaper choice obvious even when the cheaper choice earns Rootline less. It reads the Company's real trailing online volume from its own Stripe account.
+
+```text
++--------------------------------------------------------------------------------------+
+| How should Rootline charge for client payments?                     Starter, monthly  |
+|--------------------------------------------------------------------------------------|
+| Your online client payments, last 3 months:  Aug $3,940  Sep $4,610  Oct $5,120       |
+| Average: $4,557/month   Stripe fees go to Stripe either way (2.9% + 30c card, ACH less)|
+|--------------------------------------------------------------------------------------|
+|  ( ) ZERO MARKUP (standard)                 (*) PAY-AS-YOU-GROW                       |
+|      Starter $79/mo (or $69 on annual)          Starter $39/mo                        |
+|      Rootline fee on payments: 0%               + 0.5% per payment, max $10, no fee   |
+|                                                   on tips                             |
+|      At your volume: $79.00/mo                  At your volume: $39 + $22.79 = $61.79 |
+|--------------------------------------------------------------------------------------|
+|  [chart] Monthly cost vs online volume:  lines cross at about $8,000/mo (monthly)     |
+|          or about $6,000/mo (annual Starter). You are here: $4,557                    |
+|                                                                                      |
+|  If your volume passes the break-even for 2 months in a row, we will tell you and    |
+|  offer a one-click switch back. Fees appear as "application fees" in YOUR Stripe     |
+|  Dashboard, so you can check every cent.                                             |
+|                                                                                      |
+|  [ ] I understand the 0.5% fee is in addition to Stripe's fees.                      |
+|                                   [Cancel]   [Switch to Pay-as-you-grow]             |
++--------------------------------------------------------------------------------------+
+```
+
+Rules: the radio defaults to whichever option is cheaper at the Company's trailing 3-month average. The acknowledgement checkbox is required to opt in, not to opt out. The switch takes effect at 00:00 Company local time the next day and is recorded in `payment_pricing_config` with `accepted_by` ([08](08-payments-stripe.md)). Hidden for Companies on the restricted-key path.
+
+### 9.8 Winter Mode scheduler [V1]
+
+```text
++--------------------------------------------------------------------------------------+
+| Schedule Winter Mode                                        Greenway Lawn & Garden   |
+|--------------------------------------------------------------------------------------|
+| Pause from  [ Dec 1, 2027 v ]   Resume on  [ Mar 1, 2028 v ]    = 3 months           |
+| Winter Mode used in the last 12 months: 0 of 4                                       |
+|--------------------------------------------------------------------------------------|
+| YOUR BILL                     Now (Grow monthly)        During Winter Mode            |
+| Base plan                     $289.00                   $72.25  (25%)                 |
+| Extra office seats (2)        $78.00                    $0  (seats beyond 2 read-only)|
+| Snow & Ice                    -                         -  (not on this account)      |
+|--------------------------------------------------------------------------------------|
+| KEEPS WORKING                                 PAUSES                                 |
+|  [x] Invoicing, autopay, statements          [ ] Crew app (no snow module)           |
+|  [x] Client portal and client payments       [ ] New proposals and designs           |
+|  [x] Ledger, bank feeds, month-end close     [ ] AI generation (included credits     |
+|  [x] CRM (read) and unified inbox                 pause; packs stay valid)           |
+|  [x] Service Agreement billing to clients    [ ] Campaigns and Match leads           |
+|--------------------------------------------------------------------------------------|
+| Editable users in winter (pick 2):  [x] Dana (owner)  [x] Luis (office)  [ ] Kim     |
+| We'll remind you 14 days before resume to re-invite crews and check spring routes.   |
+|                                          [Cancel]   [Schedule Winter Mode]           |
++--------------------------------------------------------------------------------------+
+```
+
+Rules: monthly plans only; 4 months in any rolling 12 (4.7). The resume date can be moved earlier at any time with proration. 14 days before resume, a "Spring restart" checklist is created: re-activate field users, confirm Service Agreement start dates (first mowing round, irrigation start-ups), review the price increase letter for maintenance renewals ([07](07-invoicing-billing-contracts.md)).
 
 ---
 

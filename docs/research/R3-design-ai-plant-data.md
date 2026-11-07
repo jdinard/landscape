@@ -463,3 +463,472 @@ Per-image API costs are now small relative to the value of a design-build sale. 
 6. **Capture stack:** aerial plus parcel plus 3DEP for the lot, phone photos plus dimensions for mockups, LiDAR for close-range hardscape, video splats for premium walkthroughs. Do not use RoomPlan for yards.
 
 ---
+
+## 4. Part C: Plant data sources for a region-aware Plant Knowledge Base
+
+### 4.1 What the Plant KB needs, layer by layer
+
+Rootline's Plant KB ([12](../12-plant-knowledge-base.md)) must answer a landscaper's real question: "Will this plant, in this size, thrive at this property, look right in this design, stay within this maintenance budget, avoid harming pets or the local ecosystem, and can I buy it this month?" No single source answers that. The KB is a stack of layers, each with different best sources and license profiles.
+
+| Layer | Example fields | Best open sources | Best locked or commercial sources | Rootline must curate |
+|---|---|---|---|---|
+| 1. Identity and taxonomy | Accepted name, synonyms, family, authority, common names (EN, ES, FR) | WCVP/POWO, WFO, ITIS, USDA PLANTS symbols, Catalogue of Life | Tropicos (MBG) | Common-name localization; trade-name mapping |
+| 2. Cultivars and trade names | 'Limelight', 'Bobo', trademarked series, patents | None comprehensive | Grower and brand catalogs (Proven Winners, Bailey First Editions, Monrovia, Star Roses and Plants) | **Yes, core asset** |
+| 3. Native status and distribution | Native to L48, AK, HI, Canada provinces; state and county presence | USDA PLANTS, VASCAN, GBIF and iNaturalist occurrences | BONAP county maps (licensed), NatureServe | Ecoregion-level nativity rules |
+| 4. Climate tolerance | Hardiness zone range, heat tolerance, chill, drought, humidity | PHZM 2023 (map), NRCan zones and species range models, NOAA normals, Daymet, PRISM | AHS heat zones (copyrighted map and ratings), Sunset climate zones (copyrighted) | Zone ranges per cultivar; heat-day thresholds |
+| 5. Region performance | Thrives / good / marginal / not recommended in Region X, with notes | Regional trial reports (public but copyrighted) | Extension and botanical-garden expertise via partnership | **Yes, the Plant Region Profile** |
+| 6. Horticultural traits | Mature height and spread, form, growth rate, light, soil, pH, bloom time and color, foliage, fall color, maintenance | USDA PLANTS characteristics subset, NRCS Plant Guides, FEIS | MBG Plant Finder, NC State Toolbox, Wildflower Center, Calscape | Yes, normalized to Rootline's schema |
+| 7. Water use | Plant factor, WUCOLS category per climate region | Some state water-agency lists | WUCOLS IV (UC), regional water-wise lists | Mapping to Rootline's water budget model |
+| 8. Ecology and wildlife | Pollinator value, Lepidoptera hosts, bird value, keystone status | Some public-agency lists | NWF Native Plant Finder, Audubon, Xerces, Pollinator Partnership | Summarized wildlife badges |
+| 9. Regulatory | Federal and state noxious or invasive status, sale bans | APHIS list, state regulations (public law), USDA PLANTS noxious data | EDDMapS aggregation, UF/IFAS Assessment | **Yes, legally critical** |
+| 10. Safety | Toxicity to dogs, cats, horses, children; skin irritants; thorns | Public-domain toxicology literature | ASPCA list, NC State toxicity fields, Pet Poison Helpline | Yes, double-reviewed ([19](../19-platform-admin-portal.md)) |
+| 11. Site tolerances | Deer, rabbit, salt spray, road salt, black walnut (juglone), fire resistance, wind | Some extension lists | Rutgers deer ratings, regional fire-resistant plant lists | Yes, with regional nuance |
+| 12. Imagery and 3D | Photos by season and age, plan symbols, 3D models, render references | Wikimedia Commons, iNaturalist open data (CC0 and CC BY), USDA images | Horticopia, grower photography, Laubwerk-type 3D libraries | Yes, license-tracked per image |
+| 13. Availability and price | Who stocks it, size, quantity, price, date | None | Nursery availability lists, distributor partnerships | **Yes, network effect** ([13](../13-operations-inventory-equipment.md)) |
+
+### 4.2 Climate, geography and site layers
+
+#### 4.2.1 2023 USDA Plant Hardiness Zone Map (PHZM)
+
+- **Content.** Zones defined by the 30-year average of the annual extreme minimum winter temperature, in 10°F zones (1 to 13) split into 5°F half-zones (a and b). The 2023 edition uses 1991-2020 station data and was produced by USDA ARS with Oregon State University's PRISM Climate Group [B].
+- **Coverage and resolution.** Conterminous US, Alaska, Hawaii and Puerto Rico on a roughly 800 m (half-mile) grid [B]. The 2023 map drew on a much larger station network than the 2012 edition (roughly 13,000+ stations; verify) [B]. About half of the US shifted to the next warmer half-zone compared with 2012, and the rest stayed the same [B].
+- **Access.** An interactive map with ZIP-code lookup, plus downloadable GIS data (GeoTIFF and shapefile grids, plus ZIP-code-to-zone tables) distributed through PRISM [B]. No real-time API is needed: ingest the grid once, then rasterize zone lookups into PostGIS ([20](../20-architecture-security.md)).
+- **License.** A US government work, generally treated as public domain; PRISM asks for a citation for the GIS files (confirm the exact attribution text) [B].
+- **Caveats.** Hardiness zones capture **winter cold only**: not heat, humidity, drought, soil or snow cover. Microclimates (a south wall, a frost pocket, an urban heat island) can shift a site by a half-zone or more [B]. ZIP-code lookups are coarse in mountainous areas; Rootline should look up the **property's coordinates against the grid**, not the ZIP.
+- **Rootline use.** [MVP] property zone lookup at Region and Property level; zone-range validation of every plant placed in a Design ([10](../10-design-studio.md)).
+
+#### 4.2.2 Canada: NRCan plant hardiness zones and species range models
+
+- **Content.** Canada's plant hardiness zones (0 to 9, with a and b subzones) are computed from a model of several climate variables (including minimum winter temperature, frost-free period, summer rainfall, maximum temperatures, snow cover and wind), not from minimum temperature alone. Natural Resources Canada also publishes USDA-style extreme-minimum-temperature zones for Canada, and has run a long-term project modeling the **climatic ranges of individual plant species** (thousands of species) from contributed observations [B].
+- **License.** Open Government Licence - Canada, which permits commercial reuse with attribution [B].
+- **Caveat.** Canadian and USDA zone numbers are **not interchangeable**. A "zone 5" plant tag in Ontario may mean something different from USDA zone 5. Store both systems and show which one is used ([12](../12-plant-knowledge-base.md)).
+- **Rootline use.** [MVP] for Canadian tenants. The species range models are a valuable, openly licensed **plant-level climate envelope** for hundreds of common landscape plants (verify coverage).
+
+#### 4.2.3 AHS Plant Heat Zone Map
+
+- **Content.** The American Horticultural Society's 1997 map divides the US into 12 zones by the average number of "heat days" per year above 86°F (30°C), the temperature at which many plants begin to suffer heat stress. Plant tags and AHS publications sometimes show a heat-zone range (for example "heat zones 8-1") [B].
+- **Coverage.** US; based on historical data from the 1970s to 1990s and not updated since publication (verify) [B].
+- **License.** Copyrighted by AHS. No API [B].
+- **Rootline approach.** Do not copy the map. **Compute heat days independently** from NOAA 1991-2020 climate normals or Daymet daily data (both public domain), store "days above 86°F" per Region and Property, and record plant heat tolerance as Rootline's own curated field. Cite AHS ratings only where licensed.
+
+#### 4.2.4 EPA ecoregions (Levels I-IV) and CEC North American ecoregions
+
+- **Content.** The Omernik ecoregion framework groups areas with similar geology, landforms, soils, vegetation, climate and hydrology. EPA publishes Level III (about 105 regions in the conterminous US) and Level IV (about 970 regions) boundaries and descriptions; the Commission for Environmental Cooperation (CEC) publishes Levels I to III for all of North America, including Canada and Mexico [B].
+- **Access.** Free shapefiles and descriptions [B].
+- **License.** US government work, public domain; CEC data are distributed for free reuse with attribution (verify) [B].
+- **Rootline use.** [MVP] building block for Regions ([19](../19-platform-admin-portal.md) Region editor). Ecoregions are the right unit for **native-plant suitability** and wildlife value, and are the unit several wildlife programs already use (NWF keystone plant lists by ecoregion; Pollinator Partnership guides by Bailey ecoregion province) [B].
+
+#### 4.2.5 Climate normals, frost dates and daily weather
+
+| Source | Content | License | Rootline use |
+|---|---|---|---|
+| **NOAA NCEI US Climate Normals 1991-2020** | Station normals for temperature, precipitation, degree days, freeze-date probabilities (last spring and first fall 32°F and 28°F at several probabilities) [B] | Public domain [B] | Frost dates per Region; "safe to plant" and "cover new plantings" alerts; heat days |
+| **Daymet (ORNL DAAC)** | Gridded daily weather at 1 km for North America, from 1980 onward [B] | Free, citation requested [B] | Property-level climate summaries; drought and heat stats |
+| **PRISM (Oregon State)** | Gridded normals and time series (800 m and 4 km) [B] | Free downloads with citation; confirm terms for commercial redistribution [B] | Precipitation and temperature layers for Region building |
+| **Environment and Climate Change Canada normals** | Canadian station normals [B] | Open Government Licence - Canada [B] | Canadian equivalents |
+| **Sunset climate zones** | 45 zones for the western US used on many West Coast plant tags [B] | Copyrighted (Sunset Western Garden Book) [B] | Store as an optional attribute only if licensed; otherwise ignore |
+
+#### 4.2.6 Soils: NRCS SSURGO and Soil Data Access
+
+- **Content.** County-level detailed soil surveys: map units with components, texture, drainage class, pH, depth to restrictive layer, available water capacity, hydrologic group and more [B]. Gridded versions (gSSURGO, gNATSGO) exist [B].
+- **Access.** Web Soil Survey for humans; the **Soil Data Access** web service accepts spatial and SQL queries, which suits a property-level lookup [B].
+- **License.** US government work, public domain [B].
+- **Rootline use.** [V1] auto-fill the Property's soil profile (for example "Blount silt loam, somewhat poorly drained, pH 6.1-7.3", an illustrative description) to filter plants by drainage and pH, to warn about rain-garden infiltration and to recommend amendments. Canada: Soil Landscapes of Canada (Open Government Licence) at much coarser scale [B]. Always label soil data as "survey-mapped, verify with a soil test"; new subdivisions are often graded fill unrelated to the mapped soil.
+
+### 4.3 Taxonomy, nativity and distribution backbones
+
+#### 4.3.1 USDA PLANTS Database (NRCS)
+
+- **Content.** Standardized names and **symbols** (for example ACRU for *Acer rubrum*), synonyms, common names, native status by jurisdiction (lower 48, Alaska, Hawaii, Puerto Rico, Virgin Islands, Canada, Greenland, Saint Pierre and Miquelon, Navassa), state and some county distribution, wetland indicator status, federal and state noxious-weed and T&E status, plus a "characteristics" dataset (growth habit, shade and drought tolerance, pH range, bloom period and similar) for a subset of species, and images [B].
+- **Coverage.** Vascular plants, mosses, liverworts, hornworts and lichens of the US and its territories [B]. Covers species and infraspecific taxa, **not cultivars**.
+- **API.** No documented public API. The site exposes downloadable checklists and characteristics files; the current web app uses JSON endpoints that are not documented for third parties [B]. Plan on periodic bulk downloads.
+- **License.** US government work, public domain. **Images carry individual credits and may be copyrighted**; check each image [B].
+- **Caveats.** Taxonomy updates are irregular and can lag current botany; some characteristics data are old [B].
+- **Rootline use.** [MVP] US native-status and distribution backbone, the noxious-status cross-check, and symbols as a stable crosswalk key.
+
+#### 4.3.2 Kew: WCVP, POWO and IPNI
+
+- **Content.** The **World Checklist of Vascular Plants (WCVP)** is a global, expert-reviewed list of accepted vascular plant species (on the order of 350,000) with synonyms and native distribution coded to TDWG "botanical countries" (WGSRPD level 3). **Plants of the World Online (POWO)** presents WCVP with descriptions and images; **IPNI** covers nomenclature [B].
+- **API.** Downloadable WCVP data files; POWO and IPNI have web endpoints (an unofficial Python client, pykew, is widely used) but no formal commercial API product [B].
+- **License.** Kew has released WCVP and IPNI data under open licenses (CC BY family; verify version), with POWO website content under its own terms [B].
+- **Caveats.** WGSRPD distribution is coarse (a US state is one unit) and **WCVP does not include cultivars** [B].
+- **Rootline use.** [MVP] taxonomic backbone for accepted names and synonymy, especially for non-native ornamentals that USDA PLANTS covers poorly (many Asian and European garden plants are absent from PLANTS unless naturalized) [B].
+
+#### 4.3.3 World Flora Online (WFO)
+
+- **Content.** The successor to The Plant List: a global consensus classification of plants with the WFO Plant List as its taxonomic backbone, maintained by a consortium of botanical institutions [B].
+- **API.** WFO Plant List provides a name-matching service and an API, plus versioned data releases [B].
+- **License.** Open (CC0 or CC BY, depending on component; verify) [B].
+- **Rootline use.** [MVP] alternative or secondary backbone; WFO's name-matching service is handy for cleaning messy nursery availability lists ([13](../13-operations-inventory-equipment.md)). Choose **one** primary backbone (WCVP or WFO) and crosswalk the other.
+
+#### 4.3.4 ITIS and Catalogue of Life
+
+- **ITIS** (Integrated Taxonomic Information System) is a US federal partnership with web services; its data are public domain [B]. Useful as a US-government-recognized name source.
+- **Catalogue of Life** publishes a global checklist with an API; its checklist is CC BY 4.0 (verify) [B].
+- Both are secondary to WCVP or WFO for plants.
+
+#### 4.3.5 GBIF (Global Biodiversity Information Facility)
+
+- **Content.** Billions of occurrence records across all life, aggregated from museums, herbaria, surveys and citizen science (including iNaturalist research-grade observations), plus the GBIF Backbone Taxonomy [B].
+- **API.** Free REST API for search and occurrence downloads; large downloads require an account and produce a citable DOI [B].
+- **License.** **Each dataset carries CC0, CC BY 4.0 or CC BY-NC 4.0**; GBIF requires users to honor the license per record and to cite the download DOI [B].
+- **Caveats.** Occurrences include cultivated plants, misidentifications and spatial errors; for nativity they must be filtered (exclude cultivated, check coordinates, prefer preserved specimens and research-grade records) [B].
+- **Rootline use.** [V1] compute **empirical climate envelopes** (the range of hardiness zones, heat days and precipitation where a plant actually occurs) and ecoregion presence. **Filter to CC0 and CC BY records for any commercial derived data**, and keep the download DOI for citation.
+
+#### 4.3.6 iNaturalist
+
+- **Content.** Citizen-science observations with photos; community identifications make "research grade" records, which flow to GBIF [B].
+- **API.** Public REST API (v1) with published rate guidance (on the order of 60 requests per minute and 10,000 per day; verify) and terms that discourage bulk harvesting; the **iNaturalist Open Dataset** on AWS provides photos and metadata in bulk with license fields [B].
+- **License.** Per observation and per photo, chosen by the observer; the default is **CC BY-NC**, with CC0 and CC BY also common [B]. Commercial use requires filtering to CC0 and CC BY (and attribution for CC BY).
+- **Rootline use.** [V1] source of **render-reference and identification photos** (filtered to commercial-compatible licenses, with attribution stored per image); phenology signals (when a plant blooms in a Region) from observation dates. Do not use iNaturalist's computer-vision model commercially without permission [B].
+
+#### 4.3.7 BONAP (Biota of North America Program)
+
+- **Content.** Kartesz's North American Plant Atlas: **county-level** distribution maps for North American vascular plants, distinguishing native, introduced, rare and noxious [B].
+- **API and license.** No public API; maps are copyrighted, and BONAP licenses its data for a fee [B]. Several consumer native-plant finders reportedly build on BONAP data (verify which) [B].
+- **Rootline use.** [V1] **license candidate** if county-level nativity is required for "native to your county" claims. Otherwise use USDA PLANTS state data plus filtered GBIF occurrences and ecoregion rules.
+
+#### 4.3.8 VASCAN (Canadensys) and NatureServe
+
+- **VASCAN** (Database of Vascular Plants of Canada) gives accepted names and **native, introduced or ephemeral status per province and territory**. It is published under **CC0** (verify) [B]. [MVP] for Canadian nativity.
+- **NatureServe Explorer** provides conservation status ranks (global G1-G5 and state or province S1-S5) with an API. Terms restrict some uses; verify commercial terms [B]. [V2] for flagging rare species (useful in restoration work and for avoiding the sale of protected wild-collected plants).
+
+### 4.4 Horticultural trait and expertise sources
+
+These sources hold the knowledge landscapers actually rely on. They are mostly **copyrighted, free to view and API-less**. Treat them as references for human curators and as partnership targets, never as scrape targets.
+
+#### 4.4.1 NC State Extension Gardener Plant Toolbox
+
+- **Content.** Several thousand plants (exact count unverified) with unusually rich, structured fields: dimensions, growth rate, light, soil texture, drainage, pH, landscape location (for example "rain garden", "slope or bank"), design feature, wildlife value, **resistance to challenges** (deer, drought, salt, heat, wet soil), problems, and **poison severity and symptoms** for people and pets [B].
+- **Coverage.** Strongest for the Southeast and Mid-Atlantic, but includes many widely grown ornamentals [B].
+- **API.** None public [B].
+- **License.** Text is copyrighted by NC State; **images carry individual licenses**, many Creative Commons (some non-commercial) [B].
+- **Rootline use.** Curator reference; possible **extension partnership** (data license with attribution plus funding for content) for the Southeast. Its field schema is a good model for Rootline's trait schema ([12](../12-plant-knowledge-base.md)).
+
+#### 4.4.2 Missouri Botanical Garden Plant Finder
+
+- **Content.** Several thousand plants (roughly 7,000 to 8,000; verify) grown at the Garden and its Kemper Center for Home Gardening, with zone, height, spread, bloom, sun, water, maintenance, "tolerate" (deer, drought, clay, black walnut, air pollution), culture, noteworthy characteristics, problems and garden uses [B]. MBG also runs **Tropicos** (nomenclature, with an API under its own terms) [B].
+- **Coverage.** Strongest for the Midwest and transition zone; many cultivars included [B].
+- **API.** Plant Finder has none public [B].
+- **License.** Copyrighted; reuse requires permission [B].
+- **Rootline use.** Curator reference; **botanical-garden partnership target** for Midwest Region profiles. MBG's cultivar coverage is unusually good for a public site.
+
+#### 4.4.3 Calscape (California Native Plant Society)
+
+- **Content.** California native plants with location-aware lists (enter an address to see plants native to that spot), horticultural data, photos, and a **nursery availability listing showing which native nurseries carry which plants** [B].
+- **API and license.** No public API; CNPS copyright [B].
+- **Rootline use.** Partnership target for California Regions, especially for native and water-wise palettes and for **nursery availability for natives** (Calscape's nursery listings are a working example of the availability layer Rootline wants) [B].
+
+#### 4.4.4 WUCOLS IV (Water Use Classification of Landscape Species)
+
+- **Content.** Expert evaluations of landscape water needs for several thousand taxa (on the order of 3,500; verify) across six California climate regions. Categories are Very Low (under 10% of reference ET), Low (10-30%), Moderate (40-60%) and High (70-90%) [B]. These categories feed **plant factors in California's Model Water Efficient Landscape Ordinance (MWELO)** calculations, so landscape plans submitted for permits in California often reference WUCOLS [B].
+- **Access.** Searchable website and downloadable lists by region [B].
+- **License.** University of California copyright; terms for commercial embedding are not stated clearly enough to rely on (verify; seek written permission) [B].
+- **Rootline use.** [V1] **license priority for western tenants.** Water budgets (MAWA and ETWU calculations) in the Design Studio irrigation layer depend on plant factors ([10](../10-design-studio.md), [14](../14-service-line-modules.md)).
+
+#### 4.4.5 Lady Bird Johnson Wildflower Center (University of Texas at Austin)
+
+- **Content.** The Native Plant Information Network: a database of thousands of North American native plants with characteristics, growing conditions, benefits and a large image gallery, plus **"recommended species" lists by state and region** developed with partners [B].
+- **API and license.** No public API; text and images copyrighted (images by individual photographers) [B].
+- **Rootline use.** Curator reference for natives nationwide; partnership target for native palettes, particularly Texas and the Southwest.
+
+#### 4.4.6 NWF Native Plant Finder and keystone plant lists
+
+- **Content.** ZIP-code-based lists of native plants ranked by how many butterfly and moth (Lepidoptera) species use them as caterpillar hosts, based on research by Doug Tallamy and colleagues. NWF also publishes **keystone plant lists by ecoregion** [B].
+- **API and license.** No public API; NWF copyright [B].
+- **Rootline use.** "Wildlife value" badges and keystone flags. Seek a **"powered by NWF" partnership**: NWF's Garden for Wildlife program aligns with Rootline's homeowner portal and certified-habitat ideas ([06](../06-customer-portal.md), [16](../16-marketing-growth-communications.md)).
+
+#### 4.4.7 Audubon Native Plants Database ("Plants for Birds")
+
+- **Content.** ZIP-code-based native plants with the bird species and food types they support; native-range data reportedly sourced from a third party (BONAP; verify) [B].
+- **API and license.** None public; copyrighted [B].
+- **Rootline use.** Bird-value badges via partnership; otherwise curate independently.
+
+#### 4.4.8 Pollinator and habitat guides
+
+| Source | Content | License | Use |
+|---|---|---|---|
+| **Xerces Society** regional pollinator plant lists | Native plants for bees and butterflies by region [B] | Copyrighted PDFs [B] | Curator reference; partnership |
+| **Pollinator Partnership ecoregional planting guides** | Guides organized by Bailey ecoregion province [B] | Copyrighted PDFs [B] | Curator reference |
+| **Homegrown National Park** | Native planting advocacy and maps (Tallamy) [B] | Copyrighted [B] | Marketing partnership idea |
+
+#### 4.4.9 Regional plant evaluation and selection programs
+
+These programs are living proof that **regional curation is valuable and possible**. Each is a potential data partner and a model for Rootline's Plant Region Profile ratings [B]:
+
+| Program | Region | What it publishes |
+|---|---|---|
+| Plant Select (Denver Botanic Gardens, Colorado State University and industry) | Rocky Mountains and High Plains | Branded list of plants proven for the region |
+| Great Plant Picks (Elisabeth C. Miller Botanical Garden) | Pacific Northwest | Curated, reliable garden plants |
+| PHS Gold Medal Plants (Pennsylvania Horticultural Society) | Mid-Atlantic | Award list of outstanding woody plants |
+| Texas Superstar and Earth-Kind (Texas A&M AgriLife) | Texas | Trialed, tough plants; low-input recommendations |
+| Florida-Friendly Landscaping (UF/IFAS) | Florida | Plant selection guide by Florida zone |
+| Mt. Cuba Center trial garden reports | Mid-Atlantic, eastern US | Multi-year trials rating native species and cultivars (for example coneflowers, phlox, bee balm) |
+| Chicago Botanic Garden plant evaluation notes | Upper Midwest | Long-term cultivar trial results |
+| Missouri Botanical Garden Plants of Merit | Lower Midwest | Recommended plants |
+
+All are copyrighted [B]. Trial results are mostly **facts** (survival, mildew rating, bloom duration) that curators can record with citation, but **wholesale copying of reports is not allowed** (section 4.9). A partnership that pays for structured access and co-brands "Recommended by ..." is the better path.
+
+#### 4.4.10 Trees: selection and urban forestry
+
+| Source | Content | License | Use |
+|---|---|---|---|
+| **SelecTree** (Cal Poly Urban Forest Ecosystems Institute) | Tree selection database for California and beyond, with attributes and photos [B] | Copyrighted [B] | Partnership for western tree palettes |
+| **i-Tree Species** (USDA Forest Service) | Ranks trees by environmental function (shade, air quality, stormwater) for a location [B] | Free USDA tool; underlying data largely public (verify) [B] | Benefit badges; client-facing "this tree saves X" claims (cite) |
+| **Morton Arboretum and Chicago Region Trees Initiative** | Tree selection and climate-ready species guidance [B] | Copyrighted [B] | Curator reference for climate-adapted palettes |
+| **Cornell Woody Plants Database / Urban Horticulture Institute** | Street and urban tree selection [B] | Copyrighted [B] | Curator reference |
+| **USDA Forest Service FEIS** | Fire Effects Information System species reviews [B] | Public domain [B] | Fire ecology and invasiveness background |
+| **NRCS Plant Guides and Fact Sheets** | Species guides, often for conservation plantings [B] | Public domain [B] | Openly reusable trait text (cite) |
+
+#### 4.4.11 Site-tolerance lists: deer, fire, salt
+
+| Source | Content | License | Use |
+|---|---|---|---|
+| **Rutgers NJAES "Landscape Plants Rated by Deer Resistance"** | Ratings from A (rarely damaged) to D (frequently severely damaged) [B] | Copyrighted [B] | Curator reference; deer resistance is a "critical claim" field requiring second review ([19](../19-platform-admin-portal.md)) |
+| **Regional fire-resistant plant lists** (for example Oregon State University Extension's "Fire-Resistant Plants for Home Landscapes", UC ANR fire materials) | Plants with lower flammability characteristics [B] | Copyrighted extension publications [B] | WUI Regions: "firewise" badges and defensible-space zone rules |
+| **Road-salt and coastal salt-spray tolerance lists** (various extension services) | Salt tolerance ratings [B] | Copyrighted [B] | Curbside and coastal design validation |
+
+### 4.5 Commercial and community plant APIs
+
+| Service | What it offers | Coverage and quality | License and terms | Verdict |
+|---|---|---|---|---|
+| **Trefle** (trefle.io) | Open plant API aggregated from public sources [B] | Broad species list, thin horticultural data; the hosted service has been unreliable or unmaintained for years (verify) [B] | Open source; data licensing tied to its sources (verify) [B] | **Do not depend on it.** Use its source datasets directly |
+| **Perenual** | Commercial plant API: species list (on the order of 10,000), care guides, hardiness, watering, pests and diseases, images [B] | Uneven quality and sourcing; consumer-care oriented [B] | Free tier limited by species range and daily requests; paid tiers; ToS restrict redistribution (verify) [B] | Not a foundation. Possibly useful for gap-filling a consumer feature |
+| **Plant.id / Kindwise** | Plant identification and health assessment API [B] | Strong ID accuracy for common plants [B] | Commercial, credit-priced (verify) [B] | [V1] candidate for site-assessment plant inventory and portal "what is this plant?" |
+| **Pl@ntNet API** | Plant identification from photos [B] | Strong for wild flora, weaker for cultivars [B] | Free tier with daily quota; commercial use requires a paid plan (verify) [B] | Alternative ID provider |
+| **Horticopia** | Licensed plant image and data libraries for design professionals [B] | Large image sets with horticultural data [B] | Commercial license [B] | License candidate for plan-symbol imagery and reference photos |
+| **Garden.org (National Gardening Association) Plants Database, Dave's Garden PlantFiles** | Crowd-sourced plant pages and photos [B] | Huge, uneven [B] | Copyrighted user contributions; no API [B] | Do not ingest |
+
+**Observation:** no commercial plant API on the market combines accurate taxonomy, cultivar depth, region performance and licensing that allows redistribution inside a SaaS. That absence is the opportunity [E].
+
+### 4.6 Invasive, noxious and regulatory lists
+
+Getting this layer wrong creates legal exposure: in several states, selling or installing a listed plant is prohibited.
+
+| Source | Content | License | Notes |
+|---|---|---|---|
+| **USDA APHIS Federal Noxious Weed List** | Federally regulated noxious weeds (7 CFR 360) [B] | Public law [B] | Rarely landscape ornamentals, but must be checked |
+| **State noxious weed and invasive plant regulations** | Prohibited and restricted species, sale bans, phase-out dates [B] | Public law (facts free to use) [B] | Examples: Ohio's invasive plant rule phased in a sale ban on Callery pear effective January 2023; Pennsylvania listed Callery pear as a noxious weed with a sales prohibition phased in by 2024 (verify both) [B]. Several states also regulate Japanese barberry, burning bush and others with varying dates (verify per state) |
+| **USDA PLANTS noxious and invasive status** | State noxious status compiled per species [B] | Public domain [B] | Convenient but may lag state rule changes |
+| **EDDMapS** (University of Georgia Center for Invasive Species and Ecosystem Health) | Invasive species occurrences and state status lists [B] | Data-use terms with attribution; API or data access by arrangement (verify) [B] | Partnership candidate for status lists and "invasive near you" maps |
+| **Invasive Plant Atlas of the US** | Species profiles and state lists [B] | Copyrighted [B] | Curator reference |
+| **UF/IFAS Assessment of Non-native Plants in Florida's Natural Areas** | Per-species conclusions by Florida zone (north, central, south), including "invasive, not recommended" and "caution" [B] | Copyrighted but public [B] | Model for **Region-level invasiveness ratings** distinct from legal status |
+| **State invasive plant councils** (for example Mid-Atlantic, Southeast EPPC chapters) | Non-regulatory invasive lists [B] | Copyrighted [B] | "Ecologically invasive" flags, distinct from "legally prohibited" |
+| **Canada: CFIA, provincial acts, invasive species councils** | Federal regulated pests and weeds; provincial lists (for example Ontario's Invasive Species Act, 2015); **"Grow Me Instead"** guides from councils in Ontario and British Columbia that recommend non-invasive alternatives [B] | Public law; guides copyrighted [B] | "Grow Me Instead" is the exact substitution logic Rootline needs |
+
+**Design rule [E]:** model three distinct statuses per Plant per jurisdiction or Region: **legally prohibited** (block in Designs and Price Book, hard stop), **legally restricted** (warn and require acknowledgment), and **ecologically invasive (non-regulatory)** (warn with alternatives). Each status carries a source citation, an effective date and a review date. When a state adds a plant with a phase-out date, Rootline notifies affected tenants before the date and suggests substitutions ([12](../12-plant-knowledge-base.md), [17](../17-ai-copilot-automation.md)).
+
+### 4.7 Toxicity and safety
+
+| Source | Content | License | Notes |
+|---|---|---|---|
+| **ASPCA Toxic and Non-Toxic Plants list** | Plants listed as toxic or non-toxic to dogs, cats and horses, with clinical signs [B] | Copyrighted; no API [B] | The de facto consumer reference; not exhaustive, and "not listed" does not mean "safe" |
+| **NC State Plant Toolbox toxicity fields** | Poison severity, toxic parts and symptoms for people and pets [B] | Copyrighted [B] | Rich structured reference |
+| **Public toxicology literature and poison-control guidance** | Primary facts [B] | Facts free; texts copyrighted [B] | Curators record facts with citations |
+| **Pet Poison Helpline and similar services** | Consumer guidance [B] | Copyrighted [B] | Reference only |
+
+**Rootline approach.** Toxicity is a **critical claim** requiring two-curator review ([19](../19-platform-admin-portal.md)). Store toxic parts, severity, affected species (human, dog, cat, horse, livestock) and sources. Show it in the plant picker and the client portal ("Toxic to cats: all parts"), and let a Property carry "pets: dog" or "children under 5" flags that drive warnings in the Design Studio. Never present "non-toxic" as a guarantee.
+
+### 4.8 Nursery availability and pricing
+
+| Channel | How data flows today | API reality | Rootline play |
+|---|---|---|---|
+| **National distributors** (SiteOne, Ewing, Horizon, BFG and others) | Branch counters, contractor accounts, online portals; LMN integrates SiteOne ordering ([Turf Magazine](https://turfmagazine.com/lmn-integrates-siteone-landscape-supply-in-2021-software/); [LMN blog](https://golmn.com/blog/partner-in-spotlight-siteone-landscape-supply)) [S] | Partnership-based, not open ([13](../13-operations-inventory-equipment.md)) [S] | Partnerships for price and availability lookups [V2] |
+| **Local and regional wholesale nurseries** | Weekly availability lists as PDF or Excel, by email or website; phone orders [S/B] | Essentially none ([13](../13-operations-inventory-equipment.md)) [S] | **Availability parser plus free vendor portal (Nursery Connect) [V1]**: map any list to Plant KB records and size specs |
+| **Brand growers and plant programs** (Proven Winners ColorChoice, Bailey Nurseries' First Editions and Endless Summer, Monrovia, Star Roses and Plants, Southern Living Plant Collection, Encore Azalea) | Rich plant pages, photography, "where to buy" locators, trademarked names [B] | Some offer data feeds to retailers (verify) [B] | **Cultivar data and imagery partnerships**: brands want their plants specified in designs |
+| **Native plant nurseries** | Often listed in Calscape (California) and state native plant society directories [B] | None [B] | Partnership with native plant societies |
+| **Re-wholesalers and brokers** | Consolidated availability across growers [B] | Proprietary systems [B] | Later partnerships |
+| **European analog** | The Dutch floriculture sector standardizes product codes (Floricode) and trades through B2B platforms (Floriday) [B] | Industry-wide standards [B] | Shows what a standardized plant-product code enables; North America lacks an equivalent [E] |
+
+**Standards that matter:**
+
+- **ANSI Z60.1, American Standard for Nursery Stock** (published by AmericanHort; verify the current edition) defines how container classes, caliper, height and root-ball sizes are specified [B]. Rootline's size specs (#1, #3, #5, #7, #15 containers; 2 in caliper B&B) must follow it ([13](../13-operations-inventory-equipment.md)).
+- **ICNCP cultivar naming**: cultivar epithets in single quotes ('Limelight'), trade designations and trademarks styled differently from cultivar names [B]. Rootline must store the **cultivar name, trade name and trademark separately**, because a branded name may be a trademark for a cultivar registered under a different, often unpronounceable code name [B].
+- **Plant patents**: US plant patents (20-year term) restrict propagation, not sale or installation [B]. Store patent status as information only.
+
+**Pricing data.** No public wholesale plant price index exists [E]. Price intelligence must come from (1) tenants' own purchase history (vendor bills and POs in [13](../13-operations-inventory-equipment.md)), (2) parsed availability lists that include prices, and (3) partner feeds. Aggregated, anonymized regional price benchmarks ("#3 'Little Lime' hydrangea: median $24, Columbus metro, Q2", an illustrative example) are a powerful tenant feature but need explicit data-sharing terms and minimum-cohort thresholds ([12](../12-plant-knowledge-base.md), [18](../18-reporting-analytics.md)).
+
+### 4.9 Licensing framework for commercial reuse
+
+This section frames the questions counsel must answer. **It is not legal advice.**
+
+1. **Facts versus expression (US).** Under *Feist Publications v. Rural Telephone Service* (1991), facts are not copyrightable, but original selection, arrangement and expression are [B]. "*Hydrangea paniculata* is hardy to USDA zone 3" is a fact. A paragraph of descriptive text, a photo, a curated list's selection or a database as a whole can be protected.
+2. **Contract terms bind independently of copyright.** Website terms of use, API terms and clickwrap licenses can prohibit scraping or commercial use even of factual data. US case law on scraping public pages (for example the *hiQ v. LinkedIn* litigation) narrowed computer-fraud claims but left contract claims alive [B]. Rootline should not scrape any source whose terms prohibit it.
+3. **Creative Commons variants.**
+   - **CC0** and **public domain**: reuse freely; cite as good practice.
+   - **CC BY**: reuse with attribution. Rootline must store attribution per record and per image and display it where the content appears.
+   - **CC BY-SA** and **ODbL**: share-alike. Derived **databases** that are publicly used may need to be released under the same license. Keep such data in separate, clearly bounded tables, or avoid it in core KB derivatives.
+   - **CC BY-NC**: generally **incompatible with a paid SaaS**. Exclude it (iNaturalist default photos, some GBIF datasets, some NC State images, Depth Anything V2 Base and larger).
+4. **Per-record licensing.** GBIF, iNaturalist and image collections license per record, so **license must be a column, not a footnote**. Ingestion must refuse records without a commercial-compatible license.
+5. **Trademarks.** Brand series names and trade designations are trademarks. Rootline can use them descriptively (nominative fair use) to identify plants, with the correct symbols where the brand requires them, but must not imply endorsement [B].
+6. **EU database right.** If Rootline expands to the EU, the sui generis database right protects substantial extractions from EU-made databases regardless of originality [B].
+7. **AI enrichment.** When an LLM reads a reference to propose traits ([19](../19-platform-admin-portal.md) AI Enrichment Queue), the same rules apply. Prefer licensed and open sources for automated extraction, store citations, extract facts only (never text or images), and keep a human curator in the loop.
+
+**Recommended "clean-room curation" policy [E]:** curators may consult any public reference, record **facts** in Rootline's own structured fields, write **original** notes, and cite their sources. No copying of descriptive text, photos or list selections; no bulk or automated extraction from sources whose terms prohibit it. Counsel signs off on the policy, and curators acknowledge it in training.
+
+### 4.10 Master comparison of plant data sources
+
+Verdict key: **Ingest** (open and commercial-compatible), **Ingest with conditions** (per-record filtering, attribution or share-alike boundaries), **Reference and partner** (free to view, copyrighted; human reference and partnership target), **License** (pay or partner for structured access), **Avoid** (unreliable, or terms incompatible with SaaS use).
+
+| Source | Content | Coverage | API | License (as understood, verify) | Commercial reuse verdict | Rootline layer and phase |
+|---|---|---|---|---|---|---|
+| 2023 USDA PHZM | Hardiness zones | US, AK, HI, PR; ~800 m | GIS downloads | Public domain; cite PRISM [B] | Ingest | Climate [MVP] |
+| NRCan hardiness zones and species ranges | Zones; species climate ranges | Canada | Downloads | OGL-Canada [B] | Ingest | Climate [MVP] |
+| AHS heat zones | Heat-day zones | US | None | Copyright [B] | Avoid copying; compute heat days ourselves | Climate [V1] |
+| EPA ecoregions L III/IV; CEC L I-III | Ecoregion polygons | US; North America | Downloads | Public domain; CEC attribution [B] | Ingest | Regions [MVP] |
+| NOAA normals; Daymet; ECCC normals | Frost dates, heat days, precipitation | US; North America; Canada | Downloads and APIs | Public domain; OGL-Canada [B] | Ingest | Climate [MVP]/[V1] |
+| PRISM | Gridded climate | US | Downloads | Free with citation; confirm commercial terms [B] | Ingest with conditions | Climate [V1] |
+| NRCS SSURGO / Soil Data Access | Soil properties | US | Query service | Public domain [B] | Ingest | Property soils [V1] |
+| USDA PLANTS | Names, symbols, nativity, distribution, noxious, characteristics | US and territories | Bulk downloads, no documented API | Public domain; images vary [B] | Ingest (text); filter images | Taxonomy, nativity [MVP] |
+| WCVP / POWO / IPNI | Global accepted names, synonyms, native distribution | Global | Downloads; unofficial endpoints | Open (CC BY family; verify) [B] | Ingest with attribution | Taxonomy [MVP] |
+| WFO Plant List | Global backbone; name matching | Global | API and releases | Open (verify) [B] | Ingest | Taxonomy [MVP] |
+| ITIS; Catalogue of Life | Names | US; global | APIs | Public domain; CC BY (verify) [B] | Ingest | Crosswalk [V1] |
+| GBIF | Occurrences | Global | Free API | Per dataset: CC0, CC BY, CC BY-NC [B] | Ingest with conditions (exclude NC) | Envelopes [V1] |
+| iNaturalist | Observations, photos, phenology | Global | API; AWS open dataset | Per record; default CC BY-NC [B] | Ingest with conditions (CC0 and CC BY only) | Images, phenology [V1] |
+| BONAP | County distribution maps | North America | None | Copyright; data licensable [B] | License if county nativity needed | Nativity [V1] |
+| VASCAN | Canadian names and provincial status | Canada | API and downloads | CC0 (verify) [B] | Ingest | Nativity [MVP] |
+| NatureServe Explorer | Conservation ranks | North America | API | Terms restrict some uses (verify) [B] | License or limited use | Rarity flags [V2] |
+| NC State Plant Toolbox | Rich traits, toxicity | US (Southeast strongest) | None | Copyright; images vary [B] | Reference and partner | Traits [MVP curation] |
+| MBG Plant Finder (and Tropicos) | Traits, cultivars | US (Midwest strongest) | None (Tropicos API under terms) | Copyright [B] | Reference and partner | Traits [MVP curation] |
+| Calscape | CA natives, location lists, nursery availability | California | None | Copyright [B] | Reference and partner | CA palettes [V1] |
+| WUCOLS IV | Water-use categories | California, applicable West | None (downloads) | UC copyright (verify) [B] | License | Water budgets [V1] |
+| Wildflower Center NPIN | Native plants, recommended lists, images | North America | None | Copyright [B] | Reference and partner | Natives [V1] |
+| NWF Native Plant Finder and keystone lists | Lepidoptera host value | US | None | Copyright [B] | Partner | Wildlife badges [V1] |
+| Audubon Plants for Birds | Bird value | US | None | Copyright [B] | Partner | Wildlife badges [V2] |
+| Xerces; Pollinator Partnership | Pollinator lists | US regions | None | Copyright [B] | Reference and partner | Pollinator badges [V1] |
+| Regional programs (Plant Select, Great Plant Picks, PHS Gold Medal, Texas Superstar, Florida-Friendly, Mt. Cuba, CBG, MBG Plants of Merit) | Regional recommendations and trial data | Regional | None | Copyright [B] | Reference and partner | Region profiles [V1] |
+| SelecTree; i-Tree Species; FEIS; NRCS Plant Guides | Tree selection; benefits; ecology | US | Limited | Copyright; USDA public [B] | Mixed: ingest USDA, partner for SelecTree | Trees [V1] |
+| Rutgers deer ratings; fire and salt lists | Site tolerances | Regional | None | Copyright [B] | Reference | Tolerances [MVP curation] |
+| APHIS and state regulations | Legal status | US | None | Public law [B] | Ingest (curated) | Regulatory [MVP] |
+| EDDMapS; UF/IFAS Assessment; invasive councils | Invasive status and occurrence | US and regions | By arrangement | Terms vary [B] | Partner | Regulatory [V1] |
+| Canadian federal and provincial lists; Grow Me Instead | Legal status; alternatives | Canada | None | Public law; copyright guides [B] | Ingest law; reference guides | Regulatory [MVP] |
+| ASPCA toxic plants | Pet toxicity | Common plants | None | Copyright [B] | Reference | Safety [MVP curation] |
+| Trefle | Aggregated species API | Global | API (unreliable) | Mixed [B] | Avoid | n/a |
+| Perenual | Consumer plant API | ~10k species | API | Commercial ToS [B] | Avoid as foundation | n/a |
+| Plant.id / Pl@ntNet | Photo ID | Global | API | Commercial plans [B] | License | Site assessment ID [V1] |
+| Horticopia | Plant images and data | Landscape plants | Licensed files | Commercial [B] | License | Imagery [V1] |
+| Brand growers | Cultivar data, photos | Their catalogs | Some feeds | Copyright and trademarks [B] | Partner | Cultivars, images [V1] |
+| Nursery availability lists | Stock, size, price | Local | None | Tenant- and vendor-supplied | Ingest under tenant and vendor terms | Availability [V1] |
+
+### 4.11 Recommended ingestion and curation architecture
+
+```mermaid
+flowchart LR
+  subgraph OPEN["Open sources (bulk, scheduled)"]
+    T1["WCVP or WFO backbone"]
+    T2["USDA PLANTS, VASCAN"]
+    T3["PHZM 2023, NRCan, NOAA, Daymet"]
+    T4["EPA and CEC ecoregions, SSURGO"]
+    T5["GBIF and iNaturalist (CC0 and CC BY only)"]
+    T6["APHIS and state regulations"]
+  end
+  subgraph LIC["Licensed and partner feeds"]
+    L1["WUCOLS, BONAP, Horticopia"]
+    L2["Botanical garden and extension partners"]
+    L3["Brand growers and nurseries"]
+  end
+  subgraph TEN["Tenant and vendor signals"]
+    N1["Availability lists and POs"]
+    N2["Install outcomes and warranty claims"]
+  end
+  OPEN --> STG["Staging with source, license and retrieval date per record"]
+  LIC --> STG
+  TEN --> STG
+  STG --> NR["Name resolution: synonyms, misspellings, trade names to accepted taxon and cultivar"]
+  NR --> ENV["Computed layers: climate envelopes, ecoregion presence, heat days"]
+  ENV --> AIQ["AI enrichment queue: proposed facts with citations and confidence"]
+  AIQ --> CUR["Curator review (platform_curator); two reviewers for critical claims"]
+  CUR --> PUB["Published Plant, Cultivar and Plant Region Profile versions"]
+  PUB --> APP["Design Studio, AI mockups, estimating, portal"]
+  APP -->|"feedback: plant failures, substitutions, flags"| CUR
+```
+
+Every fact in the KB should carry provenance. An illustrative provenance model follows (the authoritative data model is in [12](../12-plant-knowledge-base.md) and [20](../20-architecture-security.md)):
+
+```mermaid
+erDiagram
+  DATA_SOURCE ||--o{ SOURCE_RELEASE : publishes
+  LICENSE ||--o{ SOURCE_RELEASE : governs
+  SOURCE_RELEASE ||--o{ PLANT_FACT : supplies
+  PLANT ||--o{ PLANT_FACT : described_by
+  PLANT ||--o{ CULTIVAR : has
+  PLANT ||--o{ PLANT_REGION_PROFILE : rated_in
+  REGION ||--o{ PLANT_REGION_PROFILE : contains
+  PLANT ||--o{ PLANT_IMAGE : shown_by
+  LICENSE ||--o{ PLANT_IMAGE : governs
+  DATA_SOURCE {
+    uuid id PK
+    string name
+    string source_type
+    string homepage_url
+    string contact_owner
+  }
+  LICENSE {
+    uuid id PK
+    string code
+    boolean commercial_ok
+    boolean attribution_required
+    boolean share_alike
+    string notes
+  }
+  SOURCE_RELEASE {
+    uuid id PK
+    uuid data_source_id FK
+    uuid license_id FK
+    string version_label
+    date retrieved_on
+    string citation_text
+  }
+  PLANT_FACT {
+    uuid id PK
+    uuid plant_id FK
+    uuid source_release_id FK
+    string attribute_key
+    string value_text
+    numeric confidence
+    string review_status
+  }
+  PLANT {
+    uuid id PK
+    string accepted_name
+    string backbone_id
+    string usda_symbol
+  }
+  CULTIVAR {
+    uuid id PK
+    uuid plant_id FK
+    string cultivar_epithet
+    string trade_name
+    string trademark_owner
+  }
+  REGION {
+    uuid id PK
+    string name
+    string region_type
+  }
+  PLANT_REGION_PROFILE {
+    uuid id PK
+    uuid plant_id FK
+    uuid region_id FK
+    string performance_rating
+    string curator_notes
+  }
+  PLANT_IMAGE {
+    uuid id PK
+    uuid plant_id FK
+    uuid license_id FK
+    string attribution_text
+    string usage_scope
+  }
+```
+
+### 4.12 Curation at scale: how thousands of plants stay accurate
+
+1. **Start narrow and deep [E].** A practical launch set is about 1,500 species and cultivars covering the large majority of what design-build firms in launch Regions actually install, then grow toward 5,000 or more in 18 to 24 months. Seed the list from tenants' imported price books and purchase history (the plants they really buy), not from a botanical checklist.
+2. **Compute before curating.** Climate envelopes from filtered GBIF occurrences, zone ranges from multiple references, and ecoregion nativity rules produce **draft** Region ratings. Curators then confirm or override rather than research from scratch.
+3. **AI enrichment with citations.** An LLM proposes trait values with source citations and confidence; curators accept, edit or reject in bulk ([19](../19-platform-admin-portal.md)). Critical claims (invasiveness, toxicity, deer resistance, hardiness) need two reviewers.
+4. **Field truth from tenants.** Plant warranty claims, replacements and crew notes ("3 of 12 'Green Mountain' boxwoods browned after winter", an illustrative example) become anonymized performance signals per Region, with tenant opt-in ([12](../12-plant-knowledge-base.md), [13](../13-operations-inventory-equipment.md)). No public source has this data.
+5. **Regional advisory panels.** Paid panels of local horticulturists, extension agents and veteran designers review Region palettes twice a year (spring and fall).
+6. **Change propagation.** When a plant becomes prohibited or its rating drops, open Designs and Proposals that include it are flagged, and the Copilot suggests substitutes ranked by similarity ([17](../17-ai-copilot-automation.md)).
+
+---

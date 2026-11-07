@@ -392,50 +392,112 @@ Rules: exactly one `primary` per Client, as [06](06-customer-portal.md) requires
 
 ### 5.5 Platform Admin console sitemap
 
-Spec in [19 - Platform admin portal](19-platform-admin-portal.md); this is the IA view.
+Spec in [19 - Platform admin portal](19-platform-admin-portal.md) (left-nav order and screen inventory per PA-001 and section 6.1); this is the IA view with routes. The console lives at `console.rootline.app`, uses the operator theme (`light` tokens, `compact` density, mono IDs) and shares `@rootline/ui`.
 
 ```mermaid
 flowchart LR
-  ADMIN["Platform Admin console"] --> A1["Overview"]
-  ADMIN --> A2["Tenants"]
-  ADMIN --> A3["SaaS billing"]
-  ADMIN --> A4["Plant KB"]
-  ADMIN --> A5["Content and templates"]
-  ADMIN --> A6["AI ops"]
-  ADMIN --> A7["Support"]
-  ADMIN --> A8["Releases and flags"]
-  ADMIN --> A9["Compliance"]
-  ADMIN --> A10["Platform settings"]
-  A2 --> TEN["Tenant 360"]
-  A4 --> CUR["Curator workbench"]
-  A4 --> REG["Regions"]
-  A6 --> EVAL["Evals and prompts"]
+  ADMIN["Platform Admin console"] --> HOME["Home and Command Center"]
+  ADMIN --> TEN["Tenants"]
+  ADMIN --> MIG["Migrations"]
+  ADMIN --> BILL["Billing"]
+  ADMIN --> ENT["Entitlements and flags"]
+  ADMIN --> SUP["Support"]
+  ADMIN --> KB["Plant KB"]
+  ADMIN --> CON["Content"]
+  ADMIN --> AIO["AI Ops"]
+  ADMIN --> COMMS["Comms"]
+  ADMIN --> PAYO["Payments oversight"]
+  ADMIN --> RISK["Risk and trust"]
+  ADMIN --> COMP["Compliance"]
+  ADMIN --> ANA["Analytics"]
+  ADMIN --> SYS["System health"]
+  ADMIN --> PART["Partners"]
+  ADMIN --> STAFF["Staff and audit"]
+  ADMIN --> SETS["Settings"]
+  TEN --> T360["Tenant 360"]
+  KB --> CUR["Curator workbench"]
+  KB --> REGMAP["Region builder map"]
+  AIO --> EVAL["Evals and prompt registry"]
+  SUP --> GRANT["Access grants and impersonation"]
+  STAFF --> APPR["Approvals inbox"]
 ```
 
-- **Overview** [MVP]: MRR/ARR, trials, activation funnel, churn risk list, incidents, AI spend today, queue depths
-- **Tenants** [MVP]: list with health scores and filters; **Tenant 360** (profile, plan and usage, AI credits, Stripe Connect status, accounting mode, users, feature flags, data region, support history, impersonation log, notes, danger zone)
-- **SaaS billing** [MVP]: plans and prices, subscriptions, invoices, dunning, coupons, credits, application-fee revenue (spec in [22](22-business-model-pricing-gtm.md))
-- **Plant KB** [MVP]: plants, regions (map editor), plant region profiles, palettes, curation queue, bulk import and diff review, media library, nursery feeds [V1], symbol mapping (plant -> plan symbol family), quality dashboards
-- **Content and templates** [MVP]: chart-of-accounts templates, starter price books and production rates by service line and region, proposal and email templates, sample datasets, help center articles, in-app announcements, terminology defaults
-- **AI ops** [MVP]: model routing, prompt registry and versions, eval suites, cost and latency, safety and abuse reports, image-model quality review queue
-- **Support** [MVP]: tickets, consented impersonation, session replay (PII-masked) [V1], known issues, macros
-- **Releases and flags** [MVP]: feature flags by tenant/cohort, staged rollouts, release notes, kill switches
-- **Compliance** [MVP]: audit log search, DSAR queue, retention policies, 10DLC brand/campaign status, SOC 2 evidence, subprocessors
-- **Platform settings** [MVP]: staff and roles, security, regions/data residency, integrations keys (Rootline-owned only)
+- **Home** `/` [MVP]: MRR/ARR movement, trials and activation funnel, churn-risk list with "why", incidents, AI spend vs forecast, queue depths, approvals waiting; Operator Morning Brief panel [V1]
+- **Tenants** `/tenants` [MVP]: directory with health bands and saved views ("Trials day 10-14 without Stripe", "Health < 50", "10DLC rejected"); **Tenant 360** `/tenants/:id` with tabs Overview, Usage, Billing, AI, Payments, Users, Support, Flags, Audit, Data and compliance, Danger zone (wireframe [18.13](#1813-platform-admin-tenant-360)); lifecycle dialogs (extend trial, pause, suspend, reactivate); Organizations and ownership transfers [V1]
+- **Migrations** `/migrations` [MVP]: projects board; project detail with mapping, validation, diff and reconcile
+- **Billing** `/billing` [MVP]: catalog (plans, add-ons, meters, credit rate card), subscriptions and invoices, dunning queue, coupons and credits, revenue dashboards, application-fee revenue (spec in [22](22-business-model-pricing-gtm.md))
+- **Entitlements and flags** `/flags` [MVP]: plan matrix and per-tenant overrides, feature flags with targeting and staged rollout, kill switches, beta programs [V1], release notes
+- **Support** `/support` [MVP]: global search, access grants and active impersonation sessions, macros, known issues, session replay (PII-masked) [V1], runbook actions [V1]
+- **Plant KB** `/kb` [MVP]: curation queue and record editor (wireframe [18.11](#1811-plant-kb-curator-workbench)), region builder map, plant region profiles, palettes, bulk import and diff review, media library and license registry, nursery feeds [V1], symbol-family mapping, quality dashboards
+- **Content** `/content` [MVP]: chart-of-accounts templates, starter price books and production rates by service line and region, proposal and email templates, sample datasets, help center CMS, in-app announcements and guides, terminology defaults, design token releases (read-only view of `@rootline/tokens` versions)
+- **AI Ops** `/ai` [MVP]: model routing, prompt registry and versions, eval suites, cost and latency, moderation and image-quality review queue, AI kill switches
+- **Comms** `/comms` [MVP]: 10DLC brand and campaign board, phone numbers, sender domains, deliverability, opt-out health
+- **Payments oversight** `/payments` [MVP]: connected-account health (charges and payouts enabled, requirements due), webhook health, dispute rates. Read-only: no access to Company funds ([08](08-payments-stripe.md))
+- **Risk and trust** `/risk` [MVP]: review queue, enforcement actions with reason codes
+- **Compliance** `/compliance` [MVP]: audit log search, DSAR queue, retention policies, legal holds, subprocessors, SOC 2 evidence, accessibility conformance reports (ACR versions)
+- **Analytics** `/analytics` [MVP]: churn, cohorts, activation funnel, feature adoption, NPS, unit economics, UX friction radar [V1] ([27](#27-beyond-the-brief-extra-ideas))
+- **System health** `/health` [MVP]: services, queues, integrations, scheduled jobs, incidents and status page
+- **Partners** `/partners` [V1]: directory, commissions, payouts
+- **Staff and audit** `/staff` [MVP]: staff, roles, access reviews, approvals inbox (two-person requests), platform audit log, Admin API tokens [V1]
+- **Settings** `/settings` [MVP]: security, regions and data residency, Rootline-owned integration keys
+
+**Console navigation by platform role** (default; full matrix in [19](19-platform-admin-portal.md) section 9). "F" = full, "R" = read, "-" = hidden. `platform_owner` sees everything.
+
+| Nav item | platform_owner | platform_support | platform_curator | platform_finance | platform_engineer |
+|---|---|---|---|---|---|
+| Home | F | F (support view) | F (KB view) | F (finance view) | F (health view) |
+| Tenants / Tenant 360 | F | F (PII masked) | - | R (billing fields) | R (technical fields) |
+| Migrations | F | F | - | - | R |
+| Billing | F | R | - | F | - |
+| Entitlements and flags | F | R | - | R | F |
+| Support | F | F | - | R | F |
+| Plant KB | F | R | F | - | R |
+| Content | F | F (help, announcements) | F (palettes, symbols, starter data) | R | R |
+| AI Ops | F | R | R (plant-related evals) | R (cost) | F |
+| Comms | F | F | - | - | F |
+| Payments oversight | F | R | - | F | F |
+| Risk and trust | F | F | - | R | R |
+| Compliance | F | R (DSAR queue) | - | F | R |
+| Analytics | F | R | R (KB metrics) | F | R |
+| System health | F | R | - | - | F |
+| Partners | F | R | - | F | - |
+| Staff and audit | F | - | - | - | R (audit only) |
+| Settings | F | - | - | - | R |
+
+The Home view is role-aware in the same way as the tenant Today ([6.3](#63-the-today-home-mvp)). A `platform_curator` lands on curation queue depth, publish velocity and plant-quality flags; a `platform_finance` user lands on MRR movement, dunning and refunds awaiting approval.
 
 ### 5.6 Public marketing site sitemap
 
-- **Home** `/` - hero with real product and real landscapes; proof (customer logos with permission, review ratings once earned); three pillars: Sell (design + AI + proposals), Run (schedule + crew app), Get paid (payments + books)
-- **Product** `/product` - tour pages: Design Studio, AI mockups, Plant intelligence, Estimating and proposals, Scheduling and routing, Crew app, Customer portal, Payments, Books, Marketing tools, Copilot and automations, Reporting
-- **Solutions** `/solutions` - by service line (lawn care and PHC, design-build, commercial maintenance, snow and ice, tree care, irrigation and lighting) and by size (solo/owner-operator, growing 5-25, multi-crew 25-150, multi-branch)
-- **Pricing** `/pricing` - tiers, AI credit explainer, payment fee transparency (Company's own Stripe pricing + Rootline application fee if any), calculator (see [22](22-business-model-pricing-gtm.md))
-- **Design my yard** `/design` - homeowner AI design funnel entry (see 5.7)
-- **Plant explorer** `/plants` - public, SEO-indexed subset of the KB: "Best shrubs for Zone 6b clay soil in the Ohio Valley" landing pages generated from curated palettes [V1]
-- **Compare** `/compare/jobber`, `/compare/lmn`, `/compare/aspire`, `/compare/service-autopilot` - factual, dated comparison pages with a "last verified" stamp
-- **Switch** `/switch` - migration guides and importers (Jobber, LMN, QuickBooks client lists, CSV)
-- **Customers** `/customers` - case studies; **Resources** `/resources` - blog, guides, free calculators (mulch and soil cubic yards, paver patio materials, fertilizer rate per 1,000 sq ft, snow route pricing), templates
-- **Partners** `/partners` - accountants, nurseries, suppliers, associations; **Trust** `/trust` - security, privacy, accessibility statement, status page, subprocessors
-- **Company** `/about`, `/careers`, `/contact`; **Auth** `/login`, `/start` (trial), `/demo`
+The marketing site has two jobs: convert landscape business owners into trials and demos, and convert homeowners into concepts that become leads for Rootline Companies. Every page leads to one of four conversions: start a trial, book a demo, design a yard, or switch from a named tool.
+
+```mermaid
+flowchart LR
+  HOME["Home"] --> PRODUCT["Product tours"]
+  HOME --> SOL["Solutions by service line and size"]
+  HOME --> PRICE["Pricing"]
+  HOME --> DESIGN["Design my yard"]
+  SEO["Plant Finder and free calculators"] --> DESIGN
+  SEO --> PRODUCT
+  COMPARE["Compare and Switch pages"] --> PRICE
+  PRODUCT --> TRIAL["Start trial"]
+  SOL --> DEMO["Book a demo"]
+  PRICE --> TRIAL
+  PRICE --> DEMO
+  DESIGN --> LEAD["Homeowner concept and lead"]
+  TRIAL --> WIZ["Setup wizard in the Company web app"]
+```
+
+- **Home** `/` [MVP] - hero with real product and real landscapes; proof (customer logos with permission, review ratings once earned); three pillars: Sell (design + AI + proposals), Run (schedule + crew app), Get paid (payments + books)
+- **Product** `/product` [MVP] - tour pages: Design Studio, AI mockups, Plant intelligence, Estimating and proposals, Scheduling and routing, Crew app, Customer portal, Payments, Books, Marketing tools, Copilot and automations, Reporting. Each tour uses real UI with the sample dataset, a 60-90 s captioned video (EN/ES) and a "Try it in the sandbox" link
+- **Solutions** `/solutions` [MVP] - by service line (lawn care and PHC, design-build, commercial maintenance, snow and ice, tree care, irrigation and lighting) and by size (solo/owner-operator, growing 5-25, multi-crew 25-150, multi-branch)
+- **Pricing** `/pricing` [MVP] - the Starter, Grow, Pro and Enterprise tiers; an AI credit explainer; payment fee transparency (the Company's own Stripe pricing, plus any opt-in Rootline application fee); and a "cost of your current stack" calculator (see [22](22-business-model-pricing-gtm.md)). Prices are shown, never "contact us" except for Enterprise
+- **Design my yard** `/design` [V1] - homeowner AI design funnel entry (see 5.7)
+- **Plant Finder** `/plants` [V1] - public, SEO-indexed subset of the KB: "What grows here" by ZIP, and "Best shrubs for Zone 6b clay soil in the Ohio Valley" landing pages generated from curated palettes ([12](12-plant-knowledge-base.md), [22](22-business-model-pricing-gtm.md)). Each page ends in "Design my yard with these plants" and "Find a pro near you" [V2]
+- **Compare** `/compare/jobber`, `/compare/lmn`, `/compare/aspire`, `/compare/service-autopilot` [V1] - factual, dated comparison pages with a "last verified" stamp and a link to the vendor's own pricing page
+- **Switch** `/switch` [MVP] - migration guides and importers (Jobber, LMN, QuickBooks client lists, CSV), with what moves automatically and what does not
+- **Customers** `/customers` [V1] - case studies; **Resources** `/resources` [MVP] - blog, guides, free calculators (mulch and soil cubic yards, paver patio materials, fertilizer rate per 1,000 sq ft, snow route pricing), templates
+- **Partners** `/partners` [V1] - accountants, nurseries, suppliers, associations; **Trust** `/trust` [MVP] - security, privacy, accessibility statement and ACR, status page, subprocessors
+- **Company** `/about`, `/careers`, `/contact` [MVP]; **Auth** `/login`, `/start` (trial), `/demo` [MVP]
 - Locales: `/es/...` [V1], `/fr-ca/...` [V2] with hreflang
 
 ### 5.7 Homeowner AI design funnel
@@ -475,7 +537,7 @@ Funnel pages and rules:
 ### 5.8 URL, ID and object conventions
 
 - Routes use plural nouns and opaque IDs: `/clients/cl_8f2k...`. Human-readable numbers (`C-0412` client, `P-1188` property, `E-2290` estimate, `PR-2290` proposal, `J-1042` job, `V-58813` visit, `INV-3307` invoice, `JE-10442` journal entry) are tenant-scoped sequences shown in UI, used in search and in client-facing documents. [MVP]
-- Every record page is linkable and shareable inside the tenant; links to records the viewer cannot access show a permission explanation and a "Request access" action, never a blank 404. [MVP]
+- Every record page is linkable and shareable inside the tenant. A link to a record the viewer cannot access shows a permission state ("You don't have access to this job. Ask Dana Henderson (owner) or request access.") with a "Request access" action, never a blank 404. The permission state never reveals the record's title, client name or amount: the object type and the human-readable number from the URL are all it shows. Links into another tenant, or to records that do not exist, show the same generic "Not found or not available" page, so a URL cannot be used to probe whether a record exists. This matches the no-leak rule in [6.2](#62-global-search-and-command-palette-mvp). [MVP]
 - Deep links work across surfaces: an office link `app.rootline.com/acme/visits/V-58813` opened on a phone with the crew app installed opens the Visit screen. [V1]
 - Filters and views are encoded in the URL (`?view=past-due&sort=-balance`) so views are shareable and bookmarkable. [MVP]
 
@@ -648,6 +710,8 @@ Rules: newest first, grouped by day, "Show system events" off by default for non
 | X | Select row | Shift Click | Range select |
 | Ctrl/Cmd Enter | Submit / send | Esc | Close panel / cancel |
 | [ / ] | Previous / next day (dispatch) | Ctrl/Cmd Z | Undo last change |
+| R then S | Reschedule selection | A then P | Approve (approval queues) |
+| . | Open Copilot panel on current context | Alt/Option 1-9 | Jump to record tab 1-9 |
 
 Single-key shortcuts are off when focus is in a text field and can be disabled per user (WCAG 2.1.4 Character Key Shortcuts).
 
@@ -701,7 +765,7 @@ Earthy but modern: warm stone neutrals carry 90% of the UI; Moss is the brand an
 | **Marigold** (sun) | Warnings, attention, offline banner, "pending" | 100 `#FBEFCF`, 300 `#F2CB6B`, 400 `#E8B03A`, 600 `#A87410`, 800 `#6B4806` |
 | **Sky** (water) | Info, links on dark panels, irrigation layer, focus ring | 50 `#EBF4FA`, 100 `#DCEBF5`, 500 `#2F7FB5`, 600 `#246690`, 700 `#1B4F70` |
 | **Ember** (danger) | Errors, destructive actions, overdue, removal marks on plans | 50 `#FEF1EF`, 100 `#FDE4E1`, 500 `#D63A2B`, 600 `#B42318`, 700 `#8F1C13` |
-| **Iris** (AI) | AI-generated content, Copilot, AI credits | 50 `#F1EFFC`, 500 `#6B5BD2`, 600 `#5646B8` |
+| **Iris** (AI) | AI-generated content, Copilot, AI credits | 50 `#F1EFFC`, 500 `#6B5BD2`, 600 `#5646B8`, 700 `#463A9A` |
 
 **Verified contrast (WCAG 2 ratios, computed for this doc):**
 
@@ -826,7 +890,7 @@ Tenants customize within guardrails; the system guarantees accessibility regardl
 | Corner style | Square (2 px), Soft (8 px), Round (16 px) | Applies to cards and buttons |
 | Hero image | Upload or choose from the Company's best job photos | Auto-crop with focal point; text never overlays the photo without a scrim |
 | Custom domain | `portal.acmelandscapes.com` | Automated TLS; DNS checker wizard |
-| "Powered by Rootline" | Shown on Starter; removable on higher tiers (see [22](22-business-model-pricing-gtm.md)) | Small footer mark only |
+| "Powered by Rootline" | Shown at MVP on all tiers; removable on Pro and Enterprise from V1 (per [06](06-customer-portal.md) 4.1.6 and [22](22-business-model-pricing-gtm.md)) | Small portal footer mark only; never inside client emails or SMS |
 
 A live preview shows portal home, a proposal, an invoice email and an SMS on phone and desktop side by side, with a contrast report ("Your green #6DBE45 was adjusted to #3E7A22 for buttons so white text stays readable").
 
@@ -852,8 +916,8 @@ Three tiers, one source of truth:
 |---|---|---|
 | `light` | Web app, admin, portal default | Stone 25 canvas, white surfaces, Moss primary |
 | `dark` [V1] | Web app, admin | Stone 950 canvas, `#211E1A` surfaces, Moss 300 primary with dark text; selected, not auto-inverted |
-| `field-sun` | Crew app | Pure white background, near-black text (`#000000`/Stone 950), Moss 700 primary (9.47:1 with white), heavier borders (Stone 600, 6.59:1), no shadows or gradients, minimum weight 500 for body |
-| `field-night` [V1] | Crew app | Black background, `#F3F0EA` text (18.46:1), reduced brightness accents for pre-dawn snow routes and lighting service calls; red-shifted accent to preserve night vision |
+| `field-sun` | Crew app | User-facing name **"Outdoor mode"** (the term [05](05-field-crew-mobile-app.md) uses). Pure white background, near-black text (`#000000`/Stone 950), Moss 700 primary (9.47:1 with white), heavier borders (Stone 600, 6.59:1), no shadows, gradients or translucent surfaces, minimum weight 500 for body, every text pair >= 7:1 |
+| `field-night` [V1] | Crew app | User-facing name **"Night mode"**. Black background, `#F3F0EA` text (18.46:1), reduced brightness accents for pre-dawn snow routes and lighting service calls; red-shifted accent to preserve night vision |
 | `portal-brand` | Customer Portal, client emails, proposals | Light theme with tenant brand tokens injected and auto-corrected (7.7) |
 | `print` | PDFs: proposals, invoices, plans, install sheets | CMYK-safe values, no backgrounds behind body text, line weights in mm |
 | `forced-colors` | All web | Respects Windows High Contrast / forced-colors; uses system colors; status relies on icons + text |
@@ -874,17 +938,17 @@ Three tiers, one source of truth:
 | `color.action.danger.bg` | Ember 600 | Ember 500 | Ember 700 |
 | `color.focus.ring` | Sky 600 | `#6FB3E0` (8.13:1 on Stone 950) | `#000000` 3 px |
 | `color.status.success` | Moss 700 on Moss 50 | Moss 300 on `#1C2A19` | Moss 800 |
-| `color.status.warning` | Marigold 800 on Marigold 100 | Marigold 300 on `#2E2510` | Marigold 800 on Marigold 300 |
+| `color.status.warning` | Marigold 800 on Marigold 100 | Marigold 300 on `#2E2510` | Stone 950 on Marigold 300 (11.95:1) |
 | `color.status.danger` | Ember 600 on Ember 50 | Ember 100 on `#3A1714` | Ember 700 |
 | `color.status.info` | Sky 700 on Sky 50 | Sky 100 on `#132836` | Sky 700 |
-| `color.ai.fg` / `.bg` | Iris 600 / Iris 50 | `#B4AAF0` / `#25203F` | Iris 600 / Iris 50 |
+| `color.ai.fg` / `.bg` | Iris 600 / Iris 50 | `#B4AAF0` / `#25203F` | Iris 700 / Iris 50 (7.93:1) |
 | `color.money.in` / `.out` | Moss 700 / Stone 900 with minus sign | Moss 300 / Stone 100 | Moss 800 / black |
 
-Every text/background pair in this table was computed against WCAG 2 and passes AA; the tightest pairs are white text on the dark-theme danger button (Ember 500, 4.67:1) and white on a tenant-adjusted brand button such as `#3E7A22` (5.23:1).
+Every text/background pair in this table was computed against WCAG 2 and passes AA. The tightest pairs are white text on the dark-theme danger button (Ember 500, 4.67:1) and white on a tenant-adjusted brand button such as `#3E7A22` (5.23:1). The review pass recomputed the table and changed the field-sun warning pair from Marigold 800 on Marigold 300 (5.30:1, below the field-sun 7:1 target) to Stone 950 on Marigold 300 (11.95:1). It also changed the field-sun AI pair from Iris 600 on Iris 50 (6.24:1) to a new Iris 700 `#463A9A` on Iris 50 (7.93:1). Every field-sun pair now clears 7:1.
 
 Money is never encoded by red/green alone: negative amounts always show a minus sign or parentheses (ledger convention, user setting) and credits/debits are labeled.
 
-### 8.4 Spacing, layout, radius, elevation, density
+### 8.4 Spacing, layout, radius, elevation, density [MVP]
 
 - **Spacing:** 4 px base: `space.0.5`=2, `1`=4, `2`=8, `3`=12, `4`=16, `5`=20, `6`=24, `8`=32, `10`=40, `12`=48, `16`=64.
 - **Grid:** web 12-column fluid with 24 px gutters at >= 1280, 16 px below; content max width 1440 for reading pages, full width for boards and canvas.
@@ -1059,7 +1123,7 @@ Validation results: light mode worst adjacent CVD separation dE 11.0 (target >= 
 | `bp.xl` | 1280 | Laptops, desktop | Right rail docked; dispatch board full |
 | `bp.2xl` | 1536 | Large monitors | Dispatch shows map + board + unscheduled tray simultaneously; Studio shows both side palettes |
 
-### 11.2 Surface support matrix
+### 11.2 Surface support matrix [MVP]
 
 | Surface / screen | Phone (< 768) | Tablet (768-1279) | Desktop (>= 1280) |
 |---|---|---|---|
@@ -1079,11 +1143,15 @@ Rules:
 - **Performance budgets** (release gates): office app INP p75 < 200 ms, LCP p75 < 2.5 s on a mid-range laptop over 4G-equivalent; portal LCP p75 < 2.0 s on a mid-range Android over 4G; crew app cold start < 2.5 s on a 3-year-old mid-range Android; Today route list render < 300 ms from local DB.
 - **Low-end Android first** for the crew app: test matrix includes devices with 3-4 GB RAM and older Android versions still common among BYOD crews (exact matrix maintained by QA, see [05](05-field-crew-mobile-app.md)).
 
-### 11.3 Native platform conventions (crew app)
+### 11.3 Native platform conventions (crew app) [MVP]
 
 - iOS: back swipe allowed (with visible back button too), share sheet for PDFs, Tap to Pay on iPhone for field payments [V1].
 - Android: system back respected, Material-style snackbars mapped to our Toast, edge-to-edge with safe areas.
 - Both: biometric/passkey unlock, camera and location permission primers explaining why before the OS prompt ("We use your location only while you're clocked in, to show the office you arrived at 1420 Maple St."), background location only when the Company enables GPS tracking and the worker is clocked in (policy in [15](15-team-hr-payroll.md)).
+- **Translucent system chrome (iOS 26 and later).** Apple's current design language draws tab bars and toolbars as translucent glass over content (verify against the current Human Interface Guidelines). Translucency behind text is exactly what fails in direct sun. Rules: (1) content surfaces under text are always opaque; (2) in Outdoor mode the crew app's own bottom bar and action bar render opaque, with a 2 px Stone 600 top border; (3) the app honors the OS "Reduce Transparency" and "Increase Contrast" settings everywhere; (4) the sun test (24.2) runs on the newest iOS release each September before we adopt any new system material.
+- **Edge-to-edge (Android 15 and later).** Apps targeting recent Android SDKs draw edge-to-edge by default (verify the current target-SDK rules). The crew app pads the primary action bar with the navigation-bar inset, so the 64 px primary button never sits under the gesture handle, and tests both 3-button and gesture navigation.
+- **Notification permission.** Android 13+ requires a runtime notification permission, and iOS asks once. The app shows a primer screen first ("Get a buzz when the office changes your route"). If the worker declines, a persistent banner on Today explains what they will miss, and P1 messages fall back to SMS per [16.2](#162-priority-levels-and-routing-mvp).
+- **Platform text scaling.** Dynamic Type (iOS) and font scale (Android) up to 200% reflow the route list into a single column, with the stop number and client name on the first line and the service and time on the second. Primary buttons grow in height and never truncate their verb.
 
 ---
 
@@ -1092,7 +1160,8 @@ Rules:
 ### 12.1 Commitment [MVP]
 
 - Conformance target: **WCAG 2.2 Level AA** on all web surfaces and the equivalent on native (mapped to platform accessibility APIs). WCAG 2.2 was published in October 2023 and added nine success criteria, six of them at A/AA ([Deque](https://dequeuniversity.com/resources/wcag-2.2); [PowerMapper](https://www.powermapper.com/blog/wcag-2.2-released/)).
-- Publish an Accessibility Conformance Report (VPAT 2.x format) for the office app and portal [V1]; commercial buyers (municipal and institutional property managers) increasingly ask for one in procurement, and US state and local governments are subject to the Department of Justice's 2024 ADA Title II web rule referencing WCAG 2.1 AA (as of Nov 2026, verify scope and dates with counsel). Ontario's AODA requires WCAG 2.0 AA for many organizations (verify). Designing to 2.2 AA covers these.
+- Publish an Accessibility Conformance Report (VPAT 2.x format) for the office app and portal [V1]. Commercial buyers (municipal and institutional property managers) increasingly ask for one in procurement. US state and local governments are subject to the Department of Justice's 2024 ADA Title II rule, which adopts WCAG 2.1 AA for web content and mobile apps. As published, compliance dates were April 2026 for entities serving 50,000 or more people and April 2027 for smaller entities. ada.gov could not be reached in the review pass, so verify current dates and any extensions with counsel. Cities and park districts that hire landscape Companies will ask whether the portal and documents those Companies send meet the standard. Ontario's AODA requires WCAG 2.0 AA public websites for designated organizations (verify scope). Designing to 2.2 AA covers all of these.
+- **Who carries the obligation.** Rootline is a vendor to Companies, and Companies are vendors to clients. We cannot guarantee a tenant's own uploads (scanned PDFs, photos without captions) are accessible, so the product makes the accessible path the default. Proposals and invoices are generated as tagged PDFs with real text. Image uploads prompt for alt text, with an AI draft (23.2). The template editor warns when a tenant writes "click the green button."
 - Accessibility is in the Definition of Done for every UI story (section 24.6).
 
 ### 12.2 WCAG 2.2 new criteria: how Rootline meets them
@@ -1106,6 +1175,9 @@ Rules:
 | 3.3.7 Redundant Entry | A | Data entered earlier in a process is auto-filled or selectable (lead -> property -> proposal -> invoice addresses; funnel quiz answers carried into the Company's assessment). |
 | 3.3.8 Accessible Authentication (Minimum) | AA | No cognitive tests: passkeys, magic links, paste allowed in all password and OTP fields, OTP autofill (`autocomplete="one-time-code"`), no image-puzzle CAPTCHA (use invisible risk scoring with an accessible fallback). |
 | 4.1.1 Parsing | removed in 2.2 | n/a (still validate markup in CI) |
+| 2.4.12 Focus Not Obscured (Enhanced), 2.4.13 Focus Appearance | AAA (exceeded where cheap) | The 2 px Sky 600 ring with 2 px offset (6.22:1 on white) meets the 2.4.13 area and 3:1 change-of-contrast tests on every surface except the canvas. In the Design Studio the ring becomes a 2 px dashed outline plus the object-outline selection, because focus on a dense canvas can sit under labels. |
+| 2.5.5 Target Size (Enhanced) | AAA (met in crew app and portal) | 44 x 44 CSS px minimum in the portal and 56 px in the crew app. The office app stays at AA (24 px) because of its dense tables, and offers `touch` density as the escape hatch. |
+| 3.3.9 Accessible Authentication (Enhanced) | AAA (met) | Passkeys and magic links need no object or personal-content recognition. Staff never get an image CAPTCHA. |
 
 ### 12.3 Pattern-level requirements [MVP]
 
@@ -1147,7 +1219,7 @@ Platform guidance sets 44 x 44 pt (Apple) and 48 x 48 dp (Material) minimum touc
 | `en-US` | All | [MVP] | Source language |
 | `en-CA` | All | [MVP] | Spelling (colour, cheque) in client-facing documents; Canadian tax labels; metric-friendly defaults |
 | `es-US` (Latin American Spanish, US usage) | Crew app, Customer Portal, client messages, proposals/invoices | [MVP] | Office web app Spanish [V1]; workforce driver: ~44.5% of US landscaping and groundskeeping workers were Hispanic in 2024 ([Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers)) |
-| `fr-CA` | Portal, client documents, crew app, then office app | [V1] portal and documents, [V2] full | Quebec French terminology; legal review for Quebec's Charter of the French Language obligations (as amended by Bill 96) before selling into Quebec (verify current requirements) |
+| `fr-CA` | Portal, client documents, crew app, then office app | [V1] portal and documents, [V2] full | Quebec French terminology. For Clients with Quebec Properties, French versions of contracts and the portal are offered by default ([06](06-customer-portal.md)), and this is a launch gate for Quebec-based Companies. Legal review of the [Charter of the French Language](https://www.legisquebec.gouv.qc.ca/en/document/cs/C-11) (as amended by Bill 96) is required before selling into Quebec (verify current requirements) |
 | RTL locales | None at launch | [V3] | RTL-ready architecture only |
 
 ### 13.2 Three independent language settings [MVP]
@@ -1155,6 +1227,8 @@ Platform guidance sets 44 x 44 pt (Apple) and 48 x 48 dp (Material) minimum touc
 1. **User UI language** (each staff member and crew member chooses; default from device).
 2. **Company default language** (for new users and templates).
 3. **Client communication language** per Client/Contact (proposals, invoices, SMS, emails, portal default). A Spanish-speaking homeowner gets a Spanish proposal even if the office works in English.
+
+**Quebec jurisdiction rule** [V1, before any Quebec sale]: when a Property is in Quebec, the proposal and e-sign flow shows the French version first. The client gets a clearly labeled "Read and sign in English" choice only after the French version was presented, and the choice is stored with the signature evidence. This follows our reading of the Charter's French-first rule for standard-form (adhesion) contracts, which counsel must confirm before launch ([28](#28-open-questions)). Payment pages, receipts and the portal shell for those clients default to `fr-CA`.
 
 Templates (proposal, invoice, SMS, email) are maintained per language; when a translation is missing the editor shows a warning and offers an AI draft translation for human review [V1]. Client-facing AI translations are never sent without review unless the Company explicitly enables auto-send for low-risk messages (reminders, "on the way").
 
@@ -1168,19 +1242,19 @@ Templates (proposal, invoice, SMS, email) are maintained per language; when a tr
 - Sorting and search are locale-aware (collation; accent-insensitive search so "jardin" finds "jardín").
 - Names: single "Display name" plus optional given/family fields; no assumptions about name order; support for two family names common in Spanish-speaking cultures.
 
-### 13.4 Formats
+### 13.4 Formats [MVP]
 
 | Element | en-US | en-CA | es-US | fr-CA |
 |---|---|---|---|---|
 | Date (UI) | Nov 7, 2026 | Nov 7, 2026 | 7 nov 2026 | 7 nov. 2026 |
-| Date (numeric, forms) | 11/07/2026 | 2026-11-07 | 07/11/2026 | 2026-11-07 |
-| Time | 2:30 PM | 2:30 p.m. | 2:30 p. m. | 14 h 30 |
+| Date (numeric, forms) | 11/07/2026 | 2026-11-07 | 7/11/2026 (day first) | 2026-11-07 |
+| Time | 2:30 PM | 2:30 p.m. | 2:30 p.m. | 14 h 30 |
 | Currency | $1,234.56 | $1,234.56 (CA$ when ambiguous) | $1,234.56 | 1 234,56 $ |
 | Decimal | 12.5 | 12.5 | 12.5 | 12,5 |
 | Week start | Sunday | Sunday | Sunday | Sunday (Monday option) |
 | Tax labels | Sales tax | GST / HST / PST | Impuesto sobre las ventas | TPS / TVH / TVQ |
 
-To avoid day/month ambiguity in North American bilingual crews, UI dates use month names ("Nov 7") rather than numeric formats wherever space allows; exports and APIs use ISO 8601.
+To avoid day/month ambiguity in North American bilingual crews, UI dates use month names ("Nov 7") rather than numeric formats wherever space allows. Exports and APIs use ISO 8601. The ambiguity is real: CLDR 48 short dates (checked with Node.js `Intl`) render November 7 as `11/7/26` in `en-US` but `7/11/2026` in `es-US`. An English-speaking office manager and a Spanish-speaking crew lead looking at the "same" numeric date would read different months. Numeric dates therefore never appear in the crew app, and numeric date inputs always show the month name back ("7/11/2026 = 7 nov 2026") before saving. Format rules come from CLDR via `Intl` at runtime and are never hand-written. A unit test pins the table above to the CLDR version shipped with the runtime, so a CLDR update that changes a format fails CI rather than silently changing invoices.
 
 ### 13.5 Units of measure [MVP]
 
@@ -1237,8 +1311,9 @@ A controlled glossary (maintained by the content designer with field-validated t
 | 1 | Company basics | Confirm logo (auto-fetched from website URL if given), address, time zone, units, currency, languages, season dates | Geocodes address -> assigns default **Region** (hardiness zone, ecoregion) and regional plant palette; suggests season (e.g., "Mowing Apr 1 - Nov 15") from region climate data | Partly |
 | 2 | Services and price book | Pick starter kits per service line; answer 5 calibration questions ("How many cubic yards of mulch can a 3-person crew install per hour?", "Your loaded labor cost per hour?", "Target gross margin?") | Builds price book items, kits/assemblies and production rates; shows illustrative sample prices computed from the answers (e.g., "Weekly mowing, 8,000 sq ft lot: $52/visit") for a sanity check ([03](03-crm-sales-estimating-proposals.md)) | Yes (defaults applied) |
 | 3 | Import clients | Upload CSV/Excel, or connect QuickBooks Online / Jobber export / Google Contacts; LMN and Service Autopilot exports [V1] | AI-assisted column mapping with confidence; address validation and geocoding; duplicate detection (name + address + phone); preview of 10 rows; background import with a report; creates Properties; optional import of recurring services [V1] and open balances (as opening AR in the ledger) | Yes |
-| 4 | Connect Stripe | "Connect your Stripe account" (create new or connect existing via Stripe Connect OAuth); choose payment methods (card, ACH, wallets) and payout schedule in Stripe | Explains in plain words that client money goes directly to the Company's Stripe account and that Rootline never holds it; verifies capabilities; sets statement descriptor; flags incomplete Stripe onboarding on the checklist ([08](08-payments-stripe.md)) | Yes ("Invoices can show check/ACH instructions until then") |
-| 5 | Accounting setup | Choose: **Rootline Books as your books** or **Sync to QuickBooks Online / Xero**; pick chart-of-accounts template (Design-build, Lawn and maintenance, Snow-heavy, General; US or Canada variants with GST/HST/PST/QST accounts); set books start date | Creates accounts, tax codes, default item -> income account mappings; for sync mode, runs OAuth and mapping wizard ([09](09-accounting-ledger-integrations.md)) | Yes |
+| 4 | Connect Stripe | "Connect your Stripe account": connect an existing account (Stripe Connect OAuth) or create one through Stripe-hosted onboarding (Account Links), per [08](08-payments-stripe.md); choose payment methods (card, ACH, wallets; Canadian PAD for CA Companies) and payout schedule in Stripe. Companies that insist on restricted API keys use the "Advanced" link, which is hidden behind a disclosure, owner-only and explained | Explains in plain words that client money goes directly to the Company's Stripe account and that Rootline never holds it; verifies capabilities; sets statement descriptor; flags incomplete Stripe onboarding on the checklist ([08](08-payments-stripe.md)) | Yes ("Invoices can show check/ACH instructions until then") |
+| 4a | Turn on texting | Confirm the business legal name, EIN or BN, address, website and sample messages for the carrier registration form. Most of it is prefilled from steps 0-1, and the user reviews it in plain language ("Carriers need to know who is texting your clients") | Submits A2P 10DLC brand and campaign registration on the Company's Twilio subaccount ([16](16-marketing-growth-communications.md), [20](20-architecture-security.md)). Carrier review takes days, so the checklist row shows "In review", with the submitted date and what to expect. Email and push work immediately; client SMS turns on when approved; rejections come back with the carrier's reason and a fix-it form | Yes (SMS stays off until done) |
+| 5 | Accounting setup | Choose: **Rootline Ledger as your books** (the built-in double-entry Ledger, shown in the nav as "Books") or **Sync to QuickBooks Online / Xero**; pick chart-of-accounts template (Design-build, Lawn and maintenance, Snow-heavy, General; US or Canada variants with GST/HST/PST/QST accounts); set books start date | Creates accounts, tax codes, default item -> income account mappings; for sync mode, runs OAuth and mapping wizard ([09](09-accounting-ledger-integrations.md)) | Yes |
 | 6 | Invite your team | Add people (name, mobile, role, language), group into crews with a crew lead and truck | Sends SMS invites in each person's language with app download link and one-tap sign-in; explains time and GPS policy to workers before first clock-in | Yes |
 | 7 | Brand your portal | Logo, color, font pair, hero photo; preview | Auto-corrects contrast; generates email/SMS templates with brand | Yes |
 | 8 | First win (choose one) | (a) **Design and propose**: pick a real client, trace a bed on satellite, drop plants from the regional palette, generate a mockup, push takeoff to an estimate, send a proposal. (b) **Run a route**: pick 10 weekly mowing clients, set frequency, auto-build and optimize routes, send the crew app link. (c) **Get paid**: send an invoice with a pay link. | Guided coach marks; sample content offered if the Company has no clients yet; celebration on completion | Yes |
@@ -1255,8 +1330,10 @@ flowchart TD
   IMPORT -->|"Not yet"| SAMPLE["Explore with sample data"]
   DEDUPE --> STRIPE["Connect Stripe"]
   SAMPLE --> STRIPE
-  STRIPE --> BOOKS{"Books in Rootline or sync?"}
-  BOOKS -->|"Rootline Books"| COA["Choose chart-of-accounts template"]
+  STRIPE --> TEXT["Submit texting registration (10DLC)"]
+  TEXT -.->|"Carrier review runs in background"| CHECK["Checklist shows In review"]
+  TEXT --> BOOKS{"Books in Rootline or sync?"}
+  BOOKS -->|"Rootline Ledger"| COA["Choose chart-of-accounts template"]
   BOOKS -->|"QuickBooks or Xero"| SYNC["Connect and map accounts"]
   COA --> TEAM["Invite team and set crews"]
   SYNC --> TEAM
@@ -1596,8 +1673,8 @@ Key behaviors: quantities flow from the Design takeoff and stay linked (a "desig
 +------------------------------------------------------------------------------------------------------+
 | [ Hero image: AI mockup of the finished entrance, labeled "AI concept" ]                             |
 |                                                                                                      |
-| Entrance renovation for Ridgeview HOA                   Prepared by Jose Ramirez, Nov 6, 2026        |
-| Valid until Dec 6, 2026                                                                              |
+| Entrance renovation for Ridgeview HOA                   Prepared by Jose Ramirez, Nov 9, 2026        |
+| Valid until Dec 9, 2026                                                                              |
 |------------------------------------------------------------------------------------------------------|
 | Choose your option                                                                                   |
 | +----------------------------+ +----------------------------+ +----------------------------+         |
@@ -1624,7 +1701,7 @@ Key behaviors: quantities flow from the Design takeoff and stay linked (a "desig
 +------------------------------------------------------------------------------------------------------+
 ```
 
-Key behaviors: on phones the option cards stack and the total/approve bar is sticky at the bottom; selecting an option updates the plan, plant list and total; line-item comments create a thread for the estimator; e-sign then deposit payment via Stripe Elements on the Company's connected account ([08](08-payments-stripe.md)); commercial clients see "Approve within your authority ($50,000)" or "Route to board" ([06](06-customer-portal.md)).
+Key behaviors: this snapshot is from Nov 9, after the owner approved E-2290 from Today ([18.2](#182-owner-today-dashboard)) and the estimator sent PR-2290; on phones the option cards stack and the total/approve bar is sticky at the bottom; selecting an option updates the plan, plant list and total; line-item comments create a thread for the estimator; e-sign then deposit payment via Stripe Elements on the Company's connected account ([08](08-payments-stripe.md)); commercial clients see "Approve within your authority ($50,000)" or "Route to board" ([06](06-customer-portal.md)).
 
 ### 18.7 Design Studio
 
@@ -1806,7 +1883,7 @@ Key behaviors: field-level diff with accept/reject; region profiles show real-wo
 | Attachments: WIP schedule Oct.pdf    Source: Job costing > WIP > Oct 2026   [Open source]            |
 | Plain language: "Moves $4,812.00 of revenue earned on the Henderson patio into October."             |
 | (seedling) Copilot: "Matches the WIP schedule. Reverses automatically on Nov 1." [Set auto-reverse]  |
-| Audit: created by Priya (bookkeeper) Nov 2, 9:14 am   QuickBooks: not synced (Books is SoR)          |
+| Audit: created by Priya (bookkeeper) Nov 2, 9:14 am   QuickBooks: not synced (Ledger is the SoR)     |
 +------------------------------------------------------------------------------------------------------+
 ```
 
@@ -1816,8 +1893,8 @@ Key behaviors: debits and credits must balance before Post; posted entries are i
 
 ```text
 +------------------------------------------------------------------------------------------------------+
-| ADMIN  Tenants / Acme Landscapes LLC (tn_7Kq...)  Plan: Growth (annual)  Health 82 (up 4)            |
-| Columbus, OH | Region Ohio Valley 6a | 6 crews, 31 users | Since Mar 2026 | Data: US-East            |
+| CONSOLE  Tenants / Acme Landscapes LLC (tn_7Kq...)  Plan: Grow (annual)  Health 82 (up 4)            |
+| Columbus, OH | Region Ohio Valley 6a | 6 crews, 37 users | Since Mar 2026 | Data: US-East            |
 | [Impersonate (request consent)] [Add note] [Flags] [Billing] [...]            Owner: Dana H.         |
 +-------------------------------------------------------------+----------------------------------------+
 | Overview | Usage | Billing | AI | Payments | Users | Support| Flags | Audit | Danger zone            |
@@ -1828,11 +1905,12 @@ Key behaviors: debits and credits must balance before Post; posted entries are i
 |  Crew app WAU     27 / 29 field users                       |  Churn risk: Low                       |
 | Usage (30 days)                                             |  Expansion: Snow module trial          |
 |  Visits 3,412  Proposals 64  Designs 19  Invoices 1,108     |----------------------------------------|
-| AI credits  Used 1,840 / 2,500  Run-out projected Nov 24    | Stripe Connect                         |
+| AI credits  Used 840 / 2,000 (Grow)  Run-out proj. Nov 17   | Stripe Connect                         |
 |  [Grant 500 credits (reason required)]                      |  acct_1P...  Standard  Charges on      |
 | SaaS billing                                                |  Payouts on   Disputes 30 d: 1         |
-|  MRR $649   Next invoice Dec 1   Card on file, current      |  App fee 30 d: $412.30                 |
-| Accounting: Rootline Books + QuickBooks sync (one-way)      |----------------------------------------|
+|  MRR $634 = $249 base + 5 office + 19 field seats           |  App fee 30 d: $0.00 (not opted in)    |
+|  Next invoice Dec 1   Card on file, current                 |                                        |
+| Accounting: Rootline Ledger + QuickBooks sync (one-way)     |----------------------------------------|
 |  Last sync 2 h ago  Errors 1 [View]                         | Impersonation log                      |
 |                                                             |  Oct 12 J. Park (support) 14 min, RO   |
 +-------------------------------------------------------------+----------------------------------------+
@@ -1845,11 +1923,12 @@ Key behaviors: impersonation requires tenant consent or break-glass reason and i
 ```text
 +------------------------------------------------------------------------------------------------------+
 | Today                                                                                                |
-| +-- Get Acme Landscapes ready  -  5 of 8 done (62%) -----------------------------------------------+ |
+| +-- Get Acme Landscapes ready  -  5 of 9 done (56%) -----------------------------------------------+ |
 | | (check) Company basics and region                                                                | |
 | | (check) Services and price book (3 starter kits)                                                 | |
 | | (check) Import clients: 412 imported, 18 need fixes          [Fix now]                           | |
 | | ( )     Connect Stripe to get paid online        about 10 min  [Start]                           | |
+| | (...)   Texting: carrier review in progress (submitted Nov 5, usually a few days)  [Details]     | |
 | | ( )     Choose how you keep your books           about 5 min   [Start]                           | |
 | | (check) Invite your team: 9 of 11 accepted                    [Resend 2]                         | |
 | | (check) Brand your portal                                                                        | |
@@ -1860,7 +1939,7 @@ Key behaviors: impersonation requires tenant consent or break-glass reason and i
 
 Wizard step 5 of 8: Choose how you keep your books
 +------------------------------------------------------------------------------------------------------+
-| ( ) Use Rootline Books (recommended)        ( ) Keep QuickBooks or Xero, and sync                    |
+| ( ) Use Rootline Ledger (recommended)       ( ) Keep QuickBooks or Xero, and sync                    |
 |     A full double-entry ledger, built in.        We'll send invoices, payments and bills to          |
 |     Your CPA gets their own login.               your accounting system. [QuickBooks Online] [Xero]  |
 |                                                                                                      |
@@ -1881,14 +1960,16 @@ Wizard step 5 of 8: Choose how you keep your books
 |      Reschedule tomorrow's visits for a crew...                          |
 | Clients                                                                  |
 |      Ridgeview HOA  - 3 properties - Commercial              C-0388      |
-| Jobs                                                                     |
-|      J-1077 Ridgeview HOA entrance renovation (Estimate)     E-2290      |
+| Estimates                                                                |
+|      E-2290 Ridgeview HOA entrance renovation (Draft)        $46,600     |
 | Ask Copilot                                                              |
 |      (seedling) "resched ridgeview" - ask Copilot to plan it             |
 |--------------------------------------------------------------------------|
 | Up/Down to move   Enter to run   Tab to scope   Esc to close             |
 +--------------------------------------------------------------------------+
 ```
+
+Key behaviors: the abbreviation "resched" matches the verb "Reschedule" through a synonym and abbreviation list ("resched", "re-sched", "move", "push" in a snow context), maintained per locale. In Spanish, "reprogramar" and "mover" map to the same action. The action row shows the scope it will act on ("Ridgeview HOA, 3 properties, 6 visits this week") before Enter. Running it opens the reschedule side panel with a preview, never a silent bulk change. The Estimates group shows the draft E-2290 because the user has `estimator` rights. A `technician` typing the same query would see nothing from Sales and would get no hint that the estimate exists.
 
 ### 18.16 Homeowner funnel: measure step (phone)
 
