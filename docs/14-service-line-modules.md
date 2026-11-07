@@ -563,6 +563,20 @@ Common contract parameters:
 - **Priority areas and no-service areas** (from the site map).
 - **Hauling/relocation and standby** priced separately.
 - **Weather station of record** for billing disputes (named station or provider).
+- **Client notification preferences:** per site, who gets "serviced" notices (none, per visit, per event summary) and by which channel; client_commercial users see per-site status in the portal ([06](06-customer-portal.md) snow service log [V1]; live storm board [V2]).
+
+**Contract clause library [V1].** Snow Terms render into the agreement from a versioned clause library, so the rules the billing engine evaluates are the same words the client signed:
+
+| Clause | What it fixes | Engine binding |
+|---|---|---|
+| Event definition and merge window | When an event starts, ends and merges | `merge_window_hours`, event boundary rules (4.3.3) |
+| Station of record and fallback chain | Whose inches count for bands, caps and per-inch true-ups | `station_of_record`, fallback order (11.1) |
+| Trigger depths and service levels by area | What "triggered" and "open by 7 a.m." mean per polygon | Site map features and priorities (4.3.2) |
+| No-service and client-responsibility areas | Areas the client told you not to treat, in writing | Generates the written confirmation SIMA guidance recommends (4.3.2) |
+| Hazard and incident reporting duty | Client must report known hazards and incidents within a stated time (e.g., 24 hours) | Incident intake (4.3.6) |
+| Indemnification and insurance | Who indemnifies whom; additional insured requirements | **Jurisdiction guardrail:** a number of US states have enacted laws that void snow-contract clauses requiring the contractor to indemnify the property owner for the owner's own negligence, an issue SIMA has campaigned on (review-pass addition; verify the current state list before shipping the pack). Where the pack says a one-sided clause is void, the clause library offers the mutual version only and warns the estimator. |
+| Not-to-exceed and approval for extras | Hauling, relocation, standby, extra applications above caps | NTE caps and client approval (portal one-tap) |
+| Seasonal installments and true-ups | Floors, caps, per-inch indexing | Event billing (4.3.8) and season-end true-up |
 
 Validation rules:
 - A site cannot be dispatched without a Snow Terms block, an approved site map (warning only at V1 launch; hard requirement in V2) and, for subcontracted sites, a valid subcontractor COI on file ([13](13-operations-inventory-equipment.md)).

@@ -364,6 +364,10 @@ A public, branded experience on the Company's site (and embeddable) that lets a 
 2. Record **consent provenance** from the marketplace (the consumer requested contact from this business through that platform). Marketplace consent permits responding to the inquiry; it is not treated as consent for ongoing marketing SMS (4.21).
 3. Start the speed-to-lead journey: acknowledgment message within 60 seconds on the channel the marketplace allows (SMS reply where consent covers it, marketplace message thread, or email), notify the assigned estimator with push and SMS, and, for LSA phone leads, ensure the call was answered (link to call record).
 4. Flag marketplace leads whose service or ZIP code is outside the tenant's area, so the owner can dispute charges and tune marketplace targeting.
+5. **Charge capture and dispute tracking [V1]:** every marketplace lead carries `lead_cost`, `charge_status` (`charged`, `credit_requested`, `credited`, `credit_denied`) and a dispute deadline where the marketplace publishes one. A weekly "disputable leads" digest lists leads that are spam, duplicates, wrong service or out of area and still inside the window. Approved credits post as a contra-expense in the Ledger (4.25), so cost per lead in ROI reports is net of credits.
+6. **Marketplace scorecard [V1]:** per marketplace, the Growth home shows gross cost, credits, net cost per lead, lead-to-booked rate, collected revenue and job-costed margin. It answers the question owners ask every spring: "Should I keep paying Angi?"
+
+> **Competitive edge:** Landscapers juggle the LSA dashboard, Angi for Pros and Thumbtack's app on top of their field-service tool. Point integrations push the lead into a CRM and stop there. Rootline dedupes across all of them, answers within 60 seconds in the Company's voice, tracks which charges are still disputable, and grades each marketplace on collected revenue and margin from the [Ledger](09-accounting-ledger-integrations.md), not on lead count.
 
 
 ### 4.7 Segments and audiences [MVP]

@@ -1660,7 +1660,10 @@ All tables carry `tenant_id` (RLS-enforced), `created_at`, `updated_at` and `cre
 | `ai_tool_call` | Tool calls made by AI | invocation_id, tool_name, tool_version, args_hash, args_redacted, result_ref, status |
 | `ai_proposal` | Pending action prepared by Copilot or agent | source (copilot, agent, automation, mcp), tool_name, args, preview_json, risk_tier, record_versions, expires_at, status |
 | `approval_request` | Approval Inbox item | proposal_id, required_roles, second_approver_required, assigned_to, priority, decided_by, decision, edits_json, reason_code |
-| `ai_action` | Immutable audit record of an executed AI-originated action | proposal_id, principal, on_behalf_of, tool_name, before_versions, after_versions, approver_id, channel, undo_token, undo_expires_at |
+| `ai_action` | Immutable audit record of an executed AI-originated action | proposal_id, principal, on_behalf_of, tool_name, before_versions, after_versions, approver_id, channel, undo_token, undo_expires_at, retention_class |
+| `contact_arbitration` | Decision log of the Contact Arbiter (section 4.4.7) | client_id, contact_id, message_ref, source (agent, automation, copilot, mcp, human), message_class, decision (sent, deferred, bundled, suppressed), reason_code, deferred_until |
+| `thread_ownership` | Current owner of a client conversation thread | thread_id, owner_type (user, agent_instance), owner_id, acquired_at, expires_at |
+| `policy_replay_run` | A backtest of an agent policy over past events | agent_instance_id, policy_json, window_start, window_end, events_replayed, would_send_count, arbiter_suppressed_count, report_ref, credits |
 | `agent_definition` | Platform-authored agent template (global) | key, version, goal, default_policy, tools_allowed, triggers, eval_suite_id, status (shadow, canary, ga, deprecated) |
 | `agent_instance` | Tenant configuration of an agent | agent_definition_key, pinned_version, principal_id, sponsor_user_id, policy_json, autonomy_json, budget_credits, scope_filters, status |
 | `agent_run` | One execution | agent_instance_id, trigger_event_id, temporal_workflow_id, goal_ref, state, steps_count, credits_used, started_at, ended_at, outcome |
@@ -1997,7 +2000,7 @@ Role keys follow [Personas and Permissions](02-personas-roles-permissions.md). L
 
 | Capability | owner | office_manager | estimator | designer | ops_manager | crew_lead | technician | bookkeeper | subcontractor |
 |-----------|:-----:|:--------------:|:---------:|:--------:|:-----------:|:---------:|:----------:|:----------:|:-------------:|
-| Use Copilot (read, within own data scope) | Y | Y | Y | Y | Y | S | S | Y | S |
+| Use Copilot (read, within own data scope; `copilot.use` in doc 02) | Y | Y | Y | Y | Y | S | S | Y | - (custom role can grant, own work orders only) |
 | Copilot financial answers (margins, costs, P&L) | Y | S | S | - | S | - | - | Y | - |
 | Copilot T1 drafts | Y | Y | Y | Y | Y | S | S | Y | - |
 | Copilot T2 actions (internal writes) | Y | Y | S | S | Y | S | - | S | - |
@@ -2014,12 +2017,15 @@ Role keys follow [Personas and Permissions](02-personas-roles-permissions.md). L
 | Edit Company Brain | Y | Y | - | - | S | - | - | S (finance policies) | - |
 | View predictions (churn, price recs) | Y | Y | S (own deals) | - | Y | - | - | S (payment risk) | - |
 | View crew productivity (individual) | Y | - | - | - | Y | S (own crew) | S (self) | - | - |
-| Use crew voice assistant | Y | Y | Y | Y | Y | Y | Y | - | S |
+| Use crew voice assistant (commands only; Q&A follows `copilot.use`) | Y | Y | Y | Y | Y | Y | Y | - | S (own work orders: notes, photos, checklist, clock) |
 | View AI usage and credits | Y | Y | - | - | S | - | - | Y | - |
 | Set AI budgets and overage | Y | - | - | - | - | - | - | - | - |
 | View AI audit log | Y | S | S (own) | S (own) | S | - | - | S (finance) | - |
 | Create API tokens and connect MCP clients | Y | S (granted) | S (granted) | S (granted) | S (granted) | - | - | S (granted) | - |
 | Opt in or out of pooled learning | Y | - | - | - | - | - | - | - | - |
+| Run policy replay (section 4.4.5) | Y | S (non-finance agents) | - | - | S (ops agents) | - | - | S (finance agents) | - |
+| Override Contact Arbiter caps for one message | Y | Y | S (own deals) | - | Y | - | - | S (billing messages) | - |
+| Approve dispute evidence submission (A28) | Y | Y | - | - | - | - | - | Y | - |
 
 Client personas (`client_residential`, `client_commercial`, additional contacts) access only the Portal Assistant, with tools scoped to their own Client and Properties. For commercial clients this is further scoped by property assignment and approval role (see [Customer Portal](06-customer-portal.md)).
 

@@ -1102,3 +1102,252 @@ Payroll calculation stays with the payroll provider ([15](15-team-hr-payroll.md)
 - **Posting**: `payroll.PR1`-`PR3` as in E13-E14. Field wage variance (overtime premium, bonuses, PTO paid in season) goes to 5190 by default; [V1] can **re-allocate variance to jobs pro rata to hours** in the pay period so job cost carries real overtime.
 - **QuickBooks Payroll in external mode**: payroll is already in QBO; Rootline does not import a journal for the book of record, but still needs labor cost for job costing, which it computes from approved time at standard burdened rates and reconciles to QBO payroll totals monthly (difference shown, not posted).
 
+### 4.6 Banking, receipts and reconciliation
+
+#### 4.6.1 Bank and card connections [MVP]
+
+- **Plaid Link** connects checking, savings, credit card and line-of-credit accounts at US and Canadian institutions (verify current Canadian coverage; a Canadian-specialist aggregator is the fallback, open question 4). Products used: transactions and balances only; no money movement through the aggregator.
+- **History on connect**: up to 24 months where the institution supports it (verify Plaid's maximum history request), but Rootline only creates bank lines on or after the account's **ledger start date** (the migration conversion date, 4.18) to avoid double-counting history that is already in the opening balance.
+- **File import** for any account without a feed or as a fallback: CSV with a column-mapping wizard, OFX/QFX, and [V1] BAI2 and ISO 20022 CAMT.053 for commercial banking portals. Imports are deduplicated against feed data.
+- **Connection health**: last successful refresh, institution status, re-authentication needed (login changed, MFA expired); the bookkeeper and owner get a task when a feed is broken for more than 48 hours, because a silent feed outage is how month-end surprises happen.
+- **Security**: aggregator access tokens are encrypted with per-tenant data keys ([20](20-architecture-security.md)); account numbers shown masked; disconnecting a feed never deletes imported lines.
+- **Regulatory note**: the US open-banking rule (CFPB section 1033) addresses consumer accounts and its status was under reconsideration in 2025-2026; most landscaper accounts are business accounts outside its scope, so Rootline relies on aggregator agreements, not regulation, for access (verify).
+
+#### 4.6.2 Transaction ingestion [MVP]
+
+- Pending transactions are displayed (cash dashboard) but never categorized or reconciled; only **posted** transactions become `bank_transaction` rows.
+- Deduplication: provider transaction ID first; for file-to-feed switches, a fuzzy key (date within 2 days, exact amount, normalized description).
+- Provider modifications and removals (the aggregator's sync can modify or remove previously sent transactions) are applied; if a removed transaction was already categorized and posted, Rootline posts a reversal and opens a task rather than silently deleting.
+- Each line gets a **normalized merchant** (from the platform merchant directory, for example "SITEONE LANDSCAPE SUP #1234 ROSWELL GA" becomes "SiteOne Landscape Supply") and the aggregator's category as a weak signal.
+
+#### 4.6.3 Categorization pipeline: matching, rules and AI [MVP rules, V1 AI]
+
+Every posted bank or card line flows through four stages; the first stage that produces a confident answer wins.
+
+```mermaid
+flowchart TD
+    BL["Posted bank or card line"] --> M1{"Matches an expected item? (payout, payroll debit, loan payment, bill payment, check number, transfer, deposit of undeposited funds, card payment, tax remittance)"}
+    M1 -->|"Yes"| AM["Auto-match to existing entry (no new posting)"]
+    M1 -->|"No"| R1{"Tenant rule matches?"}
+    R1 -->|"Yes, auto-confirm"| RP["Post categorized entry"]
+    R1 -->|"Yes, suggest only"| RV["Review queue with suggestion"]
+    R1 -->|"No"| AI["AI suggestion: account, dimensions, vendor, job, split"]
+    AI --> C{"Confidence above tenant auto-post threshold?"}
+    C -->|"Yes (V1 opt-in)"| RP
+    C -->|"No"| RV
+    RV --> ASK{"Bookkeeper knows?"}
+    ASK -->|"Yes"| RP
+    ASK -->|"No"| Q["Ask the cardholder by SMS or app"]
+    Q --> RP
+    RP --> LR["Offer: make this a rule?"]
+```
+
+- **Expected-item matching** (deterministic): Stripe payouts by amount, date window and descriptor ([08](08-payments-stripe.md) 4.17.4); payroll debits by provider descriptor and import totals; loan payments by schedule; bill payments by check number or ACH trace; inter-account transfers by opposite-sign pairs within 3 business days; office check deposits by summing undeposited funds selections; card statement payments; sales tax remittances by agency descriptor.
+- **Tenant rules**: conditions on account, direction, amount range, normalized merchant, description contains or regex, day of month; actions: account, dimensions (division, department, job), split by percentage or fixed amounts, vendor, memo, 1099 flag, auto-confirm or suggest. Rules are ordered, testable against the last 90 days ("this rule would have matched 37 lines"), and versioned.
+- **AI suggestions** [V1]: the model sees the normalized merchant, MCC, amount, the tenant's history for that merchant, matched receipt line items, and context (the cardholder's crew was on job J-2291 that day per the crew app; the line is on the shop card). It returns account, dimensions, vendor and an optional split with a confidence score and a one-line reason ("Home Depot on 5/14 while Crew 2 was at Thompson; receipt shows 6 bags of quick-set concrete"). Auto-posting above a threshold is an explicit tenant opt-in with weekly sampling review; default is suggest-only. See [17](17-ai-copilot-automation.md) for guardrails.
+- **Ask the cardholder**: unexplained card lines generate a one-tap question to the cardholder ("What was the $86.40 at Home Depot on May 14 for?" with buttons for their jobs that day, "shop supplies", "personal, I will repay"). Personal charges post to 1240 Employee Advances (or 3200 Owner Draws for the owner).
+- **Learning**: every correction offers "Always do this for SHELL OIL on the fuel card?" Platform-level priors (merchant to category) are learned only from non-identifying features across tenants, with tenant opt-out; no tenant's amounts, jobs or vendors are visible to another.
+
+#### 4.6.4 Receipt capture and matching [MVP]
+
+- **Channels**: crew app photo (offline-capable, [05](05-field-crew-mobile-app.md)), web upload, forwarding to a per-Company receipts address, e-receipts from suppliers, SMS photo reply to an "ask" question.
+- **Extraction**: merchant, date, total, tax, tip, payment card last four, and line items (AI document understanding via the AI Gateway, [17](17-ai-copilot-automation.md)).
+- **Matching**: to card or bank lines by card last four, exact amount (or amount within a tip tolerance for meals), date within 3 days; to bills when a receipt is actually a vendor invoice.
+- **Missing receipt chase**: tenant policy (default: receipts required for card spend of $25 or more; IRS substantiation rules for some expense categories start at $75, verify) creates reminders to the cardholder for 3, 7 and 14 days, then escalates to the `office_manager`.
+- **Retention**: receipt images stay attached to the journal entry for the record-retention period ([20](20-architecture-security.md)); electronic records are kept in a form that meets IRS and CRA electronic record-keeping expectations (verify Rev. Proc. 97-22 and CRA guidance).
+
+#### 4.6.5 Reconciliation workspace [MVP]
+
+- **Continuous matching, periodic certification.** Feed-connected accounts are matched daily, so the month-end "reconcile" is a certification step: enter or import the statement ending balance and date, review exceptions, finish when the difference is $0.00.
+- **Match types**: 1:1; 1:many (one bank deposit containing five checks from undeposited funds; one Stripe payout containing 43 payments and fees, already proven by [08](08-payments-stripe.md)); many:1 (a bill paid in two transfers); bank line to new entry (categorize in place).
+- **Statement upload with OCR** [V1] for accounts without feeds: the statement's ending balance, period and line list are extracted and matched.
+- **Outputs**: reconciliation report (beginning balance, cleared deposits and payments, outstanding checks and deposits in transit, ending book and bank balances), stored as a PDF in the evidence locker (4.13).
+- **Controls**: items in a completed reconciliation are locked; un-reconciling requires `bank_reconciliation.undo`, a reason, and is impossible for locked periods. Outstanding checks older than 90 days create a "stale check" task (contact vendor, void and reissue, or report as unclaimed property).
+- **Credit cards and lines of credit** reconcile the same way against their statements.
+
+> **Competitive edge.** Field-service tools push gross payments into QuickBooks and leave the bookkeeper to discover that the bank deposit is net of fees, three days later, mixed with 40 other payments. Rootline proves each Stripe payout against its balance transactions before posting it and then auto-matches the bank line, so a month of card payments reconciles with zero manual matches ([08](08-payments-stripe.md) goal G3).
+
+#### 4.6.6 Cash position [MVP]
+
+A cash panel (owner dashboard and close checklist) shows bank balances (aggregator balances, timestamped), Stripe available and pending per currency (from [08](08-payments-stripe.md)), undeposited funds, crew-held cash in transit by crew lead, credit card balances, line-of-credit availability, and payroll and AP due in the next 14 days.
+
+### 4.7 Job costing
+
+Job costing in Rootline is not a separate report fed by exports: job cost **is** the set of journal lines carrying a job dimension, plus the statistical hours lines, plus commitments from [13](13-operations-inventory-equipment.md). Job cost and the P&L therefore tie by construction; the only differences are the explicit variance accounts (5190, 5195) and overhead.
+
+#### 4.7.1 Cost structure [MVP]
+
+| Level | Example | Source |
+|---|---|---|
+| Job | J-2291 Thompson backyard; WO-8812 irrigation repair; AGR-0412 Hernandez 2027 maintenance | [04](04-scheduling-dispatch-routing.md) job model |
+| Phase (Projects) | 1 Demo and grading, 2 Hardscape, 3 Planting and beds, 4 Lighting, 5 Cleanup | Project phases from the sold estimate |
+| Cost code | Paver installation, wall block, mulch install, ZTR mowing, edging | Estimate assemblies and Price Book services ([03](03-crm-sales-estimating-proposals.md)) |
+| Cost type | Labor, labor burden, materials, equipment, subcontractor, disposal, other | From the posting rule |
+
+**Budgets on a job**: the **original budget** is frozen from the sold estimate at proposal acceptance (hours and dollars by phase, cost code and cost type); approved change orders ([03](03-crm-sales-estimating-proposals.md)) create the **revised budget**; the project manager's **forecast** produces the estimate at completion.
+
+#### 4.7.2 Labor costing and burden allocation [MVP]
+
+- **Rate basis** (Company setting): employee's actual base rate (default), crew average rate (hides individual wages in job cost views, consistent with pay-rate masking in [02](02-personas-roles-permissions.md)), or standard rate by role.
+- **Burden** is applied at a standard percentage per employee class from the Company Budget ([03](03-crm-sales-estimating-proposals.md) EST-01: FICA, FUTA/SUTA, workers' compensation by class code, benefits, PTO, training and PPE; 28.00% in the Evergreen Edge example). Separate classes for W-2 seasonal field staff, H-2B workers (with amortized program costs, `prepaid.PP2`) and salaried crew leads. Actual burden arrives through payroll, insurance and benefit bills into 2390; the monthly true-up (`payroll.PR5`) moves the residual to 5195 so the P&L is right while job costs stay stable and comparable.
+- **Salaried crew leads**: hourly equivalent = annual salary / expected annual hours, applied to their time.
+- **Overtime premium** [V1]: allocated to the jobs worked after the 40th hour ("hours in order", default) or pro rata across the week's jobs, or left in 5190.
+- **Drive time**: yard-to-first-site and between-site time is allocated to the route's visits pro rata by on-site minutes with cost code "Travel" (default), or posted to 5180 Non-billable Field Time. Allocating it is what makes a cul-de-sac of $45 mows look as unprofitable as it really is ([18](18-reporting-analytics.md) property P&L heatmap).
+- **Non-billable time** (rain-outs, yard, shop, training, callbacks): cost codes required; posts to 5180 by division; callbacks carry the original job's dimension for quality-cost reporting ([07](07-invoicing-billing-contracts.md) notes callbacks are $0 visits).
+
+#### 4.7.3 Equipment cost allocation [V1]
+
+- Usage records from [13](13-operations-inventory-equipment.md) (telematics engine hours in the job geofence, crew-assigned equipment times on-site hours times a utilization factor, or manual entry) post `equipment.EQ1` at the rate-card version effective on the usage date, by basis: per engine hour, per crew hour (trucks), per mile, per day.
+- **Over/under-recovery report** by asset and class: applied (5310) vs actual cost (5330 fuel + 5340 repairs + 5350 depreciation + 5360 insurance and registration). Example (illustrative): mowers applied $48,200 vs actual $52,900 for the season to date = $4,700 under-recovered, meaning rates are too low or machines sit idle; the report proposes the rate the estimator should use next season ([13](13-operations-inventory-equipment.md) 4.14.7).
+- **Small tools charge** [V1]: optional per-crew-hour charge (for example $0.75/h) applied with labor to recover trimmers, blowers and hand tools expensed below the capitalization threshold.
+
+#### 4.7.4 Materials, subcontractors, disposal and other direct costs [MVP]
+
+Materials hit the job from inventory issues at moving-average cost (`inventory.IN3`) or job-direct receipts at PO cost, trued up to billed price at match (`ap.AP3`); subcontractor bills by sub work order and phase (`ap.AP4`); dump and disposal tickets allocated per load from [13](13-operations-inventory-equipment.md) `ops.disposal.recorded`; permits, locates and job travel from bills and card lines coded to the job.
+
+#### 4.7.5 Commitments and estimate at completion [V1]
+
+- **Committed cost** = approved, unreceived PO lines and unbilled sub work orders tagged to the job ([13](13-operations-inventory-equipment.md) 4.8.8).
+- **Estimate at completion (EAC)** per phase and cost type, default rule: `actual + max(open commitments, remaining revised budget)`; for labor, if the crew app reports physical percent complete for the phase ([05](05-field-crew-mobile-app.md) task completion or installed square feet), `EAC hours = actual hours / physical percent complete`. The project manager can override any cell with a note; overrides older than 45 days on active jobs are flagged as stale.
+- **Alerts**: projected gross margin falls more than 5 points below the sold margin; labor hours burned exceed physical percent complete by more than 15 points ("Phase 2 has used 82% of its hours and is 55% complete"); a commitment pushes a phase over budget before the cost even lands.
+
+#### 4.7.6 Job cost report [MVP basic, V1 EAC and commitments]
+
+Columns: phase and cost code; cost type; original budget; approved change orders; revised budget; committed; actual; percent of budget used; physical percent complete; EAC; variance at completion; and estimated vs actual hours. Header: contract value, billed to date, earned revenue (from WIP), gross profit (sold, projected, to date), and retainage. Every actual drills to journal lines and their source documents (time entries with crew and date, receipts, bills, issues, usage records).
+
+#### 4.7.7 Recurring maintenance costing [MVP]
+
+For agreement and per-visit work, the useful unit is the **property season** and the **visit**:
+
+- Revenue per visit (agreement unit value or invoiced amount) vs labor (on-site plus allocated drive), equipment, materials and disposal per visit, per property, per route and per crew.
+- **Budgeted vs actual man-hours per visit**: a property estimated at 0.75 crew-hours per weekly mow that averages 0.92 is running 23% over, which becomes a renewal price recommendation ([03](03-crm-sales-estimating-proposals.md) renewal re-pricing).
+- **Gross profit per man-hour** and **revenue per man-hour** by property feed [18](18-reporting-analytics.md).
+
+#### 4.7.8 Job close-out [MVP]
+
+Job status `completed` opens a 30-day straggler window (tenant setting) during which bills and receipts still post to the job; then the job is `cost_closed`. Costs arriving later still post to the job with a `post_close` flag (warranty work goes to the warranty reserve, not the job). The closed-job record stores final revenue, cost and gross profit vs the original estimate (fade or gain), which [03](03-crm-sales-estimating-proposals.md) uses to calibrate production rates.
+
+> **Competitive edge.** Jobber's own community explains that its job profitability is only as good as the time and materials crews enter on the job, and analytics add-on vendors sell the missing loaded labor and overhead views ([Jobber community](https://community.getjobber.com/discussions/finances-forum/how-do-you-actually-track-job-profitability-not-just-revenue/15674/replies/15706), [Inzata](https://www.inzata.ai/blog/jobber-job-profitability-tracking)). LMN's Job Costing Advisor tracks labor and bills against the estimate ([Turf Magazine](https://turfmagazine.com/lmn-introduces-job-costing-advisor-for-landscapers)) but the general ledger lives elsewhere. In Rootline the burdened labor, equipment recovery, materials at actual cost and subcontractor retainage that make up job cost are the same journal lines that make up the P&L.
+
+### 4.8 Revenue recognition, WIP and deferred revenue
+
+#### 4.8.1 Recognition policy by work type [MVP policy engine; V1 WIP]
+
+Rootline ships a default policy that a CPA can adjust per Company. The defaults follow common practice under ASC 606 for US private companies and ASPE Section 3400 for Canadian private enterprises (verify both with the Company's accountant; Rootline provides mechanisms, not accounting opinions).
+
+| Work type | Default recognition | Mechanism |
+|---|---|---|
+| Per-visit maintenance, invoiced per visit or in batches | At completion of each visit | `billing.P1`; month-end accrual of completed-not-invoiced visits (`billing.P8`) |
+| Level-billed and prepaid agreements (mowing season, bed maintenance) | As occurrences are delivered; fixed-season lines ratably by a season curve | `billing.P4`-`P7` ([07](07-invoicing-billing-contracts.md) 4.2) |
+| Lawn care and PHC programs (5-step fertilizer and weed control) | Per application completed | `billing.P5` |
+| Snow seasonal (fixed-fee) contracts | Ratably over the contract season using a weighting curve or straight-line | `billing.P6`; discussed in snow bookkeeping guidance ([Beancount](https://beancount.io/blog/2026/06/03/snow-removal-plowing-ice-management-contractor-bookkeeping-asc-606-seasonal-deferred-revenue-per-push-trigger-section-179-plow-truck-salt-spreader-sima-asca-revenue-per-truck-hour-kpi-guide)) |
+| Snow per push or per application | At event completion | `billing.P1` (with month-end accrual of uninvoiced events) |
+| Enhancements and small installs under the WIP threshold | At completion | `billing.P1`; simplification policy, default threshold $10,000 contract value or 30 days duration |
+| Design-build projects at or above the threshold | Over time, input method (cost-to-cost) by default | WIP schedule (4.8.3) |
+| Design fees | At delivery when the design is a distinct deliverable; otherwise combined with the build | Policy flag on the Price Book item |
+| Standard plant and workmanship warranties | Assurance-type: no revenue deferral; accrue expected cost | `warranty.WR1` |
+| Extended warranties sold separately [V2] | Deferred and recognized over the warranty term | Deferred revenue sub-account |
+| Retainage | Recognized as earned; receivable held in 1205 | `billing.P12` |
+
+Over-time recognition for installs is supported by the fact that the work is performed on the customer's land, so the customer controls the asset as it is created, which is one of the ASC 606 criteria for over-time recognition (verify with the CPA for each contract type).
+
+#### 4.8.2 Deferred revenue for prepaid contracts [MVP]
+
+The agreement position mechanics (earned value meter, prepay factors, true-ups, contract asset vs liability per agreement) are specified in [07](07-invoicing-billing-contracts.md) 4.2. The ledger adds:
+
+- **Deferred revenue roll-forward** per period: opening balance, billed, recognized, credits and refunds, closing, by agreement, division and branch; ties to 2200 - 1210 (L7).
+- **Season curves**: configurable monthly weights for ratable lines. Illustrative fixed-season maintenance curve April-November: 10%, 15%, 14%, 11%, 11%, 12%, 15%, 12%. Illustrative snow season curve November-March: 10%, 20%, 30%, 25%, 15%. Companies can derive a curve from their own last three seasons of labor hours or snow events.
+- **Cancellations**: early termination posts the true-up (07 P10/P11) and releases any remaining deferred balance as a credit or revenue per the agreement's terms.
+- **Prepaid program liability report** for lawn care Companies: every prepaid client's remaining applications and dollars, which is also the number a buyer asks for in an acquisition.
+
+#### 4.8.3 Percentage-of-completion and the WIP schedule [V1]
+
+The WIP schedule is generated on day 1 of each month for every open project at or above the threshold, reviewed, and posted as auto-reversing entries.
+
+**Rules:**
+
+- `percent_complete = cost_to_date / estimated_total_cost` (cost-to-cost, default). Alternatives per job: labor hours-to-hours, physical units (square feet installed from the crew app), or manual milestones.
+- **Uninstalled materials**: materials delivered to the job site but not yet installed (pavers on pallets in the client's driveway) can be excluded from cost-to-date to avoid overstating progress (verify treatment with the CPA); Rootline knows them because they sit in the job-site inventory location in [13](13-operations-inventory-equipment.md).
+- `earned_revenue = percent_complete x contract_value` (contract value includes approved change orders; unapproved change orders are excluded unless the CPA marks them probable).
+- `underbilling = earned - billed` when positive (contract asset, 1215); `overbilling = billed - earned` when positive (contract liability, 2210). Billed excludes deposits not yet applied (deposits are 2150 liabilities).
+- **Estimated total cost** comes from the job's EAC (4.7.5). If the EAC has not been reviewed in 45 days, the WIP line is flagged and the bookkeeper can still post it with a note.
+- **Projected losses**: when estimated total cost exceeds contract value, the full projected loss is recognized immediately (4.8.4).
+
+**Worked example: Reyes Outdoor Living WIP schedule at May 31, 2027 (illustrative).**
+
+| Job | Contract (with approved COs) | Est. total cost | Est. GP | Cost to date | % complete | Earned revenue | Billed to date | Underbilled (1215) | Overbilled (2210) | Cost to complete |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| J-2291 Thompson patio and seat wall | 19,600 | 13,250 | 6,350 | 9,275 | 70.0% | 13,720 | 7,360 | 6,360 | | 3,975 |
+| J-2264 Patel front-yard renovation and irrigation | 42,000 | 29,400 | 12,600 | 25,872 | 88.0% | 36,960 | 39,900 | | 2,940 | 3,528 |
+| J-2302 Lakeside HOA entrance renovation | 12,400 | 8,680 | 3,720 | 1,302 | 15.0% | 1,860 | 3,720 | | 1,860 | 7,378 |
+| J-2287 Morgan retaining wall (loss job) | 9,800 | 10,300 | -500 | 6,180 | 60.0% | 5,880 | 4,900 | 980 | | 4,120 |
+| **Totals** | **83,800** | **61,630** | **22,170** | **42,629** | | **58,420** | **55,880** | **7,340** | **4,800** | **19,001** |
+
+Thompson's $9,275 cost to date is materials $4,035.00 (E2-E4), the lighting sub $2,400.00 (E10), two crew-days of labor and burden $2,334.72, the track loader $383.00 and dump fees $122.28. The Morgan wall hit ledge rock; the revised estimate of $10,300 exceeds the $9,800 contract.
+
+Entries posted May 31, auto-reversing June 1:
+
+| Rule | Account | Dimensions | Debit | Credit |
+|---|---|---|---:|---:|
+| `wip.WP1` | 1215 Underbillings | J-2291 | 6,360.00 | |
+| `wip.WP1` | 1215 Underbillings | J-2287 | 980.00 | |
+| `wip.WP1` | 4300 Design-Build and Installation Revenue | J-2291, J-2287 | | 7,340.00 |
+| `wip.WP2` | 4300 Design-Build and Installation Revenue | J-2264, J-2302 | 4,800.00 | |
+| `wip.WP2` | 2210 Overbillings | J-2264 (2,940.00), J-2302 (1,860.00) | | 4,800.00 |
+| `wip.WP3` | 5990 Provision for Contract Losses | J-2287 | 200.00 | |
+| `wip.WP3` | 2215 Accrued Losses on Contracts | J-2287 | | 200.00 |
+
+Net effect on May install revenue: +$2,540 (earned $58,420 vs billed $55,880). The Morgan provision is $200 because POC already shows a $300 loss to date ($5,880 earned vs $6,180 cost) and the full projected loss is $500.
+
+**Reports from the same data:** the surety-format WIP schedule that banks and bonding companies expect; the **closed-jobs schedule** for the year with gross profit fade or gain vs estimate; and **backlog** (contract value not yet earned: $25,380 in the example) for the owner's capacity planning.
+
+#### 4.8.4 Loss contracts [V1]
+
+When a project's EAC exceeds its contract value, `wip.WP3` provisions the remaining projected loss (total projected loss minus loss already recognized through POC). The provision is recalculated every period and released as the job completes. The job gets a red badge, the owner is notified, and the closed-job record keeps the loss for estimator learning.
+
+#### 4.8.5 Tax-basis and cash-basis views [V2]
+
+- **Cash-basis P&L**, derived from the accrual ledger: revenue when payments are received (payment allocations spread across the invoice's revenue lines pro rata), expenses when bills are paid, deferred revenue and WIP adjustments excluded. Useful for the many small landscapers who file on the cash method.
+- **Completed-contract view** for small contractors eligible under the gross-receipts test for long-term contracts (an inflation-indexed threshold of roughly $31 million of average gross receipts for 2025; verify), with an accrual-to-tax reconciliation schedule for the CPA.
+- These are views and export schedules, not alternate ledgers.
+
+### 4.9 Budgets, overhead recovery and forecasts
+
+#### 4.9.1 Budget model [V1]
+
+- The **Company Budget** that estimating uses ([03](03-crm-sales-estimating-proposals.md) EST-01, [MVP]) is the summary view of a ledger **budget version**: amounts by account (or account group), division, branch and month, plus statistical budgets (billable hours by month).
+- **Versions**: original, revised (for example after a slow spring), and rolling forecast; one version is the "estimating budget" pinned by estimates.
+- **Phasing methods**: even; seasonal curve from last year's actuals; custom per month; **driver-based** (revenue = budgeted billable hours x budgeted revenue per man-hour; field wages = hours x average wage; burden = wages x burden %; equipment recovery = hours x rates).
+- **Inputs**: guided wizard (03), XLSX import, copy last year's actuals with a percentage change, or an AI-drafted budget from history and the sales pipeline [V1] that the owner edits.
+- **Locks**: an approved budget version is read-only; edits create a new version.
+
+#### 4.9.2 Overhead recovery tracker [V1]
+
+LMN-style pricing recovers overhead through a rate built from the budget (FLH, SORS, MORS; [03](03-crm-sales-estimating-proposals.md) EST-02). Rootline then measures whether the business actually recovered it.
+
+- **Recovered overhead** for a period = actual billable field hours x FLH rate (FLH method), or actual direct costs x SORS percentage, or the sum of category costs x MORS percentages, using the pinned budget version.
+- **Actual overhead** = posted 6xxx accounts (plus any overhead-tagged allocations) for the period.
+- **Recovery %** = recovered / actual, shown monthly and year to date against the **planned recovery curve** implied by the budget's seasonal phasing, because a northern landscaper will always under-recover in January-March.
+
+**Worked example: Evergreen Edge Landscaping, 2026 budget (from [03](03-crm-sales-estimating-proposals.md) EST-01).** Overhead $420,000 ($35,000 per month), 20,000 budgeted billable hours, FLH $21.00 per hour. Budgeted hours phased March-December: 1,000; 2,200; 2,600; 2,600; 2,300; 2,300; 2,300; 2,400; 1,800; 500.
+
+| Through June 30 | Budget | Actual |
+|---|---:|---:|
+| Billable field hours | 8,400 | 8,050 |
+| Overhead recovered at $21.00/h | $176,400 | $169,050 |
+| Overhead incurred | $210,000 | $214,600 |
+| Recovery % year to date | 84.0% (planned) | 78.8% |
+
+The tracker explains the 5.2-point gap: 350 fewer billable hours ($7,350 less recovery) and $4,600 of overhead overspend. If July-December hit their budgeted 11,600 hours and overhead runs at budget, the year ends with $412,650 recovered against $424,600 of overhead: 97.2%, an **under-recovery of $11,950 that comes straight out of net profit**. The tracker proposes the levers in owner language: about 569 more billable hours at $21.00, or a price increase on remaining unsold work, or $11,950 of overhead cuts.
+
+#### 4.9.3 Budget vs actual [V1]
+
+Monthly and year-to-date by account, account group, division and branch, with variance in dollars and percent, a flex-budget option (budget restated at actual billable hours for variable lines such as field wages, fuel and materials), and AI commentary for the largest variances ("Fuel is $3,120 over budget in June: price per gallon up 9% and engine hours up 6% vs plan").
+
+#### 4.9.4 Cash forecast [V1]
+
+- **13-week direct forecast**: opening cash (bank balances plus Stripe available and pending) plus receipts (open AR by predicted pay date from each client's payment history; scheduled autopay and agreement installments; deposits on approved proposals) minus disbursements (AP by due date and scheduled batches; payroll from scheduled hours x rates plus taxes per pay calendar; loan payments from schedules; sales tax due dates; recurring entries such as rent and insurance; equipment on order) = ending cash per week, against a minimum cash threshold.
+- **Seasonal 12-month forecast** showing the winter trough: "Cash bottoms at $38,200 in the week of February 15; line of credit headroom $150,000."
+- **Scenarios** [V1]: snow season light, average or heavy (seasonal contract revenue is fixed while per-push revenue, sub costs, salt and overtime vary); "rained-out week" (lost billable hours, payroll still due); "lose the Crossroads PM contract".
+- Actual vs forecast accuracy is tracked per week to tune the payment-timing model.
+

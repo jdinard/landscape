@@ -1683,3 +1683,174 @@ Rules:
 - `credential`: index on (`tenant_id`, `expires_on`, `status`) for the daily expiry job.
 - Retention jobs respect `legal_hold` flags on employee, case and document.
 
+---
+
+## 8. Integrations, APIs and events
+
+### 8.1 External services
+
+| Service category | Candidates (verify terms, capabilities and pricing before contracting) | Use | Priority |
+|---|---|---|---|
+| Payroll providers | Gusto, QuickBooks Online Payroll, QuickBooks Desktop Payroll, ADP (Workforce Now, RUN), Paychex Flex, Paylocity, Paycom, Paycor, isolved; Canada: Wagepoint, ADP Canada, Payworks, Ceridian Dayforce | Hours and earnings export, employee onboarding hand-off, roster and rate sync, journal import | [MVP]-[V2] per PAY-03 |
+| Embedded payroll partner | Check, Gusto Embedded | Payroll inside Rootline | [V1] pilot, [V2] GA |
+| Unified employment API | For example Finch | Roster, rates and pay statement reads across long-tail providers | [V1] evaluate |
+| Job boards | Indeed (feeds or partner program), Google for Jobs (structured data), Facebook (links), ZipRecruiter | Distribution and applicant source tracking | [V1]/[V2] |
+| SMS and WhatsApp | Twilio (10DLC registration with a recruiting or HR campaign use case, WhatsApp Business API) | Applicant and employee messaging | [MVP] employees, [V1] applicants |
+| Background checks and MVR | FCRA-compliant CRA partner (for example Checkr; selection open) | Post-offer checks, MVR, continuous monitoring | [V2] |
+| E-signature | Built in (ESIGN/UETA); optional DocuSign import [V2] | Offers, acknowledgments, warnings | [MVP]/[V1] |
+| OCR and document AI | AI Gateway document understanding ([17](17-ai-copilot-automation.md)) | License card extraction, receipt reading | [V1] |
+| Speech and translation | AI Gateway speech-to-text and translation | Voice answers, voice self-reviews, Ask HR | [V1] |
+| Weather | Same provider as [04](04-scheduling-dispatch-routing.md) and [05](05-field-crew-mobile-app.md) | Heat triggers, rain-day pay | [MVP] |
+| OSHA ITA | CSV export for upload (API use to be evaluated, verify) | 300A and case data submission | [MVP] export |
+| FMCSA Clearinghouse | Manual workflow with links; no API integration planned | Query tracking | [V1] |
+| Learning content | SCORM 1.2 / xAPI import | Partner courses | [V2] |
+| Earned wage access | Partner (selection open) | Early wage access | [V2] |
+| Rewards | Gift card partner (selection open) | Recognition rewards | [V2] |
+
+### 8.2 API surface (summary)
+
+The public API ([20](20-architecture-security.md)) exposes HR resources with granular OAuth scopes. Restricted fields are never returned through the public API, with no exceptions.
+
+| Resource | Operations | Scope |
+|---|---|---|
+| `/employees` | list, get, create, update, hibernate, rehire, terminate | `people:read`, `people:write` |
+| `/employees/{id}/pay-rates` | list, create (effective-dated) | `pay:read`, `pay:write` |
+| `/time-segments`, `/timesheets` | list, get, approve (with user context), export | `time:read`, `time:approve` |
+| `/pay-periods/{id}/pay-items` | list (computed), recompute | `payroll:read` |
+| `/payroll-batches` | create, get status | `payroll:export` |
+| `/credentials` | list, create, verify | `credentials:read`, `credentials:write` |
+| `/training/completions` | list, create (external LMS) | `training:write` |
+| `/applicants`, `/applications` | list, get, create (external careers site), stage update | `recruiting:read`, `recruiting:write` |
+| `/safety/cases` | list, get | `safety:read` |
+
+### 8.3 Domain events emitted (outbox -> event bus)
+
+| Event | Payload highlights | Consumers |
+|---|---|---|
+| `employee.hired`, `employee.rehired`, `employee.hibernated`, `employee.terminated`, `employee.archived` | employee_id, effective_at, reason, employment_class | Membership ([02](02-personas-roles-permissions.md)), Scheduling ([04](04-scheduling-dispatch-routing.md)), Crew app device revocation ([05](05-field-crew-mobile-app.md)), Equipment custody ([13](13-operations-inventory-equipment.md)), SaaS seat billing ([19](19-platform-admin-portal.md)) |
+| `employee.pay_rate_changed` | employee_id, effective_from, rate_type | Burden recompute, estimating labor rates ([03](03-crm-sales-estimating-proposals.md)) |
+| `employee.certification_expiring`, `employee.certification_expired`, `credential.verified` | credential_type, categories, expires_on | Dispatch ([04](04-scheduling-dispatch-routing.md)), Crew app chem gate ([05](05-field-crew-mobile-app.md)), Inventory restricted-use gate ([13](13-operations-inventory-equipment.md)), Service lines ([14](14-service-line-modules.md)) |
+| `training.assigned`, `training.completed`, `equipment_authorization.changed` | module, employee, equipment_class | Crew app, Dispatch |
+| `timesheet.submitted`, `timesheet.approved`, `timesheet.reopened`, `timesheet.corrected` | employee, workweek, hours by type | Ledger job costing ([09](09-accounting-ledger-integrations.md)), Invoicing T&M ([07](07-invoicing-billing-contracts.md)), Reporting ([18](18-reporting-analytics.md)) |
+| `pay_period.closed`, `payroll_batch.exported`, `payroll_batch.confirmed`, `payroll_batch.failed` | period, totals, provider | Ledger, Copilot alerts, Platform connector health ([19](19-platform-admin-portal.md)) |
+| `payroll_journal.imported` | totals by account | Ledger posting and burden true-up ([09](09-accounting-ledger-integrations.md)) |
+| `pto.requested`, `pto.approved`, `pto.denied`, `availability.changed` | employee, dates | Scheduling ([04](04-scheduling-dispatch-routing.md)) |
+| `applicant.applied`, `application.stage_changed`, `offer.accepted` | requisition, source | Recruiting analytics, inbox tagging ([16](16-marketing-growth-communications.md)) |
+| `h2b.milestone_due`, `h2b.guarantee_at_risk`, `h2b.abandonment_clock_started` | program, worker | Notifications, Copilot |
+| `safety_case.recordable_determined`, `osha.severe_injury_clock_started`, `osha.annual_summary_ready` | case, deadlines | Owner alerts, Reporting |
+| `heat_plan.activated` (Company-level) | date, branch, level | Crew app ([05](05-field-crew-mobile-app.md)), Scheduling heat-flex ([04](04-scheduling-dispatch-routing.md)) |
+| `kudos.given`, `badge.awarded`, `review.completed`, `ladder.step_achieved` | employee | Crew app feed, Retention analytics |
+| `announcement.published`, `announcement.acknowledged` | targets | Crew app, kiosk |
+| `offboarding.started`, `offboarding.completed`, `final_pay.due` | deadlines | Payroll, Equipment, Access |
+
+### 8.4 Events consumed
+
+| Event | Producer | Effect here |
+|---|---|---|
+| `time.punched`, `time.segment_changed`, `time.clocked_out`, `timesheet.crew_approved` | [05](05-field-crew-mobile-app.md) | Rebuild segments and timesheets; level-1 approval |
+| `attestation.signed`, `premium_pay.flagged` | [05](05-field-crew-mobile-app.md) | Premium pay items, exception resolution |
+| `incident.reported`, `heat.procedure_activated`, `heat.check_logged`, `safety_meeting.held` | [05](05-field-crew-mobile-app.md) | Safety cases, heat compliance, training records |
+| `visit.completed` (with quantities, QA score) | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md) | Piece-rate units, production bonus pools |
+| `visit.rated` | [06](06-customer-portal.md) | Kudos, quality gates for bonuses |
+| `commission.earned`, `commission.clawed_back` | [03](03-crm-sales-estimating-proposals.md) | Commission pay items |
+| `payments.tip.allocated` | [08](08-payments-stripe.md) | Tip pay items, Tips Payable clearing on journal import |
+| `asset.checked_out`, `asset.returned` | [13](13-operations-inventory-equipment.md) | Onboarding and offboarding checklist status |
+| `membership.*` | [02](02-personas-roles-permissions.md) | Employee status sync |
+| `job.created` with prevailing wage flag | [03](03-crm-sales-estimating-proposals.md) | Creates `pw_project` stub |
+| `crew.assignment_changed` | [04](04-scheduling-dispatch-routing.md) | Acting crew-lead detection for lead pay |
+
+### 8.5 Outbound webhooks for tenants
+
+Companies can subscribe to `employee.*`, `timesheet.approved`, `payroll_batch.*`, `credential.*` and `safety_case.recordable_determined` (payloads without Restricted fields). That supports custom integrations such as an existing HRIS or a union fund portal.
+
+---
+
+## 9. Permissions
+
+Notation follows [02](02-personas-roles-permissions.md): R read, W write, D delete or deactivate, X execute or approve. Scope: /a all Company, /b own branches, /c own crew(s), /o own records. "step-up" means step-up authentication per session. A dash means no access. Custom roles ([02](02-personas-roles-permissions.md)) compose these capabilities, for example a "Payroll Clerk" or "Safety Coordinator" role.
+
+### 9.1 Tenant roles
+
+| Capability | owner | office_manager | estimator | designer | ops_manager | crew_lead | technician | bookkeeper | subcontractor |
+|---|---|---|---|---|---|---|---|---|---|
+| `employee` directory (names, crews, phones per setting) | RWD/a | RWD/a | R/a limited | R/a limited | R/b | R/c | R/c names | R/a | - |
+| `employee_pii` (Restricted) | RW/a step-up | RW/a step-up | R/o self | R/o self | - | emergency contacts /c | R/o self | R/a step-up (payroll) | - |
+| `pay_rate` | RWX/a | RW/a (raises above threshold need owner) | R/o | R/o | R/b if Company enables | - | R/o | R/a | - |
+| `comp_plan` (piece, bonus, lead pay) | RWD/a | R/a | R/o assigned | R/o assigned | R/b | R/c plan text | R/o plan text | R/a | - |
+| `requisition` | RWX/a | RW/a | - | - | RW/b (request) | - | - | - | - |
+| `job_post` publish | X/a | X/a | - | - | X/b if delegated | - | - | - | - |
+| `applicant` and `application` | RWD/a | RWD/a | - | - | RW/b (own reqs) | R interviews assigned | - | - | - |
+| `interview_scorecard` | RW/a | RW/a | - | - | RW/b | W assigned | - | - | - |
+| `offer` send | X/a | X/a (within band) | - | - | - | - | - | - | - |
+| `background_check` results | R/a step-up | R/a step-up | - | - | - | - | - | - | - |
+| `onboarding` checklists | RWX/a | RWX/a | - | - | RW/b | W/c buddy, sign-offs | W/o own tasks | R/a | - |
+| `h2b_program` and cases | RWX/a | RWX/a | - | - | R/b roster only | - | R/o own case docs | R/a reimbursements | - |
+| `housing` and `transport` boards | RW/a | RW/a | - | - | R/b | R/c transport | R/o own | - | - |
+| `credential` | RWD/a | RWDX/a verify | R/o | R/o | RWX/b verify | R/c | W/o upload, R/o | R/a | RW/o own org |
+| `credential_requirement` rules | RWD/a | RW/a | - | - | RW/b | - | - | - | - |
+| Credential override (`override_with_reason`) | X/a | X/a | - | - | X/b | - | - | - | - |
+| Credential override (`hard_block`) | X/a with reason | - | - | - | - | - | - | - | - |
+| `training` content authoring | RWD/a | RW/a | - | - | RW/b | W/c record SOP drafts | - | - | - |
+| `training_assignment` | X/a | X/a | - | - | X/b | X/c | R/o | - | - |
+| `skill_signoff` | X/a | X/a | - | - | X/b | X/c | - | - | - |
+| `availability`, `time_off_request` | RWX/a | RWX/a | RW/o | RW/o | RWX/b | X/c first level (cfg) | RW/o | R/a | - |
+| `pto_policy`, balances | RWD/a | RW/a | R/o | R/o | R/b | R/c balances only if enabled | R/o | R/a | - |
+| `timesheet.approve` | X/a | X/a | - | - | X/b | X/c level 1 | - | - | - |
+| `timesheet.edit_approved` | X/a | X/a | - | - | - | - | - | - | - |
+| `pay_period.close` and `payroll_export.run` | X/a | X/a | - | - | - | - | - | X/a | - |
+| `payroll_connection` settings | RWD/a | R/a | - | - | - | - | - | RW/a | - |
+| `policy_pack` Company overrides | RW/a | R/a | - | - | R/b | - | - | R/a | - |
+| `pw_project`, certified payroll sign | RWX/a sign | RW/a | R/a flag | - | R/b | W/c classification | - | RW/a | - |
+| `burden_profile` | RWD/a | R/a | R/a rates only | - | R/b | - | - | RW/a | - |
+| `safety_case`, OSHA logs | RWX/a certify 300A | RW/a | - | - | RW/b | W/c report, R/c own crew cases summary | W/o report | R/a | W/o report on own work |
+| `safety_program`, `heat_plan` | RWD/a | RW/a | R | R | RW/b | R | R | R | R relevant |
+| `hazard_report` (anonymous) | R/a | R/a | W | W | R/b | W | W | - | W |
+| `review`, `goal`, coaching and discipline | RWD/a | RW/a | R/o | R/o | RW/b | W/c reviews (no discipline) | R/o, W/o self-review | - | - |
+| `kudos` | RW/a | RW/a | RW | RW | RW | RW | RW | RW | - |
+| `announcement` | RWX/a | RWX/a | - | - | RWX/b | RWX/c | R | R | R targeted |
+| People dashboard and retention | R/a | R/a | - | - | R/b | - | - | R/a cost views | - |
+| Check-in suggestions (V2) | R/a | R/a | - | - | R/b | - | - | - | - |
+| `offboarding_case` | RWX/a | RWX/a | - | - | RW/b | W/c equipment check | - | R/a final pay | - |
+| Legal hold | X/a | - | - | - | - | - | - | - | - |
+
+Notes:
+- Pay amounts on the timesheet board are hidden from `ops_manager` and `crew_lead` unless the Company enables them. Hours are always visible.
+- `crew_lead` level-1 approvals and edits are bounded by `timesheet.edit_max_hours` ([02](02-personas-roles-permissions.md)).
+- Self-service rights: every employee can read their own time, pay items, PTO, documents, credentials, training and reviews (after release), and can update their own profile fields, subject to approval for payroll-relevant changes.
+
+### 9.2 External and platform roles
+
+| Role | Access in this module |
+|---|---|
+| H-2B agent or attorney (external collaborator, per-program invite) | R/W milestones and documents of the invited `h2b_program` only. R worker case fields the Company shares. No pay, no other employees, no timesheets. All access logged. Revocable instantly |
+| Applicant (no login) | Their own application status via magic link. Withdraw. Update contact info |
+| `platform_owner` | Approves policy pack and training library releases. No tenant pay or PII access by default. Break-glass access requires tenant consent and is logged ([19](19-platform-admin-portal.md)) |
+| `platform_engineer` | Maintains policy pack engine, payroll connectors and rule fixtures. Tenant data only through break-glass with consent |
+| `platform_curator` | Curates training library, credential catalog, glossary and position templates. No tenant data |
+| `platform_support` | Can view connector status, sync errors and configuration (no pay amounts, no PII) with tenant-granted support access. Can never view Restricted fields |
+| `platform_finance` | Embedded payroll revenue share and partner invoices. No tenant employee data |
+
+---
+
+## 10. AI opportunities in this module
+
+All AI runs through the AI Gateway with tenant isolation and credit metering ([17](17-ai-copilot-automation.md)). Restricted fields are never sent to models. Employment decisions stay with humans. Where AI is used in screening, jurisdictions such as Ontario (from 2026) require disclosure in job postings, and New York City regulates automated employment decision tools (verify). Rootline's design avoids AEDT scope by not scoring or ranking. It still discloses AI-assisted drafting and translation in postings where required.
+
+| # | Capability | What it does | Guardrails | Priority |
+|---|---|---|---|---|
+| AI-1 | Job post drafting and translation | Drafts English and Spanish posts from position, pay band and Company profile; suggests inclusive wording | Human review required; posting validator runs after AI | [V1] |
+| AI-2 | Hiring assistant (agent A25 in [17](17-ai-copilot-automation.md)) | Summarizes applications, transcribes and translates voice answers, schedules interviews, drafts messages | **No ranking, scoring or rejection.** Summaries exclude protected characteristics. Audit log of every AI output shown to reviewers | [V2] (summaries and translation [V1]) |
+| AI-3 | Timesheet anomaly agent (A17 in [17](17-ai-copilot-automation.md)) | Flags missing clock-outs, long shifts, far-away punches, overlapping punches, break violations; proposes fixes with evidence | Supervisor approves every change; never edits approved time | [V1] |
+| AI-4 | Credential OCR | Reads license and certificate cards and fills fields | Employee confirms; manager verifies | [V1] |
+| AI-5 | Ask HR | Answers employee questions in Spanish or English, by voice, grounded in the handbook, policies, rule packs and the employee's own data, with citations | No legal advice; immigration questions routed to a human; refuses to discuss other employees | [V1] |
+| AI-6 | Pay explainer | Explains each pay line in plain Spanish ("¿Por qué mi overtime es $32.18 y no $31.50?" -> regular rate includes bonus) | Deterministic numbers from the rule engine; the LLM only narrates | [V1] |
+| AI-7 | SOP video to micro-lesson | Transcribes a phone video, generates subtitles in both languages, suggests chapters, cuts and drafts quiz questions | Human author approves; voice dubbing reviewed by bilingual human | [V1] |
+| AI-8 | Daily tailgate talk generator | Generates a 3-minute bilingual talk from tomorrow's weather, scheduled tasks and recent incidents ("High heat + 3 tree removals + last week's trailer near miss") | Drawn from the curated library; safety-reviewed templates | [V1] |
+| AI-9 | OSHA recordability suggestion | Suggests recordable or not with cited 29 CFR 1904 text and the first-aid list | Decision is human, rationale saved | [V1] |
+| AI-10 | Incident narrative cleanup | Turns voice notes (Spanish or English) into a neutral, structured incident narrative | Original audio and transcript retained; injury notes always routed as incidents ([17](17-ai-copilot-automation.md)) | [V1] |
+| AI-11 | Season Plan forecasting | Projects weekly labor demand and recommends hiring targets and dates | Explainable inputs; owner adjusts | [V1] |
+| AI-12 | Exit and pulse theme clustering | Clusters free-text reasons across languages | Minimum group size; no individual attribution in anonymous surveys | [V1] |
+| AI-13 | Check-in suggestions | Explainable signals for manager check-ins | No protected traits or proxies; no adverse action; disable switch | [V2] |
+| AI-14 | Policy and handbook drafting | Drafts policy sections from templates and Company answers | Marked "draft, review with counsel"; jurisdiction flags | [V1] |
+| AI-15 | Copilot queries | "Who can spray on Thursday?", "What's our OT this week by crew?", "Which H-2B milestones are late?", "Show labor burden variance for June" | Permission-scoped retrieval | [V1] |
+
