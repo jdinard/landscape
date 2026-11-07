@@ -575,7 +575,7 @@ Vendor bills are recorded in the built-in [Ledger](09-accounting-ledger-integrat
 #### 4.11.1 Bill intake [MVP basic, V1 AI]
 
 - Channels: dedicated inbox (`bills@<company-slug>.rootline.app`, illustrative), upload, vendor confirmation link, Nursery Connect, EDI 810 [V2].
-- Extraction: [MVP] rules-based OCR of the header (vendor, invoice number, date, totals, tax and PO number) through deterministic rules and per-vendor templates, with no LLM and no AI credits; the AP clerk confirms or keys the rest, including lines. [V1] AI extraction of header (vendor, invoice number, date, due date, terms, totals, tax) and lines, run by the A9 AP Agent ([AI copilot and automation](17-ai-copilot-automation.md)) and metered at 2 credits per page (AI2 in [Ledger](09-accounting-ledger-integrations.md)). Vendor identified by sender, remit-to and tax ID; PO number detected from the document.
+- Extraction: [MVP] rules-based OCR of the header (vendor, invoice number, date, totals, tax and PO number) through deterministic rules and per-vendor templates, with no LLM and no AI credits; the `bookkeeper` confirms or keys the rest, including lines. [V1] AI extraction of header (vendor, invoice number, date, due date, terms, totals, tax) and lines, run by the A9 AP Agent ([AI copilot and automation](17-ai-copilot-automation.md)) and metered at 2 credits per page (AI2 in [Ledger](09-accounting-ledger-integrations.md)). Vendor identified by sender, remit-to and tax ID; PO number detected from the document.
 - Duplicate detection: same vendor plus invoice number, or same vendor plus amount within 30 days plus similar lines, blocks posting until reviewed.
 
 #### 4.11.2 Match rules [MVP 2-way, V1 3-way with tolerances]

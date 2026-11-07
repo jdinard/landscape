@@ -1225,6 +1225,8 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 | Accountant Hub | 8 h | 14 days | n/a | Period unlock, journal entry delete, employee PII |
 | Platform Admin | 30 min | 8 h | n/a | Every tenant-touching privileged action (hardware key tap) |
 
+**Crew offline lock exceptions [MVP].** When a crew device passes the 7-day offline grace, new work is locked until re-authentication, but two things stay available, as specified in [Field Crew App](05-field-crew-mobile-app.md) section 4.0.2 (offline session limit): the emergency screen (05 section 4.12.6, from [V1]), and PIN-verified time punches, so a crew is never blocked from clocking in. Those punches are append-only, signed with the device key and flagged `stale_session` for the approver. The lock never deletes queued field work; it syncs once the user re-authenticates. The 14-day device-key offline lease in [Architecture](20-architecture-security.md) 4.11.1 remains the cryptographic backstop.
+
 **Revocation semantics:**
 - Every access token carries `perm_version` (per membership) and `session_version` (per identity).
 - Role changes, deactivation or "Sign out everywhere" bump the version. The API rejects stale tokens on the **next request**, and Redis pub/sub pushes a revoke to live websocket sessions.

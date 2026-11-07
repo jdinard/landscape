@@ -23,14 +23,14 @@ This report is deliberately explicit about how well each fact is supported, beca
 | **[B]** | Analyst background knowledge of public vendor materials, reviews and trade press up to mid-2026, **not re-verified in this session**. | Treat as a hypothesis to verify (see the checklist in section 19). Do not put in investor materials unverified. |
 | **[E]** | Analyst estimate, inference or illustrative calculation. | Labeled as an estimate; the reasoning is shown. |
 
-**Research limitations (important).** This report was produced during a large parallel research run. The shared web-search budget for the run was exhausted after 15 searches for this report, and direct page fetches to vendor domains (for example getjobber.com) were blocked by the session's network allowlist. As a result:
+**Research limitations (important).** This report was compiled in November 2026 with limited live web access: a small number of searches were possible, and many vendor sites (for example getjobber.com) could not be opened directly. As a result:
 
 - **Jobber** is well sourced: pricing (via several conflicting third-party trackers), Client Hub, quote approvals and deposits, online booking, Jobber Payments' Stripe foundation, the QuickBooks Online sync model and its limits, routing behavior and complaints, AI products and the Marketing Suite are all backed by [S] or [S3P] evidence.
 - **Housecall Pro** pricing, **Workiz** pricing and AI answering, and the **ServiceTitan-Aspire** acquisition are sourced.
 - **FieldEdge, ServiceM8, FieldPulse, Kickserv, GorillaDesk, Service Fusion, Markate, Zuper, Thryv** and most ServiceTitan product detail rely on **[B]**. Where the analyst is unsure, the report says "unverified" or uses "?" rather than guessing. No statistic in this report was invented; where a number is an estimate it is labeled [E].
 - Direct quotes from G2, Capterra, Reddit and LawnSite were not re-retrieved, so complaint themes from those sites are summarized as [B] themes rather than quoted. The Jobber Community forum threads and the TechRadar review that were retrieved are cited [S].
 
-A follow-up research pass with an expanded search budget and the vendor domains allowlisted should work through the verification checklist in [section 19](#19-verification-checklist-and-open-questions) before any of these numbers are used externally.
+A follow-up verification pass with direct access to vendor sites and hands-on product trials should work through the verification checklist in [section 19](#19-verification-checklist-and-open-questions) before any of these numbers are used externally.
 
 ---
 
@@ -136,7 +136,7 @@ Every vendor in this report earns from some combination of the following [B/E]:
 
 ### 3.2 Plans and pricing (as of Nov 2026, verify)
 
-Jobber's pricing page could not be fetched in this session. Third-party trackers that claim to have checked the live page in September and October 2026 disagree, especially on Grow and Plus. The table shows the range rather than a single number.
+Jobber's pricing page could not be opened directly during research. Third-party trackers that claim to have checked the live page in September and October 2026 disagree, especially on Grow and Plus. The table shows the range rather than a single number.
 
 | Plan | Included users | Month-to-month list price (reported range) | Annual-billing effective price (reported) | Key additions over the previous tier | Evidence |
 |---|---|---|---|---|---|
@@ -846,7 +846,7 @@ Each lesson names the source pattern, the decision it implies, and where the dec
 
 ## 19. Verification checklist and open questions
 
-Work through this list in a follow-up research pass with an expanded search budget and vendor domains allowlisted. Each item names the primary source to check.
+Work through this list in a follow-up verification pass with direct access to vendor sites. Each item names the primary source to check.
 
 | # | Item to verify | Primary source to check |
 |---|---|---|

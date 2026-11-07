@@ -2741,7 +2741,7 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 | `proof_packet.sealed` | manifest hash, storage key | Retention, export |
 | `tree_assessment.completed` | ratings, prescriptions | Proposals, portfolio heat map |
 | `dig_ticket.status_changed` | ticket, clear_to_dig, expires_at | Crew app gate, Gantt |
-| `project_phase.completed` | phase, percent | Progress billing ([07](07-invoicing-billing-contracts.md)), client update |
+| `phase.completed` (the `ops` event of [04](04-scheduling-dispatch-routing.md) 8.3 and the [20](20-architecture-security.md) registry name; raised when a Project Engine phase closes, with this module supplying the completion percentage) | phase, percent | Progress billing ([07](07-invoicing-billing-contracts.md)), client update |
 | `punch_list.signed_off` | project | Final invoice gate, warranty start |
 | `warranty_claim.decided` | decision, cost | Replacement scheduling, warranty reserve posting |
 | `site_audit.completed` | score, issues | Corrective tasks, enhancement pipeline, monthly report |
@@ -2760,6 +2760,7 @@ All events go through the transactional outbox to the event bus ([20](20-archite
 |---|---|---|
 | `round_instance.ready` | `round_instance.window_opened` or `round_instance.unblocked`, whichever leaves the instance `window_open` and unblocked | [04](04-scheduling-dispatch-routing.md) 8.4 |
 | `application_record.sealed`, `chemical_application.signed` (retired spellings; `application_record.sealed` stays a registered alias in [20](20-architecture-security.md)) | `chemical_application.recorded`, the [20](20-architecture-security.md) registry name ([05](05-field-crew-mobile-app.md) 8.3); sealing is a status on the record (4.1.4), not a separate event | Earlier drafts of this doc and of [13](13-operations-inventory-equipment.md) 8.3 |
+| `project_phase.completed` (stays a registered alias in [20](20-architecture-security.md)) | `phase.completed`, the [04](04-scheduling-dispatch-routing.md) 8.3 and [20](20-architecture-security.md) registry name | Earlier drafts of this doc |
 
 ### 8.3 Events consumed
 

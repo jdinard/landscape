@@ -23,12 +23,12 @@ Pricing, packaging and even ownership in this category change several times a ye
 | **[B]** | Analyst background knowledge of public vendor materials, trade press and reviews up to mid-2026, **not re-verified in this run**. | A hypothesis. Verify before using in investor or sales material (checklist in section 20). |
 | **[E]** | Analyst estimate, inference or worked illustration. | Labeled as an estimate; reasoning shown. |
 
-**Research limitations (read this).** This report was written late in a large parallel research run.
+**Research limitations (read this).** This report was compiled in November 2026 without live web access of its own.
 
-- The run-wide web-search budget (200 searches shared by every agent) was already exhausted when this report started, so **this report's own searches were refused**, and direct fetches to vendor domains (golmn.com, youraspire.com, singleops.com, serviceautopilot.com) failed DNS resolution under the session's network allowlist.
-- Sibling module agents in the same run had already retrieved roughly 150 landscape-vendor sources (vendor help centers, Capterra/G2/GetApp pages, trade press, app-store listings, LawnSite threads). This report **consolidates that evidence**, re-citing the exact links those agents retrieved. Those facts are tagged [S] or [S3P]; this report did not reopen the pages, so a second pass should spot-check them.
+- No new searches were possible for this report, and vendor sites (golmn.com, youraspire.com, singleops.com, serviceautopilot.com) could not be opened directly.
+- The module docs in this proposal had already gathered roughly 150 landscape-vendor sources (vendor help centers, Capterra/G2/GetApp pages, trade press, app-store listings, LawnSite threads). This report **consolidates that evidence**, re-citing the exact links the module docs cite. Those facts are tagged [S] or [S3P]; this report did not reopen the pages, so a second pass should spot-check them.
 - Everything else is [B] or [E]. Where the analyst is unsure (for example the ownership of BOSS LM or the feature set of CLIP), the report says "unverified" instead of guessing. Products named in the brief that could not be verified at all in this pass ("Snowbook", a WorkWave snow product called "Evergreen") are reported as unverified rather than described.
-- Reddit (r/landscaping, r/lawncare) threads were not retrievable in this run. Complaint themes from Reddit are therefore summarized as [B] themes; complaint evidence from Capterra, G2, GetApp, LawnSite and Searchfunder is [S] and quoted only where a sibling agent captured the wording.
+- Reddit (r/landscaping, r/lawncare) threads could not be retrieved. Complaint themes from Reddit are therefore summarized as [B] themes; complaint evidence from Capterra, G2, GetApp, LawnSite and Searchfunder is [S] and quoted only where a module doc captured the wording.
 - No statistic in this report was invented. Vendor-reported numbers are labeled "vendor claim".
 
 ---
@@ -770,7 +770,7 @@ Legend: **Y** = documented capability; **P** = partial, add-on, partner or highe
 
 ## 15. What users complain about: synthesized pain points
 
-Each row consolidates complaints across products. Quotes appear only where a sibling agent captured the wording from the source.
+Each row consolidates complaints across products. Quotes appear only where a module doc captured the wording from the source.
 
 | # | Pain point | Products and evidence | Root cause [E] | Rootline answer |
 |---|---|---|---|---|
@@ -911,7 +911,7 @@ A follow-up pass with web search and vendor domains allowlisted should resolve t
 
 ## Sources
 
-All links below were retrieved by research agents during this research run (2026-11-07) and are cited inline above. This report did not reopen them because its own search budget was exhausted and vendor domains were blocked (see section 0); spot-check before external use. Prices and plan names are time-sensitive: as of Nov 2026, verify.
+All links below were retrieved during research for this proposal (November 2026) and are cited inline above. This report did not reopen them (see section 0); spot-check before external use. Prices and plan names are time-sensitive: as of Nov 2026, verify.
 
 ### Vendor primary sources (help centers, product pages, release notes, app listings)
 

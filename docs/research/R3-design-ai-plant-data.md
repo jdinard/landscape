@@ -18,15 +18,15 @@ This report uses the same evidence tags as [R2](R2-landscape-specific-platforms.
 
 | Tag | Meaning | How to use it |
 |---|---|---|
-| **[S]** | Sourced in this research run from a primary or credible source (vendor page, help center, trade press, paper, app-store listing, review site), linked inline. In this report almost every [S] fact was retrieved by a sibling agent in the same run and is re-cited with that agent's exact link. | Safe to quote with the link. Prices still carry "as of Nov 2026, verify". |
+| **[S]** | Sourced in this research run from a primary or credible source (vendor page, help center, trade press, paper, app-store listing, review site), linked inline. In this report almost every [S] fact was gathered for the module docs and is re-cited with the same link. | Safe to quote with the link. Prices still carry "as of Nov 2026, verify". |
 | **[S3P]** | Sourced in this run, but only from third-party aggregators, affiliate roundups or competitor-written pages. | Directional only. Quote ranges and say "verify". |
 | **[B]** | Analyst background knowledge of public vendor materials, documentation, licenses, papers and trade press up to mid-2026, **not re-verified in this run**. | A well-founded hypothesis. Verify before using it in contracts, investor material or ingestion code (checklist in section 7). |
 | **[E]** | Analyst estimate, inference or worked illustration. | Labeled as an estimate, with the reasoning shown. |
 
 **Research limitations (read this first).**
 
-- This report was started after the run-wide web-search budget (200 searches shared by every agent) was used up, so **every search this report attempted was refused**. Direct fetches of vendor domains (for example prolandscape.com and dynascape.com) also failed DNS resolution under the session's network allowlist. In other words, this run **could not open any new page**.
-- To compensate, the report (1) re-cites the design-tool and AI-app evidence that sibling agents had already retrieved for [10](../10-design-studio.md) and [11](../11-ai-design-mockups.md) (tagged [S] or [S3P]), and (2) draws on the analyst's background knowledge for everything else (tagged [B]). Part C, the plant data sources, is almost entirely **[B]**. Its license summaries are the analyst's understanding of each provider's published terms as of mid-2026. **They are not legal advice and must be confirmed by counsel against each provider's current terms before any ingestion.** Section 4.9 explains the framework, and section 7 is a verification checklist.
+- This report was compiled without live web access of its own: no new searches were possible and vendor sites (for example prolandscape.com and dynascape.com) could not be opened directly.
+- To compensate, the report (1) re-cites the design-tool and AI-app evidence already gathered for [10](../10-design-studio.md) and [11](../11-ai-design-mockups.md) (tagged [S] or [S3P]), and (2) draws on the analyst's background knowledge for everything else (tagged [B]). Part C, the plant data sources, is almost entirely **[B]**. Its license summaries are the analyst's understanding of each provider's published terms as of mid-2026. **They are not legal advice and must be confirmed by counsel against each provider's current terms before any ingestion.** Section 4.9 explains the framework, and section 7 is a verification checklist.
 - No statistic in this report is invented. Where the analyst remembers a figure but is not certain of it (record counts, list prices), the report gives a range or says "unverified" rather than a precise number. Vendor-reported numbers are labeled "vendor claim".
 - The sources list at the end has two parts: links retrieved in this run (via siblings), and canonical primary references the analyst knows exist but did not open in this run. They are kept apart so nobody mistakes the second group for verified evidence.
 
@@ -1071,7 +1071,7 @@ flowchart TB
 
 ## Sources
 
-### Retrieved in this research run (by sibling agents; re-cited here)
+### Retrieved during research for the module docs (re-cited here)
 
 **Design tools and the design-to-estimate gap**
 
