@@ -995,7 +995,7 @@ Tier names and commercial terms are owned by [Pricing and GTM](22-business-model
 | Production-rate feedback loop | - | Y | Y | Y | [V1] |
 | Crew "My Stats", TV display, Close Cockpit | Y | Y | Y | Y | [V1] |
 | Commercial Property Scorecard, board packets | - | L (5 commercial clients, matching the portal limit) | Y | Y | [V1] |
-| 13-week cash and capacity forecasts | - | - | Y | Y | [V1] here; doc 22 lists forecasting at [V2], see section 14 |
+| 13-week cash and capacity forecasts | - | - | Y | Y | [V1] (matches [22](22-business-model-pricing-gtm.md) section 4.2.1) |
 | Metrics API, semantic SQL API for BI tools | - | - | Y | Y | [V1] |
 | WIP schedule | - | - | Y | Y | [V1] (requires Ledger Advanced) |
 | Scenario planner, seasonal ML forecast | - | - | Y | Y | [V2] |
@@ -2182,8 +2182,8 @@ All access by platform staff to tenant-level analytics is logged in the immutabl
 9. **Historical import:** how many years of history to import from Jobber, LMN, Aspire or QuickBooks during migration so year-over-year comparisons work on day one (recommendation: 2 seasons of invoices and visits where available; see [Roadmap](24-roadmap-feature-catalog.md)).
 10. **Metric governance body:** who sits on the metrics council (founder, a landscape CPA advisor, a veteran operations consultant) and how tenants propose new certified metrics.
 11. **Data share pricing:** flat Enterprise add-on vs. usage-based on rows or refresh frequency.
-12. **Forecasting timing and tier (cross-doc):** this doc ships the 13-week cash and capacity forecasts at V1 in Pro and Enterprise, because winter cash is the owner's most acute pain; [Pricing](22-business-model-pricing-gtm.md) currently lists "Forecasting, data warehouse export" at V2. Proposed resolution: V1 for the explainable cash and capacity forecasts, V2 for ML seasonal forecasting, scenarios and data shares. The roadmap ([24](24-roadmap-feature-catalog.md)) decides.
-13. **Scheduled delivery at MVP:** scheduled email delivery of standard reports is specified as MVP here (the Monday digest and month-end packs depend on it), while doc 22 lists "Report builder, scheduled reports" together at V1. Proposed resolution: scheduling of standard reports at MVP for Grow and above; builder at V1.
+12. **Forecasting timing and tier (cross-doc, resolved):** this doc ships the 13-week cash and capacity forecasts at V1 in Pro and Enterprise, because winter cash is the owner's most acute pain, and the scenario planner and ML seasonal forecast at V2. [Pricing](22-business-model-pricing-gtm.md) section 4.2.1 now lists the same split (13-week cash and capacity forecasts [V1]; scenario planner and seasonal ML forecast [V2]; data shares and the full multi-company rollup [V2]). The roadmap ([24](24-roadmap-feature-catalog.md)) remains the authority.
+13. **Scheduled delivery at MVP (cross-doc, resolved):** scheduled email delivery of standard reports is specified as MVP here (the Monday digest and month-end packs depend on it) for Grow and above, and the custom report builder at V1. [Pricing](22-business-model-pricing-gtm.md) section 4.2.1 now states the same ("Report builder (scheduled delivery ships at [MVP])", [V1]).
 14. **ClickHouse timing:** the MVP runs on Postgres analytics schemas (4.12.2). Decide the go/no-go trigger owner and whether to pre-provision ClickHouse for the first large commercial tenants (for example 3-branch companies with 100+ field staff) before general V1.
 15. **Price benchmarks:** confirm with antitrust counsel whether mowing price per 1,000 sq ft and mulch price per cubic yard can be shown in-app at all, and at what geography, lag and n. Until then they stay behind a flag (4.11.8).
 
