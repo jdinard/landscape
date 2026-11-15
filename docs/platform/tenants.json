@@ -1,5 +1,117 @@
 {
   "_about": "Sample tenants for the Platform Explorer, one or more per segment. Reyes and Summit come from 02; Greenleaf is the sample dataset (21 §15.3, 22 §4.6); the rest are illustrative.",
+  "module_catalog": [
+    {
+      "key": "core_maintenance",
+      "name": "General maintenance (mowing, pruning, cleanups)",
+      "depends_on": "none, always on",
+      "plan_availability": "All plans (22)",
+      "scope": "MVP",
+      "scope_note": "MVP"
+    },
+    {
+      "key": "lawn_phc",
+      "name": "Lawn care and Plant Health Care programs",
+      "depends_on": "Application Compliance Engine",
+      "plan_availability": "All plans; Starter gets basic chemical logs only, without registry automation or regulator exports (22: \"L (lawn/PHC basic)\")",
+      "scope": "MVP",
+      "scope_note": "MVP"
+    },
+    {
+      "key": "irrigation",
+      "name": "Irrigation systems, seasonal services, repairs",
+      "depends_on": "Property Asset Registry",
+      "plan_availability": "All plans (22)",
+      "scope": "MVP",
+      "scope_note": "MVP"
+    },
+    {
+      "key": "backflow",
+      "name": "Backflow testing and municipal submission",
+      "depends_on": "`irrigation`",
+      "plan_availability": "Grow, Pro, Enterprise (proposed)",
+      "scope": "V1",
+      "scope_note": "V1"
+    },
+    {
+      "key": "smart_irrigation",
+      "name": "Smart controller integrations, water budgets, leak alerts",
+      "depends_on": "`irrigation`",
+      "plan_availability": "Pro and Enterprise; Grow limited to 25 linked controllers (proposed)",
+      "scope": "V1",
+      "scope_note": "V1"
+    },
+    {
+      "key": "snow_ice",
+      "name": "Snow and ice management",
+      "depends_on": "Snow Lite: Visit and photo pipeline only; full module: Storm Event Engine",
+      "plan_availability": "Snow Lite (4.3.0) on all plans at no charge, and it stays included after the add-on launches (22); full module as add-on `snow_ice` on Starter, Grow and Pro, billed Nov-Mar only, included in Enterprise (22 section 4.5)",
+      "scope": "MVP",
+      "scope_note": "MVP (Snow Lite); V1 (full module)"
+    },
+    {
+      "key": "tree_care",
+      "name": "Tree inventory, ISA risk, prescriptions, permits, crane jobs",
+      "depends_on": "Plant KB, Inspection Engine",
+      "plan_availability": "Add-on `tree_care` on Starter and Grow; included in Pro and Enterprise (22)",
+      "scope": "V2",
+      "scope_note": "V2"
+    },
+    {
+      "key": "install_projects",
+      "name": "Installation and hardscape project management",
+      "depends_on": "Project Engine, Warranty Engine",
+      "plan_availability": "All plans (22); Gantt view Pro and Enterprise (proposed); 811 gating on every plan because it is a safety control",
+      "scope": "MVP",
+      "scope_note": "MVP"
+    },
+    {
+      "key": "commercial_grounds",
+      "name": "SOW specs, quality audits, enhancement pipeline, property reports",
+      "depends_on": "Inspection Engine",
+      "plan_availability": "Grow limited to 5 commercial clients (matches the commercial portal limit in 22); unlimited on Pro and Enterprise (proposed)",
+      "scope": "MVP",
+      "scope_note": "MVP"
+    },
+    {
+      "key": "landscape_lighting",
+      "name": "Lighting system inventory and service plans",
+      "depends_on": "Property Asset Registry",
+      "plan_availability": "All plans (22)",
+      "scope": "V1",
+      "scope_note": "V1"
+    },
+    {
+      "key": "holiday_lighting",
+      "name": "Holiday lighting install, takedown and storage",
+      "depends_on": "Property Asset Registry, Inventory",
+      "plan_availability": "Grow, Pro, Enterprise (proposed; a paid add-on is an option if storage tracking drives support cost)",
+      "scope": "V1",
+      "scope_note": "V1"
+    },
+    {
+      "key": "mosquito_pest",
+      "name": "Mosquito, tick and perimeter pest programs",
+      "depends_on": "Program Engine, Application Compliance Engine",
+      "plan_availability": "Grow, Pro, Enterprise (proposed)",
+      "scope": "V1",
+      "scope_note": "V1"
+    },
+    {
+      "key": "seasonal_campaigns",
+      "name": "Aeration/overseeding, cleanups, mulch season campaigns",
+      "depends_on": "Program Engine, Marketing (16)",
+      "plan_availability": "All plans (proposed)",
+      "scope": "MVP",
+      "scope_note": "MVP"
+    }
+  ],
+  "module_rules": [
+    "Module keys follow 14 §4.0.1. core_maintenance is always on.",
+    "A tenant module that is off hides its screens and navigation (21 §5.2); it is not greyed out.",
+    "snow_ice on means Snow Lite (14 §4.3.0, every plan, no charge). The full Snow & Ice module is the snow_ice add-on (plans.json).",
+    "books is not a module: Books navigation is hidden when the tenant keeps QuickBooks or Xero as its system of record (tenant books = qbo_system)."
+  ],
   "tenants": [
     {
       "id": "brookside",
@@ -21,10 +133,11 @@
       },
       "addons": [],
       "modules": [
-        "maintenance",
-        "snow_lite"
+        "core_maintenance",
+        "snow_ice"
       ],
       "books": "rootline",
+      "design_only": false,
       "brand": {
         "color": "#2F6428",
         "portal": "brookside.rootline.app",
@@ -75,14 +188,14 @@
         "snow_ice"
       ],
       "modules": [
-        "maintenance",
-        "design_build",
-        "hardscape",
+        "core_maintenance",
+        "install_projects",
         "irrigation",
-        "lawn_programs",
-        "snow_lite"
+        "lawn_phc",
+        "snow_ice"
       ],
       "books": "rootline",
+      "design_only": false,
       "brand": {
         "color": "#2F6428",
         "portal": "portal.greenleafgrounds.example",
@@ -152,12 +265,12 @@
       },
       "addons": [],
       "modules": [
-        "maintenance",
-        "design_build",
-        "hardscape",
-        "snow_lite"
+        "core_maintenance",
+        "install_projects",
+        "snow_ice"
       ],
       "books": "rootline",
+      "design_only": false,
       "brand": {
         "color": "#96441F",
         "portal": "portal.reyesoutdoor.example",
@@ -213,11 +326,12 @@
       },
       "addons": [],
       "modules": [
-        "maintenance",
-        "lawn_programs",
-        "snow_lite"
+        "core_maintenance",
+        "lawn_phc",
+        "snow_ice"
       ],
       "books": "rootline",
+      "design_only": false,
       "brand": {
         "color": "#246690",
         "portal": "portal.maplehollowlawn.example",
@@ -269,13 +383,13 @@
         "snow_ice"
       ],
       "modules": [
-        "maintenance",
-        "commercial",
+        "core_maintenance",
+        "commercial_grounds",
         "irrigation",
-        "snow_lite",
         "snow_ice"
       ],
       "books": "rootline",
+      "design_only": false,
       "brand": {
         "color": "#1B4F70",
         "portal": "portal.summitgrounds.example",
@@ -330,12 +444,13 @@
       },
       "addons": [],
       "modules": [
+        "core_maintenance",
         "irrigation",
-        "lighting",
-        "maintenance",
-        "snow_lite"
+        "landscape_lighting",
+        "snow_ice"
       ],
       "books": "rootline",
+      "design_only": false,
       "brand": {
         "color": "#A87410",
         "portal": "portal.beaconirrigation.example",
@@ -381,9 +496,10 @@
       },
       "addons": [],
       "modules": [
-        "design_only"
+        "core_maintenance"
       ],
       "books": "qbo_system",
+      "design_only": true,
       "brand": {
         "color": "#463A9A",
         "portal": "fernwood.rootline.app",
@@ -427,12 +543,13 @@
         "dedicated_db"
       ],
       "modules": [
-        "maintenance",
-        "lawn_programs",
-        "commercial",
-        "snow_lite"
+        "core_maintenance",
+        "lawn_phc",
+        "commercial_grounds",
+        "snow_ice"
       ],
       "books": "rootline",
+      "design_only": false,
       "brand": {
         "color": "#245F3A",
         "portal": "portal.kestrellawn.example",

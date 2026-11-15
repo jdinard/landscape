@@ -2816,5 +2816,35 @@
         }
       }
     }
-  }
+  },
+  "custom_role_templates": [
+    {
+      "key": "observer",
+      "name": "Observer",
+      "scope": "V1",
+      "seat": "observer (free, up to 3 per Company; 22 §4.3)",
+      "source": "02 §5.7 starter custom roles: read-only investor, silent partner or family member with dashboards and field.margin.read, no PII, no client-list exports",
+      "assumption": "The grants below are the blueprint reading of that sentence; 02 §10.1 has no observer column. Confirm before generating the authorization tables.",
+      "nav": {
+        "Today": "R",
+        "Reports": "R"
+      },
+      "grants": {
+        "dashboard": "R/a",
+        "financial_report": "R/a",
+        "job_cost_report": "R/a"
+      },
+      "field_classes": {
+        "price": "R",
+        "cost": "R",
+        "margin": "R"
+      },
+      "never": [
+        "client PII (names, phones, emails, addresses, gate codes)",
+        "client-list or report exports",
+        "any write action",
+        "pay rates and HR records"
+      ]
+    }
+  ]
 }

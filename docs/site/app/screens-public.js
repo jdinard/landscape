@@ -477,7 +477,7 @@ RL.screen('www.partners', (c) => {
 // www.start (22 §4.6; 21 onboarding)
 // =====================================================================
 const MILESTONES = [['Import clients', 'users'], ['Connect Stripe', 'card'], ['Send a proposal', 'send'], ['Schedule a visit', 'calendar'], ['Invite a crew member', 'phone'], ['Connect a bank feed', 'bank']];
-const SL = [['maintenance', 'Maintenance'], ['design_build', 'Design-build'], ['hardscape', 'Hardscape'], ['lawn_programs', 'Lawn and PHC'], ['irrigation', 'Irrigation'], ['lighting', 'Lighting'], ['snow_lite', 'Snow'], ['commercial', 'Commercial']];
+const SL = [['core_maintenance', 'Maintenance'], ['install_projects', 'Design-build and hardscape'], ['lawn_phc', 'Lawn and PHC'], ['irrigation', 'Irrigation'], ['landscape_lighting', 'Lighting'], ['snow_ice', 'Snow'], ['commercial_grounds', 'Commercial']];
 RL.screen('www.start', (c) => {
   const step = U('pub.st', 'form'), days = trialDays(c);
   const start = c.winter ? 'Jan 12' : 'May 11', end = c.winter ? 'Feb 11' : 'May 25', ext = c.winter ? 'Feb 25' : 'Jun 8';
@@ -623,7 +623,7 @@ RL.screen('home.quote', (c) => {
   const cc = curConcept(), b = budgetCalc(cc), ans = quizA(), D = c.D;
   const sent = U('hm.sent', '') === '1', share = RL.ui['hm.c1'] === true;
   const co = c.t.name, addr = ellenAddr(c);
-  const lines = c.t.modules.map(m => ({ maintenance: 'Maintenance', design_build: 'Design-build', hardscape: 'Hardscape', lawn_programs: 'Lawn care', irrigation: 'Irrigation', lighting: 'Lighting', commercial: 'Commercial', design_only: 'Garden design' }[m])).filter(Boolean);
+  const lines = c.t.design_only ? ['Garden design'] : c.t.modules.map(m => ({ core_maintenance: 'Maintenance', install_projects: 'Design-build and hardscape', lawn_phc: 'Lawn care', irrigation: 'Irrigation', landscape_lighting: 'Lighting', commercial_grounds: 'Commercial', snow_ice: 'Snow' }[m])).filter(Boolean);
   const ids = { lead: 'L-' + (880 + D.leads.length), opp: 'O-' + (560 + D.opps.length), prop: 'P-' + (1180 + D.properties.length * 3), des: 'DS-' + (410 + D.designs.length) };
   const eligible = !['starter', 'design_solo'].includes(c.planCode);
   const fee = b.hi >= 10000 ? '$75-$150 (design-build, $10k or more)' : '$35-$60 (small install, under $10k)';
@@ -671,4 +671,30 @@ RL.modal('pub-demo', (c) => {
     foot: `<button type="button" class="btn" data-close>Cancel</button>` + B('Request demo', { kind: 'primary', act: 'pub-demo-send' }),
   };
 });
+
+// ---------- home.widget: the MVP "Dream Yard Visualizer" on a Company's own website (11 AIM-AUD-01; 24 C11-019, OD-33) ----------
+RL.screen('home.widget', c => {
+  const t = c.t, step = +U('wid.step', 0), style = U('wid.style', 'cottage');
+  const STY = [['cottage', 'Cottage garden'], ['modern', 'Clean modern'], ['native', 'Native and pollinator']];
+  const pal = (c.D.plants || []).slice(0, 5);
+  const gate = t.segment === 'S2' || t.id === 'greenleaf';
+  const steps = h.steps(['Your photo', 'Pick a style', 'See ideas', 'Send to ' + t.name], step);
+  let body = '';
+  if (step === 0) body = card(`<b>Start with a photo of your yard</b><p class="small t2">Front or back, taken from the street or the patio. Nothing leaves this page until you choose to send it.</p>${h.photo('before', { label: 'Your yard photo', badge: 'Uploaded photo' })}<div class="flex">${B('Use this photo', { kind: 'primary', ui: 'wid.step', val: '1' })}${B('Take another', { ui: 'wid.step', val: '0' })}</div>`);
+  else if (step === 1) body = card(`<b>Pick a style</b><div class="flex">${STY.map(([k, l]) => B(l, { ui: 'wid.style', val: k, kind: k === style ? 'primary' : '' })).join('')}</div><p class="small t2">Plants come only from ${esc(t.name)}'s ${esc(t.region)} palette, so every idea is something they can plant here.</p><div class="flex">${B('Show my ideas', { kind: 'primary', ui: 'wid.step', val: '2' })}${B('Back', { ui: 'wid.step', val: '0' })}</div>`);
+  else if (step === 2) body = card(`<div class="flex between"><b>${esc(STY.find(x => x[0] === style)[1])} ideas for your yard</b>${h.pill('AI artist rendering', 'ai', 'spark')}</div>${grid(220, [h.photo('mockup', { label: 'Idea 1', badge: 'Idea 1 · AI rendering' }), h.photo('after', { label: 'Idea 2', badge: 'Idea 2 · AI rendering' })])}<p class="tiny t3">Artist renderings made by AI from your photo. Sizes, colors and the finished look will differ; plants shown at about 3 years. Content credentials (C2PA) are attached to each image.</p><div class="small"><b>Plants in these ideas:</b> ${pal.map(p => esc(p[0])).join(', ')}</div><div class="flex">${B('I like these, send them', { kind: 'primary', ui: 'wid.step', val: '3' })}${B('Try another style', { ui: 'wid.step', val: '1' })}</div>`);
+  else body = card(`<b>Send your ideas to ${esc(t.name)}</b>${h.field('Name', h.input('', { ph: 'Your name' }))}${h.field('Email or mobile', h.input('', { ph: 'you@example.com' }))}${h.field('Address of the yard', h.input('', { ph: 'Street, city' }))}
+    <label class="small flex nw" style="align-items:flex-start"><input type="checkbox" style="margin-top:3px"> ${esc(t.name)} may contact me about this project by email or text. Message and data rates may apply; reply STOP to opt out.</label>
+    <div class="flex">${B('Send to ' + t.name, { kind: 'primary', act: 'wid-send' })}${B('Back', { ui: 'wid.step', val: '2' })}</div><p class="tiny t3">Your photo and ideas go to ${esc(t.name)} only. Rootline does not share them with other companies.</p>`);
+  const site = `<div style="display:grid;gap:14px"><div class="flex between" style="border-bottom:1px solid var(--border);padding-bottom:10px"><b style="font-family:var(--font-display);font-size:1.15rem;color:${esc((t.brand || {}).color || 'var(--primary)')}">${esc(t.name)}</b><span class="small t2">Services · Our work · Reviews · <b>Design ideas</b> · Contact</span></div>
+    <h2 style="margin:0">See your yard, redesigned, in about a minute</h2><p class="small t2" style="margin:0">Upload a photo and get ideas from plants that grow in ${esc(t.region)}. Free, no account needed.</p>
+    <div style="border:1px solid var(--border-strong);border-radius:12px;padding:14px;display:grid;gap:12px;background:var(--surface)">${steps}${body}<div class="tiny t3" style="text-align:right">Powered by Rootline</div></div></div>`;
+  const side = `<!--side--><b class="small">What ${esc(t.name)} sees</b>
+    ${h.card({ title: 'Lead Inbox', body: h.kv([['Source', 'Website visualizer'], ['Attached', 'Yard photo, 2 AI ideas, style and plant list'], ['Consent', 'Email and SMS, timestamped, from this form'], ['Routed to', esc((t.cast || {}).estimator || (t.cast || {}).owner || 'Owner')]]) })}
+    ${h.card({ title: 'Widget usage', body: h.kv([['Credits per idea set', '40 (photo mockup set, 22 §4.4.1)'], ['Paid by', esc(t.name) + ' (AI credits)'], ['Monthly cap', '600 cr, then the widget offers a callback instead']]) })}
+    ${h.card({ title: 'Release gate', body: `<p class="small">${gate ? 'On for this Company as a design partner' : 'Off until the golden-set quality check passes'}: the widget ships at MVP behind a verify-first gate and turns on by default later (OD-33). The full Rootline Home funnel (locate, measure, quiz) is ${h.tag('V1')}.</p>` })}
+    ${h.note('Embed with a builder block or a script tag. Leads go to this Company only, with its branding.')}`;
+  return site + side;
+});
+RL.act('wid-send', () => { RL.toast('Sent. The Company gets a new lead with your photo and ideas (mock).'); RL.ui['wid.step'] = '0'; });
 })();

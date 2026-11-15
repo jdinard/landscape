@@ -15,14 +15,13 @@ const STREET = ['Oak', 'Maple', 'Elm', 'Willow', 'Birch', 'Cedar', 'Linden', 'Ha
 const SUF = ['St', 'Ave', 'Ln', 'Dr', 'Ct', 'Rd', 'Way', 'Pl'];
 const COM = ['Lakeside Commons Association', 'Fox Run Office Park', 'Harbor Point Retail Center', 'Northgate Medical Plaza', 'Cedar Ridge Apartments', 'Riverbend Business Center', 'Stonebridge HOA', 'Parkview Senior Living', 'Westfield Corporate Campus', 'Maple Grove Townhomes HOA', 'Summit Square Shopping Center', 'Tri-County Library District'];
 const SERVICES = {
-  maintenance: ['Weekly mowing', 'Biweekly mowing', 'Spring cleanup', 'Fall cleanup', 'Mulch install', 'Shrub pruning', 'Bed edging'],
-  design_build: ['Paver patio', 'Foundation planting', 'Retaining wall', 'Backyard renovation', 'Front walk + beds', 'Fire pit and seat wall'],
-  hardscape: ['Paver patio', 'Retaining wall', 'Flagstone path'],
-  lawn_programs: ['Round 2 fertilizer + crabgrass', 'Round 3 broadleaf weed', 'Grub preventive', 'Core aeration', 'Overseeding'],
+  core_maintenance: ['Weekly mowing', 'Biweekly mowing', 'Spring cleanup', 'Fall cleanup', 'Mulch install', 'Shrub pruning', 'Bed edging'],
+  install_projects: ['Paver patio', 'Foundation planting', 'Retaining wall', 'Backyard renovation', 'Front walk + beds', 'Fire pit and seat wall', 'Flagstone path'],
+  lawn_phc: ['Round 2 fertilizer + crabgrass', 'Round 3 broadleaf weed', 'Grub preventive', 'Core aeration', 'Overseeding'],
   irrigation: ['Irrigation start-up', 'Irrigation repair', 'Backflow test', 'Controller upgrade', 'Winterization'],
-  lighting: ['Lighting upgrade', 'Transformer replacement', 'Holiday lighting'],
-  commercial: ['Commercial maintenance', 'Enhancement: entrance beds', 'Parking lot sweep', 'Tree replacement'],
-  snow_lite: ['Snow push', 'Salt application'], design_only: ['Design consultation', 'Planting plan', 'Concept design'],
+  landscape_lighting: ['Lighting upgrade', 'Transformer replacement', 'Holiday lighting'],
+  commercial_grounds: ['Commercial maintenance', 'Enhancement: entrance beds', 'Parking lot sweep', 'Tree replacement'],
+  snow_ice: ['Snow push', 'Salt application'], design_only: ['Design consultation', 'Planting plan', 'Concept design'],
 };
 const PLANTS = [
   ['Little Lime Hydrangea', "Hydrangea paniculata 'Jane'", 'Shrub', '3-8', 'Full sun to part shade', 'Moderate', 'Recommended'],
@@ -58,8 +57,8 @@ function build(t) {
   const city = t.city.split(',')[0];
   const D = { t, plants: PLANTS };
   const big = t.people_peak >= 100, solo = t.people_peak <= 3;
-  const designOnly = t.modules.includes('design_only');
-  const mods = t.modules.filter(m => SERVICES[m]);
+  const designOnly = !!t.design_only;
+  const mods = designOnly ? ['design_only'] : t.modules.filter(m => SERVICES[m]);
   const servicePool = mods.flatMap(m => SERVICES[m]);
   const person = () => pick(FIRST) + ' ' + pick(LAST);
   const castNames = new Set(Object.values(t.cast || {}));
@@ -69,9 +68,9 @@ function build(t) {
   // ---- people and crews ----
   const cast = t.cast || {};
   const crewCount = Math.max(designOnly ? 0 : 1, Math.min(t.crews, 8));
-  const crewTypes = t.modules.includes('snow_ice') ? ['maintenance', 'maintenance', 'install', 'irrigation', 'maintenance', 'enhancement', 'maintenance', 'maintenance']
-    : t.modules.includes('lawn_programs') ? ['maintenance', 'lawn', 'install', 'lawn', 'maintenance', 'maintenance', 'lawn', 'maintenance']
-    : t.modules.includes('irrigation') && !t.modules.includes('design_build') ? ['irrigation', 'irrigation', 'lighting', 'irrigation', 'maintenance']
+  const crewTypes = t.modules.includes('commercial_grounds') && t.addons.includes('snow_ice') ? ['maintenance', 'maintenance', 'install', 'irrigation', 'maintenance', 'enhancement', 'maintenance', 'maintenance']
+    : t.modules.includes('lawn_phc') ? ['maintenance', 'lawn', 'install', 'lawn', 'maintenance', 'maintenance', 'lawn', 'maintenance']
+    : t.modules.includes('irrigation') && !t.modules.includes('install_projects') ? ['irrigation', 'irrigation', 'lighting', 'irrigation', 'maintenance']
     : ['maintenance', 'install', 'maintenance', 'install', 'maintenance', 'enhancement', 'maintenance', 'install'];
   D.crews = Array.from({ length: crewCount }, (_, i) => {
     const type = crewTypes[i % crewTypes.length];
@@ -120,10 +119,11 @@ function build(t) {
   const est = cast.estimator || cast.owner || person();
   const sales = [cast.estimator, cast.owner].filter(Boolean);
   const stages = ['New', 'Qualified', 'Site visit', 'Designing', 'Proposal sent', 'Won'];
-  const bigTicket = t.modules.includes('design_build') || t.modules.includes('commercial') || designOnly;
+  const bigTicket = t.modules.includes('install_projects') || t.modules.includes('commercial_grounds') || designOnly;
   const val = () => round(bigTicket ? int(3, 60) * 900 : int(4, 40) * 120, 50);
   D.leads = Array.from({ length: 10 }, (_, i) => ({ id: 'L-' + (880 + i), name: person(), source: pick(['Website form', 'Referral', 'Google Business', 'Rootline Match (V1)', 'Phone call', 'Instant quote (V1)', 'Yard sign']), service: pick(servicePool), value: val(), age: pick(['12 min', '1 h', '3 h', 'Yesterday', '2 days']), score: int(38, 96), status: i < 3 ? 'New' : i < 6 ? 'Contacted' : 'Qualified', address: addr() }));
   D.opps = Array.from({ length: 16 }, (_, i) => { const c = D.clients[(i * 3) % D.clients.length]; return { id: 'O-' + (560 + i), client: c.name, clientId: c.id, title: pick(servicePool), stage: stages[i % stages.length], value: i === 0 && D.res.projectValue ? D.res.projectValue : val(), prob: [10, 25, 40, 55, 70, 100][i % 6], owner: sales[i % Math.max(1, sales.length)] || est, next: pick(['Call back Thu', 'Site visit Fri 9:00', 'Send revised options', 'Follow-up drafted (AI)', 'Waiting on HOA vote', 'Deposit pending']), age: int(1, 40) + ' d' }; });
+  if (D.res.project) Object.assign(D.opps[0], { client: D.res.client, clientId: D.res.clientId, title: D.res.project });
   D.estimates = D.opps.slice(0, 10).map((o, i) => { const cost = Math.round(o.value * (0.5 + R() * .12)); return { id: 'E-' + (2290 + i), client: o.client, clientId: o.clientId, title: o.title, value: o.value, cost, margin: Math.round(100 * (o.value - cost) / o.value), status: pick(['Draft', 'In review', 'Sent', 'Approved']), by: o.owner, date: pick(['May 10', 'May 8', 'May 6', 'May 3']) }; });
   D.proposals = D.estimates.slice(0, 8).map((e, i) => ({ id: 'PR-' + (2290 + i), estimate: e.id, client: e.client, clientId: e.clientId, title: e.title, value: e.value, options: i % 3 === 0 ? 3 : i % 3 === 1 ? 2 : 1, status: ['Viewed', 'Sent', 'Signed', 'Draft', 'Viewed', 'Declined', 'Signed', 'Sent'][i], viewed: i % 2 ? '3 views, last 2 h ago' : 'Opened yesterday', deposit: Math.round(e.value * .3) }));
   if (D.res.projectValue) { D.proposals[0].client = D.res.client; D.proposals[0].title = D.res.project; D.proposals[0].value = D.res.projectValue; D.proposals[0].deposit = Math.round(D.res.projectValue * .3); D.proposals[0].clientId = D.res.clientId; }
@@ -153,7 +153,7 @@ function build(t) {
     let tmin = 7 * 60 + 15;
     for (let k = 0; k < Math.min(n, 12); k++) {
       const c = D.clients[(ci * 7 + k * 3) % D.clients.length];
-      const svc = cr.type === 'install' ? (D.jobs.find(j => j.type === 'Install') || D.jobs[0]).title : cr.type === 'lawn' ? pick(SERVICES.lawn_programs) : cr.type === 'irrigation' ? pick(SERVICES.irrigation) : pick(SERVICES.maintenance.slice(0, 2));
+      const svc = cr.type === 'install' ? (D.jobs.find(j => j.type === 'Install') || D.jobs[0]).title : cr.type === 'lawn' ? pick(SERVICES.lawn_phc) : cr.type === 'irrigation' ? pick(SERVICES.irrigation) : pick(SERVICES.core_maintenance.slice(0, 2));
       const dur = cr.type === 'install' ? 480 : cr.type === 'lawn' ? 25 : cr.type === 'irrigation' ? 45 : int(25, 55);
       const NOW = 10 * 60 + 40, prevEnd = D.visits.length && D.visits[D.visits.length - 1].crewId === cr.id ? D.visits[D.visits.length - 1]._end : 0;
       const status = tmin + dur <= NOW ? 'Done' : tmin <= NOW ? 'In progress' : prevEnd && prevEnd <= NOW && !D.visits.some(v => v.crewId === cr.id && v.status === 'En route') ? 'En route' : 'Scheduled';

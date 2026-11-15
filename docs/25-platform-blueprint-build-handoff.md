@@ -90,13 +90,13 @@ The JSON is the source of truth for code; the owner doc is the source of truth f
 | `plans.json` | 6 plans; 63 capabilities with a state per plan (`Y`, `L` limited, `A` add-on, `-`); 20 add-ons; 9 meters; 25 AI credit rates; 7 seat types; trial and offer rules; `entitlement_ux`; `rules` | 22 §4, §5 |
 | `segments.json` | S1-S7: plan fit, `modules_on`, `today_widgets`, `hidden_by_default`, sample tenant | 22 §6.1 |
 | `tenants.json` | 8 sample tenants: plan, add-ons, modules, `books` mode, branches, cast by role, hero clients, brand | 02, 21 §15.3, 22 §4.6 |
-| `surfaces.json` | 10 surfaces, domain rule, `gating_order`, 153 routes (120 MVP, 33 V1) with nav, path, scope, plan feature, permission, module, roles, spec | 21 §5 |
+| `surfaces.json` | 10 surfaces, domain rule, `gating_order`, 154 routes (126 MVP, 28 V1) with nav, path, scope, plan feature, permission, module, roles, spec | 21 §5 |
 
 ### 2.2 How `build.py` validates
 
-It exits non-zero, one line per problem, unless every reference resolves: each route's surface, plan feature, permission (rows like `client / property` are split), module (one of seven keys), parent and roles; nav items for web, console and portal routes; scope MVP-V3; landing routes of personas and roles; tenants' plan, segment, add-ons and cast roles; segments' tenants and plans; capabilities' plan and add-on codes. On success it rewrites `docs/site/assets/platform-data.js` deterministically.
+It exits non-zero, one line per problem, unless every reference resolves: each route's surface, plan feature, permission (rows like `client / property` are split), module (a key from the `module_catalog` in `tenants.json`, or `books`), parent and roles; nav items for web, console and portal routes; scope MVP-V3; landing routes of personas and roles; tenants' plan, segment, add-ons and cast roles; segments' tenants and plans; capabilities' plan and add-on codes. On success it rewrites `docs/site/assets/platform-data.js` deterministically.
 
-It does not check grant grammar, module keys in `tenants.json`, duplicate capabilities (`time_entry` has two rows) or routes tagged later than their feature. The generator adds these checks.
+It also checks tenant and segment module keys against that catalog and the observer template's capabilities and nav items. It does not check grant grammar, duplicate capabilities (`time_entry` has two rows) or routes tagged later than their feature. The generator adds these checks.
 
 ### 2.3 Rules
 
@@ -189,7 +189,7 @@ Local development follows 20 §4.22, seeded from `tenants.json` (C9).
 | 2 | Route roles | `route.roles` | `denied` | Router and API |
 | 3 | Navigation | `nav_visibility` (F, R, -, C) | `denied` | Hidden items removed, not greyed. Not security: layer 4 still runs |
 | 4 | Permission and scope | Tenant matrix: `own`, `crew` (visibility window), `branch` [V1], `all`; approval limits | `denied` (web routes, grant presence) | Cedar at E3 per command and query; scope as query predicates (02 §5.3); limits create approval requests; anti-escalation (02 §5.8) |
-| 5 | Module | Tenant modules; Books off when `books` is `qbo_system`; Snow & Ice via add-on or Enterprise | `off` | Hidden, not greyed (21 §5.2) |
+| 5 | Module | Tenant modules from the 14 §4.0.1 catalog (`tenants.json` `module_catalog`); `core_maintenance` always on; `snow_ice` on means Snow Lite, the full module is the `snow_ice` add-on (layer 6); Books off when `books` is `qbo_system` | `off` | Hidden, not greyed (21 §5.2) |
 | 6 | Plan entitlement | Feature state per plan plus add-ons | `ok`, `limit`, `locked`, `hidden` | Entitlement service; rules in 4.3 |
 | 7 | Scope tier | `route.scope` | Lens filter | Feature flags; later tiers ship dark (19 PA-041) |
 | 8 | Field classes | `field_class_defaults` | `c.sees()`, `h.mask()` | Server only: masked fields absent (not null) with `_redactions`; never synced; exports resolved per recipient; AI tools get projected data (02 §5.4, E5, E10) |
@@ -200,7 +200,8 @@ Results: `ok` renders; `limit` renders with the limit shown; `locked` shows the 
 
 - Permissions are checked only on web routes and only for grant presence. Production checks action and record scope on every call and surface.
 - `cfg` grants count as off; production reads the Company setting.
-- `observer` grants and navigation are hard-coded in `core.js`; it also gives crew roles `web` and homeowners `www`, which `roles.json` does not.
+- `observer` grants and navigation come from `roles.json` `custom_role_templates`, a blueprint reading of 02 §5.7; production generates them like any other role once confirmed. `core.js` also gives crew roles `web` and homeowners `www`, which `roles.json` does not.
+- Field-class masking treats partial grants (`status chip`, `masked actions`, `self`, `R billing`, `R in window`) as masked in `h.mask`; production projects each partial grant field by field (02 §10.2).
 - Its capability index keeps only the second `time_entry` row.
 - Buyers are `owner` only; `entitlement_ux` says anyone with `rootline_subscription` write, which today is the same set.
 
@@ -236,7 +237,7 @@ What a design partner needs to run real work at all (24 §3.2, core loop).
 |---|---|---|---|
 | 1A Records, messaging | Clients, Properties, Contacts, Lead Inbox; Price Book, rates, kits (D10); service-line framework; templates, consent ledger, 10DLC, inbox (D15); Weather Service (D11) | 0 | `web.clients`, `web.client`, `web.property`, `web.contacts`, `web.inbox`, `web.settings.notifications`, `web.settings.price_book`, `web.sales_templates`, `web.settings.service_lines`, `console.comms` |
 | 1B Money spine | Ledger, posting rules, AR tie-out, Stripe clearing (D2); BYO Stripe, cards, ACH, webhooks, refunds (D4); Billing Engine, invoices, deposits, agreements, tax rates, credit memos, aging, dunning; QBO mirror | 0 | `web.settings.payments`, `web.settings.accounting`, `web.invoices`, `web.invoice`, `web.payments`, `web.ar`, `web.stripe`, `web.agreements`, `web.books`, `web.coa`, `web.journal`, `web.tax`, `web.fin_reports`, `web.sync`, `console.payments` |
-| 1C Field spine | Sync (D5); visit states, recurrence (D6); dispatch board, single-crew sequencing, map; crew Today, run sheet, photos, time (D16), pesticide records, signatures, voice notes, Outdoor Mode, Spanish; projects with 811 gate; timesheets, payroll export; sub work orders | 1A | `web.board`, `web.calendar`, `web.map`, `web.programs`, `web.jobs`, `web.job`, `web.visit`, `web.people`, `web.crews`, `web.timesheets`, `web.payroll`, `crew.today`, `crew.visit`, `crew.chem`, `crew.map`, `crew.time`, `crew.messages`, `crew.more`, `sub.orders`, `sub.order` |
+| 1C Field spine | Sync (D5); visit states, recurrence (D6); dispatch board, single-crew sequencing, map; crew Today, run sheet, photos, time (D16), pesticide records, signatures, voice notes, Outdoor Mode, Spanish; projects with 811 gate; timesheets, payroll export; sub work orders | 1A | `web.board`, `web.calendar`, `web.map`, `web.programs`, `web.jobs`, `web.job`, `web.visit`, `web.people`, `web.crews`, `web.timesheets`, `web.payroll`, `web.projects`, `crew.today`, `crew.visit`, `crew.chem`, `crew.map`, `crew.time`, `crew.messages`, `crew.more`, `sub.orders`, `sub.order` |
 | 1D Sell, design | Leads, pipelines, Company Budget, margin engine, Quick Quote, tiered proposals, e-sign, deposits, Jobs; Region model, Wave 1 profiles, curation, palettes (D7, D8); Studio to takeoff and Estimate (D9); capture, restyle, region-locked palettes, disclosure | 1A; 1B | `web.leads`, `web.pipeline`, `web.estimates`, `web.estimate`, `web.proposals`, `web.proposal`, `web.designs`, `web.studio`, `web.design_library`, `web.mockups`, `web.plants`, `web.palettes`, `console.kb.queue`, `console.ai` |
 | 1E Portal core | Action links, magic link, proposal viewer, sign and pay, invoices, autopay, visit summaries | 1B-1D | `portal.home`, `portal.proposals`, `portal.proposal`, `portal.billing`, `portal.history` |
 | 1F Ops, reports, Copilot | Items, inventory Off and Light, buy lists, POs, receiving, COI gate, assets; KPI Dictionary (D14), Job Cost Detail, Owner Command Center; Copilot, Cmd-K, number grounding | 1B, 1C | `web.ops`, `web.inventory`, `web.purchasing`, `web.vendors`, `web.equipment`, `web.dashboards` |
@@ -248,10 +249,10 @@ Sellable to the beachhead buyer without workarounds (24 §3.2, second column). E
 | Track | Builds | Closes | Lights up |
 |---|---|---|---|
 | 2A Switch, go-to-market | Migration Center, Jobber and LMN kits, QuickBooks migration with opening balances (D3), rollback; onboarding wizard, sandbox; SaaS billing with credits and tax, trials; DSAR, fraud screening, help center; marketing site | E6 | `web.settings.data`, `console.migrations`, `console.billing`, `console.content`, `console.compliance`, `console.risk`, `console.analytics`, `www.home`, `www.product`, `www.solutions`, `www.pricing`, `www.switch`, `www.resources`, `www.trust`, `www.start` |
-| 2B Season billing, close | Level billing with true-up, auto-renewal, escalators, statements, late fees; autopay mandates, retries, payout proof; bank feeds, reconciliation, basic close; basic capacity planner; client skip and pause; preference center | E2, E5 | `web.banking`, `web.close`, `portal.schedule`, `portal.account` (capacity: C1) |
-| 2C Design-build sale | Offline assessments and Field Design Mode capture; turf auto-measure, basic change orders; Studio validation, PDF plan sets; render packs, evals; 3,000-plant seed; brand kit, custom domains, project tracker, requests, messaging | E1 | `web.settings.portal`, `portal.property`, `portal.requests`, `portal.messages` (assessments, change orders, projects: C1, C3) |
+| 2B Season billing, close | Level billing with true-up, auto-renewal, escalators, statements, late fees; autopay mandates, retries, payout proof; bank feeds, reconciliation, basic close; basic capacity planner; client skip and pause; preference center | E2, E5 | `web.banking`, `web.close`, `web.capacity`, `portal.schedule`, `portal.account` |
+| 2C Design-build sale | Offline assessments and Field Design Mode capture; turf auto-measure, basic change orders; Studio validation, PDF plan sets; render packs, evals; 3,000-plant seed; brand kit, custom domains, project tracker, requests, messaging | E1 | `web.assessments`, `web.change_orders`, `home.widget`, `web.settings.portal`, `portal.property`, `portal.requests`, `portal.messages` (estimator mobile capture: C3) |
 | 2D Programs, Snow Lite | Lawn and PHC programs with label library and sign gate; irrigation services; Snow Lite log, site list, per-push invoices, PDF proof (D25); credentials, launch-state pay packs, OSHA log; SDS library | E3 | `web.chemicals`, `web.certs`, `web.safety`, `web.snow`, `crew.snow` |
-| 2E Job costing | Vendor price lists, 2-way bill match, equipment rates, meters, DVIR; AP bills; job cost by phase against the estimate | E4 | `web.bills`, `crew.equipment`, `sub.invoices` (job cost view: C2) |
+| 2E Job costing | Vendor price lists, 2-way bill match, equipment rates, meters, DVIR; AP bills; job cost by phase against the estimate | E4 | `web.job_costing`, `web.bills`, `crew.equipment`, `sub.invoices` |
 | 2F Agents, growth | Approval Inbox; agents A1-A4, A5 reminders, A6 from notes, A18, A28; Automation Builder; dashboards, reports, scheduled delivery; forms, NPS, basic campaigns, call tracking; public API core and webhooks | All six | `web.agents`, `web.automations`, `web.campaigns`, `web.reviews`, `web.receptionist`, `web.settings.integrations` |
 
 | Scenario | Runs in core-loop form after | Passes as written after |
@@ -267,15 +268,15 @@ Sellable to the beachhead buyer without workarounds (24 §3.2, second column). E
 
 ### 5.4 Stage 3: V1; Stage 4: V2 and V3
 
-V1 opens the expansion segments, Wave 2 Regions and depth (24 §4.2). Its 33 explorer routes:
+V1 opens the expansion segments, Wave 2 Regions and depth (24 §4.2). Its 28 explorer routes, plus V1 depth inside MVP routes:
 
 | Theme | Routes | Key dependency |
 |---|---|---|
 | Commercial (S4) | `portal.portfolio`, `portal.approvals`, `portal.documents`, `portal.reports`, `web.weather` | Branches, approval policies (02 §5.9, §5.11) |
-| Money depth | `web.job_costing` (WIP), `partner.clients`, `partner.referrals`, `partner.resources`, `console.partners` | Ledger proven in production |
+| Money depth | `partner.clients`, `partner.referrals`, `partner.resources`, `console.partners` | Ledger proven in production. WIP and percent complete inside `web.job_costing` (Ledger Advanced) |
 | Design, AI, growth | `web.design_templates`, `home.start`, `home.measure`, `home.quiz`, `home.concepts`, `home.budget`, `home.quote`, `web.website`, `web.referrals`, `www.compare`, `www.plants`, `www.partners` | KB seed (D8); trust earned at L0-L2 |
 | People, reports, field | `web.hiring`, `web.report_builder`, `web.benchmarks`, `web.forecasts`, `crew.manager`, `crew.kiosk` | 10 Companies per benchmark cell (D19) |
-| MVP in 24, V1 here | `web.assessments`, `web.change_orders`, `web.projects`, `web.capacity`, `web.renewals` (basic renewals live on `web.agreements`) | C1 |
+| Sales depth | `web.renewals`: the renewal review grid with CPI, cost-plus and margin-target escalators (24 C03-038). Basic renewals with fixed escalators are MVP on `web.agreements` | Renewal agent A13 |
 
 Full Snow & Ice (D12), Canada (D23) and multi-crew optimization extend existing routes. V2 and V3 (24 §4.3) have no routes yet. Rails R-01, R-02, R-03, R-06, R-08, R-09, R-11, R-12, R-14 are MVP and R-04, R-05, R-07, R-10, R-13 are V1 (24 §3.2); rails are never cut.
 
@@ -324,11 +325,11 @@ Full Snow & Ice (D12), Canada (D23) and multi-crew optimization extend existing 
 
 ## 7. Route-to-spec table
 
-Every route in `docs/platform/surfaces.json`, generated by a script and grouped by surface, then by nav in file order. A note after a label names a module gate, or route roles that differ from the surface default. Each route's plan feature and permission are the `feature` and `perm` fields in `surfaces.json` and land in the generated manifest (2.4). Routes whose tag conflicts with 24 are in C1. Regenerate the tables after any change to `surfaces.json` (proposed: as an output of `tools/blueprint`); do not edit them by hand.
+Every route in `docs/platform/surfaces.json`, generated by a script and grouped by surface, then by nav in file order. A note after a label names a module gate, or route roles that differ from the surface default. Each route's plan feature and permission are the `feature` and `perm` fields in `surfaces.json` and land in the generated manifest (2.4). Route tags follow 24 (C1 is resolved). Regenerate the tables after any change to `surfaces.json` (proposed: as an output of `tools/blueprint`); do not edit them by hand.
 
 ### 7.1 Company web app (`web`)
 
-86 routes: 72 MVP, 14 V1.
+86 routes: 77 MVP, 9 V1.
 
 | Nav | Route | Label | Scope | Spec |
 |---|---|---|---|---|
@@ -340,13 +341,13 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 |  | `web.contacts` | Contacts and portal access | MVP | 02 §5.11; 16 |
 | Sales | `web.leads` | Leads | MVP | 03; 17 A3 |
 |  | `web.pipeline` | Pipeline | MVP | 03 |
-|  | `web.assessments` | Site assessments | V1 | 03 |
+|  | `web.assessments` | Site assessments | MVP | 03 |
 |  | `web.estimates` | Estimates | MVP | 03 |
 |  | `web.estimate` | Estimate builder | MVP | 03; 17 A6 |
 |  | `web.proposals` | Proposals | MVP | 03 |
 |  | `web.proposal` | Proposal editor | MVP | 03; 06 |
 |  | `web.renewals` | Renewals | V1 | 03; 07 |
-|  | `web.change_orders` | Change orders | V1 | 03 |
+|  | `web.change_orders` | Change orders | MVP | 03 |
 |  | `web.sales_templates` | Templates and kits | MVP | 03 |
 | Design | `web.designs` | Designs | MVP | 10 |
 |  | `web.studio` | Design Studio | MVP | 10; 21 §18.7 |
@@ -358,15 +359,15 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 | Schedule | `web.board` | Dispatch board | MVP | 04 |
 |  | `web.calendar` | Calendar | MVP | 04 |
 |  | `web.map` | Route map | MVP | 04 |
-|  | `web.capacity` | Capacity planner | V1 | 04 |
+|  | `web.capacity` | Capacity planner | MVP | 04 |
 |  | `web.programs` | Recurring programs | MVP | 04; 14 |
 |  | `web.weather` | Weather center | V1 | 04 |
 | Jobs | `web.jobs` | All jobs | MVP | 04; 14 |
-|  | `web.projects` | Projects | V1 | 14 |
+|  | `web.projects` | Projects (module `install_projects`) | MVP | 14 |
 |  | `web.agreements` | Service agreements | MVP | 07 |
 |  | `web.job` | Job record | MVP | 14; 09 |
 |  | `web.visit` | Visit record | MVP | 05 |
-|  | `web.snow` | Snow & Ice | MVP | 14 §4.3 |
+|  | `web.snow` | Snow & Ice (module `snow_ice`) | MVP | 14 §4.3 |
 | Money | `web.invoices` | Invoices | MVP | 07 |
 |  | `web.invoice` | Invoice editor | MVP | 07 |
 |  | `web.payments` | Payments | MVP | 08 |
@@ -377,7 +378,7 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 |  | `web.journal` | Journal (module `books`) | MVP | 09 |
 |  | `web.bills` | Bills and vendors (module `books`) | MVP | 09; 13 |
 |  | `web.banking` | Bank feeds and reconciliation (module `books`) | MVP | 09 |
-|  | `web.job_costing` | Job costing and WIP (module `books`) | V1 | 09 |
+|  | `web.job_costing` | Job costing (module `books`; WIP with Ledger Advanced [V1]) | MVP | 09 |
 |  | `web.tax` | Sales tax (module `books`) | MVP | 07; 09 |
 |  | `web.close` | Period close (module `books`) | MVP | 09 |
 |  | `web.fin_reports` | Financial statements (module `books`) | MVP | 09 |
@@ -387,7 +388,7 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 |  | `web.purchasing` | Purchase orders | MVP | 13 |
 |  | `web.vendors` | Vendors and subcontractors | MVP | 13 |
 |  | `web.equipment` | Equipment and fleet | MVP | 13 |
-|  | `web.chemicals` | Chemical inventory and SDS | MVP | 13; 14 |
+|  | `web.chemicals` | Chemical inventory and SDS (module `lawn_phc`) | MVP | 13; 14 |
 | Team | `web.people` | People | MVP | 15; 02 §7.3 |
 |  | `web.crews` | Crews | MVP | 15 |
 |  | `web.timesheets` | Timesheets | MVP | 15 |
@@ -427,8 +428,8 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 |---|---|---|---|---|
 | Today | `crew.today` | Today route | MVP | 05; 21 §5.3 |
 |  | `crew.visit` | Visit screen | MVP | 05 |
-|  | `crew.chem` | Chemical application log | MVP | 05; 14 |
-|  | `crew.snow` | Storm visit log (Snow Lite) | MVP | 14 §4.3.0 |
+|  | `crew.chem` | Chemical application log (module `lawn_phc`) | MVP | 05; 14 |
+|  | `crew.snow` | Storm visit log (Snow Lite) (module `snow_ice`) | MVP | 14 §4.3.0 |
 | Map | `crew.map` | Map | MVP | 05 |
 | Time | `crew.time` | Time | MVP | 05; 15 |
 | Messages | `crew.messages` | Messages | MVP | 05 |
@@ -538,7 +539,7 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 
 ### 7.10 Homeowner AI design funnel (Rootline Home) (`home`)
 
-6 routes: 6 V1. Roles: `homeowner` unless the row says otherwise.
+7 routes: 1 MVP, 6 V1. Roles: `homeowner` unless the row says otherwise.
 
 | Nav | Route | Label | Scope | Spec |
 |---|---|---|---|---|
@@ -548,6 +549,7 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 |  | `home.concepts` | Concepts | V1 | 21 §5.7; 11; 22 §5.3 |
 |  | `home.budget` | Plant list and budget | V1 | 21 §5.7; 11; 22 §5.3 |
 |  | `home.quote` | Save or get a quote | V1 | 21 §5.7; 11; 22 §5.3 |
+|  | `home.widget` | Dream Yard Visualizer widget (on the Company's own site) | MVP | 11 AIM-AUD-01; 21 §5.7; 24 §4.6 #14 |
 
 ---
 
@@ -555,20 +557,20 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 
 ### 8.1 Contradictions found while writing this handoff
 
-Unresolved. Apply 1.3, and ask the founder where the row says so.
+C1, C2, C4, C5 and C10 are resolved in the blueprint data (the row says how); the rest are unresolved. Apply 1.3, and ask the founder where the row says so.
 
 | # | Topic | What disagrees | Rule or ask |
 |---|---|---|---|
-| C1 | Route tags vs MVP | `web.assessments`, `web.change_orders`, `web.projects`, `web.capacity` are V1 in `surfaces.json`; offline assessments, basic change orders, phased projects with the 811 gate and the basic capacity planner are MVP (24 §3.2, §4.6 #13). `web.change_orders` uses the MVP feature `change_orders_basic` | 24 wins. Ask whether to retag |
-| C2 | Job costing | E4 (MVP) needs job cost by phase and 22 §4.1 puts the full ledger in Grow, but `web.job_costing` is V1 behind `ledger_advanced`, a Grow add-on | Basic job costing at MVP on all plans. Ask where its view lives |
+| C1 | Route tags vs MVP | `web.assessments`, `web.change_orders`, `web.projects`, `web.capacity` are V1 in `surfaces.json`; offline assessments, basic change orders, phased projects with the 811 gate and the basic capacity planner are MVP (24 §3.2, §4.6 #13). `web.change_orders` uses the MVP feature `change_orders_basic` | **Resolved in the blueprint:** 24 wins; the four routes are retagged MVP (basic versions), with the V1 depth named in each route's purpose |
+| C2 | Job costing | E4 (MVP) needs job cost by phase and 22 §4.1 puts the full ledger in Grow, but `web.job_costing` is V1 behind `ledger_advanced`, a Grow add-on | **Resolved in the blueprint:** `web.job_costing` is MVP behind `ledger_essentials` (job cost by phase and cost type vs estimate); WIP and percent complete stay V1 with Ledger Advanced. Founder to confirm |
 | C3 | Estimators on mobile | 03 §4.13 (SALES-01) and 05 §4.0 give estimators and designers mobile capture at MVP; `roles.json` and the crew routes give them no MVP mobile surface; manager mode is V1 (21 §5.1) | Ask |
-| C4 | Homeowner widget | 24 §4.6 #14 and 21 §5.1: embeddable widget at MVP behind a verify-first gate; only V1 `home.*` routes exist | 24 wins; add a route or component |
-| C5 | Observer | In `roles.json` (02 §5.7 [V1]) and sold as free seats (22 §4.3), but absent from the tenant matrix and nav tables; `core.js` hard-codes it | Add from 02 before generating |
+| C4 | Homeowner widget | 24 §4.6 #14 and 21 §5.1: embeddable widget at MVP behind a verify-first gate; only V1 `home.*` routes exist | **Resolved in the blueprint:** route `home.widget` [MVP] on the `home` surface, embedded on the Company's site |
+| C5 | Observer | In `roles.json` (02 §5.7 [V1]) and sold as free seats (22 §4.3), but absent from the tenant matrix and nav tables; `core.js` hard-codes it | **Resolved in the blueprint:** `roles.json` `custom_role_templates` holds the observer's nav, grants and field classes, marked as a blueprint reading of 02 §5.7 to confirm |
 | C6 | `time_entry` | Two capability rows (own, others) | Key by capability and note |
 | C7 | Credit display | 22 §4.1 rule 4: every AI action shows its cost first. 17 §4.1.3, §4.11.5: cost on the button from 5 credits, confirmation above 20 | 22 wins; 17's thresholds as confirmation rules. Confirm |
 | C8 | L3 at MVP | 17 §4.3 tags pre-approved templates [V1]; 24 §3.5 and OD-46 allow L3 at MVP for two templates | 24 wins. Confirm OD-46 |
 | C9 | Sample company | 20 §4.22 seeds "Green Acres Landscaping" (420 clients); 22 §4.6: Greenleaf with 120 clients; `tenants.json`: Greenleaf with 412 | Use `tenants.json`; ask the demo size |
-| C10 | Module keys | `build.py` knows 7 keys, only `books` gates a route, `tenants.json` uses others; service-line screens are not module-gated though 21 §5.2 hides disabled modules | One key list from 14 |
+| C10 | Module keys | `build.py` knows 7 keys, only `books` gates a route, `tenants.json` uses others; service-line screens are not module-gated though 21 §5.2 hides disabled modules | **Resolved in the blueprint:** module keys follow 14 §4.0.1 (`tenants.json` `module_catalog`, checked by `build.py`); `web.projects`, `web.chemicals`, `web.snow`, `crew.chem` and `crew.snow` are module-gated |
 | C11 | Entitlement names | 19 PA-040 (`boolean`, `quota`, `tier`, `design_studio.3d`) vs 22 §10.1 (`flag`, `limit`, `meter`) and `plans.json` (`design_3d`) | 22 wins |
 | C12 | Console app | 20 §4.30 `apps/admin` vs surface `console` | Naming only (3.2) |
 | C13 | Summit tenant | "Central Ohio" with Dayton and Cincinnati branches, a Wave 2 [V1] Region (24 §1.3) | Sample data |

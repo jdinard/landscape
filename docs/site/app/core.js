@@ -58,8 +58,9 @@ RL.SURF = SURF;
 const BUYERS = new Set(['owner']);
 const SCOPE_RANK = { MVP: 1, V1: 2, V2: 3, V3: 4 };
 const LENS = { mvp: 1, v1: 2, v2: 3, all: 9 };
-const OBS_NAV = { Today: 'R', Reports: 'R' };
-const OBS_CAPS = { dashboard: 'R/a', financial_report: 'R/a', job_cost_report: 'R/a' };
+// Observer is a starter custom role (02 §5.7, V1); its template lives in roles.json custom_role_templates
+const OBS = (P.roles.custom_role_templates || []).find(x => x.key === 'observer') || { nav: {}, grants: {}, field_classes: {} };
+const OBS_NAV = OBS.nav, OBS_CAPS = OBS.grants;
 
 // ---------- state ----------
 const DEF = { r: 'atlas.home', as: 'owner', t: 'greenleaf', plan: '', scope: 'all', season: 'peak', lang: 'en', x: '', lens: '1' };
@@ -124,7 +125,7 @@ function unlockFor(key, pc) {
 function moduleOn(m, s) {
   const t = TENANTS[s.t];
   if (m === 'books') return t.books !== 'qbo_system';
-  if (m === 'snow_ice') return t.addons.includes('snow_ice') || planCode(s) === 'enterprise';
+  if (m === 'core_maintenance') return true;
   return t.modules.includes(m);
 }
 function navVis(surface, nav, roleKey, scopeKey) {
@@ -150,7 +151,7 @@ function grant(cap, roleKey) {
   const g = CAPS[cap]; return g ? (g[roleKey] || '-') : 'F';
 }
 function fieldClass(fc, roleKey) {
-  if (roleKey === 'observer') return fc === 'margin' || fc === 'price' || fc === 'cost' ? 'R' : '-';
+  if (roleKey === 'observer') return OBS.field_classes[fc] || '-';
   if (!(roleKey in (FC.price || {}))) return '-';
   const g = FC[fc]; return g ? (g[roleKey] || '-') : 'RW';
 }
@@ -224,6 +225,9 @@ function ctx() {
   c.allowed = cap => !isDash(grant(cap, o.role));
   c.fc = fcKey => fieldClass(fcKey, o.role);
   c.sees = fcKey => { const v = fieldClass(fcKey, o.role); return !isDash(v); };
+  // Raw field-class grant, and whether it is full visibility rather than a partial one (status chip, masked actions, self, billing only, in window)
+  c.fcGrant = fcKey => fieldClass(fcKey, o.role);
+  c.seesFully = fcKey => { const v = fieldClass(fcKey, o.role); return !isDash(v) && /^RW?(\s|\(|$)/.test(v) && !/in window|billing|own orders/.test(v); };
   c.vis = (surface, nav) => navVis(surface, nav, o.role, o.scope);
   c.inLens = tag => SCOPE_RANK[tag] <= LENS[s.scope];
   c.tr = (en, es) => (s.lang === 'es' && es != null) ? es : en;

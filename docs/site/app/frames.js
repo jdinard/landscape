@@ -183,6 +183,11 @@ RL.frames.www = (c, body) => {
   return browser('https://rootline.com' + c.route.path.replace(':segment', (c.seg.id || '').toLowerCase()).replace(':vendor', RL.ui['www.vendor'] || 'jobber'), `${top}<div class="site-body">${body}</div>${foot}`);
 };
 RL.frames.home = (c, body) => {
+  if (c.route.id === 'home.widget') {
+    const [main, side] = splitSide(body);
+    const host = ((c.t.brand || {}).portal || c.t.id + '.example').replace(/^portal\./, 'www.');
+    return browser('https://' + host + '/design', `${side ? `<div class="site-body has-side"><div class="site-main">${main}</div><aside class="site-side" aria-label="What the Company sees">${side}</aside></div>` : `<div class="site-body">${main}</div>`}`);
+  }
   const top = `<div class="site-top"><span class="logo" style="background:var(--iris-600)">${icon('sprout')}</span><b style="font-family:var(--font-display)">Rootline Home</b><span class="pill ai">${icon('spark', 's')}AI yard design</span><nav aria-label="Rootline Home"><button type="button" data-go="www.plants">Plant Finder</button><button type="button" data-go="home.start">Start over</button></nav></div>`;
   const [main, side] = splitSide(body);
   return browser('https://rootline.com' + c.route.path, `${top}${side ? `<div class="site-body has-side"><div class="site-main">${main}</div><aside class="site-side" aria-label="What the Company sees">${side}</aside></div>` : `<div class="site-body">${main}</div>`}<div class="site-foot"><span>Concepts are AI-generated and labeled as such; plants come from the curated ${esc(c.t.region)} palette.</span><span>Rootline Home ${h.tag('V1')}</span></div>`);

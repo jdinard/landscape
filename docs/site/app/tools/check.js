@@ -66,7 +66,7 @@ const file = 'file://' + path.resolve(__dirname, '..', '..', 'app.html');
     const n = await p.evaluate(() => document.querySelectorAll('#xmain [data-ui], #xmain [data-act], #xmain [data-modal]').length);
     for (let i = 0; i < Math.min(n, 25); i++) {
       const before = errs.length;
-      await p.evaluate((i) => { const el = document.querySelectorAll('#xmain [data-ui], #xmain [data-act], #xmain [data-modal]')[i]; if (el) el.click(); }, i);
+      await p.evaluate((i) => { const el = document.querySelectorAll('#xmain [data-ui], #xmain [data-act], #xmain [data-modal]')[i]; if (el) el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })); }, i);
       await p.evaluate(() => RL.closeModal());
       if (errs.length > before) problems.push(`${r.id} click #${i}: ${errs.slice(before).join(' | ')}`);
       await p.evaluate(({ id, as }) => { if (RL.S.r !== id) RL.set({ as, t: 'greenleaf', r: id, plan: '' }); }, { id: r.id, as: o.key });

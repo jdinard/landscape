@@ -60,8 +60,8 @@
         "starter"
       ],
       "modules_on": [
-        "maintenance",
-        "snow_lite"
+        "core_maintenance",
+        "snow_ice"
       ],
       "pains": [
         "Invoices at night",
@@ -133,11 +133,10 @@
         "pro"
       ],
       "modules_on": [
-        "maintenance",
-        "design_build",
-        "hardscape",
+        "core_maintenance",
+        "install_projects",
         "irrigation",
-        "snow_lite"
+        "snow_ice"
       ],
       "pains": [
         "Five to ten tools that do not talk",
@@ -217,9 +216,9 @@
         "grow"
       ],
       "modules_on": [
-        "maintenance",
-        "lawn_programs",
-        "snow_lite"
+        "core_maintenance",
+        "lawn_phc",
+        "snow_ice"
       ],
       "pains": [
         "Program rounds that slip out of their windows",
@@ -287,9 +286,8 @@
         "enterprise"
       ],
       "modules_on": [
-        "maintenance",
-        "commercial",
-        "snow_lite",
+        "core_maintenance",
+        "commercial_grounds",
         "snow_ice",
         "irrigation"
       ],
@@ -359,10 +357,10 @@
         "pro"
       ],
       "modules_on": [
+        "core_maintenance",
         "irrigation",
-        "lighting",
-        "maintenance",
-        "snow_lite"
+        "landscape_lighting",
+        "snow_ice"
       ],
       "pains": [
         "Seasonal waves of start-ups and winterizations",
@@ -422,7 +420,7 @@
         "design_solo"
       ],
       "modules_on": [
-        "design_only"
+        "core_maintenance"
       ],
       "pains": [
         "CAD plus Canva plus spreadsheets",
@@ -484,10 +482,10 @@
         "enterprise"
       ],
       "modules_on": [
-        "maintenance",
-        "lawn_programs",
-        "commercial",
-        "snow_lite"
+        "core_maintenance",
+        "lawn_phc",
+        "commercial_grounds",
+        "snow_ice"
       ],
       "pains": [
         "Every location on different software",

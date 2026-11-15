@@ -11,7 +11,7 @@ The JSON files are the source of truth for the blueprint. Matrices that already 
 | `plans.json` | 6 plans with prices and inclusions; 63 capabilities with availability per plan (`Y`, `L` with the limit, `A` with the add-on code, `-`) and scope tag; 20 add-ons; 9 usage meters; the AI credit rate card; seat types; trial and onboarding offers; homeowner tiers; partner tracks; the entitlement UX rules. | 22 §4.2-§4.6, §5.3.1, §5.4.1 |
 | `segments.json` | Target markets S1-S7 with size, revenue, service mix, current stack, plan fit, sales motion, sample tenant, modules on, pains, draft messaging, proof points to verify, objections, channels and what the segment sees first. Plus the ICP scorecard and the positioning statement. | 22 §6.1-§6.5 (messaging is draft copy to test) |
 | `tenants.json` | 8 sample tenants, one or more per segment, with plan, add-ons, modules, Region, size, brand, cast (role to person) and hero clients. Reyes and Summit come from 02; Greenleaf is the sample dataset (21 §15.3, 22 §4.6) and the cast of the other walkthroughs; the rest are illustrative. | 02 §3; 21; 22 |
-| `surfaces.json` | 10 surfaces with hosts and sign-in, and 153 routes. Each route has its surface, navigation group, path, scope tag, purpose, the plan feature that gates it, the module that must be on, the permission it needs and the spec that owns it. | 21 §5.1-§5.7; 19 §6.1 |
+| `surfaces.json` | 10 surfaces with hosts and sign-in, and 154 routes. Each route has its surface, navigation group, path, scope tag, purpose, the plan feature that gates it, the module that must be on, the permission it needs and the spec that owns it. | 21 §5.1-§5.7; 19 §6.1 |
 
 ## Gating order
 

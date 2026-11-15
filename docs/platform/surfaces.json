@@ -98,7 +98,8 @@
       "platform": "Responsive web, embeddable widget",
       "host": "rootline.com/design and {company-site}/design",
       "auth": "Anonymous, then email/phone OTP",
-      "scope": "V1"
+      "scope": "MVP",
+      "scope_note": "Company-site photo widget [MVP]; the full Rootline Home funnel [V1]"
     }
   ],
   "routes": [
@@ -205,8 +206,8 @@
       "nav": "Sales",
       "label": "Site assessments",
       "path": "/sales/assessments",
-      "scope": "V1",
-      "purpose": "Offline site assessments with photos, measurements and voice notes.",
+      "scope": "MVP",
+      "purpose": "Offline site assessments with checklists, photos, measurements and voice notes (24 C03-011).",
       "feature": "crm",
       "perm": "site_assessment",
       "spec": "03"
@@ -279,8 +280,8 @@
       "nav": "Sales",
       "label": "Change orders",
       "path": "/sales/change-orders",
-      "scope": "V1",
-      "purpose": "Office and field change orders with signature and price delta.",
+      "scope": "MVP",
+      "purpose": "Basic office and field change orders with signature and price delta [MVP]; verbal-emergency flow [V1] (24 C03-037).",
       "feature": "change_orders_basic",
       "perm": "change_order",
       "spec": "03"
@@ -425,8 +426,8 @@
       "nav": "Schedule",
       "label": "Capacity planner",
       "path": "/schedule/capacity",
-      "scope": "V1",
-      "purpose": "Weeks ahead: hours by crew vs sold hours.",
+      "scope": "MVP",
+      "purpose": "Basic: sold vs available crew-hours by pool and week [MVP]; full planner [V1] (24 C04-009).",
       "feature": "scheduling",
       "perm": "visit.dispatch",
       "spec": "04"
@@ -473,9 +474,10 @@
       "nav": "Jobs",
       "label": "Projects",
       "path": "/jobs/projects",
-      "scope": "V1",
-      "purpose": "Gantt and phase board for installs.",
+      "scope": "MVP",
+      "purpose": "Phased install projects with budgets and the 811 gate [MVP]; Gantt view on Pro and Enterprise (24 C03-036, 14 install_projects).",
       "feature": "service_lines",
+      "module": "install_projects",
       "perm": "job",
       "spec": "14"
     },
@@ -526,6 +528,7 @@
       "scope": "MVP",
       "purpose": "Snow Lite site list and storm visit logs; full Storm Command Center with the add-on (V1).",
       "feature": "snow_lite",
+      "module": "snow_ice",
       "perm": "visit",
       "spec": "14 §4.3"
     },
@@ -659,11 +662,11 @@
       "id": "web.job_costing",
       "surface": "web",
       "nav": "Books",
-      "label": "Job costing and WIP",
+      "label": "Job costing",
       "path": "/books/job-costing",
-      "scope": "V1",
-      "purpose": "Job cost by phase vs estimate; WIP and percent complete (Ledger Advanced).",
-      "feature": "ledger_advanced",
+      "scope": "MVP",
+      "purpose": "Job cost by phase and cost type vs estimate [MVP] (24 C09-020, C18-010, E4); WIP and percent complete with Ledger Advanced [V1].",
+      "feature": "ledger_essentials",
       "module": "books",
       "perm": "job_cost_report",
       "spec": "09"
@@ -788,6 +791,7 @@
       "scope": "MVP",
       "purpose": "Products with EPA reg. numbers, label limits, SDS library.",
       "feature": "chemical_logs",
+      "module": "lawn_phc",
       "perm": "chemical_application",
       "spec": "13; 14"
     },
@@ -1187,6 +1191,7 @@
       "scope": "MVP",
       "purpose": "Product, EPA reg. no., rate, area, wind gate, applicator license.",
       "feature": "chemical_logs",
+      "module": "lawn_phc",
       "roles": [
         "crew_lead",
         "technician"
@@ -1279,6 +1284,7 @@
       "scope": "MVP",
       "purpose": "Per-site storm visits with timestamped GPS photos.",
       "feature": "snow_lite",
+      "module": "snow_ice",
       "roles": [
         "crew_lead",
         "technician"
@@ -1977,6 +1983,20 @@
         "homeowner"
       ],
       "spec": "21 §5.7; 11; 22 §5.3"
+    },
+    {
+      "id": "home.widget",
+      "surface": "home",
+      "nav": "Design my yard",
+      "label": "Dream Yard Visualizer widget",
+      "path": "{company-site}/design",
+      "scope": "MVP",
+      "purpose": "White-label photo widget embedded on a Company website: yard photo, AI-restyled concepts from the Region palette labeled as artist renderings, and a lead to that Company only. Behind the verify-first gate for design partners (24 C11-019, OD-33).",
+      "feature": "ai_mockups",
+      "roles": [
+        "homeowner"
+      ],
+      "spec": "11 AIM-AUD-01; 21 §5.7; 24 §4.6 #14"
     }
   ]
 }

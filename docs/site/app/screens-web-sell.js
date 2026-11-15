@@ -12,9 +12,9 @@ const ZONES = { 'Central Ohio': '6a', 'Chicagoland and Northwest Indiana': '5b-6
 const zoneOf = c => ZONES[c.t.region] || '6a';
 const ar30 = D => D.aging.d30 + D.aging.d60 + D.aging.d90;
 const arAll = D => D.aging.current + ar30(D);
-const snowy = c => c.mod('snow_lite') || c.mod('snow_ice');
+const snowy = c => c.mod('snow_ice');
 const solo = c => c.t.people_peak <= 3;
-const designOnly = c => c.t.modules.includes('design_only');
+const designOnly = c => !!c.t.design_only;
 const mk = (title) => `<span class="masked" title="${esc(title)}">•••</span>`;
 const st = (s) => `<span style="${s}"></span>`;
 const pct1 = n => (Math.round(n * 10) / 10).toFixed(1) + '%';
@@ -173,7 +173,7 @@ function attentionItems(c) {
   const pv = D.proposals.find(p => /3 views/.test(p.viewed) && p.status !== 'Signed') || D.proposals[1];
   const ts = D.timesheets.filter(t => t.status === 'Pending').length;
   const ag = D.agreements.filter(a => a.client !== D.res.client)[0] || D.agreements[0];
-  if (W && snowy(c)) items.push({ icon: 'snow', tone: 'info', title: `Storm armed: 3-5 in forecast after 9 pm, push trigger 2 in`, sub: `${Math.max(1, Math.min(D.crews.length, 4))} crews on call${c.mod('snow_ice') ? ', 1 sub, 26 sites in priority order' : ', snow route of 9 sites'}`, right: h.btn('Storm plan', { sm: true, go: 'web.snow' }), k: 'storm' });
+  if (W && snowy(c)) items.push({ icon: 'snow', tone: 'info', title: `Storm armed: 3-5 in forecast after 9 pm, push trigger 2 in`, sub: `${Math.max(1, Math.min(D.crews.length, 4))} crews on call${c.has('snow_ice') ? ', 1 sub, 26 sites in priority order' : ', snow route of 9 sites'}`, right: h.btn('Storm plan', { sm: true, go: 'web.snow' }), k: 'storm' });
   if (ap) items.push({ icon: 'approve', tone: 'warn', title: `Approve ${esc(ap.e.id)} ${esc(ap.e.client)} ${money(ap.e.value)}`, sub: `${esc(ap.e.title)} · over ${esc(first(ap.e.by))}'s $15,000 limit · ${seesOwn(c, 'margin', true) ? `margin ${pct1(ap.gm)} gross, ${pct1(ap.netAct)} net` : ''}`, right: doneOr('ap', actBtn('Approve', 'ap', 'primary', `Approved ${ap.e.id}`) + h.btn('Open', { sm: true, go: 'web.estimate', x: ap.e.id }), 'Approved'), k: 'ap' });
   if (!W && late) items.push({ icon: 'truck', tone: 'warn', title: `${esc(late.name)} running 35 min late (stop 6 of ${D.visits.filter(v => v.crew === late.name).length || 11})`, sub: `${esc(late.lead)} · traffic on I-270 · 2 clients get an updated arrival text`, right: doneOr('late', actBtn('Message crew', 'late', '', 'Message sent to ' + late.lead)), k: 'late' });
   if (W) items.push({ icon: 'refresh', tone: 'warn', title: `3 renewals over 8% need your approval`, sub: `Margin-target escalators on last season's actual hours (03 REN-02)`, right: h.btn('Review', { sm: true, go: 'web.renewals' }), k: 'ren' });
@@ -194,7 +194,7 @@ function briefing(c, o) {
   const pv = D.proposals.filter(p => /3 views/.test(p.viewed) && p.status !== 'Signed').length;
   const ap = topEstForApproval(c);
   const bullets = W ? [
-    snowy(c) ? `Snow 3-5 in after 9 pm. The ${c.mod('snow_ice') ? 'storm event' : 'snow route'} is armed at a 2 in push trigger; ${Math.max(1, Math.min(D.crews.length, 4))} crews on call.` : 'Cold and dry all week: a good week to finish spring designs and send renewals.',
+    snowy(c) ? `Snow 3-5 in after 9 pm. The ${c.has('snow_ice') ? 'storm event' : 'snow route'} is armed at a 2 in push trigger; ${Math.max(1, Math.min(D.crews.length, 4))} crews on call.` : 'Cold and dry all week: a good week to finish spring designs and send renewals.',
     `Renewals: ${D.agreements.length} agreements renew this season; 7 signed, 3 increases over 8% wait for you.`,
     `Cash ${kmoney(D.kpi.cash)}; deposits held ${kmoney(D.kpi.deposits)}. AR over 30 days ${money(ar30(D))}.`,
     `Spring sales: ${leadsN + 9} early-bird requests, ${pv} proposals viewed 3+ times unsigned, backlog ${D.kpi.backlogWeeks} weeks.`,
@@ -243,7 +243,7 @@ function crewsCard(c, o) {
   if (!D.crews.length) return '';
   if (c.winter) {
     const hib = D.people.filter(p => p.status === 'hibernated').length;
-    const body = snowy(c) ? `${h.kv([['Event', `Jan 12-13 storm · 3-5 in · trigger 2 in`], ['On call', `${D.crews.slice(0, 4).map(x => esc(x.name)).join(', ')}`], ['Sites', c.mod('snow_ice') ? '26 in priority order · 4 hospital and retail first' : '9 driveways + 1 lot'], ['Salt', '38 t in the yard · 11 t per event']])}
+    const body = snowy(c) ? `${h.kv([['Event', `Jan 12-13 storm · 3-5 in · trigger 2 in`], ['On call', `${D.crews.slice(0, 4).map(x => esc(x.name)).join(', ')}`], ['Sites', c.has('snow_ice') ? '26 in priority order · 4 hospital and retail first' : '9 driveways + 1 lot'], ['Salt', '38 t in the yard · 11 t per event']])}
       ${h.bars([{ label: 'Priority 1 sites', value: 0, max: 8, right: '0 / 8 pushed' }, { label: 'Salt applied', value: 0, max: 26, right: '0 / 26' }])}${h.note('Proof of service: timestamped GPS photos per push from the crew app.')}`
       : h.empty('No field work today. Crews are hibernated until spring.');
     return h.card({ title: snowy(c) ? 'Snow operations' : "Today's operations", sub: `${hib || 2} seats hibernated · not billed`, body, actions: snowy(c) ? h.btn('Snow board', { sm: true, go: 'web.snow' }) : '' });
@@ -765,7 +765,7 @@ RL.screen('web.property', (c) => {
     `<div class="stack12">${h.card({ title: 'Site notes and access', tone: p.dog ? 'warn' : '', body: h.kv([['Gate', p.gate ? (sec ? (/R in window/.test(c.fc('access_secret')) ? '<span class="masked" title="Shown during the visit window only">in visit window</span>' : `<b>${esc(p.gate)}</b>`) : h.mask(c, 'access_secret', '')) : 'No gate'], ['Pets', p.dog ? esc(p.dog) : 'None noted'], ['Hazards', 'Low branch over driveway; septic lid in back turf'], ['Parking', 'Street only, no trailer in the drive'], ['Deer pressure', h.pill('High', 'warn') + ' (client reported)'], ['Salt exposure', 'Driveway and walk salted in winter']]) + (sec ? '' : h.note('Gate codes and alarm notes are access secrets, hidden for this role (02 §10.2).')) })}
      ${h.card({ title: 'Service history', flush: true, body: h.list((c.winter ? [{ t: 'Fall cleanup and leaf removal', d: 'Nov 3, 2026', s: 'Maintenance 2' }, { t: 'Irrigation winterize', d: 'Oct 28, 2026', s: 'Irrigation tech' }] : []).concat(vis.slice(0, 3).map((v, i) => ({ t: v.service, d: c.winter ? ['May 11, 2026', 'May 4, 2026', 'Apr 27, 2026'][i] : i ? ['May 4', 'Apr 27'][i - 1] : 'Today ' + v.start, s: v.crew }))).concat([{ t: 'Spring cleanup', d: 'Apr 14', s: 'Maintenance 2' }, { t: 'Irrigation start-up', d: 'Apr 6', s: 'Irrigation tech' }, { t: 'Fall cleanup', d: 'Nov 3, 2026', s: 'Maintenance 2' }]).slice(0, 5).map(x => ({ icon: 'check', tone: 'ok', title: esc(x.t), sub: `${esc(x.d)} · ${esc(x.s)} · photos`, right: '' }))) })}
      ${h.card({ title: 'Designs', flush: true, body: ds.length ? h.list(ds.map(d => ({ icon: 'pen', tone: 'info', title: `${esc(d.id)} ${esc(d.title)}`, sub: `${esc(d.status)} · ${dPl(c, d)} plants`, go: 'web.studio', x: d.id }))) : h.empty('No designs on this property.') })}
-     ${h.card({ title: 'Equipment on site', body: h.kv([p.controller ? ['Controller', esc(p.controller)] : null, ['Lighting', c.mod('lighting') ? '300 W transformer, smart timer' : 'None'], ['Backflow', p.zones ? 'PVB, tested Apr 2026' : 'None'], ['Rain sensor', p.zones ? 'Wireless, on gutter' : 'None']]) })}</div>`]);
+     ${h.card({ title: 'Equipment on site', body: h.kv([p.controller ? ['Controller', esc(p.controller)] : null, ['Lighting', c.mod('landscape_lighting') ? '300 W transformer, smart timer' : 'None'], ['Backflow', p.zones ? 'PVB, tested Apr 2026' : 'None'], ['Rain sensor', p.zones ? 'Wireless, on gutter' : 'None']]) })}</div>`]);
 });
 
 RL.screen('web.contacts', (c) => {

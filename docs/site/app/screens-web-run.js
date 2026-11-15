@@ -166,7 +166,7 @@ function backlog(c) {
   return memo(c, 'backlog', () => {
     const W = c.winter, D = c.D;
     const svc = W ? ['Dormant pruning', 'Holiday lighting takedown', 'Snow relocation (hauling)', 'Salt-only callout', 'Tree removal: storm damage', 'Irrigation controller swap']
-      : (c.mod('lawn_programs') ? ['Core aeration (window ends May 25)', 'Spring cleanup', 'Mulch install, 12 yd', 'Grub preventive (window open)', 'Irrigation repair', 'Shrub pruning'] : ['Spring cleanup', 'Mulch install, 12 yd', 'Bed edging', 'Irrigation repair', 'Shrub pruning', 'Lighting repair']);
+      : (c.mod('lawn_phc') ? ['Core aeration (window ends May 25)', 'Spring cleanup', 'Mulch install, 12 yd', 'Grub preventive (window open)', 'Irrigation repair', 'Shrub pruning'] : ['Spring cleanup', 'Mulch install, 12 yd', 'Bed edging', 'Irrigation repair', 'Shrub pruning', 'Lighting repair']);
     return svc.map((s, i) => { const cl = D.clients[(i * 4 + 2) % D.clients.length]; return { id: 'BK-' + (40 + i), title: s, client: cl.name, clientId: cl.id, hrs: [3.5, 0.75, 6, 1.5, 2, 4][i], due: (W ? ['Jan 20', 'Jan 15', 'Jan 13', 'Jan 12', 'Jan 14', 'Jan 22'] : ['May 25', 'May 14', 'May 20', 'May 31', 'May 13', 'May 21'])[i], need: (W ? ['Dump trailer', '', 'Skid steer', 'Salt spreader', 'Chainsaw crew', ''] : ['Dump trailer', '', 'Skid steer', 'Applicator license', '', ''])[i], urgent: i === 1 || i === 3 }; });
   });
 }
@@ -332,11 +332,11 @@ RL.act('map-opt1', toast('Route reordered: 9 min of drive saved (mock).'));
 function pools(c) {
   const m = c.mod, out = [];
   out.push(['Mowing', c.D.crews.filter(x => x.type === 'maintenance').length || 1]);
-  if (m('lawn_programs')) out.push(['Lawn applications', c.D.crews.filter(x => x.type === 'lawn').length || 1]);
+  if (m('lawn_phc')) out.push(['Lawn applications', c.D.crews.filter(x => x.type === 'lawn').length || 1]);
   out.push(['Enhancements and cleanups', 1]);
   if (m('irrigation')) out.push(['Irrigation', c.D.crews.filter(x => x.type === 'irrigation').length || 1]);
-  if (m('design_build') || m('hardscape')) out.push(['Install', c.D.crews.filter(x => x.type === 'install').length || 1]);
-  if (m('snow_lite')) out.push(['Snow (events)', 0]);
+  if (m('install_projects')) out.push(['Install', c.D.crews.filter(x => x.type === 'install').length || 1]);
+  if (m('snow_ice')) out.push(['Snow (events)', 0]);
   return out;
 }
 const mix = x => { x = (x ^ (x >>> 16)) >>> 0; x = Math.imul(x, 0x45d9f3b) >>> 0; x = (x ^ (x >>> 16)) >>> 0; x = Math.imul(x, 0x45d9f3b) >>> 0; return (x ^ (x >>> 16)) >>> 0; };
@@ -376,7 +376,7 @@ RL.act('cap-scn', toast('Scenario created from the live plan; nothing changes un
 
 // ---------------------------------------------------------------- Schedule: recurring programs (04 §4.2, 14 §4.1)
 RL.screen('web.programs', (c) => {
-  const D = c.D, W = c.winter, lawn = c.mod('lawn_programs'), irr = c.mod('irrigation'), snow = c.mod('snow_lite');
+  const D = c.D, W = c.winter, lawn = c.mod('lawn_phc'), irr = c.mod('irrigation'), snow = c.mod('snow_ice');
   const tabsL = [['mow', 'Mowing rounds']].concat(lawn ? [['lawn', '5-step lawn program']] : []).concat(irr ? [['irr', 'Irrigation seasons']] : []).concat(snow ? [['snow', 'Snow events']] : []);
   let tab = h.tab('prog.tab', W && snow ? 'snow' : 'mow');
   if (!tabsL.some(t => t[0] === tab)) tab = tabsL[0][0];
@@ -404,7 +404,7 @@ RL.screen('web.programs', (c) => {
     const events = [['Jan 12', 'Overnight snow', '4.5 in', W ? 'Active' : 'Closed', sites.length, W ? 9 : sites.length], ['Jan 6', 'Light snow', '2.1 in', 'Closed', sites.filter(s => s.com).length, sites.filter(s => s.com).length], ['Dec 28', 'Ice and sleet', '0.3 in ice', 'Closed', sites.filter(s => s.priority === 1).length, sites.filter(s => s.priority === 1).length], ['Dec 19', 'Lake-effect', '3.2 in', 'Closed', sites.length, sites.length]];
     body = h.kpis([{ label: 'Snow sites', value: sites.length, delta: `${sites.filter(s => s.priority === 1).length} priority 1` }, { label: 'Storms this season', value: W ? 4 : 14 }, { label: 'Pushes logged', value: W ? 61 : 212 }, { label: 'Billing', value: 'Per push + seasonal', delta: 'from storm logs' }])
       + h.table([{ k: 0, label: 'Date' }, { k: 1, label: 'Storm' }, { k: 2, label: 'Accumulation' }, { k: 3, label: 'Status', fmt: v => v === 'Active' ? h.pill('Active', 'info', 'snow') : st('Complete') }, { k: 4, label: 'Sites', n: true }, { k: 5, label: 'Serviced', n: true }], events.map(r => Object.assign([], r)), { dense: true })
-      + `<div class="flex">${h.btn('Open Snow & Ice', { icon: 'snow', go: 'web.snow' })}${c.mod('snow_ice') ? h.pill('Storm events and triggers: Snow & Ice add-on', 'ok') : h.pill('Snow Lite: storm visits per site, no triggers', '')}</div>`;
+      + `<div class="flex">${h.btn('Open Snow & Ice', { icon: 'snow', go: 'web.snow' })}${c.has('snow_ice') ? h.pill('Storm events and triggers: Snow & Ice add-on', 'ok') : h.pill('Snow Lite: storm visits per site, no triggers', '')}</div>`;
   }
   return h.page({ title: 'Recurring programs', sub: `${esc(c.t.name)} · ${W ? 'January: planning 2027 and running snow' : 'Week 6 of the mowing season'}`, actions: crewMode ? '' : h.btn('New program', { icon: 'plus', act: 'prog-new' }) })
     + h.tabs('prog.tab', tabsL, W && snow ? 'snow' : 'mow') + body + (lawn ? '' : h.note('Lawn programs (5-step rounds) appear when the lawn_programs service line is on (Settings > Service lines).'));
@@ -413,7 +413,7 @@ RL.act('prog-new', toast('New program: pick a service, window, frequency and the
 
 // ---------------------------------------------------------------- Schedule: weather center (V1)
 RL.screen('web.weather', (c) => {
-  const W = c.winter, days = DAYS(c), wx = WX(c), snowFull = c.mod('snow_ice');
+  const W = c.winter, days = DAYS(c), wx = WX(c), snowFull = c.has('snow_ice');
   const strip = `<div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px">${days.map(([d, dt], i) => `<div class="kp" style="${i === 1 ? 'border-color:var(--primary)' : ''}"><span class="l">${d} ${dt}</span><span class="flex nw gap4">${icon(wx[i][0] === 'cloud' ? 'sun' : wx[i][0])}<b class="num">${wx[i][2]}°F</b></span><span class="tiny t2">${esc(wx[i][1])}</span><span class="tiny ${wx[i][3] >= 60 ? '' : 't3'}" style="${wx[i][3] >= 60 ? 'color:var(--info-text);font-weight:700' : ''}">${W ? 'Snow' : 'Rain'} ${wx[i][3]}%</span></div>`).join('')}</div>`;
   const trig = W ? [
     ['Snow, lots', 'Accumulation reaches 2 in', '4.5 in observed', 'Triggered', snowFull ? 'Event sites dispatched' : 'Storm visits created for P1-P3 sites'],
@@ -664,7 +664,7 @@ RL.act('visit-msg', toast('Message sent to the crew app (mock).'));
 
 // ---------------------------------------------------------------- Jobs: Snow & Ice (14 §4.3)
 RL.screen('web.snow', (c) => {
-  const D = c.D, W = c.winter, crewMode = isCrew(c), full = c.mod('snow_ice'), fullLens = full && c.inLens('V1');
+  const D = c.D, W = c.winter, crewMode = isCrew(c), full = c.has('snow_ice'), fullLens = full && c.inLens('V1');
   const sites = snowSites(c);
   if (!sites.length) return h.page({ title: 'Snow & Ice' }) + h.empty('No snow sites yet. Add properties you service in winter.');
   let logs = winterVisits(c).map(v => W ? v : Object.assign({}, v, { status: 'Done' }));
@@ -1102,22 +1102,25 @@ RL.screen('web.job_costing', (c) => {
   const j = list.find(x => x.id === RL.ui['jc.job']) || along || list[0];
   const ph = jobPhases(j), pctDone = ph.map(p => p.pct);
   const wip = list.map(x => { const ps = jobPhases(x); const pct = x.status === 'Complete' ? 100 : Math.round(sum(ps, p => p.pct * p.b) / Math.max(1, sum(ps, p => p.b))); const est = x.cost, ctd = Math.round(est * pct / 100), earned = Math.round(x.value * pct / 100), billed = x.status === 'Complete' ? x.value : Math.round(x.value * (pct > 60 ? .7 : pct > 0 ? .5 : .3)); return { id: x.id, client: x.client, contract: x.value, est, ctd, pct, earned, billed, under: Math.max(0, earned - billed), over: Math.max(0, billed - earned) }; });
+  const adv = c.has('ledger_advanced') && c.inLens('V1');
   let body = '';
-  if (tab === 'job') {
+  if (tab === 'wip' && !adv) {
+    body = h.lock(c, 'ledger_advanced') + h.note('Job cost by phase and cost type is included in every plan with the Ledger (24 C09-020). WIP schedules, percent complete and the over/under billing entries come with Ledger Advanced [V1].');
+  } else if (tab === 'job') {
     const rows = ph.map((p, k) => { const bud = Math.round(j.cost * (p.b / Math.max(1, sum(ph, x => x.b)))); const act = Math.round(bud * Math.min(1.15, p.a / Math.max(1, p.b))); const eac = p.pct === 100 ? act : Math.max(bud, Math.round(act / Math.max(.05, p.pct / 100))); return { n: p.n, bud, cm: k === 3 ? Math.round(bud * .04) : 0, act, used: Math.round(100 * act / Math.max(1, bud)), phys: p.pct, eac: p.pct ? Math.min(eac, Math.round(bud * 1.12)) : bud, hrs: `${p.b}/${p.a}` }; });
     const eac = sum(rows, r => r.eac), bud = sum(rows, r => r.bud);
     body = `<div class="flex">${list.map(x => h.btn(x.id, { sm: true, ui: 'jc.job', val: x.id, pressed: x.id === j.id })).join('')}</div>`
-      + h.kpis([{ label: 'Contract', value: money(j.value) }, { label: 'Billed', value: money(wip.find(w => w.id === j.id).billed) }, { label: 'Earned (WIP)', value: money(wip.find(w => w.id === j.id).earned) }, { label: 'Sold margin', value: Mg(c, jMargin(j) + '%') }, { label: 'Projected margin', value: Mg(c, Math.round(100 * (j.value - eac) / j.value) + '%'), tone: eac > bud ? 'warn' : 'ok' }])
+      + h.kpis([{ label: 'Contract', value: money(j.value) }, { label: 'Billed', value: money(wip.find(w => w.id === j.id).billed) }, adv ? { label: 'Earned (WIP)', value: money(wip.find(w => w.id === j.id).earned) } : null, { label: 'Sold margin', value: Mg(c, jMargin(j) + '%') }, { label: 'Projected margin', value: Mg(c, Math.round(100 * (j.value - eac) / j.value) + '%'), tone: eac > bud ? 'warn' : 'ok' }])
       + h.table([{ k: 'n', label: 'Phase' }, { k: 'bud', label: 'Budget', n: true, fmt: v => Cst(c, v) }, { k: 'cm', label: 'Committed', n: true, fmt: v => Cst(c, v) }, { k: 'act', label: 'Actual', n: true, fmt: v => Cst(c, v) }, { k: 'used', label: '% used', n: true, fmt: (v, r) => `<span style="${v > r.phys + 15 ? 'color:var(--warn-text);font-weight:700' : ''}">${v}%</span>` }, { k: 'phys', label: 'Physical %', n: true, fmt: v => v + '%' }, { k: 'eac', label: 'EAC', n: true, fmt: v => Cst(c, v) }, { k: 'eac', label: 'Variance', n: true, fmt: (v, r) => h.mask(c, 'cost', `<span style="color:${r.bud - v < 0 ? 'var(--danger-text)' : 'inherit'}">${money(r.bud - v)}</span>`) }, { k: 'hrs', label: 'Hours est/act', n: true }], rows, { dense: true, foot: ['Total', Cst(c, bud), Cst(c, sum(rows, r => r.cm)), Cst(c, sum(rows, r => r.act)), '', '', Cst(c, eac), Cst(c, bud - eac), `${sum(ph, p => p.b)}/${sum(ph, p => p.a)}`] })
       + h.cols('2', [h.card({ title: 'Cost by type', sub: `${j.id} · actual vs budget`, body: h.bars([['Labor and burden', .5, .97], ['Materials', .3, 1.12], ['Equipment', .08, .9], ['Subcontractor', .12, 1]].map(([l, w, f]) => { const b = Math.round(j.cost * w), a = Math.round(b * sum(rows, r => r.act) / Math.max(1, bud) * f); return { label: l, value: a, max: b, tone: a > b ? 'danger' : '', right: c.sees('cost') ? `${money(a)} / ${money(b)}` : h.mask(c, 'cost', '') }; })) }),
-        h.card({ title: 'WIP position, all installs', sub: `${wip.length} jobs · as of ${mdate(c, 'Apr')} 30`, body: h.kv([['Underbilled (asset 1215)', money(sum(wip, w => w.under))], ['Overbilled (liability 2210)', money(sum(wip, w => w.over))], ['Net WIP adjustment', money(sum(wip, w => w.under) - sum(wip, w => w.over))], [`${j.id} position`, (() => { const w = wip.find(x => x.id === j.id); return w.under ? `Underbilled ${money(w.under)}` : w.over ? `Overbilled ${money(w.over)}` : 'Billing matches earned'; })()]]) + h.btn('Open WIP schedule', { sm: true, ui: 'jc.tab', val: 'wip' }) })])
+        adv ? h.card({ title: 'WIP position, all installs', sub: `${wip.length} jobs · as of ${mdate(c, 'Apr')} 30`, body: h.kv([['Underbilled (asset 1215)', money(sum(wip, w => w.under))], ['Overbilled (liability 2210)', money(sum(wip, w => w.over))], ['Net WIP adjustment', money(sum(wip, w => w.under) - sum(wip, w => w.over))], [`${j.id} position`, (() => { const w = wip.find(x => x.id === j.id); return w.under ? `Underbilled ${money(w.under)}` : w.over ? `Overbilled ${money(w.over)}` : 'Billing matches earned'; })()]]) + h.btn('Open WIP schedule', { sm: true, ui: 'jc.tab', val: 'wip' }) }) : h.card({ title: 'Job cost by phase', sub: 'Included with the Ledger in every plan', body: h.kv([['Budgeted cost', Cst(c, bud)], ['Forecast at completion', Cst(c, eac)], ['Variance', Cst(c, eac - bud)]]) + h.lock(c, 'ledger_advanced') })])
       + (eac > bud ? h.card({ tone: 'warn', title: 'Why the forecast moved', body: `<p class="small">${esc(rows.find(r => r.used > r.phys + 15) ? rows.find(r => r.used > r.phys + 15).n : rows[3].n)} has spent more than its physical progress: materials are on site but not yet installed, and waste ran above the takeoff factor.</p><div class="flex">${h.btn('View lines', { sm: true, go: 'web.journal' })}${h.btn('Send to estimator: update waste factor', { sm: true, act: 'jc-est' })}</div>` }) : '');
   } else {
     const tot = k => sum(wip, w => w[k]), under = tot('under'), over = tot('over');
     body = h.table([{ k: 'id', label: 'Job', m: true }, { k: 'client', label: 'Client' }, { k: 'contract', label: 'Contract', n: true, fmt: v => money(v) }, { k: 'est', label: 'Est cost', n: true, fmt: v => Cst(c, v) }, { k: 'ctd', label: 'Cost to date', n: true, fmt: v => Cst(c, v) }, { k: 'pct', label: '% complete', n: true, fmt: v => v + '%' }, { k: 'earned', label: 'Earned', n: true, fmt: v => money(v) }, { k: 'billed', label: 'Billed', n: true, fmt: v => money(v) }, { k: 'under', label: 'Underbilled', n: true, fmt: v => v ? money(v) : '' }, { k: 'over', label: 'Overbilled', n: true, fmt: v => v ? money(v) : '' }], wip, { dense: true, foot: ['Totals', '', money(tot('contract')), Cst(c, tot('est')), Cst(c, tot('ctd')), '', money(tot('earned')), money(tot('billed')), money(under), money(over)] })
       + h.card({ title: 'Entries to post (auto-reverse on the 1st)', body: `<div class="mono tiny">Dr 1215 Costs in excess of billings ${money(under)} / Cr 4000 Revenue: installs ${money(under)}<br>Dr 4000 Revenue: installs ${money(over)} / Cr 2210 Billings in excess of costs ${money(over)}</div><div class="flex mt8">${c.allowed('ledger.journal_entry') ? h.btn('Post WIP', { kind: 'primary', act: 'wip-post' }) : `<span class="small t2">Posting is done by the owner or bookkeeper.</span>`}${h.btn('Surety format', { act: 'wip-surety' })}</div>` });
   }
-  return h.page({ title: `Job costing and WIP ${h.tag('V1')}`, sub: `Ledger Advanced${c.feat('ledger_advanced').via ? ' (add-on)' : ''} · cost-to-cost method · as of ${mdate(c, 'Apr')} 30`, actions: h.tabs('jc.tab', [['job', 'Job cost report'], ['wip', 'WIP schedule', wip.length]], 'job') })
+  return h.page({ title: adv ? `Job costing and WIP ${h.tag('V1')}` : 'Job costing', sub: adv ? `Ledger Advanced${c.feat('ledger_advanced').via ? ' (add-on)' : ''} · cost-to-cost method · as of ${mdate(c, 'Apr')} 30` : `Estimate vs actual by phase and cost type · as of ${mdate(c, 'Apr')} 30`, actions: h.tabs('jc.tab', [['job', 'Job cost report'], ['wip', 'WIP schedule', wip.length]], 'job') })
     + modeBanner(c) + body + (c.sees('margin') ? '' : h.note(`Margin is hidden for ${esc(c.as.label)} by default (field class margin); costs stay visible.`));
 });
 RL.act('jc-est', toast('Sent to the estimator with the variance lines (mock).'));

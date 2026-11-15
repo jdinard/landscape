@@ -17,7 +17,7 @@ Rootline launches in one region, the **Great Lakes**: six Wave 1 Regions at MVP 
 ## Start here
 
 - **[Status: what's done and what remains](docs/STATUS.md)**: a one-page summary of the proposal so far and the next steps.
-- **[Platform Explorer](docs/site/app.html)**: the whole platform mocked up, 153 screens across every surface (company app, crew app, customer portal, subcontractor lite, the founder's admin console, the partner hub, the marketing site and the homeowner funnel). View it as any role or persona, on any package, in any target market, with the rule behind each screen.
+- **[Platform Explorer](docs/site/app.html)**: the whole platform mocked up, 154 screens across every surface (company app, crew app, customer portal, subcontractor lite, the founder's admin console, the partner hub, the marketing site and the homeowner funnel). View it as any role or persona, on any package, in any target market, with the rule behind each screen.
 - **[Platform blueprint data](docs/platform/)**: machine-readable roles, permissions, personas, packages and entitlements, target segments, sample tenants and every route, for a build agent to generate code from.
 - **[Build handoff](docs/25-platform-blueprint-build-handoff.md)** and **[agent-led marketing playbook](docs/26-agent-led-marketing-playbook.md)**: how an implementation agent builds Rootline from these specs, and how a marketing agent markets it safely.
 - **[Clickable AI design walkthrough](docs/site/prototype.html)**: step through the agentic design flow, from a homeowner's photos and measurements to AI mockups, a to-scale plan, an estimate, a proposal and client approval.

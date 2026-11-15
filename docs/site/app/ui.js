@@ -43,7 +43,7 @@ const h = RL.h = {
   },
   tab(key, def) { return RL.ui[key] || def; },
   /* KPI tiles: [{ label, value, delta, tone, ai }] */
-  kpis(items) { return `<div class="kpis">${items.map(k => `<div class="kp${k.ai ? ' ai' : ''}"><span class="l">${k.label}</span><span class="v">${k.value}</span>${k.delta ? `<span class="d ${k.tone || ''}">${k.delta}</span>` : ''}</div>`).join('')}</div>`; },
+  kpis(items) { return `<div class="kpis">${items.filter(Boolean).map(k => `<div class="kp${k.ai ? ' ai' : ''}"><span class="l">${k.label}</span><span class="v">${k.value}</span>${k.delta ? `<span class="d ${k.tone || ''}">${k.delta}</span>` : ''}</div>`).join('')}</div>`; },
   /* Card. o: { title, sub, body, actions, tone: warn|danger|ok|ai, flush, cls } */
   card(o) {
     const head = (o.title || o.actions) ? `<div class="cd-h"><div>${o.title ? `<h3>${o.title}</h3>` : ''}${o.sub ? `<div class="sub">${o.sub}</div>` : ''}</div>${o.actions ? `<div class="flex">${o.actions}</div>` : ''}</div>` : '';
@@ -116,8 +116,9 @@ const h = RL.h = {
   avatar(name, n) { return `<span class="av c${(n != null ? n : hash(name) % 5) + 1}" title="${esc(name)}">${esc(initials(name))}</span>`; },
   /* Masked value for a field class the role cannot see (02 §10.2). */
   mask(c, fc, value) {
-    if (c.sees(fc)) return value;
-    return `<span class="masked" title="Hidden: field class ${fc} is not visible to ${c.role} (02 §10.2)">•••</span>`;
+    if (c.seesFully ? c.seesFully(fc) : c.sees(fc)) return value;
+    const g = c.fcGrant ? c.fcGrant(fc) : '-';
+    return `<span class="masked" title="${c.sees(fc) ? `Partial: ${esc(c.role)} gets field class ${fc} as &quot;${esc(g)}&quot; only` : `Hidden: field class ${fc} is not visible to ${esc(c.role)}`} (02 §10.2)">•••</span>`;
   },
   field(label, control, hint) { return `<label class="fld"><span>${label}</span>${control}${hint ? `<span class="hint">${hint}</span>` : ''}</label>`; },
   input(value, o) { o = o || {}; return `<input class="inp${o.ro ? ' ro' : ''}" value="${esc(value)}"${attr({ readonly: o.ro, placeholder: o.ph, type: o.type || 'text', 'data-ui-input': o.ui, 'aria-label': o.label })}>`; },

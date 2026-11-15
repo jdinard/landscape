@@ -37,7 +37,18 @@ def check(d):
     nav = d['roles']['nav_visibility']
     surf = {s['id'] for s in d['surfaces']['surfaces']}
     routes = {r['id']: r for r in d['surfaces']['routes']}
-    modules = {'books', 'lawn_programs', 'snow_ice', 'irrigation', 'lighting', 'commercial', 'design_build'}
+    modules = {m['key'] for m in d['tenants']['module_catalog']} | {'books'}  # books: hidden when QuickBooks or Xero is the system of record
+    for t in tenants.values():
+        for m in t['modules']:
+            if m not in modules: errs.append(f"tenant {t['id']}: unknown module {m}")
+    for sg in d['segments']['segments']:
+        for m in sg['modules_on']:
+            if m not in modules: errs.append(f"segment {sg['id']}: unknown module {m}")
+    for tpl in d['roles'].get('custom_role_templates', []):
+        for c in tpl['grants']:
+            if c not in caps: errs.append(f"custom role {tpl['key']}: unknown capability {c}")
+        for n in tpl['nav']:
+            if n not in nav['web']['items']: errs.append(f"custom role {tpl['key']}: nav {n} not in web nav table")
 
     for r in routes.values():
         w = 'route ' + r['id']

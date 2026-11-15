@@ -797,12 +797,12 @@ function resCtx(c) {
   const cl = D.clients.find(x => x.id === R.clientId) || D.clients[0] || {};
   const prop = D.properties.find(p => p.client === R.clientId) || { address: R.property, turf: 8000, beds: 5, gate: null, dog: null, zones: null };
   const V = R.projectValue || 18600;
-  const designOnly = c.t.modules.includes('design_only');
+  const designOnly = !!c.t.design_only;
   const tiers = [{ k: 'good', en: 'Good', es: 'Básica', price: rnd(V * .8, 100) }, { k: 'better', en: 'Better', es: 'Mejor', price: V, rec: true }, { k: 'best', en: 'Best', es: 'Superior', price: rnd(V * 1.22, 100) }];
   const opt = tiers.find(t => t.k === U('pp.opt', 'better')) || tiers[1];
   const autopay = cl.autopay !== false;
   const visits = D.visits.filter(v => v.clientId === R.clientId);
-  const lawn = c.mod('lawn_programs');
+  const lawn = c.mod('lawn_phc');
   let inv;
   if (designOnly) inv = [{ id: 'INV-3301', date: W ? 'Dec 2' : 'Apr 20', desc: ['Design consultation and site measure', 'Consulta de diseño y medición'], amount: 250, due: '', status: 'Paid', paid: W ? 'Dec 2' : 'Apr 20' }];
   else if (W) inv = [{ id: 'INV-3341', date: 'Jan 11', desc: ['Snow push, Jan 10 (drive and walks)', 'Despeje de nieve, 10 ene (entrada y aceras)'], amount: 65, due: 'Jan 25', status: 'Open' }, { id: 'INV-3302', date: 'Dec 1', desc: ['Fall cleanup (2 of 2)', 'Limpieza de otoño (2 de 2)'], amount: 420, due: 'Dec 15', status: 'Paid', paid: 'Dec 15' }, { id: 'INV-3277', date: 'Nov 3', desc: ['Weekly mowing, October (level billing 8 of 8)', 'Corte semanal, octubre (pago nivelado 8 de 8)'], amount: 212, due: 'Nov 17', status: 'Paid', paid: 'Nov 17' }];
