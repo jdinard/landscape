@@ -1075,7 +1075,7 @@ Platform capabilities every module depends on. Most are invisible to customers b
 | C20-015 | Media pipeline | EXIF/GPS proof-of-service, derivatives and media.processed hooks (rails R-03, R-12) | `platform_engineer` | [20 §4.12](20-architecture-security.md#412-media-pipeline-mvp) |
 | C20-016 | AI Gateway | Task routing (Claude family for reasoning, image models per task), credit metering, budgets, evals and residency routing | `platform_engineer` | [20 §4.13](20-architecture-security.md#413-ai-gateway-mvp) |
 | C20-017 | GPU job orchestration | Lanes and fair queuing; EKS GPU pools when volume justifies | `platform_engineer` | [20 §4.14](20-architecture-security.md#414-gpu-job-orchestration-mvp--v1) |
-| C20-018 | Search | Postgres FTS plus pgvector; OpenSearch when needed | `platform_engineer` | [20 §4.15](20-architecture-security.md#415-search-mvp--v1) |
+| C20-018 | Search | Postgres FTS plus pgvector for most entities; OpenSearch for the Plant KB and cross-entity search | `platform_engineer` | [20 §4.15](20-architecture-security.md#415-search-mvp--v1) |
 | C20-019 | Notifications service | TCPA consent, quiet hours and per-tenant 10DLC enforced centrally | `platform_engineer` | [20 §4.16](20-architecture-security.md#416-notifications-service-mvp) |
 | C20-020 | Routing and geo services | OR-Tools service with matrix caching and PostGIS geometry conventions (rail R-11) | `platform_engineer` | [20 §4.17](20-architecture-security.md#417-route-optimization-and-geo-services-mvp) |
 | C20-021 | Ledger invariants in the database | Balance, immutability, period locks, exactly-once posting and hash chain enforced by Postgres | `platform_engineer` | [20 §4.18](20-architecture-security.md#418-ledger-service-invariants-mvp) |
@@ -1352,7 +1352,7 @@ Rule of thumb: build what is the moat or what touches money correctness; buy com
 | AI receptionist | **Build on buy** | Realtime voice model plus the telephony provider, tools from the Action Layer | Must quote from route and Price Book data | - |
 | Workflow engine | **Buy** | Temporal Cloud | Durable workflows for billing, mockups, sync | Cost at scale (self-host option) |
 | Policy engine | **Adopt open source** | Cedar | Fine-grained RBAC/ABAC | Benchmark fails at 1k decisions/s per task |
-| Search | **Build on Postgres** | Postgres full-text search plus pgvector | Fewer moving parts | Search latency budgets missed (then OpenSearch) |
+| Search | **Build on Postgres, plus OpenSearch** | Postgres full-text search plus pgvector for most entities; OpenSearch for the Plant KB and cross-entity search ([20](20-architecture-security.md)) | Fewer moving parts where Postgres is enough | Search latency budgets missed on Postgres-backed entities |
 | Analytics platform | **Buy managed / open source** | Postgres analytics schemas with CDC into ClickHouse, dbt and Cube (C18-022) | Semantic layer must enforce tenant security | ClickHouse sizing for large tenants ([18 open question 14](18-reporting-analytics.md#14-open-questions)) |
 | Feature flags | **Buy** | OpenFeature-compatible managed provider with tenant targeting | Dark launches, per-Company deferral of crew-facing changes in peak season, and kill switches | Cost per seat |
 | Helpdesk and chat | **Buy** | Intercom, Plain or Zendesk (bilingual), worked by the support agent | Commodity | - |
@@ -1425,7 +1425,7 @@ One set of product outcomes for v1. Targets are proposals; the KPI definitions c
 | Commercial (S4) and snow-belt Companies run their whole year in Rootline | Commercial portfolios with AIA or progress billing live without a second tool; snow add-on attach in snow-belt Regions | No second tool; ≥ 25% of eligible Companies (proposal) |
 | Rootline is the book of record | Tenants on native books (Mode A or B) | ≥ 50% |
 | Canadian Companies are served in Canada | Canadian Companies on the residency stack | 100% |
-| The platform is dependable at seasonal peaks | Monthly availability; crash-free sessions | 99.9%; ≥ 99.5% |
+| The platform is dependable at seasonal peaks | Monthly availability; crash-free sessions | 99.95%; ≥ 99.5% |
 | Benchmarks are private and meaningful | Companies per published benchmark cell | ≥ 10 (k ≥ 10) |
 | Multi-company owners and franchises run on one platform | Rollups and data shares in use without exports | No spreadsheets needed |
 | Customers stay and grow | Net revenue retention, first full cohort | ≥ 105% |

@@ -1226,7 +1226,7 @@ Platform principals have **no tenant memberships**. They reach tenant data only 
 
 **Lost or stolen devices:**
 - An admin can **revoke** the device: tokens are invalidated and the next contact triggers a **remote wipe** of Rootline's local database (SQLite, cached photos, encryption key).
-- Offline devices cannot be reached, so local data is encrypted with a key that expires after the offline grace period (5.16).
+- Offline devices cannot be reached, so local data is encrypted with a key that expires with the offline lease (5.16).
 
 **Risk signals** that trigger step-up: new device, impossible travel, TOR or anonymizer IP, or more than 3 failed MFA attempts.
 
@@ -1234,7 +1234,7 @@ Platform principals have **no tenant memberships**. They reach tenant data only 
 
 ### 5.16 Session policies
 
-| Surface | Idle timeout (default) | Absolute lifetime | Offline grace | Step-up required for |
+| Surface | Idle timeout (default) | Absolute lifetime | Offline lease | Step-up required for |
 |---|---|---|---|---|
 | Company web app | 12 h (configurable 15 min - 24 h), per [Architecture](20-architecture-security.md) | 14 days on a remembered device, else 24 h | n/a | Viewing `employee_pii`; changing bank, Stripe, roles, security policy; exports; period unlock; refunds over $500; deleting Clients; editing closed periods (re-auth if the last authentication is more than 10 min old, per [Architecture](20-architecture-security.md)) |
 | Native app in manager or sales mode (office roles) | App lock after 15 min background (biometric unlock) | 30 days refresh | 72 h of read-only cached data | Same as web |
@@ -1252,7 +1252,7 @@ Platform principals have **no tenant memberships**. They reach tenant data only 
 **Revocation semantics:**
 - Every access token carries `perm_version` (per membership) and `session_version` (per identity).
 - Role changes, deactivation or "Sign out everywhere" bump the version. The API rejects stale tokens on the **next request**, and Redis pub/sub pushes a revoke to live websocket sessions.
-- Target: access ends within 1 second online. Offline devices fail on the next sync, and the offline grace clock limits damage.
+- Target: access ends within 1 second online. Offline devices fail on the next sync, and the offline lease limits damage.
 - This fixes the "permission changes are not retroactive to existing sessions" class of problem seen in incumbents.
 
 **Concurrent sessions:** unlimited by default; Companies can cap concurrent web sessions per user. IP allowlists for office roles.
@@ -2395,7 +2395,7 @@ The founder holds `platform_owner`; the other four columns are held by the suppo
 | Commercial client forwards a document link | Action links are scoped to one object; signing above the threshold or under a different name, paying with a saved method or opening anything else requires a code sent to the contact on record ([06](06-customer-portal.md) 4.2.5), and the audit trail records the verified signer; the link can be revoked |
 | Subcontractor also works directly for the Client | Sub sees only orders from the Company; their own relationship with the Client happens outside Rootline (or in their own Rootline tenant) and never merges |
 | CPA firm loses a client mid-close | Revocation is immediate. The firm can request a time-boxed read-only extension from the owner to finish work papers |
-| Lost truck tablet holding offline data | Device revoked; data encrypted under a device key; key expires after the offline grace period; gate codes outside the visit window were never on the device |
+| Lost truck tablet holding offline data | Device revoked; data encrypted under a device key; key expires with the offline lease; gate codes outside the visit window were never on the device |
 | Clock drift or tampered device time | Server time is authoritative; punches flagged when drift exceeds 5 minutes; edits require reason and are audited (wage-and-hour defensibility) |
 | Company downgrades from a plan with SSO | SSO enforcement is lifted with a 14-day warning; users are prompted to create passkeys or passwords before cutover |
 | Impersonated user is deactivated mid-session | Impersonation session terminates immediately (subject perm_version bumped) |

@@ -145,7 +145,7 @@ Rootline is two people: the founder and Claude ([24](24-product-scope-decisions-
 | Platform Finance | `platform_finance` | The finance agent (Rootline's outside accountant reads the QuickBooks mirror of Rootline's books, [24](24-product-scope-decisions-catalog.md) OD-25, and holds no console role) | "Know MRR, deferred revenue and churn to the dollar." "Run dunning, refunds and credits on Rootline subscriptions." "Pay partners." "Keep sales tax and GST/HST filings right." |
 | Platform Engineer | `platform_engineer` | The engineering agent, on call around the clock | "See queue depth, integration errors and SLO burn." "Roll out a flag to 10% of tenants." "Hit the kill switch on a misbehaving model." "Run an approved runbook to repair data." |
 
-Custom platform roles can be composed from granular platform permissions (for example a "Migration" role built from `platform_support` minus billing actions plus migration commit rights, or a "Compliance" role with DSAR and legal-hold rights), and assigned to an agent or, later, to a person. The five role keys above remain the canonical base roles referenced elsewhere in the doc set ([02 - Personas and RBAC](02-personas-roles-permissions.md)).
+Custom platform roles can be composed from granular platform permissions (for example a "Migration" role built from `platform_support` minus billing actions plus migration commit rights, or a "Compliance" role with DSAR and legal-hold rights), and assigned to an agent, or to a person if Rootline ever hires one. The five role keys above remain the canonical base roles referenced elsewhere in the doc set ([02 - Personas and RBAC](02-personas-roles-permissions.md)).
 
 **External partner users** (affiliates, resellers, implementation partners) do not use the Operator Console. They use a separate **Partner Portal** (section 4.16) with role keys `partner_admin` and `partner_member`, defined here because they exist only in the platform context.
 
@@ -202,7 +202,7 @@ Feature IDs use the prefix `PA-` (Platform Admin). Every feature below is part o
 
 **PA-005 Platform audit log**
 - Append-only table plus streaming copy to WORM object storage (S3 Object Lock, compliance mode) and the SIEM.
-- Fields: `id`, `occurred_at`, `actor_type` (staff for a person such as the founder, agent for an operator agent, system, api_token, tenant_user), `actor_id`, `on_behalf_of_user_id` (during impersonation), `tenant_id` (nullable), `action` (dotted verb, e.g., `tenant.lifecycle.suspend`), `target_type`, `target_id`, `reason_code`, `reason_text`, `ticket_ref`, `before` and `after` JSON diffs (with secrets and PII redacted per field policy), `ip`, `user_agent`, `session_id`, `approval_id`, `prev_hash`, `hash`.
+- Fields: `id`, `occurred_at`, `actor_type` (staff, meaning the founder or an operator agent, with `STAFF_USER.principal_type` saying which; system; api_token; tenant_user), `actor_id`, `on_behalf_of_user_id` (during impersonation), `tenant_id` (nullable), `action` (dotted verb, e.g., `tenant.lifecycle.suspend`), `target_type`, `target_id`, `reason_code`, `reason_text`, `ticket_ref`, `before` and `after` JSON diffs (with secrets and PII redacted per field policy), `ip`, `user_agent`, `session_id`, `approval_id`, `prev_hash`, `hash`.
 - Hash chain: each record stores `SHA-256(prev_hash || canonical_json(record))`; a daily anchor hash is written to WORM storage and to the SOC 2 evidence store. A nightly verifier job alerts `platform_engineer` and `platform_owner` on any break.
 - Retention: 7 years. Searchable in the console by actor, tenant, action, date range, reason code.
 - Tenants see a filtered projection of events about their own tenant (section 4.6, PA-054).
@@ -848,7 +848,7 @@ Definitions here are platform (operator) metrics; tenant-facing analytics live i
 ### 4.15 System health
 
 **PA-150 Service health dashboard**
-- Golden signals per service and surface (latency p50/p95/p99, error rate, throughput, saturation), SLO status and error-budget burn (e.g., API availability 99.9% monthly; crew app sync success 99.5% of mutations within 60 seconds of connectivity), database health (replica lag, connection pool, slow queries, RLS policy violations blocked), Redis, object storage, CDN.
+- Golden signals per service and surface (latency p50/p95/p99, error rate, throughput, saturation), SLO status and error-budget burn (e.g., API availability 99.95% monthly; crew app sync success 99.5% of mutations within 60 seconds of connectivity), database health (replica lag, connection pool, slow queries, RLS policy violations blocked), Redis, object storage, CDN.
 - Data from the observability stack ([20](20-architecture-security.md)); the console embeds summaries and deep-links to the observability tool.
 
 **PA-151 Queues and workflows**
@@ -1675,7 +1675,7 @@ erDiagram
 
 ### 7.2 Staff, access, audit, flags and support
 
-`STAFF_USER` holds every platform principal: `principal_type` is `human` (the founder, or a person hired later) or `agent`, and `agent_key` names the operator agent (`support`, `plant_curator`, `finance`, `engineering`). Agents have no `sso_subject`. An `APPROVAL_REQUEST` raised by an agent can only be approved by a human principal holding `platform_owner`.
+`STAFF_USER` holds every platform principal: `principal_type` is `human` (the founder, or a person if Rootline ever hires one) or `agent`, and `agent_key` names the operator agent (`support`, `plant_curator`, `finance`, `engineering`). Agents have no `sso_subject`. An `APPROVAL_REQUEST` raised by an agent can only be approved by a human principal holding `platform_owner`.
 
 ```mermaid
 erDiagram
@@ -2317,7 +2317,7 @@ Targets below are Rootline's internal goals, not industry benchmarks.
 | Payments | Webhook processing lag p95 | Stripe event created -> processed | < 30 s |
 | Compliance | DSARs completed on time | Completed by statutory due date | 100% |
 | Compliance | Access review completion | Reviewed within campaign window | 100% |
-| Reliability | API availability | Monthly SLO | 99.9% |
+| Reliability | API availability | Monthly SLO | 99.95% |
 | Reliability | MTTA / MTTR (SEV1-2) | Alert -> ack / declare -> resolve | < 5 min / < 60 min |
 | KB | Curator throughput | KB change requests resolved per day by the plant curator agent | Track |
 | KB | Region palette completeness | Palette plants with full traits and licensed images | > 95% in the Great Lakes Regions ([24](24-product-scope-decisions-catalog.md) OD-01) |
@@ -2360,6 +2360,7 @@ Targets below are Rootline's internal goals, not industry benchmarks.
 
 ---
 
+<a id="14-open-questions"></a>
 ## 14. Decisions on former open questions
 
 Each former open question with its decision. Where [24](24-product-scope-decisions-catalog.md) section 1 has an answer, it is used.

@@ -1100,12 +1100,12 @@ The plant curator agent builds the seed as an ordered sequence of steps; the eng
 
 ### 5.1 Curator bulk import with diff preview
 
-1. Maria (senior curator, `platform_curator`) uploads "Ohio extension landscape shrubs.csv" (612 rows) or connects a Google Sheet, and picks the import profile "Extension list format A". The source and license are selected from the registry; the upload is blocked if none is chosen.
-2. The system auto-maps columns; she confirms "Hardiness" to `usda_zone_min/max`, "Light" to `sun`, "Deer" to `deer_resistance`.
+1. The plant curator agent (`platform_curator`) uploads "Ohio extension landscape shrubs.csv" (612 rows) or connects a Google Sheet, and picks the import profile "Extension list format A". The source and license are selected from the registry; the upload is blocked if none is chosen.
+2. The system auto-maps columns; the agent confirms "Hardiness" to `usda_zone_min/max`, "Light" to `sun`, "Deer" to `deer_resistance`.
 3. Normalization and name resolution run: 571 matched, 22 new cultivars of existing taxa, 6 new taxa, 9 ambiguous, 4 unresolved.
 4. The diff preview shows 1,840 field changes: 1,210 fill empty values, 402 change unverified values, 211 conflict with selected values, 17 would overwrite curator-verified values (never auto-applied).
-5. She resolves the 9 ambiguous names, sets the apply policy ("fill empty" and "propose as candidates" for conflicts), and submits. The import becomes a batch of change requests grouped as "Ohio extension shrubs, Apr 2027".
-6. Non-critical, high-agreement items are eligible for bulk accept; critical items route to a second curator. Approved items ship in the next daily release.
+5. The agent resolves the 9 ambiguous names, sets the apply policy ("fill empty" and "propose as candidates" for conflicts), and submits. The import becomes a batch of change requests grouped as "Ohio extension shrubs, Apr 2027".
+6. Non-critical, high-agreement items are eligible for bulk accept; critical items route to the founder for approval. Approved items ship in the next daily release.
 
 ```mermaid
 flowchart TD
@@ -1115,14 +1115,14 @@ flowchart TD
     C --> D["Normalize units, enums, zones, months"]
     D --> E["Resolve names against backbone and KB"]
     E --> F{"Ambiguous or unresolved rows?"}
-    F -- "Yes" --> F1["Curator resolves or skips rows"]
+    F -- "Yes" --> F1["Curator agent resolves or skips rows"]
     F -- "No" --> G["Validate types, ranges and sanity rules"]
     F1 --> G
     G --> H["Diff preview: new, changed, conflict, verified-overwrite"]
     H --> I["Choose apply policy per column"]
     I --> J["Create batch of change requests"]
     J --> K{"Critical trait?"}
-    K -- "Yes" --> L["Second curator review"]
+    K -- "Yes" --> L["Founder approval"]
     K -- "No" --> M["Review queue or bulk accept if eligible"]
     L --> N["Approved"]
     M --> N
@@ -1131,15 +1131,16 @@ flowchart TD
 
 ### 5.2 AI enrichment to published release
 
-1. A curator selects "Lake Erie Shore deicing-salt tolerance, 400 Great Lakes shrubs and perennials, trait group: requirements" and starts an enrichment run (V1 self-serve; at MVP `platform_engineer` launches seed batches).
+1. The plant curator agent selects "Lake Erie Shore deicing-salt tolerance, 400 Great Lakes shrubs and perennials, trait group: requirements" and starts a self-serve enrichment run.
 2. For each plant, the enrichment worker retrieves permitted documents from registered sources and calls the AI Gateway task `kb.enrich`.
 3. The model returns values with snippets and locators; the worker verifies every locator (fetch plus exact snippet match), normalizes values, cross-checks sources and computes confidence.
-4. Suggestions land in the review queue grouped by plant. Eligible non-critical items can be bulk-accepted; critical items need two humans.
-5. Accepted items are published in the next release; rejection reasons feed prompt evaluation in AI Ops ([19](19-platform-admin-portal.md)).
+4. Suggestions land in the review queue grouped by plant. The agent reviews them; eligible non-critical items can be bulk-accepted, and critical items also need the founder's approval.
+5. Accepted items are published in the next release the founder approves; rejection reasons feed prompt evaluation in AI Ops ([19](19-platform-admin-portal.md)).
 
 ```mermaid
 sequenceDiagram
-    participant Cur as Curator
+    participant Cur as CuratorAgent
+    participant F as Founder
     participant Q as ReviewQueue
     participant W as EnrichWorker
     participant Src as SourceRegistry
@@ -1154,9 +1155,13 @@ sequenceDiagram
         W->>W: Verify locators, normalize, cross-check, score
         W->>Q: Change requests with confidence
     end
-    Cur->>Q: Accept, edit, reject, second opinion
+    Cur->>Q: Accept, edit, reject, escalate
+    Q->>F: Critical items for approval
+    F-->>Q: Approve or reject
     Q->>Rel: Approved change items
     Rel->>Rel: Daily release build and validation
+    Rel->>F: Release changelog for approval
+    F-->>Rel: Approve release
     Rel-->>Cur: Release published with changelog
 ```
 
@@ -1169,8 +1174,8 @@ stateDiagram-v2
     draft --> withdrawn : author withdraws
     in_review --> approved : reviewer accepts non-critical
     in_review --> second_review : critical trait or legal
-    second_review --> approved : second curator accepts
-    second_review --> rejected : second curator rejects
+    second_review --> approved : founder approves
+    second_review --> rejected : founder rejects
     in_review --> rejected : reviewer rejects with reason
     in_review --> draft : changes requested
     approved --> published : included in release
@@ -1180,7 +1185,7 @@ stateDiagram-v2
     superseded --> [*]
 ```
 
-Rules: the author can never approve their own critical item; AI-authored items count as authored by the prompt version, so any human may be first reviewer; `approved` items not released within 7 days alert `platform_engineer` (release pipeline stuck).
+Rules: the author can never review their own item; AI-authored items count as authored by the prompt version, so the plant curator agent may be first reviewer of enrichment output; critical and legal items reach `approved` only with the founder's approval, and when the founder authored the item, that approval also needs step-up authentication, a written reason and the audit log; `approved` items not released within 7 days alert `platform_engineer` (the engineering agent: release pipeline stuck).
 
 ### 5.4 Address to Region to a filtered plant picker
 
@@ -1224,14 +1229,14 @@ flowchart TD
     D -- "No" --> F["Median rating accepted"]
     E --> F
     F --> G["Profile change requests with rating_session evidence"]
-    G --> H["Senior curator review"]
+    G --> H["Founder approval"]
     H --> I["Published in next release"]
 ```
 
-1. Maria creates "Central Ohio shrubs, session 3" with 140 shrubs used by 3 or more Companies in the Region, and invites two contract curators and an extension educator.
-2. Raters work blind for 90 minutes in the grid (or a shared Google Sheet).
+1. The plant curator agent creates "Central Ohio shrubs, session 3" with 140 shrubs used by 3 or more Companies in the Region, and invites four guest raters: an extension educator, an arboretum horticulturist and two designers from customer Companies.
+2. Raters work blind in the grid (or a shared Google Sheet).
 3. The facilitator view shows 23 items with a spread of 2 or more; the group discusses them (for example boxwood cultivars in shade under current blight pressure) and agrees values.
-4. Publishing creates 140 profile change requests with evidence type `rating_session` naming the raters; a senior curator approves them in one batch.
+4. Publishing creates 140 profile change requests with evidence type `rating_session` naming the raters; the founder approves them in one batch.
 
 ### 5.7 Duplicate detection and merge
 
@@ -1251,7 +1256,7 @@ flowchart TD
 ### 5.8 Regulatory change hotfix and tenant alerts
 
 1. The list watcher detects that a state's prohibited plant list page changed; a high-priority change request opens.
-2. A curator verifies the official text and enters a listing with effective date and phase-out schedule; a second curator approves.
+2. The plant curator agent verifies the official text and enters a listing with effective date and phase-out schedule; the founder approves it.
 3. A hotfix release publishes within hours; `kb.regulatory_status_changed` is emitted.
 4. Each affected Company gets an alert listing draft designs, open proposals, palettes, Price Book items and maintenance programs that include the plant in that jurisdiction, with suggested substitutes.
 5. If the listing is `enacted` with a future effective date (the common case: rules are often adopted months before the sale ban starts), `kb.regulatory_listing_enacted` is emitted as well. The notifier schedules reminders at 90 and 30 days before the effective date, and from now on every validation evaluates the planned install date rather than today (KB-RGN-10). Signed Proposals whose install falls after the effective date get an error and a "Substitute and send change order" action ([03](03-crm-sales-estimating-proposals.md)).
@@ -1260,14 +1265,14 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     participant Wt as ListWatcher
-    participant C1 as Curator
-    participant C2 as SecondCurator
+    participant C1 as CuratorAgent
+    participant C2 as Founder
     participant Rel as ReleaseBuilder
     participant Bus as EventBus
     participant T as TenantNotifier
     Wt->>C1: High-priority change request
     C1->>C1: Verify official text, enter listing
-    C1->>C2: Request second review
+    C1->>C2: Request approval
     C2-->>Rel: Approve for hotfix
     Rel->>Bus: kb.release_published and kb.regulatory_status_changed
     Bus->>T: Affected plant and jurisdiction
@@ -1298,7 +1303,7 @@ flowchart LR
 1. Miguel (`crew_lead`) is doing a spring walk-through for a warranty client with Luis (`technician`). He photographs a browned shrub in the crew app.
 2. The app segments the plant and calls plant ID; top result "*Ilex crenata*" (0.86) with the regional note "struggles in wet clay in Central Ohio".
 3. He confirms the ID, taps "Report problem", picks "dead or dying", adds a second photo of the root zone, and submits.
-4. The warranty workflow in [13](13-operations-inventory-equipment.md) opens a replacement task; the de-identified failure report goes to the Central Ohio curator queue.
+4. The warranty workflow in [13](13-operations-inventory-equipment.md) opens a replacement task; the de-identified failure report goes to the plant curator agent's Central Ohio queue.
 
 ```mermaid
 sequenceDiagram
@@ -1321,7 +1326,7 @@ sequenceDiagram
 ### 5.11 Private plant promoted to the global KB
 
 1. A designer adds "*Itea virginica* 'Little Henry'", which is missing from the KB. It resolves to the global taxon *Itea virginica*, so a private cultivar is created and inherits species traits; she overrides mature size to 2-3 ft with a nursery tag photo as citation.
-2. She clicks "Submit to Rootline". A curator verifies the cultivar, enriches it and publishes a global record.
+2. She clicks "Submit to Rootline". The plant curator agent verifies the cultivar, enriches it and publishes a global record in the next release.
 3. The private record merges into the global one; the Company's designs and Price Book items redirect automatically.
 
 ### 5.12 KB release pipeline
@@ -1331,14 +1336,15 @@ flowchart TD
     A["Approved change items since last release"] --> B["Release build: apply to staging snapshot"]
     B --> C["Validate: schema, ranges, legal overlays, broken refs"]
     C --> D{"Validation passes?"}
-    D -- "No" --> D1["Block release and alert engineer"]
+    D -- "No" --> D1["Block release and alert engineering agent"]
     D -- "Yes" --> E["Compile plant documents and Region profiles"]
     E --> F["Rebuild facet tables and blue-green search index"]
     F --> G["Re-embed changed documents"]
     G --> H["Run eval smoke tests: region compliance, search golden set"]
     H --> I{"Gates pass?"}
     I -- "No" --> D1
-    I -- "Yes" --> J["Switch current_release pointer"]
+    I -- "Yes" --> I2["Founder approves release from changelog"]
+    I2 --> J["Switch current_release pointer"]
     J --> K["Emit kb.release_published and invalidate caches"]
     K --> L["Tenant changelog digest and offline bundle deltas"]
 ```
@@ -1362,7 +1368,7 @@ flowchart TD
 | 9 | Regulatory listings manager and list watchers | Operator console | `platform_curator` |
 | 10 | Media library, license registry, takedowns | Operator console | `platform_curator`, `platform_owner` |
 | 11 | Quality dashboard | Operator console | `platform_curator`, `platform_owner` |
-| 12 | Release manager and changelog | Operator console | senior `platform_curator`, `platform_engineer` |
+| 12 | Release manager and changelog | Operator console | `platform_curator` (requests), `platform_owner` (approves), `platform_engineer` |
 | 13 | Palette editor with health check | Operator console and Company app | `platform_curator`, `designer`, `owner` |
 | 14 | Plant library (tenant lens) `/plants` | Company web app | `designer`, `estimator`, `owner` |
 | 15 | Plant detail (tenant lens) with Region profile, availability, Company notes | Company web app | All Company roles |
@@ -1379,7 +1385,7 @@ flowchart TD
 
 ```text
 +----------------------------------------------------------------------------------------------------+
-| ROOTLINE CONSOLE > Plant KB > Review queue                       [Cmd-K]   Maria O. (senior)       |
+| ROOTLINE CONSOLE > Plant KB > Review queue                       [Cmd-K]   curator agent           |
 +----------------------------------------------------------------------------------------------------+
 | Filters: Region [Lake Erie Shore v]  Group [Shrubs v]  Author [AI v]  Conf [>=0.7 v]  Crit. [any]  |
 | Queue: 214 items   Eligible for bulk accept: 96   My SLA breaches: 0          [Shift+A bulk accept]|
@@ -1393,7 +1399,7 @@ flowchart TD
 |   ...                        |  salt_tol_spray    (empty)        high            0.95   T1 x3      |
 |                              |  salt_tol_soil     moderate       high            0.94   T1 x2      |
 | * = critical trait           |  deer_resistance * C              B               0.71   T1 vs T1 ! |
-|   (needs 2nd reviewer)       |  soil_ph_max       7.0            8.0             0.82   T1, T3     |
+|   (founder approves)         |  soil_ph_max       7.0            8.0             0.82   T1, T3     |
 |                              +---------------------------------------------------------------------+
 |                              |  SOURCE SNIPPETS for deer_resistance                                |
 |                              |  [1] Ext. list (OH): "...rarely damaged by deer..." p.4     open    |
@@ -1401,7 +1407,7 @@ flowchart TD
 |                              |  Note: sources from different Regions disagree -> consider Region   |
 |                              |  profile override instead of global change.                         |
 |                              +---------------------------------------------------------------------+
-|                              | [A] Accept [E] Edit+accept [R] Reject [S] 2nd opinion               |
+|                              | [A] Accept [E] Edit+accept [R] Reject [S] Escalate to founder       |
 |                              | [P] Propose as Lake Erie Shore override   J/K next/prev  ? help     |
 +------------------------------+---------------------------------------------------------------------+
 ```
@@ -1416,8 +1422,8 @@ flowchart TD
 |       [Commercial] [Care] [History] [Duplicates 0]                                                 |
 +----------------------------------------------------------------------------------------------------+
 | TRAITS (inherited values in grey)                                          [Propose change]        |
-|  mature_height     6-8 ft   (183-244 cm)   override   src: T1 extension   cur: M.O.  Mar 2027  (i) |
-|  mature_spread     6-8 ft                  override   src: T1 extension   cur: M.O.  Mar 2027  (i) |
+|  mature_height     6-8 ft   (183-244 cm)   override   src: T1 extension   cur: agent Mar 2027  (i) |
+|  mature_spread     6-8 ft                  override   src: T1 extension   cur: agent Mar 2027  (i) |
 |  form              upright, rounded        override   src: curator                             (i) |
 |  blooms_on         new wood                inherited from species                              (i) |
 |  bloom_months      Jul-Sep  (ref: Great Lakes)  override   src: T1 x2                          (i) |
@@ -1427,8 +1433,8 @@ flowchart TD
 |  toxicity *        dogs: mild  cats: mild  humans: mild   src: T1 x2       2 reviewers         (i) |
 +----------------------------------------------------------------------------------------------------+
 | (i) PROVENANCE: bloom_months                                                                       |
-|  v3  Jul-Sep   curator_entered  M. Ortiz   2027-03-02  rel 2027.03.03-1   evidence: 2 citations    |
-|  v2  Jul-Aug   ai_extracted     kb.enrich@v9  conf 0.78  2026-11-20  accepted by J. Lee            |
+|  v3  Jul-Sep   curator_entered  cur. agent 2027-03-02  rel 2027.03.03-1   evidence: 2 citations    |
+|  v2  Jul-Aug   ai_extracted     kb.enrich@v9  conf 0.78  2026-11-20  accepted by curator agent     |
 |  v1  (empty)   imported         USDA PLANTS import  2026-10-04                                     |
 +----------------------------------------------------------------------------------------------------+
 | REGIONS  Central Ohio 5/5  "Top performer; tolerates clay if not waterlogged"  rev Mar 2027        |
@@ -1537,9 +1543,9 @@ Tiles map to KB-CUR-09; console layout and staleness rules are shared with [19](
 ```text
 +----------------------------------------------------------------------------------------------------+
 | ROOTLINE CONSOLE > Plant KB > Quality                Release 2027.04.12-1 (current)   [Export CSV] |
-| Scope: Region [All Wave 1 v]   Group [All v]   Compare to: [release 2027.03.01-1 v]                |
+| Scope: Region [Great Lakes v]  Group [All v]   Compare to: [release 2027.03.01-1 v]                |
 +----------------------------------------------------------------------------------------------------+
-| COMPLETENESS (published plants)            | REGION COVERAGE (Wave 1)                              |
+| COMPLETENESS (published plants)            | REGION COVERAGE (Great Lakes)                         |
 |  Gold   1,284  ########........   (+61)    |  Central Ohio        EXCELLENT  812 rated  stale 2%   |
 |  Silver 1,402  #########.......   (+18)    |  NE Ohio             EXCELLENT  644 rated  stale 3%   |
 |  Bronze   251  ##..............   (-54)    |  SE Michigan/Toledo  GOOD  ->   588 rated  (12 to go) |
@@ -1549,8 +1555,8 @@ Tiles map to KB-CUR-09; console layout and staleness rules are shared with [19](
 +--------------------------------------------+-------------------------------------------------------+
 | CRITICAL-TRAIT INTEGRITY                   | LEGAL AND LICENSING                                   |
 |  Critical values cited        100.0%  OK   |  Jurisdictions with complete lists  64/64  OK         |
-|  Dual-reviewed                 99.7%  (!)  |  Listings past re-verify date         3   [Open]      |
-|    -> 72 values awaiting 2nd reviewer      |  Enacted bans effective < 180 days     2   [Alerts]   |
+|  Founder-approved              99.7%  (!)  |  Listings past re-verify date         3   [Open]      |
+|    -> 72 values awaiting the founder       |  Enacted bans effective < 180 days     2   [Alerts]   |
 |  Open conflicts (selected traits)   0.6%   |  Licenses expiring < 60 days           4   [Open]     |
 |  Release-blocking anomalies          0     |  Takedowns open > 12 h                 0   OK         |
 +--------------------------------------------+-------------------------------------------------------+
@@ -1579,7 +1585,7 @@ Tiles map to KB-CUR-09; console layout and staleness rules are shared with [19](
 |                               | Conditions: none.  Bloom here: Jul-Sep (+0 wk vs reference)        |
 | AT A GLANCE                   +--------------------------------------------------------------------+
 |  6-8 ft x 6-8 ft  (size M-L)  | OUR COMPANY                                                        |
-|  Full sun to part sun         |  In palette: "Cedar & Stone Core" (flowering shrub)                |
+|  Full sun to part sun         |  In palette: "Greenleaf Core" (flowering shrub)                    |
 |  Zones 3a-8b  (site 6b OK)    |  Our rating: 5/5   Warranty: 1 year standard                       |
 |  Deer C  | Rabbit: moderate   |  Internal note: "Cut back to 18 in each March; clients love it."   |
 |  Toxic: dogs, cats (mild)     |  Price Book: #3 $46.00 | #5 $68.00 | #7 $96.00  (costs hidden)     |
@@ -1601,7 +1607,7 @@ Tiles map to KB-CUR-09; console layout and staleness rules are shared with [19](
 
 ```text
 +--------------------------------------+
-| Cedar & Stone   My yard > Plants     |
+| Greenleaf       My yard > Plants     |
 +--------------------------------------+
 | Front bed (installed May 14, 2027)   |
 | 12 plants, 5 kinds        [Map view] |
@@ -2177,8 +2183,8 @@ erDiagram
 
 - `plant.code` and `plant.slug` are unique and immutable; `merged_into_id` is set only when `status = merged`.
 - At most one `plant_trait_value` per (`plant_id`, `trait_key`, scope) has `is_selected = true` (partial unique index).
-- `plant_region_profile` is unique per (`plant_id`, `region_id`); `rating` is 1-5 or null; `do_not_use = true` requires a reason code and a senior reviewer.
-- A `change_item` with `is_critical = true` cannot reach `approved` unless `reviewer1_id` and `reviewer2_id` are distinct and neither is the author.
+- `plant_region_profile` is unique per (`plant_id`, `region_id`); `rating` is 1-5 or null; `do_not_use = true` requires a reason code and the founder's approval.
+- A `change_item` with `is_critical = true` cannot reach `approved` unless `reviewer1_id` (normally the plant curator agent) is not the author and `reviewer2_id` holds `platform_owner` (the founder's approval). When the founder is the author, the approval also needs step-up authentication and a written reason, both kept in the audit log.
 - `regulatory_listing` on a species applies to descendants unless an exemption lists the descendant `plant_id`.
 - `regulatory_listing.sale_prohibited_from` is required when `status` is `enacted` or `in_effect` and `category = prohibited`; `planting_prohibited_from` defaults to null (sale-only rule), and validations treat a supply-and-install Proposal as a sale (KB-RGN-10). A listing cannot move to `in_effect` before `sale_prohibited_from`; a nightly job advances status on the effective date and emits `kb.regulatory_status_changed`.
 - Tenant tables carry `tenant_id` and RLS policies; global tables are read-only to the application role (`rootline_app`) per [20](20-architecture-security.md).
@@ -2195,7 +2201,7 @@ erDiagram
 | WCVP/POWO and WFO exports | Accepted names, synonyms, distributions | Bulk download, diffed into change requests | Monthly |
 | GBIF API | Taxon keys, occurrence sanity checks | REST | On demand, cached |
 | USDA PLANTS, ITIS | Symbols, native status, noxious lists, TSNs | Bulk download | Quarterly |
-| Official regulatory sources (APHIS Federal Noxious Weed List, CFIA, state and provincial rules, municipal codes in the beachhead jurisdictions: OH, MI, IN, IL and WI, plus ON at) | Legal listings and rule packs | List watchers (content hash) plus curator verification | Weekly hash check; quarterly human re-verification |
+| Official regulatory sources (APHIS Federal Noxious Weed List, CFIA, state and provincial rules, municipal codes, starting with OH, MI, IN, IL, WI and ON, plus California's water and fire rules) | Legal listings and rule packs | List watchers (content hash) plus verification by the plant curator agent and the founder's approval | Weekly hash check; quarterly re-verification |
 | Hardiness maps (USDA, NRCan), EPA and CEC ecoregions, Census TIGER, Statistics Canada boundaries | Region layers | GIS files loaded to PostGIS | On new edition |
 | NOAA and ECCC normals, NRCS SSURGO, USFS wildfire risk | Climate summaries, soil hints, fire defaults | GIS and tabular loads | Annual or on new edition |
 | Google Sheets API | Curator imports and rating sessions | OAuth, read-only scope per sheet | On demand |
@@ -2222,7 +2228,7 @@ All events go through the transactional outbox ([20](20-architecture-security.md
 | `kb.property_region_changed` | tenant id, property id, old and new Region and zone | CRM, Design Studio, portal care guides |
 | `kb.profile_updated` | plant id, region id, old and new rating | AI palette caches, SEO pages, Company alerts if a palette plant drops below 3 |
 | `kb.media_taken_down` | asset id | CDN purge, proposal PDF regeneration queue, portal |
-| `kb.change_request_submitted` | origin, priority | Curator notifications |
+| `kb.change_request_submitted` | origin, priority | Plant curator agent queue; founder approval inbox for critical and legal items |
 | `kb.tenant_plant_submitted` | tenant id, private plant id | Curator queue |
 | `kb.nursery_listing_updated` | nursery id, plants | Availability aggregates, picker chips |
 
@@ -2243,7 +2249,7 @@ All events go through the transactional outbox ([20](20-architecture-security.md
 
 - Console (operator) endpoints are internal and audited: imports, change requests, reviews, releases, Regions, listings, media, sessions. Every write records actor, reason and diff ([19](19-platform-admin-portal.md)).
 - Company app endpoints are thin wrappers over the module API (KB-API-02) plus tenant overlay CRUD (`/plants/{id}/overlay`, `/palettes`, `/private-plants`, `/plants/{id}/suggestions`, `/plants/{id}/failure-reports`).
-- partner webhooks: `plant.updated`, `region_profile.updated`, `regulatory_status.changed` for API licensees, signed with HMAC and retried with exponential backoff for 24 hours.
+- Partner webhooks: `plant.updated`, `region_profile.updated`, `regulatory_status.changed` for API licensees, signed with HMAC and retried with exponential backoff for 24 hours.
 
 ---
 
@@ -2260,7 +2266,7 @@ Legend: F full, R read, W write (draft), A approve, X execute, - none.
 | Read KB, Regions, profiles | F | R (scoped) | R | R | R | - | R |
 | Draft plant and profile changes | F | W (scoped Regions and groups) | W | W | - | - | - |
 | Approve non-critical changes | A | - | A (not own) | A (not own) | - | - | - |
-| Second review of critical traits and legal listings | A | - | - | A (not own) | - | - | - |
+| Approve critical traits and legal listings | A | - | - | A (not own) | - | - | - |
 | Publish releases, hotfix releases | X | - | - | X | - | - | Operates the pipeline; no publish decision ([02](02-personas-roles-permissions.md)) |
 | Region definitions and republish | F | - | W | A | - | - | - |
 | Regulatory listings | F | W | W | A | R | - | - |
@@ -2269,14 +2275,16 @@ Legend: F full, R read, W write (draft), A approve, X execute, - none.
 | Media and license registry | F | W | W | A | R | R (license costs) | - |
 | Takedown (24-hour) | X | - | X | X | X (request) | - | X |
 | Run imports | X | - | X | X | - | - | X |
-| Run enrichment (seed batches at MVP) | X | - | X  | X  | - | - | X |
+| Run enrichment | X | - | X | X | - | - | X |
 | Facilitate rating sessions | X | Rate only | X | X | - | - | - |
 | Merge duplicates | A | - | W | A | - | - | - |
 | Curator scopes, COI registry | F | R own | R own | R | - | - | - |
 | KB analytics (aggregated, k of 10 or more) | R | R | R | R | R | - | R |
 | Tenant business data | Per [02](02-personas-roles-permissions.md) consented access only | - | - | - | Per [02](02-personas-roles-permissions.md) | - | Per [02](02-personas-roles-permissions.md) |
 
-Curators never see tenant business data (Clients, invoices); failure reports and search logs reach them de-identified ([02](02-personas-roles-permissions.md)).
+The plant curator agent holds the `curator` level in every scope. The senior column's approvals (critical traits, legal listings, releases, Regions, rule packs, media licenses, merges) are exercised by the founder as `platform_owner` on the agent's request, and the founder's own privileged actions need step-up authentication, a written reason and the audit log. A person hired later could hold any level without a product change.
+
+`platform_curator` holders, including the plant curator agent, never see tenant business data (Clients, invoices); failure reports and search logs reach them de-identified ([02](02-personas-roles-permissions.md)).
 
 ### 9.2 Company roles and Clients
 
@@ -2309,33 +2317,33 @@ Notes: "P" defaults are set in the role templates in [02](02-personas-roles-perm
 
 ## 10. AI opportunities in this module
 
-AI makes curation at scale possible, but in the KB it **drafts and assists; humans publish**. All calls go through the AI Gateway with task routing, metering, evals and prompt versioning ([17](17-ai-copilot-automation.md), [19](19-platform-admin-portal.md)). Curation-side AI (enrichment, profile and palette drafting, media QA, regulatory and rule-pack drafting) is a platform cost; tenant-facing AI actions use AI credits only where the [22](22-business-model-pricing-gtm.md) rate card lists them (for example Copilot plant answers at 1 credit and plant palette recommendations at 3 credits).
+AI makes curation at scale possible. In the KB, drafting models **draft and assist; the plant curator agent reviews, and the founder approves** critical traits, legal listings, rule packs, merges and releases. All calls go through the AI Gateway with task routing, metering, evals and prompt versioning ([17](17-ai-copilot-automation.md), [19](19-platform-admin-portal.md)). Curation-side AI (enrichment, profile and palette drafting, media QA, regulatory and rule-pack drafting) is a platform cost; tenant-facing AI actions use AI credits only where the [22](22-business-model-pricing-gtm.md) rate card lists them (for example Copilot plant answers at 1 credit and plant palette recommendations at 3 credits).
 
 | # | Opportunity | What it does | Guardrails |
 |---|---|---|---|
-| 1 | Trait enrichment agent | Drafts trait values with verified citations and confidence (KB-CUR-03), for the seed and then continuously | Allowlisted sources; snippet verification; critical traits need two humans; bulk accept only for eligible items |
-| 2 | Region profile drafting | Drafts ratings, conditions and notes from evidence: trials, extension lists, warranty aggregates, failure reports (agent A26 in [17](17-ai-copilot-automation.md)) | Draft only; evidence attached; senior approval for `do_not_use` |
+| 1 | Trait enrichment agent | Drafts trait values with verified citations and confidence (KB-CUR-03), for the seed and then continuously | Allowlisted sources; snippet verification; critical traits need the plant curator agent's review and the founder's approval; bulk accept only for eligible items |
+| 2 | Region profile drafting | Drafts ratings, conditions and notes from evidence: trials, extension lists, warranty aggregates, failure reports (agent A26 in [17](17-ai-copilot-automation.md)) | Draft only; evidence attached; founder approval for `do_not_use` |
 | 3 | Name and size resolution | Resolves messy names ("Hyd pan Lime #5", "Spirea Goldflame") to KB plants and size specs for imports, nursery lists, invoices and OCR | Constrained to KB candidates; never creates canonical plants |
 | 4 | Natural-language search parsing | Turns questions into filters and preferences with editable chips (KB-SRCH-03) | Hard constraints always shown; region and legal filters cannot be dropped silently |
 | 5 | Plant ID by photo | Identifies plants with a regional prior, online and on-device, and abstains when unsure (KB-SRCH-04) | Calibrated confidence; abstention below 0.5; never auto-files warranty decisions |
 | 6 | Pest and disease ID | Suggests likely problems from photos plus host plant and Region | "Likely", never a diagnosis; routes to PHC workflows; no product prescriptions |
-| 7 | Descriptions and care guides | Writes original descriptions and personalized care guides in English, Spanish and later French-Canadian from selected values | Copy-overlap check; only selected KB values as facts; curator spot checks |
-| 8 | Media QA | Taxon check, tagging, quality scoring, privacy blur, watermark detection | Curator confirms hero images; rejections logged |
-| 9 | Duplicate and taxonomy triage | Finds duplicates and explains backbone name changes for curators | Human merge only |
+| 7 | Descriptions and care guides | Writes original descriptions and personalized care guides in English, Spanish and French-Canadian from selected values | Copy-overlap check; only selected KB values as facts; plant curator agent spot checks |
+| 8 | Media QA | Taxon check, tagging, quality scoring, privacy blur, watermark detection | Plant curator agent confirms hero images; rejections logged |
+| 9 | Duplicate and taxonomy triage | Finds duplicates and explains backbone name changes for the plant curator agent | Merges only through KB-CUR-08, with the founder's approval |
 | 10 | Conflict explainer | Summarizes why sources disagree ("NJ list reflects higher deer pressure") and proposes a regional override instead of a global change | Suggestion only |
 | 11 | Anomaly detection | Flags impossible or suspicious values (cultivar taller than species maximum, zone 3 palm, pH 11) | Blocks release on hard anomalies |
-| 12 | Palette drafting | Drafts palettes for a new Region from profiles and fills role and bloom gaps | Health check must pass; curator publishes |
+| 12 | Palette drafting | Drafts palettes for a new Region from profiles and fills role and bloom gaps | Health check must pass; publishes in a release the founder approves |
 | 13 | Substitution narratives | Explains why a substitute fits ("same form and size, deer A, in stock") | Built only from KB values |
-| 14 | Regulatory watcher summaries | Summarizes what changed on an official list and drafts listings | Two-curator approval; citation to official text |
+| 14 | Regulatory watcher summaries | Summarizes what changed on an official list and drafts listings | Plant curator agent verifies, founder approves; citation to official text |
 | 15 | HOA and municipal list parsing | Turns approved or prohibited plant lists into client palettes | Unmatched names surfaced; Company confirms |
 | 16 | Copilot plant answers | "Which maintenance clients have boxwood in shade?", "Give me a deer-proof screen for the Johnson back line" | Grounded in KB and tenant data with citations; labels unverified knowledge ([17](17-ai-copilot-automation.md)) |
-| 17 | Phenology learning | Learns bloom timing per Region from dated crew and client photos | Aggregated; curator approves shifts |
-| 18 | Region split suggestions | Clusters outcomes (ratings, failures, climate) to suggest new curated Region boundaries | Operator decides |
+| 17 | Phenology learning | Learns bloom timing per Region from dated crew and client photos | Aggregated; plant curator agent approves shifts |
+| 18 | Region split suggestions | Clusters outcomes (ratings, failures, climate) to suggest new curated Region boundaries | The founder decides |
 | 19 | Plan-set plant schedule resolution | Reads a GC plan set's plant schedule (botanical name, size, quantity) and resolves each line to a KB Plant and size spec, flagging Region rating 2 or lower, prohibited on the install date, unavailable within 50 miles, and offering substitutes for an alternates sheet ([03](03-crm-sales-estimating-proposals.md) BID-09) | Sheet and page citations per line; unmatched lines go to the "Unpriced scope" tray; never silently substitutes a specified plant |
 | 20 | Invasive plants on site photos | During site assessments and maintenance Visits, flags likely listed or invasive plants already on the Property (for example bush honeysuckle, Callery pear, burning bush) and drafts a removal-and-replace Opportunity with "plant this instead" alternatives (section 13) | Shown to Company staff only; confidence threshold 0.8; a person confirms before anything reaches the Client |
-| 21 | Rule-pack drafting | Turns official water, turf or fire regulation text into a draft rule pack (KB-RGN-11) with clause citations | Two-curator approval; counsel review for new pack kinds |
+| 21 | Rule-pack drafting | Turns official water, turf or fire regulation text into a draft rule pack (KB-RGN-11) with clause citations | Plant curator agent verifies; the founder approves each pack before it publishes (OD-60); counsel review for new pack kinds |
 
-**Evaluation sets** (owned with AI Ops in [19](19-platform-admin-portal.md)): 300 curator-verified plants for enrichment; 500 plant-recommendation queries with Region-correct answers (99% gate); 400 natural-language search queries with labeled relevant results; a regional plant-ID photo set per Wave 1 Region (Wave 2 Regions added as they launch); 200 nursery list lines with known matches.
+**Evaluation sets** (owned with AI Ops in [19](19-platform-admin-portal.md)): 300 curator-verified plants for enrichment; 500 plant-recommendation queries with Region-correct answers (99% gate); 400 natural-language search queries with labeled relevant results; a regional plant-ID photo set per curated Region, starting with the six Great Lakes Regions (each further Region adds its set as it is curated); 200 nursery list lines with known matches.
 
 ---
 
@@ -2343,12 +2351,12 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 
 | Area | Edge case or risk | Handling |
 |---|---|---|
-| Taxonomy | Names change (Russian sage to *Salvia yangii*); backbone itself unsettled for some conifers | Synonyms forever searchable; display policy with `trade_display_until`; senior curator can pin a displayed name with rationale (KB-TAX-03) |
+| Taxonomy | Names change (Russian sage to *Salvia yangii*); backbone itself unsettled for some conifers | Synonyms forever searchable; display policy with `trade_display_until`; the founder can pin a displayed name with rationale, on the plant curator agent's request (KB-TAX-03) |
 | Names | Trade name vs cultivar confusion (Knock Out® vs 'Radrazz'); one common name for different plants by Region | Separate fields; Region-scoped common names; disambiguation chips in search |
 | Legal | Cultivar-level exemptions (seed-sterile cultivars allowed where the species is regulated) | Exemptions on listings; legal checks evaluate the exact cultivar |
 | Legal | A plant becomes prohibited after a proposal is signed but before install | Effective-date-aware checks evaluate the install date, not today (KB-RGN-10); alerts at enactment, 90 and 30 days before the effective date; the Company decides with the Client; proposals include a template clause allowing substitution of equal or better plants ([03](03-crm-sales-estimating-proposals.md)) |
 | Legal | An install Visit slips past a ban's effective date (rain week in late March, ban effective April 1) | Scheduling slip guard blocks the reschedule until the plant is swapped (KB-RGN-10); substitutes offered at the same size class and price band |
-| Legal | An HOA list requires a plant the state now prohibits, or bans water-wise plantings a state statute protects | Law beats HOA rules; conflict message on the client palette; statute note shown only where a curator has cited it; never legal advice (KB-RGN-11) |
+| Legal | An HOA list requires a plant the state now prohibits, or bans water-wise plantings a state statute protects | Law beats HOA rules; conflict message on the client palette; statute note shown only where the plant curator agent has cited it; never legal advice (KB-RGN-11) |
 | Legal | Multi-year phased master plan (phase 3 in 2029) | Each phase is checked against its own target date; later-phase errors do not block signing earlier phases |
 | Legal | A plant already installed becomes listed | Many listings restrict sale and planting rather than existing plants (verify per jurisdiction); Rootline informs and can suggest a removal or replacement opportunity, never asserts a legal obligation |
 | Legal | Private plants used to evade bans | Legal checks run on the resolved taxon (KB-TEN-03) |
@@ -2362,11 +2370,11 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 | Licensing | AI training rights on photos | Separate `ai_training` flag; default off except owned assets |
 | Licensing | Share-alike (CC BY-SA, ODbL) content leaks into compiled documents or the Plant API | Bounded tables; release validation fails if a compiled document or API field references a share-alike source (KB-SRC-02 point 6) |
 | Trademarks | A brand objects to how its trade name appears | Descriptive use with the brand's required symbol; no implied endorsement; brand contact and correction path in the license registry |
-| Data quality | Curator error on a critical trait | Dual review; audit samples (300 plants per quarter); rollback to the previous release in minutes |
+| Data quality | Curation error on a critical trait | Plant curator agent review plus founder approval; audit samples (300 plants per quarter); rollback to the previous release in minutes |
 | Data quality | Poisoned or low-quality tenant suggestions | Never auto-applied; de-identified; reputation weighting |
 | Media | Misidentified photos | Taxon check at ingest; "report wrong photo" link on every photo |
 | Privacy | Site Context is tied to a Client's address (personal information under CCPA and PIPEDA) | Stored as tenant data with RLS in the tenant's home region; Canadian tenants' Site Context stays in the Canadian cell; the global KB holds no Client data ([20](20-architecture-security.md)) |
-| Privacy | Failure reports and photos from client properties | De-identification and blur pipeline before curator access |
+| Privacy | Failure reports and photos from client properties | De-identification and blur pipeline before the plant curator agent sees them |
 | Offline | Crew devices hold an old release | Release id shown in the app; legal hotfixes force a priority bundle sync |
 | Scale | 10,000 plants x 100 Regions = 1M potential profiles | Profiles exist only where authored; inheritance resolved at compile time; compiled documents only for Regions with profiles |
 | Commercial | Brand or nursery pressure on ratings | Editorial independence policy; conflict-of-interest registry; no paid placement (KB-CUR-13) |
@@ -2382,8 +2390,8 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 
 | Category | Metric | Definition | Target |
 |---|---|---|---|
-| Coverage | Plants at Silver or better | Count of published plants with completeness of 75 or more | 3,000 at; 6,000 at |
-| Coverage | Region coverage tier | Regions at Excellent, Good, Basic | All 6 Wave 1 Great Lakes Regions Excellent at; Golden Horseshoe Excellent when Canada ships at; other Wave 2 Regions Good or better at |
+| Coverage | Plants at Silver or better | Count of published plants with completeness of 75 or more | 3,000 in the seed; 6,000 as coverage grows |
+| Coverage | Region coverage tier | Regions at Excellent, Good, Basic | All six Great Lakes Regions Excellent; Golden Horseshoe Excellent as the first Canadian Region; Regions beside the macro-region Good or better through inheritance |
 | Coverage | Profile coverage of used plants | Share of plant placements in a Region that have a published profile there | 95% or more in Excellent Regions |
 | Quality | Audit error rate | Errors found per 100 audited values (quarterly sample of 300 plants) | Under 2 non-critical; 0 critical |
 | Quality | Unresolved conflicts | Open conflicting candidates on selected traits | Under 1% of values |
@@ -2392,21 +2400,21 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 | Legal | Prohibited at install | Installed plants (from as-built) that were legally prohibited in the jurisdiction on the install date | 0 |
 | Legal | Ban lead time | Days between the first tenant alert for an enacted listing and its effective date, for listings published at least 90 days ahead | 90 days or more (median) |
 | Legal | Listing re-verification | Share of listings and rule packs verified within their quarterly window | 100% for prohibited and restricted; 95% for advisory |
-| Curation | Curator throughput | Change items resolved per curator-hour | 2x baseline with AI enrichment |
+| Curation | Curation throughput | Change items resolved per day, and age of items waiting for the founder's approval | Rising as AI enrichment improves; legal hotfixes never wait in the approval queue |
 | Curation | AI acceptance rate | Share of AI suggestions accepted without edit, by trait group and prompt version | 80% or more non-critical (target) |
 | Curation | Hallucinated citations | AI suggestions whose locator or snippet fails verification | 0 published; under 1% generated |
 | Search | Zero-result rate | Searches with no results after relaxation | Under 3% |
 | Search | Search-to-add rate | Searches ending in add to design, palette or estimate | 40% or more |
 | Search | Latency | p95 faceted and natural-language | Under 300 ms and under 1.5 s |
-| AI fidelity | Region compliance | AI-recommended or AI-placed plants valid for Region (rating 3 or more, legal, hardy) | 99% or more (release gate) |
+| AI fidelity | Region compliance | AI-recommended or AI-placed plants valid for Region (rating 3 or more, legal, hardy) | 99% or more (blocks a KB release below it) |
 | Plant ID | Accuracy | Top-1 and top-5 on regional test sets | 80% or more and 95% or more |
 | Outcomes | Warranty replacement rate by rating | Replacement rate for plants rated 4-5 vs 2-3 (k of 10 or more) | Rated 4-5 at least 50% lower than rated 2-3 (validates the ratings) |
 | Outcomes | Warranty cost share | `plant_warranty_cost_pct` from [18](18-reporting-analytics.md) for Companies using Region-validated designs vs not | Lower for validated designs |
-| Media | Licensed photo coverage | Palette plants with complete seasonal sets | 95% or more in launch (Wave 1) Regions |
+| Media | Licensed photo coverage | Palette plants with complete seasonal sets | 95% or more in every Region at Excellent |
 | Media | License incidents | Unlicensed assets served; takedowns over 24 hours | 0 |
-| Commercial | Availability coverage | Specified plants with availability from at least one vendor within 50 miles | 70% or more by |
+| Commercial | Availability coverage | Specified plants with availability from at least one vendor within 50 miles | 70% or more in the Great Lakes Regions |
 | Commercial | Nursery match rate | Nursery list lines auto-matched to plant and size | 90% or more after mapping memory |
-| Growth | SEO plant page traffic and leads | Organic sessions and routed leads from plant pages | Tracked from; target set with [22](22-business-model-pricing-gtm.md) |
+| Growth | SEO plant page traffic and leads | Organic sessions and routed leads from plant pages | Tracked; target set with [22](22-business-model-pricing-gtm.md) and the marketing agent ([26](26-agent-led-marketing-playbook.md)) |
 | Adoption | Company palette adoption | Companies with a palette of 50 or more plants within 60 days | 60% or more of design-build Companies |
 | Evidence | Regional evidence depth | Share of published 5/5 ratings in Excellent Regions with 2 or more local evidence items | 100% (publishing rule); audited quarterly |
 | Data business | Plant API | Active licensees, calls per month, revenue, share of responses with zero `restricted` fields leaked | Targets set with [22](22-business-model-pricing-gtm.md); leakage 0 |
@@ -2415,14 +2423,14 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 
 ## 13. Beyond the brief: extra ideas
 
-1. **Climate-forward ratings ("Will it still thrive in 2050?").** Overlay projected hardiness and heat conditions for mid-century (from published downscaled climate projections; source to select) on each Region profile. Designers of 50-year shade trees see "Zone fit today: good. Projected 2050: marginal heat stress." Nobody in the trade shows this, and commercial clients increasingly ask for it. The full concept is specified as moonshot [M-11, Climate-adaptive planting, in 23](23-innovation-moonshots.md#m-11-climate-adaptive-planting); the KB supplies the per-Region projections and curator judgments it needs.
+1. **Climate-forward ratings ("Will it still thrive in 2050?").** Overlay projected hardiness and heat conditions for mid-century (from published downscaled climate projections; source to select) on each Region profile. Designers of 50-year shade trees see "Zone fit today: good. Projected 2050: marginal heat stress." Nobody in the trade shows this, and commercial clients increasingly ask for it. The full concept is specified in [M-11, Climate-adaptive planting, in 23](23-innovation-moonshots.md#m-11-climate-adaptive-planting); the KB supplies the per-Region projections and curator judgments it needs.
 2. **The Rootline Plant Performance Index.** An annual, publishable report of survival and warranty rates by plant and Region from real installs (aggregated, k of 10 or more). It becomes a press, SEO and trade-show asset ("The 25 most reliable shrubs in Central Ohio, based on 41,000 installed plants") and feeds the ratings.
 3. **Habitat and sustainability score per design.** Native share, keystone and host-plant count, pollinator bloom continuity by month, estimated irrigation demand from plant factors, and lawn-to-bed conversion. Commercial clients use it in sustainability reporting ([18](18-reporting-analytics.md)); homeowners can use it toward programs such as wildlife-habitat certifications (verify each program's criteria).
 4. **Rebate and incentive finder.** Match designs to local turf-replacement, rain-garden and native-planting incentives where water utilities or municipalities offer them, using WUCOLS and plant factors (program data curated per Region; verify each program).
 5. **Plant passports.** A QR tag or a portal link per installed plant (from the as-built) with its care calendar, warranty status and "report a problem" button. Brand nursery tags with GTINs can be scanned at install to log the exact cultivar.
 6. **"What's blooming now" Region feed.** Weekly per-Region list of plants in bloom (from profiles plus crew photos) for tenant social posts, newsletters and upsell campaigns ([16](16-marketing-growth-communications.md)).
 7. **Safe-yard design modes.** One toggle for "dogs and cats", "toddlers", "allergy-sensitive" or "horse property" that filters palettes and adds client-facing explanations.
-8. **Living trials network.** Partner with design-partner Companies, nurseries and universities to run standardized trial plots per Region, with crew-app phenology and survival logging. Rootline becomes a source of original regional evidence, not just a compiler.
+8. **Living trials network.** Partner with customer Companies, nurseries and universities to run standardized trial plots per Region, with crew-app phenology and survival logging. Rootline becomes a source of original regional evidence, not just a compiler.
 9. **Shortage radar and substitution planning.** Watch availability trends across Nursery Connect vendors and warn designers in January that a plant specified in 60 spring installs is getting scarce, with pre-approved substitutes.
 10. **Municipal and HOA ordinance packs.** Curated packs of street-tree lists, parking-lot landscaping rules and prohibited species for major municipalities, sold as an add-on for commercial bid work.
 11. **"Verified by a local expert" badges and a curator marketplace.** Regional horticulturists (including tenant designers) earn bounties for filling gaps and get public credit on profiles.
@@ -2431,8 +2439,8 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 14. **Plant "family tree" explorer.** An embedding map of similar plants for inspiration and substitution, browsable by designers and on public pages.
 15. **Grower demand forecasts.** Anonymized, aggregated "what contractors will specify next spring" data for growers, one of the data products in [22](22-business-model-pricing-gtm.md).
 16. **Digital-twin plant health.** Connect installed-plant registries with drone or satellite vegetation indices and soil moisture sensors to predict failures before the client notices ([23](23-innovation-moonshots.md)).
-17. **Invasive-removal opportunity finder.** Every site assessment and maintenance Visit is a survey. When plant ID (or a crew tag) spots a listed or invasive plant already on a Property (bush honeysuckle, Callery pear, burning bush, buckthorn), Rootline drafts a CRM Opportunity: "Remove 3 Callery pears (est. 14-18 in DBH) and replace with 'plant this instead' natives", priced from the Company's removal and planting assemblies ([03](03-crm-sales-estimating-proposals.md)). Where a state or city runs a swap or bounty program for a listed tree, curators attach it to the listing so the proposal can mention it (verify each program). Compliance turns into recurring enhancement revenue, and the Company becomes the neighborhood's invasive-removal expert.
-18. **"Right tree, right place" utility clearance check.** The Design Studio already has the parcel, the house footprint and aerial imagery ([10](10-design-studio.md)). Add an overhead-line layer (drawn by the designer or detected from imagery) and a setback rule: a tree whose `mature_height` (Region-overridden) exceeds the clearance under a line, or whose `infrastructure_risk` setback crosses a sewer lateral or foundation, gets a warning, with "small tree under wires" alternatives from a Region palette. Utilities and municipalities publish such lists; curators load them as palettes with citations. This prevents the 20-year-old maple that the utility tops into a "V".
+17. **Invasive-removal opportunity finder.** Every site assessment and maintenance Visit is a survey. When plant ID (or a crew tag) spots a listed or invasive plant already on a Property (bush honeysuckle, Callery pear, burning bush, buckthorn), Rootline drafts a CRM Opportunity: "Remove 3 Callery pears (est. 14-18 in DBH) and replace with 'plant this instead' natives", priced from the Company's removal and planting assemblies ([03](03-crm-sales-estimating-proposals.md)). Where a state or city runs a swap or bounty program for a listed tree, the plant curator agent attaches it to the listing so the proposal can mention it (verify each program). Compliance turns into recurring enhancement revenue, and the Company becomes the neighborhood's invasive-removal expert.
+18. **"Right tree, right place" utility clearance check.** The Design Studio already has the parcel, the house footprint and aerial imagery ([10](10-design-studio.md)). Add an overhead-line layer (drawn by the designer or detected from imagery) and a setback rule: a tree whose `mature_height` (Region-overridden) exceeds the clearance under a line, or whose `infrastructure_risk` setback crosses a sewer lateral or foundation, gets a warning, with "small tree under wires" alternatives from a Region palette. Utilities and municipalities publish such lists; the plant curator agent loads them as palettes with citations. This prevents the 20-year-old maple that the utility tops into a "V".
 19. **Tree benefits on proposals.** For every tree in a design, show estimated stormwater intercepted, shade and carbon over 20 years, using USDA Forest Service i-Tree methods and species data where licensing allows ([R3 section 4.4.10](research/R3-design-ai-plant-data.md); verify terms and methodology). Commercial clients drop it into sustainability reports ([18](18-reporting-analytics.md)); homeowners see why the $1,100 2.5 in caliper oak is worth it. Every figure is labeled an estimate with its method.
 20. **Risk-priced plant warranties.** Region ratings plus aggregated replacement data (k of 10 or more Companies) yield a *suggested* replacement-risk percentage per plant, size and Region (for example "#3 *Buxus* in shade, Central Ohio: 9% first-year replacement; *Ilex glabra* 'Shamrock': 2%", illustrative). It extends plant warranty intelligence in [10](10-design-studio.md) (Beyond the brief 3). Estimating prices a warranty line from it ([03](03-crm-sales-estimating-proposals.md) Beyond the brief 6); the proposal can offer "1-year warranty included on plants rated 4-5; plants rated 3 warrantied only with a maintenance agreement"; and the owner or bookkeeper can adopt the blended rate as the Ledger's warranty reserve accrual rate (`warranty.WR1` in [09](09-accounting-ledger-integrations.md)). The KB suggests; the Company's accounting policy decides; nothing posts automatically.
 21. **Planting-window guard.** Store establishment windows per plant kind, root type and Region (bare-root windows, B&B dig seasons, a fall cutoff for broadleaf evergreens in cold Regions, "no new turf seed after the Region's fall seeding cutoff"; dates curated per Region and labeled guidance). Scheduling warns when an install Visit falls outside the window ([04](04-scheduling-dispatch-routing.md)), proposals offer "plant in spring at no extra cost or accept reduced warranty for late-fall planting", and the Company's warranty policy can automatically shorten coverage for out-of-window installs with the Client's acknowledgment.
@@ -2440,31 +2448,31 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 
 ---
 
-## 14. Open questions
+## 14. Decisions on former open questions
 
-1. **Beachhead Regions (resolved, founder decision):** the launch region is the Great Lakes, a single US launch cluster in the macro-region "Great Lakes and Ohio Valley". Six Wave 1 Regions launch at Excellent, Wave 2 follows at, and the second US cluster (Wave 3,) is chosen later, based on traction, with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. The 3,000-plant mix is re-weighted for Great Lakes needs (KB-SEED-03, KB-SEED-04).
-2. **Data licenses:** which extension services, botanic gardens and brands will license data or photos, at what cost, and with what attribution? Counsel must confirm the facts-versus-expression policy and the source plan in 4.6.
-3. **WUCOLS and AHS heat zones:** what are the current terms for commercial use, and do we need written permission?
-4. **Backbone choice for display:** WCVP/POWO as primary with WFO cross-reference is assumed; does any partner (for example a Canadian data source) require a different backbone?
-5. **Rating scale publication:** should Region ratings be visible to Clients and the public (SEO) or stay professional-only? (Default here: visible, with client-safe notes.)
-6. **Brand partnerships:** how do we monetize brand programs (photos, GTINs, availability) without compromising the no-paid-placement policy?
-7. **Curator network model:** how much curation runs through the platform's core curators vs a contract regional network and guest raters, and how guest raters and bounty contributors are compensated (see idea 11 in section 13).
-8. **Toxicity data source:** license ASPCA or another veterinary source directly, or rely on facts with citation?
-9. **Public API pricing and terms:** who are the first licensees, and which fields can we redistribute?
-10. **Private plants at scale:** should private plants from many Companies that resolve to the same missing cultivar auto-create a curator task (and at what threshold)?
-11. **Regulatory exceptions:** what is the process and evidence for `platform_owner` exceptions (for example invasive-removal projects that temporarily list prohibited species)?
-12. **French-Canadian scope:** ship fr-CA common names with the Golden Horseshoe  or wait for Quebec?
-13. **Plant ID provider:** build-only (KB photos plus a BioCLIP-class model) or keep a commercial fallback, given cost and terms?
-14. **"Sale" in supply-and-install work:** KB-RGN-10 treats a Proposal that supplies and installs a plant as a sale under sale-only bans. Counsel must confirm per beachhead jurisdiction (Ohio, Michigan, Indiana, Illinois and Wisconsin first; Ontario at), including whether a Client-supplied plant installed by the Company is covered.
-15. **Rule-pack scope at:** which water, turf and HOA-law rule packs ship first for the Wave 1 Regions (where municipal street-tree, parkway and stormwater rules may matter more than water budgets), and who maintains them: curators, a contracted regulatory researcher, or a partner such as an association?
-16. **Open plant-product code:** publish the plant-plus-size identifier openly to speed nursery adoption (section 13 idea 22), or keep it proprietary? Opening it helps the network effect but makes it easier for a competitor to map to Rootline's catalog.
-17. **Regional program partnerships:** which programs will co-brand (Great Lakes trial gardens and arboreta first, for example Chicago Botanic Garden plant evaluations; Plant Select, PHS Gold Medal or Great Plant Picks only if the Wave 3 cluster falls in their geography), at what cost, and does co-branding create any appearance of paid placement under KB-CUR-13?
+1. **Beachhead Regions:** the Great Lakes is where the seed and marketing start, with the six Regions in KB-SEED-04 (OD-01). The product works in every US state and Canadian province; further Regions are curation work in the order the founder sets.
+2. **Data licenses:** facts follow the facts-versus-expression policy and photos come only from licensed or commissioned sources, with attribution where required (OD-67). The plant curator agent pursues extension, botanic-garden and brand licenses, the founder signs them, and the founder takes the policy and the source plan in 4.6 to counsel ([24](24-product-scope-decisions-catalog.md) section 1.7).
+3. **WUCOLS and AHS heat zones:** loaded only under recorded commercial terms (written permission for WUCOLS bulk use); until the license registry holds them, the traits exist in the schema without data.
+4. **Backbone for display:** WCVP/POWO is primary with WFO cross-reference; a partner on another backbone maps through `plant_external_id` without changing the display backbone.
+5. **Rating publication:** Region ratings are visible to Clients and on public pages, with client-safe notes.
+6. **Brand partnerships:** brands pay only to license photos, GTIN data and availability feeds; ratings, palette membership and search ranking are never for sale (KB-CUR-13).
+7. **Curator network model:** the plant curator agent curates and the founder approves; there is no curator team. Guest raters and bounty contributors (section 13 idea 11) are paid per session or per accepted item at rates the founder sets, under the contributor agreement (KB-CUR-11).
+8. **Toxicity data source:** facts with citation and a link (4.6); the founder pursues a direct license with ASPCA or another veterinary source, which adds to the citations when signed.
+9. **Public API pricing and terms:** licensees subscribe self-serve to the tiers in [22](22-business-model-pricing-gtm.md) section 5.2.1; only fields whose sources allow `api_redistribution` are returned (KB-API-05).
+10. **Private plants at scale:** when private plants from 3 or more Companies resolve to the same missing cultivar, a curation task opens automatically for the plant curator agent.
+11. **Regulatory exceptions:** a Company requests an exception with evidence (for example an invasive-removal project); the founder approves it with step-up authentication and a written reason; the exception is time-boxed, kept in the audit log and visible to the Company.
+12. **French-Canadian scope:** fr-CA common names and interface are in v1 (OD-70); marketing to Quebec waits for the founder's French-language check (R26-10).
+13. **Plant ID provider:** the built model (KB photos plus a BioCLIP-class model) is primary; the optional commercial fallback provider identifies out-of-KB plants through the AI Gateway (8.1).
+14. **"Sale" in supply-and-install work:** the KB-RGN-10 rule stands, and a Client-supplied plant installed by the Company gets the same error (the conservative reading). The founder confirms the reading with counsel per jurisdiction, starting with Ohio, Michigan, Indiana, Illinois, Wisconsin and Ontario ([24](24-product-scope-decisions-catalog.md) section 1.7).
+15. **Rule-pack scope:** every rule-pack kind (water, turf, fire, HOA law, street-tree, parkway and stormwater) is in v1. The plant curator agent maintains packs from licensed sources and the founder approves each before it publishes (OD-60). Great Lakes municipal packs lead the curation queue, and California's water and fire packs are part of the v1 jurisdiction set (R24-18).
+16. **Open plant-product code:** published under an open license with a free lookup endpoint (section 13 idea 22); the ratings, availability and workflow built on it stay Rootline's.
+17. **Regional program partnerships:** Great Lakes trial gardens and arboreta first (for example Chicago Botanic Garden plant evaluations); programs elsewhere, such as Plant Select, PHS Gold Medal or Great Plant Picks, as their Regions are curated. The founder approves each partnership, and co-branding credits evidence, never placement (KB-CUR-13).
 
 ---
 
 ## Sources
 
-**Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build, starting with the Ohio and Pennsylvania Callery pear rules, the Massachusetts Prohibited Plant List entries, the Canadian zone range, WUCOLS and AHS commercial terms, and the nonfunctional-turf and Zone 0 rules in KB-RGN-11. Sources below are grouped as sources cited by sibling Rootline documents and research reports, then canonical public references.
+**Verification note.** Items marked "verify" are from secondary sources or general knowledge. Each is checked against a primary source before it is used publicly (OD-07): legal lists and rules by the plant curator agent with the founder's approval (KB-RGN-08), other facts by the marketing agent. The build does not depend on them. Checks start with the Ohio and Pennsylvania Callery pear rules, the Massachusetts Prohibited Plant List entries, the Canadian zone range, WUCOLS and AHS commercial terms, and the nonfunctional-turf and Zone 0 rules in KB-RGN-11. Sources below are grouped as sources cited by sibling Rootline documents and research reports, then canonical public references.
 
 **Competitors and user sentiment (cited by sibling Rootline documents)**
 
