@@ -162,12 +162,12 @@ Rootline is two people: the founder and Claude ([24](24-product-scope-decisions-
 
 | Attribute | Detail |
 |---|---|
-| Who | Customer success specialist, bilingual EN/ES, ex-office-manager at a landscape company |
+| Who | The support agent: an AI operator agent holding `platform_support`. It also runs migrations and onboarding, works from the help center, runbooks and landscape office workflows, and escalates to the founder what its permissions do not cover |
 | Goals | Resolve "my crew can't see today's route" in under 10 minutes. Onboard new Companies (import Clients, set up the Price Book, connect Stripe) |
-| Frustrations | Asking customers for screenshots; not being able to see what the user sees; fear of accidentally changing customer data |
-| Devices | Laptop, headset |
-| Tech comfort / language | 4; EN and ES (takes Spanish crew-lead calls directly) |
-| Peak day | 60% of tickets are crew-app logins and route questions between 6 and 9 am Eastern. Uses "View as user" (read-only, consented) to reproduce issues; escalates data fixes to engineering |
+| Frustrations | Asking customers for screenshots; not being able to see what the user sees; the risk of changing customer data by accident (it works read-only unless the owner grants `read_write`) |
+| Devices | None: it runs in Rootline's agent runtime and acts through the Admin API |
+| Tech comfort / language | n/a; EN, ES and FR (answers Spanish crew-lead chats and texts directly) |
+| Peak day | 60% of tickets are crew-app logins and route questions between 6 and 9 am Eastern. Uses "View as user" (read-only, consented) to reproduce issues; escalates data fixes to the engineering agent |
 | Winter day | Onboarding rush: 15-20 new Companies a week migrating from other tools before spring |
 | Success | Consent granted in one tap by the customer. Read-only view reproduces the bug. No access to pay rates or SSNs is needed, and none is given |
 | Quote (illustrative) | "Let me see what Miguel sees, not what the owner sees." |
@@ -176,11 +176,11 @@ Rootline is two people: the founder and Claude ([24](24-product-scope-decisions-
 
 | Attribute | Detail |
 |---|---|
-| Who | Horticulturist / plant scientist (plus a few contract curators per Region, e.g. a retired extension agent in Zone 6a Ohio) |
+| Who | The plant curator agent: an AI operator agent holding `platform_curator`. It curates from licensed sources, extension publications and tenant field data, and the founder approves Region publication, critical traits it wrote and each rule pack ([24](24-product-scope-decisions-catalog.md) OD-60, [19](19-platform-admin-portal.md) PA-070) |
 | Goals | Make every Plant Region Profile defensible: hardiness, heat tolerance, deer resistance, invasiveness status by state, nursery availability. Ship Region palettes before spring |
 | Frustrations | Conflicting sources; invasive-species lists that change by state; tenant designers requesting obscure cultivars |
-| Devices | Laptop; tablet at nurseries and trial gardens for photos |
-| Tech comfort / language | 3-4 (power user of the KB workbench, not of SQL); EN, fluent in botanical Latin |
+| Devices | None: it works in the KB workbench through the Admin API. Photos come only from licensed or commissioned sources ([24](24-product-scope-decisions-catalog.md) OD-67) |
+| Tech comfort / language | n/a; EN, ES and FR-CA plant names, botanical Latin |
 | Peak day | Reviews AI-drafted plant records (see [Plant KB](12-plant-knowledge-base.md)), merges duplicates, approves tenant-suggested additions |
 | Winter day | Builds next season's Plant Palettes; updates invasive lists after state legislative sessions |
 | Access needs | Full write to the Plant KB and Regions. **Zero** tenant business data (they never need to see a Client or invoice). May see aggregated, anonymized "plant usage by Region" analytics |
@@ -191,9 +191,9 @@ Rootline is two people: the founder and Claude ([24](24-product-scope-decisions-
 
 | Attribute | Detail |
 |---|---|
-| Who | RevOps / finance lead |
-| Devices | Laptop; Rootline's own Stripe dashboard and the Platform Admin console |
-| Tech comfort / language | 4; EN (handles Canadian GST/HST and QST questions in English) |
+| Who | The finance agent: an AI operator agent holding `platform_finance`. Rootline's outside accountant reads the QuickBooks mirror of Rootline's books and holds no console role ([24](24-product-scope-decisions-catalog.md) OD-25) |
+| Devices | None: it works through the Admin API and Rootline's own Stripe account |
+| Tech comfort / language | n/a; EN (handles Canadian GST/HST and QST questions in English) |
 | Goals | Accurate Rootline SaaS billing on Rootline's **own** Stripe account. Handle dunning, credits, seasonal plan changes, sales tax on SaaS, revenue recognition and AI credit pricing |
 | Access needs | Rootline subscription data for all tenants, SaaS invoices, coupons and credits. **No access** to tenants' Client payments, which live in each Company's own Stripe account and Ledger by design ([Payments](08-payments-stripe.md)). Optional application-fee revenue reports in aggregate |
 | Peak / winter | Spring: plan upgrades as crews grow. November: hibernation wave and seat reductions. December: annual prepay promotions |
@@ -204,14 +204,14 @@ Rootline is two people: the founder and Claude ([24](24-product-scope-decisions-
 
 | Attribute | Detail |
 |---|---|
-| Who | Backend/SRE engineer on call |
+| Who | The engineering agent: an AI operator agent holding `platform_engineer`, on call around the clock |
 | Goals | Keep sync, routing, AI and payment webhooks healthy; fix data issues safely |
-| Devices | Laptop with hardware security key; phone for on-call paging |
-| Tech comfort / language | 5; EN |
+| Devices | None: it acts through the Admin API and infrastructure tooling with short-lived, role-scoped credentials; incidents page the founder |
+| Tech comfort / language | n/a; EN |
 | Peak / winter | Spring and summer are peak load: crew-app sync storms at 6-7 am local time across four US/Canadian time zones, route optimization batches the night before, payment webhooks at month-end. Winter is when risky migrations, load tests and disaster-recovery drills happen, plus snow-night on-call for storm dispatch spikes |
-| Access needs | Infrastructure, feature flags, logs with PII redaction, job queues (Temporal). Production data access only via **just-in-time, approved, time-boxed break-glass** with tenant notification |
+| Access needs | Infrastructure, feature flags, logs with PII redaction, job queues (Temporal). Production data access only via **just-in-time, time-boxed break-glass that the founder approves**, with tenant notification |
 | Success | Incidents fixed without ever needing standing data access; every break-glass session closed with a written reason the tenant could read |
-| Quote (illustrative) | "I don't want standing access to customer data. Give me a 30-minute window with a reason and an approver." |
+| Quote (illustrative) | "No standing access to customer data. A 30-minute window, a reason and the founder's approval." |
 
 ### 3.3 Tenant-side personas (Company staff)
 
@@ -254,7 +254,7 @@ Rootline is two people: the founder and Claude ([24](24-product-scope-decisions-
 | Who | Former crew lead turned salesperson; measures properties, builds Estimates, presents Proposals, owns renewals for his accounts |
 | Goals | Close more of what he quotes. Quote fast in the driveway. Get commission right |
 | Frustrations | Can't see if the Client owes money before quoting more work. Margin rules he can't see until the owner rejects a proposal. Leads stolen by other reps |
-| Devices | iPad Pro in the truck, iPhone |
+| Devices | iPad Pro in the truck and iPhone, both running the native app in sales mode |
 | Peak day | 5 site visits; measures with satellite plus laser; builds 3 Estimates; sends 2 Proposals with Good/Better/Best options; gets an e-sign notification at dinner |
 | Winter day | Snow quotes (Summit) or design-build pipeline (Reyes); renewal price increases of 4-6% on maintenance agreements (illustrative) |
 | Access needs | Own leads and opportunities, plus the unassigned lead pool for his branch. Sees cost and margin **on his own Estimates** (needs them to price) but not company P&L. Sees Client AR status flag (good standing / past due) without full Ledger access. Discount authority up to 10%; deeper discounts require approval |
@@ -469,7 +469,7 @@ flowchart LR
 | Step | Persona | Touchpoint | Key permissions exercised | Moment of truth / Rootline edge |
 |---|---|---|---|---|
 | Lead capture | Client, office_manager | Website form or AI receptionist ([Marketing](16-marketing-growth-communications.md)) | `lead.create` (public form, anonymous), `lead.assign:all` | Response in under 5 minutes with a booking link |
-| Site assessment | estimator | iPad, offline capable | `opportunity.update:own`, `site_assessment.create:own`, `property.update:branch` | Measurements land in the Design base automatically |
+| Site assessment | estimator | Native app in sales mode on the iPad, offline | `opportunity.update:own`, `site_assessment.create:own`, `property.update:branch` | Measurements land in the Design base automatically |
 | Design and Mockups | designer | Design Studio | `design.create:own`, `mockup.generate` (credit budget), `plant_kb.read` | Client sees their actual yard in under 24 hours ([AI Mockups](11-ai-design-mockups.md)) |
 | Estimate | estimator | Estimate builder | `estimate.update:own`, field classes `cost` + `margin` read on own Estimates | Takeoff-to-estimate in one click ([Design Studio](10-design-studio.md)) |
 | Approval rule | owner | Push notification | `proposal.approve_internal:all` | Dana approves from her phone in 30 seconds |
@@ -619,7 +619,7 @@ journey
 | 15:50 | Clock out, attest "no injuries today" (safety attestation) | Kiosk | His day total | Overtime calculations for others |
 | 16:00 | Miguel reviews crew time, fixes a missed punch with reason "olvidó marcar salida" ("forgot to clock out") | Crew app | Crew time (Miguel only) | Pay rates |
 
-Release note: the yard wall kiosk is ([Field Crew App](05-field-crew-mobile-app.md), device modes). At MVP Luis makes the same 6:45 punch on the truck's **crew device** with the same PIN pad, and the rest of the day is identical.
+Device note: Luis can make the same 6:45 punch on the yard wall kiosk or on the truck's **crew device** ([Field Crew App](05-field-crew-mobile-app.md), device modes); both use the same PIN pad, and the rest of the day is identical.
 
 ### 4.5 Homeowner's portal journey
 
@@ -631,7 +631,7 @@ journey
       Views Mockup slider before and after: 5: Client
       Verifies phone with one-time code to sign: 4: Client
     section Account
-      Creates passkey with Face ID - optional in V1: 4: Client
+      Creates passkey with Face ID - optional: 4: Client
       Adds spouse as co-owner contact: 4: Client
       Saves card on file through Stripe: 4: Client
     section Season
@@ -733,21 +733,21 @@ journey
     title Founder day in April
     section Morning
       Health digest on phone: 4: Founder
-      Approve engineer break-glass for data repair: 3: Founder, Engineer
-      Review 3 at-risk tenants flagged by AI: 4: Founder, Support
+      Approve engineering agent break-glass for data repair: 3: Founder, Engineering agent
+      Review 3 at-risk tenants flagged by the support agent: 4: Founder, Support agent
     section Midday
       Demo to 30-person company: 5: Founder
-      Curator release for West Michigan palette: 5: Founder, Curator
-      AI model cost review per mockup: 3: Founder, Engineer
+      Approve curator agent release for West Michigan palette: 5: Founder, Curator agent
+      AI model cost review per mockup: 3: Founder, Engineering agent
     section Afternoon
-      Approve SaaS credit for storm-affected tenant: 4: Founder, Finance
-      Answer escalated support ticket with consented view: 4: Founder, Support
-      Ship feature flag to 10 pct of tenants: 4: Founder, Engineer
+      Approve finance agent SaaS credit for storm-affected tenant: 4: Founder, Finance agent
+      Answer escalated support ticket with consented view: 4: Founder, Support agent
+      Approve flag rollout to 10 pct of tenants: 4: Founder, Engineering agent
     section Evening
-      Read NPS verbatims and roadmap votes: 5: Founder
+      Read NPS verbatims and feature requests: 5: Founder
 ```
 
-All of the above happen in the Platform Admin console ([Platform Admin](19-platform-admin-portal.md)). Each privileged action carries a reason code and is visible in the platform audit log. Tenant-touching actions also appear in the tenant's own access log.
+All of the above happen in the Platform Admin console ([Platform Admin](19-platform-admin-portal.md)). Agent requests reach the founder's Approvals inbox and the founder approves them with step-up authentication ([19](19-platform-admin-portal.md) PA-004). Each privileged action carries a reason code and is visible in the platform audit log. Tenant-touching actions also appear in the tenant's own access log.
 
 ### 4.9 A seasonal worker's year (Luis, Summit Columbus)
 
@@ -794,7 +794,7 @@ journey
   - a **Company membership** (tenant staff: owner through subcontractor user),
   - an **Accountant Firm membership** (5.10),
   - a **Client contact link** (portal access to one or more Clients across one or more Companies),
-  - a **Platform staff membership** (separate realm, see 5.13).
+  - a **Platform staff membership** (the founder, in a separate realm; operator agents hold platform roles as service principals, see 5.13).
 - **Employee is not User.** An `employee` record (HR, payroll, crew roster) may exist without a login (e.g. a laborer clocked in by the crew lead). A user may exist without an employee record (external CPA, subcontractor). This prevents Arborgold's "office staff appear in crew pick-lists" problem. Rules:
   - A membership with a field role (`crew_lead`, `technician`) **must** link to an `employee`.
   - An `employee` may have zero or one linked user per Company.
@@ -822,7 +822,7 @@ journey
 | Sales | `estimate`, `estimate.line`, `proposal`, `change_order`, `service_agreement`, `price_book`, `production_rate` | `proposal.send`, `proposal.approve_internal`, `proposal.record_offline_acceptance`, `change_order.approve_internal`, `service_agreement.renew`, `service_agreement.cancel` ([Invoicing](07-invoicing-billing-contracts.md) section 9) |
 | Design | `design`, `mockup`, `tenant_palette`, `plant_kb` (read), `takeoff` | `mockup.generate`, `design.share`, `design.as_built` (record as-built changes), `design.as_built_publish` (publish the as-built version) ([Design Studio](10-design-studio.md) section 9) |
 | Operations | `job`, `visit`, `route`, `crew`, `equipment`, `inventory`, `purchase_order`, `vendor`, `subcontract_order`, `checklist`, `chemical_application`, `incident` | `visit.dispatch`, `route.optimize`, `visit.complete`, `purchase_order.approve` |
-| Time and people | `time_entry`, `timesheet`, `employee`, `certification`, `training`, `payroll_export`, `expense` | `timesheet.approve`, `payroll_export.run` |
+| Time and people | `time_entry.own`, `time_entry.others`, `timesheet`, `employee`, `certification`, `training`, `payroll_export`, `expense` | `timesheet.approve`, `payroll_export.run` |
 | Billing | `invoice`, `billing_run`, `payment`, `refund`, `credit_memo`, `statement`, `deposit`, `collections_case`, `dispute`, `payout` | `invoice.send`, `invoice.void`, `billing_run.post` (approve and issue a Billing Run batch, [Invoicing](07-invoicing-billing-contracts.md)), `payment.collect`, `payment.refund`, `collections_case.write_off`, `dispute.respond` (evidence submitted to the Company's own Stripe account) |
 | Ledger | `ledger.account`, `ledger.journal_entry`, `ledger.period`, `ledger.control_account`, `ledger.posting_rule`, `wip`, `info_return`, `bank_account`, `bank_reconciliation`, `bill`, `bill_payment`, `financial_report`, `tax_setting`, `accounting_sync` | `journal_entry.post`, `period.lock`, `period.unlock`, `ledger.control_account.adjust` (manual lines on subledger control accounts, rule L13 in [Ledger](09-accounting-ledger-integrations.md)), `ledger.posting_rule.manage`, `wip.post`, `info_return.manage` (1099 and T5018 workspace), `accounting_sync.resolve`, `bill_payment.approve` |
 | Marketing | `campaign`, `review`, `website`, `booking_page`, `referral`, `consent`, `gift_certificate`, `marketplace_connection` (the full Growth sub-resource list and defaults are in [Marketing](16-marketing-growth-communications.md) section 9) | `campaign.send`, `review.respond`, `website.publish`, `referral.approve`, `consent.export` |
@@ -833,8 +833,9 @@ journey
 1. **Dependencies are explicit and auto-granted in the editor with a notice:** `X.update` implies `X.read`; `invoice.send` requires `invoice.read` and `field.price.read`; `payment.refund` requires `payment.read`. The editor refuses to save inconsistent roles; the API validates again.
 2. **Danger flags:** some permissions are marked `sensitive` and show a red badge plus a confirmation: `stripe_connection.*`, `bank_account.update`, `vendor.banking.update`, `data_export.run`, `user.assign_role`, `role.update`, `period.unlock`, `ledger.control_account.adjust`, `ledger.posting_rule.manage`, `security_policy.update`, `support_access.grant`, `api_key.create`.
 3. **Owner-only permissions** cannot be granted to any other role: `stripe_connection.connect` / `disconnect` (covers both the Connect OAuth path and pasting restricted API keys on the advanced path, per [Payments](08-payments-stripe.md)), `rootline_subscription.cancel`, `company.delete`, `ownership.transfer`, `security.lockdown` (section 14, item 13), and `security_policy.update` when SSO is enforced. Multiple users can hold `owner` (partners); see 5.18.6 for partner-dispute protections.
-4. **Permission keys are stable API.** Renames ship as aliases for 2 major versions; tenants' custom roles are migrated automatically, and a changelog entry appears in the role editor.
-5. **This document is the canonical permission catalog.** Sibling docs sometimes use illustrative spellings. They map one-to-one, and the code generator registers them as aliases so nobody has to rename prose:
+4. **Time entries are two capabilities** ([24](24-product-scope-decisions-catalog.md) R25-C6): `time_entry.own` covers the user's own punches and takes only the `own` scope; `time_entry.others` covers other people's time and takes the `crew`, `branch` or `all` scope. A role can therefore let everyone punch while limiting who may see or edit anyone else's hours. They are separate rows in the role editor, the matrix in 10.1 and `platform/roles.json`.
+5. **Permission keys are stable API.** Renames ship as aliases for 2 major versions; tenants' custom roles are migrated automatically, and a changelog entry appears in the role editor.
+6. **This document is the canonical permission catalog.** Sibling docs sometimes use illustrative spellings. They map one-to-one, and the code generator registers them as aliases so nobody has to rename prose:
 
 | Spelling used elsewhere | Canonical key here | Where it appears |
 |---|---|---|
@@ -849,14 +850,15 @@ journey
 | `payments.field.collect` | `payment.collect:crew` | [Payments](08-payments-stripe.md) |
 | `api_key:create` | `api_key.create` | [Architecture](20-architecture-security.md) |
 | scope `assigned` | scope `own` (assignment is one of the `own` resolvers in 5.3) | [Architecture](20-architecture-security.md) |
+| `time_entry` (unsplit), `time_entry:own` | `time_entry.own` for the user's own punches; `time_entry.others` for anyone else's time | Earlier drafts of this doc and the blueprint data |
 | Growth namespaced keys such as `growth.campaigns.send`, `growth.site.publish`, `reputation.reviews.reply`, `comms.messages.send`, `growth.referrals.approve_reward` | `campaign.send`, `website.publish`, `review.respond`, `inbox.conversation.send`, `referral.approve` (and the other Marketing resources above) | [Marketing](16-marketing-growth-communications.md) |
 
 ### 5.3 Scopes: `own`, `crew`, `branch`, `all`
 
 | Scope | Meaning (generic) | Notes |
 |---|---|---|
-| `own` | Records where the user is the owner, creator, assignee, salesperson or account manager, as defined per resource by an **ownership resolver** | Always includes records the user created, unless the resource's resolver says otherwise (e.g. `time_entry:own` = entries for the user's linked employee) |
-| `crew` | Records assigned to any Crew the user belongs to or leads, **within the visibility window** | For people-resources (`time_entry`, `employee`), means members of crews the user **leads** |
+| `own` | Records where the user is the owner, creator, assignee, salesperson or account manager, as defined per resource by an **ownership resolver** | Always includes records the user created, unless the resource's resolver says otherwise (e.g. `time_entry.own` covers entries for the user's linked employee) |
+| `crew` | Records assigned to any Crew the user belongs to or leads, **within the visibility window** | For people-resources (`time_entry.others`, `employee`), means members of crews the user **leads** |
 | `branch` | Records whose `branch_id` is in the user's branch memberships, optionally narrowed by division filters on the role assignment | Users always also see their `own` and `crew` records even if those sit in another branch (borrowed crews) |
 | `all` | All records in the Company, limited to the legal entities on the membership (5.9) | Default for owner |
 
@@ -869,7 +871,7 @@ journey
 | `lead`, `opportunity` | `owner_user_id = me` OR I am on the sales team | (not applicable; treated as `own`) | `branch_id in my_branches` |
 | `client`, `property` | I own an open Opportunity/Job/Agreement for it OR I am account manager | A Visit for this Property is assigned to my Crew within the window | `property.branch_id in my_branches` (Client visible if any Property matches) |
 | `job`, `visit` | I am an assignee | `crew_id in my_crews` and within the window | `branch_id in my_branches` |
-| `time_entry`, `timesheet` | `employee_id = my_employee` | Employee is a member of a Crew I lead on that date | Employee's home branch in my branches |
+| `time_entry.own`, `time_entry.others`, `timesheet` | `employee_id = my_employee` (the only scope `time_entry.own` takes) | Employee is a member of a Crew I lead on that date (`time_entry.others`) | Employee's home branch in my branches (`time_entry.others`) |
 | `invoice`, `payment` | Invoice on a Job/Agreement where I am salesperson or account manager | Field invoice created by my Crew today (only with `payment.collect`) | `branch_id in my_branches` |
 | `design`, `mockup` | Creator or assigned designer | Plan sheets attached to Jobs assigned to my Crew (read-only, price-free) | `branch_id in my_branches` |
 | `subcontract_order` | (sub users) assigned to my vendor org | n/a | Company staff: `branch_id in my_branches` |
@@ -1355,7 +1357,7 @@ Summer crews often include 16- and 17-year-olds, and some Companies hire 14- and
 ### 5.20 Enforcement architecture (summary; details in [Architecture](20-architecture-security.md))
 
 1. **Tenant isolation:** Postgres RLS on `tenant_id` with the tenant set per transaction from the verified token. Large tenants on dedicated databases keep identical policies.
-2. **Policy decision point (PDP):** the in-process policy engine defined in [Architecture](20-architecture-security.md) evaluates `can(principal, action, resource)`. That engine uses Cedar policies, with each tenant's roles compiled to policy templates and a typed TypeScript DSL as the documented fallback. The `access` domain module owns role definitions and compiles them for the engine. Key spellings in the Architecture doc map to this catalog through the alias table in 5.2 (rule 5).
+2. **Policy decision point (PDP):** the in-process policy engine defined in [Architecture](20-architecture-security.md) evaluates `can(principal, action, resource)`. That engine uses Cedar policies, with each tenant's roles compiled to policy templates and a typed TypeScript DSL as the documented fallback. The `access` domain module owns role definitions and compiles them for the engine. Key spellings in the Architecture doc map to this catalog through the alias table in 5.2 (rule 6).
    - Compiled grants are cached in Redis, keyed by `membership_id:perm_version`.
    - Relationship checks (Client contacts, delegations, subcontract assignments, crew membership on a date) use a relationship index (Zanzibar-style tuples in Postgres).
    - Policies are data, not code branches, so the role editor and the "View as" simulator use the same evaluator.

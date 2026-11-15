@@ -529,7 +529,7 @@
     },
     {
       "key": "ledger_essentials",
-      "name": "Ledger Essentials: double-entry GL, auto-posting, 1 bank feed, P&L/BS",
+      "name": "Ledger Essentials: double-entry GL, auto-posting, 1 bank feed with reconciliation, P&L/BS",
       "module": "Books",
       "docs": [
         "09"
@@ -554,7 +554,7 @@
     },
     {
       "key": "ledger_plus",
-      "name": "Ledger Plus: AP and bills, unlimited bank feeds, bank rec, 1099 tracking, budgets",
+      "name": "Ledger Plus: AP and bills, unlimited bank feeds with reconciliation, 1099 tracking, budgets",
       "module": "Books",
       "docs": [
         "09"

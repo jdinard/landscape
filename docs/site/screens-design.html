@@ -527,9 +527,9 @@ tr.done td { opacity: .62; }
   <section class="intro" aria-labelledby="page-h">
     <p class="eyebrow">Concept screens · Design Studio, AI mockups and the Plant Knowledge Base</p>
     <h1 id="page-h">From a yard photo to a priced, plant-true plan</h1>
-    <p class="lede">Five hi-fi concepts show how a Greenleaf Grounds Co. designer draws to scale, tries AI mockups and layouts that only use plants proven in Central Ohio, searches the Plant Knowledge Base in plain English, and how Rootline's curators keep that plant data honest. Iris purple marks AI output and AI credit costs, and nothing else.</p>
+    <p class="lede">Five hi-fi concepts show how a Greenleaf Grounds Co. designer draws to scale, tries AI mockups and layouts that only use plants proven in Central Ohio, searches the Plant Knowledge Base in plain English, and how Rootline's plant curator agent keeps that plant data honest, with the founder approving critical changes. Iris purple marks AI output and AI credit costs, and nothing else.</p>
     <div class="intro-meta">
-      <span><b>Sample tenant:</b> Greenleaf Grounds Co., design-build-maintain, Columbus, Ohio (USDA zone 6b, about 28 staff)</span>
+      <span><b>Sample tenant:</b> Greenleaf Grounds Co., design-build-maintain, Columbus, Ohio (USDA zone 6b, 28 people, 120 clients)</span>
       <span><b>Region:</b> Central Ohio (operator-curated)</span>
       <span class="credits"><svg class="ic" aria-hidden="true"><use href="#i-ai"/></svg>Iris = AI-generated content, Copilot and credits</span>
     </div>
@@ -544,11 +544,11 @@ tr.done td { opacity: .62; }
 
   <!-- ===================================================== 1. DESIGN STUDIO -->
   <section class="screen" id="studio" aria-labelledby="studio-h">
-    <div class="screen-head"><h2 id="studio-h">1. Design Studio: the Hendersons' backyard, drawn to scale</h2><span class="pill accent">Persona: designer</span><span class="tag mvp">MVP</span></div>
+    <div class="screen-head"><h2 id="studio-h">1. Design Studio: the Hendersons' backyard, drawn to scale</h2><span class="pill accent">Persona: designer</span></div>
     <p class="screen-note">Spec: 10-design-studio.md section 4 (4.9 layers, 4.10 plant placement, 4.11 live validation, 4.13 growth slider and seasons, 4.15 takeoff and live price panel) and wireframe 6.2 (S3 design canvas). Symbols are sized to each plant's KB mature spread for the chosen year, and the money bar prices the takeoff with the same engine as the Estimate.</p>
     <div class="frame-scroll">
       <div class="browser">
-        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">app.rootline.app/design/D-1187?option=A&amp;version=4</div></div>
+        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">app.rootline.example/design/D-1187?option=A&amp;version=4</div></div>
         <div class="studio">
           <div class="st-head">
             <span class="crumbs"><b>The Hendersons · 4128 Brookside Dr</b> › Backyard</span>
@@ -588,7 +588,7 @@ tr.done td { opacity: .62; }
               <div class="beds-list">
                 <div class="bd"><b>A · Patio east</b><span class="mono">209 sf</span><small>Part sun · 5.2 h · steel edge</small></div>
                 <div class="bd"><b>B · Rear border</b><span class="mono">341 sf</span><small>Full sun · 7.8 h · steel edge</small></div>
-                <div class="bd warn"><b>C · West foundation</b><span class="mono">123 sf</span><small>Part shade · 3.5 h (manual tag)</small></div>
+                <div class="bd warn"><b>C · West foundation</b><span class="mono">123 sf</span><small>Part shade · 3.5 h (computed)</small></div>
               </div>
             </div>
             <div>
@@ -771,7 +771,7 @@ tr.done td { opacity: .62; }
             </div>
             <div class="warnbox" role="status">
               <b><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg>Full sun required: bed gets ~3.5 h sun</b>
-              <div style="margin-top:3px">VAL-SUN-01 · Bed C is tagged part shade (3.5 h avg, north wall). This plant wants 6 h or more.</div>
+              <div style="margin-top:3px">VAL-SUN-01 · Bed C computes to part shade (3.5 h avg, north wall). This plant wants 6 h or more.</div>
               <div class="acts"><button class="btn sm" type="button">Move to Bed B (7.8 h)</button><button class="btn sm" type="button">Swap plant</button><button class="btn sm" type="button">Override…</button></div>
               <div style="margin-top:6px;font-size:.72rem">Similar for part shade: <em>Geranium maculatum</em> 'Espresso' (5/5) · <em>Aster divaricatus</em> (4/5)</div>
             </div>
@@ -808,16 +808,16 @@ tr.done td { opacity: .62; }
         </div>
       </div>
     </div>
-    <div class="phase"><span><span class="tag mvp">MVP</span>canvas, layers, plant picker, validation, takeoff and price bar</span><span><span class="tag v1">V1</span>growth slider, season toggle, computed sun hours (MVP uses manual sun tags)</span><span>Try it: switch Growth or Season, or hide layers.</span></div>
+    <div class="phase"><span>In this screen: canvas, layers, plant picker, validation with computed sun hours, growth slider, season toggle, takeoff and price bar</span><span>Try it: switch Growth or Season, or hide layers.</span></div>
   </section>
 
   <!-- ===================================================== 2. AI MOCKUP -->
   <section class="screen" id="mockup" aria-labelledby="mockup-h">
-    <div class="screen-head"><h2 id="mockup-h">2. AI photo mockup: capture, understand, render</h2><span class="pill accent">Persona: designer with client_residential</span><span class="tag mvp">MVP</span></div>
+    <div class="screen-head"><h2 id="mockup-h">2. AI photo mockup: capture, understand, render</h2><span class="pill accent">Persona: designer with client_residential</span></div>
     <p class="screen-note">Spec: 11-ai-design-mockups.md section 4.1 (AIM-CAP-01 to 04 capture and dimension form), 4.2 (AIM-UND scene understanding and scale calibration), 4.3 Mode A restyle and 4.4 plant fidelity; credit prices from 22-business-model-pricing-gtm.md 4.4. Plants come from the Central Ohio palette before any pixel is generated.</p>
     <div class="frame-scroll">
       <div class="browser">
-        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">app.rootline.app/properties/P-3307/mockups/M-5521</div></div>
+        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">app.rootline.example/properties/P-3307/mockups/M-5521</div></div>
         <div class="mk">
           <div class="mk-head">
             <b>The Okafors · 1876 Glenn Ave, Upper Arlington</b><span class="ui-muted">Backyard refresh · OPP-3318</span>
@@ -1309,16 +1309,16 @@ tr.done td { opacity: .62; }
         </div>
       </div>
     </div>
-    <div class="phase"><span><span class="tag mvp">MVP</span>guided capture, dimension form, segmentation, scale calibration, Mode A restyle, labels, badge</span><span><span class="tag v1">V1</span>plan-to-photo (Mode B), edit on the photo, fidelity score</span><span>Try it: drag the before and after divider.</span></div>
+    <div class="phase"><span>In this screen: guided capture, dimension form, segmentation, scale calibration, Mode A restyle, plan-to-photo (Mode B), edit on the photo, labels, badge and fidelity score</span><span>Try it: drag the before and after divider.</span></div>
   </section>
 
   <!-- ===================================================== 3. AI LAYOUT GENERATION -->
   <section class="screen" id="layouts" aria-labelledby="layouts-h">
-    <div class="screen-head"><h2 id="layouts-h">3. AI layout generation from constraints</h2><span class="pill accent">Persona: designer</span><span class="tag v1">V1</span></div>
+    <div class="screen-head"><h2 id="layouts-h">3. AI layout generation from constraints</h2><span class="pill accent">Persona: designer</span></div>
     <p class="screen-note">Spec: 11-ai-design-mockups.md AIM-GEN-C (constraint compilation, LLM planner, geometry solver, validation and tiering) and wireframe 6.5 (S8); the options open as editable drafts in 10-design-studio.md. The planner may only reference KB candidate IDs; the solver does every exact number.</p>
     <div class="frame-scroll">
       <div class="browser">
-        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">app.rootline.app/design/D-1203/generate</div></div>
+        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">app.rootline.example/design/D-1203/generate</div></div>
         <div class="lg">
           <div class="lg-head">
             <b>The Okafors · Backyard</b><span class="ui-muted">› Generate layouts</span>
@@ -1611,16 +1611,16 @@ tr.done td { opacity: .62; }
         </div>
       </div>
     </div>
-    <div class="phase"><span><span class="tag v1">V1</span>layout generation, HOA parsing, Good/Better/Best handoff to proposals</span><span><span class="tag mvp">MVP</span>sun tags and dimension form that feed it</span><span>Try it: pick an option card.</span></div>
+    <div class="phase"><span>In this screen: layout generation fed by sun data and the dimension form, HOA parsing, Good/Better/Best handoff to proposals</span><span>Try it: pick an option card.</span></div>
   </section>
 
   <!-- ===================================================== 4. PLANT KB COMPANY VIEW -->
   <section class="screen" id="kb-search" aria-labelledby="kb-h">
-    <div class="screen-head"><h2 id="kb-h">4. Plant Knowledge Base: plain-English search for the Company</h2><span class="pill accent">Persona: designer · estimator</span><span class="tag mvp">MVP</span></div>
+    <div class="screen-head"><h2 id="kb-h">4. Plant Knowledge Base: plain-English search for the Company</h2><span class="pill accent">Persona: designer · estimator</span></div>
     <p class="screen-note">Spec: 12-plant-knowledge-base.md KB-SRCH-02 and KB-SRCH-03 (faceted and natural-language search, worked example), KB-PRP-01 (Region ratings), KB-PAL (palettes) and KB-NUR availability, with wireframe 6.7. The query becomes editable chips; ranking blends text, vectors, Region rating, palette and availability.</p>
     <div class="frame-scroll">
       <div class="browser">
-        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">app.rootline.app/plants?q=shade-tolerant+evergreen+shrub+under+4+ft&amp;property=P-2210&amp;bed=C</div></div>
+        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">app.rootline.example/plants?q=shade-tolerant+evergreen+shrub+under+4+ft&amp;property=P-2210&amp;bed=C</div></div>
         <div class="app">
           <nav class="app-side" aria-label="Company app">
             <div class="co"><span class="logo">G</span><div><b>Greenleaf Grounds Co.</b><small>Columbus, OH</small></div></div>
@@ -1645,7 +1645,7 @@ tr.done td { opacity: .62; }
                 <div class="facet"><h4>Leaf persistence</h4><label><input type="checkbox" checked aria-label="Evergreen">Evergreen<span>318</span></label><label><input type="checkbox" aria-label="Semi-evergreen">Semi-evergreen<span>41</span></label></div>
                 <div class="facet"><h4>Deer resistance</h4><label><input type="checkbox" checked aria-label="A rarely damaged">A · rarely<span>212</span></label><label><input type="checkbox" checked aria-label="B seldom severely damaged">B · seldom<span>389</span></label><label><input type="checkbox" aria-label="C">C · occasionally<span>501</span></label></div>
                 <div class="facet"><h4>Soil</h4><label><input type="checkbox" checked aria-label="Clay">Clay<span>744</span></label><label><input type="checkbox" aria-label="Wet sites">Tolerates wet<span>203</span></label></div>
-                <div class="facet"><h4>Region and stock</h4><label><input type="checkbox" checked aria-label="Rating 3 or above">Rating ≥ 3 in C. Ohio<span>812</span></label><label><input type="checkbox" checked aria-label="Available within 25 miles">Stock within 25 mi<span>V1</span></label><label><input type="checkbox" aria-label="Native to Ohio">Native to Ohio<span>612</span></label></div>
+                <div class="facet"><h4>Region and stock</h4><label><input type="checkbox" checked aria-label="Rating 3 or above">Rating ≥ 3 in C. Ohio<span>812</span></label><label><input type="checkbox" checked aria-label="Available within 25 miles">Stock within 25 mi</label><label><input type="checkbox" aria-label="Native to Ohio">Native to Ohio<span>612</span></label></div>
               </div>
 
               <div>
@@ -1716,23 +1716,23 @@ tr.done td { opacity: .62; }
                   <span><span class="wrn">!</span> Evergreen backbone: 1, add 1-2</span>
                   <span><span class="wrn">!</span> Bloom gap: August</span>
                 </div>
-                <div class="ui-faint" style="font-size:.7rem">Ratings, prices and stock are sample data. Availability feeds are V1.</div>
+                <div class="ui-faint" style="font-size:.7rem">Ratings, prices and stock are sample data; stock comes from nursery availability feeds.</div>
               </aside>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="phase"><span><span class="tag mvp">MVP</span>semantic search, facets, Region ratings, palettes, Price Book prices</span><span><span class="tag v1">V1</span>nursery availability and stock radius, OpenSearch index</span><span>Try it: add a plant to the palette.</span></div>
+    <div class="phase"><span>In this screen: semantic search, facets, Region ratings, palettes, Price Book prices, nursery availability and stock radius, OpenSearch index</span><span>Try it: add a plant to the palette.</span></div>
   </section>
 
   <!-- ===================================================== 5. CURATOR CONSOLE -->
   <section class="screen" id="curator" aria-labelledby="cur-h">
-    <div class="screen-head"><h2 id="cur-h">5. Plant KB curator console</h2><span class="pill accent">Persona: platform_curator</span><span class="tag mvp">MVP</span></div>
+    <div class="screen-head"><h2 id="cur-h">5. Plant KB curator console</h2><span class="pill accent">Persona: platform_curator</span></div>
     <p class="screen-note">Spec: 12-plant-knowledge-base.md sections 4.3 to 4.5 (KB-RGN Regions, KB-PRP profiles, KB-CUR curation with field-level provenance and AI enrichment) and wireframes 6.2 to 6.4 and 6.8; console tooling in 19-platform-admin-portal.md PA-070 to PA-074. AI proposals land in the same review queue as imports and never publish on their own.</p>
     <div class="frame-scroll">
       <div class="browser">
-        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">console.rootline.app/kb/plants/RL-P-007312?tab=traits</div></div>
+        <div class="browser-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">console.rootline.example/kb/plants/RL-P-007312?tab=traits</div></div>
         <div class="app console">
           <nav class="app-side" aria-label="Operator console">
             <div class="co"><span class="logo">R</span><div><b>Rootline console</b><small>platform_curator</small></div></div>
@@ -1742,7 +1742,7 @@ tr.done td { opacity: .62; }
             <span class="item">Content</span><span class="item">AI Ops <span class="badge">read</span></span>
           </nav>
           <div class="app-main">
-            <div class="cn-top"><span class="env">prod</span><b>Plant KB</b><span class="ui-muted">Release 2026.11.07-1 · cut 06:00 UTC</span><span class="sp"></span><div class="search-box" style="max-width:240px;min-width:180px"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>Plants, regions, change requests<span class="kbd" style="margin-left:auto">⌘K</span></div><span class="ui-muted">Maria O. · senior curator</span></div>
+            <div class="cn-top"><span class="env">prod</span><b>Plant KB</b><span class="ui-muted">Release 2026.11.07-1 · cut 06:00 UTC</span><span class="sp"></span><div class="search-box" style="max-width:240px;min-width:180px"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>Plants, regions, change requests<span class="kbd" style="margin-left:auto">⌘K</span></div><span class="ui-muted">Plant curator agent · founder approves</span></div>
             <div class="tiles">
               <div class="kpi"><div class="label">Published plants</div><div class="value">3,412</div><div class="delta up">+38 this week</div></div>
               <div class="kpi"><div class="label">Trait completeness</div><div class="value">94%</div><div class="sub">critical traits 100% cited</div></div>
@@ -1801,22 +1801,22 @@ tr.done td { opacity: .62; }
                 <table class="data cmp">
                   <thead><tr><th>Field</th><th>Value</th><th>Method</th><th>Source</th><th class="num">Conf</th><th>Reviewed</th></tr></thead>
                   <tbody>
-                    <tr><td>mature_height</td><td>3-4 ft <span class="ui-faint">(91-122 cm)</span></td><td><span class="meth">curator_entered</span></td><td>T1 extension ×2</td><td class="num">0.96</td><td>M.O. · Mar 2026</td></tr>
-                    <tr><td>mature_spread</td><td>3-4 ft</td><td><span class="meth">curator_entered</span></td><td>T1 extension ×2</td><td class="num">0.95</td><td>M.O. · Mar 2026</td></tr>
-                    <tr><td>sun</td><td>full sun, part sun, part shade</td><td><span class="meth ai">ai_extracted</span></td><td>T1 ×3</td><td class="num">0.94</td><td>J. Lee · Nov 2025</td></tr>
+                    <tr><td>mature_height</td><td>3-4 ft <span class="ui-faint">(91-122 cm)</span></td><td><span class="meth">curator_entered</span></td><td>T1 extension ×2</td><td class="num">0.96</td><td>Curator agent · Mar 2026</td></tr>
+                    <tr><td>mature_spread</td><td>3-4 ft</td><td><span class="meth">curator_entered</span></td><td>T1 extension ×2</td><td class="num">0.95</td><td>Curator agent · Mar 2026</td></tr>
+                    <tr><td>sun</td><td>full sun, part sun, part shade</td><td><span class="meth ai">ai_extracted</span></td><td>T1 ×3</td><td class="num">0.94</td><td>Curator agent · Nov 2025</td></tr>
                     <tr><td>soil_texture</td><td>clay, loam, sand · tolerates wet</td><td><span class="meth">imported</span></td><td>OSU Ext. list A</td><td class="num">0.90</td><td>Oct 2025</td></tr>
-                    <tr><td>usda_zone <span class="crit">*</span></td><td>5a-9b <span class="ui-faint">inherited</span></td><td><span class="meth">imported</span></td><td>USDA PLANTS</td><td class="num">-</td><td>2 reviewers · Jan 2026</td></tr>
-                    <tr><td>deer_resistance <span class="crit">*</span></td><td><b>B</b> · seldom severely damaged</td><td><span class="meth">curator_entered</span></td><td>T1 list (Rutgers-style)</td><td class="num">0.90</td><td>2 reviewers · Mar 2026</td></tr>
-                    <tr><td>toxicity <span class="crit">*</span></td><td>berries: mild (dogs, cats, people)</td><td><span class="meth">imported</span></td><td>T1 ×2</td><td class="num">0.93</td><td>2 reviewers · Feb 2026</td></tr>
+                    <tr><td>usda_zone <span class="crit">*</span></td><td>5a-9b <span class="ui-faint">inherited</span></td><td><span class="meth">imported</span></td><td>USDA PLANTS</td><td class="num">-</td><td>Agent + founder · Jan 2026</td></tr>
+                    <tr><td>deer_resistance <span class="crit">*</span></td><td><b>B</b> · seldom severely damaged</td><td><span class="meth">curator_entered</span></td><td>T1 list (Rutgers-style)</td><td class="num">0.90</td><td>Agent + founder · Mar 2026</td></tr>
+                    <tr><td>toxicity <span class="crit">*</span></td><td>berries: mild (dogs, cats, people)</td><td><span class="meth">imported</span></td><td>T1 ×2</td><td class="num">0.93</td><td>Agent + founder · Feb 2026</td></tr>
                     <tr><td>salt_tolerance_soil</td><td>moderate</td><td><span class="meth ai">ai_extracted</span></td><td>T2</td><td class="num">0.78</td><td><span class="pill info">In review</span></td></tr>
                   </tbody>
                 </table>
                 </div>
                 <div class="prov">
-                  <b>Provenance · deer_resistance</b> <span class="ui-faint">(<span class="crit">*</span> critical: second reviewer required)</span>
+                  <b>Provenance · deer_resistance</b> <span class="ui-faint">(<span class="crit">*</span> critical: founder approval required)</span>
                   <ol>
-                    <li><b>v3 B</b> · curator_entered · M. Ortiz · 2026-03-02 · rel 2026.03.03-1 · 2 citations</li>
-                    <li><b>v2 C</b> · ai_extracted · kb.enrich@v9 · conf 0.71 · 2025-11-20 · rejected by J. Lee: "sources disagree by Region"</li>
+                    <li><b>v3 B</b> · curator_entered · plant curator agent, approved by the founder · 2026-03-02 · rel 2026.03.03-1 · 2 citations</li>
+                    <li><b>v2 C</b> · ai_extracted · kb.enrich@v9 · conf 0.71 · 2025-11-20 · rejected by the plant curator agent: "sources disagree by Region"</li>
                     <li><b>v1</b> <span class="empty">(empty)</span> · imported · USDA PLANTS import · 2025-10-04</li>
                   </ol>
                 </div>
@@ -1875,7 +1875,7 @@ tr.done td { opacity: .62; }
                     <div>[2] Rutgers NJAES deer list (T1): "…occasionally severely damaged…" row 112 · <a href="#curator">open</a></div>
                     <div class="ai-row" style="border-left:1px solid var(--ai-solid)"><span class="credits" style="font-weight:500"><svg class="ic" aria-hidden="true"><use href="#i-ai"/></svg>Sources from different Regions disagree. Propose B as a Central Ohio profile override instead of a global value?</span><button class="btn sm" type="button">Propose override</button></div>
                   </div>
-                  <div class="ui-muted" style="font-size:.74rem;margin-top:6px" id="qStatus" aria-live="polite">7 fields · 0 decided · deer_resistance needs a second reviewer before publish</div>
+                  <div class="ui-muted" style="font-size:.74rem;margin-top:6px" id="qStatus" aria-live="polite">7 fields · 0 decided · deer_resistance needs founder approval before publish</div>
                 </div>
               </div>
             </div>
@@ -1883,7 +1883,7 @@ tr.done td { opacity: .62; }
         </div>
       </div>
     </div>
-    <div class="phase"><span><span class="tag mvp">MVP</span>review queue, record editor with provenance, Region builder, profiles, quality dashboard, seed enrichment runs</span><span><span class="tag v1">V1</span>continuous self-serve enrichment agents</span><span>Try it: accept, edit or reject a proposed field.</span></div>
+    <div class="phase"><span>In this screen: review queue, record editor with provenance, Region builder, profiles, quality dashboard, seed enrichment runs and continuous self-serve enrichment agents</span><span>Try it: accept, edit or reject a proposed field.</span></div>
   </section>
 </div>
 </main>
@@ -1963,7 +1963,7 @@ tr.done td { opacity: .62; }
   function refresh() {
     var rows = table.querySelectorAll('tbody tr');
     var done = table.querySelectorAll('tbody tr.done').length;
-    status.textContent = rows.length + ' fields · ' + done + ' decided · deer_resistance needs a second reviewer before publish';
+    status.textContent = rows.length + ' fields · ' + done + ' decided · deer_resistance needs founder approval before publish';
   }
   table.addEventListener('click', function (e) {
     var b = e.target.closest('button[data-act]');

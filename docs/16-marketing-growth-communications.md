@@ -228,9 +228,9 @@ Local SEO depends on city pages, but templated pages that differ only by city na
 - Site hosting comes with Sites; the sending-domain setup below is available to every Company.
 - Default hostname `{company-slug}.rootline.site`; custom domain connection by CNAME or apex A/ALIAS, with automatic TLS certificates issued and renewed via ACME on a "SaaS custom hostname" CDN product (e.g., Cloudflare for SaaS; decision in [20](20-architecture-security.md)).
 - **Domain Connect** one-click flow for supported registrars; guided DNS instructions with live verification otherwise; domain purchase through a reseller API.
-- The same flow sets up the **sending domain** for email (SPF include, DKIM CNAMEs, DMARC record starting at `p=none` with reporting to Rootline, upgraded to `p=quarantine` when alignment is clean for 30 days) so that marketing and transactional email send from `@greenleafgrounds.com`, not a shared domain.
+- The same flow sets up the **sending domain** for email (SPF include, DKIM CNAMEs, DMARC record starting at `p=none` with reporting to Rootline, upgraded to `p=quarantine` when alignment is clean for 30 days) so that marketing and transactional email send from `@greenleafgrounds.example`, not a shared domain.
 - **SLOs:** site availability 99.95% monthly; p75 TTFB under 200 ms from North American edges for cached pages; publish-to-live under 60 seconds.
-- Customer Portal ([06](06-customer-portal.md)) can share the domain as `portal.greenleafgrounds.com`.
+- Customer Portal ([06](06-customer-portal.md)) can share the domain as `portal.greenleafgrounds.example`.
 
 <a id="418-ai-site-generator-mvp"></a>
 
@@ -574,7 +574,7 @@ A recommendation service that generates **Next Best Offers** per Client and feed
 ### 4.14 Referral program with rewards
 
 - **Program configuration:** reward for referrer (account credit, gift card, charity donation, or free service such as one free mow), reward for referee (first-service discount or credit), qualification rule (referee's first invoice paid in full, minimum invoice total, within N days of referral), caps (max rewards per referrer per year), and program terms page auto-generated on the website.
-- **Referral identity:** each Client gets a unique short link and code (e.g., `greenleafgrounds.com/r/JSMITH`), shareable from portal, emails, SMS and a printable card the crew can leave. Link opens the booking/quote flow with attribution preserved.
+- **Referral identity:** each Client gets a unique short link and code (e.g., `greenleafgrounds.example/r/JSMITH`), shareable from portal, emails, SMS and a printable card the crew can leave. Link opens the booking/quote flow with attribution preserved.
 - **Lifecycle:** `invited` -> `lead_created` -> `qualified` (rule met) -> `reward_pending_approval` (optional) -> `reward_issued` -> (or `rejected`/`expired`/`reversed` if the referee refunds within 30 days).
 - **Fraud checks:** referee cannot share address, phone, email or payment fingerprint with referrer; self-referral blocked; velocity limits; suspicious patterns flagged for owner review.
 - **Accounting:** account credits are issued as Credit Memos ([07](07-invoicing-billing-contracts.md)) and posted to a configurable GL account in the [Ledger](09-accounting-ledger-integrations.md) (marketing expense or sales discount, owner's choice with CPA guidance). Gift cards are purchased through a rewards provider (e.g., Tremendous or Tango) on the Company's own payment method and booked as marketing expense.
@@ -733,7 +733,7 @@ An AI voice agent that answers the Company's phone line 24/7 (or after hours, or
 - **Tracking numbers:** static tracking numbers per offline source (vehicle wrap, yard signs, EDDM campaign, door hangers, GBP listing, LSA forwarding is Google's own) and a **dynamic number insertion (DNI) pool** for website visitors so each session sees a unique number and calls map back to the session's source, keyword and landing page. Pool sizing rule: numbers = peak concurrent sessions x 1.2, minimum 4; number reuse after 30 minutes of session inactivity.
 - **Whisper and labels:** staff hear "Call from Google Ads" before connecting; the call is labeled with source in the inbox.
 - **Recording and transcription:** on by default with disclosure prompt (Section 11); recordings retained 13 months by default (configurable 30 days to 7 years), transcripts searchable.
-- **Missed-call text-back:** when a call to the main line is missed and the caller is not in the inbox already, send an SMS within 30 seconds: "Sorry we missed you, this is Greenleaf Grounds. How can we help? Reply here or request a visit at greenleafgrounds.com/request. Reply STOP to opt out." Sent only to mobile numbers (line-type lookup), within quiet hours, and as a direct response to the caller's own call; logged with consent basis `inbound_call_response` for that conversation only, not marketing consent.
+- **Missed-call text-back:** when a call to the main line is missed and the caller is not in the inbox already, send an SMS within 30 seconds: "Sorry we missed you, this is Greenleaf Grounds. How can we help? Reply here or request a visit at greenleafgrounds.example/request. Reply STOP to opt out." Sent only to mobile numbers (line-type lookup), within quiet hours, and as a direct response to the caller's own call; logged with consent basis `inbound_call_response` for that conversation only, not marketing consent.
 - **Caller ID trust:** register business name for outbound caller ID display (CNAM) and ensure calls are signed with STIR/SHAKEN attestation through the carrier, so callbacks are not labeled "Spam Likely". Register Company numbers with the analytics-engine registration portals that the major US carriers' spam-labeling partners offer. Monitor outbound numbers for spam labels weekly, and rotate or remediate any flagged number. Branded caller ID (logo and name on the handset) is used where carriers and handset makers offer it to small businesses (Beyond the brief, idea 21).
 - **Call analytics:** volume by hour, missed calls, answer rate, first-call booking rate, call outcomes by source.
 
@@ -1372,7 +1372,7 @@ Behavior notes: the AI suggestion uses the instant quote engine and route calend
 | Campaign 1  Account notifications   ACTIVE       | Unknown (no evidence)     188    1,496        102     |
 |   Numbers: main, 3 tracking, 2 relay             | Opted out                  41       96         87     |
 | Campaign 2  Marketing               ACTIVE       | [Re-permission email to 1,496 unknown]                |
-|   Opt-in form: greenleafgrounds.com/sms [view]   |-------------------------------------------------------|
+|   Opt-in: greenleafgrounds.example/sms [view]    |-------------------------------------------------------|
 |   SMS terms page: published [view]               | QUIET HOURS, CAPS AND STATE RULES                     |
 |--------------------------------------------------| Marketing SMS: 9:00a-7:00p Mon-Sat, local             |
 | CARRIER HEALTH (last 30 days)                    | Transactional: 7:00a-9:00p, local                     |

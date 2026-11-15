@@ -41,7 +41,7 @@
 14. [Edge cases, compliance and risks](#14-edge-cases-compliance-and-risks)
 15. [Metrics and KPIs](#15-metrics-and-kpis)
 16. [Beyond the brief: extra ideas](#16-beyond-the-brief-extra-ideas)
-17. [Open questions](#17-open-questions)
+17. [Decisions on former open questions](#17-open-questions)
 18. [Sources](#sources)
 
 ---
@@ -2108,7 +2108,7 @@ All platform actions in this module are audit-logged with actor, reason code, be
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| **Breadth risk**: building 20+ modules dilutes MVP quality | High | High | Beachhead focus (one launch region, 6.2). Grow-tier ICP. MVP scope in [24](24-product-scope-decisions-catalog.md). Partners for payroll and imagery |
+| **Breadth risk**: building 20+ modules in one release dilutes quality | High | High | One release with every quality bar kept (ledger invariants, offline sync, tenant isolation, AI golden sets; [24](24-product-scope-decisions-catalog.md) section 1.1). Marketing focus on one launch region (6.2). Grow-tier ICP. Partners for payroll and imagery |
 | **Incumbent response**: Jobber or ServiceTitan/Aspire add AI design and mockups | Medium-high | Medium | Plant KB curation and Region quality are slow to copy. Integrated Ledger. BYO Stripe trust. Speed |
 | **AI quality and expectation gap**: renders look better than what gets installed | Medium | High (reputation, disputes) | Region-constrained palettes. "At planting / in 3 years" toggle. Watermark "conceptual rendering". Proposal terms state renders are illustrative ([11](11-ai-design-mockups.md)) |
 | **AI and GPU cost volatility** | Medium | Medium | Multi-vendor AI Gateway. Cost governor. Credit repricing rules with notice |
@@ -2118,16 +2118,16 @@ All platform actions in this module are audit-logged with actor, reason code, be
 | **Marketplace channel conflict**: Companies fear Rootline will market to their clients | Medium | High | Hard rule: Rootline never markets Rootline Home or Match to a Company's existing clients, and never uses a Company's client data for lead generation. Published in the terms |
 | **Distributor neutrality concerns** | Medium | Medium | Neutrality rule (5.4.2). Labeled sponsorships only |
 | **Platform dependency on Stripe policy and terms** | Low-medium | High | Restricted-key advanced path, abstraction in the payments module, monitor Connect changes ([08](08-payments-stripe.md)) |
-| **Pricing complexity confuses buyers** | Medium | Medium | "2-minute bill test": prospects must be able to compute their bill in under 2 minutes in usability tests. Calculator. In-app preview |
-| **Founder bandwidth as curator** | High | Medium | Region curation owned by `platform_curator` horticulturists, not the founder alone, before a Region opens. Curator tooling in [12](12-plant-knowledge-base.md) |
+| **Pricing complexity confuses buyers** | Medium | Medium | "2-minute bill test": trial users must be able to compute their bill in under 2 minutes, measured in-product (6.10 step 8). Calculator. In-app preview |
+| **Founder bandwidth**: one human approves everything the specs reserve for a person, including demos, booths and community posts | High | Medium | The plant curator agent curates Regions from licensed sources and the founder approves rule packs and coverage statements (OD-60). The support, finance, engineering and marketing agents carry the rest within their limits; pre-approved templates and graduated autonomy keep routine work off the founder's queue ([17](17-ai-copilot-automation.md), [26](26-agent-led-marketing-playbook.md) section 1.2). Curator tooling in [12](12-plant-knowledge-base.md) |
 | **Plant image and content licensing for API** | Medium | Medium | `license_class` per field. Commission original photography. Exclude restricted content |
-| **Localization cost (ES now, FR-CA later)** | Medium | Low-medium | Translation memory, AI-assisted translation with human review |
+| **Localization cost (ES and FR-CA)** | Medium | Low-medium | Translation memory, AI-assisted translation, fluent review contracted per language, and the founder's French-language check before any Quebec marketing (OD-70) |
 | **Incumbent consolidation and bundling**: Granum (LMN + SingleOps) and ServiceTitan (Aspire) bundle payments, measurement and estimating, and can cut price to defend accounts | Medium-high | Medium | Compete on what bundles cannot copy quickly (design + plants + Ledger). Time switching campaigns to their forced migrations (6.5). Keep portability as a promise they cannot match |
-| **CAC optimism**: the unit economics assume blended CAC falls as low-cost channels (SEO, referrals, partners, homeowner app) take share from trade shows and AE-led deals | Medium | High | Traction signals (6.11) open new waves only after payback is proven on actual spend. Channel mix reviewed quarterly against 6.5. Sensitivity in 7.8 |
+| **CAC optimism**: the unit economics assume blended CAC falls as low-cost channels (SEO, referrals, partners, homeowner app) take share from trade shows, outbound and founder demos | Medium | High | Marketing extends to new Regions only when the 6.11 signals hold on actual spend. Channel mix reviewed quarterly against 6.5. Sensitivity in 7.8 |
 | **Free homeowner app cost outruns lead revenue** | Medium | Medium | Render budgets, verification before cost and per-Region kill switch (5.3.4). Cost per accepted lead tracked weekly |
-| **Single launch region concentration**: one Great Lakes cluster ties early results to one regional economy, one winter and one set of shows | Medium | Medium | Six Wave 1 Regions across five states. Wave 2 (Ontario plus four Regions) at V1. Wave 3 cluster scored with 6.2 on measured traction. Retention and win rate reported by Region (15) |
-| **Snow Lite sets expectations the MVP cannot meet**: commercial snow contractors sign up expecting the full module | Medium | Medium | Market Snow Lite as storm logs, per-push invoices and proof PDFs, not storm management. Full module and sealed proof packets named as V1 on the pricing page. ICP scoring (6.1) keeps sales on residential design-build-maintain firms |
-| **Pay-as-you-grow muddies the Zero-Markup message** | Medium | Medium | Opt-in only, cheaper-option default, holdout test (6.10 step 7), retire if it does not lift conversion (open question 17.2) |
+| **Single launch region concentration**: one Great Lakes cluster ties early results to one regional economy, one winter and one set of shows | Medium | Medium | Six launch Regions across five states. Signups from all of the US and Canada from launch. Marketing extends to adjacent Regions, Ontario and a second US cluster on the 6.11 signals. Retention and win rate reported by Region (15) |
+| **Snow Lite oversold**: commercial snow contractors expect storm management from the free tier | Medium | Medium | Market Snow Lite as storm logs, per-push invoices and proof PDFs, not storm management. The pricing page names the Snow & Ice add-on (storm events, triggers, sealed proof packets) next to it, with a 30-day module trial (4.6). ICP scoring (6.1) keeps marketing on residential design-build-maintain firms |
+| **Pay-as-you-grow muddies the Zero-Markup message** | Medium | Medium | Opt-in only, cheaper-option default, holdout test (6.10 step 7); the founder retires it if it does not lift conversion (17.2) |
 
 ---
 
@@ -2144,7 +2144,8 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 | Margin | Gross margin | (revenue - COGS) / revenue | ≥ 72% |
 | Margin | AI gross margin | (credit + receptionist revenue - AI raw cost) / that revenue | ≥ 65%, every action ≥ 55% |
 | Acquisition | Visitor → trial | Trials / unique pricing+product page visitors | ≥ 3% |
-| Acquisition | Trial → PQL | PQLs / trials | ≥ 35% |
+| Acquisition | Trial → PQL | PQLs / trials (4 of 7 signals in 7 days, 6.7) | ≥ 35% |
+| Activation | Trial activation | Trials completing 4 of the 6 onboarding milestones (4.6) / trials, reported separately from PQL (24 R26-7) | Track |
 | Acquisition | Trial → paid | Paid within 45 days / trials | ≥ 12% (ICP ≥ 25%) |
 | Acquisition | CAC by channel and tier | Section 7.5 | Under ceilings |
 | Acquisition | CAC payback | CAC / (ARPA × GM) | ≤ 12 months |
@@ -2165,8 +2166,8 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 | Marketplace | Lead acceptance rate | Accepted offers / offers | ≥ 60% |
 | Marketplace | Lead-to-win rate | Signed proposals / accepted leads | ≥ 20% install leads |
 | Marketplace | Dispute rate | Upheld disputes / accepted leads | ≤ 8% |
-| Partners | Partner-sourced new ARR | Share of new ARR with partner attribution | ≥ 15% (Wave 3 signal, 6.11), rising toward 25% as the program matures |
-| Data products | Data ARR | Plant API + Pulse | Tracked once external data products ship  |
+| Partners | Partner-sourced new ARR | Share of new ARR with partner attribution | ≥ 15% (a 6.11 signal), rising toward 25% as the program matures |
+| Data products | Data ARR | Plant API + Pulse | Tracked from launch |
 | Trust | Billing ticket rate | Billing-related tickets per 100 paying Companies per month | ≤ 3 |
 | Trust | Pricing fairness score | Survey: "Rootline's pricing is fair and predictable" (1-5) | ≥ 4.3 |
 | Efficiency | Acquisition spend as % of recognized revenue | Fully loaded acquisition spend (incl. onboarding) / recognized revenue | Falling every quarter as the channel mix shifts (7.5, 7.9) |
@@ -2180,50 +2181,52 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 ## 16. Beyond the brief: extra ideas
 
 1. **Season-aligned billing**. Annual contracts payable in **10 installments from March to December**, nothing due in January and February, when many landscapers' cash is thinnest. Same annual price. Matches the customer's cash flow and is easy to explain at a trade-show booth.
-2. **Design Solo plan** at about $49/mo for independent landscape designers who don't run crews. Design Studio, AI mockups, Plant KB, proposals, portal, payments. It builds a designer community, adds supply for a **freelance designer marketplace** (Companies without in-house designers hire certified Rootline designers per project, Rootline takes 10%; the marketplace itself is, matching the freelance designer network in [10](10-design-studio.md)), and is a wedge into design-build firms that hire those designers.
-3. **Rootline Design Services**. Done-for-you designs during the spring rush ($149-$399 per residential design, estimate) produced by contract designers using Rootline. Sold to Starter/Grow Companies that can't keep up with spring design requests.
+2. **Design Solo plan** at about $49/mo for independent landscape designers who don't run crews. Design Studio, AI mockups, Plant KB, proposals, portal, payments. It builds a designer community, adds supply for a **freelance designer marketplace** (Companies without in-house designers hire certified Rootline designers per project, Rootline takes 10%; the marketplace runs on the freelance designer network in [10](10-design-studio.md)), and is a wedge into design-build firms that hire those designers.
+3. **Rootline Design Services**. Done-for-you designs during the spring rush ($149-$399 per residential design, estimate) produced by certified freelance designers from the marketplace in idea 2, using Rootline. Sold to Starter/Grow Companies that can't keep up with spring design requests.
 4. **"Rootline Fundador" program**. Many landscape owners start as crew members. A Spanish-first program for crew leads launching their own companies: 6 months free Starter, a bilingual business academy (pricing, insurance, licensing, bookkeeping basics) and a mentor network. It earns loyalty from the next generation of owners.
 5. **Plant Performance Network**. Companies earn AI credits by contributing field observations (plant losses, thriving plantings, pest pressure, photos with dates) that curators use to refine Region Profiles. A data flywheel that improves the product for everyone and gives customers a reason to stay.
-6. **Annual Transparency Report**. Publish yearly: list-price changes, AI credit price changes, application-fee revenue (if pay-as-you-grow launches), uptime, data requests. Turns "fair and transparent" into an auditable commitment.
+6. **Annual Transparency Report**. Publish yearly: list-price changes, AI credit price changes, application-fee revenue from pay-as-you-grow, uptime, data requests. Turns "fair and transparent" into an auditable commitment.
 7. **Group purchasing / spring pre-book**. Aggregate anonymized planned installs from signed proposals into regional demand signals so nurseries and distributors can offer pre-book pricing to participating Companies. Revenue share from suppliers, under neutrality and antitrust review.
 8. **Data-backed plant warranty program**. Partner with an insurer to back plant warranties. Plants with strong Region Profile scores carry lower reserves, so Companies can offer longer warranties on better plant choices. Links to [23](23-innovation-moonshots.md).
 9. **Client-to-neighbor referrals**. A homeowner who loves their new landscape can share it through the white-label portal. Neighbors who request a quote go **directly to that Company** as a free lead (not into the marketplace). Network effects that strengthen the Company's brand, not Rootline's.
 10. **Route-density lead preference**. Match prioritizes maintenance leads that land on streets a Company already services, reducing windshield time. This is unusual among lead products and hard to copy without dispatch data.
 11. **Winter School**. Free, cohort-based, bilingual training every January and February (pricing jobs, estimating with production rates, design sales, cash flow). It produces trials at the exact moment owners plan their year.
 12. **"Show me July and January" bill preview**. The pricing calculator shows the bill in peak season and in winter side by side, making seasonal fairness concrete.
-13. **Customer Advisory Board with real influence**. Founding Customers vote quarterly on 1 roadmap item out of a shortlist.
+13. **A direct line to the founder**. Founding Customers reach the founder directly (24 R26-12); there is no advisory board. Their feature requests go into the catalog review the founder runs under OD-71, and each gets a written answer.
 14. **Accountant-as-a-service bundle**. Through the CPA partner network, Companies can add a monthly bookkeeping service (partner-delivered inside Rootline Ledger) at a bundled price. Rootline takes a platform fee, and Ledger adoption deepens.
 15. **"Make the AI pay for itself" design-fee playbook**. Many design-build firms already charge a design fee and credit it against the install if the client signs. Rootline ships proposal templates for a refundable design deposit ($150-$500, credited at signing), collected into the Company's own Stripe before the designer starts. A Grow Company that charges $250 on 8 designs a month collects $2,000, against roughly $10-$25 of AI credits for the mockups and layouts behind those designs (estimate). The Plan & Billing page shows "design fees collected vs AI credits used" so the owner sees AI as a profit line, not a cost. It also filters out tire-kickers before a designer spends four hours on a plan.
 16. **Contract-end tracker for the tools being replaced**. The stack calculator (9.3) and the onboarding kickoff ask for the renewal date and notice period of each tool Rootline replaces (FSM, QuickBooks, design tool, website, review tool). Rootline reminds the owner 45 days before each renewal or notice deadline, times the switching credit (4.8) to the real overlap, and records realized savings when each old subscription is cancelled. Twelve months later the owner gets a "money you stopped spending" summary, which is the best renewal argument we will ever have.
 17. **Monthly Value Statement on every Rootline invoice**. Each Rootline invoice carries a one-page statement built from the Company's own data: proposals sent with mockups and their signed value, share of invoices paid online and average days to pay, field hours captured by the crew app, AR collected by the collections agent, and "$0 added to your client payments". Every number links to its report in [18](18-reporting-analytics.md). A bill that explains its value reduces billing tickets and makes the 7%-capped price increases (4.7) easier to accept.
-18. **Public migration-slot calendar**. Spring capacity is real: the concierge can only migrate so many Companies before Mar 31. The pricing page shows honest remaining capacity per week ("February week 2: 6 Grow migrations left") pulled from the onboarding schedule. It smooths the January-April crunch (6.6), creates truthful urgency instead of fake countdowns, and tells sales exactly which weeks to sell.
-19. **Risk-documentation insurance program**. Snow logs with timestamped photos, chemical application records, safety training records and vehicle inspections are exactly the evidence insurers want for slip-and-fall, pesticide and auto claims. With a licensed insurance partner, Companies can share a read-only "risk dossier" from Rootline to apply for coverage or premium credits. Rootline earns a disclosed referral fee only where the partner is licensed and the law allows it, and never shares data without the owner's explicit, revocable consent. For snow contractors facing slip-and-fall exposure, this can be worth more than the subscription (estimate; validate with 2-3 insurers).
+18. **Public migration-slot calendar**. Spring capacity is real: the concierge can only migrate so many Companies before Mar 31. The pricing page shows honest remaining capacity per week ("February week 2: 6 Grow migrations left") pulled from the onboarding schedule. It smooths the January-April crunch (6.6), creates truthful urgency instead of fake countdowns, and tells the marketing agent exactly which weeks to push.
+19. **Risk-documentation insurance program**. Snow logs with timestamped photos, chemical application records, safety training records and vehicle inspections are exactly the evidence insurers want for slip-and-fall, pesticide and auto claims. With a licensed insurance partner, Companies can share a read-only "risk dossier" from Rootline to apply for coverage or premium credits. Rootline earns a disclosed referral fee only where the partner is licensed and the law allows it, and never shares data without the owner's explicit, revocable consent. For snow contractors facing slip-and-fall exposure, this can be worth more than the subscription (estimate; the finance agent validates it with 2-3 insurers).
 
 ---
 
-## 17. Open questions
+## 17. Decisions on former open questions
 
-1. ~~**Beachhead regions:** where is the founder's plant knowledge strongest? This sets the 2-3 MVP clusters (6.2).~~ **Resolved (founder decision):** the launch region is the Great Lakes, a single US cluster with six Wave 1 Regions at MVP, Wave 2 (Southern Ontario plus Cincinnati-Dayton, Indianapolis, Western New York and Erie/Pittsburgh) at V1, and a Wave 3 second US cluster chosen later on traction with the 6.2 scoring framework. Snow Lite ships at MVP in every tier as a consequence (4.5).
-2. **Pay-as-you-grow:** launch it at V1, or keep a strict zero-markup message with no exceptions? Does any application fee weaken the pledge? The per-account math in 5.1.2 shows it is roughly revenue-neutral, so the only reason to keep it is a measured lift in Starter conversion (6.10 step 7). A related detail from [08](08-payments-stripe.md): with one rate for card and ACH, a $2,000 ACH payment carries a $10 Rootline fee while Stripe's own ACH fee is capped lower; should ACH carry a lower cap?
-3. **Free plan:** should Rootline offer a permanently free tier for solo operators (to compete with free tools) or rely on the trial, Design Solo and Fundador programs?
-4. **Starter design taste:** should Starter include a few AI mockups per month (beyond the credit allotment) to create the "wow" moment that drives upgrades?
-5. **Canada and Quebec:** CAD price parity policy. Scope and legal requirements for French-language availability for Quebec customers (verify Charter of the French Language obligations for software sold in Quebec).
-6. **Payroll partner:** which embedded payroll provider, and the wholesale cost per employee that sets the add-on price?
-7. **Lead marketplace legal review:** state-by-state rules on contractor referral and success fees, contractor licensing verification, consent text.
-8. **Benchmarks:** antitrust counsel review of Pulse methodology before V1.
-9. **Plant KB licensing:** which fields and images can be licensed through the Plant API, and what original photography is needed?
-10. **Enterprise dedicated DB:** priced as an add-on or bundled above a contract size?
-11. **Credit unit name:** "AI credits" (clear) vs a branded unit (e.g., "Seeds"). Test for comprehension.
-12. **Price increase cap:** is a 7%/year cap after the 24-month lock acceptable to finance across inflation scenarios?
-13. **No-snow winter policy** for the Snow & Ice add-on: goodwill credit or not?
-14. **Tax footprint:** which US states and Canadian provinces need registration at launch for Rootline's own SaaS sales?
-15. **Competitor contract buyouts:** cap at 3 months of overlap, or offer full buyouts for Pro/Enterprise deals?
-16. **Market sizing inputs:** pull US Census CBP (NAICS 561730) and Statistics Canada counts by employee band into [01](01-market-landscape.md) to size the reachable market in each wave and sanity-check logo targets.
-17. **Homeowner funnel scale:** is the illustrative scale in 5.3.4 (about 1.3M homeowners creating a mockup in a year) reachable from SEO and shares alone, or does it need a paid homeowner budget well above $0.5M? Validate with Plant Finder traffic in the Great Lakes launch region.
-18. **10DLC fee absorption:** absorbing one-time registration fees on annual Grow/Pro (4.4) is cheap today. Revisit if carriers raise vetting fees or require annual re-vetting.
-19. **Granum and Xplor switching programs:** how aggressive should the switching credit be for Companies forced to re-onboard payments (full contract buyout vs the standard 3 months)? Needed before the first switching campaign (6.5).
-20. **Onboarding cost classification:** this doc counts pre-go-live onboarding in CAC (7.1). Confirm with `platform_finance` and auditors whether paid migrations and onboarding should sit in COGS for reporting, which would move about 3 points of gross margin.
-21. **Website visualizer subsidy:** should Rootline fund the first 500 widget credits a month for Grow tenants as a growth investment, since widget leads also feed Rootline Match (5.3)? The 4.4.1 default cap of 600 credits funds only about 15 visitors a month, so a subsidy would make the widget useful out of the box. Raised in [11](11-ai-design-mockups.md) open question 1, which names this doc as the owner.
+Each former open question, with its answer from [24](24-product-scope-decisions-catalog.md) section 1 or this doc's own default. Nothing here waits for a later release.
+
+1. **Beachhead regions:** the launch region is the Great Lakes: six Regions where marketing and Plant KB seeding start (OD-01, 6.2). The product works across the US and Canada from launch; adjacent Regions, Ontario and a second US cluster get marketing on the 6.11 signals.
+2. **Pay-as-you-grow:** in v1 as an opt-in plan, with zero markup as the default (OD-09). One rate and the $10 cap apply to card and ACH, as specified in [08](08-payments-stripe.md); the holdout test (6.10 step 7) decides whether the founder keeps it.
+3. **Free plan:** no free plan; Starter, the trial, Design Solo and Fundador cover the low end (OD-02).
+4. **Starter design taste:** no extra mockups beyond the allotment; Starter's 300 included credits already cover about seven 4-variant mockup sets a month.
+5. **Canada and Quebec:** CAD prices are separate price points reviewed twice a year (4.2), with no parity rule; the fr-CA interface and plant names are in v1 and Quebec marketing waits for the founder's French-language check (R24-19, OD-70).
+6. **Payroll partner:** Check, with Gusto Embedded as the fallback (OD-53); the add-on stays at $39 + $6 per employee and the finance agent checks it against the partner's wholesale cost.
+7. **Lead marketplace legal review:** a legal check the founder runs (24 section 1.7); success fees apply only where the state rule table allows them, and consent text names each receiving Company (5.3.2).
+8. **Benchmarks:** ship with k of 10 or more and lags; price benchmarks stay off until the founder has had them checked by counsel (OD-69).
+9. **Plant KB licensing:** facts under a facts-versus-expression policy, photos only from licensed or commissioned sources (OD-67); the Plant API returns only fields whose `license_class` allows redistribution (5.2.1).
+10. **Enterprise dedicated DB:** an add-on from $1,000/mo (4.5).
+11. **Credit unit name:** "AI credits" (OD-10); the marketing agent's comprehension test ([26](26-agent-led-marketing-playbook.md) X8) can propose a change to the founder.
+12. **Price increase cap:** 7% a year after the 24-month lock stands; the finance agent reviews it yearly against inflation and reports to the founder.
+13. **No-snow winter policy:** no automatic refund; a goodwill credit toward next season when no storm events were recorded (OD-16, 14.1).
+14. **Tax footprint:** register wherever the tax engine's nexus monitoring shows an obligation; the finance agent tracks thresholds and the founder signs each registration.
+15. **Competitor contract buyouts:** 3 months of overlap credit as standard; a full buyout only for Pro and Enterprise on annual prepay (OD-08, 4.8).
+16. **Market sizing inputs:** the marketing agent pulls US Census CBP (NAICS 561730) and Statistics Canada counts by employee band into [01](01-market-landscape.md) to size the reachable market by Region and sanity-check logo targets.
+17. **Homeowner funnel scale:** the marketing agent measures it from Plant Finder traffic and Rootline Home usage in the Great Lakes; the paid homeowner budget stays capped (5.3.4) unless the founder raises it.
+18. **10DLC fee absorption:** one-time fees stay absorbed on annual Grow and Pro (OD-12); the finance agent flags any carrier fee change to the founder.
+19. **Granum and Xplor switching programs:** a Company forced to re-onboard payments gets a one-month switching credit; with proof of an overlapping contract, the standard credit of up to 3 months applies instead, and Pro and Enterprise on annual prepay can get a full buyout (4.8, OD-08).
+20. **Onboarding cost classification:** pre-go-live onboarding stays in CAC (7.1); the finance agent confirms the external reporting treatment with Rootline's accountant (OD-25).
+21. **Website visualizer subsidy:** no subsidy; the widget draws from the Company's credits under its cap (default 600) and owners fund campaigns with packs (4.4.1), matching [11](11-ai-design-mockups.md).
 
 ---
 
