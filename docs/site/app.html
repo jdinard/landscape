@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rootline Platform Explorer</title>
+<meta name="description" content="The whole Rootline platform mocked up: every surface and screen, viewed as any role or persona, on any package, in any target market, with the gating rule behind each screen.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/rootline.css">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+<a class="skip" href="#xmain">Skip to the screen</a>
+<header class="site-nav"><div class="inner"><a class="wordmark" href="index.html">Rootline</a><nav aria-label="Proposal"><a href="index.html">Vision</a><a href="app.html" aria-current="page">Platform Explorer</a><a href="prototype.html">AI design prototype</a><a href="recurring.html">Recurring work prototype</a><a href="screens-office.html">Office app</a><a href="screens-design.html">Design and AI</a><a href="screens-field-client-admin.html">Crew, client and admin</a></nav></div></header>
+<div class="xb" id="xb" role="region" aria-label="Explorer controls"></div>
+<div class="xl" id="xl">
+  <main class="xmain" id="xmain" tabindex="-1"></main>
+  <aside class="lens" id="lens" aria-label="Why you see this"></aside>
+</div>
+<noscript><p style="padding:20px">The Platform Explorer needs JavaScript. The static concept screens on <a href="screens-office.html">Office app</a> work without it.</p></noscript>
+<script src="assets/platform-data.js"></script>
+<script src="app/core.js"></script>
+<script src="app/ui.js"></script>
+<script src="app/icons.js"></script>
+<script src="app/data.js"></script>
+<script src="app/frames.js"></script>
+<script src="app/atlas.js"></script>
+<script src="app/screens-web-sell.js"></script>
+<script src="app/screens-web-run.js"></script>
+<script src="app/screens-web-more.js"></script>
+<script src="app/screens-field-portal.js"></script>
+<script src="app/screens-console.js"></script>
+<script src="app/screens-public.js"></script>
+<script>RL.boot();</script>
+</body>
+</html>

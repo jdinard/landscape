@@ -4,9 +4,9 @@
 
 ## At a glance
 
-- **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, and two clickable walkthrough prototypes: the AI design flow, and a season of small recurring work.
+- **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, two clickable walkthrough prototypes (the AI design flow, and a season of small recurring work), and the **platform blueprint**: machine-readable roles, personas, packages, target markets and every route, the **Platform Explorer** that mocks all 153 screens as any role, package and market, and the handoff documents for the agent that builds the product ([25](25-platform-blueprint-build-handoff.md)) and the agent that markets it ([26](26-agent-led-marketing-playbook.md)).
 - **Decided:** bring-your-own Stripe, a built-in double-entry ledger, the Great Lakes launch region, Snow Lite in the MVP, pricing tiers, the region-aware Plant Knowledge Base, and "humans approve AI actions by default".
-- **Remains:** founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the remaining workflows (office lead-to-cash, a crew member's full day, month-end close, the operator console and commercial approvals), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
+- **Remains:** founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, guided walkthroughs for the remaining workflows (office lead-to-cash, a crew member's full day, month-end close, the operator console and commercial approvals; every screen they touch is already in the Platform Explorer), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
 
 ## 1. What's done
 
@@ -26,6 +26,7 @@ Four research reports in [research/](research/) cover general field-service plat
 | Platform | [19 Platform admin console](19-platform-admin-portal.md), [20 Architecture and security](20-architecture-security.md), [21 UX, design system and sitemaps](21-ux-design-system-sitemaps.md) |
 | Business and vision | [22 Business model, pricing and go-to-market](22-business-model-pricing-gtm.md), [23 Innovation and moonshots](23-innovation-moonshots.md) |
 | Scope | [24 Product scope and master feature catalog](24-roadmap-feature-catalog.md): scope tiers, the MVP definition and exit criteria, product dependencies, build vs buy, product risks and open decisions |
+| Build and market it | [25 Platform blueprint and build handoff](25-platform-blueprint-build-handoff.md), [26 Agent-led marketing playbook](26-agent-led-marketing-playbook.md), and the blueprint data in [platform/](platform/README.md) |
 
 Every module doc follows the same template: goals, market research, personas and jobs, feature spec with scope tags, user flows, wireframes, data model, integrations and events, permissions, AI opportunities, edge cases and compliance, metrics, extra ideas, open questions and sources.
 
@@ -48,6 +49,7 @@ All pages live in [site/](site/) as static HTML that runs in any browser, and ar
 
 | Page | What it shows |
 |---|---|
+| [site/app.html](site/app.html) | **Platform Explorer: the whole platform, as anyone.** Every surface (office web app, crew app and manager mode, kiosk, subcontractor lite, client portal, operator console, partner hub, marketing site, Rootline Home) and all 153 routes, rendered from the blueprint data. Switch the market (eight sample companies across the seven target segments), the package (Starter to Enterprise, Design Solo), who you are viewing as (every tenant role, client contact scope, Rootline staff role, partner and homeowner), the scope lens (MVP to V2), the season and the language. Locked, limited and hidden states follow the real entitlement and permission rules, and a "Why you see this" lens explains each one. Atlas pages cover personas, roles and permission matrices, packages, markets, who sees what, and every screen |
 | [site/prototype.html](site/prototype.html) | **Clickable walkthrough of the agentic AI design flow**, from a homeowner's photos and measurements through AI mockups, design-assistant edits, a to-scale plan in the Design Studio, the estimating agent's draft, the proposal, client approval with deposit, and the agents that act afterwards. Each step shows what the agents did, who approved it and the AI credits used |
 | [site/recurring.html](site/recurring.html) | **Clickable walkthrough of small and recurring work**: one 9,000 sq ft lawn for one season. A 2-minute Quick Quote with AI turf measurement, the visit model behind $73 a visit (editable), Good / Better / Best with level billing and autopay, the neighbor's online instant quote, season and route insertion, a Tuesday visit in the Spanish-first crew app, a Spanish voice note turned into a $65 add-on, the Scheduling agent's rain-day reshuffle, the June billing run with ledger postings, an expired-card reminder, and the season true-up and +4% renewal. 22 AI credits for the whole season |
 | [site/index.html](site/index.html) | The vision site: problem, big bets, personas, lead-to-ledger flow, module atlas, competitive landscape, business model, product scope and architecture |
@@ -63,7 +65,8 @@ Each module doc was written by one agent and then reviewed and deepened by anoth
 
 | Measure | Count |
 |---|---|
-| Documents | 24 numbered documents, a README, this status page and 4 research reports |
+| Documents | 26 numbered documents, a README, this status page and 4 research reports |
+| Blueprint data | 27 roles, 28 personas, 6 plans, 63 plan capabilities, 20 add-ons, 7 target segments, 8 sample companies, 10 surfaces, 153 routes |
 | Words | About 950,000 |
 | Cataloged features | 747: 442 [MVP], 255 [V1], 46 [V2], 4 [V3] |
 | Open product decisions (with recommended defaults) | 72, of which 2 are decided (launch region, Snow Lite) |
@@ -129,7 +132,7 @@ Two workflows are clickable: the AI design flow ([site/prototype.html](site/prot
 | Expired-card reminder [MVP] | [17](17-ai-copilot-automation.md) A5 |
 | Season true-up, fixed escalator and renewal [MVP] | [07](07-invoicing-billing-contracts.md) sections 4.2.3, 4.3.3-4.3.7 |
 
-The workflows that would still benefit from clickable walkthroughs:
+The [Platform Explorer](site/app.html) now mocks every screen on every surface, so each step of the workflows below can already be opened as the right person, package and market. What the explorer does not give is a guided, step-by-step story with agent narration. The workflows that would still benefit from those walkthroughs:
 
 - office lead-to-cash for project work: dispatch board, visit completion, invoicing and payment
 - a crew member's full day in the crew app, including clock-in, breaks, offline sync and Snow Lite
@@ -161,4 +164,8 @@ None of the plant data exists yet. The work, in order ([12](12-plant-knowledge-b
 
 ### 2.7 Building the product
 
-Building starts from the MVP definition in [24](24-roadmap-feature-catalog.md) section 3 and the architecture in [20](20-architecture-security.md). The repository will need its own code structure, engineering conventions and CI when that work begins.
+Building starts from the MVP definition in [24](24-roadmap-feature-catalog.md) section 3 and the architecture in [20](20-architecture-security.md). [25 - Platform blueprint and build handoff](25-platform-blueprint-build-handoff.md) is the brief for the agent that builds it: what to generate from the blueprint data in [platform/](platform/README.md) (permission and field-class tables, the entitlement table, the route manifest and navigation, seed data), the build order by scope tier, and the acceptance checks, with the [Platform Explorer](site/app.html) as the visual reference for every screen. The repository will need its own code structure, engineering conventions and CI when that work begins.
+
+### 2.8 Marketing it
+
+[26 - Agent-led marketing playbook](26-agent-led-marketing-playbook.md) is the brief for the agent that markets the product: the segments and draft messaging in [platform/segments.json](platform/segments.json), the channels and assets per segment, what the agent may publish on its own and what a person approves, and the claims it may not make until the research facts are verified (section 2.2). Messaging is draft copy to test with design partners, not settled positioning.
