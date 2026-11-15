@@ -200,6 +200,8 @@ function personFor(o, t) {
   const D = RL.data(t);
   if (role === 'client_residential') return { primary: D.res.primary, co_owner: D.res.co_owner, property_contact: D.res.resident }[o.scope] || D.res.primary;
   if (role === 'client_commercial') return { primary: D.com.primary, approver: D.com.approver, billing: D.com.billing, property_contact: D.com.site, viewer: D.com.viewer }[o.scope] || D.com.primary;
+  const staff = (D.people || []).find(p => p.role === role);
+  if (staff) return staff.name;
   return ROLES[role] ? ROLES[role].name : role;
 }
 function ctx() {

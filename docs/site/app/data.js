@@ -62,14 +62,15 @@ function build(t) {
   const mods = t.modules.filter(m => SERVICES[m]);
   const servicePool = mods.flatMap(m => SERVICES[m]);
   const person = () => pick(FIRST) + ' ' + pick(LAST);
-  const crewPerson = () => pick(CREWF) + ' ' + pick(CREWL);
+  const castNames = new Set(Object.values(t.cast || {}));
+  const crewPerson = () => { let n; do { n = pick(CREWF) + ' ' + pick(CREWL); } while (castNames.has(n)); castNames.add(n); return n; };
   const addr = () => `${int(100, 9800)} ${pick(STREET)} ${pick(SUF)}`;
 
   // ---- people and crews ----
   const cast = t.cast || {};
   const crewCount = Math.max(designOnly ? 0 : 1, Math.min(t.crews, 8));
   const crewTypes = t.modules.includes('snow_ice') ? ['maintenance', 'maintenance', 'install', 'irrigation', 'maintenance', 'enhancement', 'maintenance', 'maintenance']
-    : t.modules.includes('lawn_programs') ? ['lawn', 'maintenance', 'lawn', 'maintenance', 'install', 'maintenance', 'lawn', 'maintenance']
+    : t.modules.includes('lawn_programs') ? ['maintenance', 'lawn', 'install', 'lawn', 'maintenance', 'maintenance', 'lawn', 'maintenance']
     : t.modules.includes('irrigation') && !t.modules.includes('design_build') ? ['irrigation', 'irrigation', 'lighting', 'irrigation', 'maintenance']
     : ['maintenance', 'install', 'maintenance', 'install', 'maintenance', 'enhancement', 'maintenance', 'install'];
   D.crews = Array.from({ length: crewCount }, (_, i) => {
@@ -97,7 +98,7 @@ function build(t) {
     D.properties.push({ id: pid, client: id, clientName: c.name, address: c.address, city, lot: int(6, 30) * 1000, turf: int(3, 18) * 1000, beds: int(2, 9), gate: R() < .4 ? 'Gate code ' + int(1000, 9999) : null, dog: R() < .3 ? pick(['Biscuit', 'Moose', 'Luna', 'Rocky']) + ' (friendly)' : null, zones: t.modules.includes('irrigation') ? int(4, 12) : null, controller: t.modules.includes('irrigation') ? pick(['Hunter Pro-C, garage', 'Rain Bird ESP-TM2, side yard', 'Rachio 3, basement']) : null });
     D.clients.push(c); return c;
   };
-  (t.hero_clients || []).forEach(hc => addClient({ name: hc.name, type: hc.type, address: hc.property, service: hc.service, autopay: hc.autopay, balance: hc.type === 'residential' ? 0 : int(2, 30) * 400, pastDue: 0, hero: true, contact: hc.name.replace(/^(\w+) and \w+ (\w+)/, '$1 $2') }));
+  (t.hero_clients || []).forEach(hc => addClient({ name: hc.name, type: hc.type, address: hc.property, service: hc.service, autopay: hc.autopay, balance: hc.type === 'residential' ? 0 : int(2, 30) * 400, pastDue: 0, hero: true, contact: hc.contact || (hc.type === 'residential' ? hc.name.replace(/^(\w+) and \w+ (\w+)/, '$1 $2') : person() + ' (board president)') }));
   while (D.clients.length < nClients) {
     const isCom = R() < comShare;
     const type = isCom ? (R() < .35 ? 'hoa' : 'commercial') : 'residential';

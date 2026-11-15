@@ -121,7 +121,7 @@ RL.frames.console = (c, body) => {
   return browser('https://console.rootline.app' + (c.route.path === '/' ? '' : c.route.path.replace(':id', c.x || c.t.id)), `<div class="mx console">${rail}<div class="mx-body">${top}${h.banner(`${icon('shield')} Signed in as ${esc(c.who)} (${esc(staff.key)}). Every privileged action needs a reason and is written to the platform audit log (19, 02 §5.13).`, 'info')}${subnav('console', c)}<div class="mx-content">${body}</div></div></div>`);
 };
 function phone(c, o) {
-  const time = c.winter ? '4:52' : '7:42';
+  const time = c.winter ? '4:52' : '10:40';
   return `<div class="ph" aria-label="${esc(o.label || 'Phone')}"><div class="ph-status"><span>${time}</span><span class="flex gap4">${o.offline ? icon('wifi-off', 's') : ''}${icon('battery', 's')}</span></div>${o.head || ''}<div class="ph-body">${o.body}</div>${o.tabs || ''}</div>`;
 }
 RL.phone = phone;
@@ -130,7 +130,7 @@ RL.frames.crew = (c, body) => {
   const tabs = [['crew.today', 'today', c.tr('Today', 'Hoy')], ['crew.map', 'map', c.tr('Map', 'Mapa')], ['crew.time', 'clock', c.tr('Time', 'Tiempo')], ['crew.messages', 'chat', c.tr('Messages', 'Mensajes')], ['crew.more', 'grid', c.tr('More', 'Más')]];
   const cur = c.route.nav;
   const crew = c.D.crews[0] || { name: 'Crew', truck: '' };
-  const head = `<div class="ph-head">${h.avatar(String(c.who))}<div class="grow"><b>${esc(c.who)}</b><span>${esc(crew.name)} · ${esc(crew.truck)}</span></div><span class="pill ok">${icon('refresh', 's')}${c.tr('Synced', 'Sincronizado')}</span></div>`;
+  const head = `<div class="ph-head">${h.avatar(String(c.who))}<div class="grow"><b>${esc(c.who)}</b><span>${esc(crew.name)} · ${esc(crew.truck)}</span></div>${String(RL.ui['crew.offline']) === 'true' ? `<span class="pill warn">${icon('wifi-off', 's')}${c.tr('Offline · 3 waiting', 'Sin señal · 3 en cola')}</span>` : `<span class="pill ok">${icon('refresh', 's')}${c.tr('Synced', 'Sincronizado')}</span>`}</div>`;
   const tb = `<nav class="ph-tabs" aria-label="Crew app">${tabs.map(([id, ic, l]) => `<button type="button" data-go="${id}"${I.ROUTES[id].nav === cur ? ' aria-current="page"' : ''}>${icon(ic)}${l}</button>`).join('')}</nav>`;
   const [ph, side] = splitSide(body);
   return `<div class="ph-wrap">${phone(c, { head, body: ph, tabs: tb, label: 'Rootline Crew app' })}${side ? `<div class="ph-side">${side}</div>` : ''}</div>`;

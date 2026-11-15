@@ -53,7 +53,8 @@ const file = 'file://' + path.resolve(__dirname, '..', '..', 'app.html');
       if (errs.length > before || n < 40 || err) problems.push(`${r.id} as=${o.key} t=${t}${plan ? ' plan=' + plan : ''}: ${err ? 'SCREEN ERROR ' : ''}${n < 40 ? 'empty ' : ''}${errs.slice(before).join(' | ')}`);
     }
     if (shots && r.surface !== 'atlas') {
-      const o = ases[0];
+      const shotT = id => id.startsWith('portal.portfolio') || id.startsWith('portal.approvals') ? 'summit' : 'greenleaf';
+      const o = (await p.evaluate(({ id, list, t }) => list.find(x => ['ok', 'limit'].includes(RL.access(RL.idx.ROUTES[id], Object.assign({}, RL.S, { as: x.key, t, plan: '' })).state)), { id: r.id, list: ases, t: shotT(r.id) })) || ases[0];
       await p.evaluate(({ id, as }) => { RL.ui = {}; RL.set({ as, t: id.startsWith('portal.portfolio') || id.startsWith('portal.approvals') ? 'summit' : 'greenleaf', r: id, plan: '' }); }, { id: r.id, as: o.key });
       await p.screenshot({ path: path.join(shots, r.id + '.png'), fullPage: true });
     }
