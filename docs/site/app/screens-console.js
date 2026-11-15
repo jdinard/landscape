@@ -705,5 +705,377 @@ function t360Danger(c, t) {
     </div>` });
 }
 
+// =====================================================================================
+// Migration Center (19 PA-020 to PA-023, §6.5)
+// =====================================================================================
+const MIG_STATES = ['requested', 'scoping', 'awaiting_files', 'mapping', 'validating', 'tenant_review', 'committing', 'reconciling', 'live'];
+const MIGS = c => [
+  { id: 'MIG-0412', t: 'bluespruce', name: 'Blue Spruce Lawn', src: 'Jobber export (Jan 2027)', state: 'validating', spec: 'Luis R.', cut: 5, live: 19, sla: 'day 6 of 15', clients: 1228, ent: 'Free: 1 source system on annual Grow' },
+  { id: 'MIG-0418', t: 'kestrel', name: 'Kestrel Lawn franchise system', src: 'Scoped project: 7 remaining locations', state: 'committing', spec: 'Luis R.', cut: 2, live: 9, sla: 'scoped plan, on track', clients: 6400, ent: 'Enterprise scoped project' },
+  { id: 'MIG-0421', t: 'northfield', name: 'Northfield Snow & Landscape', src: 'Service Autopilot reports', state: 'mapping', spec: 'Jordan P.', cut: 9, live: 24, sla: 'day 3 of 15', clients: 640, ent: '$499 per source (monthly), credited if annual in 60 days' },
+  { id: 'MIG-0425', t: 'cardinal', name: 'Cardinal Outdoor', src: 'Generic CSV', state: 'tenant_review', spec: 'Jordan P.', cut: 1, live: 6, sla: 'day 8 of 15', clients: 388, ent: 'Free: 1 source system on annual Grow' },
+  { id: 'MIG-0427', t: 'hermanos', name: 'Hermanos Garcia Lawn Care', src: 'Spreadsheets (unknown)', state: 'requested', spec: 'unassigned (ES)', cut: 14, live: 30, sla: 'scoping call due in 1 business day', clients: 0, ent: 'Trial: self-serve or $499 per source' },
+  { id: 'MIG-0409', t: 'copperleaf', name: 'Copper Leaf Landscape', src: 'Generic CSV', state: 'awaiting_files', spec: 'Jordan P.', cut: 12, live: 26, sla: 'files 2 days late', clients: 0, ent: 'Trial' },
+  { id: 'MIG-0401', t: 'kzoo', name: 'Kalamazoo Stoneworks', src: 'CSV + QuickBooks Online', state: 'reconciling', spec: 'Luis R.', cut: -2, live: 2, sla: 'day 13 of 15', clients: 510, ent: 'Free: 1 source (QBO counted as a second, $499)' },
+  { id: 'MIG-0398', t: 'escarpment', name: 'Escarpment Gardens', src: 'QuickBooks Online (OAuth)', state: 'live', spec: 'Luis R.', cut: -20, live: -8, sla: 'met', clients: 290, ent: 'Free: 1 source system on annual Grow' },
+  { id: 'MIG-0403', t: 'maplestone', name: 'Maple & Stone LLC', src: 'Card data copy from a vendor-controlled account', state: 'scoping', spec: 'Maya D.', cut: 0, live: 10, sla: 'blocked: source vendor refused copy', clients: 0, ent: 'Payment method continuity (V1)', blocked: true },
+];
+RL.screen('console.migrations', (c) => {
+  const ms = MIGS(c), selId = RL.ui['cx.mig'] || 'MIG-0412', m = ms.find(x => x.id === selId) || ms[0], ro = RO(c);
+  const cols = MIG_STATES.map(s => ({ title: s, cards: ms.filter(x => x.state === s).map(x => ({ title: esc(x.name), sub: `${x.id} · ${esc(x.src)}`, meta: `${h.pill(esc(x.sla), x.blocked ? 'danger' : /late|due|13 of/.test(x.sla) ? 'warn' : '')}${x.id === m.id ? h.pill('open below', 'accent') : ''}` })) }));
+  const obj = [['Clients', 1228, 1192, 22, 0, '14 (phone format)'], ['Properties', 1401, 1379, 22, 0, '31 (unit or suite parsed)'], ['Recurring services', 318, 312, 6, 0, '0'], ['Open invoices', 87, 86, 0, 1, '0'], ['Price book', 146, 146, 0, 0, '9 (unit normalized)'], ['Employees', 24, 24, 0, 0, 'SSN column blocked by rule']];
+  const stepIdx = { requested: 0, scoping: 0, awaiting_files: 0, mapping: 1, validating: 2, tenant_review: 4, committing: 5, reconciling: 6, live: 7 }[m.state];
+  return h.page({ title: 'Migration Center', sub: `${ms.length} white-glove projects shown · ${c.winter ? 'Winter Switch season: maintenance Companies are steered to November-February cutovers' : 'Spring: mid-season migrations use parallel-run mode'}`, actions: ro ? '' : B('New project', { kind: 'primary', icon: 'plus', a: { 'data-act': 'cx-newmig' } }) })
+    + roBanner(c)
+    + `<div class="flex">${ms.map(x => B(x.id, { kind: x.id === m.id ? 'primary' : 'ghost', a: { 'data-ui': 'cx.mig', 'data-val': x.id } })).join('')}</div>`
+    + h.board(cols.slice(0, 9))
+    + h.card({ title: `${m.id} · ${esc(m.name)}`, sub: `Source: ${esc(m.src)} · state ${m.state}`, actions: B('Tenant 360', { kind: 'ghost', a: { 'data-go': 'console.tenant', 'data-x': m.t } }), body: h.kv([['Specialist', esc(m.spec)], ['Cutover', day(c, m.cut)], ['Go-live target', day(c, m.live)], ['SLA', esc(m.sla)], ['Entitlement', esc(m.ent)], ['Data access', 'Support Access Grant, scope migration (14 days)']])
+      + h.steps(['Files', 'Mapping', 'Validation', 'Dry run', 'Approve', 'Commit', 'Reconcile', 'Live'], stepIdx) })
+    + h.cols('21', [
+      h.card({ title: 'Validation report', sub: 'Rows land in a per-migration staging schema, never in live tables', flush: true, body: h.table([{ k: 0, label: 'Object' }, { k: 1, label: 'Rows', n: true, fmt: v => num(v) }, { k: 2, label: 'Ready', n: true, fmt: v => num(v) }, { k: 3, label: 'Warnings', n: true, fmt: v => v ? `<span style="color:var(--warn-text)">${v}</span>` : '0' }, { k: 4, label: 'Errors', n: true, fmt: v => v ? `<b style="color:var(--danger-text)">${v}</b>` : '0' }, { k: 5, label: 'Auto-fixed' }], obj, { dense: true })
+        + `<div class="li">${[
+          ['danger', 'ERROR INV-3381: balance -$45.00 not marked as credit', ab(c, 'migrate', 'Mark as credit memo', { t: 'INV-3381', audit: 'migration.fix', hide: true }) + ab(c, 'migrate', 'Exclude', { t: 'INV-3381', id: 'excl', audit: 'migration.fix', hide: true })],
+          ['warn', 'WARN 22 addresses geocoded at interpolated precision', B('Review on map', { a: { 'data-act': 'cx-mapreview' } })],
+          ['warn', 'WARN 6 schedules "every 7-10 days"', ab(c, 'migrate', 'Set to weekly', { t: '6 schedules', audit: 'migration.fix', hide: true }) + ab(c, 'migrate', 'Set to 10-day', { t: '6 schedules', id: 'ten', audit: 'migration.fix', hide: true })],
+          ['warn', 'WARN 14 possible duplicate clients (Jaro-Winkler > 0.92)', B('Review merges', { a: { 'data-act': 'cx-merges' } })],
+        ].map(([tone, txt, act]) => `<div class="li-i"><span class="ico ${tone}">${icon('warn')}</span><div class="grow tiny">${esc(txt)}</div><div class="flex nw">${act}</div></div>`).join('')}</div>`
+        + `<div class="cd-b"><div class="flex"><span class="mono tiny">AR check: source $48,255.55 · staged $48,210.55 · diff $45.00 (INV-3381)</span><span class="grow"></span>${ro ? '' : B('Run dry run', { dis: true, title: 'Blocked: 1 error' }) + ab(c, 'migrate', 'Commit', { t: m.name, audit: 'migration.commit', hide: true, sum: 'Commits in batches of 1,000 with import_batch_id on every record, after the tenant owner (and bookkeeper for financial objects) approves. 72-hour rollback window.' })}</div></div>` }),
+      `<div class="stack12">${h.card({ title: 'Mapping profile', sub: 'AI-proposed, confidence under 0.8 needs a human', body: h.table([{ k: 0, label: 'Source column', m: true }, { k: 1, label: 'Rootline field', m: true }, { k: 2, label: 'Conf.', n: true, fmt: v => v < .8 ? `<span class="pill warn">${v}</span>` : v }], [['Client Name', 'client.name', .99], ['Service Street 1', 'property.line1', .97], ['Visit Frequency', 'agreement.rrule', .74], ['Tags', 'client.tags', .66], ['Balance', 'invoice.balance', .95]], { dense: true }) + h.note('Saved as profile jobber-2027-01, reusable for the next Jobber export.') })}
+      ${c.inLens('V1') ? h.card({ title: 'Spring-Ready Guarantee ' + h.tag('V1'), sub: 'Annual Grow or Pro signed by Feb 15 and live by Mar 31, or 3 months free', body: c.winter ? h.kv([['Eligible tenants', '143'], ['At risk (5+ business days behind)', '<b style="color:var(--warn-text)">9</b>, routed to the top of the queue'], ['Countdown', `${79} days to Mar 31`]]) : h.kv([['Apr 1 sweep', '143 eligible · 138 met'], ['Tenant-caused misses', '3 (files never supplied), evidence recorded'], ['Rootline-caused misses', '2: 3-month credit applied with reason goodwill']]) }) : ''}
+      ${h.card({ title: 'Payment method continuity ' + h.tag('V1'), body: h.kv([['Own Stripe account', '61% of migrations: saved cards already there'], ['Vendor-controlled account', '27%: copy requested, 1 refused (MIG-0403)'], ['No portable data', '12%: "update your payment method" campaign 10 days before first autopay']]) })}</div>`,
+    ]);
+});
+RL.act('cx-newmig', () => { RL.toast('New migration project (mock): pick the tenant, sources and scope. A scoping call is due within 2 business days (PA-022).'); return false; });
+RL.act('cx-mapreview', () => { RL.toast('Map review (mock): 22 interpolated addresses; routing needs rooftop or parcel precision.'); return false; });
+RL.act('cx-merges', () => { RL.toast('Merge review (mock): 14 candidate pairs by normalized email, phone or name plus address.'); return false; });
+
+// =====================================================================================
+// Billing (19 PA-030 to PA-038; 22 §4, §8.2)
+// =====================================================================================
+const DUNNING = c => {
+  const T = id => findT(c, id);
+  const rows = [
+    { tid: T('hilltop').tid, x: 'hilltop', name: 'Hilltop Lawn Co.', plan: 'grow', day: 9, state: 'past_due', amt: 389, last: 'card_declined (insufficient_funds)', next: 'Day 12: "features restrict in 2 days"', mrr: 389 },
+    { tid: T('foxvalley').tid, x: 'foxvalley', name: 'Fox Valley Tree & Turf', plan: 'grow', day: 17, state: 'restricted', amt: 824, last: 'ACH return R01, retried', next: 'Day 25: suspension notice', mrr: 412 },
+    { tid: T('riverbend').tid, x: 'riverbend', name: 'Riverbend Lawn & Snow', plan: 'starter', day: 33, state: 'suspended', amt: 237, last: 'expired_card', next: 'Day 55: final notice with export link', mrr: 79, snow: c.winter },
+    { tid: 'TNT-49577', x: '', name: 'Evergreen Edge Lawn', plan: 'grow', day: 3, state: 'past_due', amt: 249, last: 'card_declined (do_not_honor)', next: 'Day 7: email + SMS + CSM task', mrr: 249 },
+    { tid: 'TNT-49031', x: '', name: 'Rolling Hills Grounds', plan: 'pro', day: 26, state: 'restricted', amt: 1058, last: 'card_declined (stolen card reported)', next: 'Grace candidate (stolen card)', mrr: 529 },
+    { tid: 'TNT-49702', x: '', name: 'Blackbird Landscape', plan: 'starter', day: 1, state: 'past_due', amt: 79, last: 'Smart Retry scheduled', next: 'Day 3: email', mrr: 79 },
+  ];
+  if (c.winter) rows.unshift({ tid: T('brookside').tid, x: 'brookside', name: 'Brookside Lawn Co.', plan: 'starter', day: 9, state: 'past_due', amt: 79, last: 'expired_card', next: 'Winter Mode offered on day 7', mrr: 79, wm: true });
+  return rows;
+};
+const dunTable = (c, rows) => h.table([
+  { k: 'name', label: 'Tenant', fmt: (v, r) => `<b>${esc(v)}</b> ${mono(r.tid)}${r.snow ? `<div>${h.pill('snow carve-out: 41 of 72 h used this event', 'info')}</div>` : ''}${r.wm ? `<div>${h.pill('Winter Mode offer sent', 'info')}</div>` : ''}` },
+  { k: 'day', label: 'Day', n: true },
+  { k: 'state', label: 'State', fmt: v => stP(v) },
+  { k: 'amt', label: 'Due', n: true, fmt: v => money(v) },
+  { k: 'last', label: 'Last attempt', fmt: v => `<span class="tiny">${esc(v)}</span>` },
+  { k: 'next', label: 'Next step', fmt: v => `<span class="tiny">${esc(v)}</span>` },
+], rows, { dense: true });
+const PLAN_SUBS = { starter: 437, grow: 552, pro: 191, enterprise: 4, design_solo: 30, archive: 21 };
+RL.screen('console.billing', (c) => {
+  const P = RL.P.plans, ro = RO(c);
+  const [tb, cur] = tabsN('cx.bill', [['catalog', 'Catalog'], ['subs', 'Subscriptions'], ['dunning', 'Dunning queue', DUNNING(c).length], ['coupons', 'Coupons and credits'], ['revenue', 'Revenue']]);
+  let body = '';
+  if (cur === 'catalog') {
+    const pend = apprState('APR-2291');
+    body = h.card({ title: 'Plans', sub: 'Rootline is the source of truth; synced to Stripe Products and Prices on Rootline\'s own account. USD and CAD are separate price points (PA-030)', flush: true, body: h.table([
+      { k: 'name', label: 'Plan', fmt: (v, p) => `<b>${esc(v)}</b> ${mono(p.code)} ${h.tag(p.scope)}${p.public ? '' : ' <span class="tiny t3">sales-led</span>'}` },
+      { k: 'monthly', label: 'Monthly', n: true, fmt: (v, p) => v ? money(v) : '-' },
+      { k: 'annual', label: 'Annual /mo', n: true, fmt: (v, p) => v ? money(v) : `<span class="tiny">${esc(p.annual_note || '-')}</span>` },
+      { k: 'monthly_cad', label: 'CAD', n: true, fmt: (v, p) => v ? 'C' + money(v) + (p.annual_cad ? ' / C' + money(p.annual_cad) : '') : '-' },
+      { k: 'office_seats', label: 'Seats o · f · d', n: true, fmt: (v, p) => `${v == null ? '-' : v} · ${p.field_seats == null ? '∞' : p.field_seats} · ${p.designer_seats == null ? 'neg.' : p.designer_seats}` },
+      { k: 'extra_office', label: 'Extra o · f · d', n: true, fmt: (v, p) => v ? `$${v} · $${p.extra_field} · $${p.extra_designer}` : '-' },
+      { k: 'ai_credits', label: 'Credits', n: true, fmt: v => v ? num(v) : '-' },
+      { k: 'sms', label: 'SMS', n: true, fmt: v => v ? num(v) : '-' },
+      { k: 'code', label: 'Version · subs', n: true, fmt: v => `${v === 'pro' ? '2027.1' : '2026.4'} · ${num(PLAN_SUBS[v] || 0)}` },
+    ], P.plans, { dense: true }) })
+      + h.cols('21', [
+        h.card({ title: 'Draft price change: Pro 2027.2', tone: 'warn', sub: 'Finance drafts, the founder approves (two-person, PA-030)', body: h.kv([['Change', 'pro.monthly $599 → $629; pro.annual $529 → $549'], ['Applies to', 'New subscribers. Existing tenants stay on 2027.1 until a migration is scheduled'], ['Price Lock Promise', '214 tenants excluded (annual, under 24 months); later raises capped at 7%/yr, 90 days\' notice'], ['Projected MRR', '+$1,140/mo at the current Pro signup rate'], ['Status', pend ? h.pill(pend, pend === 'approved' ? 'ok' : '') : h.pill('APR-2291 waiting on the founder', 'warn')]])
+          + `<div class="flex">${own(c) && !pend ? B('Review APR-2291', { kind: 'primary', a: { 'data-modal': 'cx-appr', 'data-id': 'APR-2291' } }) : ''}${ab(c, 'catalog', 'Draft a price change', { id: 'price-draft', audit: 'billing.price.change', hide: true, two: true, stepup: true, blast: 'Price migration tool lists every excluded tenant', sum: 'Creates a new price version. Existing subscribers stay on their version; the migration tool refuses any schedule that breaks the Price Lock Promise.' })}</div>` }),
+        h.card({ title: 'Trials and offers', flush: true, body: h.table([{ k: 'item', label: 'Item' }, { k: 'rule', label: 'Rule', fmt: v => `<span class="tiny">${esc(v.length > 110 ? v.slice(0, 108) + '…' : v)}</span>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.trial_and_offers.slice(0, 6), { dense: true }) }),
+      ])
+      + h.card({ title: 'Add-ons', sub: 'Seasonal add-ons carry a billing month mask: Snow & Ice shows "dormant until Nov 1", not canceled (PA-032)', flush: true, body: h.table([{ k: 'name', label: 'Add-on', fmt: (v, a) => `<b>${esc(v)}</b> ${mono(a.code)}` }, { k: 'price', label: 'Price', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'available_on', label: 'Available on', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'billing_months', label: 'Months', fmt: v => v ? mono(v.join(' ')) : '<span class="t3">all</span>' }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.addons, { dense: true }) })
+      + h.cols('2', [
+        h.card({ title: 'Usage meters', flush: true, body: h.table([{ k: 'key', label: 'Meter', m: true }, { k: 'included', label: 'Included S / G / P', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'overage', label: 'Overage', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.meters, { dense: true }) }),
+        h.card({ title: 'AI credit rate card', sub: 'Published action prices held 12 months; an increase needs 60 days\' notice and two people (PA-033)', flush: true, body: h.table([{ k: 'action', label: 'Action', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'credits', label: 'Credits', n: true, fmt: v => `<b>${esc(v)}</b>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.ai_credit_rates.filter(r => c.inLens(r.scope)).slice(0, 14), { dense: true }) + `<div class="cd-b">${ab(c, 'catalog', 'Propose a rate change', { id: 'ratecard', audit: 'billing.rate_card.change', hide: true, two: true, stepup: true, blast: 'All tenants; 60-day notice email' })}</div>` }),
+      ]);
+  } else if (cur === 'subs') {
+    const rows = allT(c).filter(t => !['trial', 'trial_expired', 'churned'].includes(t.state));
+    body = h.card({ title: 'Subscriptions', sub: `${num(PM(c).paying)} paying · illustrative rows`, flush: true, body: h.table([
+      { k: 'name', label: 'Tenant', fmt: (v, t) => `<b>${esc(v)}</b> ${mono(t.tid)}` }, { k: 'plan', label: 'Plan', fmt: v => esc(planN(v)) },
+      { k: 'plan', label: 'Interval', fmt: (v, t) => (I.PLANS[v].annual && !['brookside', 'riverbend', 'prairieedge'].includes(t.id)) ? 'annual' : 'monthly' },
+      { k: 'mrr', label: 'MRR', n: true, fmt: (v, t) => mrrF(t) }, { k: 'coupon', label: 'Discount', fmt: v => v ? `<span class="tiny">${esc(v)}</span>` : '' },
+      { k: 'state', label: 'Status', fmt: v => stP(v) }, { k: 'signup', label: 'Next invoice', fmt: (v, t) => esc(day(c, 20 + (h.hash(t.id) % 9))) },
+    ], rows, { go: 'console.tenant', dense: true }) });
+  } else if (cur === 'dunning') {
+    const d = DUNNING(c);
+    body = h.banner(`${icon('shield')} Restricted and suspended never block a Company from getting paid: scheduling (restricted), invoicing, the Customer Portal, client payments into the Company's own Stripe, the Ledger and exports keep working. Snow carve-out: a snow tenant keeps crew dispatch and per-push logging for up to 72 hours per forecast event (22 §8.2, PA-012).`, 'info')
+      + h.kpis([{ label: 'In dunning', value: d.length }, { label: 'Past due', value: money(d.reduce((s, r) => s + r.amt, 0)) }, { label: 'Recovered (30 days)', value: '71%', delta: 'Smart Retries + card updater', tone: 'ok' }, { label: 'Involuntary churn (90 d)', value: '0.4%', tone: '' }])
+      + h.card({ title: 'Ladder', body: `<div class="steps">${['Day 0 email + banner', 'Day 3 email', 'Day 7 email, SMS, CSM task', 'Day 12 notice', 'Day 14 restricted', 'Day 25 notice', 'Day 30 suspended', 'Day 55 final notice', 'Day 60 churned'].map((s, i) => `<span class="${[4, 6, 8].includes(i) ? 'on' : ''}">${esc(s)}</span>`).join('')}</div><div class="tiny t3">Messages go to the owner and billing contacts only. Crew and clients never see billing messages. Maintenance and snow tenants on monthly plans get a Winter Mode offer on day 7 in their off-season.</div>` })
+      + h.card({ title: 'Queue', flush: true, body: h.table([
+        { k: 'name', label: 'Tenant', fmt: (v, r) => `<b>${esc(v)}</b> ${mono(r.tid)}${r.snow ? `<div>${h.pill('snow carve-out: 41 of 72 h used this event', 'info')}</div>` : ''}${r.wm ? `<div>${h.pill('Winter Mode offer sent', 'info')}</div>` : ''}` },
+        { k: 'day', label: 'Day', n: true }, { k: 'state', label: 'State', fmt: v => stP(v) }, { k: 'amt', label: 'Due', n: true, fmt: v => money(v) },
+        { k: 'last', label: 'Last attempt', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'next', label: 'Next', fmt: v => `<span class="tiny">${esc(v)}</span>` },
+        { k: 'tid', label: '', fmt: (v, r) => `<div class="flex nw gap4">${ab(c, 'suspend_pay', 'Grace +14 d', { t: r.name, id: 'grace', audit: 'billing.dunning.grace', hide: true, sum: 'Extends past_due by up to 14 days, once per 12 months, with a reason code (22 §8.2).' })}${ab(c, 'safe', 'Pay-now link', { t: r.name, id: 'paylink', audit: 'billing.dunning.paylink', hide: true, repeat: true })}</div>` },
+      ], d, { dense: true }) });
+  } else if (cur === 'coupons') {
+    body = h.cols('2', [
+      h.card({ title: 'Programs', flush: true, body: h.table([{ k: 0, label: 'Program' }, { k: 1, label: 'Discount' }, { k: 2, label: 'Use', n: true }, { k: 3, label: '', fmt: v => h.tag(v) }], [['Founding Customer (Wave 1 Regions, first 100)', '25% off base while subscribed', '87 of 100', 'MVP'], ['Accountant Partner client', '10% off base, year 1', '41', 'V1'], ['Association member', '10% off base, year 1', '63', 'V1'], ['Switching credit (proof of contract)', 'Up to 3 months free', '118', 'MVP'], ['Spring-Ready Guarantee credit', '3 months free on a Rootline miss', '2', 'V1']], { dense: true }) })
+      + h.card({ title: 'Recent account credits', flush: true, body: h.table([{ k: 0, label: 'Tenant' }, { k: 1, label: 'Amount', n: true }, { k: 2, label: 'Reason', m: true }, { k: 3, label: 'By' }], [['Pine Ridge Grounds', '$250', 'goodwill', 'Maya D.'], ['Ironwood Hardscapes', '$1,200', 'billing_adjustment', 'Tom B.'], ['Cardinal Outdoor', '3 months', 'switching credit', 'Jordan P.'], ['Hilltop Lawn Co.', '$100', 'overage waiver', 'Maya D.']], { dense: true }) + `<div class="cd-b">${ab(c, 'credits', 'Apply account credit', { extra: 'amount', audit: 'billing.account_credit', hide: true, repeat: true })}</div>` }),
+      h.card({ title: 'Discount authority ladder', sub: 'All audited; discounts never apply to usage meters except in Enterprise contracts (PA-034)', flush: true, body: h.table([{ k: 0, label: 'Who' }, { k: 1, label: 'May apply' }], [['platform_support', 'Switching credit up to 3 months; goodwill up to $250 or 1 month base per grant, once a quarter; overage waivers up to $100 per period'], ['platform_finance', 'Credits up to $5,000 per grant; deal-desk discounts up to 20% recorded by sales'], ['platform_owner', 'Anything above 20%, or any discount without an expiry'], ['Sales rep / sales lead', 'Up to 10% / 20%, applied by finance']], { dense: true }) })
+      + h.card({ title: 'Promotion codes', flush: true, body: h.table([{ k: 0, label: 'Code', m: true }, { k: 1, label: 'Rule' }, { k: 2, label: 'Redeemed', n: true }], [['LIUCPA10', 'Partner: 10% client discount, year 1', '9'], ['CENTSWINTER', 'Trade show: switching credit, first-time only', '44'], ['SPRINGREADY', 'Guarantee eligibility tag', '143']], { dense: true }) }),
+    ]);
+  } else {
+    const m = PM(c);
+    body = h.kpis([{ label: 'MRR', value: money(m.mrr) }, { label: 'ARPA', value: money(Math.round(m.mrr / m.paying)), delta: 'model target $421 (22 §7.2)' }, { label: 'Usage revenue (30 d)', value: money(c.winter ? 9840 : 21460), delta: 'credit packs + SMS overage' }, { label: 'Deferred revenue', value: '$1.31M', delta: 'annual prepaid, ratable' }, { label: 'Application fees', value: '$0', delta: 'opt-in only, 0 tenants' }])
+      + h.cols('2', [
+        h.card({ title: 'MRR by plan', body: h.bars([['Starter', 41500], ['Grow', 208900], ['Pro', 171300], ['Enterprise', 52600], ['Design Solo', 1470], ['Archive', 189]].map(([l, v]) => ({ label: l, value: v, max: 210000, right: money(v) }))) }),
+        h.card({ title: 'MRR by Region', body: h.bars([['Central Ohio', 124000], ['Chicagoland and NW Indiana', 118000], ['Southeast Michigan and Toledo', 86000], ['Northeast Ohio', 64000], ['West Michigan', 58000], ['Southeast Wisconsin', 49000], ['Ontario (Wave 2)', 12800]].map(([l, v]) => ({ label: l, value: v, max: 125000, right: money(v) }))) }),
+      ])
+      + h.card({ title: 'MRR movement', body: mrrChart(c, m) + waterfall(c, m.mv) });
+  }
+  return h.page({ title: 'Billing', sub: 'Rootline bills Companies on its own Stripe account, completely separate from the Companies\' connected accounts (19 §4.4)' }) + roBanner(c) + tb + body;
+});
+
+// =====================================================================================
+// Entitlements and flags (19 PA-040 to PA-044, §6.6)
+// =====================================================================================
+const FLAGS = c => [
+  { key: 'route_optimizer_v2', type: 'release', pct: 25, owner: 'Sam I.', exp: day(c, 81), guard: 'healthy', target: 'Exclude 2 · beta Routing Labs (64) · CA off · 25% of maintenance, snow' },
+  { key: 'design.render_hd_selfhosted', type: 'release', pct: 60, owner: 'Kai M.', exp: day(c, 45), guard: 'healthy', target: '60% of Grow and Pro, sticky by tenant' },
+  { key: 'proposal.ai_scope_v2', type: 'experiment', pct: 50, owner: 'Kai M.', exp: day(c, 30), guard: 'acceptance +3.1 pts', target: 'A/B 50/50, metric: proposal acceptance' },
+  { key: 'crew.sync_protocol_v3', type: 'release', pct: 100, owner: 'Sam I.', exp: day(c, -12), guard: 'stale: fully rolled out 94 days', target: 'All tenants' },
+  { key: 'geocoder.fallback', type: 'ops', pct: 0, owner: 'Sam I.', exp: '-', guard: 'off', target: 'Use fallback geocoder' },
+  { key: 'portal.pay_3ds_friction', type: 'ops', pct: 1, owner: 'Tom B.', exp: '-', guard: 'include list (3)', target: 'Tenants with dispute or card-testing alerts' },
+  { key: 'sms.broadcasts', type: 'kill_switch', pct: 100, owner: 'Founder', exp: 'permanent', guard: 'on', target: 'Global; per-tenant off for 1' },
+  { key: 'ai.layout_generator_beta', type: 'permission', pct: 4, owner: 'Kai M.', exp: day(c, 60), guard: 'beta program', target: 'Beta program: AI Layout Generator (V1)' },
+  { key: 'trial.reverse_pro', type: 'experiment', pct: 10, owner: 'Founder', exp: day(c, 40), guard: 'conversion +1.2 pts', target: 'V1 experiment: Pro-feature reverse trial' },
+];
+RL.screen('console.flags', (c) => {
+  const ro = RO(c), F = RL.P.plans.features, plans = ['starter', 'grow', 'pro', 'enterprise', 'design_solo'];
+  const [tb, cur] = tabsN('cx.flg', [['flags', 'Feature flags', FLAGS(c).length], ['matrix', 'Plan matrix'], ['overrides', 'Tenant overrides'], ['kill', 'Kill switches'], ['freeze', 'Change freeze'], ['versions', 'App versions']].concat(c.inLens('V1') ? [['beta', 'Beta programs ' + h.tag('V1')]] : []));
+  let body = '';
+  if (cur === 'matrix') {
+    const groups = {}; F.forEach(f => { (groups[f.module] = groups[f.module] || []).push(f); });
+    body = h.card({ title: 'Plan matrix', sub: 'From plans.json (22 §4.2.1). Y included, L included with limits, A add-on, - not available. Hover a cell for the note', flush: true, body: `<div class="mtx-wrap"><table class="mtx"><thead><tr><th>Feature</th>${plans.map(p => `<th>${esc(planN(p))}</th>`).join('')}<th>Scope</th></tr></thead><tbody>${Object.entries(groups).map(([g, fs]) => `<tr class="grp"><th colspan="${plans.length + 2}">${esc(g)}</th></tr>` + fs.map(f => `<tr><th>${esc(f.name)} <span class="g none">${esc(f.key)}</span></th>${plans.map(p => { const v = f.plans[p] || { s: '-' }; return `<td title="${esc(v.note || '')}${v.addon ? ' add-on ' + esc(v.addon) : ''}">${h.chip(v.s)}</td>`; }).join('')}<td>${h.tag(f.scope)}</td></tr>`).join('')).join('')}</tbody></table></div>` });
+  } else if (cur === 'overrides') {
+    body = h.card({ title: 'Per-tenant overrides', sub: 'Every override has an expiry and reason; expired ones revert automatically and the CSM hears 7 days before (PA-017)', flush: true, body: h.table([{ k: 0, label: 'Tenant' }, { k: 1, label: 'Key', m: true }, { k: 2, label: 'Plan default', n: true }, { k: 3, label: 'Override', n: true }, { k: 4, label: 'Expires' }, { k: 5, label: 'Reason', m: true }, { k: 6, label: 'By' }], [
+      ['Summit Grounds Group', 'seats.office', '8', '14 (billed as extra)', day(c, 50), 'customer_request', 'Jordan P.'], ['Kestrel Lawn franchise system', 'api.rate_per_day', '250k', '500k', 'contract end', 'customer_request', 'Founder'], ['Hermanos Garcia Lawn Care', 'ai_credits.cap', '500', '50 (allow_with_limits)', 'until verified', 'fraud_investigation', 'system (risk)'], ['Pine Ridge Grounds', 'sms.daily_cap', '2,400', '2,000', day(c, 14), 'customer_request', 'Maya D.'], ['Oak Hollow Landscapes', 'storage_gb', '1,000', '1,250 (+25%)', day(c, 30), 'goodwill', 'Maya D.']], { dense: true }) + `<div class="cd-b">${ab(c, 'override', 'New override', { audit: 'entitlement.override.set', hide: true, repeat: true })}</div>` });
+  } else if (cur === 'kill') {
+    body = h.card({ title: 'Kill switches', sub: 'Effect within 15 seconds. Global switches need two people except during a declared SEV1 or SEV2, where the incident commander may act alone (PA-095)', flush: true, body: h.table([{ k: 0, label: 'Switch', m: true }, { k: 1, label: 'Level' }, { k: 2, label: 'State', fmt: v => h.pill(v, v === 'on' ? 'ok' : v === 'degraded' ? 'warn' : 'danger') }, { k: 3, label: 'Last change' }, { k: 0, label: '', fmt: (v, r) => ab(c, 'kill', r[2] === 'on' ? 'Kill' : 'Restore', { t: v, two: r[1] === 'global', stepup: true, audit: 'flag.kill_switch', hide: true }) }], [['ai.all', 'global', 'on', day(c, -40)], ['ai.provider.image_primary', 'provider', 'degraded', 'today 5:20 am'], ['sms.broadcasts', 'global', 'on', day(c, -90)], ['portal.payments', 'global', 'on', 'never (protected: payments stay up)'], ['crew.photo_upload_hd', 'task', 'on', day(c, -8)], ['tenant:TNT-51877.sms', 'tenant', 'off', 'today 6:44 am']], { dense: true }) });
+  } else if (cur === 'freeze') {
+    body = h.card({ title: 'Peak-season change freeze', sub: 'Risky rollouts are blocked by default in these windows; only the founder can override (PA-042)', flush: true, body: h.table([{ k: 0, label: 'Window' }, { k: 1, label: 'Scope' }, { k: 2, label: 'Status', fmt: v => h.pill(v, v === 'active now' ? 'warn' : '') }], [['Weekdays 05:00-09:00 local', 'All Regions, dispatch window', c.winter ? 'scheduled' : 'active now'], ['Apr 1-14 by Region spring start', 'Central Ohio, Chicagoland, SE Michigan', 'scheduled'], ['Forecast snow events (24 h before to 12 h after)', 'Snow tenants in affected Regions', c.winter ? 'active now' : 'scheduled'], ['First 2 business days of each month', 'Invoice runs', 'scheduled'], ['Kestrel Lawn enterprise freeze', 'TNT-50011', 'active now']], { dense: true }) + `<div class="cd-b">${own(c) ? B('Override freeze (founder)', { a: { 'data-modal': 'cx-act', 'data-k': 'flag', 'data-g': 'F', 'data-id': 'freeze', 'data-title': 'Override change freeze', 'data-tn': '', 'data-two': '0', 'data-audit': 'flag.freeze.override', 'data-sum': 'Overrides the freeze for one rollout step. Recorded on the flag history.', 'data-extra': '', 'data-stepup': '1', 'data-blast': 'one rollout step' } }) : '<span class="tiny t3">Only the founder can override a freeze.</span>'}</div>` });
+  } else if (cur === 'versions') {
+    body = h.card({ title: 'Crew app version control', sub: 'Hard blocks never fire during an active clock-in (PA-044)', body: h.kv([['Latest', mono('2.18.1')], ['Soft prompt below', mono('2.17.0')], ['Hard block below', mono('2.16.0')], ['Devices below hard block', '41 on 2.14-2.15 across 9 tenants'], ['OTA channel', 'production 92%, canary 8%']]) + h.bars([['2.18.x', 71], ['2.17.x', 22], ['2.16.x', 5], ['2.15 and older', 2]].map(([l, v]) => ({ label: l, value: v, max: 100, tone: l.startsWith('2.15') ? 'danger' : '', right: v + '%' }))) });
+  } else if (cur === 'beta') {
+    body = h.card({ title: 'Beta programs', flush: true, body: h.table([{ k: 0, label: 'Program' }, { k: 1, label: 'Members', n: true }, { k: 2, label: 'Capacity', n: true }, { k: 3, label: 'Graduation' }], [['AI Layout Generator beta', 38, 50, 'after eval gate'], ['Routing Labs', 64, 80, 'with route_optimizer_v2'], ['Snow Ops 2027', 22, 40, 'before Nov 1']], { dense: true }) + `<div class="cd-b">${ab(c, 'beta', 'Invite tenants', { audit: 'beta.invite', hide: true, repeat: true })}</div>` });
+  } else {
+    const sel = FLAGS(c).find(f => f.key === RL.ui['cx.flag']) || FLAGS(c)[0];
+    body = h.card({ title: 'Flags', sub: 'Entitlements answer "has this tenant paid for it?", flags answer "is this code path on for them right now?" (19 §4.5)', flush: true, body: h.table([
+      { k: 'key', label: 'Flag', fmt: (v, f) => `<button type="button" class="btn sm ghost mono" data-ui="cx.flag" data-val="${esc(v)}" aria-pressed="${sel.key === v}">${esc(v)}</button>` },
+      { k: 'type', label: 'Type', fmt: v => h.pill(v, v === 'kill_switch' ? 'danger' : v === 'experiment' ? 'info' : '') },
+      { k: 'pct', label: 'Rollout', n: true, fmt: v => `<div style="width:90px" class="flex nw gap4">${h.progress(v, 100)}<span class="tiny">${v}%</span></div>` },
+      { k: 'target', label: 'Targeting', fmt: v => `<span class="tiny">${esc(v)}</span>` },
+      { k: 'guard', label: 'Guardrails', fmt: v => `<span class="tiny">${esc(v)}</span>` },
+      { k: 'owner', label: 'Owner' }, { k: 'exp', label: 'Expires' },
+    ], FLAGS(c), { dense: true }) })
+      + h.card({ title: `Flag editor: ${mono(sel.key)}`, sub: `type ${sel.type} · owner ${esc(sel.owner)} · expires ${esc(sel.exp)}`, body: h.cols('2', [
+        `<div><div class="tiny t3 b">TARGETING (top to bottom)</div><ol class="small" style="margin:4px 0;padding-left:18px"><li>Exclude tenants: ${mono('TNT-50011')}, ${mono('TNT-50290')} (enterprise change freeze)</li><li>Include beta program "Routing Labs" (64 tenants)</li><li>If country = CA: off (metric distance QA pending)</li><li>Percentage ${sel.pct}% sticky by ${mono('tenant_id')} · segments maintenance, snow</li><li>Default: off</li></ol>
+          <div class="tiny t3 b mt8">ROLLOUT PLAN</div>${h.steps(['internal', '5%', '25% (soak 31 of 48 h)', '50%', '100%'], 2)}<div class="tiny t3 mt8">Freeze: ${c.winter ? 'forecast snow events' : 'weekdays 05:00-09:00 local is active now'}</div></div>`,
+        `<div><div class="tiny t3 b">GUARDRAILS (auto-rollback after 15 min breach)</div>${h.table([{ k: 0, label: 'Metric' }, { k: 1, label: 'Now', n: true }, { k: 2, label: 'Threshold', n: true }], [['Optimizer error rate', '0.4%', '< 2%'], ['Dispatcher overrides per route', '1.3', '< 2.5'], ['Drive minutes vs v1', '-11%', '< +5%'], ['"routing" tickets per 100 tenants/day', '0.7', '< 1.5']], { dense: true })}</div>`,
+      ]) + `<div class="flex">${ab(c, 'flag', 'Pause rollout', { t: sel.key, audit: 'flag.rollout.pause', hide: true })}${ab(c, 'kill', 'Kill', { t: sel.key, audit: 'flag.kill_switch', hide: true, stepup: true, kind: 'danger' })}${ab(c, 'flag', 'Advance to 50%', { t: sel.key, two: true, audit: 'flag.rollout.advance', hide: true, blast: '612 tenants added', sum: 'Production change: needs a peer approval, and the change freeze must not be active (PA-042).' })}${B('Audit history', { kind: 'ghost', a: { 'data-act': 'cx-flaghist' } })}</div>` });
+  }
+  return h.page({ title: 'Entitlements and flags', sub: 'Shared evaluation service, managed and audited separately. Resolution: default → plan → add-ons → organization → tenant override → kill switch' }) + roBanner(c) + tb + body;
+});
+RL.act('cx-flaghist', () => { RL.toast('route_optimizer_v2: created by Sam I., 5% → 25% approved by Rafael O., soak timer 31 h (mock).'); return false; });
+
+// =====================================================================================
+// Support console (19 PA-050 to PA-061; 02 §5.13, §6.3)
+// =====================================================================================
+const TICKETS = c => [
+  { id: 'HD-21044', x: 'hilltop', tenant: 'Hilltop Lawn Co.', plan: 'grow', subj: 'Crew app shows "sync pending" for 37 visits', tag: 'crew_app', lang: 'ES', age: '18 min', sla: '3h 42m left', peak: !c.winter, tone: '' },
+  { id: 'HD-21041', x: 'pineridge', tenant: 'Pine Ridge Grounds', plan: 'pro', subj: 'Invoice batch totals look off vs last month', tag: 'billing', lang: 'EN', age: '52 min', sla: '8 min left (Pro: 1 h)', tone: 'warn' },
+  { id: 'HD-21027', x: 'maplestone', tenant: 'Maple & Stone LLC', plan: 'grow', subj: 'Clients see "Contact us to pay" in the portal', tag: 'payments', lang: 'EN', age: '5h 10m', sla: 'breached by 1h 10m', tone: 'danger' },
+  { id: 'HD-21039', x: 'cardinal', tenant: 'Cardinal Outdoor', plan: 'grow', subj: 'Where do I approve the import?', tag: 'migration', lang: 'EN', age: '1h 10m', sla: '2h 50m left', tone: '' },
+  { id: 'HD-21036', x: 'kestrel', tenant: 'Kestrel Lawn franchise system', plan: 'enterprise', subj: 'Franchise rollup report missing 2 locations', tag: 'reports', lang: 'EN', age: '2h', sla: '2h left (contract SLA)', tone: '' },
+  { id: 'HD-21031', x: 'hermanos', tenant: 'Hermanos Garcia Lawn Care', plan: 'grow', subj: '¿Cómo conecto mi cuenta de Stripe?', tag: 'payments', lang: 'ES', age: '3h', sla: '1h left', tone: 'warn' },
+];
+const ticketTable = (c, rows) => h.table([
+  { k: 'id', label: 'Ticket', fmt: (v, r) => `${mono(v)} <b>${esc(r.subj)}</b>${r.peak && r.tag === 'crew_app' ? ' ' + h.pill('peak hours: jumped queue', 'info') : ''}` },
+  { k: 'tenant', label: 'Tenant', fmt: (v, r) => `<a href="#" data-go="console.tenant" data-x="${esc(r.x)}">${esc(v)}</a>` },
+  { k: 'tag', label: 'Tag', fmt: v => mono(v) }, { k: 'lang', label: 'Lang' },
+  { k: 'sla', label: 'SLA', fmt: (v, r) => h.pill(esc(v), r.tone) },
+], rows, { dense: true });
+const KNOWN = c => [
+  { title: 'Crew app 2.15 rejects the new visit schema after sync', tenants: 9, macro: 'force-update (EN/ES)', tone: 'warn' },
+  { title: c.winter ? 'Snow push texts delayed on one carrier (INC-322)' : 'SMS delayed on one carrier (INC-322)', tenants: 212, macro: 'carrier-delay-status', tone: 'danger' },
+  { title: 'QBO "Duplicate Name Exists" on customer sync', tenants: 22, macro: 'qbo-duplicate-name', tone: 'warn' },
+  { title: 'Autopay mandates must be re-collected for migrated clients', tenants: 31, macro: 'update-payment-method', tone: 'info' },
+];
+const MACROS = [
+  ['force-update', 'EN/ES', 'Your crew app is out of date. Open the App Store or Play Store and tap Update...', 'Clear device sync cursor (safe)', false],
+  ['qbo-duplicate-name', 'EN', 'QuickBooks already has a customer with this name. We renamed the copy with a suffix...', 'Re-trigger QBO sync (safe)', false],
+  ['trial-extend-7', 'EN/ES', 'We added 7 days to your trial so you can finish importing...', 'Extend trial +7 (safe, within limit)', false],
+  ['goodwill-credit', 'EN', 'Sorry about the trouble this week. We applied a credit to your next invoice...', 'Goodwill credit up to $250 (safe, within limit)', false],
+  ['price-update-agreements', 'EN', 'We updated the per-visit price on your mowing agreements as you asked...', 'Bulk price update on Service Agreements (grant required, dry run first)', true],
+  ['regen-visits', 'EN', 'We re-generated next month\'s recurring visits from your agreements...', 'Re-generate a month of recurring visits (grant required)', true],
+];
+RL.screen('console.support', (c) => {
+  const ro = RO(c);
+  const [tb, cur] = tabsN('cx.sup', [['search', 'Global search'], ['grants', 'Access grants and sessions', GRANTS(c).length], ['queue', 'Queue', TICKETS(c).length], ['macros', 'Macros and actions'], ['known', 'Known issues', KNOWN(c).length], ['pin', 'Caller verification']].concat(c.inLens('V1') ? [['runbooks', 'Runbooks ' + h.tag('V1')], ['replay', 'Session replay ' + h.tag('V1')]] : []));
+  let body = '';
+  if (cur === 'search') {
+    const q = RL.ui['cx.q'] || '(614) 555-0187';
+    const grp = (title, items) => h.card({ title, flush: true, body: h.list(items) });
+    body = `<div class="flex"><span style="flex:1 1 320px">${h.input(q, { ui: 'cx.q', label: 'Search', ph: 'Phone, email, invoice number, Stripe ID, tenant' })}</span>${B('Search', { kind: 'primary', icon: 'search', a: { 'data-act': 'cx-search' } })}</div>`
+      + h.banner(`${icon('eye-off')} Without an active grant, client-level results are redacted. Matching uses hashed, normalized phone and email indexes. This query was logged as ${mono('support.search')} by ${esc(c.who)} (PA-050).`, 'info')
+      + h.cols('2', [
+        grp('Tenants', [{ icon: 'building', title: `Greenleaf Grounds Co. ${mono('TNT-48213')}`, sub: 'matched on business phone · Pro · active', go: 'console.tenant', x: 'greenleaf' }])
+        + grp('Tenant users', [{ icon: 'user', title: `Tasha Greene (office_manager) ${mono('U-2184')}`, sub: `matched on mobile ${pii(c, '(614) 555-0187')}` }])
+        + grp('Clients (metadata only)', [{ icon: 'users', title: `Client ${mono('C-10293')} · Greenleaf Grounds Co.`, sub: 'matched on phone ending 0187 · name and address redacted without a grant' }]),
+        grp('Invoices and payments', [{ icon: 'receipt', title: `Invoice ${mono('INV-20418')} · $412.00 · paid`, sub: 'No line items in the console' }, { icon: 'card', title: `Stripe ${mono('cus_Q8x…41f')} on ${mono('acct_1P48213…')}`, sub: 'Connected-account customer; metadata only' }])
+        + grp('Tickets and migrations', [{ icon: 'help', title: `${mono('HD-20311')} Crew 2 route missing Thursday visits`, sub: 'solved · CSAT 5' }]),
+      ]);
+  } else if (cur === 'grants') {
+    body = h.card({ title: 'Active grants', sub: 'Who, what scope, how long, why and who approved (PA-051)', flush: true, body: h.table([{ k: 'tenant', label: 'Tenant', fmt: (v, g) => `<a href="#" data-go="console.tenant" data-x="${esc(g.tenantId)}">${esc(v)}</a>` }, { k: 'scope', label: 'Scope', fmt: v => h.pill(esc(v), v === 'read_write' ? 'warn' : 'info') }, { k: 'who', label: 'Staff' }, { k: 'by', label: 'Approved by', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'ends', label: 'Ends' }, { k: 'ticket', label: 'Ticket', m: true }], GRANTS(c), { dense: true }) })
+      + h.card({ title: 'Active View as user sessions', flush: true, body: `<div class="li">${[['Maya D.', 'Javier Ruiz (crew_lead)', 'Hilltop Lawn Co.', 'read_only', '3:40 pm', '22 min'], ['Maya D.', 'Rick Dawson (owner)', 'Pine Ridge Grounds', 'read_write', '9:00 am', '11 min']].map(s => `<div class="li-i"><span class="ico ${s[3] === 'read_write' ? 'warn' : 'info'}">${icon('eye')}</span><div class="grow"><div class="tt">${esc(s[0])} as ${esc(s[1])} · ${esc(s[2])}</div><div class="ss">${s[3]} · grant ends ${s[4]} · session ${s[5]} of ${s[3] === 'read_write' ? '30' : '60'} min</div></div><div class="flex nw">${own(c) ? B('End session', { a: { 'data-act': 'cx-endother' } }) : ''}</div></div>`).join('')}</div>` })
+      + h.cols('2', [
+        h.card({ title: 'Grant scopes', flush: true, body: h.table([{ k: 0, label: 'Scope', m: true }, { k: 1, label: 'Approver' }, { k: 2, label: 'Default / max' }, { k: 3, label: 'Session' }], [['read_only', 'owner or office_manager', '72 h / 7 days', '60 min'], ['read_write', 'owner, per ticket', '24 h / 72 h', '30 min'], ['billing_setup', 'owner', '24 h / 72 h', '30 min'], ['ledger', 'owner, opt-in', '24 h / 7 days', '60 min'], ['migration', 'owner (+ bookkeeper)', '14 days', '60 min'], ['standing read-only', 'owner toggle', 'until revoked, 90-day reconfirm', '60 min']], { dense: true }) }),
+        h.card({ title: 'Banner preview', body: `<div style="background:var(--clay-500);color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;font-size:.8rem">ROOTLINE SUPPORT (Maya D.) is viewing as Javier Ruiz (crew_lead) · READ-ONLY · ends 3:40 pm · End session</div>` + h.note('Clay impersonation band, token color.banner.impersonation (21 §8.3). Tenant users see a subtle header indicator and the event in the Support Access Log.') }),
+      ]);
+  } else if (cur === 'queue') {
+    body = h.kpis([{ label: 'Open', value: c.winter ? 61 : 84 }, { label: 'Near SLA', value: c.winter ? 4 : 7, tone: 'warn', delta: 'Pro 1 h, Grow 4 h, Starter 1 day' }, { label: 'Breached today', value: 1, tone: 'danger' }, { label: 'Spanish-language', value: '31%', delta: 'routed by locale' }])
+      + (c.winter ? '' : h.banner(`${icon('clock')} Peak-hours routing (April-June): crew_app and routing tickets from 5 to 9 am in the tenant's time zone jump the queue (PA-060).`, 'info'))
+      + h.card({ title: 'Queue', flush: true, body: ticketTable(c, TICKETS(c)) });
+  } else if (cur === 'macros') {
+    body = h.card({ title: 'Macros', sub: 'Canned replies in English and Spanish, optionally bundled with support actions that run with your permissions and the conversation\'s grant (PA-057)', flush: true, body: h.table([{ k: 0, label: 'Macro', m: true }, { k: 1, label: 'Lang' }, { k: 2, label: 'Reply', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 3, label: 'Bundled action', fmt: (v, r) => `<span class="tiny">${esc(v)}</span>${r[4] ? ' ' + h.pill('grant required', 'warn') : ' ' + h.pill('safe', 'ok')}` }, { k: 0, label: '', fmt: (v, r) => ro ? '' : B('Dry run', { a: { 'data-act': 'cx-macro', 'data-m': v } }) }], MACROS, { dense: true }) });
+  } else if (cur === 'known') {
+    body = h.card({ title: 'Known issues', flush: true, body: h.list(KNOWN(c).map(k => ({ icon: 'warn', tone: k.tone, title: esc(k.title), sub: `${k.tenants} tenants affected · macro ${mono(k.macro)} · help article linked`, right: h.pill(k.tone === 'danger' ? 'incident' : 'open', k.tone) }))) });
+  } else if (cur === 'pin') {
+    body = h.cols('2', [
+      h.card({ title: 'Verify a caller', sub: 'Identity or access changes by phone or email need the PIN, an in-app confirmation from another owner, or the documentary process (PA-061)', body: h.field('Tenant', h.select(allT(c).slice(0, 12).map(t => [t.id, t.name]), 'greenleaf', { ui: 'cx.pinT', label: 'Tenant' })) + h.field('Support PIN (6 digits, rotates every 24 h)', h.input('', { ui: 'cx.pin', ph: '••••••', label: 'PIN' })) + B('Check PIN', { kind: 'primary', a: { 'data-act': 'cx-pin' } }) + h.note('Nobody can override caller verification, including the founder (19 §9.1). Three failed attempts in 24 hours flag the tenant for Trust and Safety review and notify the owner.') }),
+      h.card({ title: 'Recent verification events', body: h.timeline([{ when: 'today 7:51 am', text: 'Hilltop Lawn Co.: PIN verified for MFA reset request (owner)', tone: 'ok' }, { when: 'yesterday 4:02 pm', text: 'Pine Ridge Grounds: owner email change refused, no PIN; documentary process offered', tone: 'warn' }, { when: day(c, -3), text: 'Maple & Stone LLC: 3 failed PIN attempts, T&S review opened', tone: 'danger' }]) }),
+    ]);
+  } else if (cur === 'runbooks') {
+    body = h.card({ title: 'Runbook actions', sub: 'Code-reviewed repair functions. No free-form SQL against production (PA-058)', flush: true, body: h.table([{ k: 0, label: 'Runbook', m: true }, { k: 1, label: 'Needs' }, { k: 2, label: 'Last run' }], [['rebuild_route_geometry_cache(tenant, date)', 'engineer, grant, ticket', day(c, -4)], ['replay_outbox(tenant, from, to)', 'engineer, grant, dry run', day(c, -9)], ['recompute_ledger_balances(tenant, period)', 'engineer, grant, 2nd approver over 1,000 rows', day(c, -3)]], { dense: true }) });
+  } else {
+    body = h.card({ title: 'Session replay', body: h.kv([['Default', 'Off. The owner enables it for the Company or one user for 7 days'], ['Masking', 'All inputs, data-pii elements, property photos blurred; Stripe Elements never recorded'], ['Retention', '30 days'], ['Enabled now', '3 tenants (owner opt-in)']]) });
+  }
+  return h.page({ title: 'Support console', sub: 'Find the tenant and the problem in 10 seconds, fix it without an engineer, and never see more than the Company allowed' }) + roBanner(c) + tb + body;
+});
+RL.act('cx-search', () => { RL.toast('Search ran (mock). Results are redacted without a grant; the query is in the audit log.'); return false; });
+RL.act('cx-endother', () => { RL.toast('Session ended by the founder (mock). The agent and the tenant owner are notified.'); return false; });
+RL.act('cx-macro', (el) => { RL.toast(`Macro ${esc(el.dataset.m)}: dry run shows 1 conversation and its bundled action's blast radius. Nothing sent (mock).`); return false; });
+RL.act('cx-pin', () => { const p = String(RL.ui['cx.pin'] || ''); RL.toast(/^\d{6}$/.test(p) ? 'PIN matches the current rotation (mock). It rotates now that it was used.' : 'Enter the 6-digit PIN the caller reads from Help > Contact support.'); return false; });
+
+// =====================================================================================
+// Plant KB curation (19 PA-070 to PA-076, §6.9; 21 §18.11)
+// =====================================================================================
+const KBQ = [
+  { id: 'KBR-77120', plant: "Aronia melanocarpa 'Low Scape Mound'", common: 'Black chokeberry', field: 'Salt tolerance (soil)', cur: 'Moderate', prop: 'High', conf: 0.94, src: ['State extension road-salt plant list', 'Regional arboretum plant database'], crit: false },
+  { id: 'KBR-77121', plant: "Rhus aromatica 'Gro-Low'", common: 'Fragrant sumac', field: 'Deer resistance', cur: 'High', prop: 'High (re-confirm)', conf: 0.88, src: ['University deer-resistance survey', 'Nursery grower notes'], crit: true },
+  { id: 'KBR-77124', plant: "Calamagrostis x acutiflora 'Karl Foerster'", common: 'Feather reed grass', field: 'Bloom period', cur: 'Jun-Jul', prop: 'Jun-Aug', conf: 0.91, src: ['Botanic garden records', 'Grower catalog', 'Extension fact sheet'], crit: false },
+  { id: 'KBR-77126', plant: 'Rosa rugosa', common: 'Rugosa rose', field: 'Invasive status', cur: 'none', prop: 'Watch list (2 state lists)', conf: 0.97, src: ['State invasive species list', 'Regional invasive plant council'], crit: true },
+  { id: 'KBR-77129', plant: 'Juniperus horizontalis', common: 'Creeping juniper', field: 'Mature height', cur: '6-12 in', prop: '4-12 in', conf: 0.83, src: ['Grower catalog'], crit: false },
+  { id: 'KBR-77131', plant: "Hydrangea paniculata 'Limelight'", common: 'Panicle hydrangea', field: 'Deer resistance', cur: 'Moderate', prop: 'High (nursery feed)', conf: 0.62, src: ['Nursery availability feed'], crit: true, conflict: 'Deer resistance "High" conflicts with 3 extension sources rating it Moderate.' },
+  { id: 'KBR-77133', plant: 'Pyrus calleryana', common: 'Callery pear', field: 'Invasive status', cur: 'Invasive: do not plant', prop: 'Invasive: sale banned (state rule)', conf: 0.99, src: ['State department of agriculture rule', 'Extension bulletin', 'Invasive plant council'], crit: true },
+];
+const REGIONS = ['Central Ohio', 'Northeast Ohio', 'Southeast Michigan and Toledo', 'West Michigan', 'Chicagoland and Northwest Indiana', 'Southeast Wisconsin'];
+RL.screen('console.kb.queue', (c) => {
+  const ro = RO(c), reg = RL.ui['cx.kbreg'] || 'West Michigan';
+  const [tb, cur] = tabsN('cx.kb', [['queue', 'Curation queue', 214], ['region', 'Region builder'], ['releases', 'Releases'], ['quality', 'Quality'], ['licenses', 'Licenses']].concat(c.inLens('V1') ? [['nursery', 'Nursery feeds ' + h.tag('V1')]] : []));
+  let body = '';
+  if (cur === 'queue') {
+    const sel = KBQ.find(k => k.id === RL.ui['cx.kbi']) || KBQ[0];
+    const fields = [['Mature height', '6-8 ft', '6-8 ft'], ['Mature width', '6-8 ft', '6-10 ft'], ['Bloom', 'Jul-Sep', 'Jul-Sep'], ['USDA zones', '3-8', '3-9'], [sel.field, sel.cur, sel.prop]];
+    body = `<div class="flex"><span style="width:280px">${h.select(REGIONS.map(r => [r, r + (r === 'West Michigan' ? ' (v7)' : '')]), reg, { ui: 'cx.kbreg', label: 'Region' })}</span><span class="tiny t3">Source: ${mono('kb.enrich')} prompt v3.2 · assigned to you: 60</span><span class="grow"></span>${ab(c, 'kb', 'Bulk accept safe (31 eligible)', { id: 'bulk-kb', audit: 'kb.bulk_accept', hide: true, blast: '31 non-critical traits, confidence over 0.9, 2+ agreeing sources', sum: 'Bulk accept never includes critical traits (invasiveness, toxicity, deer resistance, hardiness) (PA-073).' })}</div>`
+      + h.cols('12', [
+        h.card({ title: 'Queue', flush: true, body: `<div class="li">${KBQ.map(k => `<div class="li-i go" data-ui="cx.kbi" data-val="${k.id}" role="button" tabindex="0" style="${k.id === sel.id ? 'background:var(--primary-soft)' : ''}"><span class="ico ${k.crit ? 'warn' : ''}">${icon(k.crit ? 'warn' : 'leaf')}</span><div class="grow"><div class="tt" style="font-style:italic">${esc(k.plant)}</div><div class="ss">${esc(k.field)} · conf ${k.conf}${k.crit ? ' · critical: 2nd curator' : ''}</div></div></div>`).join('')}</div>` }),
+        h.card({ title: `<i>${esc(sel.plant)}</i>`, sub: `${esc(sel.common)} · ${sel.id} · Status: in review · Region profile: ${esc(reg)}`, body:
+          h.table([{ k: 0, label: 'Field' }, { k: 1, label: 'Current' }, { k: 2, label: 'Proposed', fmt: (v, r) => r[1] === v ? `<span class="t3">${esc(v)}</span>` : `<b>${esc(v)}</b>` }, { k: 1, label: '', fmt: (v, r) => r[1] === r[2] ? '<span class="t3">=</span>' : h.pill('changed', 'info') }], fields, { dense: true, hl: r => r[0] === sel.field })
+          + `<div class="tiny t3 b">SOURCES (${sel.src.length}${sel.src.length > 1 ? ' agree' : ''})</div>${sel.src.map((s, i) => `<div class="tiny">${String.fromCharCode(65 + i)} · ${esc(s)}</div>`).join('')}`
+          + h.kv([['Region rating', h.select(['Recommended', 'Use with care', 'Not recommended here', 'Invasive: do not plant'], 'Recommended', { ui: 'cx.kbrate', label: 'Region rating' })], ['Tenant signals', '12 tenants planted · 2 warranty claims per 340 installs (aggregated, anonymized)']])
+          + (sel.conflict ? h.aiCard({ agent: 'KB conflict check', level: 'L0', title: 'Possible conflict', body: esc(sel.conflict), why: 'AI flags only; a curator decides. Platform-paid (no tenant credits).' }) : '')
+          + (sel.crit ? h.banner(`${icon('users')} Critical trait: a second curator other than the author must review before publish (PA-070).`, 'warn') : '')
+          + `<div class="flex">${ab(c, 'kb', 'Accept', { t: sel.id, audit: 'kb.record.accept', hide: true, kind: 'primary' })}${ab(c, 'kb', 'Edit and accept', { t: sel.id, id: 'edit', audit: 'kb.record.accept', hide: true })}${ab(c, 'kb', 'Reject', { t: sel.id, id: 'rej', audit: 'kb.record.reject', hide: true, sum: 'The rejection reason feeds back into the kb.enrich prompt evaluation (PA-073).' })}${ab(c, 'kb', 'Second opinion', { t: sel.id, id: '2nd', audit: 'kb.record.second_opinion', hide: true })}</div>` }),
+      ]);
+  } else if (cur === 'region') {
+    const L = [['usda', 'USDA 2023 zones 5b-6b', true], ['eco', 'EPA Level III: Southern Michigan / Northern Indiana Drift Plains', true], ['cty', 'Counties: Kent, Ottawa, Allegan, Kalamazoo, Muskegon, Van Buren', true], ['ber', 'County: Berrien', false], ['prec', 'Climate filter: annual precipitation 34-40 in', false]];
+    body = h.cols('21', [
+      h.card({ title: `Region builder: ${esc(reg)}`, sub: 'Draft v8 (published v7). Union and intersection of layers (PA-071)', body: h.map({ seed: 11, h: 220, label: 'Region map preview', pins: [{ x: 120, y: 90, n: 'GR', tone: 'accent', label: 'Grand Rapids' }, { x: 70, y: 120, n: 'H', tone: 'info', label: 'Holland' }, { x: 150, y: 170, n: 'K', tone: 'info', label: 'Kalamazoo' }] })
+        + `<div class="stack8">${L.map(([k, l, d]) => h.toggle(esc(l), 'cx.l.' + k, d)).join('')}</div>` }),
+      `<div class="stack12">${h.card({ title: 'Preview', body: h.kv([['Tenants inside', '38 (count only)'], ['Properties', '21,406'], ['Plants with profiles', '612'], ['Overlap with Southeast Michigan and Toledo', '3%'], ['Republish moves', '1,212 Properties to this Region']]) + `<div class="flex">${B('Preview diff', { a: { 'data-act': 'cx-regdiff' } })}${ab(c, 'region', 'Submit for approval', { t: reg, audit: 'kb.region.publish', hide: true, two: c.role === 'platform_curator', sum: 'A senior curator other than the author (or the founder) approves. Republishing recomputes Property assignments and reports the moves.' })}</div>` })}
+      ${h.card({ title: 'Wave 1 launch Regions', flush: true, body: h.list(REGIONS.map(r => ({ icon: 'map', title: esc(r), sub: r === reg ? 'editing' : 'published · Excellent coverage', right: B('Open', { kind: 'ghost', a: { 'data-ui': 'cx.kbreg', 'data-val': r } }) }))) })}</div>`,
+    ]);
+  } else if (cur === 'releases') {
+    body = h.card({ title: 'KB releases', sub: 'Daily at MVP; tenants see changes at the next release (PA-070)', flush: true, body: h.table([{ k: 0, label: 'Release', m: true }, { k: 1, label: 'Published' }, { k: 2, label: 'Changes', n: true }, { k: 3, label: 'Notes' }, { k: 4, label: 'By' }], [['KB-' + (c.winter ? '2027.01.12' : '2027.05.11'), 'tonight 2:00 am ET (scheduled)', 214, 'Pending queue', '-'], ['KB-' + (c.winter ? '2027.01.11' : '2027.05.10'), day(c, -1), 388, '2 Region profiles', 'Dr. Priya R.'], ['KB-' + (c.winter ? '2027.01.10' : '2027.05.09'), day(c, -2), 241, 'West Michigan v7 (1,212 Properties moved)', 'Dr. Priya R.'], ['KB-' + (c.winter ? '2027.01.09' : '2027.05.08'), day(c, -3), 96, 'Takedown: 3 images (license expired)', 'Ben C.']], { dense: true }) + `<div class="cd-b">${ab(c, 'kb', 'Publish release now', { audit: 'kb.release.publish', hide: true, stepup: true, sum: 'Publishing is limited to a senior curator or the founder (02 §10.4).' })}</div>` });
+  } else if (cur === 'quality') {
+    body = h.cols('2', [
+      h.card({ title: 'Completeness by Region', body: h.bars(REGIONS.map((r, i) => ({ label: r, value: [98, 96, 95, 93, 97, 94][i], max: 100, right: [98, 96, 95, 93, 97, 94][i] + '%' }))) }),
+      h.card({ title: 'Quality signals', body: h.kv([['Source conflicts', '23 (9 critical)'], ['Stale (24+ months)', '41 records'], ['Missing images', '18 palette plants'], ['Invasive coverage', 'OH, MI, IL, IN, WI: 100% · ON: 84%'], ['"Failed in my area" reports', '7 this month (anonymized)'], ['Search misses', 'Pawpaw (31), Ninebark Tiny Wine (18)']]) }),
+    ]);
+  } else if (cur === 'licenses') {
+    body = h.card({ title: 'License registry', sub: 'Non-commercial or expired images are blocked from proposals and the portal; takedowns run platform-wide within 24 hours (PA-075)', flush: true, body: h.table([{ k: 0, label: 'Dataset or image set' }, { k: 1, label: 'License', m: true }, { k: 2, label: 'Allowed uses' }, { k: 3, label: 'Expires' }, { k: 4, label: 'Assets', n: true }], [['Regional arboretum image set', 'CC BY 4.0', 'display, print in proposals', 'n/a', '1,140'], ['Nursery photo library', 'commercial', 'display, print, no AI training', day(c, 24), '612'], ['Extension trait tables', 'public domain', 'all', 'n/a', '3,980'], ['Hobbyist plant photos', 'CC BY-NC', 'display only, blocked from proposals', 'n/a', '210']], { dense: true }) + `<div class="cd-b">${ab(c, 'kb', 'Start takedown', { audit: 'kb.license.takedown', hide: true })}</div>` });
+  } else {
+    body = h.card({ title: 'Nursery availability feeds', body: h.kv([['Feeds', '14 nurseries (Nursery Connect uploads)'], ['Freshness', '12 within 7 days'], ['SKU match rate to KB plants', '91%'], ['Errors (7 days)', '2 parse failures']]) });
+  }
+  return h.page({ title: 'Plant KB', sub: 'Curator workbench. Curators never see tenant business data; tenant signals are aggregated counts (02 §5.13)' }) + roBanner(c) + tb + body;
+});
+RL.act('cx-regdiff', () => { RL.toast('Region diff (mock): +1 county (Berrien off), 1,212 Properties change Region, 38 tenants notified at release.'); return false; });
+
+// =====================================================================================
+// Content (19 PA-080 to PA-084)
+// =====================================================================================
+const contentEdit = (c, tab) => own(c) || (c.role === 'platform_support' && ['help', 'announce'].includes(tab)) || (c.role === 'platform_curator' && ['palettes', 'samples', 'pricebooks'].includes(tab));
+RL.screen('console.content', (c) => {
+  const [tb, cur] = tabsN('cx.cnt', [['templates', 'Templates'], ['pricebooks', 'Starter price books'], ['help', 'Help center'], ['announce', 'Announcements'], ['samples', 'Sample datasets'], ['palettes', 'Palettes and symbols'], ['notes', 'Release notes']]);
+  const ed = contentEdit(c, cur);
+  const edB = (label, audit, o) => ed ? B(label, Object.assign({ a: { 'data-modal': 'cx-act', 'data-k': 'content', 'data-g': 'F', 'data-id': label, 'data-title': label, 'data-tn': '', 'data-two': (o && o.two) ? '1' : '0', 'data-audit': audit, 'data-sum': (o && o.sum) || '', 'data-extra': '', 'data-stepup': '0', 'data-blast': (o && o.blast) || '' } }, o && o.kind ? { kind: o.kind } : {})) : '';
+  let body = '';
+  if (cur === 'templates') body = h.card({ title: 'Template library', sub: 'Forked templates show "Update available" with a three-way diff; subscribed (legal) templates propagate and need a second reviewer (PA-081)', flush: true, body: h.table([{ k: 0, label: 'Template', m: true }, { k: 1, label: 'Type' }, { k: 2, label: 'Version' }, { k: 3, label: 'Locales' }, { k: 4, label: 'Model', fmt: v => h.pill(v, v === 'subscribed' ? 'warn' : '') }, { k: 5, label: 'Reach', n: true }], [['proposal.residential_maintenance', 'Proposal', 'v12', 'en-US, es-US, en-CA', 'forked', '1,104'], ['proposal.design_build_install', 'Proposal', 'v9', 'en-US, es-US', 'forked', '688'], ['sms.on_our_way', 'SMS', 'v6', 'en-US, es-US', 'forked', '1,412'], ['legal.tcpa_consent', 'Legal clause', 'v4', 'en-US, es-US', 'subscribed', '1,962'], ['legal.pesticide_notice.wi', 'Legal clause', 'v2', 'en-US', 'subscribed', '214'], ['coa.us_landscape', 'Chart of accounts', 'v5', 'en-US', 'forked', '1,301'], ['checklist.irrigation_winterization', 'Checklist', 'v3', 'en-US, es-US', 'forked', '402']], { dense: true }) + `<div class="cd-b flex">${edB('Publish update', 'template.publish', { blast: '1,104 tenants see "update available"' })}${edB('Publish legal clause', 'template.publish.subscribed', { two: true, blast: '1,962 tenants receive it automatically' })}</div>` });
+  else if (cur === 'pricebooks') body = h.card({ title: 'Starter price books and production rates', sub: 'By service line and Region; copied into the tenant at onboarding', flush: true, body: h.table([{ k: 0, label: 'Price book' }, { k: 1, label: 'Region' }, { k: 2, label: 'Items', n: true }, { k: 3, label: 'Updated' }], [['Maintenance (mow, edge, cleanup)', 'Central Ohio', 146, day(c, -30)], ['Design-build (beds, patios, walls)', 'Chicagoland and NW Indiana', 212, day(c, -12)], ['Lawn programs (5-step)', 'Southeast Wisconsin', 38, day(c, -60)], ['Irrigation and lighting', 'West Michigan', 94, day(c, -21)]], { dense: true }) + `<div class="cd-b">${edB('Edit price book', 'content.pricebook.edit')}</div>` });
+  else if (cur === 'help') body = h.card({ title: 'Help center', sub: 'EN/ES at launch; drafts are never retrievable by the in-app Copilot (PA-082)', flush: true, body: h.table([{ k: 0, label: 'Article' }, { k: 1, label: 'Audience', m: true }, { k: 2, label: 'Lang' }, { k: 3, label: 'Helpful', n: true }, { k: 4, label: 'State', fmt: v => h.pill(v, v === 'published' ? 'ok' : '') }], [['Connect your own Stripe account', 'owner', 'EN, ES', '94%', 'published'], ['Actualizar la app de cuadrilla', 'technician', 'ES, EN', '97%', 'published'], ['Why texting needs carrier approval (10DLC)', 'owner', 'EN, ES', '88%', 'published'], ['Snow carve-out during billing holds', 'owner', 'EN', '-', 'draft']], { dense: true }) + `<div class="cd-b flex">${edB('New article', 'help.article.create')}${ed ? B('AI draft and translate', { kind: 'ai', icon: 'spark', a: { 'data-act': 'cx-aidraft' } }) : ''}</div>` });
+  else if (cur === 'announce') body = h.card({ title: 'In-app announcements', sub: 'Frequency caps: one modal per user per day, never in the crew app during a visit, never on the dispatch board 5-9 am local (PA-084)', flush: true, body: h.table([{ k: 0, label: 'Announcement' }, { k: 1, label: 'Type' }, { k: 2, label: 'Targeting', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 3, label: 'Window' }, { k: 4, label: 'State', fmt: v => h.pill(v, v === 'live' ? 'ok' : '') }], [['Snow & Ice module: storm command center', 'banner', 'plan grow+, segment snow, role owner', c.winter ? 'live' : 'Oct 15', c.winter ? 'live' : 'scheduled'], ['Carrier SMS delays (INC-322)', 'banner (critical)', 'tenants with SMS on affected carrier', 'until resolved', 'live'], ['Plant palette update for your Region', 'toast', 'design roles, by Region', 'next KB release', 'scheduled'], ['NPS (owners, quarterly)', 'survey', 'role owner, not 5-9 am', day(c, 14), 'scheduled']], { dense: true }) + `<div class="cd-b">${edB('New announcement', 'announcement.create', { sum: 'Critical banners bypass caps and need a second review.' })}</div>` });
+  else if (cur === 'samples') body = h.card({ title: 'Sample datasets', sub: 'The demo Company every trial can toggle (22 §4.6)', body: h.kv([['Standard', '"Greenleaf Grounds Co.": 120 clients, a year of visits, designs, invoices and GL'], ['Large (sales demos)', '180 residential + 22 commercial clients, two HOAs with board approvals, 260 Properties'], ['Demo tenants', '48 active, flagged is_demo, excluded from revenue and health, auto-delete after 30 days idle']]) + edB('Regenerate seed', 'content.sample.regenerate') });
+  else if (cur === 'palettes') body = h.card({ title: 'Palettes and symbol families', flush: true, body: h.table([{ k: 0, label: 'Palette' }, { k: 1, label: 'Region' }, { k: 2, label: 'Plants', n: true }, { k: 3, label: 'Symbol families' }], [['Low-maintenance shrubs', 'Central Ohio', 34, 'Deciduous shrub, evergreen shrub'], ['Pollinator border', 'Chicagoland and NW Indiana', 41, 'Perennial, grass'], ['Salt-tolerant drive edge', 'West Michigan', 22, 'Shrub, grass, groundcover'], ['Shade woodland', 'Southeast Wisconsin', 28, 'Perennial, fern, groundcover']], { dense: true }) + `<div class="cd-b">${edB('Edit palette', 'kb.palette.edit')}</div>` });
+  else body = h.card({ title: 'Release notes', sub: '"What\'s new" shows only what a tenant actually has, unless marked as an upsell (PA-083)', body: h.timeline([{ when: day(c, -2), text: 'Crew app 2.18: offline photo retry, Spanish voice notes', tone: 'ok' }, { when: day(c, -9), text: 'Design Studio: HD render on self-hosted route (Grow, Pro)', tone: 'ok' }, { when: day(c, -16), text: 'Portal: autopay mandate re-collection link', tone: 'ok' }]) });
+  return h.page({ title: 'Content', sub: 'Templates, starter price books, help center, announcements and sample datasets' }) + (!ed ? h.banner(`${icon('eye')} Read-only for ${esc(ROLE_LBL[c.role])} on this tab (${esc(navv(c))}, 21 §5.5).`, 'info') : '') + tb + body;
+});
+RL.act('cx-aidraft', () => { RL.toast('AI draft and translation queued for human review (mock). Drafts are never retrievable by the tenant Copilot.'); return false; });
+
+// =====================================================================================
+// AI Ops (19 PA-090 to PA-096, §6.7; 22 §7.4)
+// =====================================================================================
+const AIR = [
+  ['copilot.chat', 'claude-mid > claude-small', '3.1 s', 0.2, 0.011, 'on'], ['proposal.write_scope', 'claude-mid > claude-frontier', '9.8 s', 0.4, 0.042, 'on'], ['estimate.draft_from_notes', 'claude-mid > claude-small', '7.2 s', 0.3, 0.071, 'on'],
+  ['restyle.preview', 'image-primary > image-fallback', '21 s', 1.9, 0.090, 'degraded'], ['layout.plan', 'claude-frontier + solver', '34 s', 0.8, 0.150, 'on'], ['kb.answer', 'claude-small + KB retrieval', '1.4 s', 0.1, 0.003, 'on'],
+  ['kb.enrich', 'claude-mid (batch)', 'batch', 0.2, 0.004, 'on'], ['inbox.classify', 'claude-small', '0.9 s', 0.1, 0.0009, 'on'], ['receipt.extract', 'claude-small (batch)', 'batch', 0.3, 0.006, 'on'],
+];
+const RATES = [['Copilot answer', 1, 0.005], ['Estimate or proposal draft', 8, 0.071], ['Photo mockup set (4)', 40, 0.24], ['Mockup refinement', 10, 0.07], ['Dimension-aware layout (3)', 60, 0.41], ['Plant palette recommendation', 3, 0.012], ['Document page', 2, 0.008], ['Presentation 4K re-render (V1)', 40, 0.21]];
+RL.screen('console.ai', (c) => {
+  const role = c.role;
+  let list = [['routing', 'Model routing'], ['prompts', 'Prompt registry'], ['evals', 'Evals'], ['cost', 'Cost and margin'], ['moderation', 'Moderation', 12], ['kill', 'Kill switches']];
+  if (role === 'platform_curator') list = [['evals', 'Plant-related evals']];
+  if (role === 'platform_finance') list = [['cost', 'Cost and margin']];
+  const [tb, cur] = tabsN('cx.ai', list);
+  const day0 = c.winter ? { cr: '121K', cost: '$1,020', rev: '$2,560', m: 60 } : { cr: '214K', cost: '$1,610', rev: '$4,490', m: 64 };
+  let body = '';
+  if (cur === 'routing') body = h.card({ title: 'Model routing by task', sub: 'Route labels are tier aliases resolved by the AI Gateway; a model upgrade is a routing change behind an eval gate (19 §6.7)', flush: true, body: h.table([{ k: 0, label: 'Task', m: true }, { k: 1, label: 'Route (primary > fallback)', m: true }, { k: 2, label: 'p95', n: true }, { k: 3, label: 'Errors', n: true, fmt: v => v > 1 ? `<span style="color:var(--warn-text)">${v}%</span>` : v + '%' }, { k: 4, label: 'Cost/call', n: true, fmt: v => '$' + v.toFixed(v < .01 ? 4 : 3) }, { k: 5, label: 'Switch', fmt: v => h.pill(v, v === 'on' ? 'ok' : 'warn') }], AIR, { dense: true }) + `<div class="cd-b flex">${ab(c, 'ai', 'Edit route', { id: 'route', audit: 'ai.route.edit', hide: true, two: role === 'platform_engineer', sum: 'Staging first. Production needs the eval gate and a peer approval (19 §9.1).' })}<span class="tiny t3">Provider health: primary text p95 2.9 s, headroom 64% · image primary 1.9% errors, failover armed</span></div>` });
+  else if (cur === 'prompts') body = h.card({ title: 'Prompt registry', sub: 'Versioned artifacts referenced by key; no prompt text in services (PA-091)', flush: true, body: h.table([{ k: 0, label: 'Prompt', m: true }, { k: 1, label: 'Version', m: true }, { k: 2, label: 'dev' }, { k: 3, label: 'staging' }, { k: 4, label: 'prod-canary' }, { k: 5, label: 'prod' }, { k: 6, label: 'Eval suite', m: true }], [['proposal.write_scope', '4.3.0', '4.4.0-rc1', '4.3.0', '4.3.0', '4.2.1', 'scope-150'], ['kb.enrich', '3.2.0', '3.3.0', '3.2.0', '-', '3.2.0', 'kb-enrich-400'], ['inbox.classify', '2.0.4', '2.0.4', '2.0.4', '-', '2.0.4', 'inbox-1k'], ['restyle.plan', '1.9.0', '2.0.0', '1.9.0', '1.9.0', '1.8.2', 'mockup-300']], { dense: true }) + `<div class="cd-b flex">${ab(c, 'ai', 'Promote to prod', { id: 'promote', audit: 'ai.prompt.promote', hide: true, two: true, sum: 'Blocked automatically if any gating metric regresses beyond tolerance (PA-092).' })}${ab(c, 'ai', 'Roll back', { id: 'rollback', audit: 'ai.prompt.rollback', hide: true })}</div>` });
+  else if (cur === 'evals') {
+    const all = [['kb.answer region-fit', '99.4%', '>= 99%', 'ok', true], ['kb.enrich acceptance (curators)', '87%', '>= 80%', 'ok', true], ['palette.recommend zone-correct', '99.7%', '>= 99%', 'ok', true], ['proposal.write_scope match', '93.1%', '>= 92%', 'ok', false], ['restyle.preview fidelity', '4.2 / 5', '>= 4.0', 'ok', false], ['estimate.draft hallucination', '3.8%', '<= 5%', 'ok', false], ['restyle.plan 2.0.0 plant-in-palette', '97.9%', '>= 99%', 'blocked', false]];
+    const rows = role === 'platform_curator' ? all.filter(r => r[4]) : all;
+    body = h.card({ title: role === 'platform_curator' ? 'Plant-related evals' : 'Eval suites', sub: 'Release gates: a change cannot reach prod if a gating metric regresses (PA-092)', flush: true, body: h.table([{ k: 0, label: 'Suite', m: true }, { k: 1, label: 'Score', n: true }, { k: 2, label: 'Gate', n: true }, { k: 3, label: 'Status', fmt: v => h.pill(v, v === 'ok' ? 'ok' : 'danger') }], rows, { dense: true }) + (role === 'platform_curator' ? h.note('Curators review plant outputs as part of human sampling; other suites are not shown to this role (21 §5.5).') : '') });
+  } else if (cur === 'cost') {
+    body = h.kpis([{ label: 'Credits today', value: day0.cr, ai: true }, { label: 'Provider cost', value: day0.cost }, { label: 'Credit revenue (alloc.)', value: day0.rev }, { label: 'Margin', value: day0.m + '%', tone: 'ok', delta: 'target 72% blended' }])
+      + h.card({ title: 'Cost per action vs credit price', sub: 'Guardrail: alert when the 7-day median raw cost exceeds 45% of credit revenue at the lowest pack price ($0.017 per credit) (22 §7.4)', flush: true, body: h.table([{ k: 0, label: 'Action' }, { k: 1, label: 'Credits', n: true }, { k: 1, label: 'Revenue at $0.017', n: true, fmt: v => '$' + (v * 0.017).toFixed(3) }, { k: 2, label: 'Median raw cost', n: true, fmt: v => '$' + v.toFixed(3) }, { k: 2, label: 'Cost share', n: true, fmt: (v, r) => { const s = v / (r[1] * 0.017) * 100; return `<span style="color:${s > 45 ? 'var(--danger-text)' : 'inherit'}">${Math.round(s)}%</span>`; } }, { k: 2, label: 'Guardrail', fmt: (v, r) => v / (r[1] * 0.017) > .45 ? h.pill('breach: re-price or re-route', 'danger') : h.pill('ok', 'ok') }], RATES, { dense: true }) + `<div class="cd-b tiny t3">Estimate drafts breach the guardrail: APR-2301 proposes 8 → 10 credits with 60 days' notice. Re-routing to a cached small model is the alternative.</div>` })
+      + h.cols('2', [h.card({ title: 'Top tenants by AI cost (7 days)', flush: true, body: h.table([{ k: 0, label: 'Tenant' }, { k: 1, label: 'Cost', n: true }, { k: 2, label: 'vs subscription', n: true }], [['TNT-48877 (illustrative)', '$412', c.winter ? '0.4x' : '1.6x'], ['Kestrel Lawn franchise system', '$188', '0.02x'], ['Oak Hollow Landscapes', '$61', '0.06x'], ['Lakeshore Hardscape', '$44', '0.06x']], { dense: true }) }), h.card({ title: 'Alerts', body: h.list([{ icon: 'warn', tone: 'warn', title: c.winter ? 'No tenant over 3x its 7-day average' : 'TNT-48877 spend 12x its 7-day average', sub: 'Mockups: 2,300 in 48 h' }, { icon: 'check', tone: 'ok', title: 'Platform spend ' + (c.winter ? '96%' : '118%') + ' of daily forecast', sub: 'Alert threshold 120%' }]) })]);
+  } else if (cur === 'moderation') body = h.card({ title: 'Moderation and image-quality queue', sub: 'Prompt-injection attempts are blocked and sampled here (PA-094)', flush: true, body: h.table([{ k: 0, label: 'Item', m: true }, { k: 1, label: 'Type' }, { k: 2, label: 'Tenant' }, { k: 3, label: 'Signal' }], [['MOD-5512', 'Image: third-party logo in mockup', 'TNT-49155', 'auto-blocked'], ['MOD-5509', 'Prompt injection in inbound email to agent', 'TNT-48644', 'blocked, 7 today'], ['MOD-5507', 'Face in uploaded property photo', 'TNT-48720', 'auto-blurred'], ['MOD-5503', 'Volume anomaly: scripted mockups', 'TNT-48877', 'sent to Risk']], { dense: true }) });
+  else body = h.card({ title: 'AI kill switches', sub: 'Global, provider, model, task, tenant, user. Effect within 15 seconds; in-flight durable jobs pause and resume (PA-095)', flush: true, body: h.table([{ k: 0, label: 'Level' }, { k: 1, label: 'Target', m: true }, { k: 2, label: 'State', fmt: v => h.pill(v, v === 'on' ? 'ok' : v === 'degraded' ? 'warn' : 'danger') }, { k: 1, label: '', fmt: (v, r) => ab(c, 'kill', r[2] === 'on' ? 'Degrade or kill' : 'Restore', { t: v, two: r[0] === 'Global', stepup: true, audit: 'ai.kill_switch', hide: true }) }], [['Global', 'ai.*', 'on'], ['Provider', 'image-primary', 'degraded'], ['Task', 'layout.plan', 'on'], ['Tenant', 'TNT-48877', 'degraded']], { dense: true }) });
+  return h.page({ title: 'AI Ops', sub: `Today: ${day0.cr} credits · provider cost ${day0.cost} · credit revenue (allocated) ${day0.rev} · margin ${day0.m}%` }) + roBanner(c) + tb + body;
+});
+
 /* @@MORE@@ */
 })();

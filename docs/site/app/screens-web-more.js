@@ -8,7 +8,14 @@ const RL = window.RL, h = RL.h, { esc, icon, money, num } = h;
 const I = RL.idx;
 
 // ---------- shared helpers ----------
-const hs = s => { let x = 7; for (const ch of String(s)) x = (x * 31 + ch.charCodeAt(0)) >>> 0; return x; };
+const hs = s => { let x = 7; for (const ch of String(s)) x = (x * 31 + ch.charCodeAt(0)) >>> 0; x ^= x >>> 16; x = Math.imul(x, 0x45d9f3b) >>> 0; x ^= x >>> 16; return x >>> 0; };
+/* In-content banner: one text block (mx-banner is a flex row meant for the frame top), rounded. */
+const bnr = (html, tone) => `<div class="mx-banner ${tone || 'info'}" style="border:1px solid var(--border);border-radius:8px"><span>${html}</span></div>`;
+/* Toggle without the browser's default button chrome (.tgl in app.css does not reset border and background). */
+const TGL_STYLE = 'style="border:0;background:none;padding:2px 0;text-align:left"';
+const tg = (label, key, def) => h.toggle(label, key, def).replace('<button type="button" class="tgl', `<button type="button" ${TGL_STYLE} class="tgl`);
+const mini = (v, max, tone) => `<span style="display:inline-block;width:56px;vertical-align:middle">${h.progress(v, max, tone)}</span>`;
+const crewOf = (D, name) => (D.crews.find(cr => cr.lead === name || cr.members.includes(name)) || {}).name || '-';
 const pick = (s, arr) => arr[hs(s) % arr.length];
 const rnd = (s, a, b) => a + hs(s) % (b - a + 1);
 /* Write access: the grant's first token holds W, D or X (02 §10.1). 'F' means not in the matrix (full). */
@@ -104,13 +111,19 @@ function assets(c) {
   D.equipment.forEach((e, i) => {
     const m = String(e.meter).match(/(\d+)\s*(.*)/) || [0, 0, 'h'];
     const miles = /mi/.test(m[2]);
-    out.push({ id: e.id, name: e.name, cls: cls(e.name), meter: miles ? num(+m[1] * 100) + ' mi' : num(+m[1]) + ' h', crew: e.crew, next: e.next, status: /DVIR overdue/.test(e.next) ? 'Active' : 'Active', year: 2017 + (hs(e.id) % 8), cost: [14800, 12900, 61500, 48900, 3300, 9800, 15400, 7600][i % 8] });
+    const k2 = cls(e.name), road = k2 === 'vehicle' || k2 === 'trailer';
+    let next = e.next;
+    if (road && /Blades|Oil change in/.test(next)) next = 'Oil change due in 800 mi';
+    if (!road && /DVIR/.test(next)) next = k2 === 'mower' ? 'Hours not entered 3 days' : 'OK';
+    if (!road && /DOT/.test(next)) next = k2 === 'snow_equipment' ? 'Pre-season prep checklist' : 'Service due in 25 h';
+    if (k2 === 'mower' && next === 'OK' && i === 1) next = 'Blades due';
+    out.push({ id: e.id, name: e.name, cls: k2, meter: miles ? num(+m[1] * 100) + ' mi' : num(+m[1]) + ' h', crew: e.crew, next, status: 'Active', year: 2017 + (hs(e.id) % 8), cost: [14800, 12900, 61500, 48900, 3300, 9800, 15400, 7600][i % 8] });
   });
   D.crews.forEach((cr, i) => {
     if (i > 0) out.push({ id: 'EQ-' + (40 + i), name: cr.truck + ' (1-ton dump)', cls: 'vehicle', meter: num(41000 + (hs(cr.truck) % 70000)) + ' mi', crew: cr.name, next: i === 2 ? 'Registration Jun 3' : 'OK', status: 'Active', year: 2018 + (hs(cr.truck) % 7), cost: 58000 });
-    out.push({ id: 'EQ-' + (60 + i), name: 'Open trailer 6x14 #' + (i + 1), cls: 'trailer', meter: '-', crew: cr.name, next: i === 1 ? 'Defect: brake light' : 'Breakaway test due', status: i === 1 ? 'Down' : 'Active', year: 2016 + (hs(cr.name) % 9), cost: 5200 });
+    out.push({ id: 'EQ-' + (60 + i), name: 'Open trailer 6x14 #' + (i + 1), cls: 'trailer', meter: '-', crew: cr.name, next: i === 1 ? 'Defect: brake light' : i === 3 ? 'Breakaway test due' : 'OK', status: i === 1 ? 'Down' : 'Active', year: 2016 + (hs(cr.name) % 9), cost: 5200 });
   });
-  return out;
+  return out.sort((x, y) => x.id.localeCompare(y.id, 'en', { numeric: true }));
 }
 const CHEM = [
   { name: 'Granular pre-emergent, prodiamine 0.38%', epa: '00000-101', ai: 'Prodiamine', signal: 'Caution', rup: false, rei: 0, rate: '3.0 lb / 1,000 sq ft', max: '2 apps / yr', uom: 'bag 50 lb', qty: 64, sds: 'Mar 2026' },
@@ -134,7 +147,7 @@ RL.screen('web.ops', (c, a) => {
     return `<div class="plan-c${cur ? ' on' : ''}"><div class="flex between"><b>${m.name}</b><span class="flex gap4">${h.tag(m.scope)}${pill}</span></div><div class="tiny t3">${esc(m.who)}</div><div class="small">${esc(m.on)}</div><div class="tiny t2">${esc(m.acct)}</div>${btn ? `<div>${btn}</div>` : ''}</div>`;
   };
   return h.page({ title: 'Operations', sub: `${esc(c.t.branches.join(', '))} · inventory mode <b>${MODES.find(m => m.id === mode).name}</b>${f.note ? ' · ' + esc(f.note) : ''}`, actions: (writes(c, 'purchase_order') ? h.btn('New purchase order', { kind: 'primary', icon: 'plus', modal: 'more-new-po' }) : '') + h.btn('Buy lists', { go: 'web.purchasing' }) + roPill(c, 'inventory') })
-    + (a.state === 'limit' ? h.banner(`${icon('info')} Included with limits on ${esc(c.plan.name)}: ${esc(a.limit || '')}. ${isOwner(c) ? 'Pro adds multi-location stock and, from V1, Advanced mode.' : ask(c)}`, 'info') : '')
+    + (a.state === 'limit' ? bnr(`${icon('info')} Included with limits on ${esc(c.plan.name)}: ${esc(a.limit || '')}. ${isOwner(c) ? 'Pro adds multi-location stock and, from V1, Advanced mode.' : ask(c)}`, 'info') : '')
     + h.kpis([
       { label: 'Buy lists to order', value: bl.filter(b => /Ready|Partly/.test(b.status)).length, delta: bl.reduce((s, b) => s + b.lines, 0) + ' lines across ' + bl.length + ' jobs' },
       { label: 'Open purchase orders', value: openPo.length, delta: h.mask(c, 'cost', money(openPo.reduce((s, p) => s + p.total, 0))) + ' committed' },
@@ -142,7 +155,7 @@ RL.screen('web.ops', (c, a) => {
       { label: 'Assets due for service', value: due.length, delta: eq.filter(e => e.status === 'Down').length + ' down, ' + eq.filter(e => /DVIR/.test(e.next)).length + ' DVIR overdue', tone: 'warn' },
       { label: 'Chemical SDS to review', value: CHEM.filter(x => /2024|Feb 2025/.test(x.sds)).length, delta: 'Older than 12 months' },
     ])
-    + sec('Inventory mode', h.cols('4', MODES.map(modeCard)) + (mode === 'standard' || mode === 'advanced' ? h.banner(`${icon('warn')} Switching up to ${mode === 'standard' ? 'Standard' : 'Advanced'} needs an opening count per location. The cutover date must fall in an open accounting period; ${c.winter ? 'January is a good time, yards are quiet.' : 'the off-season (Dec to Feb) is recommended.'} Until the count posts, the branch stays in its old mode (13 §4.1.6).`, 'warn') : '') + h.note('Switching up never loses data; switching down archives detail. Mode is per branch (13 §4.1.6).'), { sub: 'Off and Light ship at MVP. Standard and Advanced ship at V1.' })
+    + sec('Inventory mode', h.cols('4', MODES.map(modeCard)) + (mode === 'standard' || mode === 'advanced' ? bnr(`${icon('warn')} Switching up to ${mode === 'standard' ? 'Standard' : 'Advanced'} needs an opening count per location. The cutover date must fall in an open accounting period; ${c.winter ? 'January is a good time, yards are quiet.' : 'the off-season (Dec to Feb) is recommended.'} Until the count posts, the branch stays in its old mode (13 §4.1.6).`, 'warn') : '') + h.note('Switching up never loses data; switching down archives detail. Mode is per branch (13 §4.1.6).'), { sub: 'Off and Light ship at MVP. Standard and Advanced ship at V1.' })
     + h.cols('21', [
       sec('Buy lists from signed jobs', h.table([
         { k: 'job', label: 'Job', m: true },
@@ -152,8 +165,8 @@ RL.screen('web.ops', (c, a) => {
         { k: 'est', label: 'Est. cost', n: true, fmt: v => h.mask(c, 'cost', money(v)) },
         { k: 'status', label: 'Status', fmt: v => statusPill(v) },
       ], bl, { go: 'web.purchasing', x: r => r.job, dense: true, empty: 'No signed jobs with material lines.' }), { flush: true, sub: 'Sourcing per line: pull from yard, blanket PO release, or preferred vendor (13 §4.8.1)' }),
-      `<div class="stack12">${sec('Assets needing attention', h.list(due.slice(0, 5).map(e => ({ icon: e.cls === 'vehicle' ? 'truck' : e.cls === 'trailer' ? 'truck' : 'wrench', tone: /Down|Defect|overdue/.test(e.next + e.status) ? 'danger' : 'warn', title: esc(e.name), sub: esc(e.next) + ' · ' + esc(e.crew), right: h.pill(esc(e.status), e.status === 'Down' ? 'danger' : ''), go: 'web.equipment' }))) || h.empty('Nothing due.'), { flush: true })}
-      ${sec('Open POs', h.list(openPo.slice(0, 4).map(p => ({ icon: 'receipt', title: `<span class="mono">${esc(p.id)}</span>`, sub: esc(p.vendor), right: statusPill(p.status), go: 'web.purchasing' }))), { flush: true })}</div>`,
+      `<div class="stack12">${sec('Assets needing attention', h.list(due.sort((x, y) => (y.status === 'Down') - (x.status === 'Down')).slice(0, 5).map(e => ({ icon: e.cls === 'vehicle' || e.cls === 'trailer' ? 'truck' : 'wrench', tone: /Down|Defect|overdue/.test(e.next + e.status) ? 'danger' : 'warn', title: esc(e.name), sub: esc(e.next) + ' · ' + esc(e.crew), right: e.status === 'Down' ? h.pill('Down', 'danger') : '', go: 'web.equipment' }))) || h.empty('Nothing due.'), { flush: true })}
+      ${sec('Open POs', h.list(openPo.slice(0, 4).map(p => ({ icon: 'receipt', title: `<span class="mono nowrap">${esc(p.id)}</span>`, sub: esc(p.vendor.replace(' (illustrative)', '')) + '<div class="mt8">' + statusPill(p.status) + '</div>', go: 'web.purchasing' }))), { flush: true })}</div>`,
     ]);
 });
 RL.modal('more-new-po', c => {
@@ -171,7 +184,7 @@ RL.screen('web.inventory', (c, a) => {
   const uomRow = (it) => ({ 'cu yd': '1 cu yd = 13.5 bags (2 cu ft)', ton: '1 ton = 0.74 cu yd (#57 stone, density 2,700 lb)', 'sq ft': '1 pallet = 120 sq ft; waste 5%', bag: '1 bag = 50 lb; covers 25-50 sq ft (joint width)', each: 'Buy #3 container, sell each', piece: '1 piece = 16 ft; stakes 4 per piece' }[it.uom] || '');
   const cost = it => 8 + hs(it.id) % 40;
   let body;
-  if (tab === 'items') body = (off ? h.banner(`${icon('info')} Off mode: items live in the Price Book as materials. No stock is tracked; receipts attach straight to jobs and load-out lists come from scheduled visits (13 §4.1.6).`, 'info') : '') + h.table([
+  if (tab === 'items') body = (off ? bnr(`${icon('info')} Off mode: items live in the Price Book as materials. No stock is tracked; receipts attach straight to jobs and load-out lists come from scheduled visits (13 §4.1.6).`, 'info') : '') + h.table([
     { k: 'name', label: 'Item', fmt: (v, r) => `<b>${esc(v)}</b><div class="tiny t3 mono">${esc(r.id)}</div>` },
     { k: 'uom', label: 'Stock UOM' },
     { k: 'conv', label: 'Conversion', fmt: (v, r) => `<span class="tiny t2">${esc(uomRow(r))}</span>` },
@@ -180,7 +193,7 @@ RL.screen('web.inventory', (c, a) => {
     { k: 'cost', label: 'Avg cost', n: true, fmt: (v, r) => h.mask(c, 'cost', money(cost(r), { cents: true })) },
     { k: 'yard', label: 'Location' },
   ], D.inventory.map(i => Object.assign({ conv: '', cost: 0 }, i)), { dense: true });
-  else if (tab === 'locations') body = (c.feat('inventory').s === 'L' && c.planCode === 'grow' ? h.banner(`${icon('info')} Grow includes 1 yard plus truck locations. Multi-location stock is in Pro.`, 'info') : '') + h.table([
+  else if (tab === 'locations') body = (c.feat('inventory').s === 'L' && c.planCode === 'grow' ? bnr(`${icon('info')} Grow includes 1 yard plus truck locations. Multi-location stock is in Pro.`, 'info') : '') + h.table([
     { k: 'name', label: 'Location', fmt: (v, r) => `<b>${esc(v)}</b><div class="tiny t3 mono">${esc(r.id)}</div>` },
     { k: 'type', label: 'Type' }, { k: 'items', label: 'Items with stock', n: true },
     { k: 'value', label: 'Memo value', n: true, fmt: v => h.mask(c, 'cost', money(v)) },
@@ -225,7 +238,7 @@ RL.screen('web.purchasing', (c) => {
     const lines = (c.D.inventory.length ? c.D.inventory : [{ name: 'Material', uom: 'each' }]).slice(0, 4).map((it, i) => ({ item: it.name, uom: it.uom, ordered: [20, 6, 240, 12][i], received: [20, 0, 120, 12][i], now: RL.ui['po.recv'] === 'all' ? [0, 6, 120, 0][i] : 0 }));
     body = sec(`Receive against <span class="mono">${esc(p.id)}</span>`, h.table([{ k: 'item', label: 'Line' }, { k: 'uom', label: 'UOM' }, { k: 'ordered', label: 'Ordered', n: true }, { k: 'received', label: 'Received', n: true }, { k: 'now', label: 'Receiving now', n: true, fmt: v => v ? `<b>${v}</b>` : '0' }], lines, { dense: true })
       + `<div class="flex">${writes(c, 'purchase_order') || c.role === 'crew_lead' ? h.btn('Receive all open lines', { kind: 'primary', ui: 'po.recv', val: 'all' }) + tbtn('Photo of packing slip', 'Packing slip attached to the receipt.', { icon: 'camera' }) : ''}<span class="tiny t3">Receipts land at ${esc(c.t.branches[0])} yard or the job site; Light mode expenses them to the job.</span></div>`, { sub: esc(p.vendor) + ' · ' + esc(p.job) });
-  } else body = h.banner(`${icon('info')} 2-way match at MVP: bill vs PO price for services and non-stock purchases. 3-way match with receipts and tolerances arrives at V1 (13 §4.11.2).`, 'info') + h.table([
+  } else body = bnr(`${icon('info')} 2-way match at MVP: bill vs PO price for services and non-stock purchases. 3-way match with receipts and tolerances arrives at V1 (13 §4.11.2).`, 'info') + h.table([
     { k: 'id', label: 'Bill', m: true }, { k: 'vendor', label: 'Vendor' }, { k: 'po', label: 'PO', m: true },
     { k: 'po_amt', label: 'PO', n: true, fmt: v => h.mask(c, 'cost', money(v, { cents: true })) }, { k: 'bill', label: 'Bill', n: true, fmt: v => h.mask(c, 'cost', money(v, { cents: true })) },
     { k: 'result', label: 'Result', fmt: (v, r) => v === 'Matched' ? h.pill('Matched', 'ok') : h.pill(esc(v) + (r.varc ? ' ' + (r.varc > 0 ? '+' : '') + money(r.varc, { cents: true }) : ''), 'warn') },
@@ -259,7 +272,7 @@ RL.screen('web.vendors', (c) => {
       { k: 'ai', label: 'Addl. insured', fmt: v => v === 'Missing' ? h.pill('Missing', 'danger') : esc(v) }, { k: 'w9', label: 'W-9' },
       { k: 'lic', label: 'Licenses', fmt: v => /expired/.test(v) ? h.pill(esc(v), 'danger') : esc(v) },
       { k: 'status', label: 'Status', fmt: v => statusPill(v) },
-    ], subs, { dense: true }) + (gate === 'block' ? h.banner(`${icon('lock')} Block: a sub with any expired required document cannot get new work orders, cannot start work in the portal and is left out of AP payment runs until resolved. The owner can override per assignment with a reason (13 §4.13.1).`, 'warn') + (isOwner(c) ? `<div>${tbtn('Override for one assignment', 'Override recorded with your reason in the audit log.', { sm: true })}</div>` : '') : h.note('Warn: assignments are allowed with a warning banner.'))
+    ], subs, { dense: true }) + (gate === 'block' ? bnr(`${icon('lock')} Block: a sub with any expired required document cannot get new work orders, cannot start work in the portal and is left out of AP payment runs until resolved. The owner can override per assignment with a reason (13 §4.13.1).`, 'warn') + (isOwner(c) ? `<div>${tbtn('Override for one assignment', 'Override recorded with your reason in the audit log.', { sm: true })}</div>` : '') : h.note('Warn: assignments are allowed with a warning banner.'))
       + `<div class="flex"><span class="tiny t3">Reminders to the sub at 30, 14 and 3 days before expiry; office at 14 days and on expiry.</span>${h.tag('V1')}<span class="tiny t3">AI COI reading from the ACORD 25 PDF</span></div>`, { sub: 'Requirements are set per trade and per client contract' });
 });
 
@@ -325,7 +338,7 @@ RL.screen('web.chemicals', (c, a) => {
     { k: 'lic', label: 'Status', fmt: v => v === 'expired' ? h.pill('Expired: logging blocked', 'danger') : v === 'expiring' ? h.pill('Expiring soon', 'warn') : v === 'supervised' ? h.pill('Under supervision', 'info') : h.pill('Valid', 'ok') },
   ], cr.filter(p => p.licCat), { dense: true }) + h.link('Open certifications', 'web.certs'), { flush: true });
   return h.page({ title: c.tr('Chemical inventory and SDS', 'Químicos y hojas SDS'), sub: `${CHEM.length} products · SDS library available offline in the crew app · state rules: ${st}`, actions: (writes(c, 'chemical_application') && !fieldRole(c) ? h.btn('Add product', { icon: 'plus', act: 'more-toast' }) : '') + roPill(c, 'chemical_application') + (basic ? h.pill('Starter: lawn/PHC basic', 'info') : '') })
-    + (blocked.length ? h.banner(`${icon('lock')} ${blocked.map(p => esc(p.name)).join(', ')}: applicator license expired. The crew app blocks chemical logging for ${blocked.length > 1 ? 'them' : 'this person'} until a renewal is on file, or allows it only as "under supervision" where ${st} permits (02 §10.1 note 3).`, 'danger') : '')
+    + (blocked.length ? bnr(`${icon('lock')} ${blocked.map(p => esc(p.name)).join(', ')}: applicator license expired. The crew app blocks chemical logging for ${blocked.length > 1 ? 'them' : 'this person'} until a renewal is on file, or allows it only as "under supervision" where ${st} permits (02 §10.1 note 3).`, 'danger') : '')
     + h.tabs('ch.tab', [['products', 'Products and SDS', CHEM.length], ['logs', 'Application records'], ['lic', 'Applicators', cr.filter(p => p.licCat).length]], 'products') + body
     + `<div class="flex">${h.tag('V1')}<span class="tiny t3">A16 Chemical Compliance agent checks wind, temperature, licensing and REI notices on every record.</span></div>`;
 });
@@ -339,7 +352,7 @@ function certRows(c) {
     const lead = p.role === 'crew_lead';
     const lic = lead ? ['valid', 'expired', 'expiring', 'valid'][(li++) % 4] : (i % 5 === 2 ? 'supervised' : null);
     return {
-      name: p.name, role: p.role, crew: p.crew || '-', lead,
+      name: p.name, role: p.role, crew: p.crew || crewOf(c.D, p.name), lead,
       licCat: lic ? (st === 'IL' ? 'Turf operator' : st === 'WI' ? 'Turf and landscape (3.0)' : 'Turfgrass (3A)') : '', lic: lic || '', exp: lic === 'expired' ? (c.winter ? 'Dec 31' : 'Apr 30') : lic === 'expiring' ? d[0] : lic ? pick(p.name, ['Dec 2027', 'Mar 2028', 'Oct 2027']) : '-',
       dl: i % 7 === 4 ? '-' : 'OK ' + (2027 + i % 3), cdl: lead && i % 2 === 0 ? (i === 2 ? 'Med card ' + d[1] : 'OK') : '-', fa: i % 3 === 0 ? 'OK 2027' : i % 3 === 1 ? 'Expiring ' + d[2] : '-',
       zt: i % 4 === 3 ? 'TRN' : 'AUTH', saw: lead ? 'AUTH' : i % 3 === 0 ? 'TRN' : '-',
@@ -362,7 +375,7 @@ function roster(c) {
     let status = p.status === 'hibernated' ? 'Hibernated' : 'Active';
     if (p.seat === 'field') { fi++; if (c.winter) status = fi <= winterField ? 'Active' : 'Hibernated'; }
     const seen = status === 'Hibernated' ? pick(p.name, ['Nov 21', 'Nov 26', 'Dec 4', 'Nov 14']) : p.seat === 'field' ? pick(p.name, ['6:45 am', '2 min', '7:02 am', '18 min']) : pick(p.name, ['1 h', '5 min', 'Yesterday', '3 h']);
-    return Object.assign({}, p, { status, seen, login: status === 'Hibernated' ? '-' : LOGIN[p.role] || 'Passkey', mfa: p.seat === 'field' ? 'n/a' : 'Yes', rate: rateOf(p), crew: p.crew || '-', branch: t.branches[i % t.branches.length] });
+    return Object.assign({}, p, { status, seen, login: status === 'Hibernated' ? '-' : LOGIN[p.role] || 'Passkey', mfa: p.seat === 'field' ? 'n/a' : 'Yes', rate: rateOf(p), crew: p.crew || crewOf(D, p.name), branch: t.branches[i % t.branches.length] });
   });
   if (!c.winter && t.people_peak > 3) rows.push({ id: 'U-INV1', name: 'Rafael Medina', role: 'technician', crew: '-', seat: 'field', status: 'Invited', seen: '-', login: 'Invite sent', mfa: 'n/a', rate: 18, lang: 'ES', branch: t.branches[0] });
   const sub = c.t.cast && c.t.cast.subcontractor;
@@ -389,7 +402,7 @@ RL.screen('web.people', (c) => {
     const sel = (RL.ui['rh.sel'] != null ? String(RL.ui['rh.sel']) : rh.filter(r => !r.block && r.reply === 'Returning').map(r => r.id).join(',')).split(',').filter(Boolean);
     const seeRate = seesFor(c, 'pay_rate', '');
     const cols = [
-      { k: 'id', label: '', fmt: (v, r) => r.block ? `<span title="Resolve the blocking check first">${icon('lock', 's')}</span>` : `<button type="button" class="tgl${sel.includes(v) ? ' on' : ''}" data-act="rh-toggle" data-x="${esc(v)}" aria-pressed="${sel.includes(v)}" aria-label="Select ${esc(r.name)}"><i></i></button>` },
+      { k: 'id', label: '', fmt: (v, r) => r.block ? `<span title="Resolve the blocking check first">${icon('lock', 's')}</span>` : `<button type="button" ${TGL_STYLE} class="tgl${sel.includes(v) ? ' on' : ''}" data-act="rh-toggle" data-x="${esc(v)}" aria-pressed="${sel.includes(v)}" aria-label="Select ${esc(r.name)}"><i></i></button>` },
       { k: 'name', label: 'Name', fmt: (v, r) => `<b>${esc(v)}</b><div class="tiny t3">${esc(r.role)}</div>` }, { k: 'crew', label: 'Last crew' },
     ].concat(seeRate ? [{ k: 'rate', label: 'Last rate', n: true, fmt: v => money(v, { cents: true }) }, { k: 'sug', label: 'Suggested', n: true, fmt: v => `<b>${money(v, { cents: true })}</b>` }] : [])
       .concat([{ k: 'reply', label: 'Replied', fmt: v => statusPill(v) }, { k: 'check', label: 'Checks', fmt: v => v === 'OK' ? h.pill('OK', 'ok') : h.pill(esc(v), 'danger') }]);
@@ -403,13 +416,13 @@ RL.screen('web.people', (c) => {
   const shown = rows.filter(r => filt === 'all' || r.status === filt);
   const peak = c.t.people_peak;
   return h.page({ title: c.tr('Team', 'Equipo'), sub: `${rows.length} people${peak > rows.length ? ` shown of ${peak} at peak` : ''} · ${esc(c.t.branches.length > 1 ? c.t.branches.length + ' branches' : c.t.branches[0])}${c.winter ? ' · winter: crews hibernated' : ''}`, actions: (canEdit ? h.btn('Invite', { kind: 'primary', icon: 'plus', act: 'more-toast' }) + tbtn('Bulk import', 'CSV template downloaded.', { icon: 'upload' }) : '') + (canEdit || c.role === 'ops_manager' ? h.btn(`Rehire returning crew (${rh.filter(r => r.reply === 'Returning').length})`, { ui: 'pp.view', val: 'rehire', icon: 'refresh' }) : '') + roPill(c, 'employee') })
-    + `<div class="flex">${[['all', 'All', rows.length]].concat(counts.map(([s, n]) => [s, s, n])).map(([v, l, n]) => h.btn(`${l} <span class="t3">${n}</span>`, { sm: true, ui: 'pp.st', val: v, kind: filt === v ? 'primary' : 'ghost', pressed: String(filt === v) })).join('')}<span class="grow"></span><span class="tiny t3">Branch: ${esc(c.t.branches[0])}${c.t.branches.length > 1 ? ' +' + (c.t.branches.length - 1) : ''}</span></div>`
+    + `<div class="flex">${[['all', 'All', rows.length]].concat(counts.map(([s, n]) => [s, s, n])).map(([v, l, n]) => h.btn(`${l} <span style="opacity:.7">${n}</span>`, { sm: true, ui: 'pp.st', val: v, kind: filt === v ? 'primary' : 'ghost', pressed: String(filt === v) })).join('')}<span class="grow"></span><span class="tiny t3">Branch: ${esc(c.t.branches[0])}${c.t.branches.length > 1 ? ' +' + (c.t.branches.length - 1) : ''}</span></div>`
     + sec('', h.table([
       { k: 'name', label: 'Name', fmt: (v, r) => `<span class="flex nw">${h.avatar(v)}<span><b>${esc(v)}</b><span class="tiny t3"> ${esc(r.lang || '')}</span><div class="tiny t3">${maskFor(c, 'employee_pii', v, esc(r.phone || '(614) 555-0100'))}</div></span></span>` },
       { k: 'role', label: 'Role', fmt: v => `<span class="mono tiny">${esc(v)}</span>` }, { k: 'crew', label: 'Crew' },
       { k: 'login', label: 'Login' }, { k: 'mfa', label: 'MFA' }, { k: 'seen', label: 'Last seen' },
       { k: 'status', label: 'Status', fmt: v => h.pill(esc(v), v === 'Active' ? 'ok' : v === 'Hibernated' ? 'info' : 'warn') },
-      { k: 'rate', label: 'Pay rate', n: true, fmt: (v, r) => v == null ? '<span class="t3">-</span>' : maskFor(c, 'pay_rate', r.name, money(v, { cents: true }) + (r.seat === 'field' ? '/h' : '/h')) },
+      { k: 'rate', label: 'Pay rate', n: true, fmt: (v, r) => v == null ? '<span class="t3">-</span>' : (r.seat === 'field' ? maskFor(c, 'pay_rate', r.name, money(v, { cents: true }) + '/h') : maskFor(c, 'pay_rate', r.name, 'Salaried')) },
     ], shown, { dense: true }), { flush: true })
     + `<div class="cd"><div class="cd-b"><div class="flex between"><span class="small"><b>Seats:</b> ${S.office} office + ${S.field} active field + ${S.bk + (c.t.cast && c.t.cast.subcontractor ? 1 : 0)} free (bookkeeper, subs). Hibernated ${rows.filter(r => r.status === 'Hibernated').length} = $0.</span>${isOwner(c) ? h.btn('Plan and seats', { sm: true, go: 'web.settings.subscription' }) : ''}</div>${S.inc.field != null ? h.meter('Active field seats this month', S.field, S.inc.field) : ''}<div class="tiny t3">Field seats are billed on active count: a 25-person summer crew that shrinks to 4 in winter pays for 4 (22 §4.3). The crew app never blocks work for seat reasons.</div></div></div>`;
 });
@@ -449,31 +462,33 @@ RL.modal('more-crew', (c, el) => {
 
 RL.screen('web.timesheets', (c) => {
   const D = c.D, own = c.role === 'crew_lead' ? (D.crews[0] || {}).name : null;
-  const ts = D.timesheets.filter(r => !own || r.crew === own).map((r, i) => Object.assign({}, r, { hrs: c.winter ? Math.round(r.hrs * .45 * 4) / 4 : r.hrs, ot: c.winter ? 0 : r.ot, idx: i }));
+  const ts = D.timesheets.map((r, i) => Object.assign({}, r, { crew: r.crew !== '-' ? r.crew : crewOf(D, r.person), hrs: c.winter ? Math.round(r.hrs * .45 * 4) / 4 : r.hrs, ot: c.winter ? 0 : r.ot, idx: i })).filter(r => !own || r.crew === own);
   const approved = RL.ui['ts.all'] === '1';
   const done = String(RL.ui['ts.done'] || '').split(',');
   const exc = ts.filter(r => r.exceptions && !done.includes(String(r.idx)));
-  const extra = !own && ts.length > 2 ? [{ person: ts[2].person, crew: ts[2].crew, kind: 'MISSING CLOCK-OUT', detail: `Clock-in 6:52, last segment at ${esc((D.visits[5] || D.visits[0] || { client: 'a client' }).client)} 14:51`, ai: 'Suggested 15:42: left the job geofence 15:31 plus 11 min drive to the yard', idx: 'mco' }] : [];
-  const clean = ts.filter(r => !r.exceptions);
+  const xp = ts.find(r => !r.exceptions && r.idx >= 2);
+  const extra = !own && xp && !done.includes('mco') ? [{ person: xp.person, crew: xp.crew, kind: 'Missing clock-out', detail: `Tue: clock-in 6:52, last job segment at ${esc((D.visits[5] || D.visits[0] || { client: 'a client' }).client)} 14:51`, ai: 'Suggested clock-out 15:42: left the job geofence at 15:31, plus 11 min drive to the yard', idx: 'mco' }] : [];
+  const clean = ts.filter(r => !r.exceptions && !(extra.length && r.idx === xp.idx));
   const rate = r => rateOf({ name: r.person, role: (D.people.find(p => p.name === r.person) || {}).role || 'technician' });
-  const gross = ts.reduce((s, r) => s + r.hrs * rate(r) + r.ot * rate(r) * 1.5, 0);
+  const gross = ts.reduce((s2, r) => s2 + r.hrs * rate(r) + r.ot * rate(r) * 1.5, 0);
   const canApprove = writes(c, 'timesheet.approve');
   const week = c.winter ? 'Sun Jan 3 - Sat Jan 9, 2027' : 'Sun May 2 - Sat May 8, 2027';
-  const excCard = (title, who, detail, actions, tone) => `<div class="cd ${tone || 'warn'}"><div class="cd-b"><div class="flex between"><b>${icon('warn')} ${esc(who)}</b>${h.pill(esc(title), 'warn')}</div><div class="small t2">${detail}</div>${actions ? `<div class="flex">${actions}</div>` : ''}</div></div>`;
-  return h.page({ title: c.tr('Timesheets', 'Hojas de tiempo'), sub: `Week ${week} · pay calendar: weekly field · cutoff Mon 10:00${own ? ' · first-level approval for ' + esc(own) : ''}`, actions: canApprove ? h.btn(approved ? 'Clean timesheets approved' : `Approve all clean (${clean.length})`, { kind: approved ? '' : 'primary', ui: 'ts.all', val: '1', icon: 'check', disabled: approved }) : roPill(c, 'timesheet.approve') })
+  const seeRate = seesFor(c, 'pay_rate', '');
+  const rows = exc.map(r => ({ icon: 'warn', tone: 'warn', title: `${esc(r.person)} <span class="tiny t3">${esc(r.crew)}</span> ${h.pill(/lunch/i.test(r.exceptions) ? 'Missed meal punch' : 'Edited by crew lead', 'warn')}`, sub: esc(r.exceptions) + ` · ${r.hrs} h reg, ${r.ot} h OT`, right: canApprove ? h.btn('Approve', { sm: true, kind: 'primary', act: 'ts-ok', x: String(r.idx) }) + tbtn('Note', 'Note added to the timesheet.', { sm: true }) : '' }));
+  return h.page({ title: c.tr('Timesheets', 'Hojas de tiempo'), sub: `Week ${week} · weekly field pay calendar · cutoff Mon 10:00${own ? ' · first-level approval for ' + esc(own) : ''}`, actions: canApprove ? h.btn(approved ? 'Clean timesheets approved' : `Approve all clean (${clean.length})`, { kind: approved ? '' : 'primary', ui: 'ts.all', val: '1', icon: 'check', disabled: approved }) : roPill(c, 'timesheet.approve') })
     + h.kpis([
-      { label: 'Regular hours', value: num(ts.reduce((s, r) => s + r.hrs, 0)), delta: ts.length + ' people' },
-      { label: 'Overtime', value: num(ts.reduce((s, r) => s + r.ot, 0)), delta: c.winter ? 'Snow events only' : 'Weekly over 40 h', tone: 'warn' },
-      { label: 'Exceptions', value: exc.length + extra.length, delta: 'Need a decision', tone: exc.length ? 'warn' : 'ok' },
-      { label: 'Est. gross', value: seesFor(c, 'pay_rate', '') ? money(Math.round(gross)) : '•••', delta: seesFor(c, 'pay_rate', '') ? 'Pay rates visible to your role' : 'Hidden: pay_rate field class' },
+      { label: 'Regular hours', value: num(ts.reduce((s2, r) => s2 + r.hrs, 0)), delta: ts.length + ' people' },
+      { label: 'Overtime', value: num(ts.reduce((s2, r) => s2 + r.ot, 0)), delta: c.winter ? 'Snow events only' : 'Weekly over 40 h', tone: 'warn' },
+      { label: 'Exceptions', value: exc.length + extra.length, delta: exc.length + extra.length ? 'Need a decision' : 'All clear', tone: exc.length + extra.length ? 'warn' : 'ok' },
+      { label: 'Est. gross', value: seeRate ? money(Math.round(gross)) : '•••', delta: seeRate ? 'Before taxes and burden' : 'Hidden: pay_rate field class' },
     ])
     + h.cols('21', [
-      `<div class="stack8"><h3 class="small">Exceptions</h3>${extra.map(e => excCard(e.kind, e.person + ' · ' + e.crew, e.detail + '<div class="mt8">' + h.aiCard({ agent: 'Timesheet Anomaly', level: 'L2', credits: 0.5, title: e.ai, why: 'Evidence: geofence exit and visit completion. Shown as a suggestion; you decide.' }) + '</div>', canApprove ? tbtn('Accept 15:42', 'Clock-out set to 15:42 with evidence stored and you as approver.', { sm: true, kind: 'primary' }) + tbtn('Edit', 'Opened the punch editor.', { sm: true }) + tbtn('Ask crew lead', 'Question sent to the crew lead in the crew app.', { sm: true }) : '')).join('')}
-      ${exc.map(r => excCard(/lunch/i.test(r.exceptions) ? 'MISSED MEAL PUNCH' : 'EDITED BY CREW LEAD', r.person + ' · ' + r.crew, esc(r.exceptions) + ` · ${r.hrs} h reg, ${r.ot} h OT`, canApprove ? h.btn('Approve', { sm: true, kind: 'primary', act: 'ts-ok', x: String(r.idx) }) + tbtn('Add note', 'Note added to the timesheet.', { sm: true }) : '')).join('') || (extra.length ? '' : h.empty('No exceptions this week.'))}</div>`,
+      `<div class="stack12">${extra.map(e => sec(`${esc(e.person)} <span class="tiny t3">${esc(e.crew)}</span> ${h.pill(e.kind, 'warn')}`, `<div class="small t2">${e.detail}</div>` + h.aiCard({ agent: 'Timesheet Anomaly', level: 'L2', credits: 0.5, title: e.ai, why: 'Evidence: geofence exit and visit completion. A suggestion; you decide.', actions: canApprove ? h.btn('Accept 15:42', { sm: true, kind: 'primary', act: 'ts-ok', x: 'mco' }) + tbtn('Edit punch', 'Opened the punch editor.', { sm: true }) + tbtn('Ask crew lead', 'Question sent to the crew lead in the crew app.', { sm: true }) : '' }), { tone: 'warn' })).join('')}
+      ${sec('Exceptions', rows.length ? h.list(rows) : h.empty('No other exceptions this week.'), { flush: true, sub: 'Missed meal punches, edits by crew leads, job time without a visit' })}</div>`,
       sec('Clean timesheets', h.table([
-        { k: 'person', label: 'Person' }, { k: 'hrs', label: 'Reg', n: true }, { k: 'ot', label: 'OT', n: true },
+        { k: 'person', label: 'Person', fmt: (v, r) => `${esc(v)}<div class="tiny t3">${esc(r.crew)}</div>` }, { k: 'hrs', label: 'Reg', n: true }, { k: 'ot', label: 'OT', n: true },
         { k: 'status', label: '', fmt: v => approved || v === 'Approved' ? h.pill('Approved', 'ok') : h.pill('Pending', 'warn') },
-      ], clean, { dense: true, empty: 'None' }), { flush: true, sub: 'Collapsed by crew in the full view' }),
+      ], clean, { dense: true, empty: 'None' }), { flush: true, sub: 'Grouped by crew in the full view' }),
     ])
     + h.note('Every accepted AI suggestion stores its evidence and the approver. Approved weeks flow to payroll export (15 §4.8, §6.2).');
 });
@@ -523,7 +538,7 @@ RL.screen('web.certs', (c) => {
       rows.filter(r => r.lic === 'expired' || r.lic === 'expiring' || /Expir|Med/.test(r.fa + r.cdl)).map(r => ({ name: r.name, what: r.lic === 'expired' || r.lic === 'expiring' ? 'Pesticide applicator ' + r.licCat : /Med/.test(r.cdl) ? 'DOT medical card' : 'First aid / CPR', when: r.lic ? r.exp : (r.cdl.match(/(\w+ \d+)$/) || r.fa.match(/(\w+ \d+)$/) || [, '-'])[1], st: r.lic === 'expired' ? 'Expired' : 'Expiring' })), { dense: true });
   return h.page({ title: c.tr('Certifications and licenses', 'Certificaciones y licencias'), sub: `${rows.length} field people · ${st} applicator rules · reminders at 60, 30 and 14 days`, actions: (writes(c, 'certification') ? h.btn('Add credential', { icon: 'plus', act: 'more-toast' }) : '') + roPill(c, 'certification') })
     + (conflicts.length ? sec('Future conflicts', h.list(conflicts), { flush: true, tone: exp ? 'danger' : 'warn' }) : '')
-    + `<div class="flex between">${h.tabs('ct.view', [['matrix', 'Matrix'], ['exp', 'Expiring list']], 'matrix')}${writes(c, 'certification') ? h.toggle('Block chemical logging when a license is expired', 'ct.block', true) : h.pill(enforce ? 'Expired licenses block chemical logging' : 'Warn only', 'info')}</div>`
+    + `<div class="flex between">${h.tabs('ct.view', [['matrix', 'Matrix'], ['exp', 'Expiring list']], 'matrix')}${writes(c, 'certification') ? tg('Block chemical logging when a license is expired', 'ct.block', true) : h.pill(enforce ? 'Expired licenses block chemical logging' : 'Warn only', 'info')}</div>`
     + body + h.note('Legend: OK active · Exp within 60 days · EXP expired · AUTH authorized · In training. "Under supv." means the person may apply under a licensed applicator where state rules allow (15 §4.5, §6.3).');
 });
 
@@ -539,7 +554,7 @@ RL.screen('web.safety', (c) => {
   const sel = cases.find(x => x.id === RL.ui['sf.case']) || cases[1];
   const talks = c.winter ? [['Cold stress and frostbite', 92], ['Slips on ice, three points of contact', 88], ['Plow truck pre-trip checks', 100]] : [['Heat illness prevention (water, rest, shade)', 94], ['Mower rollover on slopes', 81], ['Hearing protection with blowers', 76]];
   return h.page({ title: c.tr('Safety and incidents', 'Seguridad e incidentes'), sub: `${cases.length} cases this year · OSHA 300 log ${c.winter ? '· 300A summary posts Feb 1 to Apr 30' : 'current'}`, actions: (writes(c, 'incident') ? h.btn('Report incident', { kind: 'primary', icon: 'plus', act: 'more-toast' }) : '') + tbtn('Download OSHA 300', 'OSHA 300 log exported (PDF and CSV).', { icon: 'download' }) })
-    + (c.winter ? h.banner(`${icon('info')} OSHA 300A summary for 2026 must be certified and posted from Feb 1 to Apr 30 (verify). ${writes(c, 'incident') ? 'Draft is ready to review.' : ''}`, 'info') : '')
+    + (c.winter ? bnr(`${icon('info')} OSHA 300A summary for 2026 must be certified and posted from Feb 1 to Apr 30 (verify). ${writes(c, 'incident') ? 'Draft is ready to review.' : ''}`, 'info') : '')
     + h.kpis([{ label: 'Recordable cases (YTD)', value: 1 }, { label: 'Days away', value: 0 }, { label: 'Restricted days', value: 2 }, { label: 'Days since lost-time injury', value: c.winter ? 212 : 331, tone: 'ok', delta: 'Crew app shows the streak' }])
     + h.cols('21', [
       sec('Cases', h.table([
@@ -592,15 +607,17 @@ RL.screen('web.campaigns', (c, a) => {
   let body;
   if (tab === 'list') body = h.table([
     { k: 'name', label: 'Campaign', fmt: (v, r) => `<b>${esc(v)}</b><div class="tiny t3">${esc(r.segment)} · ${esc(r.channel)}</div>` },
-    { k: 'status', label: 'Status', fmt: v => statusPill(v) }, { k: 'sent', label: 'Sent', n: true, fmt: v => v ? num(v) : '-' },
+    { k: 'status', label: 'Status', fmt: v => statusPill(v) }, { k: 'sent', label: 'Sent', n: true, fmt: (v, r) => /Scheduled|Draft/.test(r.status) ? (v ? `<span class="t3">${num(v)} queued</span>` : '-') : v ? num(v) : '-' },
     { k: 'open', label: 'Opened', n: true, fmt: v => v != null ? v + '%' : '-' }, { k: 'conv', label: 'Booked', n: true, fmt: v => v != null ? v + '%' : '-' },
     { k: 'rev', label: 'Revenue (last touch)', n: true, fmt: v => v ? h.mask(c, 'price', money(v)) : '-' },
-  ], list, { dense: true }) + h.note('Attribution at MVP is first touch and last touch. Multi-touch needs Advanced Marketing (V1).');
+  ], list, { dense: true }) + h.note('Attribution at MVP is first touch and last touch. Multi-touch needs Advanced Marketing (V1).')
+    + sec('Lead sources this season (last touch)', h.table([{ k: 0, label: 'Source' }, { k: 1, label: 'Leads', n: true }, { k: 2, label: 'Won', n: true }, { k: 3, label: 'Revenue', n: true, fmt: v => h.mask(c, 'price', money(v)) }, { k: 4, label: 'Spend', n: true, fmt: v => v ? h.mask(c, 'cost', money(v)) : '-' }],
+      [['Google Business Profile', 64, 22, 61400, 0], ['Referral', 31, 17, 48200, 250], ['Website form', 48, 14, 39800, 1200], ['Campaign email and SMS', 39, 16, 16300, 0], ['Yard signs and truck wrap', 18, 6, 11900, 900]].map(r => c.winter ? [r[0], Math.round(r[1] * .2), Math.round(r[2] * .2), Math.round(r[3] * .15), Math.round(r[4] * .2)] : r), { dense: true }), { flush: true, sub: 'Spend is entered by hand at MVP; ad platform sync arrives at V1 (16 §4.5.3)' });
   else if (tab === 'journeys') body = h.list(journeys.map(([n, r, d, s]) => ({ icon: 'bolt', tone: s === 'On' ? 'ok' : '', title: `${esc(n)} <span class="tiny t3 mono">${r}</span>`, sub: esc(d), right: statusPill(s) }))) + h.note('Prebuilt journeys are in every plan. Editing steps or building new multi-step journeys needs the journey builder.');
   else if (tab === 'segments') body = h.table([{ k: 0, label: 'Segment' }, { k: 1, label: 'Clients', n: true, fmt: v => num(v) }, { k: 2, label: 'Built from', fmt: v => `<span class="tiny t3">${esc(v)}</span>` }, { k: 0, label: '', fmt: v => canSend ? tbtn('Use', `New campaign drafted for "${v}".`, { sm: true }) : '' }], segs, { dense: true }) + h.note('Consent is checked per channel at send time; opted-out and do-not-contact clients are removed automatically (16 §4.21).');
   else body = adv ? sec('Journey: lapsed client win-back', h.steps(['Trigger: no visit in 12 months', 'Email: we miss you', 'Wait 5 days', 'If not opened: SMS', 'If booked: stop', 'Task: owner call'], 6) + `<div class="flex">${h.tag('V1')}<span class="tiny t3">Branches, waits, A/B splits, holdout groups and multi-touch attribution.</span></div>`, { sub: 'Advanced Marketing' + (c.planCode === 'pro' ? ' (included in Pro)' : '') }) : inlineLock(c, 'marketing_advanced');
   return h.page({ title: 'Campaigns', sub: `${list.length} campaigns · ${segs.length} saved segments${a.state === 'limit' ? ' · ' + esc(a.limit) : ''}`, actions: (canSend ? h.btn('New campaign', { kind: 'primary', icon: 'plus', modal: 'more-campaign' }) : writes(c, 'campaign') ? h.btn('New draft', { icon: 'plus', modal: 'more-campaign' }) + h.pill('Drafts only, no send', 'info') : '') + roPill(c, 'campaign') })
-    + h.cols('3', [`<div class="cd"><div class="cd-b">${h.meter('Marketing emails this month', emUsed, emInc)}</div></div>`, `<div class="cd"><div class="cd-b">${h.meter('SMS segments this month', smsUsed, smsInc)}</div></div>`, `<div class="cd"><div class="cd-b"><div class="small"><b>10DLC marketing campaign</b></div>${c.planCode === 'starter' ? h.pill('Not registered: marketing SMS off', 'warn') : h.pill('Approved · active', 'ok')}<div class="tiny t3">Transactional SMS is registered for every Company at signup (16 §4.20).</div></div></div>`])
+    + `<div class="cd"><div class="cd-b"><div class="cols cols-3">${h.meter('Marketing emails this month', emUsed, emInc)}${h.meter('SMS segments this month', smsUsed, smsInc)}<div class="stack8"><span class="small"><b>10DLC marketing campaign</b></span>${c.planCode === 'starter' ? h.pill('Not registered: marketing SMS off', 'warn') : h.pill('Approved · active', 'ok')}</div></div><div class="tiny t3">Transactional SMS is registered for every Company at signup; marketing SMS needs its own registered campaign (16 §4.20).</div></div></div>`
     + h.tabs('cm.tab', [['list', 'Campaigns', list.length], ['journeys', 'Prebuilt journeys', journeys.length], ['segments', 'Segments', segs.length], ['builder', 'Journey builder ' + (adv ? h.tag('V1') : icon('lock', 's'))]], 'list') + body;
 });
 RL.modal('more-campaign', c => ({ title: 'New campaign', body: h.field('Name', h.input(c.winter ? 'Spring cleanup early-bird' : 'Mulch refresh, June slots')) + h.field('Segment', h.select(['Maintenance clients without a spring cleanup', 'Turf over 3,000 sq ft (cool-season)', 'Lapsed: no visit in 12 months'], 'Turf over 3,000 sq ft (cool-season)')) + h.field('Channel', h.select(['Email', 'SMS', 'Email + SMS'], 'Email + SMS')) + h.field('Message', h.textarea(`${c.t.name}: aeration and overseeding for your lawn is {price_from_turf_area} on your usual route day. Reply YES to book. STOP to opt out.`)) + h.aiCard({ agent: 'Copilot', level: 'L1', credits: 1, title: 'Draft the email body in your voice', actions: tbtn('Draft (1 credit)', 'Draft added below the SMS text.', { sm: true, kind: 'ai' }) }) + h.note('Price blocks pull each client\'s price from turf area. Quiet hours and frequency caps apply (16 §4.21.3).'), foot: h.btn('Cancel', { act: 'noop' }) + (c.role === 'designer' ? tbtn('Save draft', 'Draft saved for the office to send.', { kind: 'primary' }) : tbtn('Schedule send', 'Campaign scheduled. Consent is checked again at send time.', { kind: 'primary' })) }));
@@ -614,7 +631,7 @@ RL.screen('web.reviews', (c) => {
   const nps = { p: 62, n: 25, d: 13 };
   const crewLead = (D.crews[0] || {}).lead || 'the crew lead';
   return h.page({ title: 'Reviews and NPS', sub: `Google Business Profile connected · ${c.winter ? 'NPS next sends in May' : 'Relationship NPS sent May 3'}`, actions: can ? tbtn('Send requests now (14 eligible)', '14 review requests queued. Eligibility never depends on satisfaction or NPS.', { kind: 'primary', icon: 'send' }) : '' })
-    + h.banner(`${icon('shield')} No review gating: every eligible client gets the same ask after a completed job or their 4th visit, at most once per 180 days. Requests never depend on satisfaction, NPS or complaints, and never carry incentives (16 §4.12.1).`, 'info')
+    + bnr(`${icon('shield')} No review gating: every eligible client gets the same ask after a completed job or their 4th visit, at most once per 180 days. Requests never depend on satisfaction, NPS or complaints, and never carry incentives (16 §4.12.1).`, 'info')
     + h.kpis([{ label: 'Google rating', value: '4.8', delta: '186 reviews · +9 in 30 days', tone: 'ok' }, { label: 'Requests sent (30 d)', value: c.winter ? 38 : 212, delta: (c.winter ? 26 : 31) + '% left a review' }, { label: 'Relationship NPS', value: '+' + (nps.p - nps.d), delta: 'n = 214 responses' }, { label: 'Open detractor tasks', value: 3, delta: '48-hour SLA', tone: 'warn' }])
     + h.cols('21', [
       sec('Recent reviews', h.list(rv.map(r => ({ icon: 'star', tone: r.stars <= 3 ? 'warn' : 'ok', title: `${stars(r.stars)} <b>${esc(r.name)}</b> <span class="tiny t3">${esc(r.when)}</span>`, sub: `“${esc(r.text)}”${r.matched ? ` · matched to ${esc(r.matched)}` : ''}`, right: r.replied ? h.pill('Replied', 'ok') : h.pill('Needs reply', 'warn') })))
@@ -667,7 +684,7 @@ RL.screen('web.receptionist', (c) => {
     + h.kpis([{ label: 'Calls (30 d)', value: c.winter ? 96 : 412 }, { label: 'Answer rate', value: c.winter ? '88%' : '81%' }, { label: 'Missed, texted back', value: c.winter ? 9 : 47, delta: 'Within 30 seconds' }, { label: 'First-call bookings', value: c.winter ? 14 : 63, tone: 'ok' }])
     + h.cols('21', [
       sec('Call log', h.table([{ k: 'when', label: 'When' }, { k: 'from', label: 'Caller' }, { k: 'src', label: 'Source' }, { k: 'dur', label: 'Length', n: true }, { k: 'out', label: 'Outcome', fmt: v => statusPill(v) }], calls, { dense: true }) + h.note('Transcription and summary cost 2 credits per call or voicemail. AI receptionist time is metered in minutes, not credits.'), { flush: true }),
-      `<div class="stack12">${sec('Missed-call text-back', (can ? h.toggle('Send a text within 30 seconds', 'rc.textback', true) : h.pill(tb ? 'On' : 'Off', tb ? 'ok' : '')) + `<div class="small t2" style="background:var(--surface-2);padding:8px;border-radius:8px">“Sorry we missed you, this is ${esc(c.t.name)}. How can we help? Reply here or request a visit online. Reply STOP to opt out.”</div>` + h.note('Mobile numbers only, inside quiet hours, once per caller.'))}
+      `<div class="stack12">${sec('Missed-call text-back', (can ? tg('Send a text within 30 seconds', 'rc.textback', true) : h.pill(tb ? 'On' : 'Off', tb ? 'ok' : '')) + `<div class="small t2" style="background:var(--surface-2);padding:8px;border-radius:8px">“Sorry we missed you, this is ${esc(c.t.name)}. How can we help? Reply here or request a visit online. Reply STOP to opt out.”</div>` + h.note('Mobile numbers only, inside quiet hours, once per caller.'))}
       ${sec('Call routing', kv2([['Business hours', 'Mon-Fri 7:00-5:00, Sat 8:00-12:00'], ['After hours', recep ? 'AI receptionist' : 'Voicemail with transcription'], ['Ring group', 'Office (sequential)'], ['Minutes', `${num(c.winter ? 640 : 2210)} / ${num(voiceInc)} included`]]))}</div>`,
     ])
     + (recep ? sec('AI receptionist ' + h.tag('V1'), `<div class="cols cols-2"><div class="stack8">${h.meter('AI receptionist minutes this month', mins.used, mins.inc, { unit: 'min' })}<div class="tiny t3">${c.planCode === 'pro' ? 'Pro includes 200 min' : 'Add-on includes 100 min'}, then $0.39/min. At the ceiling, calls fall back to voicemail with transcription.</div></div><div class="stack8">${h.field('Answers', h.select(['After hours and overflow', 'After hours only', 'All calls (24/7)'], 'After hours and overflow', { ui: 'rc.mode' }))}${h.field('Languages', h.select(['English and Spanish', 'English only'], 'English and Spanish'))}</div></div>` + h.aiCard({ agent: 'AI Receptionist (A23)', level: 'L2', title: 'Qualifies callers and books site visits into open schedule slots', why: 'Never quotes firm prices or takes card payments. Discloses that it is an AI assistant at the start of the call.' }))
@@ -693,19 +710,22 @@ RL.screen('web.dashboards', (c) => {
   const carr = D.agreements.reduce((s, a) => s + a.value, 0);
   let body;
   if (tab === 'owner') {
-    const ar = D.aging;
+    /* Sample invoices are few; scale aging to a realistic AR (about 4.5% of annual revenue) keeping the bucket shares. */
+    const ag0 = D.aging, tot0 = (ag0.current + ag0.d30 + ag0.d60 + ag0.d90) || 1, arTot = Math.round(k.revenueLY * (c.winter ? .03 : .045) / 100) * 100;
+    const ar = { current: Math.round(arTot * ag0.current / tot0), d30: Math.round(arTot * ag0.d30 / tot0), d60: Math.round(arTot * ag0.d60 / tot0), d90: Math.round(arTot * ag0.d90 / tot0) };
+    const curM = c.winter ? 0 : 4;
+    const sw = col => `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${col};margin-right:4px;vertical-align:-1px"></span>`;
     body = h.kpis([
       { label: 'Revenue MTD', value: h.kmoney(m.mtd), delta: (m.mtd >= m.goal ? '+' : '') + Math.round(100 * (m.mtd - m.goal) / m.goal) + '% vs goal', tone: m.mtd >= m.goal ? 'ok' : 'warn' },
       { label: 'Revenue YTD', value: h.kmoney(m.ytd), delta: '+' + Math.round(100 * (m.ytd - m.ly) / m.ly) + '% vs last year', tone: 'ok' },
       { label: 'Gross margin', value: h.mask(c, 'margin', k.gm + '%'), delta: 'Target 42%' },
-      { label: 'Labor % of revenue', value: h.mask(c, 'cost', (c.winter ? 38 : 31) + '%') },
       { label: 'Cash on hand', value: h.mask(c, 'client_financial', h.kmoney(k.cash)), delta: 'Bank + own Stripe balance' },
       { label: 'Backlog', value: h.mask(c, 'price', h.kmoney(Math.round(k.revenueLY * (c.winter ? .21 : .14)))), delta: (c.winter ? 9.5 : k.backlogWeeks) + ' weeks' },
     ])
       + h.cols('21', [
-        sec('Revenue by month', h.colchart(MONTHS, [{ values: SEASON.map((s, i) => (c.winter ? i < 1 : i < 5) ? Math.round(k.revenueLY * 1.08 * s) : 0), cls: 'c1' }, { values: SEASON.map(s => Math.round(k.revenueLY * s)), cls: 'c3' }], { money: true, label: 'Revenue by month this year and last year' }) + `<div class="flex tiny t3"><span>${icon('chart', 's')} This year (earned)</span><span>Last year</span><span class="grow"></span><span>revenue_earned · certified metric</span></div>`),
+        sec('Revenue by month', h.colchart(MONTHS, [{ values: SEASON.map((s, i) => i < curM ? Math.round(k.revenueLY * 1.08 * s) : i === curM ? m.mtd : 0), cls: 'c1' }, { values: SEASON.map(s => Math.round(k.revenueLY * s)), cls: 'c3' }], { money: true, label: 'Revenue by month this year and last year' }) + `<div class="flex tiny t3"><span>${sw('var(--primary)')}This year (earned, ${c.today.month} to date)</span><span>${sw('var(--marigold-400)')}Last year</span><span class="grow"></span><span class="mono">revenue_earned</span></div>`),
         `<div class="stack12">${sec('Receivables', h.bars([{ label: 'Current', value: ar.current, right: h.mask(c, 'client_financial', money(ar.current)) }, { label: '1-30 days', value: ar.d30, right: h.mask(c, 'client_financial', money(ar.d30)), tone: 'warn' }, { label: '31-60 days', value: ar.d60, right: h.mask(c, 'client_financial', money(ar.d60)), tone: 'warn' }, { label: '61+ days', value: ar.d90, right: h.mask(c, 'client_financial', money(ar.d90)), tone: 'danger' }]) + `<div class="tiny t3">DSO (countback) 34 days · 2 failed autopays this week</div>`)}
-        ${sec('Pipeline and recurring', kv2([['Open pipeline', h.mask(c, 'price', money(pv))], ['Weighted', h.mask(c, 'price', money(Math.round(wv)))], ['Close rate (90 d)', k.closeRate + '%'], ['Contracted recurring (CARR)', h.mask(c, 'price', money(carr))], ['Revenue per man-hour', h.mask(c, 'price', '$' + (c.winter ? 61 : 58))]]))}</div>`,
+        ${sec('Pipeline and recurring', kv2([['Open pipeline', h.mask(c, 'price', money(pv))], ['Weighted', h.mask(c, 'price', money(Math.round(wv)))], ['Close rate (90 d)', k.closeRate + '%'], ['Contracted recurring (CARR)', h.mask(c, 'price', money(carr))], ['Revenue per man-hour', h.mask(c, 'price', '$' + (c.winter ? 61 : 58))], ['Labor % of revenue', h.mask(c, 'cost', (c.winter ? 38 : 31) + '%')]]))}</div>`,
       ])
       + (c.inLens('V1') ? `<div class="flex">${h.tag('V1')}<span class="small">Peers: your gross margin is at the 61st percentile of 23 peers in your region, size band and service mix.</span>${c.has('benchmarks') ? h.link('Open benchmarks', 'web.benchmarks') : lockPill('Grow and Pro')}</div>` : '')
       + (c.role === 'observer' ? h.note('Observer: read-only dashboards and margin, no client PII, no client-list exports (22 §4.3).') : '');
@@ -738,7 +758,7 @@ RL.screen('web.dashboards', (c) => {
       { icon: 'shield', tone: 'warn', title: '1 subcontractor COI expiring', sub: 'Tree crew partner, 12 days', go: 'web.vendors' },
     ]), { flush: true });
   }
-  return h.page({ title: 'Dashboards', sub: `${esc(names[tab])} · ${c.today.label} · metrics from the KPI dictionary, refreshed every 15 minutes`, actions: (writes(c, 'dashboard') ? tbtn('Schedule email', 'Dashboard scheduled: Mondays 6:30 am as PDF.', { icon: 'mail' }) : '') + tbtn('Export PDF', 'PDF exported.', { icon: 'download' }) })
+  return h.page({ title: 'Dashboards', sub: `${esc(names[tab])} · ${c.today.label} · certified KPIs, refreshed every 15 min`, actions: (writes(c, 'dashboard') ? tbtn('Schedule email', 'Dashboard scheduled: Mondays 6:30 am as PDF.', { icon: 'mail' }) : '') + tbtn('Export PDF', 'PDF exported.', { icon: 'download' }) })
     + (roleTabs.length > 1 ? h.tabs('db.tab', roleTabs.map(t => [t, names[t]]), roleTabs[0]) : '') + body;
 });
 
@@ -752,7 +772,7 @@ RL.screen('web.report_builder', (c) => {
   const saved = [['Job cost by phase', 'Weekly, Mon 7:00', 'Owner, ops'], ['AR aging with notes', 'Daily', 'Office'], ['Chemical applications by applicator', 'Monthly', 'Owner']];
   return h.page({ title: 'Report builder', tags: h.tag('V1'), sub: 'Certified metrics only; anything new is labeled exploratory (18 §4.5)', actions: writes(c, 'dashboard') ? tbtn('Save report', 'Report saved to Reports.', { kind: 'primary' }) + tbtn('Schedule delivery', 'Scheduled: Mondays 7:00 am to you as CSV and PDF.', { icon: 'mail' }) : roPill(c, 'dashboard') })
     + h.cols('12', [
-      sec('Build', h.field('Data source', h.select(['Jobs', 'Visits', 'Invoices', 'Time entries', 'Leads and opportunities'], src, { ui: 'rb.src' })) + `<div class="fld"><span>Metrics</span><div class="stack8">${metrics.map(([kk, l, d]) => h.toggle(esc(l), kk, d)).join('')}</div></div>` + h.field('Group by', h.select(['Service line', 'Crew', 'Month'], grp, { ui: 'rb.grp' })) + h.field('Filter', h.select(['This season', 'Last 90 days', 'Last year'], 'This season')) + h.note('Margin and cost columns follow your field-class visibility.')),
+      sec('Build', h.field('Data source', h.select(['Jobs', 'Visits', 'Invoices', 'Time entries', 'Leads and opportunities'], src, { ui: 'rb.src' })) + `<div class="fld"><span>Metrics</span><div class="stack8">${metrics.map(([kk, l, d]) => tg(esc(l), kk, d)).join('')}</div></div>` + h.field('Group by', h.select(['Service line', 'Crew', 'Month'], grp, { ui: 'rb.grp' })) + h.field('Filter', h.select(['This season', 'Last 90 days', 'Last year'], 'This season')) + h.note('Margin and cost columns follow your field-class visibility.')),
       sec('Preview', on.length ? h.table(cols, rows, { dense: true }) + h.colchart(rows.map(r => r.g.slice(0, 10)), [{ values: rows.map(r => r.rev), cls: 'c1' }], { money: true, h: 130 }) : h.empty('Pick at least one metric.'), { sub: esc(src) + ' · ' + esc(grp) }),
     ])
     + sec('Saved and scheduled', h.table([{ k: 0, label: 'Report' }, { k: 1, label: 'Delivery' }, { k: 2, label: 'Recipients' }], saved, { dense: true }), { flush: true, sub: 'Scheduled delivery ships at MVP for standard reports' });
@@ -769,11 +789,11 @@ RL.screen('web.benchmarks', (c) => {
   const fmt = (v, u) => u === '$' ? '$' + v : v + u;
   const lowerBetter = l => /Labor|DSO/.test(l);
   const pctile = (r) => { const [l, v, p25, p50, p75] = r; const lb = lowerBetter(l); const s = lb ? -1 : 1; const x = s * (v - p50) / Math.max(1, Math.abs(p75 - p50)); return Math.max(5, Math.min(95, Math.round(50 + x * 25))); };
-  return h.page({ title: 'Peer benchmarks', tags: h.tag('V1'), sub: `Peers: Great Lakes and Ohio Valley · ${esc(band)} · ${esc(arche)} (n = ${n}) · Q${c.winter ? 4 : 1} ${c.winter ? 2026 : 2027}`, actions: isOwner(c) ? h.toggle('Contribute and compare', 'bm.in', true) : '' })
+  return h.page({ title: 'Peer benchmarks', tags: h.tag('V1'), sub: `Peers: Great Lakes and Ohio Valley · ${esc(band)} · ${esc(arche)} (n = ${n}) · Q${c.winter ? 4 : 1} ${c.winter ? 2026 : 2027}`, actions: isOwner(c) ? tg('Contribute and compare', 'bm.in', true) : '' })
     + (optIn ? h.table([
       { k: 0, label: 'Metric' }, { k: 1, label: 'You', n: true, fmt: (v, r) => `<b>${r[5] ? h.mask(c, r[5], fmt(v, r[6])) : fmt(v, r[6])}</b>` },
       { k: 2, label: 'P25', n: true, fmt: (v, r) => fmt(v, r[6]) }, { k: 3, label: 'Median', n: true, fmt: (v, r) => fmt(v, r[6]) }, { k: 4, label: 'P75', n: true, fmt: (v, r) => fmt(v, r[6]) },
-      { k: 0, label: 'Your rank', fmt: (v, r) => { const p = pctile(r); return `<span class="flex nw">${h.progress(p, 100, p >= 75 ? '' : p >= 50 ? 'info' : 'warn')}<span class="tiny nowrap">${p}th</span></span>`; } },
+      { k: 0, label: 'Your rank', fmt: (v, r) => { const p = pctile(r); return `<span class="flex nw">${mini(p, 100, p >= 75 ? '' : p >= 50 ? 'info' : 'warn')}<span class="tiny nowrap">${p}th</span></span>`; } },
       { k: 0, label: 'Quartile', fmt: (v, r) => { const p = pctile(r); return h.pill(p >= 75 ? 'Top' : p >= 50 ? 'Second' : p >= 25 ? 'Third' : 'Bottom', p >= 75 ? 'ok' : p >= 50 ? 'info' : 'warn'); } },
       { k: 0, label: '', fmt: (v, r) => isOwner(c) ? tbtn('Set goal to P75', `Goal for ${v} set to the cohort P75.`, { sm: true }) : '' },
     ], rows, { dense: true }) + h.cols('2', [sec('Privacy rules', h.list([{ icon: 'shield', title: 'At least 10 companies per published cell', sub: 'Otherwise the view falls back to a broader cohort and says so' }, { icon: 'users', title: 'P25, median and P75 only; P10 and P90 when n is 30 or more', sub: 'No minimums, maximums or small-cell means' }, { icon: 'lock', title: 'No client, property, employee or transaction data leaves your Company', sub: 'Quarterly batch; no on-demand recomputation' }]), { flush: true }), sec('Biggest gaps to median', h.list([{ icon: 'arrow-r', tone: 'warn', title: 'DSO 34 days vs 38: strength', sub: 'Autopay share ' + c.D.kpi.autopayPct + '%' }, { icon: 'arrow-r', tone: 'info', title: 'Renewal rate 86% vs 81%: strength', sub: 'Renewal desk in Sales' }]), { flush: true })])
@@ -785,18 +805,19 @@ RL.screen('web.forecasts', (c) => {
   const rain = h.on('fc.rain', false), late = h.on('fc.late', false), buy = h.on('fc.buy', false);
   const wk = Array.from({ length: 13 }, (_, i) => i + 1);
   const start = k.cash;
-  const flow = wk.map(i => { const seasonal = c.winter ? (i < 8 ? -0.07 : 0.05) : (i % 2 ? .05 : -.02); let v = seasonal * start; if (!c.winter && i === 6) v -= start * .12; if (rain && !c.winter && (i === 3 || i === 4)) v -= start * .09; if (late && i >= 2 && i <= 6) v -= start * .03; if (late && i === 7) v += start * .15; if (buy && i === (c.winter ? 10 : 3)) v -= 68000; return v; });
+  const base = c.winter ? [-.08, -.10, -.06, -.12, -.05, -.09, -.04, .03, -.10, .06, .04, .12, .15] : [.10, -.18, .12, -.15, .08, -.32, .14, -.12, .16, -.10, .18, -.08, .15];
+  const flow = base.map((f, j) => { const i = j + 1; let v = f * start; if (rain && (c.winter ? i >= 12 : i === 3 || i === 4)) v -= start * .09; if (late && i >= 2 && i <= 6) v -= start * .03; if (late && i === 7) v += start * .15; if (buy && i === (c.winter ? 10 : 3)) v -= 68000; return v; });
   let bal = start; const ends = flow.map(v => (bal += v, Math.max(0, Math.round(bal))));
   const low = Math.min(...ends), lowWk = ends.indexOf(low) + 1;
-  const thr = Math.round(start * .55 / 1000) * 1000;
+  const thr = Math.round(start * (c.winter ? .35 : .6) / 1000) * 1000;
   const labels = wk.map(i => 'W' + i);
   const cap = [['Maintenance', c.winter ? 320 : 1540, c.winter ? 180 : 1610], ['Installs', c.winter ? 160 : 720, c.winter ? 90 : 860], ['Lawn applications (licensed)', c.winter ? 0 : 260, c.winter ? 0 : 300], ['Irrigation', c.winter ? 40 : 210, c.winter ? 10 : 190]];
   const fmt = v => h.mask(c, 'client_financial', h.kmoney(v));
   return h.page({ title: '13-week forecasts', tags: h.tag('V1'), sub: `Cash and capacity · re-runs nightly and on material events · backtest error 6.8% (MAPE)`, actions: tbtn('Export', 'Forecast exported to CSV.', { icon: 'download' }) })
-    + (low < thr ? h.banner(`${icon('warn')} Low point ${fmt(low)} in week ${lowWk} is under your ${fmt(thr)} threshold. Levers: speed up collections, move a purchase, draw on the line of credit.`, 'warn') : '')
+    + (low < thr ? bnr(`${icon('warn')} Low point ${fmt(low)} in week ${lowWk} is under your ${fmt(thr)} threshold. Levers: speed up collections, move a purchase, draw on the line of credit.`, 'warn') : '')
     + h.kpis([{ label: 'Opening cash', value: fmt(start), delta: 'Reconciled bank + Stripe in transit' }, { label: 'Low point (P50)', value: fmt(low), delta: 'Week ' + lowWk, tone: low < thr ? 'warn' : 'ok' }, { label: 'Week 13 (P50)', value: fmt(ends[12]), delta: `P10 ${fmt(Math.round(ends[12] * .82))} · P90 ${fmt(Math.round(ends[12] * 1.14))}` }, { label: 'Scenarios on', value: [rain, late, buy].filter(Boolean).length }])
     + h.cols('21', [sec('Weekly ending cash', h.colchart(labels, [{ values: ends, cls: low < thr ? 'c3' : 'c1' }], { money: true, line: ends.map(() => thr), label: '13-week cash forecast' }) + `<div class="flex tiny t3"><span>Bars: P50 ending cash</span><span>Dashed line: your low-cash threshold</span></div>`),
-      sec('Scenarios', `<div class="stack8">${h.toggle('Lose 2 weeks to rain in ' + (c.winter ? 'April' : 'May'), 'fc.rain', false)}${h.toggle('Biggest commercial client pays 30 days late', 'fc.late', false)}${h.toggle('Buy a $68,000 skid steer', 'fc.buy', false)}</div>` + h.note('Inflows use each client\'s predicted payment date; outflows use payroll, AP due dates and recurring expenses (18 §4.9.1).'))])
+      sec('Scenarios', `<div class="stack8">${tg('Lose 2 weeks to rain in ' + (c.winter ? 'April' : 'May'), 'fc.rain', false)}${tg('Biggest commercial client pays 30 days late', 'fc.late', false)}${tg('Buy a $68,000 skid steer', 'fc.buy', false)}</div>` + h.note('Inflows use each client\'s predicted payment date; outflows use payroll, AP due dates and recurring expenses (18 §4.9.1).'))])
     + sec('Capacity: next 13 weeks', h.table([{ k: 0, label: 'Division' }, { k: 1, label: 'Available hours', n: true, fmt: v => num(v) }, { k: 2, label: 'Demand hours', n: true, fmt: v => num(v) }, { k: 0, label: 'Gap', n: true, fmt: (v, r) => { const g = r[1] - r[2]; return g < 0 ? h.pill(num(g) + ' h', 'danger') : h.pill('+' + num(g) + ' h', 'ok'); } }], cap, { dense: true }) + h.aiCard({ agent: 'Copilot', level: 'L1', credits: 1, title: c.winter ? 'Hire 3 seasonal technicians to start by Mar 15' : 'Add a Saturday install shift for 4 weeks or sub out 140 hours of pavers', why: 'Demand includes scheduled visits, backlog and weighted pipeline hours.' }), { flush: false });
 });
 
@@ -831,7 +852,7 @@ RL.screen('web.automations', (c, a) => {
   const nl = RL.ui['au.nl'] === '1';
   let body;
   if (tab === 'rules') body = h.table([
-    { k: 0, label: '', fmt: (v, r) => { const on = ruleOn(c, v, RULES.indexOf(r)); return can ? `<button type="button" class="tgl${on ? ' on' : ''}" data-act="au-toggle" data-x="${v}" aria-pressed="${on}" aria-label="${on ? 'Turn off' : 'Turn on'} ${esc(r[1])}"><i></i></button>` : h.pill(on ? 'On' : 'Off', on ? 'ok' : ''); } },
+    { k: 0, label: '', fmt: (v, r) => { const on = ruleOn(c, v, RULES.indexOf(r)); return can ? `<button type="button" ${TGL_STYLE} class="tgl${on ? ' on' : ''}" data-act="au-toggle" data-x="${v}" aria-pressed="${on}" aria-label="${on ? 'Turn off' : 'Turn on'} ${esc(r[1])}"><i></i></button>` : h.pill(on ? 'On' : 'Off', on ? 'ok' : ''); } },
     { k: 1, label: 'Rule', fmt: (v, r) => `<b>${esc(v)}</b> <span class="tiny t3 mono">${r[0]}</span><div class="tiny t3">${esc(r[3])}</div>` },
     { k: 2, label: 'Trigger', m: true },
     { k: 5, label: 'AI credits / mo', n: true, fmt: v => v ? `${h.ai('')} about ${num(v)}` : '<span class="t3">0</span>' },
@@ -860,7 +881,7 @@ RL.screen('web.agents', (c) => {
     const locked = isV1 && (!v1ok || (v1cap != null && i >= v1cap));
     const cap = capOf(ag, i), used = Math.round(cap * (.2 + (hs(ag.id) % 60) / 100));
     const maxL = TIER[ag.id] === 'T0' ? 'L4' : TIER[ag.id] === 'T3' ? 'L3' : 'L4';
-    const opts = ['L0', 'L1', 'L2', 'L3', 'L4'].filter(l => l <= maxL).map(l => [l, l + ' ' + { L0: 'Off', L1: 'Suggest', L2: 'Draft and approve', L3: 'Act and notify', L4: 'Autonomous in budget' }[l]]);
+    const opts = ['L0', 'L1', 'L2', 'L3', 'L4'].filter(l => l <= maxL).map(l => [l, l + ' ' + { L0: 'Off', L1: 'Suggest', L2: 'Approve', L3: 'Act + notify', L4: 'Autonomous' }[l]]);
     return { id: ag.id, name: ag.name, isV1, locked, cad: ag.cadence, cost: ag.credits, lv, cap, used, opts, tier: TIER[ag.id] || 'T1' };
   };
   const rows = mvp.map((x, i) => row(x, i, false)).concat(v1list.map((x, i) => row(x, i, true)));
@@ -872,13 +893,13 @@ RL.screen('web.agents', (c) => {
     { id: 'q2', agent: 'Lead Follow-up (A3)', title: `Reply to ${esc(D.leads[0].name)} and offer a site visit ${c.winter ? 'Thu Jan 14 at 10:00' : 'Thu May 13 at 10:00'}`, body: `“Thanks for reaching out about ${esc(D.leads[0].service.toLowerCase())}. ${esc((c.t.cast && c.t.cast.estimator) || c.owner)} can stop by Thursday at 10. Does that work?”`, conf: 'Medium: slot from the estimator\'s calendar', cr: 4, lv: 'L2' },
     { id: 'q3', agent: 'Estimating from notes (A6)', title: `Draft estimate for ${esc(D.opps[1].client)} from a voice memo`, body: '14 lines mapped to the Price Book; 2 lines need a quantity.', conf: 'Low: 2 quantities guessed', cr: 8, lv: 'L2' },
   ].filter(q => !done.includes(q.id));
-  return h.page({ title: 'AI agents', sub: `${rows.filter(r => !r.locked && r.lv !== 'L0').length} agents on · ${num(cr.used)} of ${num(cr.inc)} credits used this month · every action shows its cost and autonomy level before it runs`, actions: roPill(c, 'ai_agent.configure') + (isOwner(c) ? h.btn('Credits and caps', { go: 'web.settings.subscription' }) : '') })
+  return h.page({ title: 'AI agents', sub: `${rows.filter(r => !r.locked && r.lv !== 'L0').length} agents on · ${num(cr.used)} of ${num(cr.inc)} credits used this month`, actions: roPill(c, 'ai_agent.configure') + (isOwner(c) ? h.btn('Credits and caps', { go: 'web.settings.subscription' }) : '') })
     + h.cols('21', [
       sec('Roster', h.table([
         { k: 'name', label: 'Agent', fmt: (v, r) => `<b>${esc(v)}</b> <span class="tiny t3 mono">${r.id} · ${r.tier}</span>${r.isV1 ? ' ' + h.tag('V1') : ''}<div class="tiny t3">${esc(r.cad)} · ${r.cost} cr per run</div>` },
         { k: 'lv', label: 'Autonomy', fmt: (v, r) => r.locked ? lockPill(v1ok ? 'Grow: 3 V1 agents' : 'Grow and Pro') : can ? h.select(r.opts, v, { ui: 'ag.lv.' + r.id, label: 'Autonomy for ' + r.name }) : h.pill(esc(v), 'ai') },
         { k: 'cap', label: 'Cap / mo', n: true, fmt: (v, r) => r.locked ? '-' : num(v) },
-        { k: 'used', label: 'Used', n: true, fmt: (v, r) => r.locked ? '-' : `<span class="flex nw">${h.progress(v, r.cap, v / r.cap > .8 ? 'warn' : 'ai')}<span class="tiny">${num(v)}</span></span>` },
+        { k: 'used', label: 'Used', n: true, fmt: (v, r) => r.locked ? '-' : `<span class="flex nw">${mini(v, r.cap, v / r.cap > .8 ? 'warn' : 'ai')}<span class="tiny">${num(v)}</span></span>` },
         { k: 'id', label: '', fmt: (v, r) => r.locked ? '' : h.btn('Log', { sm: true, ui: 'ag.sel', val: v, kind: sel.id === v ? 'primary' : 'ghost' }) },
       ], rows, { dense: true }) + h.note(`L0 off, L1 suggest, L2 draft and approve, L3 act and notify (5-minute undo), L4 autonomous within budget. External or money actions (T3) stop at L3; card charges and signatures (T4) are never done by AI (17 §4.1.2, §4.3).${v1.s === 'L' ? ' Grow includes up to 3 V1 agents.' : v1.s === '-' ? ' V1 agents are not available on ' + esc(c.plan.name) + '.' : ''}`), { flush: true }),
       `<div class="stack12">${sec(`Approval inbox <span class="tiny t3">${inbox.length}</span>`, inbox.length ? inbox.map(q => h.aiCard({ agent: q.agent, level: q.lv, credits: q.cr, title: q.title, body: `<div class="small">${q.body}</div><div class="tiny t3">Confidence: ${esc(q.conf)}</div>`, actions: can ? h.btn('Approve', { sm: true, kind: 'primary', act: 'ag-done', x: q.id }) + h.btn('Edit', { sm: true, act: 'ag-done', x: q.id }) + h.btn('Reject', { sm: true, act: 'ag-done', x: q.id }) : '<span class="tiny t3">Routed to people who can approve</span>' })).join('') : h.empty('Inbox zero. Items unhandled for 24 hours escalate to the owner.'))}
@@ -887,5 +908,322 @@ RL.screen('web.agents', (c) => {
 });
 RL.act('ag-done', (el) => { const cur = String(RL.ui['ag.done'] || '').split(',').filter(Boolean); cur.push(el.dataset.x); RL.ui['ag.done'] = cur.join(','); RL.toast('Done. Your decision feeds this Company\'s examples, not model training.'); });
 
-// @@PART5
+// =====================================================================
+// SETTINGS (21 §5.2; 02 §7.2, §7.6; 22 §4, §9)
+// =====================================================================
+const fx = (c, cap) => (label, value, hint, o) => h.field(label, h.input(value, Object.assign({ ro: !writes(c, cap) }, o || {})), hint);
+const sx = (c, cap) => (label, opts, value, hint) => h.field(label, writes(c, cap) ? h.select(opts, value) : h.input(value, { ro: true }), hint);
+const saveBar = (c, cap, msg) => writes(c, cap) ? `<div class="flex">${tbtn('Save changes', msg || 'Saved. The change is recorded in the audit log.', { kind: 'primary' })}<span class="tiny t3">Changes are audited with who, when and the old value.</span></div>` : h.note(`Read only for ${esc(c.roleObj.name)} (${esc(c.can(cap))}). ${ask(c)}`);
+const tz = c => ({ IL: 'America/Chicago (Central)', WI: 'America/Chicago (Central)', MI: 'America/Detroit (Eastern)', IN: 'America/Indiana/Indianapolis (Eastern)' }[stateOf(c)] || 'America/New_York (Eastern)');
+const domainOf = c => (c.t.brand.portal.match(/portal\.([a-z]+)\.example/) || [])[1] ? c.t.brand.portal.replace(/^portal\./, '') : c.t.id + '.example';
+
+RL.screen('web.settings.company', (c) => {
+  const f = fx(c, 'company.settings'), s = sx(c, 'company.settings'), t = c.t, st = stateOf(c);
+  const multi = c.feat('multi_branch');
+  const locs = t.branches.map((b, i) => ({ name: b + (i === 0 ? ' (main)' : ''), addr: `${1200 + i * 340} Industrial Pkwy, ${b}`, type: i === 0 ? 'Office and yard' : 'Branch yard', crews: c.D.crews.filter(cr => cr.branch === b).length }));
+  return h.page({ title: 'Company profile and locations', sub: `${esc(t.name)} · ${esc(t.city)} · ${esc(c.seg.name)}`, actions: roPill(c, 'company.settings') })
+    + h.cols('2', [
+      sec('Profile', `<div class="cols cols-2">${f('Legal name', t.name.replace(' Co.', ' Company LLC'))}${f('Doing business as', t.name)}${h.field('EIN', `<span class="inp ro">${h.mask(c, 'vendor_banking', '<span class="mono">••-•••4410</span>')}</span>`, 'Shown after step-up to owner and bookkeeper')}${f('Main phone', '(614) 555-0142')}${f('Website', 'https://' + domainOf(c))}${f('Billing email', 'billing@' + domainOf(c))}</div>` + h.field('Logo', `<span class="flex"><span class="logo" style="width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;background:${esc(t.brand.color)}">${esc(t.brand.logo)}</span>${writes(c, 'company.settings') ? tbtn('Replace', 'Logo uploaded; portal and documents update.', { sm: true, icon: 'upload' }) : ''}</span>`)),
+      sec('Regional and fiscal', `<div class="cols cols-2">${s('Time zone', [tz(c)], tz(c))}${s('Week starts', ['Sunday', 'Monday'], 'Sunday')}${s('Fiscal year starts', ['January', 'April', 'October'], 'January', c.role === 'bookkeeper' ? 'Bookkeepers read fiscal and tax settings' : '')}${s('Accounting basis', ['Accrual', 'Cash'], 'Accrual')}${f('Sales tax registration', st + ' vendor license ' + h.esc('•••• 2291'))}${s('Units', ['Imperial (ft, sq ft, gal)', 'Metric'], 'Imperial (ft, sq ft, gal)')}${s('Default language for crews', ['Spanish', 'English'], 'Spanish')}${f('Plant region', t.region)}</div>`),
+    ])
+    + sec('Locations and branches', h.table([{ k: 'name', label: 'Location' }, { k: 'addr', label: 'Address' }, { k: 'type', label: 'Type' }, { k: 'crews', label: 'Crews', n: true }], locs, { dense: true })
+      + `<div class="flex">${multi.s === 'Y' ? (writes(c, 'company.settings') ? h.btn('Add branch', { sm: true, icon: 'plus', act: 'more-toast' }) : '') + h.tag('V1') + '<span class="tiny t3">Branches with their own numbering, price books and P&L (Pro).</span>' : lockPill('Multiple branches: Pro') + '<span class="tiny t3">One location with yard and trucks is included in every plan.</span>'}</div>`, { flush: false })
+    + sec('Business hours and service area', `<div class="cols cols-3">${f('Office hours', 'Mon-Fri 7:00-5:00')}${f('Field hours', 'Mon-Sat 6:30-6:00')}${f('Service radius', '25 mi from ' + t.branches[0])}</div>` + saveBar(c, 'company.settings'));
+});
+
+const SEAT_OF = { owner: 'office', office_manager: 'office', estimator: 'office', designer: 'office', ops_manager: 'office', crew_lead: 'field', technician: 'field', bookkeeper: 'free', subcontractor: 'free', observer: 'free' };
+const GRANTS = [['estimate.update:own', 'Estimates: update own', 'office'], ['invoice.create', 'Invoices: create', 'office'], ['campaign.send', 'Marketing: send campaigns', 'office'], ['design.edit', 'Design Studio: edit', 'designer'], ['visit.complete:crew', 'Visits: complete for crew', 'field'], ['timesheet.approve:crew', 'Timesheets: first-level approval', 'field'], ['dashboard.read', 'Dashboards: read only', 'free']];
+RL.screen('web.settings.users', (c, a) => {
+  const D = c.D, S = seats(c), can = writes(c, 'role');
+  const tab = h.tab('su.tab', 'editor');
+  const users = roster(c).filter(p => p.status !== 'Hibernated').slice(0, 12);
+  const lim = c.feat('custom_roles'), cap = lim.s === 'L' ? 2 : null;
+  const custom = [['Crew Lead - Irrigation', 'crew_lead', 3, 'field'], ['Account manager (commercial)', 'ops_manager', 1, 'office']].slice(0, cap == null ? 2 : Math.min(2, cap));
+  const field = D.people.filter(p => p.seat === 'field');
+  const who = RL.ui['su.user'] || (c.t.cast && c.t.cast.crew_lead) || (field[0] || D.people[0]).name;
+  const person = D.people.find(p => p.name === who) || field[0] || D.people[0];
+  const g = GRANTS.find(x => x[0] === (RL.ui['su.perm'] || 'estimate.update:own')) || GRANTS[0];
+  const curSeat = SEAT_OF[person.role] || 'office';
+  const first = person.name.split(' ')[0];
+  const rank = { free: 0, field: 1, office: 2, designer: 3 };
+  const nextSeat = rank[g[2]] > rank[curSeat] ? g[2] : curSeat;
+  let effect;
+  if (nextSeat === curSeat) effect = `Giving ${esc(first)} <span class="mono">${esc(g[0])}</span> keeps ${esc(first)} on a ${curSeat} seat. No billing change.`;
+  else if (nextSeat === 'office') effect = `Giving ${esc(first)} <span class="mono">${esc(g[0])}</span> makes ${esc(first)} an office seat ` + (S.inc.office != null && S.office < S.inc.office ? `(fills an included seat: ${S.office + 1} of ${S.inc.office} on ${esc(c.plan.name)}, no extra charge)` : `(<b>${money(S.ex.office)}/month on ${esc(c.plan.name)}</b>, you use ${S.office} of ${S.inc.office} included)`) + (curSeat === 'field' ? ' and frees one active field seat.' : '.');
+  else if (nextSeat === 'designer') effect = `Giving ${esc(first)} <span class="mono">${esc(g[0])}</span> adds a designer entitlement on top of an office seat (${S.designers < S.inc.designer ? 'included' : money(S.ex.designer || 79) + '/month'}).`;
+  else effect = `Giving ${esc(first)} <span class="mono">${esc(g[0])}</span> makes ${esc(first)} a field seat, billed only in months when active.`;
+  const fv = [['Price (sell prices, totals)', 'Locked by guardrail for field roles'], ['Cost (unit costs, burden)', ''], ['Margin', 'Locked by guardrail'], ['Budgeted hours', ''], ['Pay rates (others)', 'Own pay rate: Company setting'], ['Client contact (phone, email)', 'Masked calling and texting on'], ['Access secrets (gate codes)', 'Window: 60 min before and after the visit']];
+  const fvOn = i => person.seat === 'field' ? [false, false, false, true, false, false, true][i] : [true, true, person.role === 'owner', true, false, true, true][i];
+  let body;
+  if (tab === 'users') body = h.table([
+    { k: 'name', label: 'User', fmt: (v, r) => `<span class="flex nw">${h.avatar(v)}<b>${esc(v)}</b></span>` }, { k: 'role', label: 'Role', fmt: v => `<span class="mono tiny">${esc(v)}</span>` },
+    { k: 'role', label: 'Seat (from permissions)', fmt: v => h.pill(SEAT_OF[v] || 'office', SEAT_OF[v] === 'free' ? 'ok' : SEAT_OF[v] === 'field' ? 'info' : '') }, { k: 'mfa', label: 'MFA' }, { k: 'status', label: 'Status', fmt: v => statusPill(v) },
+  ], users, { dense: true }) + h.note('Seat type comes from effective permissions, not the role name (22 §4.3).');
+  else if (tab === 'roles') body = h.table([{ k: 'name', label: 'Role' }, { k: 'key', label: 'Key', m: true }, { k: 'n', label: 'Users', n: true }, { k: 'seat', label: 'Seat', fmt: v => h.pill(esc(v), '') }, { k: 'kind', label: '', fmt: v => v === 'custom' ? h.pill('Custom', 'info') : '<span class="tiny t3">Built in</span>' }],
+    Object.keys(SEAT_OF).filter(k2 => k2 !== 'observer' || c.inLens('V1')).map(k2 => ({ name: (I.ROLES[k2] || {}).name || k2, key: k2, n: D.people.filter(p => p.role === k2).length + (k2 === 'subcontractor' && c.t.cast && c.t.cast.subcontractor ? 1 : 0), seat: SEAT_OF[k2], kind: 'built-in' }))
+      .concat(custom.map(([n, base, u, s]) => ({ name: n, key: 'custom: from ' + base, n: u, seat: s, kind: 'custom' }))), { dense: true })
+    + `<div class="flex">${cap != null ? h.meter('Custom roles on ' + esc(c.plan.name), custom.length, cap) : h.pill('Unlimited custom roles on ' + esc(c.plan.name), 'ok')}${can ? (cap != null && custom.length >= cap ? tbtn('New custom role', `${cap} of ${cap} custom roles used on ${c.plan.name}.`, { disabled: true }) : h.btn('Clone a role', { sm: true, icon: 'copy', ui: 'su.tab', val: 'editor' })) : ''}</div>`;
+  else body = h.cols('21', [
+    sec(`Role editor: ${esc(person.name)} (${esc(person.role)})`, `<div class="cols cols-2">${h.field('User', h.select(D.people.slice(0, 14).map(p => [p.name, p.name + ' · ' + p.role]), person.name, { ui: 'su.user' }))}${h.field('Add permission', h.select(GRANTS.map(x => [x[0], x[1] + ' (' + x[0] + ')']), g[0], { ui: 'su.perm' }))}</div>`
+      + bnr(`${icon(nextSeat === curSeat ? 'check' : 'dollar')} ${effect}`, nextSeat === curSeat ? 'info' : 'warn')
+      + h.table([{ k: 0, label: 'Field visibility' }, { k: 1, label: 'Read', fmt: (v, r) => `<span class="tgl${fvOn(r[2]) ? ' on' : ''}" aria-hidden="true"><i></i></span>` }, { k: 1, label: 'Note', fmt: v => `<span class="tiny t3">${esc(v)}</span>` }], fv.map((r, i) => [r[0], r[1], i]), { dense: true })
+      + `<div class="cols cols-2">${h.field('Purchase on the fly', h.input(person.seat === 'field' ? '$300' : '$2,500', { ro: !can }))}${h.field('Timesheet edit without approval', h.input('1.0 h', { ro: !can }))}</div>`
+      + `<div class="flex">${can ? tbtn('Save', `Saved. ${first}'s seat ${nextSeat === curSeat ? 'is unchanged' : 'changes to ' + nextSeat} from today; billing is prorated.`, { kind: 'primary' }) : ''}${tbtn('View as this role', 'Opened a read-only preview as ' + person.role + '.', { icon: 'eye' })}<span class="tiny t3">Impact: 1 user</span></div>`),
+    sec('Guardrails', h.list([{ icon: 'shield', title: 'Anti-escalation', sub: 'You can assign only roles whose grants are less than or equal to your own; ops managers assign field roles in their branch.' }, { icon: 'lock', title: 'Owner-only permissions', sub: 'Stripe connection, bank accounts, roles, subscription, data export.' }, { icon: 'eye', title: 'Field roles never see prices, costs or margins', sub: 'Locked in every custom role cloned from a field role.' }]) + (can ? '' : h.note(ask(c))), { flush: true }),
+  ]);
+  return h.page({ title: 'Users, roles and permissions', sub: `${users.length} users · ${S.office} office seats · ${custom.length} custom roles${a.state === 'limit' ? ' · ' + esc(a.limit) : ''}`, actions: (can ? h.btn('Invite user', { kind: 'primary', icon: 'plus', act: 'more-toast' }) : '') + roPill(c, 'role') })
+    + h.tabs('su.tab', [['editor', 'Role editor'], ['roles', 'Roles', Object.keys(SEAT_OF).length + custom.length], ['users', 'Users', users.length]], 'editor') + body;
+});
+
+RL.screen('web.settings.service_lines', (c) => {
+  const t = c.t, can = writes(c, 'company.settings');
+  const lines = [['maintenance', 'Maintenance', 'Recurring visits, agreements, level billing', 'MVP', null], ['design_build', 'Design/build', 'Design Studio, proposals with options, project phases', 'MVP', null], ['hardscape', 'Hardscape projects', 'Phases, takeoffs, subcontract orders', 'MVP', null], ['lawn_programs', 'Lawn and PHC programs', 'Rounds, applications, chemical records', 'MVP', null], ['irrigation', 'Irrigation', 'Controllers, zones, start-ups, backflow tests', 'MVP', null], ['commercial', 'Commercial maintenance', 'Multi-property sites, scopes, proof of service', 'MVP', null], ['lighting', 'Landscape lighting', 'Fixtures, transformers, night checks', 'V1', null], ['snow_lite', 'Snow Lite', 'Storm visit logging, per-push invoices, proof PDF', 'MVP', 'Included in every plan'], ['snow_ice', 'Snow and Ice', 'Storm events, triggers, Storm Command Center', 'V1', 'snow_ice'], ['tree_care', 'Tree care', 'ANSI A300 notes, crane and climb tasks', 'V2', 'tree_care']];
+  const on = id => { const v = RL.ui['sl.' + id]; if (v != null) return v === 'true'; return id === 'snow_ice' ? c.mod('snow_ice') : t.modules.includes(id); };
+  return h.page({ title: 'Service lines and modules', sub: `${lines.filter(l => on(l[0])).length} enabled · modules a Company does not enable are hidden from navigation for everyone (21 §5.2)`, actions: roPill(c, 'company.settings') })
+    + sec('', h.table([
+      { k: 0, label: '', fmt: (v, r) => { const ad = r[4] && r[4] !== 'Included in every plan' ? I.ADDONS[r[4]] : null; const has = !ad || c.has(r[4]) || (r[4] === 'snow_ice' && c.mod('snow_ice')); return can && has && (r[3] === 'MVP' || c.inLens(r[3])) ? tg('', 'sl.' + v, on(v)) : h.pill(on(v) ? 'On' : 'Off', on(v) ? 'ok' : ''); } },
+      { k: 1, label: 'Service line', fmt: (v, r) => `<b>${esc(v)}</b> ${h.tag(r[3])}<div class="tiny t3">${esc(r[2])}</div>` },
+      { k: 4, label: 'Price', fmt: v => !v ? '<span class="tiny t3">Included</span>' : v === 'Included in every plan' ? h.pill(v, 'ok') : `<span class="tiny">${esc(I.ADDONS[v].price)}</span>` },
+      { k: 0, label: '', fmt: (v, r) => { if (!r[4] || r[4] === 'Included in every plan') return ''; if (on(v) || c.has(r[4])) return h.pill('Active', 'ok'); return isOwner(c) ? h.btn('Start 30-day trial', { sm: true, act: 'trial' }) : '<span class="tiny t3">Owner can add</span>'; } },
+    ], lines, { dense: true }), { flush: true })
+    + h.note('A paying Company can trial a module its plan does not include for 30 days, once per module. At expiry with open commitments (a live storm event, enrolled programs) the module winds down instead of switching off (22 §4.6).') + saveBar(c, 'company.settings');
+});
+
+RL.screen('web.settings.price_book', (c, a) => {
+  const D = c.D, can = writes(c, 'price_book'), tab = h.tab('pb.tab', 'items');
+  const lim = c.feat('estimating').s === 'L';
+  const items = [['MAT-110', 'Shredded hardwood mulch', 'Material', 'cu yd', 28, 62], ['MAT-140', 'Paver, tumbled cobble', 'Material', 'sq ft', 4.1, 9.8], ['MAT-152', 'Polymeric sand', 'Material', 'bag', 24, 46], ['PL-1100', 'Little Lime Hydrangea #3', 'Plant', 'each', 21, 64], ['PL-1104', 'Purple Coneflower #1', 'Plant', 'each', 6.5, 18], ['LAB-01', 'Install labor', 'Labor', 'man-hour', 31.2, 68], ['LAB-04', 'Maintenance labor', 'Labor', 'man-hour', 27.4, 58], ['EQ-20', 'Zero-turn mower 60"', 'Equipment', 'hour', 9.8, 24], ['SUB-3', 'Excavation (sub)', 'Subcontract', 'job', 1800, 2340]];
+  const rates = [['Mow and trim, open turf', '1,000 sq ft', '0.9 min', 'Company actuals (V1)'], ['Edge beds', '100 ln ft', '6 min', 'Default'], ['Install mulch by wheelbarrow', 'cu yd', '0.55 h', 'Company actuals (V1)'], ['Install pavers incl. base', '100 sq ft', '6.5 man-hours', 'Default'], ['Plant #3 shrub', 'each', '0.25 h', 'Default'], ['Core aeration', '1,000 sq ft', '1.4 min', 'Default']];
+  const used = lim ? 186 : D.inventory.length * 40 + 312;
+  let body;
+  if (tab === 'items') body = h.table([
+    { k: 0, label: 'Code', m: true }, { k: 1, label: 'Item' }, { k: 2, label: 'Type' }, { k: 3, label: 'Unit' },
+    { k: 4, label: 'Cost', n: true, fmt: v => h.mask(c, 'cost', money(v, { cents: true })) }, { k: 5, label: 'Price', n: true, fmt: v => h.mask(c, 'price', money(v, { cents: true })) },
+    { k: 4, label: 'Margin', n: true, fmt: (v, r) => h.mask(c, 'margin', Math.round(100 * (r[5] - v) / r[5]) + '%') },
+  ], items, { dense: true });
+  else if (tab === 'rates') body = h.table([{ k: 0, label: 'Task' }, { k: 1, label: 'Per' }, { k: 2, label: 'Rate', n: true, fmt: v => h.mask(c, 'budget_hours', esc(v)) }, { k: 3, label: 'Source', fmt: v => /V1/.test(v) ? `<span class="tiny">${esc(v.replace(' (V1)', ''))}</span> ${h.tag('V1')}` : `<span class="tiny t3">${esc(v)}</span>` }], rates, { dense: true }) + h.note('Production rates turn takeoff quantities into budget hours on estimates. The feedback loop from job actuals arrives at V1 (18 §4.4.4).');
+  else if (tab === 'kits') body = h.list([{ icon: 'layers', title: 'Paver patio, per 100 sq ft', sub: 'Pavers 105 sq ft (5% waste), base 2.2 tons, sand 0.6 ton, edge restraint 40 ln ft, 6.5 man-hours', right: h.mask(c, 'price', money(2480)) }, { icon: 'layers', title: 'Foundation bed refresh, per 100 sq ft', sub: 'Mulch 0.9 cu yd, edging 40 ln ft, 6 shrubs #3, 2.5 man-hours', right: h.mask(c, 'price', money(890)) }, { icon: 'layers', title: 'Spring cleanup, standard lot', sub: 'Debris haul, bed cleanup, first mow, 3.5 man-hours', right: h.mask(c, 'price', money(385)) }]);
+  else body = `<div class="cols cols-3">${fx(c, 'price_book')('Labor burden', '24%', 'Payroll taxes, workers comp, benefits')}${fx(c, 'price_book')('Overhead recovery', '$14.80 / man-hour', 'From the overhead budget')}${fx(c, 'price_book')('Target gross margin', h.esc('42%'))}${fx(c, 'price_book')('Material markup default', '35%')}${fx(c, 'price_book')('Minimum visit charge', '$45')}${fx(c, 'price_book')('Drive time billing', 'Included in rates')}</div>` + (c.sees('cost') ? '' : h.note('Cost and burden fields are hidden for your role.'));
+  return h.page({ title: 'Price book and production rates', sub: `${c.planCode === 'pro' && c.t.branches.length > 1 ? c.t.branches.length + ' price books (per branch)' : '1 price book'} · ${num(used)} items${fieldRole(c) ? ' · names only for field roles' : ''}`, actions: (can ? h.btn('Add item', { kind: 'primary', icon: 'plus', act: 'more-toast' }) + tbtn('Import CSV', 'Price list import started: map columns, preview changes.', { icon: 'upload' }) : '') + roPill(c, 'price_book') })
+    + (lim ? `<div class="cd"><div class="cd-b">${h.meter('Price Book items on ' + esc(c.plan.name), used, 200)}<div class="tiny t3">Starter: 1 price book, 200 items. ${isOwner(c) ? 'Grow removes the limit.' : ask(c)}</div></div></div>` : '')
+    + h.tabs('pb.tab', [['items', 'Items', num(used)], ['kits', 'Kits', 3], ['rates', 'Production rates', rates.length], ['overhead', 'Overhead and burden']], 'items') + body;
+});
+
+RL.screen('web.settings.payments', (c) => {
+  const D = c.D, own = isOwner(c);
+  const vol = Math.round(D.payments.reduce((s, p) => s + p.amount, 0) * (c.winter ? .35 : 1.6) / 10) * 10;
+  const m3 = [Math.round(vol * .86), Math.round(vol * .94), vol];
+  const avg = Math.round((m3[0] + m3[1] + m3[2]) / 3);
+  const fee = Math.min(avg * .005, avg / 120 * 10);
+  const starter = c.planCode === 'starter';
+  const pm = [['pm.card', 'Cards (credit and debit)', true], ['pm.ach', 'ACH bank debit (lower fee)', true], ['pm.wallet', 'Apple Pay and Google Pay', true], ['pm.cof', 'Card on file and autopay', true], ['pm.partial', 'Partial payments on invoices', false], ['pm.tips', 'Tips on field payments', false]];
+  const connected = RL.ui['pay.conn'] !== '0';
+  return h.page({ title: 'Payments (Stripe connection)', sub: 'Your clients pay you through your own Stripe account. Stripe\'s fees go to Stripe. Rootline adds nothing on standard plans.', actions: own ? '' : h.pill('Owner-only changes', '', 'lock') })
+    + h.cols('2', [
+      sec('Stripe account', connected ? h.kv([['Account', '<span class="mono">acct_••••9KQ</span> (Standard, connected)'], ['Charges', h.pill('Enabled', 'ok')], ['Payouts', h.pill('Enabled · daily', 'ok')], ['Identity', h.pill('Verified', 'ok')], ['Payout bank', h.mask(c, 'vendor_banking', '<span class="mono">Checking ••4410</span>')], ['Disputes (90 d)', '0 open · 1 won']])
+        + `<div class="flex">${own ? tbtn('Open Stripe dashboard', 'Opened your Stripe dashboard in a new tab.', { icon: 'external' }) + h.btn('Disconnect', { sm: true, ui: 'pay.conn', val: '0' }) : `<span class="tiny t3">Only ${esc(c.owner)} can connect or disconnect Stripe (stripe_connection = ${esc(c.can('stripe_connection'))}).</span>`}</div>`
+        : h.empty('Not connected. Invoices still send; clients can pay by check until Stripe is connected.') + (own ? `<div>${h.btn('Connect your Stripe account', { kind: 'primary', ui: 'pay.conn', val: '1' })}</div>` : '')),
+      sec('Payment methods offered', `<div class="stack8">${pm.map(([kk, l, d]) => own ? tg(esc(l), kk, d) : `<span class="flex">${h.pill(h.on(kk, d) ? 'On' : 'Off', h.on(kk, d) ? 'ok' : '')}${esc(l)}</span>`).join('')}</div>` + h.note('Card surcharges, where legal, are the Company\'s revenue and follow state rules (verify). Rootline never holds client funds.')),
+    ])
+    + sec('How Rootline charges for client payments ' + h.tag('V1'), starter ? `<div class="cols cols-2"><div class="plan-c${RL.ui['pay.pag'] === '1' ? '' : ' on'}"><b>Zero markup (standard)</b><div class="pr">$${c.plan.monthly}<small>/mo</small></div><div class="tiny t2">Rootline fee on payments: 0%</div><div class="tiny">At your volume: <b>${money(c.plan.monthly, { cents: true })}/mo</b></div></div><div class="plan-c${RL.ui['pay.pag'] === '1' ? ' on' : ''}"><b>Pay-as-you-grow</b><div class="pr">$39<small>/mo + 0.5% per payment, max $10</small></div><div class="tiny t2">No fee on tips. Fees show in your own Stripe dashboard.</div><div class="tiny">At your volume: <b>${money(39 + fee, { cents: true })}/mo</b></div></div></div>`
+      + `<div class="small t2">Online client payments, last 3 months: ${m3.map(v => money(v)).join(', ')} · average ${money(avg)}/month. Break-even is about $8,000/month on monthly Starter.</div>`
+      + (own ? `<div class="flex">${tg('I understand the 0.5% fee is in addition to Stripe\'s fees', 'pay.ack', false)}${h.btn(RL.ui['pay.pag'] === '1' ? 'Switch back to zero markup' : 'Switch to pay-as-you-grow', { sm: true, kind: 'primary', ui: 'pay.pag', val: RL.ui['pay.pag'] === '1' ? '0' : '1', disabled: RL.ui['pay.pag'] !== '1' && !h.on('pay.ack', false) })}</div>` : '')
+      + h.note('Opt-in only. If your volume passes break-even for 2 months in a row we tell you and offer a one-click switch back (22 §9.7).')
+      : `<div class="flex">${h.pill('Zero markup: Rootline fee 0%', 'ok')}<span class="small t2">Pay-as-you-grow is an opt-in Starter option. On ${esc(c.plan.name)} there is no Rootline fee on client payments.</span></div>`);
+});
+
+RL.screen('web.settings.accounting', (c) => {
+  const can = writes(c, 'accounting_sync'), qbo = c.t.books === 'qbo_system';
+  const mode = RL.ui['ac.mode'] || (qbo ? 'qbo' : 'ledger');
+  const rules = [['Invoice posted', '1100 Accounts receivable', '4000-4200 Revenue by service line'], ['Client payment (Stripe)', '1050 Stripe clearing', '1100 Accounts receivable'], ['Stripe payout', '1000 Operating checking + 6300 Fees', '1050 Stripe clearing'], ['Deposit on proposal', '1050 Stripe clearing', '2100 Customer deposits'], ['Level billing installment', '1100 Accounts receivable', '2150 Deferred revenue'], ['Payroll journal', '5000 Direct labor', '2300 Payroll liabilities'], ['Vendor bill (job)', '5100 Materials (job cost)', '2000 Accounts payable']];
+  return h.page({ title: 'Accounting setup', sub: mode === 'ledger' ? 'Rootline Ledger is the system of record · chart template: landscape contractor' : 'QuickBooks Online is the system of record · Books screens are hidden', actions: roPill(c, 'accounting_sync') })
+    + sec('System of record', `<div class="cols cols-3">${[['ledger', 'Rootline Ledger', 'Double-entry GL, auto-posting, bank feed, P&L and balance sheet', 'MVP'], ['qbo', 'QuickBooks Online sync', 'Rootline sends invoices, payments and job costs; QuickBooks keeps the books', 'MVP'], ['xero', 'Xero sync', 'Same sync model for Xero', 'V1']].map(([id, n, d, sc]) => `<div class="plan-c${mode === id ? ' on' : ''}"><div class="flex between"><b>${n}</b>${h.tag(sc)}</div><div class="tiny t2">${d}</div>${mode === id ? h.pill('Current', 'ok', 'check') : can && (sc === 'MVP' || c.inLens(sc)) ? h.btn('Switch', { sm: true, ui: 'ac.mode', val: id }) : ''}</div>`).join('')}</div>` + h.note('Switching the system of record takes effect at the start of an open period and never rewrites posted entries.'))
+    + (mode === 'ledger' ? h.cols('21', [sec('Posting rules', h.table([{ k: 0, label: 'Event' }, { k: 1, label: 'Debit' }, { k: 2, label: 'Credit' }], rules, { dense: true }), { flush: true }),
+      sec('Periods and defaults', h.kv([['Chart template', 'Landscape contractor (Rootline standard)'], ['Books closed through', c.winter ? 'Nov 30, 2026' : 'Mar 31, 2027'], ['Lock date', c.winter ? 'Nov 30, 2026' : 'Mar 31, 2027'], ['Default deposit account', '1000 Operating checking'], ['Bank feeds', c.has('ledger_plus') ? '2 connected' : '1 connected (Ledger Essentials)']]) + (can ? tbtn('Close next period', 'Close checklist opened.', { sm: true }) : ''))])
+      : sec('QuickBooks Online sync', h.kv([['Company file', esc(c.t.name) + ' (QuickBooks Online)'], ['Last sync', c.today.short + ' 6:02 am · 41 records'], ['Errors', h.pill('1: tax code missing on INV-3311', 'warn')], ['Items mapped', '212 of 214']]) + (can ? `<div class="flex">${tbtn('Sync now', 'Sync queued.', { sm: true, kind: 'primary' })}${tbtn('Fix mapping', 'Mapping editor opened.', { sm: true })}</div>` : '')))
+    + saveBar(c, 'accounting_sync');
+});
+
+RL.screen('web.settings.portal', (c) => {
+  const t = c.t, can = writes(c, 'company.settings'), b = RL.portalBrand(c);
+  const rules = [['pr.photos', 'Show visit photos and reports', true], ['pr.req', 'Clients can submit requests', true], ['pr.crew', 'Show crew first names on visit notices', true], ['pr.coown', 'Co-owners can manage payment methods', false], ['pr.sched', 'Clients can reschedule within 48 h', false]];
+  const com = c.feat('portal_commercial');
+  return h.page({ title: 'Portal and branding', sub: `White-label portal at <span class="mono">${esc(b.host)}</span>`, actions: roPill(c, 'company.settings') })
+    + h.cols('2', [
+      sec('Brand kit', `<div class="cols cols-2">${h.field('Logo', `<span class="flex"><span class="logo" style="width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;background:${esc(t.brand.color)}">${esc(t.brand.logo)}</span>${can ? tbtn('Replace', 'Logo updated.', { sm: true }) : ''}</span>`)}${fx(c, 'company.settings')('Brand color', t.brand.color)}${sx(c, 'company.settings')('Font', ['Inter', 'Source Serif', 'System'], 'Inter')}${fx(c, 'company.settings')('Reply-to email', 'office@' + domainOf(c))}</div>`
+        + `<div class="site-top" style="border:1px solid var(--border);border-radius:8px"><span class="logo" style="background:${esc(t.brand.color)}">${esc(t.brand.logo)}</span><b>${esc(t.name)}</b><span class="tiny t3" style="margin-left:auto">Preview: portal header</span></div>`),
+      sec('Custom domain', h.kv([['Domain', `<span class="mono">${esc(b.host)}</span>`], ['DNS (CNAME)', h.pill('Verified', 'ok')], ['TLS certificate', h.pill('Issued · auto-renews', 'ok')], ['Email sending (SPF, DKIM)', h.pill('Verified', 'ok')]]) + (can ? tbtn('Check DNS again', 'DNS records verified.', { sm: true, icon: 'refresh' }) : '')),
+    ])
+    + sec('Portal rules', `<div class="stack8">${rules.map(([kk, l, d]) => can ? tg(esc(l), kk, d) : `<span class="flex">${h.pill(h.on(kk, d) ? 'On' : 'Off', h.on(kk, d) ? 'ok' : '')}${esc(l)}</span>`).join('')}</div>`
+      + `<div class="flex">${h.tag('V1')}<span class="small">Commercial multi-property portal with approval workflows: ${com.s === 'L' ? esc(com.note) : com.s === 'Y' ? 'included' : 'not in plan'}</span></div>` + saveBar(c, 'company.settings'));
+});
+
+RL.screen('web.settings.notifications', (c) => {
+  const can = writes(c, 'company.settings');
+  const tpl = [['On the way', 'SMS', 'EN, ES', 'Transactional', `${c.t.name}: {crew_lead}'s crew is on the way, ETA {eta}. Reply STOP to opt out.`], ['Visit summary', 'Email + portal', 'EN, ES', 'Transactional', 'Your visit is done. Photos and notes: {link}'], ['Rain delay', 'SMS', 'EN, ES', 'Transactional', 'Rain today: your visit moves to {new_date}.'], ['Invoice sent', 'Email', 'EN', 'Transactional', 'Invoice {number} for {amount} is ready: {link}'], ['Payment receipt', 'Email', 'EN', 'Transactional', 'Thanks, we received {amount}.'], ['Proposal sent', 'Email', 'EN', 'Transactional', '{estimator} sent you a proposal: {link}'], ['Seasonal offer', 'SMS', 'EN', 'Marketing', 'Aeration for your lawn is {price}. Reply YES to book.']];
+  const reg = c.planCode === 'starter' ? [['Brand', 'Approved'], ['Customer care and notifications campaign', 'Approved'], ['Marketing campaign', 'Not registered']] : [['Brand', 'Approved'], ['Customer care and notifications campaign', 'Approved'], ['Marketing campaign', 'Approved']];
+  const sel = tpl.find(x => x[0] === RL.ui['nt.sel']) || tpl[0];
+  return h.page({ title: 'Notifications and templates', sub: `${tpl.length} templates · quiet hours 8 pm to 8 am local · consent checked on every send`, actions: roPill(c, 'company.settings') })
+    + h.cols('21', [
+      sec('Templates', h.table([{ k: 0, label: 'Template', fmt: v => `<b>${esc(v)}</b>` }, { k: 1, label: 'Channel' }, { k: 2, label: 'Languages' }, { k: 3, label: 'Type', fmt: v => h.pill(esc(v), v === 'Marketing' ? 'warn' : '') }, { k: 0, label: '', fmt: v => h.btn(v === sel[0] ? 'Editing' : 'Edit', { sm: true, ui: 'nt.sel', val: v, kind: v === sel[0] ? 'primary' : 'ghost' }) }], tpl, { dense: true }), { flush: true }),
+      `<div class="stack12">${sec('Edit: ' + esc(sel[0]), (can ? h.textarea(sel[4], { label: 'Template text' }) : `<div class="small">${esc(sel[4])}</div>`) + h.note('Variables in braces fill from the record. Spanish versions are reviewed by a person before first use.') + (can ? tbtn('Save template', 'Template saved.', { sm: true, kind: 'primary' }) : ''))}
+      ${sec('10DLC registration', h.list(reg.map(([n, s]) => ({ icon: s === 'Approved' ? 'check' : 'warn', tone: s === 'Approved' ? 'ok' : 'warn', title: esc(n), right: statusPill(s) }))) + (c.planCode === 'starter' ? h.note('Marketing SMS stays off until the marketing campaign is registered. Fees are passed through at cost on Starter and monthly plans (16 §4.20).') : ''), { flush: true })}</div>`,
+    ])
+    + sec('Consent and frequency', `<div class="cols cols-3">${fx(c, 'company.settings')('Quiet hours', '8:00 pm - 8:00 am (recipient local time)')}${fx(c, 'company.settings')('Marketing messages per client', 'Max 4 per month')}${sx(c, 'company.settings')('Opt-out keywords', ['STOP, UNSUBSCRIBE, CANCEL, END, QUIT', 'STOP only'], 'STOP, UNSUBSCRIBE, CANCEL, END, QUIT')}</div>` + saveBar(c, 'company.settings'));
+});
+
+RL.screen('web.settings.integrations', (c, a) => {
+  const can = writes(c, 'integration'), api = c.feat('api');
+  const quota = { starter: 10000, grow: 50000, pro: 250000 }[c.planCode] || 250000;
+  const readOnly = c.planCode === 'starter';
+  const apps = [['Stripe', 'Payments (your own account)', 'Connected', 'MVP'], [c.t.books === 'qbo_system' ? 'QuickBooks Online' : 'Bank feed (aggregator)', c.t.books === 'qbo_system' ? 'System of record' : 'Ledger bank feed', 'Connected', 'MVP'], ['Google Business Profile', 'Reviews and replies', 'Connected', 'MVP'], ['Payroll provider', 'Payroll export (Gusto, ADP, QuickBooks Payroll)', 'Connected', 'MVP'], ['Calendar sync', 'Google or Microsoft 365 calendars', 'Not connected', 'MVP'], ['Telematics', 'Engine hours and GPS for equipment', 'Not connected', 'V1'], ['MCP server', 'Let your own AI tools read Rootline with your permissions', 'Not connected', 'V1']];
+  const hooks = [['https://hooks.' + domainOf(c) + '/rootline', 'invoice.paid, job.completed', 'Healthy', '99.9%'], ['https://example.com/crm-sync', 'client.created', 'Failing: 3 retries', '71%']];
+  return h.page({ title: 'Integrations and API', sub: `Public API ${readOnly ? 'read-only, ' : ''}${num(quota)} calls per day on ${esc(c.plan.name)}`, actions: roPill(c, 'integration') })
+    + sec('Connected apps', h.table([{ k: 0, label: 'App', fmt: (v, r) => `<b>${esc(v)}</b> ${r[3] !== 'MVP' ? h.tag(r[3]) : ''}<div class="tiny t3">${esc(r[1])}</div>` }, { k: 2, label: 'Status', fmt: v => statusPill(v) }, { k: 2, label: '', fmt: (v, r) => can && (r[3] === 'MVP' || c.inLens(r[3])) ? h.btn(v === 'Connected' ? 'Manage' : 'Connect', { sm: true, act: 'more-toast' }) : '' }], apps, { dense: true }), { flush: true })
+    + h.cols('2', [
+      sec('API keys', `<div class="cd-b" style="padding:0">${h.meter('Calls today', c.winter ? Math.round(quota * .04) : Math.round(quota * .23), quota)}</div>` + h.table([{ k: 0, label: 'Key' }, { k: 1, label: 'Scope' }, { k: 2, label: 'Last used' }], [['rl_live_••••7Qd2', readOnly ? 'Read only' : 'Read and write', '2 min ago'], ['rl_live_••••a19K', 'Read only: reports', 'Yesterday']], { dense: true })
+        + `<div class="flex">${can ? tbtn('Create key', readOnly ? 'Read-only key created. Write scopes need Grow.' : 'Key created. Copy it now; it is shown once.', { sm: true, icon: 'key' }) : ''}${readOnly ? lockPill('Write access: Grow and Pro') : ''}</div>`),
+      sec('Webhooks', h.table([{ k: 0, label: 'Endpoint', fmt: v => `<span class="mono tiny">${esc(v)}</span>` }, { k: 1, label: 'Events', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 2, label: 'Status', fmt: v => statusPill(v) }], hooks, { dense: true }) + h.note('Signed payloads, retries with backoff for 24 hours, replay from the delivery log.')),
+    ]);
+});
+
+RL.screen('web.settings.data', (c) => {
+  const can = c.allowed('data_export.run'), own = isOwner(c), off = c.role === 'office_manager', bk = c.role === 'bookkeeper';
+  const step = +(RL.ui['dt.step'] || 0);
+  const src = RL.ui['dt.src'] || 'Jobber';
+  const hist = [['Clients and properties', 'CSV', c.winter ? 'Dec 2' : 'Mar 3', `${c.t.clients} clients, ${Math.round(c.t.clients * 1.1)} properties`, 'Done'], ['Price book', 'CSV', c.winter ? 'Dec 2' : 'Mar 3', '214 items', 'Done'], ['Open invoices', 'QuickBooks', c.winter ? 'Dec 4' : 'Mar 5', '38 invoices', 'Done: 2 skipped (duplicates)']];
+  const sandbox = c.feat('sandbox');
+  return h.page({ title: 'Data import and export', sub: 'Your data is yours: export everything at any time, including after you leave', actions: '' })
+    + h.cols('2', [
+      sec('Import', h.steps(['Source', 'Upload', 'Map fields', 'Preview', 'Import'], step) + `<div class="cols cols-2">${h.field('Source', h.select(['Jobber', 'LMN', 'QuickBooks', 'CSV (any system)'], src, { ui: 'dt.src' }))}${h.field('Records', h.select(['Clients and properties', 'Price book', 'Open invoices', 'Agreements', 'Equipment'], 'Clients and properties'))}</div>`
+        + (step >= 3 ? h.table([{ k: 0, label: 'Source field' }, { k: 1, label: 'Rootline field' }, { k: 2, label: 'Sample' }], [['Client Name', 'Client name', esc(c.D.clients[1].name)], ['Service Street', 'Property address', esc(c.D.clients[1].address)], ['Phone', 'Primary phone', '(614) 555-0137'], ['Tags', 'Tags', 'Weekly, Autopay']], { dense: true }) : '')
+        + `<div class="flex">${step > 0 ? h.btn('Back', { sm: true, ui: 'dt.step', val: String(step - 1) }) : ''}${step < 4 ? h.btn(['Choose file', 'Upload', 'Map fields', 'Import ' + c.t.clients + ' records'][step], { sm: true, kind: 'primary', ui: 'dt.step', val: String(step + 1) }) : h.pill('Imported · undo available for 7 days', 'ok')}</div>`
+        + h.note('Import formats follow each vendor\'s own export and can change; verify before migrating. Grow and Pro annual plans include a free migration concierge.')),
+      sec('Export', h.list([
+        { icon: 'download', title: 'Full Company export', sub: 'Every record, files and the ledger as CSV and JSON', right: own ? tbtn('Export', 'Export started. A download link arrives by email (passkey step-up done).', { sm: true }) : lockPill('Owner') },
+        { icon: 'users', title: 'Client list', sub: off ? 'Over 1,000 clients needs a second approver' : 'Names, contacts, properties', right: own || off ? tbtn(off && c.t.clients > 1000 ? 'Request export' : 'Export', off && c.t.clients > 1000 ? 'Export requested; the owner must approve (dual control).' : 'Client list exported.', { sm: true }) : lockPill('Owner, office') },
+        { icon: 'bank', title: 'Financial export', sub: 'GL, AR, AP, tax reports', right: own || bk ? tbtn('Export', 'Financial export ready.', { sm: true }) : lockPill('Owner, bookkeeper') },
+      ]) + (can ? '' : h.note('Your role cannot run exports.')), { flush: true }),
+    ])
+    + sec('History', h.table([{ k: 0, label: 'Import' }, { k: 1, label: 'Source' }, { k: 2, label: 'When' }, { k: 3, label: 'Records' }, { k: 4, label: 'Result', fmt: v => statusPill(v) }], hist, { dense: true }), { flush: true })
+    + sec('Sample data and sandbox', `<div class="flex between">${own ? tg('Show the demo company (Greenleaf Grounds Co., a full sample year) while you set up', 'dt.demo', false) : '<span class="small">Demo company: owner setting</span>'}<span class="flex gap4">${h.tag('V1')}<span class="tiny t3">Sandbox tenant: ${sandbox.s === 'Y' ? 'included' : sandbox.s === 'A' ? '$99/mo add-on' : 'Pro add-on'}</span></span></div>`);
+});
+
+function planDiff(c, to) {
+  const out = [], from = c.planCode;
+  const ord = { starter: 0, grow: 1, pro: 2, enterprise: 3 };
+  if (ord[to] > ord[from]) return out;
+  RL.P.plans.features.forEach(f => {
+    const a = (f.plans[from] || {}).s, b = (f.plans[to] || {}).s;
+    if ((a === 'Y' || a === 'L') && (b === 'A' || b === '-') && f.scope !== 'V2' && f.scope !== 'V3' && !c.t.addons.includes((f.plans[to] || {}).addon)) out.push(f.name.split(/[,:(]/)[0].trim() + (b === 'A' ? ' (becomes an add-on)' : ''));
+  });
+  return out.slice(0, 8);
+}
+RL.screen('web.settings.subscription', (c) => {
+  const t = c.t, pl = c.plan, S = seats(c), cr = credits(c), own = isOwner(c);
+  const iv = interval(c), base = basePrice(c);
+  const founding = ['S1', 'S2', 'S3'].includes(c.seg.id) && pl.public;
+  const seatCost = S.oOffice * S.ex.office + S.oField * S.ex.field + S.oDesigner * S.ex.designer;
+  const addons = [['snow_ice', 'snow_ice'], ['ai_receptionist', 'ai_receptionist'], ['website', 'website'], ['marketing_advanced', 'marketing_advanced'], ['ledger_advanced', 'ledger_advanced'], ['design_3d', 'design_3d'], ['payroll', 'payroll']].map(([code, feat]) => {
+    const ad = I.ADDONS[code], fs = c.feat(feat), on = t.addons.includes(code);
+    const state = on ? 'Active' : fs.s === 'Y' ? 'Included in ' + pl.name : fs.s === 'A' ? 'Not active' : 'Not available';
+    return { code, name: ad.name, price: ad.price, scope: ad.scope, state };
+  }).filter(x => x.state !== 'Not available');
+  const addCost = t.addons.includes('snow_ice') ? (c.winter ? 79 : 0) : 0;
+  const smsInc = pl.sms || 0, smsUsed = Math.round(smsInc * .44);
+  const voiceInc = { starter: 300, grow: 1000, pro: 3000 }[c.planCode] || 0;
+  const stor = pl.storage_gb || 0;
+  const packBuy = cr.pack && !c.winter ? 25 : 0;
+  const tax = Math.round((seatCost + addCost + packBuy + (iv === 'monthly' ? base : 0)) * .0575 * 100) / 100;
+  const due = (iv === 'monthly' ? base : 0) + seatCost + addCost + packBuy + tax;
+  const nextDate = c.winter ? 'Feb 1' : 'Jun 1';
+  const caps = [['Technicians', '20 per user'], ['Crew leads', '40 per user'], ['Estimators', '300 per user'], ['Designers', '800 per user'], ['Office', '500 per user'], ['Owner', 'No cap']];
+  const wmFrom = RL.ui['wm.from'] || 'Dec 1', wmTo = RL.ui['wm.to'] || 'Mar 1';
+  const plans = ['starter', 'grow', 'pro', 'enterprise'].map(k2 => I.PLANS[k2]);
+  const ord = { starter: 0, grow: 1, pro: 2, enterprise: 3, design_solo: -1 };
+  const ro = own ? '' : bnr(`${icon('lock')} Read only. Only ${esc(c.owner)} (owner) can change the plan, add-ons, credit packs and caps (rootline_subscription = ${esc(c.can('rootline_subscription'))}).`, 'info');
+  const seatRow = (l, inc, used, over, per, note) => ({ l, inc: inc == null ? 'Unlimited' : inc, used, over, cost: over * per, note });
+  const seatRows = [seatRow('Office users', S.inc.office, S.office, S.oOffice, S.ex.office), seatRow('Designer seats', S.inc.designer, S.designers, S.oDesigner, S.ex.designer), seatRow('Crew users (active this month)', S.inc.field, S.field, S.oField, S.ex.field, c.winter ? 'Winter: only active crew count' : ''), seatRow('Bookkeeper (free)', 1, S.bk, 0, 0), seatRow('Observers (free, up to 3)', 3, 1, 0, 0)];
+  return h.page({ title: 'Plan, billing and AI credits', sub: `${esc(t.name)} · billed to ACH ••4410 · billing email billing@${esc(domainOf(c))}`, actions: own ? tbtn('Download all invoices', 'Invoices exported as PDF.', { icon: 'download' }) : '' })
+    + ro
+    + `<div class="cd"><div class="cd-b"><div class="flex between"><div><div class="tiny t3" style="letter-spacing:.06em">PLAN</div><div style="font-size:1.25rem;font-weight:720">${esc(pl.name)} · ${iv === 'annual' ? 'Annual (USD)' : 'Monthly (USD)'}</div></div>${own ? h.btn('Change plan', { kind: 'primary', ui: 'sb.tab', val: 'plans' }) : ''}</div><div class="flex">${'<span class="small t2">' + money(base) + '/mo' + (iv === 'annual' ? ' billed annually' : '') + ' · renews ' + (iv === 'annual' ? 'Mar 1, 2028' : nextDate) + '</span>'}${founding ? h.pill('Founding Customer -25% on base', 'ok') : ''}${h.pill(iv === 'annual' ? 'Price Lock until Mar 1, 2028' : '60 days notice before any price change', 'info', 'shield')}</div><div class="tiny t3">Price Lock: annual customers keep their list price for 24 months; after that, increases are capped at 7% per year with 90 days notice (22 §4.7).</div></div></div>`
+    + h.tabs('sb.tab', [['usage', 'Seats and usage'], ['credits', 'AI credits'], ['addons', 'Add-ons', addons.length], ['invoices', 'Invoices'], ['winter', 'Winter Mode ' + h.tag('V1')], ['plans', 'Compare plans']], 'usage')
+    + (() => {
+      const tab = h.tab('sb.tab', 'usage');
+      if (tab === 'usage') return h.cols('21', [
+        sec('Seats', h.table([{ k: 'l', label: 'Seat' }, { k: 'inc', label: 'Included', n: true }, { k: 'used', label: 'In use', n: true }, { k: 'over', label: 'Billed extra', n: true, fmt: v => v ? `<b>${v}</b>` : '-' }, { k: 'cost', label: 'Next invoice', n: true, fmt: (v, r) => money(v, { cents: true }) + (r.note ? `<div class="tiny t3">${esc(r.note)}</div>` : '') }], seatRows, { dense: true, foot: ['Seats total', '', '', '', money(seatCost, { cents: true })] }) + h.note(`Extra seats on ${esc(pl.name)}: office ${money(S.ex.office)}, field ${money(S.ex.field)}, designer ${money(S.ex.designer)} per month. Field seats count active users only (22 §4.3).`), { flush: true }),
+        sec('Usage this period', `<div class="stack8">${h.meter('AI credits', cr.used, cr.inc)}${cr.pack ? `<div class="tiny t3">+ ${num(cr.pack)} pack credits (expire in 12 months)</div>` : ''}${smsInc ? h.meter('SMS segments', smsUsed, smsInc) + `<div class="tiny t3">Hard cap ${num(smsInc * 3)} (3x included, owner-set)</div>` : ''}${voiceInc ? h.meter('Call minutes', Math.round(voiceInc * (c.winter ? .21 : .74)), voiceInc) : ''}${stor ? h.meter('Storage', Math.round(stor * .24), stor, { unit: 'GB' }) : ''}</div>`),
+      ]) + sec(`Upcoming invoice preview (${nextDate})`, h.kv([['Base plan', iv === 'annual' ? money(base) + '/mo <span class="t3">(prepaid annually)</span>' : money(base, { cents: true })], ['Extra seats', money(seatCost, { cents: true })], ['Add-ons', addCost ? money(addCost, { cents: true }) + ' (Snow and Ice, in season)' : '$0.00'], ['Usage', packBuy ? money(packBuy, { cents: true }) + ' (1,000-credit pack, bought ' + past(c)[2] + ')' : '$0.00'], ['Estimated tax', money(tax, { cents: true })], ['Due', `<b>${money(due, { cents: true })}</b>`]]) + h.note('Seats and usage are billed monthly in arrears. Never blocks getting paid: invoicing, portal payments and the ledger stay on in every billing state.'));
+      if (tab === 'credits') return h.cols('2', [
+        sec('Credit packs', `<div class="stack8">${[['1000', '1,000 credits', '$25'], ['5000', '5,000 credits', '$100'], ['20000', '20,000 credits', '$340']].map(([n, l, p]) => `<div class="flex between"><span><b>${l}</b> <span class="t3">${p}</span></span>${own ? h.btn('Buy', { sm: true, modal: 'more-pack', x: n }) : ''}</div>`).join('')}</div>` + h.note('Soft stop at 0 with a one-click pack purchase. Every AI action shows its cost before it runs (22 §4.4.1).')
+          + `<div class="flex between"><span class="small"><b>Auto top-up</b> <span class="t3">Off by default</span></span>${own ? tg('', 'sb.topup', false) : h.pill(h.on('sb.topup', false) ? 'On' : 'Off', '')}</div>${h.on('sb.topup', false) ? h.field('Monthly ceiling', h.select(['$25', '$100', '$340'], '$100')) : ''}`),
+        sec('Per-role credit caps', h.table([{ k: 0, label: 'Role' }, { k: 1, label: 'Cap per month' }], caps, { dense: true }) + (own ? tbtn('Edit caps', 'Caps saved. Users see their remaining budget before each action.', { sm: true }) : '') + h.note('Per-agent caps are set on Automations > AI agents.'), { flush: false }),
+      ]) + sec('Rate card (examples)', h.table([{ k: 'action', label: 'Action' }, { k: 'credits', label: 'Credits', n: true }, { k: 'scope', label: '', fmt: v => h.tag(v) }], RL.P.plans.ai_credit_rates.filter(r => r.scope === 'MVP').slice(0, 8), { dense: true }), { flush: true });
+      if (tab === 'addons') return sec('Add-ons', h.table([{ k: 'name', label: 'Add-on', fmt: (v, r) => `<b>${esc(v)}</b> ${h.tag(r.scope)}` }, { k: 'price', label: 'Price', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'state', label: 'Status', fmt: v => statusPill(v === 'Not active' ? 'Off' : v) }, { k: 'code', label: '', fmt: (v, r) => !own ? '' : r.state === 'Active' ? tbtn('Remove', 'Removal takes effect at the end of the period; data stays read only.', { sm: true }) : r.state === 'Not active' ? tbtn('Add', `${r.name} added; prorated on the next invoice.`, { sm: true, kind: 'primary' }) : '' }], addons, { dense: true }) + h.note('An add-on that a higher tier includes is removed on upgrade with prorated credit (22 §4.5).'), { flush: true });
+      if (tab === 'invoices') return sec('Rootline invoices', h.table([{ k: 0, label: 'Invoice', m: true }, { k: 1, label: 'Date' }, { k: 2, label: 'Amount', n: true }, { k: 3, label: 'Status', fmt: v => statusPill(v) }, { k: 0, label: '', fmt: () => tbtn('PDF', 'Invoice PDF downloaded.', { sm: true, icon: 'download' }) }],
+        (c.winter ? [['RL-26-1201', 'Jan 1, 2027', 0.82], ['RL-26-1101', 'Dec 1, 2026', 0.74], ['RL-26-1001', 'Nov 1, 2026', 0.9]] : [['RL-27-0501', 'May 1, 2027', 1.1], ['RL-27-0401', 'Apr 1, 2027', 0.96], ['RL-27-0301', 'Mar 1, 2027', iv === 'annual' ? 12 : 1]]).map(([id, d, f]) => [id, d, money(Math.round((iv === 'annual' && f < 5 ? seatCost * f + 9 : base * f + seatCost * .9) * 100) / 100, { cents: true }), 'Paid']), { dense: true }) + h.kv([['Payment method', 'ACH debit, Checking ••4410 ' + (own ? h.btn('Update', { sm: true, act: 'more-toast' }) : '')], ['Tax ID', 'On file']]), { flush: true });
+      if (tab === 'winter') {
+        const wm = iv === 'monthly';
+        const mo = c.plan.monthly || base;
+        return sec('Schedule Winter Mode', `<div class="cols cols-3">${h.field('Pause from', own && wm ? h.select(['Nov 15', 'Dec 1', 'Dec 15'], wmFrom, { ui: 'wm.from' }) : h.input(wmFrom, { ro: true }))}${h.field('Resume on', own && wm ? h.select(['Feb 15', 'Mar 1', 'Mar 15'], wmTo, { ui: 'wm.to' }) : h.input(wmTo, { ro: true }))}${h.field('Used in the last 12 months', h.input('0 of 4 months', { ro: true }))}</div>`
+          + h.table([{ k: 0, label: 'Your bill' }, { k: 1, label: 'Now (monthly)', n: true }, { k: 2, label: 'During Winter Mode', n: true }], [['Base plan', money(mo, { cents: true }), money(mo * .25, { cents: true }) + ' (25%)'], [`Extra office seats (${S.oOffice})`, money(S.oOffice * S.ex.office, { cents: true }), '$0 (beyond 2 read only)'], ['Snow and Ice', t.addons.includes('snow_ice') ? 'In season' : '-', t.addons.includes('snow_ice') ? 'Stays on' : '-']], { dense: true })
+          + h.cols('2', [`<div><b class="small">Keeps working</b>${h.list(['Invoicing, autopay, statements', 'Client portal and client payments', 'Ledger, bank feeds, month-end close', 'CRM (read) and unified inbox', 'Service agreement billing'].map(x => ({ icon: 'check', tone: 'ok', title: x })))}</div>`, `<div><b class="small">Pauses</b>${h.list([t.addons.includes('snow_ice') ? 'Crew app except snow users' : 'Crew app (no snow module)', 'New proposals and designs', 'AI generation (included credits pause; packs stay valid)', 'Campaigns and Match leads'].map(x => ({ icon: 'pause', title: x })))}</div>`])
+          + (wm ? (own ? `<div class="flex">${tbtn('Schedule Winter Mode', `Winter Mode scheduled ${wmFrom} to ${wmTo}. We will remind you 14 days before resume.`, { kind: 'primary' })}<span class="tiny t3">Pick 2 users who keep editing in winter.</span></div>` : '') : h.note(`Winter Mode is for monthly plans (up to 4 months in any rolling 12). ${esc(t.name)} is on annual billing; field seats already drop with activity in winter.`)), { sub: 'Base drops to 25% of list; the Company keeps getting paid (22 §9.8)' });
+      }
+      return h.cols('4', plans.map(p => {
+        const cur = p.code === c.planCode, up = ord[p.code] > ord[c.planCode];
+        const price = p.annual ? `$${p.annual}<small>/mo annual</small>` : `<small>${esc(p.annual_note || 'Custom')}</small>`;
+        return `<div class="plan-c${cur ? ' on' : ''}"><div class="flex between"><b>${esc(p.name)}</b>${p.scope !== 'MVP' ? h.tag(p.scope) : ''}</div><div class="pr">${price}</div><div class="tiny t2">${p.office_seats != null ? p.office_seats + ' office' : esc(p.office_note || '')} · ${p.field_seats != null ? p.field_seats + ' active field' : esc(p.field_note || 'Unlimited field')} · ${p.ai_credits ? num(p.ai_credits) + ' AI credits' : esc(p.ai_note || '')}</div><div class="tiny t3">${esc(p.for)}</div>${cur ? h.pill('Current plan', 'ok', 'check') : own ? (p.public ? h.btn(up ? 'Upgrade' : 'Downgrade', { sm: true, kind: up ? 'primary' : '', modal: 'more-plan', x: p.code }) : tbtn('Talk to sales', 'A specialist will reach out within one business day.', { sm: true })) : ''}</div>`;
+      })) + h.note('Upgrades are immediate and prorated. Downgrades take effect at the end of the period or term, after an entitlement check lists what goes read only (22 §4.7).');
+    })();
+});
+RL.modal('more-pack', (c, el) => {
+  const n = +(el && el.dataset.x) || 1000, price = { 1000: 25, 5000: 100, 20000: 340 }[n] || 25;
+  return { title: 'Buy AI credits', body: h.kv([['Pack', num(n) + ' credits'], ['Price', money(price, { cents: true }) + ' + tax'], ['Charged to', 'ACH debit, Checking ••4410'], ['Expires', '12 months after purchase'], ['Balance after', num(credits(c).inc - credits(c).used + n) + ' credits']]) + h.note('Packs are used after the monthly allowance. Credits are refunded automatically when a generation fails.'), foot: h.btn('Cancel', { act: 'noop' }) + tbtn(`Buy for ${money(price)}`, `${num(n)} credits added. Receipt emailed.`, { kind: 'primary' }) };
+});
+RL.modal('more-plan', (c, el) => {
+  const to = (el && el.dataset.x) || 'grow', p = I.PLANS[to], S = seats(c);
+  const ord = { starter: 0, grow: 1, pro: 2, enterprise: 3, design_solo: -1 };
+  const up = ord[to] > ord[c.planCode];
+  const lost = planDiff(c, to);
+  const seatsNote = !up && p.field_seats != null && S.field > p.field_seats ? `<li>Included active field seats drop from ${c.plan.field_seats} to ${p.field_seats}; you have ${S.field} active (extra billed at ${money(p.extra_field)} each)</li>` : '';
+  const officeNote = !up && p.office_seats != null && S.office > p.office_seats ? `<li>Included office seats drop to ${p.office_seats}; you have ${S.office} (extra ${money(p.extra_office)} each)</li>` : '';
+  return { title: (up ? 'Upgrade to ' : 'Downgrade to ') + esc(p.name), body: h.kv([['New price', '$' + (p.annual || p.monthly) + '/mo' + (p.annual ? ' annual' : '')], ['Takes effect', up ? 'Now, prorated' : 'End of the current term'], ['AI credits', num(p.ai_credits || 0) + ' per month']]) + (up ? h.note('New entitlements are available instantly. Add-ons this plan includes are removed with prorated credit.') : `<div class="small"><b>Entitlement check: what goes read only or off</b><ul class="small" style="margin:6px 0 0;padding-left:18px">${officeNote}${seatsNote}${lost.map(l => `<li>${esc(l)}</li>`).join('') || '<li>Nothing changes for features you use.</li>'}</ul></div>` + h.note('Data is never deleted on a downgrade; it stays read only.')), foot: h.btn('Cancel', { act: 'noop' }) + tbtn(up ? 'Upgrade now' : 'Schedule downgrade', up ? `Upgraded to ${p.name}.` : `Downgrade to ${p.name} scheduled for the end of the term.`, { kind: up ? 'primary' : 'danger' }) };
+});
+
+RL.screen('web.settings.security', (c) => {
+  const own = isOwner(c), can = writes(c, 'security_policy'), grantCap = c.can('support_access.grant');
+  const canGrant = !/^-/.test(String(grantCap));
+  const viewOnly = /view-only/.test(String(grantCap));
+  const tab = h.tab('sc.tab', 'access');
+  const granted = RL.ui['sc.grant'] === '1';
+  const asUser = RL.ui['sc.as'] || ((c.t.cast && c.t.cast.crew_lead) ? c.t.cast.crew_lead + ' (crew_lead)' : c.owner + ' (owner)');
+  const people = c.D.people.slice(0, 8).map(p => p.name + ' (' + p.role + ')');
+  const kind = viewOnly ? 'view' : (RL.ui['sc.kind'] || 'view');
+  const log = [[c.winter ? 'Dec 14' : 'Apr 22', 'Maya S. (Rootline Support)', 'Ticket 4702: import mapping', 'View only, 24 h', c.owner, 'Expired'], [c.winter ? 'Nov 3' : 'Mar 9', 'Devin R. (Rootline Support)', 'Ticket 4511: QuickBooks sync', 'View and change, 4 h', c.owner, 'Revoked early']];
+  const audit = [[c.today.short + ' 7:41', c.owner, 'Role changed', 'Custom role "Crew Lead - Irrigation": +timesheet.approve:crew'], [c.today.short + ' 7:02', (c.t.cast && c.t.cast.office_manager) || c.owner, 'Export run', 'Client list (412 rows)'], [past(c)[0] + ' 16:20', c.owner, 'Stripe payout bank viewed', 'Step-up with passkey'], [past(c)[0] + ' 9:15', 'Rootline Support (Maya S.)', 'Support session ended', 'Ticket 4702, view only'], [past(c)[1] + ' 11:03', (c.t.cast && c.t.cast.bookkeeper) || c.owner, 'Period closed', c.winter ? 'Nov 2026' : 'Mar 2027'], [past(c)[2] + ' 8:30', 'System', 'New device sign-in', 'Chrome on Windows, Columbus OH']];
+  let body;
+  if (tab === 'access') body = h.cols('2', [
+    sec('Rootline Support is asking for access', granted ? bnr(`${icon('eye')} Access granted: ${kind === 'view' ? 'view only' : 'view and make changes'} as ${esc(asUser)} for 72 hours. Support sees a banner with the ticket number and a countdown.`, 'warn') + `<div class="flex">${h.btn('Revoke now', { kind: 'danger', sm: true, ui: 'sc.grant', val: '0' })}</div>`
+      : h.kv([['Ticket', '4821: "Crew ' + esc((c.D.crews[0] || { name: 'M3' }).name) + ' cannot see today\'s route"'], ['Requested by', 'Maya S. (Rootline Support)']])
+      + (canGrant ? `<div class="stack8">${h.field('Access type', viewOnly ? h.input('View only (your role can grant view-only access)', { ro: true }) : seg('sc.kind', [['view', 'View only'], ['edit', 'View and make changes']], kind))}${h.field('As user', h.select(people, asUser, { ui: 'sc.as' }))}${h.field('Duration', h.select(['4 hours', '24 hours', '72 hours'], '72 hours'))}</div>` : '')
+      + (canGrant ? `<div class="flex">${tbtn('Deny', 'Request denied. Support was notified.', {})}${h.btn('Grant access', { kind: 'primary', ui: 'sc.grant', val: '1' })}</div>` : h.note('Only the owner or office manager can answer support requests.')), { tone: granted ? 'warn' : '' }),
+    sec('What support access means', h.list([
+      { icon: 'eye-off', tone: 'ok', title: 'Support will not see', sub: 'Pay rates, SSNs, bank details, card data, passwords' },
+      { icon: 'clock', title: 'Time-boxed', sub: 'Ends automatically; you can revoke at any moment' },
+      { icon: 'shield', title: 'Visible on both sides', sub: 'Staff work under a "Viewing as" banner with the ticket number' },
+      { icon: 'list', title: 'Logged', sub: 'Every session and action is written to your audit log' },
+    ]), { flush: true }),
+  ]) + sec('Support access log', h.table([{ k: 0, label: 'When' }, { k: 1, label: 'Who' }, { k: 2, label: 'Why' }, { k: 3, label: 'Scope' }, { k: 4, label: 'Granted by' }, { k: 5, label: 'Status', fmt: v => h.pill(esc(v), v === 'Active' ? 'warn' : '') }], (granted ? [[c.today.short, 'Maya S. (Rootline Support)', 'Ticket 4821', (kind === 'view' ? 'View only' : 'View and change') + ', 72 h', c.who, 'Active']] : []).concat(log), { dense: true }) + h.note('Consent, scope and a visible log for every session (02 §7.6).'), { flush: true });
+  else if (tab === 'mfa') body = h.cols('2', [
+    sec('Sign-in policy', h.table([{ k: 0, label: 'Who' }, { k: 1, label: 'Requirement' }, { k: 2, label: 'Enrolled', n: true }], [['Owner', 'Passkey, or password + MFA', '1 / 1'], ['Office roles', 'MFA required', `${seats(c).office - 1} / ${seats(c).office - 1}`], ['Bookkeeper', 'MFA required (TOTP or passkey)', '1 / 1'], ['Crew leads and technicians', 'Phone OTP + app PIN or biometrics', 'n/a'], ['Clients', 'Magic link; passkey optional', 'n/a']], { dense: true }) + `<div class="cols cols-2">${h.field('Session length (office)', can ? h.select(['12 hours', '7 days', '30 days'], '7 days') : h.input('7 days', { ro: true }))}${h.field('Step-up for sensitive data', can ? h.select(['Passkey or MFA, every 15 min', 'Every time'], 'Passkey or MFA, every 15 min') : h.input('Passkey or MFA, every 15 min', { ro: true }))}</div>`, { flush: false }),
+    sec('Your sessions', h.table([{ k: 0, label: 'Device' }, { k: 1, label: 'Where' }, { k: 2, label: 'Last active' }], [['Safari on iPhone (this device)', esc(c.t.city), 'Now'], ['Chrome on Mac', esc(c.t.city), '2 h ago'], ['Rootline app on iPad', esc(c.t.city), 'Yesterday']], { dense: true }) + `<div class="flex">${tbtn('Sign out everywhere else', 'Signed out of 2 other sessions.', { sm: true })}</div>`, { flush: true }),
+  ]);
+  else if (tab === 'audit') body = sec('Audit log', h.table([{ k: 0, label: 'When' }, { k: 1, label: 'Who' }, { k: 2, label: 'Action', fmt: v => `<b>${esc(v)}</b>` }, { k: 3, label: 'Detail', fmt: v => `<span class="tiny">${esc(v)}</span>` }], audit, { dense: true }) + `<div class="flex">${tbtn('Export CSV', 'Audit log exported.', { sm: true, icon: 'download' })}<span class="tiny t3">Kept 7 years. Security events about owners are not shown to other roles.</span></div>`, { flush: true });
+  else body = c.has('sso') ? sec('Single sign-on ' + h.tag('V1'), `<div class="cols cols-2">${h.field('Protocol', h.select(['SAML 2.0', 'OIDC'], 'SAML 2.0'))}${h.field('IdP metadata URL', h.input('https://idp.example.com/metadata.xml', { ro: !can }))}</div>` + tg('Require SSO for office roles', 'sc.sso', true) + h.note('Field roles keep phone OTP + PIN. SCIM provisioning arrives at V2.'))
+    : `<div>${inlineLock(c, 'sso')}</div>` + h.note('SSO (SAML or OIDC) is Enterprise only and ships at V1.');
+  return h.page({ title: 'Security and audit log', sub: `MFA on for every office user · ${granted ? '1 active support session' : 'no active support sessions'}`, actions: roPill(c, 'security_policy') })
+    + h.tabs('sc.tab', [['access', 'Support access', granted ? 1 : 1], ['mfa', 'MFA and sessions'], ['audit', 'Audit log'], ['sso', 'SSO ' + (c.has('sso') ? h.tag('V1') : icon('lock', 's'))]], 'access') + body;
+});
+
 })();

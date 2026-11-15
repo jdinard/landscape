@@ -768,5 +768,435 @@ RL.screen('web.contacts', (c) => {
 });
 RL.act('ct-act', (el) => { RL.toast(esc(el.dataset.val) + ' (mock)'); return false; });
 
+// ---------- Sales: leads, pipeline, assessments (03 §4.1-4.4) ----------
+function leadsOf(c) {
+  const D = c.D, est = castOf(c, 'estimator', c.owner), des = c.t.cast && c.t.cast.designer;
+  return D.leads.map((l, i) => Object.assign({}, l, { owner: i === 4 && des ? des : i % 3 === 2 ? 'Branch pool' : est, phone: '(614) 555-02' + (10 + i * 7), email: first(l.name).toLowerCase() + '@example.com', first: ['1 m 40 s', '2 m 05 s', '58 s', '4 m 12 s', '1 m 15 s', '3 m 30 s', '45 s', '2 m 50 s', '1 m 05 s', '6 m 10 s'][i], dup: i === 3 ? c.D.clients[2] : null }));
+}
+RL.screen('web.leads', (c) => {
+  const D = c.D, all = leadsOf(c), r = c.role;
+  const mineOnly = /\/o/.test(c.can('lead')) && !/\/a|\/b/.test(c.can('lead').replace(/R\/b pool/, ''));
+  const pool = r === 'estimator' ? all.filter(l => l.owner === c.who || l.owner === 'Branch pool') : r === 'designer' ? all.filter(l => l.owner === c.who) : all;
+  const tab = U('ld-tab', 'New');
+  const list = tab === 'All' ? pool : pool.filter(l => l.status === tab);
+  const sel = pool.find(l => l.id === U('ld-sel', '')) || list[0] || pool[0];
+  const head = h.page({ title: 'Leads', sub: `${pool.length} leads · median first response ${c.has('agents_mvp') ? '1 m 40 s with the Lead Follow-up agent' : '22 min'}`, actions: (c.allowed('lead') && /W/.test(c.can('lead')) ? h.btn('New lead', { kind: 'primary', icon: 'plus', act: 'ld-act', val: 'New lead form' }) : '') });
+  const tabs = h.tabs('ld-tab', [['New', 'New', pool.filter(l => l.status === 'New').length], ['Contacted', 'Contacted', pool.filter(l => l.status === 'Contacted').length], ['Qualified', 'Qualified', pool.filter(l => l.status === 'Qualified').length], ['All', 'All', pool.length]], 'New');
+  if (!sel) return head + tabs + h.empty(r === 'designer' ? 'No leads assigned to you. Designers see their own leads only (lead R/o).' : 'No leads yet.');
+  const scoreV1 = c.inLens('V1');
+  const items = list.map(l => `<div class="li-i go" role="button" tabindex="0" data-ui="ld-sel" data-val="${l.id}" style="${l.id === sel.id ? 'background:var(--primary-soft);' : ''}grid-template-columns:auto minmax(0,1fr) auto">${h.avatar(l.name)}<div style="min-width:0"><div class="tt">${esc(l.name)}</div><div class="ss">${esc(l.service)} · ${esc(l.source)}</div><div class="ss">${esc(l.age)} ago · ${esc(l.owner)}</div></div><div style="display:grid;gap:3px;justify-items:end">${h.mask(c, 'price', '<span class="small num">' + kmoney(l.value) + '</span>')}${scoreV1 ? h.pill('Score ' + l.score, l.score >= 70 ? 'ok' : l.score >= 50 ? 'info' : '') : ''}</div></div>`).join('') || h.empty('Nothing in this view.');
+  const conv = c.has('agents_mvp') ? h.aiCard({ agent: 'Lead Follow-up (A3)', level: 'L2', credits: 4, title: `First reply in ${sel.first}, inside business hours`, body: `<div class="stack8 small"><div><b>Rootline:</b> "Thanks ${esc(first(sel.name))}! A few quick questions so ${esc(first(sel.owner === 'Branch pool' ? castOf(c, 'estimator', c.owner) : sel.owner))} comes prepared: roughly how big is the area, when would you like it done, and does your HOA need to approve it?"</div><div><b>${esc(first(sel.name))}:</b> "${sel.status === 'New' ? 'About 400 sq ft behind the house. Ideally before July. No HOA.' : 'Before July works. No HOA. Thursday is good.'}"</div><div><b>Rootline:</b> "Great. I can book a site visit Thursday 9:00, Friday 1:30 or Monday 10:00."</div></div>`, why: 'Stops on reply from a person, opt-out, booking or takeover. Quiet hours 8 pm to 8 am. Nurture beyond the inquiry needs consent from the form.', actions: h.btn('Take over', { sm: true, act: 'ld-act', val: 'You took over; the agent stopped' }) }) : `<div class="flex">${lockPill(c, 'agents_mvp', 'Lead Follow-up agent')}</div>`;
+  const detail = h.card({ title: `${esc(sel.name)} ${h.pill(esc(sel.status), sel.status === 'New' ? 'info' : sel.status === 'Qualified' ? 'ok' : '')}`, sub: `${esc(sel.id)} · ${esc(sel.source)} · ${esc(sel.age)} ago`, body: `${h.kv([['Service', esc(sel.service)], ['Budget band', h.mask(c, 'price', kmoney(sel.value))], ['Address', `${esc(sel.address)}, ${esc(c.t.city.split(',')[0])}`], ['Contact', `${contactVal(c, sel.phone)} · ${contactVal(c, sel.email)}`], ['Service area', h.pill('Inside: north territory, 14 min from the yard', 'ok')], ['Owner', esc(sel.owner)], scoreV1 ? ['Score ' + h.tag('V1'), `${sel.score} · fit ${sel.score > 60 ? 'high' : 'medium'}, source quality, budget vs service`] : null, ['Duplicate check', sel.dup ? `${h.pill('Possible match', 'warn')} ${esc(sel.dup.name)} by phone` : 'No match on name, phone or address']])}
+    ${conv}
+    <div class="tiny t3" style="font-weight:700;text-transform:uppercase;letter-spacing:.05em">Book a site visit</div><div class="flex">${['Thu 9:00', 'Fri 1:30', 'Mon 10:00'].map(s => doneOr('ld-' + sel.id + s, `<button type="button" class="btn sm" data-act="td-do" data-val="ld-${esc(sel.id + s)}" title="Site visit booked ${s}">${s}</button>`, 'Booked ' + s)).join('')}</div>`,
+    actions: /W|X/.test(c.can('lead')) ? h.btn('Convert to opportunity', { sm: true, kind: 'primary', act: 'ld-act', val: 'Opportunity created in Qualified' }) + h.btn('Quick Quote', { sm: true, go: 'web.estimates' }) + h.btn('Mark lost', { sm: true, act: 'ld-act', val: 'Marked lost: reason required' }) : '' });
+  return head + (mineOnly || r === 'estimator' ? h.note(`${esc(c.roleObj.name)}: your leads plus the branch pool (lead ${esc(c.can('lead'))}).`) : '') + tabs + grid('minmax(0,0.9fr) minmax(0,1.3fr)', [`<div class="cd" style="overflow:hidden"><div class="li">${items}</div></div>`, detail]);
+});
+RL.act('ld-act', (el) => { RL.toast(esc(el.dataset.val) + ' (mock)'); return false; });
+
+const STAGES = ['New', 'Qualified', 'Site visit', 'Designing', 'Proposal sent', 'Won'];
+RL.screen('web.pipeline', (c) => {
+  const D = c.D, r = c.role;
+  const scope = r === 'estimator' ? 'mine' : r === 'designer' ? 'design' : U('pi-scope', 'all');
+  const opps = D.opps.filter(o => scope === 'mine' ? o.owner === c.who : scope === 'design' ? o.stage === 'Designing' : true);
+  const view = U('pi-view', 'board');
+  const stale = o => parseInt(o.age, 10) > 21 && o.stage !== 'Won';
+  const weighted = sum(opps.filter(o => o.stage !== 'Won'), o => o.value * o.prob / 100);
+  const head = h.page({ title: 'Pipeline', sub: `${opps.length} opportunities · ${h.mask(c, 'price', kmoney(sum(opps, o => o.value)))} total · weighted ${h.mask(c, 'price', kmoney(weighted))}`, actions: `${seg('pi-view', [['board', 'Board'], ['table', 'Table']], 'board')}${c.inLens('V1') ? h.btn('Map ' + h.tag('V1'), { sm: true, act: 'ld-act', val: 'Map view' }) : ''}${/W/.test(c.can('opportunity')) ? h.btn('New opportunity', { kind: 'primary', icon: 'plus', act: 'ld-act', val: 'New opportunity' }) : ''}` });
+  const kp = h.kpis([{ label: 'Open pipeline', value: h.mask(c, 'price', kmoney(sum(opps.filter(o => o.stage !== 'Won'), o => o.value))) }, { label: 'Weighted', value: h.mask(c, 'price', kmoney(weighted)) }, { label: 'Stale over 21 days', value: opps.filter(stale).length, tone: 'warn', delta: 'Nudge or close' }, { label: 'Win rate (90 d)', value: D.kpi.closeRate + '%' }, { label: c.winter ? 'Spring backlog' : 'Backlog', value: D.kpi.backlogWeeks + ' wk' }]);
+  const scopeBar = r === 'estimator' ? h.note('Your pipeline (opportunity RWX/o).') : r === 'designer' ? h.note('Designer: opportunities in the Designing stage, read only.') : `<div class="flex">${seg('pi-scope', [['all', 'Everyone'], ['mine', 'Mine']], 'all')}<span class="tiny t3">Forecast ${h.tag('V1')} uses stage probability x value.</span></div>`;
+  const body = view === 'table' ? h.card({ flush: true, body: h.table([{ k: 'id', label: 'Opp', m: true }, { k: 'client', label: 'Client', fmt: (v, o) => `<div class="b small">${esc(v)}</div><div class="tiny t3">${esc(o.title)}</div>` }, { k: 'stage', label: 'Stage', fmt: s => stPill(s) }, { k: 'value', label: 'Value', n: true, fmt: v => h.mask(c, 'price', money(v)) }, { k: 'prob', label: 'Prob.', n: true, fmt: v => v + '%' }, { k: 'owner', label: 'Owner' }, { k: 'next', label: 'Next step' }, { k: 'age', label: 'Age', fmt: (v, o) => stale(o) ? h.pill(v + ' stale', 'warn') : esc(v) }], opps, { go: 'web.client', x: o => o.clientId }) })
+    : h.board(STAGES.map(s => { const os = opps.filter(o => o.stage === s); return { title: s, sub: `${os.length} · ${c.sees('price') ? kmoney(sum(os, o => o.value)) : ''}`, cards: os.map(o => ({ title: esc(o.client), sub: `${esc(o.title)} · ${h.mask(c, 'price', money(o.value))}`, meta: `${h.avatar(o.owner)}<span class="tiny t3">${esc(o.next)}</span>${stale(o) ? h.pill(o.age, 'warn') : ''}${/AI/.test(o.next) ? h.pill('AI draft', 'ai') : ''}`, go: 'web.client', x: o.clientId, tone: /AI/.test(o.next) ? 'ai' : '' })) }; }));
+  return head + kp + scopeBar + body;
+});
+
+function assessments(c) {
+  const D = c.D, est = castOf(c, 'estimator', c.owner);
+  return [[D.leads[2], 'Synced', 14, 3, 2.4], [D.leads[5], 'Draft estimate ready', 22, 5, 3.1], [{ name: D.res.client, address: D.res.property, service: D.res.project }, 'Complete', 31, 6, 4.0], [D.leads[7], 'Scheduled', 0, 0, 0]].map(([l, s, ph, m, v], i) => ({ id: 'SA-' + (301 + i), who: l.name, address: l.address, service: l.service, status: s, photos: ph, meas: m, voice: v, by: i === 1 && c.t.cast && c.t.cast.designer ? c.t.cast.designer : est, when: ['Today 8:30', 'Yesterday', 'May 6', 'Thu 9:00'][i] }));
+}
+RL.screen('web.assessments', (c) => {
+  const D = c.D, list = assessments(c), sel = list.find(a => a.id === U('as-sel', '')) || list[1];
+  const own = sel.by === c.who || c.role === 'owner' || c.role === 'office_manager' || c.role === 'ops_manager';
+  const head = h.page({ title: 'Site assessments', sub: 'Captured offline on iPad or phone, synced with photos, measurements and voice notes', tags: h.tag('V1'), actions: /W/.test(c.can('site_assessment')) ? h.btn('Schedule assessment', { kind: 'primary', icon: 'plus', act: 'ld-act', val: 'Site visit scheduled' }) : '' });
+  const tbl = h.card({ flush: true, body: `<div class="li">${list.map(a => `<div class="li-i go" role="button" tabindex="0" data-ui="as-sel" data-val="${a.id}" style="${a.id === sel.id ? 'background:var(--primary-soft)' : ''}"><span class="ico ${a.status === 'Draft estimate ready' ? 'ai' : a.status === 'Scheduled' ? '' : 'ok'}">${icon('clipboard')}</span><div style="min-width:0"><div class="tt">${esc(a.id)} ${esc(a.who)}</div><div class="ss">${esc(a.service)} · ${esc(a.when)} · ${esc(first(a.by))}</div></div><div class="flex nw gap4">${a.photos ? h.pill(icon('camera', 's') + a.photos) : ''}${h.pill(esc(a.status), a.status === 'Draft estimate ready' ? 'ai' : a.status === 'Scheduled' ? 'info' : 'ok')}</div></div>`).join('')}</div>` });
+  const ai = U('as-ai', '');
+  const detail = h.card({ title: `${esc(sel.id)} · ${esc(sel.who)}`, sub: `${esc(sel.address)} · ${esc(sel.when)} · by ${esc(sel.by)}`, body: sel.status === 'Scheduled' ? h.empty('Scheduled. The checklist, property measurements and last season\'s notes are cached for offline use.') : `${grid('repeat(3,minmax(0,1fr))', [h.photo('before', { label: 'Back yard', badge: 'Photo 1 of ' + sel.photos }), h.photo('bed', { label: 'Foundation bed', badge: 'Annotated' }), h.photo('lawn', { label: 'Side yard' })], 8)}
+    ${h.table([{ k: 0, label: 'Checklist item' }, { k: 1, label: 'Answer' }], [['Access', 'Gate 42 in: machine fits (x1.10)'], ['Haul distance', '50-150 ft from drop point (x1.10)'], ['Soil', 'Heavy clay (x1.20)'], ['Slope', 'Under 10%'], ['Utilities', 'Called in, flags expected Thu'], ['Deer pressure', 'High (client reported)']], { dense: true })}
+    ${h.table([{ k: 0, label: 'Measurement' }, { k: 1, label: 'Value', n: true }, { k: 2, label: 'Source' }], [['Patio area', '320 sq ft', 'Laser, on site'], ['Back border', '1,180 sq ft', 'Aerial AI, verified'], ['Bed edge', '229 lin ft', 'Walked wheel']], { dense: true })}
+    <div class="small" style="background:var(--surface-2);border-radius:8px;padding:8px 10px">${icon('mic', 's')} <b>Voice note ${sel.voice} min</b> ${h.tag('V1')} · "Client wants the patio off the kitchen door, about 16 by 20, fire pit later. Deer every night, so nothing they browse. Existing burning bush on the fence line should come out."</div>
+    ${c.has('agents_mvp') ? (ai ? h.aiCard({ agent: 'Estimating from notes (A6)', level: 'L2', credits: 8, title: 'Draft estimate created: 9 lines mapped to your price book', body: '<div class="small">Paver patio kit 320 sq ft (herringbone, clay x1.20) · seat wall 18 lin ft · bed prep 1,574 sq ft · mulch 15 cu yd · 86 plants from the regional palette, deer-resistant filter on · burning bush removal.</div>', why: 'Quantities come from the measurements above; prices come only from the estimating engine. 2 lines flagged low confidence.', actions: h.btn('Open draft estimate', { sm: true, kind: 'ai', go: 'web.estimate', x: D.estimates[0].id }) }) : `<div class="flex">${h.btn('Draft estimate from notes (8 cr)', { kind: 'ai', icon: 'spark', ui: 'as-ai', val: '1' })}<span class="tiny t3">${creditLine(c, 8)}</span></div>`) : lockPill(c, 'agents_mvp', 'A6')}` , actions: own ? '' : h.pill('Read only') });
+  return head + grid('minmax(0,0.85fr) minmax(0,1.4fr)', [tbl, detail]);
+});
+
+// ---------- Estimates and the estimate builder (03 §4.6, 21 §18.5, 17 A6) ----------
+const limitFor = c => ({ owner: Infinity, office_manager: 25000, estimator: 15000, ops_manager: 15000 }[c.role] || 0);
+const canEditEst = (c, m) => { const g = c.can('estimate'); if (/^RWD\/a|^RW\/a/.test(g)) return true; if (/W[^/]*\/o/.test(g)) return m.own; if (/RW\/b/.test(g)) return true; return false; };
+RL.screen('web.estimates', (c, a) => {
+  const D = c.D, models = D.estimates.map(e => estModel(c, e));
+  const def = c.role === 'estimator' && models.some(m => m.own) ? 'mine' : 'all';
+  const tab = U('es-tab', def);
+  const f = { all: () => true, mine: m => m.own, Draft: m => m.e.status === 'Draft', 'In review': m => m.e.status === 'In review', Sent: m => m.e.status === 'Sent', Approved: m => m.e.status === 'Approved' }[tab] || (() => true);
+  const rows = models.filter(f);
+  const lim = a && a.state === 'limit' ? h.banner(`${icon('info')} ${esc(c.plan.name)}: estimating included with a limit (${esc(a.limit)}). Price book items used: 164 of 200.${c.role === 'owner' ? ' ' + h.link('Compare plans', 'web.settings.subscription') : ''}`, 'info') : '';
+  const qq = U('es-qq', '') === '1';
+  return h.page({ title: 'Estimates', sub: `${rows.length} shown · margin chips follow your field-class visibility`, actions: h.btn(qq ? 'Hide Quick Quote' : 'Quick Quote', { icon: 'bolt', ui: 'es-qq', val: qq ? '' : '1' }) + (c.allowed('estimate') && /W/.test(c.can('estimate')) ? (c.has('agents_mvp') ? h.btn('Draft from notes (8 cr)', { kind: 'ai', icon: 'spark', act: 'es-ai-go' }) : '') + h.btn('New estimate', { kind: 'primary', icon: 'plus', go: 'web.estimate' }) : '') })
+    + lim + (qq ? grid('minmax(0,1fr) minmax(0,1fr)', [quickQuoteCard(c), h.card({ title: 'Quick Quote templates', sub: 'At most 5 visible inputs each', flush: true, body: h.list(QQT.slice(0, 5).map(t => ({ icon: 'bolt', title: esc(t[0]), sub: esc(t[1]), right: h.pill(esc(t[3])) }))) })]) : '')
+    + h.tabs('es-tab', [['all', 'All', models.length], ['mine', 'Mine', models.filter(m => m.own).length], ['Draft', 'Draft'], ['In review', 'In review'], ['Sent', 'Sent'], ['Approved', 'Approved']], def)
+    + h.card({ flush: true, body: h.table([
+      { k: 'id', label: 'Estimate', m: true, fmt: (v, m) => esc(m.e.id) },
+      { k: 'client', label: 'Client and title', fmt: (v, m) => `<div class="b small">${esc(m.e.client)}</div><div class="tiny t3">${esc(m.e.title)}</div>` },
+      { k: 'by', label: 'By', fmt: (v, m) => `<span class="small">${esc(m.e.by)}</span>` },
+      { k: 'date', label: 'Date', fmt: (v, m) => esc(m.e.date) },
+      { k: 'status', label: 'Status', fmt: (v, m) => stPill(m.e.status) + (m.e.value > 15000 && m.e.status === 'In review' ? ' ' + h.pill('Needs approval', 'warn') : '') },
+      { k: 'opts', label: 'Options', n: true, fmt: () => '3' },
+      { k: 'price', label: 'Price', n: true, fmt: (v, m) => h.mask(c, 'price', money(m.e.value)) },
+      { k: 'cost', label: 'Cost', n: true, fmt: (v, m) => fcOwn(c, 'cost', m.own, money(Math.round(m.T.better.direct))) },
+      { k: 'gm', label: 'Margin', fmt: (v, m) => marginCell(c, m.gm, m.netAct, m.own) },
+    ], rows, { go: 'web.estimate', x: m => m.e.id }) })
+    + h.note('Margin chips: gross margin %, colored by net margin against the 10% net floor (03 EST-09). Designers see price only; operations managers see an indicator.');
+});
+RL.act('es-ai-go', (el, ev, c) => { RL.ui['es-ai'] = '1'; RL.go('web.estimate', c.D.estimates[0].id); return false; });
+const QQT = [['Weekly mowing', 'Turf sq ft (intel), trim lin ft, gate, frequency', 'Mowing visit model', 'Mow / + 5-step / Full care'], ['Mulch top-dress', 'Bed sq ft (intel), depth, product, access, haul', 'MULCH-INSTALL kit', 'Hardwood / Dyed / + edge'], ['Spring cleanup', 'Bed sq ft, turf sq ft, tree count, debris level', 'Cleanup kit', 'Basic / Standard / Premium'], ['Core aeration and overseeding', 'Turf sq ft, seed, slope class', 'Aeration kit', 'Aerate / + overseed / + starter'], ['Irrigation start-up or winterization', 'Zone count, backflow type', 'Base + per zone', 'Single price'], ['Shrub and hedge trimming', 'Count by size class or hedge lin ft', 'Trimming kit', 'Single price']];
+const rateTxt = l => l.rate ? (l.rate >= 1 ? `${l.rate} ${l.unit}/mh` : `${(1 / l.rate).toFixed(1)} mh/${l.unit}`) : (l.subc ? 'sub quote' : '-');
+const KIT_PAVER = [['Excavation and disposal', '3 dump loads', 180, 13.0], ['Base gravel 3/4 in minus', '10 t', 280, 11.38], ['Bedding sand 1 in', '1.5 t', 48, 3.0], ['Geotextile fabric', '360 sq ft', 64.8, 0], ['Pavers 60 mm, herringbone +10%', '330 sq ft', 1402.5, 31.05], ['Edge restraint + spikes', '7 pcs + 50', 147, 7.0], ['Polymeric sand', '6 bags', 192, 4.5], ['Equipment: mini skid, compactor, saw', 'kit', 625, 0], ['Mobilization 3 days x 4 crew', 'kit', 0, 6.0]];
+RL.screen('web.estimate', (c, a) => {
+  const D = c.D, e0 = D.estimates.find(x => x.id === c.x) || D.estimates[0], m = estModel(c, e0), e = m.e;
+  const opt = U('es-opt', 'better'), T = m.T[opt];
+  const edit = canEditEst(c, m), own = m.own || c.role === 'owner';
+  const sCost = seesOwn(c, 'cost', m.own), sMar = seesOwn(c, 'margin', m.own), sPrice = c.sees('price');
+  const prop = D.proposals.find(p => p.estimate === e.id);
+  const ds = D.designs.find(d => d.clientId === e.clientId);
+  const linked = ds && /build|plant/.test(m.cat);
+  const lim = limitFor(c), over = e.value > lim, belowFloor = m.netAct < 10;
+  const ratio = T.price / T.be;
+  const kitOpen = U('es-kit', '') === '1';
+  const lines = T.lines.map((l, i) => ({ i: i + 1, l }));
+  const tbl = h.table([
+    { k: 'i', label: '#', n: true },
+    { k: 'l', label: 'Item', fmt: (l) => `<div class="small b">${esc(l.name)}</div>${l.kit ? `<div class="tiny"><button type="button" class="btn sm ghost" style="padding:0 4px" data-ui="es-kit" data-val="${kitOpen ? '' : '1'}">${icon('layers', 's')} kit: ${esc(l.kit)}</button></div>` : ''}${linked && /takeoff|Mulch|Plants|edging|Paver|Bed prep/i.test(l.name) ? `<div class="tiny t3">${icon('link', 's')} linked to ${esc(ds.id)} takeoff</div>` : ''}` },
+    { k: 'l', label: 'Qty', n: true, fmt: l => `${num(l.qty)} <span class="t3 tiny">${esc(l.unit)}</span>` },
+    { k: 'l', label: 'Rate', fmt: l => `<span class="tiny">${rateTxt(l)}</span>` },
+    { k: 'l', label: 'Lab h', n: true, fmt: l => h.mask(c, 'budget_hours', l.mh ? l.mh.toFixed(1) : '-') },
+    { k: 'l', label: 'Cost', n: true, fmt: l => fcOwn(c, 'cost', m.own, money(Math.round(l.direct))) },
+    { k: 'l', label: 'Price', n: true, fmt: l => h.mask(c, 'price', money(Math.round((l.direct + l.oh) * ratio))) },
+  ], lines, { dense: true, foot: ['', `${T.lines.length} lines`, '', '', h.mask(c, 'budget_hours', T.mh.toFixed(1)), fcOwn(c, 'cost', m.own, money(Math.round(T.direct))), h.mask(c, 'price', money(T.price))] });
+  const kit = kitOpen && T.lines.some(l => /Paver/.test(l.kit)) ? h.card({ title: 'Kit: Paver patio per sq ft v3', sub: 'Inputs: area 320 sq ft · perimeter 70 lin ft · against house 20 lin ft · base 6 in · herringbone · access gate x1.10', body: h.table([{ k: 0, label: 'Component' }, { k: 1, label: 'Purchased' }, { k: 2, label: 'Cost', n: true, fmt: v => fcOwn(c, 'cost', m.own, money(v, { cents: true })) }, { k: 3, label: 'Man-hours', n: true, fmt: v => v ? v.toFixed(2) : '-' }], KIT_PAVER, { dense: true }) + h.note('Formulas run in the sandboxed kit evaluator: base area = area + (perimeter - house edge) x 0.5; gravel t = base area x 0.5 / 27 x 1.15 x 1.4 (03 EST-10). Client sees one line.') }) : '';
+  const S = (l, v, o) => `<div class="flex between nw small" style="${o && o.b ? 'font-weight:700;border-top:1px solid var(--border);padding-top:5px' : ''}"><span class="t2">${l}</span><span class="num">${v}</span></div>`;
+  const cv = v => fcOwn(c, 'cost', m.own, money(Math.round(v)));
+  const summary = h.card({ title: `Summary (${opt[0].toUpperCase() + opt.slice(1)})`, sub: 'Priced from break-even at the target net margin', body: `${S(`Labor ${T.mh.toFixed(1)} h at $${BURDEN}`, cv(T.lab))}${S('Materials (+5% waste)', cv(T.matc))}${S('Equipment', cv(T.eqc))}${S('Subcontractors', cv(T.subc))}${S('Direct cost', cv(T.direct), { b: 1 })}${S(`Overhead recovery (FLH $${FLH}/h)`, cv(T.oh))}${S('Break-even', cv(T.be), { b: 1 })}${S('Price', h.mask(c, 'price', `<b style="font-size:1.05rem">${money(T.price)}</b>`), { b: 1 })}
+    ${sMar ? `${S('Gross margin', pct1(T.gm))}${S('Net margin', `<span style="color:${T.net < 10 ? 'var(--warn-text)' : 'var(--ok-text)'}">${pct1(T.net)}</span>`)}${S('Markup on direct cost', pct1(T.markup))}${c.role === 'owner' ? S('Target / floor', '12% net / 10% net') : S('Margin floor', '10% net')}` : `<div class="flex between small"><span class="t2">Margin</span>${marginCell(c, T.gm, T.net, m.own)}</div>`}
+    ${S('Deposit 30%', h.mask(c, 'price', money(Math.round(T.price * .3))))}${S('Warranty', opt === 'good' ? '90 days' : opt === 'better' ? '1 year plants' : '2 years with maintenance')}
+    ${h.note('Margin is a share of price; markup is a share of cost. Rootline never labels a markup as a margin (03 EST-09).')}` });
+  const ohCmp = sCost ? h.card({ title: 'Overhead under each method', sub: 'Generated live from this estimate\'s cost mix', body: h.table([{ k: 0, label: 'Method' }, { k: 1, label: 'Overhead', n: true }, { k: 2, label: `Price at ${m.net}% net`, n: true }], [['FLH ($21.00/h)', T.oh], ['SORS (29.72%)', T.direct * .2972], ['MORS (labor 56.5%)', T.lab * .565 + T.matc * .1 + T.eqc * .25 + T.subc * .05], ['Revenue % (20.16%)', T.direct * .2972]].map(([n, oh]) => [n, money(Math.round(oh)), money(Math.round((T.direct + oh) / (1 - m.net / 100)))]), { dense: true }) }) : '';
+  const aiOn = U('es-ai', '') === '1';
+  const aiCard = !c.has('agents_mvp') ? `<div class="flex">${lockPill(c, 'agents_mvp', 'AI estimate from notes')}</div>` : aiOn ? h.aiCard({ agent: 'Estimating from notes (A6)', level: 'L2', credits: 8, title: '4 lines drafted from the site visit notes and photos', body: h.table([{ k: 0, label: 'Line' }, { k: 1, label: 'Qty', n: true }, { k: 2, label: 'Why' }, { k: 3, label: 'Confidence', fmt: v => h.pill(v, v === 'high' ? 'ok' : 'warn') }], [['Burning bush removal and stump grind', '1 ea', 'Voice note: "should come out"; listed invasive in Ohio', 'high'], ['Mulch, double-shred, 3 in', '15 cu yd', 'Beds 1,574 sq ft x 3 in / 324, from the design takeoff', 'high'], ['Clay amendment, 2 in compost', '9.7 cu yd', 'Checklist: heavy clay x1.20', 'medium'], ['Downspout extension to rain garden', '1 ea', 'Photo 4 shows downspout into bed; not in scope notes', 'low']], { dense: true }), why: 'The model never invents a price. Mapping to your price book by similarity; prices come from the engine. Accept or edit each line.', actions: h.btn('Accept 3 high and medium', { sm: true, kind: 'ai', act: 'es-acc' }) + h.btn('Discard', { sm: true, ui: 'es-ai', val: '' }) }) : `<div class="aic"><div class="ah">${icon('spark')}<span>Estimating from notes (A6)</span><span class="lv">L2</span><span class="cr">8 cr</span></div><div class="small">Paste site notes, a voice memo transcript or photos; Iris maps them to your price book and kits.</div><div class="flex">${edit ? h.btn('Draft lines (8 cr)', { sm: true, kind: 'ai', ui: 'es-ai', val: '1' }) : ''}<span class="tiny t2">${creditLine(c, 8)}</span></div></div>`;
+  const copilot = sCost || c.role === 'ops_manager' ? h.aiCard({ agent: 'Copilot', level: 'L1', credits: 1, title: `Similar ${m.cat === 'build' ? 'patio and planting' : 'jobs'} averaged ${Math.round(T.mh * 1.12)} labor hours`, body: 'Plant install hours here may be low (3.2 plants per man-hour vs 2.8 on your last 5 similar jobs).', why: 'Advisory only. Sources: 5 completed jobs with job-cost actuals.', actions: edit ? h.btn('Show 5 similar jobs', { sm: true, act: 'es-act', val: 'Similar jobs panel' }) + h.btn('Apply +12% to planting', { sm: true, kind: 'ai', act: 'es-act', val: 'Planting hours +12% applied' }) : '' }) : '';
+  const approval = c.role === 'owner' ? (e.status === 'In review' || e.status === 'Draft' ? h.btn('Approve', { kind: 'primary', act: 'es-act', val: `${e.id} approved` }) : '') : over || belowFloor ? h.btn(`Request approval${over ? ' (over ' + money(lim) + ')' : ''}`, { kind: 'primary', act: 'es-act', val: `Approval requested from ${c.owner}` }) : '';
+  const head = h.page({ crumbs: [['Sales', 'web.pipeline'], ['Estimates', 'web.estimates'], [esc(e.id)]], title: `${esc(e.id)} ${esc(e.client)}: ${esc(e.title)}`, sub: `Client: ${esc(e.client)} · by ${esc(e.by)} · ${esc(e.date)}${linked ? ` · Source: ${h.link(esc(ds.id) + ' v3', 'web.studio', ds.id)} (takeoff linked)` : ''}`, tags: `${stPill(e.status)}${!edit ? h.pill('View only', '') : ''}${over && c.role !== 'owner' && lim ? h.pill(`Over your ${money(lim)} limit`, 'warn') : ''}${belowFloor && (sMar || c.role === 'ops_manager') ? h.pill('Below net floor', 'warn') : ''}${a && a.state === 'limit' ? h.pill('Limit: ' + esc(a.limit), 'info') : ''}`, actions: (prop && c.allowed('proposal.send') ? h.btn('Preview proposal', { icon: 'eye', go: 'web.proposal', x: prop.id }) : '') + approval });
+  const banner = linked ? h.banner(`${icon('refresh')} Takeoff changed in ${esc(ds.id)}: Bed B +45 sq ft (+0.42 cu yd mulch); 2 roses replaced by 2 fragrant sumac. ${edit ? '<button type="button" class="btn sm" data-act="es-act" data-val="Takeoff diff accepted">Accept all</button> <button type="button" class="btn sm ghost" data-act="es-act" data-val="Diff review opened">Review</button>' : ''}`, 'info') : '';
+  const optTabs = h.tabs('es-opt', [['good', `Good ${sPrice ? '· ' + kmoney(m.T.good.price) : ''}`], ['better', `Better (recommended) ${sPrice ? '· ' + kmoney(m.T.better.price) : ''}`], ['best', `Best ${sPrice ? '· ' + kmoney(m.T.best.price) : ''}`]], 'better');
+  const roleNote = c.role === 'designer' ? h.note('Designer view: prices, no cost or margin (cost and margin field classes are hidden by default, 02 §10.2).') : c.role === 'ops_manager' ? h.note('Operations: costs visible, margin shown as an indicator only.') : c.role === 'estimator' && !m.own ? h.note(`Not your estimate: read only, and cost and margin are visible on your own estimates only (estimate RWD/o + R/b).`) : c.role === 'office_manager' ? h.note('Office manager: cost visible, margin hidden by Company setting.') : '';
+  return head + banner + roleNote + grid('minmax(0,1fr) 270px', [`<div class="stack12">${optTabs}${h.card({ flush: true, body: tbl })}${edit ? `<div class="flex"><span class="inp" style="max-width:380px;color:var(--text-3)">${icon('search', 's')} Add item: type to search the price book, or /kit</span>${h.btn('Add kit', { sm: true, icon: 'layers', act: 'es-act', val: 'Kit picker' })}${h.btn('Difficulty x1.32', { sm: true, act: 'es-act', val: 'Access gate x1.10, clay x1.20 (combined 1.32)' })}</div>` : ''}${kit}${aiCard}${copilot}</div>`, `<div class="stack12">${summary}${ohCmp}</div>`]);
+});
+RL.act('es-acc', () => { RL.ui['es-ai'] = ''; RL.toast('3 AI lines accepted into Better; 1 low-confidence line left for you to verify.'); });
+RL.act('es-act', (el) => { RL.toast(esc(el.dataset.val) + ' (mock)'); return false; });
+
+// ---------- Proposals (03 §4.7, 21 §18.6) ----------
+const TIER_NAMES = { build: ['Refresh', 'Outdoor room', 'Showcase'], plant: ['Refresh', 'Four-season', 'Showcase'], maint: ['Mow only', 'Mow + programs', 'Full care'], enh: ['Basic', 'Standard', 'Premium'], irr: ['Service', 'Service + test', 'Smart upgrade'], snow: ['Push only', 'Push + salt', 'Full winter'], light: ['Path', 'Path + trees', 'Designed night'], lawn: ['5-step', '5-step + grub', 'Full lawn care'], fee: ['Concept', 'Concept + plan', 'Full design'] };
+const sigOf = p => p.status === 'Signed' ? h.pill('Signed', 'ok') : p.status === 'Declined' ? h.pill('Declined', 'danger') : p.status === 'Draft' ? '<span class="t3 small">Not sent</span>' : h.pill('Awaiting', 'warn');
+RL.screen('web.proposals', (c) => {
+  const D = c.D, ps = D.proposals;
+  const out = ps.filter(p => ['Sent', 'Viewed'].includes(p.status));
+  const sent = c.role === 'estimator' ? ps.filter(p => { const e = D.estimates.find(x => x.id === p.estimate); return e && e.by === c.who; }) : ps;
+  return h.page({ title: 'Proposals', sub: 'View tracking, e-signature and deposits on your own Stripe account', actions: c.allowed('proposal.send') ? h.btn('New proposal', { kind: 'primary', icon: 'plus', go: 'web.proposal' }) : '' })
+    + h.kpis([{ label: 'Out with clients', value: out.length, delta: h.mask(c, 'price', kmoney(sum(out, p => p.value))) }, { label: 'Viewed 3+ times, unsigned', value: out.filter(p => /3 views/.test(p.viewed)).length, tone: 'warn', delta: 'Nudge drafted' }, { label: 'Signed this month', value: ps.filter(p => p.status === 'Signed').length, tone: 'ok', delta: h.mask(c, 'price', kmoney(sum(ps.filter(p => p.status === 'Signed'), p => p.value))) }, { label: 'Deposits collected', value: h.mask(c, 'price', kmoney(sum(ps.filter(p => p.status === 'Signed'), p => p.deposit))), delta: 'Held as customer deposits', tone: 'info' }])
+    + h.card({ flush: true, body: h.table([
+      { k: 'id', label: 'Proposal', m: true },
+      { k: 'client', label: 'Client and title', fmt: (v, p) => `<div class="b small">${esc(v)}</div><div class="tiny t3">${esc(p.title)}</div>` },
+      { k: 'options', label: 'Options', fmt: v => v === 3 ? 'Good / better / best' : v === 2 ? '2 options' : 'Single' },
+      { k: 'value', label: 'Value', n: true, fmt: v => h.mask(c, 'price', money(v)) },
+      { k: 'status', label: 'Status', fmt: s => stPill(s) },
+      { k: 'viewed', label: 'Views', fmt: (v, p) => p.status === 'Draft' ? '<span class="t3 small">-</span>' : `<span class="small">${icon('eye', 's')} ${esc(v)}</span>` },
+      { k: 'sig', label: 'E-sign', fmt: (v, p) => sigOf(p) },
+      { k: 'deposit', label: 'Deposit 30%', n: true, fmt: (v, p) => `${h.mask(c, 'price', money(v))}<div class="tiny t3">${p.status === 'Signed' ? 'Paid by ACH' : p.status === 'Declined' ? '-' : 'Due at signing'}</div>` },
+    ], sent, { go: 'web.proposal' }) });
+});
+RL.screen('web.proposal', (c) => {
+  const D = c.D, p = D.proposals.find(x => x.id === c.x) || D.proposals[0];
+  const e0 = D.estimates.find(x => x.id === p.estimate) || D.estimates[0], m = estModel(c, e0);
+  const names = TIER_NAMES[m.cat] || TIER_NAMES.build;
+  const tiers = [['good', names[0], m.T.good], ['better', names[1], m.T.better], ['best', names[2], m.T.best]];
+  const view = U('pp-view', 'edit'), pick = U('pp-tier', 'better'), chosen = m.T[pick];
+  const lim = limitFor(c), needs = p.value > lim || m.netAct < 10;
+  const canApprove = c.allowed('proposal.approve_internal') && (c.role === 'owner' || p.value <= lim);
+  const approved = RL.ui['pp-ok-' + p.id] === '1';
+  const dep = Math.round(chosen.price * .3);
+  const coName = c.t.name;
+  const plantsList = [['Little Lime Hydrangea', 5], ['Little Bluestem', 24], ['Serviceberry', 3], ["Walker's Low Catmint", 9], ['Prairie Dropseed', 15], ['Fragrant Sumac', 9]].map(([n, q]) => ({ p: PL(n), q }));
+  const head = h.page({ crumbs: [['Sales', 'web.pipeline'], ['Proposals', 'web.proposals'], [esc(p.id)]], title: `${esc(p.id)} ${esc(p.title)}`, sub: `${esc(p.client)} · from ${h.link(esc(m.e.id), 'web.estimate', m.e.id)} · valid until ${c.winter ? 'Feb 12, 2027' : 'Jun 10, 2027'} · ${esc(p.viewed)}`, tags: `${stPill(p.status)}${needs && !approved && c.role !== 'owner' ? h.pill('Needs internal approval', 'warn') : approved ? h.pill('Approved internally', 'ok') : ''}`, actions: seg('pp-view', [['edit', 'Edit'], ['client', 'Client preview']], 'edit') + (p.status === 'Draft' || p.status === 'Viewed' || p.status === 'Sent' ? (needs && !approved ? (canApprove ? h.btn('Approve and send', { kind: 'primary', act: 'pp-ok', val: p.id }) : h.btn(`Request approval from ${esc(first(c.owner))}`, { kind: 'primary', act: 'pp-req' })) : h.btn(p.status === 'Draft' ? 'Send proposal' : 'Resend', { kind: 'primary', icon: 'send', act: 'pp-send' })) : '') });
+  const approvalNote = needs && !approved ? h.banner(`${icon('approve')} ${p.value > lim && lim ? `${money(p.value)} is over the ${money(lim)} limit for ${esc(c.roleObj.name.toLowerCase())}` : m.netAct < 10 ? `Net margin is below the 10% floor` : 'Needs internal approval'}. ${canApprove ? 'You can approve it (proposal.approve_internal ' + esc(c.can('proposal.approve_internal')) + ').' : `It goes to "Pending internal approval" for ${esc(c.owner)} (02 §5.6).`}`, 'warn') : '';
+  const tierCard = ([k, n, T], client) => `<div class="cd${k === pick ? ' ok' : ''}" style="${k === pick ? 'border-width:2px' : ''}"><div class="cd-b">${h.photo(k === 'good' ? 'after' : k === 'best' ? 'night' : 'mockup', { badge: 'AI artist rendering', label: n + ' concept' })}<div class="flex between nw"><b>${esc(n)}</b>${k === 'better' ? h.pill('Recommended', 'accent') : ''}</div><div style="font-size:1.25rem;font-weight:750" class="num">${h.mask(c, 'price', money(T.price))}</div><div class="tiny t2">${T.lines.length} scope lines · ${k === 'good' ? '90-day warranty' : k === 'better' ? '1-year plant warranty' : '2-year warranty, lighting'}</div>${client ? h.btn(k === pick ? 'Selected' : 'Select', { sm: true, kind: k === pick ? 'primary' : '', ui: 'pp-tier', val: k }) : `<div class="flex">${h.btn(k === pick ? 'Default' : 'Make default', { sm: true, ui: 'pp-tier', val: k })}${h.btn('Swap mockup', { sm: true, kind: 'ai', go: 'web.mockups' })}</div>`}</div></div>`;
+  const cmp = h.table([{ k: 0, label: 'Included' }, { k: 1, label: names[0] }, { k: 2, label: names[1] }, { k: 3, label: names[2] }], m.lines.map(l => [esc(l.name), l.tier === 'g' ? icon('check') : '-', l.tier !== 'x' ? icon('check') : '-', icon('check')]).slice(0, 8), { dense: true });
+  const terms = h.kv([['Deposit', `30% (${h.mask(c, 'price', money(dep))}) required to sign · card or ACH`], ['Schedule', '30% deposit, 40% at hardscape complete, 30% at final walkthrough'], ['Warranty', '1-year plant warranty with watering conditions'], ['Changes', 'Change orders in writing, priced by the same engine'], ['Jurisdiction pack', `${esc(c.t.city.split(', ')[1] || 'OH')} home-improvement terms ${h.tag('V1')}`]]);
+  if (view === 'client') {
+    return head + `<div class="cd" style="max-width:820px;margin:0 auto;overflow:hidden"><div class="flex between" style="padding:10px 14px;border-bottom:1px solid var(--border)"><span class="flex"><span class="logo" style="width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.72rem;background:${esc(c.t.brand.color)}">${esc(c.t.brand.logo)}</span><b>${esc(coName)}</b></span><span class="small t2">Questions? ${h.btn('Message', { sm: true, act: 'pp-noop' })}</span></div>
+      <div style="padding:14px" class="stack12">${h.photo('mockup', { badge: 'AI artist rendering', label: 'Hero concept' })}<div><h2 style="font-family:var(--font-display);font-size:1.3rem">${esc(p.title)} for ${esc(p.client)}</h2><div class="small t2">Prepared by ${esc(m.e.by)} · valid until ${c.winter ? 'Feb 12, 2027' : 'Jun 10, 2027'}</div></div>
+      <b>Choose your option</b>${grid('repeat(3,minmax(0,1fr))', tiers.map(t => tierCard(t, true)), 10)}
+      ${grid('minmax(0,1.2fr) minmax(0,1fr)', [`<div>${studioSvg(c, { mini: true, label: 'Your design, to scale' })}</div>`, `<div class="small"><b>Plants in this design</b>${plantsList.map(x => `<div class="flex between nw"><span>${x.q} ${esc(x.p.common)}</span>${NATIVE.test(x.p.common) ? h.pill('native', 'ok') : ''}</div>`).join('')}</div>`])}
+      ${h.note('This image is an AI-assisted artist rendering based on your photo and our design. Plants are shown at about 3 years of growth. The written plan and plant list are what we will install.')}
+      <div class="flex between" style="background:var(--surface-2);border-radius:10px;padding:10px 12px"><div><div class="small">Total <b class="num">${h.mask(c, 'price', money(chosen.price))}</b></div><div class="small">Deposit due today (30%): <b class="num">${h.mask(c, 'price', money(dep))}</b></div></div><span class="flex">${h.btn('Approve and sign', { kind: 'primary', disabled: true, title: 'Preview only' })}${h.btn('Ask a question', { disabled: true })}${h.btn('Download PDF', { disabled: true })}</span></div>
+      <div class="tiny t3">Payments are processed securely by Stripe for ${esc(coName)}. Signing records your name, time and device (ESIGN / UETA).</div></div></div>`;
+  }
+  const blocks = [['Cover', 'Hero mockup, title, valid until'], ['Personal letter', 'AI draft available'], ['About us', 'License, insurance, 4 reviews'], ['Current conditions', '6 annotated photos'], ['Options', 'Good / better / best'], ['Design plan', 'Static image (interactive V1)'], ['Mockups', '3 concepts, labeled'], ['Scope and plant list', '86 plants'], ['Terms and warranty', 'Ohio pack'], ['Deposit and schedule', '30% to sign'], ['Signature', 'E-sign, all signers']];
+  return head + approvalNote + grid('190px minmax(0,1fr) 250px', [
+    h.card({ title: 'Blocks', sub: 'Drag to reorder', flush: true, body: `<div class="li">${blocks.map(([b, s], i) => `<div class="li-i" style="grid-template-columns:16px minmax(0,1fr);padding:6px 10px"><span class="t3">${icon('menu', 's')}</span><div><div class="tt small">${esc(b)}${b === 'Design plan' ? ' ' + h.tag('V1') : ''}</div><div class="ss">${esc(s)}</div></div></div>`).join('')}</div>` }),
+    `<div class="stack12">${h.card({ title: 'Options', sub: 'Tier prices come from the estimate option sections, never typed', body: grid('repeat(3,minmax(0,1fr))', tiers.map(t => tierCard(t, false)), 8) + cmp })}
+     ${h.card({ title: 'Personal letter', body: `<div class="small" style="line-height:1.5">Hi ${esc(first(p.client))}, thank you for walking the yard with us. The Outdoor room option gives you the 16 x 20 ft patio off the kitchen door, a seat wall around the fire pit and a deer-resistant border of native shrubs and grasses chosen for ${esc(c.t.region)}.</div>${c.has('agents_mvp') || c.has('copilot') ? `<div class="flex">${h.btn('Redraft with Copilot (1 cr)', { sm: true, kind: 'ai', act: 'pp-noop' })}</div>` : ''}` })}
+     ${h.card({ title: 'Terms, deposit and payment', body: terms + h.note(`Deposits are direct charges on ${esc(coName)}'s own connected Stripe account, held as a customer deposit liability until applied (03 PROP-07, 08).`) })}</div>`,
+    `<div class="stack12">${h.card({ title: 'Settings', body: h.kv([['Template', 'Design-build residential'], ['Pricing display', 'Totals per option'], ['Default option', esc(names[['good', 'better', 'best'].indexOf(pick)])], ['Deposit', '30%, required to sign'], ['Methods', 'Card, ACH (default over $5,000)'], ['Signers', p.client.includes(' and ') ? 'Both owners' : 'Primary contact']]) })}
+     ${h.card({ title: 'Analytics', body: p.status === 'Draft' ? h.empty('Not sent yet.') : h.timeline([{ when: '2 h ago', text: `Viewed on iPhone · 4 min on Options`, tone: 'ok' }, { when: 'Yesterday 8:41 pm', text: 'Viewed · zoomed the plan', tone: 'ok' }, { when: 'May 8', text: 'Sent by email and SMS', tone: 'info' }]) })}
+     ${h.card({ title: 'Approval', body: `${row('Your limit', lim === Infinity ? 'Unlimited' : lim ? money(lim) : 'None')}${row('This proposal', h.mask(c, 'price', money(p.value)))}${row('Net margin', seesOwn(c, 'margin', m.own) ? pct1(m.netAct) : marginCell(c, m.gm, m.netAct, m.own))}${approved ? h.pill('Approved by you', 'ok') : needs ? h.pill(canApprove ? 'You can approve' : 'Routes to ' + esc(c.owner), 'warn') : h.pill('Within limits', 'ok')}` })}</div>`]);
+});
+RL.act('pp-ok', (el) => { RL.ui['pp-ok-' + el.dataset.val] = '1'; RL.toast('Approved internally and sent to the client (mock).'); });
+RL.act('pp-req', (el, ev, c) => { RL.toast(`Approval request sent to ${esc(c.owner)}: one-tap approve from the Daily Owner Briefing.`); return false; });
+RL.act('pp-send', () => { RL.toast('Proposal sent by email and SMS (mock). View tracking is on.'); return false; });
+RL.act('pp-noop', () => { RL.toast('Mock action'); return false; });
+
+// ---------- Renewals (03 §4.10 REN-03) ----------
+RL.screen('web.renewals', (c) => {
+  const D = c.D, W = c.winter;
+  const rows = D.agreements.map((a, i) => {
+    const s = hsh(a.id), actNet = [3.8, 14.2, 9.1, -2.4, 17.5, 11.0, 6.2, 15.8][i % 8], hrs = [121.6, 98, 104, 131, 92, 101, 112, 96][i % 8];
+    const fixed = /5%/.test(a.escalator) ? 5 : 4, cpi = 3, mt = Math.min(12, Math.max(0, 100 * ((1 - actNet / 100) / 0.85 - 1)));
+    const rec = actNet < 0 ? 'Re-scope or let go' : mt > 8 ? `Renew at +${mt.toFixed(1)}% (margin target)` : actNet > 14 ? `Renew at +${cpi}% (CPI)` : `Renew at +${fixed}% (fixed)`;
+    const pctUp = actNet < 0 ? 12 : mt > 8 ? mt : actNet > 14 ? cpi : fixed;
+    return { a, actNet, hrs, fixed, cpi, mt, rec, pctUp, days: 12 + s % 40, comp: s % 4 === 0 ? 2 : s % 5 === 0 ? 1 : 0, health: actNet < 0 ? 41 : actNet < 8 ? 68 : 86 };
+  });
+  const canAgents = c.has('agents_v1');
+  const sel = rows.filter(r => U('rn-' + r.a.id, '') === true || U('rn-' + r.a.id, '') === '1');
+  return h.page({ title: 'Renewals', sub: `${rows.length} agreements renewing · priced on last season's actual job cost`, tags: h.tag('V1') + (W ? h.pill('Renewal season: notices go out 30-60 days before term end', 'accent') : ''), actions: `${h.btn(`Apply recommended (${sel.length || 'all'})`, { kind: 'primary', act: 'rn-apply' })}${h.btn('Send renewal proposals', { act: 'rn-send' })}` })
+    + h.kpis([{ label: 'Up for renewal', value: rows.length, delta: kmoney(sum(rows, r => r.a.value)) }, { label: 'Proposed value', value: h.mask(c, 'price', kmoney(sum(rows, r => r.a.value * (1 + r.pctUp / 100)))), tone: 'ok', delta: `+${pct1(100 * (sum(rows, r => r.a.value * (1 + r.pctUp / 100)) / sum(rows, r => r.a.value) - 1))} blended` }, { label: 'Over 8%: owner approval', value: rows.filter(r => r.pctUp > 8).length, tone: 'warn' }, { label: 'Below break-even last season', value: rows.filter(r => r.actNet < 0).length, tone: 'danger' }])
+    + (canAgents ? h.aiCard({ agent: 'Renewal agent (A13)', level: 'L2', credits: 2, title: `${rows.filter(r => r.pctUp > 8).length} renewals need a bigger increase or a scope cut`, body: `${esc(rows.find(r => r.actNet < 0) ? rows.find(r => r.actNet < 0).a.client : rows[0].a.client)} ran ${Math.round((rows.find(r => r.actNet < 0) || rows[0]).hrs - 100)}% over budgeted hours; restoring the 15% net target needs about +13%. Upsell suggestions added: aeration last done 3 years ago on 4 properties.`, why: 'Drafts only. Contract language is checked for an escalator clause; without one the renewal becomes a new proposal needing signature.' }) : `<div class="flex">${lockPill(c, 'agents_v1', 'Renewal agent A13')}</div>`)
+    + h.card({ flush: true, body: h.table([
+      { k: 'sel', label: '', fmt: (v, r) => `<input type="checkbox" aria-label="Select ${esc(r.a.client)}" data-ui-input="rn-${esc(r.a.id)}"${U('rn-' + r.a.id, '') === '1' || U('rn-' + r.a.id, '') === true ? ' checked' : ''} value="1">` },
+      { k: 'a', label: 'Agreement', fmt: (a) => `<div class="b small">${esc(a.client)}</div><div class="tiny t3">${esc(a.id)} · ${esc(a.name)} · renews ${esc(a.renews)}</div>` },
+      { k: 'a', label: 'Current', n: true, fmt: a => h.mask(c, 'price', money(a.value)) },
+      { k: 'fixed', label: 'Fixed', n: true, fmt: v => '+' + v + '%' },
+      { k: 'cpi', label: 'CPI', n: true, fmt: () => '+3% <span class="tiny t3">(2.9%, floor 3)</span>' },
+      { k: 'mt', label: 'Margin target', n: true, fmt: v => v < 0.5 ? 'Hold' : '+' + v.toFixed(1) + '%' },
+      { k: 'hrs', label: 'Hours vs budget', n: true, fmt: v => `<span style="color:${v > 110 ? 'var(--danger-text)' : 'inherit'}">${Math.round(v)}%</span>` },
+      { k: 'actNet', label: 'Actual net', n: true, fmt: v => h.mask(c, 'margin', `<span style="color:${v < 0 ? 'var(--danger-text)' : v < 10 ? 'var(--warn-text)' : 'var(--ok-text)'}">${pct1(v)}</span>`) },
+      { k: 'days', label: 'AR days', n: true },
+      { k: 'health', label: 'Health', n: true, fmt: v => h.pill(String(v), v < 50 ? 'danger' : v < 75 ? 'warn' : 'ok') },
+      { k: 'rec', label: 'Recommended', fmt: (v, r) => `<span class="small">${esc(v)}</span>${r.pctUp > 8 ? `<div>${c.role === 'owner' ? doneOr('rn-ok' + r.a.id, actBtn('Approve', 'rn-ok' + r.a.id, '', 'Increase approved'), 'Approved') : h.pill('Owner approval', 'warn')}</div>` : ''}` },
+    ], rows, { dense: true }) })
+    + h.note('Escalators never lower a price unless you choose it; increases over 8% need owner approval; auto-renewal notices follow the jurisdiction rule table (03 REN-02, REN-04).');
+});
+RL.act('rn-apply', () => { RL.toast('Recommended escalators applied to the selected agreements (mock). Over-8% rows wait for the owner.'); return false; });
+RL.act('rn-send', () => { RL.toast('Renewal proposals queued: commercial by signature, residential by notice with opt-out.'); return false; });
+
+// ---------- Change orders (03 §4.9) ----------
+function coList(c) {
+  const D = c.D, j = D.jobs;
+  const lead = D.crews[0] ? D.crews[0].lead : c.owner;
+  return [
+    { id: 'CO-001', job: j[0].id, client: j[0].client, title: 'Hit buried concrete footing at 4 in, about 20 sq ft', type: 'Unforeseen condition', origin: `Field: ${lead}`, delta: 1240, state: 'Pending client', sig: 'Verbal OK 9:12 am, sign within 48 h', verbal: true },
+    { id: 'CO-002', job: j[0].id, client: j[0].client, title: 'Enlarge patio from 16 x 20 to 18 x 20 ft', type: 'Add', origin: 'Client request (portal)', delta: 1010, state: 'Approved', sig: 'E-signed May 9' },
+    { id: 'CO-003', job: j[1].id, client: j[1].client, title: 'Drop second serviceberry', type: 'Deduct', origin: `Designer revision`, delta: -485, state: 'Applied', sig: 'E-signed May 6' },
+    { id: 'CO-004', job: j[2].id, client: j[2].client, title: 'Drainage fix behind wall, T&M not-to-exceed', type: 'T&M NTE', origin: 'Office', delta: 2800, state: 'Draft', sig: '-' },
+    { id: 'CO-005', job: j[3].id, client: j[3].client, title: 'Add 6 path lights', type: 'Add', origin: 'Value engineering', delta: 2520, state: 'Rejected', sig: 'Declined May 2' },
+  ];
+}
+RL.screen('web.change_orders', (c) => {
+  const D = c.D, list = coList(c), sel = list.find(x => x.id === U('co-sel', '')) || list[0];
+  const job = D.jobs.find(j => j.id === sel.job) || D.jobs[0];
+  const appr = sum(list.filter(x => x.job === job.id && /Approved|Applied/.test(x.state)), x => x.delta), pend = sum(list.filter(x => x.job === job.id && /Pending|Draft/.test(x.state)), x => x.delta);
+  const crew = c.role === 'crew_lead';
+  return h.page({ title: 'Change orders', sub: 'Office and field change orders with signature and price delta', tags: h.tag('V1'), actions: /W/.test(c.can('change_order')) ? h.btn(crew ? 'Draft change order (no price)' : 'New change order', { kind: 'primary', icon: 'plus', act: 'co-act', val: 'Change order draft created' }) : '' })
+    + grid('minmax(0,1.3fr) minmax(0,1fr)', [h.card({ flush: true, body: `<div class="li">${list.map(x => `<div class="li-i go" role="button" tabindex="0" data-ui="co-sel" data-val="${x.id}" style="${x.id === sel.id ? 'background:var(--primary-soft)' : ''}"><span class="ico ${x.type === 'Unforeseen condition' ? 'warn' : x.delta < 0 ? 'info' : ''}">${icon('clipboard')}</span><div style="min-width:0"><div class="tt">${esc(x.id)} · ${esc(x.job)} ${esc(x.client)}</div><div class="ss">${esc(x.title)} · ${esc(x.type)}</div></div><div class="flex nw gap4"><span class="num small b">${h.mask(c, 'price', (x.delta >= 0 ? '+' : '') + money(x.delta))}</span>${stPill(x.state)}</div></div>`).join('')}</div>` }),
+      `<div class="stack12">${h.card({ title: `${esc(sel.id)} ${esc(sel.title)}`, sub: `${esc(sel.type)} · ${esc(sel.origin)}`, body: `${sel.type === 'Unforeseen condition' ? grid('1fr 1fr', [h.photo('before', { badge: 'Field photo 9:04 am' }), h.photo('patio', { badge: 'Marked area' })], 8) : ''}${h.kv([['Job', h.link(esc(job.id), 'web.job', job.id) + ' ' + esc(job.title)], ['Pricing', sel.type === 'T&M NTE' ? 'Labor and equipment at billing rates, cap ' + h.mask(c, 'price', money(sel.delta)) : 'Same engine: excavation in rock x1.35 + disposal'], ['Price delta', h.mask(c, 'price', (sel.delta >= 0 ? '+' : '') + money(sel.delta))], ['Schedule', sel.delta > 1000 ? '+1 day, scheduler notified' : 'No change'], ['Signature', esc(sel.sig)]])}${sel.verbal ? (c.has('change_orders_full') ? h.banner(`${icon('clock')} Verbal emergency approval recorded by ${esc(sel.origin.replace('Field: ', ''))}. Must be e-signed within 48 h or it escalates to operations.`, 'warn') : `<div class="flex">${lockPill(c, 'change_orders_full', 'Verbal emergency COs')}</div>`) : ''}`, actions: /X/.test(c.can('change_order')) && /Pending|Draft/.test(sel.state) ? h.btn('Send for signature', { sm: true, kind: 'primary', act: 'co-act', val: 'Sent to client portal for e-signature' }) : '' })}
+      ${h.card({ title: `Change-order log: ${esc(job.id)}`, body: `${row('Original contract', h.mask(c, 'price', money(job.value)))}${row('Approved change orders', h.mask(c, 'price', (appr >= 0 ? '+' : '') + money(appr)))}${row('Pending change orders', h.mask(c, 'price', (pend >= 0 ? '+' : '') + money(pend)))}${row('<b>Revised contract value</b>', h.mask(c, 'price', '<b>' + money(job.value + appr) + '</b>'))}${h.note('Approved changes update the job budget, the schedule and the next progress invoice.')}` })}</div>`]);
+});
+RL.act('co-act', (el) => { RL.toast(esc(el.dataset.val) + ' (mock)'); return false; });
+
+// ---------- Templates and kits (03 EST-10, EST-11, EST-14, PROP-01) ----------
+RL.screen('web.sales_templates', (c, a) => {
+  const tab = U('tp-tab', 'kits'), canW = /W/.test(c.can('price_book'));
+  const kits = [['Paver patio per sq ft', 'v3', 8, 17, 23], ['Mulch install', 'v4', 4, 3, 61], ['Seat wall per lin ft', 'v2', 5, 9, 7], ['Cleanup kit', 'v2', 4, 6, 44], ['Irrigation per zone', 'v2', 3, 5, 18], ['Lighting per fixture', 'v1', 4, 6, 9], ['Steel edging', 'v1', 2, 3, 31]];
+  const head = h.page({ title: 'Templates and kits', sub: 'Kits explode into estimate lines; clients see one line', actions: canW ? h.btn('New kit', { kind: 'primary', icon: 'plus', act: 'co-act', val: 'Kit builder' }) : h.pill('Read only (price_book ' + esc(c.can('price_book')) + ')') });
+  const lim = a && a.state === 'limit' ? `<div class="cd"><div class="cd-b">${h.meter('Price book items (Starter: 1 price book, 200 items)', 164, 200)}</div></div>` : '';
+  const tabs = h.tabs('tp-tab', [['kits', 'Kits', kits.length], ['qq', 'Quick Quote templates', QQT.length], ['est', 'Estimate templates', 5], ['prop', 'Proposal templates', 4]], 'kits');
+  let body = '';
+  if (tab === 'kits') body = grid('minmax(0,1fr) minmax(0,1.25fr)', [h.card({ flush: true, body: h.table([{ k: 0, label: 'Kit' }, { k: 1, label: 'Version' }, { k: 2, label: 'Inputs', n: true }, { k: 3, label: 'Components', n: true }, { k: 4, label: 'Used on', n: true }], kits, { dense: true }) }),
+    h.card({ title: 'Paver patio per sq ft v3', sub: 'Pinned on 23 estimates · new version shows a diff before upgrade', body: `${h.table([{ k: 0, label: 'Input' }, { k: 1, label: 'Type' }, { k: 2, label: 'Default' }], [['area_sqft', 'number > 0', 'required'], ['perimeter_lf', 'number', 'from design'], ['edge_against_structure_lf', 'number', '0'], ['base_depth_in', 'number 4-12', '6'], ['pattern', 'running bond, herringbone, basket weave', 'running bond'], ['paver_product', 'price book: Pavers', 'Dublin Cobble 60 mm'], ['access', 'difficulty', 'drive-up']], { dense: true })}
+      ${h.table([{ k: 0, label: 'Component' }, { k: 1, label: 'Formula', m: true }], [['Base gravel (t)', 'base_area * 0.5 / 27 * 1.15 * 1.4'], ['Bedding sand (t)', 'area / 12 / 27 * 1.10 * 1.35'], ['Pavers (sq ft)', 'area * if(pattern == herringbone, 1.10, 1.05)'], ['Edge restraint (pcs)', 'ceil((perimeter - house_edge) / 8)'], ['Lay pavers (mh)', '0.090 * area * pattern_mult']], { dense: true })}${canW ? '' : h.note('Read only for your role. The owner and office manager maintain kits.')}` })]);
+  if (tab === 'qq') body = h.card({ flush: true, body: h.table([{ k: 0, label: 'Service' }, { k: 1, label: 'Visible inputs (prefill)' }, { k: 2, label: 'Engine binding' }, { k: 3, label: 'Default tiers' }], QQT) }) + h.note('Quick Quote is a presentation mode of the same engine: at most 5 visible inputs, 3 condition taps and price nudges within +/-10% (03 EST-11).');
+  if (tab === 'est') body = h.card({ flush: true, body: h.table([{ k: 0, label: 'Template' }, { k: 1, label: 'Overhead method' }, { k: 2, label: 'Target' }, { k: 3, label: 'Rounding' }], [['Design-build residential', 'FLH $21.00/h', '12% net', 'Up to $5'], ['Enhancements', 'FLH', '18% net', 'Up to $5'], ['Maintenance agreement', 'FLH', '15% net', 'Up to $1'], ['Commercial bid', 'MORS', '10% net', 'Up to $25'], ['Snow per event', 'SORS 29.72%', '15% net', 'Up to $5']]) });
+  if (tab === 'prop') body = h.cols('2', [['Design-build residential', 'Cover, letter, options, plan, mockups, terms, deposit'], ['Compact (Quick Quote)', 'One page, SMS-friendly, e-sign + card on file'], ['Commercial bid', 'Scope by property, PO field, multi-signer'], ['Renewal', 'Old price, new price and the escalator used']].map(([n, s]) => h.card({ title: esc(n), sub: esc(s), body: h.photo('after', { label: n }) })));
+  return head + lim + tabs + body;
+});
+
+// ---------- Design Studio model (10 §4.3-4.15, 21 §18.7) ----------
+// Plan at 6 px per foot: viewBox 600 x 440 covers about 100 x 70 ft.
+const BEDS = [
+  { id: 'bedA', name: 'Bed A · foundation', d: 'M130,104 L250,104 L250,146 C214,166 166,170 130,156 Z', area: 214, perim: 71, sun: 'Part sun · 4.6 h', lx: 190, ly: 136 },
+  { id: 'bedC', name: 'Bed C · driveway side', d: 'M370,104 L446,104 L446,190 C414,184 388,164 370,140 Z', area: 180, perim: 62, sun: 'Full sun · 7.2 h', lx: 404, ly: 136 },
+  { id: 'bedB', name: 'Bed B · back border', d: 'M24,336 C140,312 260,330 330,322 C420,314 500,300 576,316 L576,404 L24,404 Z', area: 1180, perim: 96, sun: 'Full sun · 8 h', lx: 300, ly: 398 },
+];
+const GROUPS = [
+  { id: 'hyd', sp: 'Little Lime Hydrangea', bed: 'bedA', spread: 5, pts: [[150, 120], [184, 124], [218, 120]] },
+  { id: 'nep', sp: "Walker's Low Catmint", bed: 'bedA', spread: 3, pts: [[144, 146], [166, 152], [190, 154], [214, 150], [236, 138]] },
+  { id: 'bux', sp: 'Green Velvet Boxwood', bed: 'bedC', spread: 3, pts: [[388, 116], [410, 116], [432, 118]], fix: 'salt', to: 'Fragrant Sumac' },
+  { id: 'ros', sp: 'Knock Out Rose', bed: 'bedC', spread: 4, pts: [[404, 150], [428, 166]], fix: 'deer', to: "Walker's Low Catmint" },
+  { id: 'ame', sp: 'Serviceberry', bed: 'bedB', spread: 15, pts: [[80, 370], [300, 362], [512, 350]] },
+  { id: 'aro', sp: 'Black Chokeberry', bed: 'bedB', spread: 2.5, pts: [[128, 362], [150, 378], [446, 352], [468, 366], [490, 380]] },
+  { id: 'sch', sp: 'Little Bluestem', bed: 'bedB', spread: 2, pts: [[192, 352], [208, 364], [224, 352], [240, 366], [256, 352], [200, 382], [216, 394], [232, 382], [248, 394], [264, 380], [184, 368], [272, 364]] },
+  { id: 'ech', sp: 'Purple Coneflower', bed: 'bedB', spread: 2, pts: [[338, 352], [354, 366], [370, 352], [386, 366], [346, 384], [362, 396], [378, 384], [394, 396]] },
+  { id: 'spo', sp: 'Prairie Dropseed', bed: 'bedB', spread: 2.5, pts: [[410, 384], [426, 396], [442, 386], [458, 398], [522, 390], [538, 380], [554, 392], [536, 400]] },
+  { id: 'cup', sp: 'Leyland Cypress', bed: 'bedB', spread: 15, pts: [[552, 344]], fix: 'rgn', to: 'Serviceberry' },
+  { id: 'asa', sp: 'Wild Ginger', bed: 'turf', spread: 1, pts: [[62, 214], [74, 222], [86, 214], [98, 222], [110, 214], [68, 236], [80, 244], [92, 236], [104, 244], [116, 236], [86, 254], [100, 256]] },
+];
+const MATF = { install: 0.35, y1: 0.5, y5: 0.8, mature: 1 };
+const PCOL = { Shrub: ['#5f9952', '#2f6428'], Perennial: ['#b07cc6', '#6b4b88'], Grass: ['#d6c27a', '#8a7431'], Tree: ['#3f7d35', '#1c3c19'], Groundcover: ['#87b67a', '#3f7d35'] };
+const studioState = c => {
+  const fixed = k => U('st-fix-' + k, '') === '1';
+  const groups = GROUPS.map(g => { const sp = g.fix && fixed(g.fix) ? g.to : g.sp; return Object.assign({}, g, { sp, p: PL(sp) || PL(g.sp) }); });
+  return { groups, fixed, opt: U('st-opt', 'A'), mat: U('st-mat', 'y5'), sel: U('st-sel', 'bedB') };
+};
+function studioSvg(c, o) {
+  o = o || {};
+  const S = studioState(c), f = MATF[o.mat || S.mat] || 0.8, mini = o.mini;
+  const L = k => mini ? !['irr', 'dim', 'notes'].includes(k) : h.on('st-l-' + k, !['irr', 'notes'].includes(k));
+  const sel = mini ? '' : S.sel, optB = (o.opt || S.opt) === 'B';
+  const t = (x, y, s, sz, anchor, col) => `<text x="${x}" y="${y}" text-anchor="${anchor || 'middle'}" style="font:700 ${sz || 8}px var(--font-body);fill:${col || '#34302a'};paint-order:stroke;stroke:rgba(255,255,255,.75);stroke-width:2.5px">${esc(s)}</text>`;
+  let s = `<svg viewBox="0 0 600 440" role="img" aria-label="${esc(o.label || 'To-scale design plan')}" style="width:100%;height:auto;display:block;background:#eef3ea;border-radius:8px">`;
+  s += `<defs><pattern id="hb" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#d8cfbf"/><path d="M0 6 L6 0 M6 12 L12 6 M0 0 L12 12" stroke="#b3a68f" stroke-width="1"/></pattern><pattern id="fs" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#c9bba2"/><path d="M0 14 L16 10 L22 24 L8 30 Z M22 4 L38 8 L34 20 L24 22 Z M26 28 L40 30 L36 40 L20 38 Z" fill="none" stroke="#8f8575" stroke-width="1"/></pattern><pattern id="mu" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#8a6a4f"/><circle cx="2" cy="2" r=".8" fill="#6f533c"/><circle cx="5" cy="4" r=".7" fill="#a07e60"/></pattern></defs>`;
+  if (L('base')) s += `<rect x="0" y="0" width="600" height="440" fill="#dfe8d8"/><rect x="8" y="8" width="584" height="404" fill="#a9cf88"/>${Array.from({ length: 14 }, (_, i) => `<path d="M8,${30 + i * 28} L592,${22 + i * 28}" stroke="#9fc67d" stroke-width="5"/>`).join('')}`;
+  s += `<rect x="8" y="8" width="584" height="404" fill="none" stroke="#4b453b" stroke-dasharray="8 5" stroke-width="1.5"/>`;
+  if (L('existing')) {
+    s += `<rect x="130" y="10" width="300" height="94" fill="#e9e3d6" stroke="#776e60" stroke-width="1.5"/>${t(280, 56, 'House (existing)', 11)}<rect x="304" y="100" width="14" height="5" fill="#776e60"/>${mini ? '' : t(311, 98, 'Kitchen door', 7, 'middle', '#645c4f')}`;
+    s += `<rect x="452" y="8" width="96" height="196" fill="#cfc6b6" stroke="#a39a8a"/>${mini ? '' : `<text x="500" y="110" text-anchor="middle" transform="rotate(-90 500 110)" style="font:700 9px var(--font-body);fill:#645c4f">Driveway (salted in winter)</text>`}`;
+    s += `<circle cx="86" cy="232" r="56" fill="#3f7d35" opacity=".18" stroke="#2f6428" stroke-dasharray="4 4"/><circle cx="86" cy="232" r="4" fill="#4b453b"/>${mini ? '' : t(86, 292, 'Silver maple (existing)', 7)}`;
+    s += `<g><circle cx="38" cy="300" r="10" fill="#b42318" opacity=".75"/><path d="M31 293 L45 307 M45 293 L31 307" stroke="#fff" stroke-width="2"/></g>${mini ? '' : t(38, 322, 'Burning bush: remove', 7, 'start', '#8f1c13')}`;
+  }
+  if (L('hardscape')) {
+    s += `<rect x="250" y="104" width="120" height="96" fill="url(#${optB ? 'fs' : 'hb'})" stroke="${sel === 'patio' ? '#2f7fb5' : '#776e60'}" stroke-width="${sel === 'patio' ? 3 : 1.2}"${sel === 'patio' ? ' stroke-dasharray="6 3"' : ''}/>${t(310, 156, optB ? 'Flagstone patio 320 sq ft' : 'Paver patio 320 sq ft', 8)}${t(310, 166, optB ? 'irregular bluestone' : 'herringbone', 7, 'middle', '#645c4f')}`;
+    s += [[330, 220], [352, 236], [374, 250]].map(([x, y]) => `<rect x="${x - 6}" y="${y - 4}" width="12" height="8" rx="2" fill="#cfc6b6" stroke="#8f8575"/>`).join('');
+    s += `<circle cx="420" cy="262" r="21" fill="#645c4f" stroke="${sel === 'fire' ? '#2f7fb5' : '#4b453b'}" stroke-width="${sel === 'fire' ? 3 : 1}"/><circle cx="420" cy="262" r="12" fill="#b5562f" opacity=".7"/><path d="M382,248 A40,40 0 0 1 458,248" fill="none" stroke="#a39a8a" stroke-width="7"/>${t(420, 302, 'Fire pit + seat wall 18 ft', 7)}`;
+  }
+  if (L('beds')) BEDS.forEach(b => { s += `<path d="${b.d}" fill="url(#mu)" stroke="${sel === b.id ? '#2f7fb5' : '#4b453b'}" stroke-width="${sel === b.id ? 3 : 1.5}"${sel === b.id ? ' stroke-dasharray="6 3"' : ''}/>`; });
+  if (L('irr')) s += `<path d="M30,392 C150,370 300,384 570,372 M132,140 C170,150 210,150 246,138 M374,120 L440,120 M380,160 L440,172" fill="none" stroke="#2f7fb5" stroke-width="1.5" stroke-dasharray="4 3"/>${t(520, 366, 'Zone 7 drip', 7, 'middle', '#1b4f70')}`;
+  if (L('plants')) S.groups.forEach(g => {
+    const p = g.p || {}, col = PCOL[p.type] || PCOL.Shrub, r = Math.max(2.5, g.spread * 3 * f), hi = sel === g.id;
+    g.pts.forEach(([x, y]) => {
+      if (p.type === 'Tree') s += `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="${col[0]}" fill-opacity=".45" stroke="${hi ? '#2f7fb5' : col[1]}" stroke-width="${hi ? 2.5 : 1.2}" stroke-dasharray="5 3"/><circle cx="${x}" cy="${y}" r="2.5" fill="${col[1]}"/>`;
+      else if (p.type === 'Grass') s += `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="${col[0]}" stroke="${hi ? '#2f7fb5' : col[1]}" stroke-width="${hi ? 2 : .8}"/>${[0, 60, 120].map(a => `<path d="M${(x - r * Math.cos(a * Math.PI / 180)).toFixed(1)},${(y - r * Math.sin(a * Math.PI / 180)).toFixed(1)} L${(x + r * Math.cos(a * Math.PI / 180)).toFixed(1)},${(y + r * Math.sin(a * Math.PI / 180)).toFixed(1)}" stroke="${col[1]}" stroke-width=".7"/>`).join('')}`;
+      else s += `<circle cx="${x}" cy="${y}" r="${r.toFixed(1)}" fill="${col[0]}" stroke="${hi ? '#2f7fb5' : col[1]}" stroke-width="${hi ? 2 : 1}"/>${p.type === 'Shrub' && r > 5 ? `<path d="M${x - r * .5},${y} L${x + r * .5},${y} M${x},${y - r * .5} L${x},${y + r * .5}" stroke="${col[1]}" stroke-width=".8"/>` : ''}`;
+    });
+    if (!mini && p.common) { const [x, y] = g.pts[0]; s += t(x, y - Math.max(r, 6) - 3, `${g.pts.length} ${pcode(p)}`, 7); }
+  });
+  if (L('lighting')) s += [[256, 212], [300, 212], [344, 212], [378, 190], [378, 140], [334, 232], [388, 246], [452, 262], [80, 352], [300, 344]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.2" fill="#f2cb6b" stroke="#a87410"/>`).join('');
+  if (L('beds')) BEDS.forEach(b => { s += t(b.lx, b.ly, `${b.id === 'bedB' ? 'Bed B' : b.id === 'bedA' ? 'Bed A' : 'Bed C'} ${num(b.area)} sq ft`, 8, 'middle', '#fff').replace('fill:#fff;paint-order:stroke;stroke:rgba(255,255,255,.75)', 'fill:#fff;paint-order:stroke;stroke:rgba(52,48,42,.8)'); });
+  if (L('dim')) {
+    const dim = (x1, y1, x2, y2, label, vert) => `<g stroke="#246690" stroke-width="1"><path d="M${x1},${y1} L${x2},${y2}"/><path d="M${x1 - (vert ? 4 : 0)},${y1 - (vert ? 0 : 4)} L${x1 + (vert ? 4 : 0)},${y1 + (vert ? 0 : 4)} M${x2 - (vert ? 4 : 0)},${y2 - (vert ? 0 : 4)} L${x2 + (vert ? 4 : 0)},${y2 + (vert ? 0 : 4)}"/></g>` + (vert ? `<text x="${x1 - 5}" y="${(y1 + y2) / 2}" text-anchor="middle" transform="rotate(-90 ${x1 - 5} ${(y1 + y2) / 2})" style="font:700 8px var(--font-mono);fill:#1b4f70">${label}</text>` : t((x1 + x2) / 2, y1 - 4, label, 8, 'middle', '#1b4f70'));
+    s += dim(250, 224, 370, 224, `20'-0"`) + dim(242, 104, 242, 200, `16'-0"`, true) + dim(24, 418, 576, 418, `92'-0" back border`);
+  }
+  if (!mini && L('notes')) s += t(150, 190, 'Note: keep 3 ft clear for gas meter', 8, 'start', '#96441f');
+  if (!mini) {
+    const warn = (x, y, k) => S.fixed(k) ? '' : `<g><path d="M${x},${y - 8} L${x + 8},${y + 6} L${x - 8},${y + 6} Z" fill="#e8b03a" stroke="#6b4806"/><text x="${x}" y="${y + 4}" text-anchor="middle" style="font:800 9px var(--font-body);fill:#34302a">!</text></g>`;
+    s += warn(446, 98, 'salt') + warn(440, 168, 'deer') + warn(566, 324, 'rgn') + warn(234, 110, 'fnd');
+    s += `<g transform="translate(40,40)"><circle r="14" fill="#fff" stroke="#776e60"/><path d="M0,-10 L5,6 L0,2 L-5,6 Z" fill="#34302a"/><text y="-17" text-anchor="middle" style="font:800 9px var(--font-body);fill:#34302a">N</text></g>`;
+    s += `<g transform="translate(20,428)"><rect width="60" height="5" fill="#34302a"/><rect x="60" width="60" height="5" fill="#fff" stroke="#34302a"/><text x="0" y="-3" style="font:700 7px var(--font-mono);fill:#34302a">0</text><text x="60" y="-3" text-anchor="middle" style="font:700 7px var(--font-mono);fill:#34302a">10</text><text x="120" y="-3" text-anchor="middle" style="font:700 7px var(--font-mono);fill:#34302a">20 ft</text></g><text x="590" y="434" text-anchor="end" style="font:600 7px var(--font-mono);fill:#645c4f">1" = 10' · snap 1 ft · imagery Apr 2026</text>`;
+  }
+  return s + '</svg>';
+}
+function takeoff(c) {
+  const S = studioState(c), optB = S.opt === 'B';
+  const plants = {}; S.groups.forEach(g => { if (g.p) plants[g.p.common] = (plants[g.p.common] || 0) + g.pts.length; });
+  const rows = [[optB ? 'Flagstone patio, bluestone' : 'Paver patio, herringbone (kit)', 320, 'sq ft', optB ? 31.5 : 25.28], ['Seat wall', 18, 'lin ft', 165], ['Fire pit kit', 1, 'ea', 1850], ['Mulch, double-shred, 3 in', 15, 'cu yd', 115], ['Compost amendment, 2 in', 10, 'cu yd', 78], ['Steel edging', 229, 'lin ft', 9.5], ['Lighting fixtures + transformer', 10, 'ea', 485]]
+    .concat(Object.entries(plants).map(([n, q]) => { const p = PL(n); return [`${n} ${plantSize(p)}`, q, 'ea', plantPrice(p), p]; }))
+    .concat(U('st-fix-tko', '') === '1' ? [['Boulders and bench (mapped)', 3, 'ea', 260]] : []);
+  const price = sum(rows, r => r[1] * r[3]), cost = Math.round(price * 0.618);
+  return { rows, price, cost, gm: 100 * (price - cost) / price, plants: sum(Object.values(plants)), unpriced: U('st-fix-tko', '') === '1' ? 0 : 2 };
+}
+const VAL_RULES = [
+  { k: 'salt', id: 'VAL-SALT-01', sc: 'V1', sev: 'warning', t: 'Green Velvet Boxwood within 3 ft of the salted driveway: salt spray burn likely.', fix: "Swap to Fragrant Sumac 'Gro-Low' (salt-tolerant)" },
+  { k: 'deer', id: 'VAL-DEER-01', sc: 'V1', sev: 'warning', t: 'Knock Out Rose is browsed by deer; this property reports high deer pressure.', fix: "Swap to Walker's Low Catmint" },
+  { k: 'rgn', id: 'VAL-RGN-01', sc: 'MVP', sev: 'warning', t: 'Leyland Cypress is rated Not recommended in this Region (winter burn). Keeping it adds a client disclosure.', fix: 'Swap to Serviceberry (Top performer 5/5)' },
+  { k: 'inv', id: 'VAL-INV-01', sc: 'MVP', sev: 'info', t: 'Existing Burning Bush is listed invasive in the state. It is marked for removal.', fix: 'Add removal line to the estimate' },
+  { k: 'fnd', id: 'VAL-FND-01', sc: 'MVP', sev: 'warning', t: 'Little Lime Hydrangea is 2 ft from the foundation; it needs 3.5 ft at maturity.', fix: 'Nudge 18 in away from the wall' },
+  { k: 'tko', id: 'VAL-TKO-01', sc: 'MVP', sev: 'warning', t: '2 objects are not priced: boulders and a bench.', fix: 'Map to price book items' },
+];
+const canEditDesign = (c, d) => { const g = c.can('design'); if (/^RWD\/a/.test(g)) return true; if (/RWD\/o/.test(g) || /RW\/o/.test(g)) return d.designer === c.who; return false; };
+const pickDesign = c => c.D.designs.find(d => d.id === c.x) || c.D.designs[0];
+
+RL.screen('web.designs', (c) => {
+  const D = c.D, tab = U('dl-tab', 'all'), view = U('dl-view', 'table');
+  const st = ['Draft', 'In progress', 'Client review', 'Approved', 'As-built'];
+  const rows = D.designs.filter(d => tab === 'all' || d.status === tab);
+  const seats = c.plan.designer_seats;
+  const canNew = /W/.test(c.can('design'));
+  return h.page({ title: 'Designs', sub: `${D.designs.length} designs · ${esc(c.t.region)} palette · zone ${zoneOf(c)}`, actions: seg('dl-view', [['table', 'Table'], ['board', 'Board']], 'table') + (canNew ? h.btn('New design', { kind: 'primary', icon: 'plus', go: 'web.studio' }) : '') })
+    + h.kpis([{ label: 'In progress', value: D.designs.filter(d => d.status === 'In progress').length }, { label: 'Client review', value: D.designs.filter(d => d.status === 'Client review').length, tone: 'warn', delta: '2 comments waiting' }, { label: 'Approved, ready to estimate', value: D.designs.filter(d => d.status === 'Approved').length, tone: 'ok' }, { label: 'Mockups this month', value: sum(D.designs, d => d.mockups), tone: 'info', delta: `${sum(D.designs, d => d.mockups) * 10} credits` }, { label: 'Designer seats', value: seats == null ? 'Negotiated' : `1 of ${seats}`, delta: esc(c.plan.designer_note || '') }])
+    + h.tabs('dl-tab', [['all', 'All', D.designs.length]].concat(st.map(s => [s, s, D.designs.filter(d => d.status === s).length])), 'all')
+    + (view === 'board' ? h.board(st.map(s => ({ title: s, cards: D.designs.filter(d => d.status === s).map(d => ({ title: `${esc(d.id)} ${esc(d.title)}`, sub: `${esc(d.client)} · ${d.plants} plants`, meta: `${h.avatar(d.designer)}${d.mockups ? h.pill(d.mockups + ' mockups', 'ai') : ''}`, go: 'web.studio', x: d.id })) })))
+      : h.card({ flush: true, body: h.table([
+        { k: 'id', label: 'Design', m: true },
+        { k: 'title', label: 'Title and client', fmt: (v, d) => `<div class="b small">${esc(v)}</div><div class="tiny t3">${esc(d.client)} · ${esc(d.property)}</div>` },
+        { k: 'status', label: 'Status', fmt: s => stPill(s) },
+        { k: 'designer', label: 'Designer', fmt: v => `<span class="flex nw">${h.avatar(v)}<span class="small">${esc(v)}</span></span>` },
+        { k: 'options', label: 'Options', n: true },
+        { k: 'plants', label: 'Plants', n: true },
+        { k: 'area', label: 'Area', n: true, fmt: v => num(v) + ' sq ft' },
+        { k: 'mockups', label: 'Mockups', n: true },
+        { k: 'budget', label: 'Client budget', fmt: v => c.sees('price') ? esc(v) : h.mask(c, 'price', '') },
+        { k: 'updated', label: 'Updated' },
+      ], rows, { go: 'web.studio', empty: 'No designs in this status.' }) }));
+});
+
+RL.screen('web.studio', (c) => {
+  const D = c.D, d = pickDesign(c), S = studioState(c), tk = takeoff(c);
+  const edit = canEditDesign(c, d);
+  const tool = U('st-tool', 'select'), view = U('st-view', '2d'), btab = U('st-btab', 'val');
+  const sp = c.sees('price'), sc = c.sees('cost'), sm = c.sees('margin');
+  const open = VAL_RULES.filter(r => !S.fixed(r.k));
+  const warns = open.filter(r => r.sev === 'warning').length;
+  const budgetHi = +((d.budget.match(/\$(\d+)k-\$(\d+)k/) || [0, 0, 32])[2]) * 1000;
+  const overBudget = tk.price > budgetHi * 1.1;
+  const tools = [['select', 'cursor', 'Select (V)'], ['pan', 'grid', 'Pan (H)'], ['bed', 'leaf', 'Bed (B)'], ['hard', 'box', 'Hardscape (S)'], ['plant', 'sprout', 'Plant (P)'], ['fill', 'layers', 'Fill bed (F)'], ['irr', 'drop', 'Irrigation'], ['light', 'sun', 'Lighting'], ['measure', 'ruler', 'Measure (M)'], ['dim', 'arrow-r', 'Dimension (D)'], ['text', 'pen', 'Text (T)']];
+  const rail = `<div style="display:grid;gap:3px;align-content:start;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px">${tools.map(([k, ic, l]) => `<button type="button" class="icon-btn" title="${esc(l)}" aria-label="${esc(l)}" data-ui="st-tool" data-val="${k}" aria-pressed="${tool === k}"${!edit && !['select', 'pan', 'measure'].includes(k) ? ' disabled' : ''} style="${tool === k ? 'background:var(--primary-soft);color:var(--primary-soft-text);' : ''}${!edit && !['select', 'pan', 'measure'].includes(k) ? 'opacity:.35;' : ''}width:32px;height:30px;display:grid;place-items:center">${icon(ic)}</button>`).join('')}<button type="button" class="icon-btn" title="AI layout" aria-label="AI layout" data-ui="st-btab" data-val="ai" style="width:32px;height:30px;display:grid;place-items:center;color:var(--ai-text)">${icon('spark')}</button></div>`;
+  const toolHint = { select: 'Select: click an object; Shift-click to add to the selection. Marquee shows a selection subtotal.', pan: 'Pan: drag the canvas or hold Space.', bed: 'Bed: click to place vertices, double-click to close. Snap 1 ft is on.', hard: 'Hardscape: draw a polygon, then pick a material and pattern; kit inputs fill from geometry.', plant: 'Plant: pick from the Region palette; spacing guides show mature spread.', fill: 'Fill bed: fills the selected bed from the palette by role and sun class (10 §5.5).', irr: 'Irrigation: zones, heads and drip lines feed the irrigation kit.', light: 'Lighting: fixtures and wire runs; transformer load is checked.', measure: 'Measure: click two points. Cursor 41\'-3" E, 18\'-7" N.', dim: 'Dimension: click two points to place a dimension line.', text: 'Text: add a note to the plan sheet.' }[tool];
+  const canvas3d = view !== '2d' ? (c.has('design_3d') ? `<div class="stack8">${h.photo('patio', { badge: '3D view · sun study 3 pm, Jun 21', label: '3D view' })}<div class="flex between"><span class="tiny t2">Growth: Install · Year 1 · <b>Year 5</b> · Mature</span><span class="tiny t2">Season ${h.select(['Summer', 'Fall', 'Winter', 'Spring'], 'Summer', { label: 'Season' })}</span></div></div>` : h.lock(c, 'design_3d')) : '';
+  const canvas = view === '3d' ? canvas3d : view === 'split' ? grid('1fr 1fr', [studioSvg(c), canvas3d], 8) : studioSvg(c);
+  const selG = S.groups.find(g => g.id === S.sel), selB = BEDS.find(b => b.id === S.sel);
+  let insp = '';
+  if (selB) { const inBed = S.groups.filter(g => g.bed === selB.id); insp = h.kv([['Object', esc(selB.name)], ['Area', `${num(selB.area)} sq ft`], ['Perimeter', `${selB.perim} ft`], ['Sun', `${selB.sun} ${h.tag('V1')}`], ['Mulch', 'Double-shred hardwood'], ['Depth', '3 in'], ['Edging', 'Steel, 10 ft pcs'], ['Plants', `${sum(inBed, g => g.pts.length)} in ${inBed.length} groups`], ['Phase', 'Phase 1']]); }
+  else if (selG) { const p = selG.p; insp = `${h.kv([['Plant', `<b>${esc(p.common)}</b><div class="tiny t3"><i>${esc(p.botanical)}</i></div>`], ['Region', `${ratingPill(p)} <span class="tiny t3">${esc(c.t.region)} ${zoneOf(c)}</span>`], ['Size', `${plantSize(p)} · qty ${selG.pts.length}`], ['Mature', `${selG.spread} ft wide`], ['Spacing', `${Math.max(1, Math.round(selG.spread * .8))} ft on center`], ['Sun', esc(p.sun)], ['Deer', `${esc(p.deer)} resistance`], ['Zones', esc(p.zones)], sp ? ['Price', money(plantPrice(p)) + ' installed'] : null])}${edit ? h.btn('Swap from palette', { sm: true, act: 'st-swap' }) : ''}`; }
+  else if (S.sel === 'patio') insp = h.kv([['Object', S.opt === 'B' ? 'Flagstone patio' : 'Paver patio'], ['Area', '320 sq ft (16 x 20 ft)'], ['Pattern', S.opt === 'B' ? 'Irregular bluestone' : 'Herringbone (x1.15 labor)'], ['Base', '6 in compacted, geotextile'], ['Kit', S.opt === 'B' ? 'Flagstone on base v2' : 'Paver patio per sq ft v3'], sp ? ['Price', money(320 * (S.opt === 'B' ? 31.5 : 25.28))] : null]);
+  else if (S.sel === 'fire') insp = h.kv([['Object', 'Fire pit + seat wall'], ['Fire pit', '7 ft outside diameter, gas-ready'], ['Seat wall', '18 lin ft, 20 in high'], ['Clearance', `10 ft ring clear ${h.tag('V1')}`]]);
+  else insp = h.kv([['Object', 'Silver maple (existing)'], ['Canopy', '18 ft radius'], ['Note', 'Root zone: no hardscape inside the drip line']]);
+  const money3 = `<div class="flex between" style="background:var(--surface);border:1px solid ${overBudget ? 'var(--warn-solid)' : 'var(--border)'};border-radius:10px;padding:8px 12px;font-size:.84rem">${sp ? `<span>Price <b class="num">${money(tk.price)}</b></span>` : `<span class="t3">Prices hidden for your role</span>`}${sp ? `<span>Cost ${h.mask(c, 'cost', '<b class="num">' + money(tk.cost) + '</b>')}</span><span>GM ${h.mask(c, 'margin', '<b>' + pct1(tk.gm) + '</b> (target 40%)')}</span>` : ''}${sp ? `<span class="tiny ${overBudget ? '' : 't3'}" style="${overBudget ? 'color:var(--warn-text)' : ''}">Client budget ${esc(d.budget)}</span>` : ''}<span class="flex gap4">${h.pill('0 errors', 'ok')}${h.pill(warns + ' warnings', warns ? 'warn' : 'ok')}${tk.unpriced ? h.pill(tk.unpriced + ' unpriced', 'warn') : ''}</span></div>`;
+  const layerKeys = [['base', 'Base aerial'], ['existing', 'Existing'], ['hardscape', 'Hardscape'], ['beds', 'Beds'], ['plants', 'Plants'], ['irr', 'Irrigation'], ['lighting', 'Lighting'], ['dim', 'Dimensions'], ['notes', 'Notes']];
+  const objs = [['bedA', 'Bed A · foundation', 'leaf'], ['bedC', 'Bed C · driveway side', 'leaf'], ['bedB', 'Bed B · back border', 'leaf'], ['patio', S.opt === 'B' ? 'Flagstone patio' : 'Paver patio', 'box'], ['fire', 'Fire pit + seat wall', 'box'], ['maple', 'Silver maple (existing)', 'tree']].concat(S.groups.map(g => [g.id, `${g.pts.length} ${g.p.common}`, 'sprout']));
+  const bottom = btab === 'lay' ? `<div class="flex">${layerKeys.map(([k, l]) => h.toggle(l, 'st-l-' + k, !['irr', 'notes'].includes(k))).join('')}</div>`
+    : btab === 'obj' ? `<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px 10px">${objs.map(([k, l, ic]) => `<button type="button" class="mx-nav" data-ui="st-sel" data-val="${k}"${S.sel === k ? ' aria-current="page"' : ''} style="font-size:.78rem;padding:4px 8px">${icon(ic, 's')}<span>${esc(l)}</span></button>`).join('')}</div>`
+    : btab === 'com' ? h.list([{ av: D.res.primary, title: `${esc(D.res.primary)} <span class="tiny t3">client, on Bed C</span>`, sub: '"Could the patio be a bit bigger? And nothing the deer eat, please."', right: h.btn('Reply', { sm: true, act: 'st-act', val: 'Reply posted to the portal thread' }) }, { av: castOf(c, 'estimator'), title: `${esc(castOf(c, 'estimator'))} <span class="tiny t3">internal</span>`, sub: '"Keep the Better option under $30k if we can."' }])
+    : btab === 'ver' ? h.timeline([{ when: 'v3 · today 10:42 · autosaved', text: 'Bed B widened 45 sq ft; roses flagged', tone: 'ok' }, { when: 'v2 · May 6 · shared with client', text: 'Option B flagstone added', tone: 'info' }, { when: 'v1 · May 3', text: 'Base plan from aerial and site assessment', tone: '' }])
+    : btab === 'mock' ? grid('repeat(3,minmax(0,1fr))', [h.photo('mockup', { badge: 'AI artist rendering' }), h.photo('after', { badge: 'AI artist rendering' }), h.photo('night', { badge: 'AI artist rendering' })], 8)
+    : btab === 'ai' ? (c.has('ai_layouts') ? h.aiCard({ agent: 'AI layout', level: 'L1', credits: 60, title: 'Fill Bed B with deer-resistant natives, max 3 ft', body: 'Generates 3 to-scale options inside Bed B\'s real dimensions using the Region palette and your filters. You pick one; nothing is placed until you accept.', actions: edit ? h.btn('Generate 3 layouts (60 cr)', { sm: true, kind: 'ai', act: 'st-act', val: 'Generating 3 layouts (60 credits)' }) : '', why: creditLine(c, 60) }) : `<div class="flex">${lockPill(c, 'ai_layouts', 'AI layouts')}<span class="tiny t3">Dimension-aware AI layouts ${h.tag('V1')}. Plant suggestions for a bed (3 cr) are included.</span></div>`)
+    : `<div class="li">${VAL_RULES.map(r => { const done = S.fixed(r.k); return `<div class="li-i"><span class="ico ${done ? 'ok' : r.sev === 'warning' ? 'warn' : 'info'}">${icon(done ? 'check' : r.sev === 'warning' ? 'warn' : 'flag')}</span><div style="min-width:0"><div class="tt small">${esc(r.id)} ${h.tag(r.sc)} ${done ? '<span class="t3">resolved</span>' : ''}</div><div class="ss">${esc(r.t)}</div></div><div class="flex nw">${done ? '' : edit ? `<button type="button" class="btn sm" data-act="st-fix" data-val="${r.k}">${esc(r.fix)}</button>` : ''}${!done && edit ? h.btn('Override', { sm: true, act: 'st-act', val: 'Override needs a reason; it is stored and reported' }) : ''}</div></div>`; }).join('')}</div>`;
+  const btabs = h.tabs('st-btab', [['val', 'Validation', open.length], ['obj', 'Objects outline'], ['lay', 'Layers'], ['com', 'Comments', 2], ['ver', 'Versions', 3], ['mock', 'Mockups', 3], ['ai', 'AI layout']], 'val');
+  const head = h.page({ crumbs: [['Design', 'web.designs'], [esc(d.client), 'web.client', d.clientId], [esc(d.id)]], title: `${esc(d.id)} ${esc(d.title)} v3`, sub: `${esc(d.property)} · zone ${zoneOf(c)} · ${esc(c.t.region)} palette · autosaved 10:42 · ${avs([d.designer, castOf(c, 'estimator')])} live ${h.tag('V1')}`, tags: `${stPill(d.status)}${edit ? '' : h.pill('View only', '')}${c.role === 'crew_lead' ? h.pill('Plan sheets only', 'info') : ''}`, actions: `${seg('st-opt', [['A', 'Option A'], ['B', 'Option B']], 'A')}${h.btn('Share', { sm: true, icon: 'link', act: 'st-act', val: 'Share link for the portal' })}${h.btn('Present', { sm: true, icon: 'play', act: 'st-act', val: 'Presentation mode' })}${edit || c.role === 'designer' ? h.btn(c.role === 'designer' ? 'Hand off takeoff' : 'Push to estimate', { sm: true, kind: 'primary', act: 'st-act', val: 'Takeoff pushed; estimate lines stay linked' }) : ''}` });
+  const viewTabs = `<div class="flex between"><span class="flex">${seg('st-view', [['2d', '2D'], ['3d', '3D'], ['split', 'Split']], '2d')}${c.has('design_3d') ? h.pill(c.feat('design_3d').via ? '3D add-on' : '3D included on ' + esc(c.plan.name), 'ok') : lockPill(c, 'design_3d', '3D')}${h.tag('V1')}</span><span class="flex"><span class="tiny t3">Maturity</span>${seg('st-mat', [['install', 'Install'], ['y1', 'Yr 1'], ['y5', 'Yr 5'], ['mature', 'Mature']], 'y5')}</span></div>`;
+  const right = `<div class="stack12">${h.card({ title: 'Inspector', body: insp })}${h.card({ title: 'Takeoff (live)', sub: 'Feeds the estimate through the same pricing engine', body: `${tk.rows.slice(0, 7).map(r => row(esc(r[0]), `${num(r[1])} ${esc(r[2])}`)).join('')}${row('<b>Plants</b>', `<b>${tk.plants} ea</b>`)}${sp ? row('<b>Live price</b>', `<b>${money(tk.price)}</b>`) : ''}` })}
+    ${h.card({ title: 'Region palette', sub: `${esc(c.t.region)} · deer-resistant filter on`, body: `<div class="flex gap4">${RL.PLANTS.filter(p => rating(p).k === 'rec').slice(0, 8).map(p => h.pill(pcode(p), 'ok')).join('')}</div>${h.note('Not recommended and invasive plants are hidden from the picker by default (12 KB-PRP-01).')}` })}</div>`;
+  return head + (edit ? '' : h.note(c.role === 'crew_lead' ? 'Crew lead: read-only plan sheets, no prices (design R/c).' : `View only: ${esc(c.roleObj.name)} has design ${esc(c.can('design'))}${c.role === 'designer' ? ' and this design belongs to ' + esc(d.designer) : ''}.`))
+    + viewTabs + grid('42px minmax(0,1fr) 236px', [rail, `<div class="stack8"><div style="border:1px solid var(--border);border-radius:10px;padding:6px;background:var(--surface)">${canvas}</div><div class="tiny t3">${icon('info', 's')} ${esc(toolHint)}</div>${money3}</div>`, right], 10)
+    + h.card({ body: btabs + `<div style="padding-top:8px">${bottom}</div>` });
+});
+RL.act('st-fix', (el) => { RL.ui['st-fix-' + el.dataset.val] = '1'; RL.toast('Fixed: ' + esc((VAL_RULES.find(r => r.k === el.dataset.val) || {}).fix || '') + '. Takeoff and price updated.'); });
+RL.act('st-swap', () => { RL.ui['st-btab'] = 'val'; RL.toast('Palette swap drawer: Region-rated alternatives with the same role and sun class.'); });
+RL.act('st-act', (el) => { RL.toast(esc(el.dataset.val) + ' (mock)'); return false; });
+
 /* @@SECTIONS */
 })();
