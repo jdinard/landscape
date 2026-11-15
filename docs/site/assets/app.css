@@ -156,6 +156,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .cd-h .sub { font-size: .74rem; color: var(--text-3); }
 .cd-b { padding: 10px 12px 12px; display: grid; gap: 8px; min-width: 0; }
 .cd-b.flush { padding: 8px 0 4px; }
+.cd-b > .btn, .cd-b > a.btn { justify-self: start; }
+.cd-b.flex { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .cd.warn { border-color: var(--warn-solid); } .cd.danger { border-color: var(--danger-solid); } .cd.ok { border-color: var(--ok-solid); }
 .cd.ai { background: var(--ai-bg); border-color: color-mix(in srgb, var(--ai-solid) 45%, transparent); }
 .cd.ai .cd-h h3 { color: var(--ai-text); }

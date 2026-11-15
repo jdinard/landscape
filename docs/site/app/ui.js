@@ -49,7 +49,9 @@ const h = RL.h = {
     const head = (o.title || o.actions) ? `<div class="cd-h"><div>${o.title ? `<h3>${o.title}</h3>` : ''}${o.sub ? `<div class="sub">${o.sub}</div>` : ''}</div>${o.actions ? `<div class="flex">${o.actions}</div>` : ''}</div>` : '';
     return `<section class="cd${o.tone ? ' ' + o.tone : ''}${o.cls ? ' ' + o.cls : ''}">${head}<div class="cd-b${o.flush ? ' flush' : ''}">${o.body || ''}</div></section>`;
   },
-  cols(kind, items) { return `<div class="cols cols-${kind}">${items.join('')}</div>`; },
+  // An item can be a string, or an array of strings stacked in one column
+  cols(kind, items) { return `<div class="cols cols-${kind}">${items.map(i => Array.isArray(i) ? `<div class="stack12" style="min-width:0">${i.join('')}</div>` : i).join('')}</div>`; },
+  hash(str) { let x = 2166136261; for (const ch of String(str)) { x ^= ch.charCodeAt(0); x = Math.imul(x, 16777619); } return x >>> 0; },
   /* Table. cols: [{ k, label, n (numeric), m (mono), fmt: (v,row)=>html }], rows: objects. o: { go: routeId, x: row=>id, dense, foot: [..], hl: row=>bool, empty } */
   table(cols, rows, o) {
     o = o || {};

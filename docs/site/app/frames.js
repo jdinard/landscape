@@ -102,6 +102,8 @@ RL.frames.web = (c, body) => {
   const trial = c.s.plan === '' && c.t.id === 'greenleaf' ? '' : '';
   return `<div class="fr"><div class="mx">${rail}<div class="mx-body">${top}${fieldWeb}${trial}${subnav('web', c)}<div class="mx-content">${body}</div></div></div></div>`;
 };
+const CONSOLE_QUEUE = { platform_owner: ['approve', 'Approvals waiting on you 3', 'console.home'], platform_support: ['inbox', 'Your tickets 7', 'console.support'], platform_curator: ['leaf', 'KB review queue 24', 'console.kb.queue'], platform_finance: ['dollar', 'Dunning queue 5', 'console.billing'], platform_engineer: ['warn', 'Open alerts 1', 'console.health'] };
+const consoleQueue = c => { const q = CONSOLE_QUEUE[c.role]; return q ? `<button type="button" class="mx-tb" data-go="${q[2]}">${icon(q[0], 's')}${q[1]}</button>` : ''; };
 RL.frames.console = (c, body) => {
   const groups = RL.navGroups('console');
   const staff = c.roleObj;
@@ -111,8 +113,8 @@ RL.frames.console = (c, body) => {
   </nav>`;
   const top = `<div class="mx-top">
     <span class="mx-search">${icon('search')}Search tenants, users, invoices, plants, tickets<span class="kbd">/</span></span>
-    <span class="mx-tb">${icon('approve', 's')}Approvals 3</span>
-    <span class="mx-tb">${icon('warn', 's')}Incidents 0</span>
+    ${consoleQueue(c)}
+    <button type="button" class="mx-tb" data-go="console.health">${icon('warn', 's')}Incidents ${c.winter ? '1 (SMS delay, monitoring)' : '0'}</button>
     <span class="mx-tb">${icon('key', 's')}Step-up: security key</span>
     <span class="mx-av" style="background:var(--moss-100);color:var(--moss-800)">${esc(h.initials(c.who))}</span>
   </div>`;
