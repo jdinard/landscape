@@ -259,7 +259,7 @@ For `estimator` (own data by default) and `owner`/`office_manager` (all reps). W
 - **Lead response time** [`lead_response_minutes_median`] (speed-to-lead strongly influences conversion in home services; we measure it rather than assert an industry figure).
 - **Estimate accuracy** on jobs this rep estimated and that are now complete [`estimate_hours_wape`, `estimate_margin_variance_pp`].
 - **Proposal engagement:** views, time to first view, option chosen (Good/Better/Best tier mix), deposit conversion.
-- **Renewal desk** (for account managers): agreements expiring in the next 60/90 days with renewal probability.
+- **Renewal desk** (for account managers): agreements expiring in the next 60/90 days with renewal probability, from rules until the churn model in [AI Copilot](17-ai-copilot-automation.md) section 4.7.1 has enough history, then from that model.
 - **Commission and goal progress** (links to [Team](15-team-hr-payroll.md)).
 
 #### 4.2.4 Crew lead and technician "My Stats"

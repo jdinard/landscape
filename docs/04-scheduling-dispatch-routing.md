@@ -254,7 +254,7 @@ Rules:
 | Payment state (from [08](08-payments-stripe.md)) | Gate status | What scheduling allows |
 |---|---|---|
 | No payment, or `payments.attempt.failed` | `open` | Tentative placement only (hatched card); no client date promise; backlog shows "Deposit outstanding $5,520" |
-| `payments.payment.pending` for the deposit (ACH or PAD in flight, up to about 4 business days per [08](08-payments-stripe.md)) | `pending_clearing` | Company setting `deposit_pending_counts_for` = `none` / `scheduling` (default) / `dispatch`. With the default, phases can be confirmed and the client told "Week of May 12", but Visits cannot be `dispatched` until the payment succeeds; if the first phase is fewer than 3 business days away, the board shows "Deposit still clearing" on the card |
+| `payments.payment.pending` for the deposit (ACH or PAD in flight, up to about 4 business days per [08](08-payments-stripe.md)) | `pending_clearing` | Depends on the amount (OD-23). Up to the Company's ACH initiation limit (default $5,000; the same setting that lets a proposal execute on initiation in [03](03-crm-sales-estimating-proposals.md) `PROP-07`), the pending payment counts for what the Company setting `deposit_pending_counts_for` says: `none` / `scheduling` (default) / `dispatch`. With the default, phases can be confirmed and the client told "Week of May 12", but Visits cannot be `dispatched` until the payment succeeds; if the first phase is fewer than 3 business days away, the board shows "Deposit still clearing" on the card. Above the limit, the gate allows only what `open` allows until the payment clears, and the backlog shows "Deposit clearing $8,400" |
 | `payments.deposit.received` (succeeded, amount >= required) | `satisfied` | Full scheduling and dispatch |
 | Partial deposit (amount < required) | `open` with amount remaining | As `open`; the Company can lower the requirement with `job.gate_override` |
 | `payments.payment.returned` (R01 NSF, PAD return) after the gate was satisfied | `reopened` | Future, not-started Visits and phases get flag `needs_reschedule` and a hold reason `deposit_returned`; a `scheduled` Job moves to `on_hold` and a `ready_to_schedule` Job returns to `awaiting_gates`. Work already `in_progress` is never pulled automatically; the owner gets a decision task |
@@ -449,8 +449,8 @@ Rules:
 
 The Program Engine in [14](14-service-line-modules.md) owns round templates, enrollment and round instances. The contract with this module:
 1. Round instances carry: Property, round number, application window (start/end), minimum days since previous round, product mix, required license category, measured area, weather guardrails, notification gate status.
-2. The **Round Planner** (a view in [14](14-service-line-modules.md)) groups eligible instances by zone and week and calls the scheduling API `POST /scheduling/optimize` (mode `sequence` per Crew Day at MVP, `week_plan` at V1) with `context = round` and a target week (8.2).
-3. **MVP:** the planner's block drop assigns instances to zone-days and to the zone's default applicator crews, and `sequence` mode orders each Crew Day. **V1:** `week_plan` assigns across days and applicators automatically. In both cases this module's optimizer sequences them into routes for licensed applicators only (hard skill constraint `pesticide_applicator` with the product's category valid in the Property's state/province), checks hourly wind and rain forecasts per route day (amber/red flags from [14](14-service-line-modules.md) section 4.1), and returns a ScheduleDiff.
+2. The **Round Planner** (a view in [14](14-service-line-modules.md)) groups eligible instances by zone and week and calls the scheduling API `POST /scheduling/optimize` (mode `week_plan` on plans with multi-crew optimization, otherwise `sequence` per Crew Day; 4.8.1) with `context = round` and a target week (8.2).
+3. On Grow and above (OD-13), `week_plan` assigns instances across days and applicators automatically. On other plans, the planner's block drop assigns instances to zone-days and to the zone's default applicator crews, and `sequence` mode orders each Crew Day. In both cases this module's optimizer sequences them into routes for licensed applicators only (hard skill constraint `pesticide_applicator` with the product's category valid in the Property's state/province), checks hourly wind and rain forecasts per route day (amber/red flags from [14](14-service-line-modules.md) section 4.1), and returns a ScheduleDiff.
 4. Accepted Visits link back to the round instance (`visit.round_instance_id`). Rescheduling a round Visit outside its notified window triggers re-notification automatically (rule owned by [14](14-service-line-modules.md); this module emits `visit.rescheduled` with `old_date`/`new_date`).
 5. Window protection: a round Visit cannot be moved past its window end. The rain playbook treats rounds with fewer than 5 working days left in their window as priority 1.
 
@@ -514,10 +514,11 @@ Grass does not grow on a calendar. In a dry August in Ohio, weekly mowing client
 
 #### 4.2.8 Client-driven schedule changes
 
-Clients request skips, reschedules and extra visits from the portal ([06](06-customer-portal.md)) or by message. Rules:
+Clients skip, reschedule and pause service and book add-on services themselves from the portal ([06](06-customer-portal.md) 4.10.3 and 4.10.4, R24-20), or ask by message. Rules:
 - **Skip next visit**: allowed up to the Company's cutoff (default 18:00 the day before service). After cutoff the request becomes an office task. Per-visit billing clients are not charged; fixed-price clients see the agreement's skip policy ("Skips do not reduce your monthly price; 2 skips per season can be made up on request").
 - **Reschedule**: the portal offers only dates with capacity in the Property's zone (4.13). Commercial clients with approval workflows route requests to the approver contact first.
 - **Pause service** (vacation): creates a Property blackout with start/end; recurring Visits within are skipped with reason `client_pause`.
+- **Add-on self-scheduling**: a booked add-on (aeration, mulch refresh, gutter cleaning) becomes a one-off Job and Visit on a day the Availability API offered (4.13).
 - All client changes produce `visit.rescheduled` or `visit.skipped` with `actor_type = client`.
 
 ### 4.3 Capacity planning and backlog
@@ -544,7 +545,7 @@ Example: Crew 1 is 3 people on a 10-hour shift (7:00-17:00) with a 30-minute unp
 - Program rounds from [14](14-service-line-modules.md) enrollments.
 - Projects: phase durations placed on tentative or confirmed dates.
 - **Backlog**: sold, unscheduled work with due windows.
-- **Pipeline forecast: open opportunities from [03](03-crm-sales-estimating-proposals.md) weighted by stage probability and expected start month, shown as a separate stacked band ("likely to sell").
+- **Pipeline forecast:** open opportunities from [03](03-crm-sales-estimating-proposals.md) weighted by stage probability and expected start month, shown as a separate stacked band ("likely to sell").
 
 **Utilization bands** (Company setting): < 75% blue (under-booked), 75-90% green, 90-100% amber, 100-110% orange (overtime likely), > 110% red (not deliverable without hiring, subs or Saturday shifts).
 
@@ -782,43 +783,45 @@ The engine is a Python service using **Google OR-Tools' vehicle routing solver**
 
 #### 4.8.1 Optimization modes
 
-| Mode | Problem class | Typical size | Time limit (5 s, 30 s and 120 s budgets from [20](20-architecture-security.md); others defined here) | Priority |
+| Mode | Problem class | Typical size | Time limit (5 s, 30 s and 120 s budgets from [20](20-architecture-security.md); others defined here) | Plans (OD-13) |
 |---|---|---|---|---|
-| `sequence` | Re-order one Crew Day (TSP with time windows, breaks, dump stops) | 10-40 stops | 5 s | |
-| `insertion` | Best position(s) for 1-20 new Visits across candidate Crew Days | 1-20 visits x up to 30 routes | 1.5 s | |
-| `day_plan` | Assign and sequence a day's Visits across all crews of a branch (VRPTW with skills, capacities, breaks) | 50-800 stops, 2-40 crews | 30 s | |
-| `week_plan` | Assign flexible Visits to days and crews within a week, then sequence (periodic VRP, decomposed) | 200-4,000 stops | 120 s async | |
-| `territory` | Seasonal zones and master routes (4.7.3) | 500-10,000 properties | 120 s; up to 10 min async above 2,000 properties (extends the [20](20-architecture-security.md) budget for large tenants) | |
-| `repair` | Mid-day re-optimization from crews' current positions and progress (4.10.8) | Remaining stops of 1-10 crews | 5-10 s | |
-| `storm` | Priority-ordered snow routing with re-service loops (4.9.6) | 20-500 sites | 30 s, repeated | |
+| `sequence` | Re-order one Crew Day (TSP with time windows, breaks, dump stops) | 10-40 stops | 5 s | All plans |
+| `insertion` | Best position(s) for 1-20 new Visits across candidate Crew Days | 1-20 visits x up to 30 routes | 1.5 s | All plans |
+| `day_plan` | Assign and sequence a day's Visits across all crews of a branch (VRPTW with skills, capacities, breaks) | 50-800 stops, 2-40 crews | 30 s | Grow and above |
+| `week_plan` | Assign flexible Visits to days and crews within a week, then sequence (periodic VRP, decomposed) | 200-4,000 stops | 120 s async | Grow and above |
+| `territory` | Seasonal zones and master routes (4.7.3) | 500-10,000 properties | 120 s; up to 10 min async above 2,000 properties (extends the [20](20-architecture-security.md) budget for large tenants) | Grow and above |
+| `repair` | Mid-day re-optimization from crews' current positions and progress (4.10.8) | Remaining stops of 1-10 crews | 5-10 s | One crew on all plans; across crews on Grow and above |
+| `storm` | Priority-ordered snow routing with re-service loops (4.9.6) | 20-500 sites | 30 s, repeated | With the full Snow and Ice module (`snow_ice` add-on) |
+
+**Plan access (OD-13).** `sequence` and `insertion` are the `route_single` entitlement on every plan; the multi-crew modes are the `route_vrp` entitlement on Grow and above ([22](22-business-model-pricing-gtm.md)). On a plan without `route_vrp`, a feature that would call a multi-crew mode (the rain playbook's `push_later_in_week`, the Round Planner, recovery option (b) in 4.10.8, Copilot moves across crews, the territory solver) falls back to `insertion` into each candidate Crew Day followed by `sequence`, and the ScheduleDiff says so. Multi-crew runs are heavy runs and count against the fair-use quota in 4.14.1.
 
 #### 4.8.2 Constraint catalogue
 
-| Constraint | Hard/soft (default) | Modeling note (OR-Tools; verify API details against the current release) | Priority |
-|---|---|---|---|
-| Start and end at depot (yard); per-crew depot | Hard | Vehicle start/end nodes | |
-| Start at crew lead's home (take-home trucks) | Hard per crew setting | Per-vehicle start node | |
-| Shift start/end, max shift length | Hard end at shift + max OT (default 2 h); soft beyond shift | Time dimension with vehicle-specific ranges; soft upper bound cost on end cumul | |
-| Service duration (crew-size adjusted, 4.1.4) | Hard | Transit callback = travel + service time at the from-node | |
-| Client time window (`between`, `fixed_time`) | `fixed_time` hard; `between` soft by default (Company setting can make hard) | Cumul range or soft bounds with lateness penalty | |
-| Access window (gate staffed hours, HOA quiet hours, school hours, municipal noise ordinance earliest start) | Hard | Cumul range | |
-| Lunch/meal break | Hard (where law requires, e.g., meal start before end of the 5th hour of work in California per [15](15-team-hr-payroll.md)); otherwise soft window 11:00-13:00, 30 min | Vehicle break intervals on the time dimension | |
-| Skills and licenses | Hard | Allowed-vehicles per node | single crew check, assignment |
-| Equipment class (aerator, skid steer, deck width vs gate width) | Hard | Allowed-vehicles per node, computed from Crew Day units | |
-| Crew size minimum | Hard | Allowed-vehicles per node | |
-| Debris capacity (leaf cleanup cu yd) with dump runs | Hard | Capacity dimension; dump sites as optional reload nodes (duplicated, penalty-free disjunctions) that reset load via slack | |
-| Material pickup at supply house before visits that need it (mulch, stone, plants) | Hard precedence when material is not loaded at the yard | Pickup-and-delivery pairs on the same vehicle with pickup before delivery | |
-| Spray tank refills (gallons) | Hard | Capacity + reload nodes at the yard or water source | |
-| Salt reload (tons) during storms | Hard | Capacity + reload at salt depot | |
-| Day lock, crew lock, sequence lock | Hard | Fixed vehicle; precedence or fixed rank | |
-| Stability vs master route / previous plan | Soft | Penalty on changed vehicle or rank; warm start from previous routes | |
-| Zone adherence | Soft | Penalty when assigned crew/day differs from zone | |
-| Max single drive leg (default 25 min) | Soft | Arc cost surcharge above threshold | |
-| Crew workload balance | Soft | Global span cost coefficient | |
-| Overtime cost | Soft | End-time soft upper bound at shift end | |
-| Optional visits (fillers, upsells, flexible backlog) | Soft | Disjunction with drop penalty scaled by priority | |
-| Battery equipment energy budget | Hard | Energy dimension with charging stops | |
-| Traffic-dependent travel time | Soft (approximated) | Time-of-day bucketed matrices chosen by planned departure | |
+| Constraint | Hard/soft (default) | Modeling note (OR-Tools; verify API details against the current release) |
+|---|---|---|
+| Start and end at depot (yard); per-crew depot | Hard | Vehicle start/end nodes |
+| Start at crew lead's home (take-home trucks) | Hard per crew setting | Per-vehicle start node |
+| Shift start/end, max shift length | Hard end at shift + max OT (default 2 h); soft beyond shift | Time dimension with vehicle-specific ranges; soft upper bound cost on end cumul |
+| Service duration (crew-size adjusted, 4.1.4) | Hard | Transit callback = travel + service time at the from-node |
+| Client time window (`between`, `fixed_time`) | `fixed_time` hard; `between` soft by default (Company setting can make hard) | Cumul range or soft bounds with lateness penalty |
+| Access window (gate staffed hours, HOA quiet hours, school hours, municipal noise ordinance earliest start) | Hard | Cumul range |
+| Lunch/meal break | Hard (where law requires, e.g., meal start before end of the 5th hour of work in California per [15](15-team-hr-payroll.md)); otherwise soft window 11:00-13:00, 30 min | Vehicle break intervals on the time dimension |
+| Skills and licenses | Hard | Allowed-vehicles per node |
+| Equipment class (aerator, skid steer, deck width vs gate width) | Hard | Allowed-vehicles per node, computed from Crew Day units |
+| Crew size minimum | Hard | Allowed-vehicles per node |
+| Debris capacity (leaf cleanup cu yd) with dump runs | Hard | Capacity dimension; dump sites as optional reload nodes (duplicated, penalty-free disjunctions) that reset load via slack |
+| Material pickup at supply house before visits that need it (mulch, stone, plants) | Hard precedence when material is not loaded at the yard | Pickup-and-delivery pairs on the same vehicle with pickup before delivery |
+| Spray tank refills (gallons) | Hard | Capacity + reload nodes at the yard or water source |
+| Salt reload (tons) during storms | Hard | Capacity + reload at salt depot |
+| Day lock, crew lock, sequence lock | Hard | Fixed vehicle; precedence or fixed rank |
+| Stability vs master route / previous plan | Soft | Penalty on changed vehicle or rank; warm start from previous routes |
+| Zone adherence | Soft | Penalty when assigned crew/day differs from zone |
+| Max single drive leg (default 25 min) | Soft | Arc cost surcharge above threshold |
+| Crew workload balance | Soft | Global span cost coefficient |
+| Overtime cost | Soft | End-time soft upper bound at shift end |
+| Optional visits (fillers, upsells, flexible backlog) | Soft | Disjunction with drop penalty scaled by priority |
+| Battery equipment energy budget | Hard | Energy dimension with charging stops |
+| Traffic-dependent travel time | Soft (approximated) | Time-of-day bucketed matrices chosen by planned departure |
 
 Gate codes are not constraints; they are restricted access data shown on device for dispatched Visits only ([20](20-architecture-security.md)). What matters for routing is the access window (e.g., "community gate staffed 08:00-16:00; after hours needs the resident") and the Property's trailer-parking note.
 
@@ -826,7 +829,7 @@ Gate codes are not constraints; they are restricted access data shown on device 
 
 - **Source:** Google Routes or Mapbox matrix APIs (provider chosen per region and cost; [20](20-architecture-security.md)). Per-request element limits and traffic-aware limits differ by provider and change; verify current limits before sizing batches.
 - **Time-of-day buckets:** `early` (05:00-07:00), `am_peak` (07:00-09:30), `midday` (09:30-15:00), `pm_peak` (15:00-18:30), `evening` (18:30-22:00), `night` (22:00-05:00, used for snow). The solver uses the bucket of the planned departure time for each arc (piecewise approximation).
-- **Truck-and-trailer factor:** car travel times are multiplied by a Company-tunable factor (default 1.10) plus a fixed 2-minute park-and-unload buffer per stop (accounted in setup time).: learn per-crew factors from breadcrumbs.
+- **Truck-and-trailer factor:** car travel times are multiplied by a Company-tunable factor (default 1.10) plus a fixed 2-minute park-and-unload buffer per stop (accounted in setup time). The system also learns per-crew factors from breadcrumbs (AI-13 in section 10).
 - **Caching:** Redis keys by `(geohash7 origin, geohash7 destination, bucket)` for 14 days ([20](20-architecture-security.md)). Weekly recurring routes hit the cache almost entirely; the estimate in [20](20-architecture-security.md) is a 60-80% reduction in matrix API cost.
 - **Pruning:** for `day_plan` and larger, only the k = 30 nearest neighbors per stop (by haversine) plus depots and dump sites are fetched from the provider; other arcs use a haversine-times-detour-factor estimate (default 1.35) with a high cost so the solver rarely uses them. This bounds API calls from O(n^2) to O(n x k). A 600-stop day costs about 18,000 + 2 x 600 depot arcs rather than 360,000 elements (estimate).
 - **Fallback:** if the provider is down or quota is exhausted, haversine-with-detour estimates are used and the plan is labeled "Approximate drive times" in the diff.
@@ -913,7 +916,7 @@ Every route in the Day view shows a density chip (e.g., "On-site 78% / Drive 16%
 - **Fallback:** on timeout or infeasibility the service returns the best feasible solution found or a greedy insertion plan, flagged in the diff ("Partial optimization: 30 s limit reached; estimated 4% from best"). Infeasible visits are never silently dropped; each is returned with a machine-readable reason (`no_skill`, `no_equipment`, `window_infeasible`, `capacity`, `access_window`, `locked_conflict`).
 - **Run records:** every run stores inputs hash, parameters, solver version, duration, objective breakdown and solution; viewable by `platform_engineer` with tenant consent for support ([19](19-platform-admin-portal.md)).
 - **Peak-load shaping.** Landscape demand is synchronized: every tenant's A7 agent wants weather diffs at 05:00 local, and every dispatcher presses "Optimize tomorrow" between 13:00 and 15:00. Rules: (1) proactive runs (agent, nightly re-mastering, scenario batches) start at a per-tenant jittered offset inside 04:15-04:55 local, so US Eastern tenants do not all hit the solver pool in the same minute; (2) two queues, `interactive` (`sequence`, `insertion`, `repair`, Copilot-initiated runs) and `batch` (`day_plan`, `week_plan`, `territory`, scenarios), with interactive work preempting batch at the worker level; (3) weighted fair queuing by tenant so a 40-crew tenant's territory solve cannot starve a 2-crew tenant's insertion; (4) autoscaling on queue depth with a 15-minute pre-warm before 04:15 Eastern and before the first rain-trigger forecast of the day. SLOs: interactive queue wait p95 < 1 s; batch queue wait p95 < 30 s at 05:00 peak; zero dropped runs (Temporal retries per [20](20-architecture-security.md)).
-- **Version pinning and rollout.** A tenant's routes are produced by one pinned solver version per season week; new versions roll out by cohort only after the nightly benchmark suite shows no quality regression > 1% and the stability KPI on replayed last-week instances does not drop. `platform_owner` approves the rollout in [19](19-platform-admin-portal.md); rollback is per cohort.
+- **Version pinning and rollout.** A tenant's routes are produced by one pinned solver version per season week; new versions roll out by cohort only after the nightly benchmark suite shows no quality regression > 1% and the stability KPI on replayed last-week instances does not drop. The engineering agent (`platform_engineer`) proposes each rollout with the benchmark results, and the founder (`platform_owner`) approves it in [19](19-platform-admin-portal.md); rollback is per cohort.
 
 **Performance targets**
 
@@ -944,7 +947,7 @@ This module owns Rootline's shared **Weather Service**, consumed by the crew app
 
 #### 4.9.1 Weather Service
 
-- **Provider-agnostic adapter** with at least two providers: the US National Weather Service API for gridpoint hourly forecasts and alerts at no cost ([NWS API](https://www.weather.gov/documentation/services-web-api)); Environment and Climate Change Canada's Meteorological Service of Canada open data for Canada (verify current endpoints and terms); and one commercial provider for consistent North American coverage, minute-level precipitation nowcasts, soil temperature and certified historical reports (vendor selection open; candidates include Tomorrow.io, DTN and The Weather Company class providers; verify terms and pricing).
+- **Provider-agnostic adapter** with at least two providers: the US National Weather Service API for gridpoint hourly forecasts and alerts at no cost ([NWS API](https://www.weather.gov/documentation/services-web-api)); Environment and Climate Change Canada's Meteorological Service of Canada open data for Canada (verify current endpoints and terms); and one commercial provider for consistent North American coverage, minute-level precipitation nowcasts, soil temperature, air quality index and certified historical reports (OD-61; candidates include Tomorrow.io, DTN and The Weather Company class providers; verify terms and pricing).
 - **Spatial unit:** forecasts are fetched and cached per H3 hexagon cell (resolution 7, a few square kilometers; verify) that contains at least one Property with a Visit in the next 7 days, plus depots. A 2,000-property Company in one metro typically touches a few hundred cells (estimate).
 - **Cadence:** hourly forecast refresh every 60 minutes for cells with Visits in the next 72 hours; every 15 minutes when a playbook trigger is within 20% of threshold or an alert is active; observations hourly; daily summaries at 02:00 local.
 - **Variables:** hourly precipitation probability and amount (QPF), precipitation type, snowfall and ice accretion, temperature, dew point, relative humidity, heat index, wind speed and gusts and direction, cloud cover, NWS alerts (watches, warnings, advisories), and where available soil temperature at 2-4 in, reference evapotranspiration, lightning proximity and air quality index.
@@ -972,9 +975,9 @@ This module owns Rootline's shared **Weather Service**, consumed by the crew app
 
 #### 4.9.3 Rain-delay playbooks
 
-**MVP:** bulk "Move day" and "Slide week" actions on the board (the same engine as holiday slides, 4.2.7) with a ScheduleDiff and bulk client notices.
+**Manual bulk moves:** "Move day" and "Slide week" actions on the board (the same engine as holiday slides, 4.2.7) with a ScheduleDiff and bulk client notices, for any day a playbook does not cover.
 
-**V1 playbooks:** a playbook is a saved rule set: trigger, scope, per-service rules, strategy, notifications and approval mode. Rootline ships defaults per service line and Region; the Company edits them in plain language with the Copilot's help ([17](17-ai-copilot-automation.md) section 4.5.8 lists matching agent defaults).
+**Playbooks:** a playbook is a saved rule set: trigger, scope, per-service rules, strategy, notifications and approval mode. Rootline ships defaults per service line and Region; the Company edits them in plain language with the Copilot's help ([17](17-ai-copilot-automation.md) section 4.5.8 lists matching agent defaults).
 
 **Triggers (defaults):**
 
@@ -1014,7 +1017,7 @@ This module owns Rootline's shared **Weather Service**, consumed by the crew app
 
 **Mid-route rain.** The crew lead taps "Rain stop" in the app: remaining Visits of that Crew Day become `weather_hold`; partially completed Visits follow the Partial flow in [05](05-field-crew-mobile-app.md); the playbook re-runs for the held Visits only.
 
-**Approval mode.** `propose` (default; human applies), `auto_after_deadline` (applies at a set time if nobody objects,), or `auto` for specific service types only (, e.g., per-visit residential mowing). Auto modes still send the dispatcher a summary.
+**Approval mode.** `propose` (default; human applies), `auto_after_deadline` (applies at a set time if nobody objects) or `auto` for specific service types only (for example per-visit residential mowing). Auto modes are opt-in per playbook and service type, follow the agent autonomy levels in [17](17-ai-copilot-automation.md) (R25-C8), and still send the dispatcher a summary.
 
 **Decision deadline and reporting-time pay.** The cheapest rain day is the one decided before crews leave home. Each playbook carries a `decision_deadline` (default 45 minutes before the earliest crew shift start, e.g., 06:15 for a 07:00 start). Rules:
 - Diffs applied before the deadline notify crews by push and SMS ("Rain day: do not report, route moved to Thursday" or "Report at 08:00 for shop work").
@@ -1041,9 +1044,9 @@ This module owns Rootline's shared **Weather Service**, consumed by the crew app
 
 Each skipped or delayed Visit stores the forecast and observation that justified it. Clients disputing a skipped visit see "Skipped: 0.62 in of rain recorded between 7:00 and 11:00 at the nearest station" in the portal. Snow billing uses observed accumulation of record (station defined in the contract) from [14](14-service-line-modules.md).
 
-#### 4.9.6 Snow and ice event dispatch [V1, with [14](14-service-line-modules.md)]
+#### 4.9.6 Snow and ice event dispatch (with [14](14-service-line-modules.md))
 
-The Storm Event Engine in [14](14-service-line-modules.md) owns the event lifecycle (watch, pretreat, active, cleanup, monitoring, closed, billed), contracts, triggers and proof-of-service packets. This module supplies:
+Snow comes at two levels (R24-1). With **Snow Lite**, free on every plan ([14](14-service-line-modules.md) 4.3.0), the office creates storm visits for the snow site list in priority order on the dispatch board, and `sequence` orders each truck's route like any other Crew Day. The rest of this section comes with the full Snow and Ice module (the `snow_ice` add-on), whose Storm Event Engine in [14](14-service-line-modules.md) owns the event lifecycle (watch, pretreat, active, cleanup, monitoring, closed, billed), contracts, triggers and proof-of-service packets. This module supplies:
 
 - **Site activation:** when `snow_trigger_eta` passes a site's contract trigger (e.g., 2 in for lots, any accumulation for zero-tolerance walks), the site's event Visit becomes eligible. Pretreatment Visits are generated for sites with anti-icing in the contract.
 - **Storm routing (`storm` mode):** priority tiers (P1 hospitals and "open by 6:00" sites, P2 commercial lots, P3 residential driveways), open-by deadlines as hard time windows, equipment classes (plow truck, loader, skid steer with pusher box, sidewalk crew, salt truck), salt capacity with depot reloads, night travel buckets, and subcontractor-held sites as fixed assignments.
@@ -1125,15 +1128,15 @@ Each completed Visit gets an evidence score (0-100) used for disputes and snow b
 
 #### 4.10.7 Late-running and anomaly alerts
 
-| Alert | Condition (default) | Recipient | Priority |
-|---|---|---|---|
-| Stop late risk | Projected arrival later than a `between`/`fixed_time` window end by > 10 min | Dispatcher (board badge + optional push) | |
-| Route overrun | Projected route end > shift end + 30 min | Dispatcher, crew lead | |
-| Long stop | On site > 2x budget and > 20 min over | Crew lead (in-app "Need help or a note?"), dispatcher | |
-| Idle while clocked in | Outside any geofence, not moving, no activity > 45 min ([05](05-field-crew-mobile-app.md) prompts the crew first) | Dispatcher after crew prompt unanswered | |
-| Route not started | No drive start 30 min after shift start | Dispatcher | |
-| Device not syncing | Clocked-in device not synced > 4 h ([05](05-field-crew-mobile-app.md)) | Dispatcher | |
-| Off-route | Crew at a Property not on its route | Dispatcher (often a legitimate swap; one-tap "accept as reassignment") | |
+| Alert | Condition (default) | Recipient |
+|---|---|---|
+| Stop late risk | Projected arrival later than a `between`/`fixed_time` window end by > 10 min | Dispatcher (board badge + optional push) |
+| Route overrun | Projected route end > shift end + 30 min | Dispatcher, crew lead |
+| Long stop | On site > 2x budget and > 20 min over | Crew lead (in-app "Need help or a note?"), dispatcher |
+| Idle while clocked in | Outside any geofence, not moving, no activity > 45 min ([05](05-field-crew-mobile-app.md) prompts the crew first) | Dispatcher after crew prompt unanswered |
+| Route not started | No drive start 30 min after shift start | Dispatcher |
+| Device not syncing | Clocked-in device not synced > 4 h ([05](05-field-crew-mobile-app.md)) | Dispatcher |
+| Off-route | Crew at a Property not on its route | Dispatcher (often a legitimate swap; one-tap "accept as reassignment") |
 
 Alerts are grouped per crew and rate-limited (one push per crew per 30 minutes unless severity increases).
 
@@ -1154,8 +1157,8 @@ Triggers: equipment breakdown, crew member leaves sick, emergency insertion ("ma
 
 #### 4.11.1 Project structure
 
-- **MVP:** a work order can span multiple consecutive days; it creates one Visit per day for the same crew, shown as a continuous bar on the board.
-- **V1:** full project schedules: Phases contain Tasks. Each Task has: duration in crew-days (or crew-hours with a crew size), capacity pool and skills, equipment requirements, weather sensitivity (`none`, `rain_sensitive`, `cure_window_hours`, `frozen_ground`), predecessors, and an optional "must start on or after" / "must finish by" constraint.
+- **Multi-day work orders:** a work order can span multiple consecutive days; it creates one Visit per day for the same crew, shown as a continuous bar on the board.
+- **Project schedules:** Phases contain Tasks. Each Task has: duration in crew-days (or crew-hours with a crew size), capacity pool and skills, equipment requirements, weather sensitivity (`none`, `rain_sensitive`, `cure_window_hours`, `frozen_ground`), predecessors, and an optional "must start on or after" / "must finish by" constraint.
 - **Dependencies:** finish-to-start (FS), start-to-start (SS), finish-to-finish (FF), with positive or negative lag in working days. Examples: "Excavation FS Base install"; "Base install FS +1 day Pavers" (compaction and inspection); "Concrete footing FS +7 days Wall cap install" (cure, illustrative); "Irrigation sleeves SS +0 Base install".
 - **Milestones:** zero-duration markers ("Hardscape complete", "Final walkthrough") that billing uses for milestone invoices ([07](07-invoicing-billing-contracts.md) emits on `milestone.reached`).
 - **Templates:** per project type (paver patio 400 sq ft, retaining wall, planting install, irrigation system install, landscape lighting install) with default tasks and production-rate-driven durations from the estimate ([03](03-crm-sales-estimating-proposals.md)).
@@ -1174,7 +1177,7 @@ Triggers: equipment breakdown, crew member leaves sick, emergency insertion ("ma
 
 #### 4.11.3 Multi-project resource view
 
-A Gantt across all active projects for install pools shows crew and equipment loading by week. **V2 resource leveling** proposes start-date shifts to remove over-allocation while minimizing total project delay weighted by contract value and promised windows.
+A Gantt across all active projects for install pools shows crew and equipment loading by week. **Resource leveling** proposes start-date shifts to remove over-allocation while minimizing total project delay weighted by contract value and promised windows. It returns a ScheduleDiff like any optimizer run; nothing moves until the ops manager accepts it.
 
 > **Competitive edge.** Aspire and LMN carry install budgets and job costing, but design-build firms still report running install schedules in spreadsheets beside their maintenance software [B]. Rootline generates the project schedule from the sold design's install sequence ([10](10-design-studio.md)), gates it on deposits, dig tickets and deliveries, and puts it on the same board and resource model as the mowing routes, so the skid steer and the install crew cannot be double-booked.
 
@@ -1189,7 +1192,7 @@ A Gantt across all active projects for install pools shows crew and equipment lo
 
 ### 4.13 Client self-scheduling windows
 
-The **Availability API** is the single slot supply for the portal ([06](06-customer-portal.md)), online booking ([16](16-marketing-growth-communications.md)), the AI receptionist and staff booking on calls.
+The **Availability API** is the single slot supply for the portal ([06](06-customer-portal.md)), including its add-on catalog ([06](06-customer-portal.md) 4.10.3) and client reschedules (4.2.8, R24-20), online booking ([16](16-marketing-growth-communications.md)), the AI receptionist and staff booking on calls.
 
 `GET /scheduling/availability?property_id&service_type&from&to&mode`
 
@@ -1199,7 +1202,7 @@ Rules:
 - **Protected capacity:** a Company-set share of each day's capacity (default 15%) is not offered online, reserved for office priorities, rain recovery and commercial work.
 - **Per-day caps** per service and zone (e.g., max 12 aerations per Tuesday per aerator).
 - **Modes:** `day` (client picks a day), `week` (client picks a week; Rootline picks the day), `slot` (time slots of duration + 30-min buffer for consults and walkthroughs), `recurring_start` (client picks a start week; service day assigned by best-day, 4.7.5).
-- **Holds:** selecting a slot creates a 10-minute reservation (hold) while the client completes deposit or card-on-file; released on timeout or abandon. Payment runs in Stripe Elements against the Company's own connected Stripe account ([08](08-payments-stripe.md)); scheduling never sees card data. On `payments.attempt.requires_action` (3-D Secure challenge, bank verification) the hold extends once by 10 minutes; on `payments.payment.succeeded` (or `payments.payment.pending` for ACH, per the deposit rules in 4.1.2) the hold converts to a booked Visit in the same transaction that consumes it, so two clients can never book the last aeration slot on a Tuesday.
+- **Holds:** selecting a slot creates a 10-minute reservation (hold) while the client completes deposit or card-on-file; released on timeout or abandon. Payment runs in Stripe Elements against the Company's own connected Stripe account ([08](08-payments-stripe.md)); scheduling never sees card data. On `payments.attempt.requires_action` (3-D Secure challenge, bank verification) the hold extends once by 10 minutes; on `payments.payment.succeeded` (or `payments.payment.pending` for an ACH or PAD payment up to the ACH initiation limit, per the deposit rules in 4.1.2; a larger pending payment books the Visit as tentative until it clears) the hold converts to a booked Visit in the same transaction that consumes it, so two clients can never book the last aeration slot on a Tuesday.
 - **Confirmation modes:** auto-confirm (default for standard services within caps) or office approval (default for commercial and for services flagged `needs_review`). Commercial client approvers can be required to approve reschedules ([06](06-customer-portal.md)).
 - **Waitlist:** when no slot fits, the client can join a waitlist for a date range; cancellations or freed capacity (rain recovery done, growth skips) trigger offers in waitlist order.
 - **Estimator self-booking**: site assessment appointments on estimators' calendars by territory, with travel buffers computed from the matrix between consecutive appointments.
@@ -1228,7 +1231,7 @@ Rules:
 - Ambiguity is resolved with clarifying chips ("Which Smith? Smith, 12 Elm or Smith Ridge Office Park").
 - Locks, fixed dates and compliance windows are hard constraints for AI-initiated changes.
 - Every applied diff records `actor_type = ai_agent` with the initiating user ([20](20-architecture-security.md) audit).
-- LLM usage for parsing and explanation is metered as AI credits; solver runs are not metered as AI credits but are rate-limited per tenant (default 300 heavy runs per day; [19](19-platform-admin-portal.md) can raise).
+- LLM usage for parsing and explanation is metered as AI credits; solver runs are not metered as AI credits; heavy runs (the multi-crew modes in 4.8.1) count against a fair-use quota per tenant (OD-13; default 300 per day, which the founder can raise per tenant in [19](19-platform-admin-portal.md)).
 
 #### 4.14.2 Scheduling agent
 
@@ -1240,7 +1243,7 @@ From the crew app: "We're running 40 minutes behind" (triggers the late-running 
 
 #### 4.14.4 Evaluation and safety gates for AI scheduling
 
-- **Golden set:** 400 recorded dispatcher requests (English and Spanish, typed and voice) with expected structured tool calls, maintained per release. Ship gate: >= 95% correct tool selection and parameter extraction, 100% of locked or compliance-bound Visits untouched, 0 diffs applied without a confirmation step.
+- **Golden set:** 400 recorded dispatcher requests (English and Spanish, typed and voice) with expected structured tool calls, re-run on every model or prompt change. Quality bar: >= 95% correct tool selection and parameter extraction, 100% of locked or compliance-bound Visits untouched, 0 diffs applied without a confirmation step.
 - **Ambiguity budget:** if a request maps to more than 50 Visits or to more than one branch, the Copilot must restate scope ("This moves 63 visits across 2 branches. Continue?") before it calls the optimizer.
 - **No silent notices:** a Copilot-built diff that would message more than 25 clients always shows the notice preview and the count on the confirmation card.
 - **Replayability:** every AI-originated diff stores the prompt, the parsed tool calls and the solver run id, so support can replay it deterministically (4.8.10 determinism).
@@ -1269,7 +1272,8 @@ From the crew app: "We're running 40 minutes behind" (triggers the late-running 
 | Late-risk alert | 10 min beyond window | 5-60 min |
 | Growth-adaptive mode | Off | Off / suggest / auto per agreement |
 | Rain decision deadline | 45 min before the earliest crew shift start | 0-180 min before |
-| Deposit pending (ACH/PAD) counts for | Scheduling (not dispatch) | None / scheduling / dispatch |
+| ACH initiation limit (OD-23) | $5,000 | Any amount; above it a pending ACH/PAD deposit counts for nothing until it clears |
+| Deposit pending (ACH/PAD) up to the limit counts for | Scheduling (not dispatch) | None / scheduling / dispatch |
 | Drive cost allocation (job costing) | Route overhead for maintenance; next visit for projects | Next visit / route overhead / pro rata on-site |
 | Heat duration factor | +10% at heat band >= 95 F | 0-30% |
 | Evidence below 60 blocks billing | Off | On/off |
@@ -2430,44 +2434,44 @@ erDiagram
 
 ### 8.1 External services
 
-| Service | Purpose | Notes | Priority |
-|---|---|---|---|
-| Google Routes API or Mapbox Matrix/Directions | Travel-time matrices, live-traffic next-leg ETAs | Provider per region/cost; matrix element limits and traffic-aware limits differ by provider and change (verify); caching and pruning in 4.8.3 | |
-| Google OR-Tools (in-house service) | Vehicle routing solver | Apache 2.0 open source; runs in the Python routing service ([OR-Tools routing](https://developers.google.com/optimization/routing)) | |
-| Managed route-optimization APIs (e.g., Google Route Optimization API, Mapbox Optimization) | Benchmark and possible burst fallback | Evaluated, not primary: per-request pricing and limited control over stability penalties and landscape-specific constraints (verify current capabilities and pricing) | evaluation |
-| Geocoding (Google or Mapbox) and parcels (Regrid) | Rooftop geocodes, parcel polygons for geofences and access points | Pin-correction tool; parcel polygons improve arrival detection ([20](20-architecture-security.md)) | |
-| USGS 3DEP elevation | Slope hints for equipment class constraints (no ZTR above slope threshold) | Cached per Property ([20](20-architecture-security.md)) | |
-| US National Weather Service API | Hourly gridpoint forecasts and alerts (US) | Free; requires an identifying User-Agent; rate limits apply ([NWS API](https://www.weather.gov/documentation/services-web-api)) | |
-| Environment and Climate Change Canada (MSC open data) | Canadian forecasts and alerts | Verify endpoints, licensing and attribution | for Canadian tenants |
-| Commercial weather provider | Nowcasts, soil temperature, consistent cross-border data, certified historical reports for disputes | Vendor selection is open question 13 (Tomorrow.io, DTN and The Weather Company class candidates; verify terms) | |
-| Telematics: Samsara, Motive, Geotab, Verizon Connect (candidates) | Vehicle positions, ignition, engine hours | OAuth or API-key connectors via the integration framework ([20](20-architecture-security.md) section 4.8); Aspire lists Motive in its marketplace ([Motive marketplace](https://marketplace.gomotive.com/app/aspire)) | |
-| Google Calendar, Microsoft 365 (Graph) | Busy/free sync for office roles (estimators, designers) | Two-way for Rootline-created events; read busy/free otherwise | |
-| Twilio, email, push | Client and crew notifications | Via the notifications service and [16](16-marketing-growth-communications.md) templates; 10DLC registration per Company ([Twilio A2P 10DLC](https://www.twilio.com/docs/messaging/compliance/a2p-10dlc)) | |
-| Holiday data | US federal, Canadian federal/provincial holidays | Platform-curated table, reviewed annually by `platform_engineer` ([19](19-platform-admin-portal.md)) | |
-| Stripe (indirect) | Deposit and booking-hold outcomes | Scheduling never calls Stripe and never sees card data. Each Company's own connected Stripe account is integrated once, by [08](08-payments-stripe.md); this module consumes `payments.*` domain events only (4.1.2, 4.13) | |
-| Smart irrigation controllers (indirect, Hunter Hydrawise, Rachio) | Mow-day watering suspend and water-in requests (section 13, idea 17) | Through the controller integration and consent model owned by [14](14-service-line-modules.md) | |
+| Service | Purpose | Notes |
+|---|---|---|
+| Google Routes API or Mapbox Matrix/Directions | Travel-time matrices, live-traffic next-leg ETAs | Provider per region/cost; matrix element limits and traffic-aware limits differ by provider and change (verify); caching and pruning in 4.8.3 |
+| Google OR-Tools (in-house service) | Vehicle routing solver | Apache 2.0 open source; runs in the Python routing service ([OR-Tools routing](https://developers.google.com/optimization/routing)) |
+| Managed route-optimization APIs (e.g., Google Route Optimization API, Mapbox Optimization) | Benchmark and possible burst fallback | Evaluated, not primary: per-request pricing and limited control over stability penalties and landscape-specific constraints (verify current capabilities and pricing) |
+| Geocoding (Google or Mapbox) and parcels (Regrid) | Rooftop geocodes, parcel polygons for geofences and access points | Pin-correction tool; parcel polygons improve arrival detection ([20](20-architecture-security.md)) |
+| USGS 3DEP elevation | Slope hints for equipment class constraints (no ZTR above slope threshold) | Cached per Property ([20](20-architecture-security.md)) |
+| US National Weather Service API | Hourly gridpoint forecasts and alerts (US) | Free; requires an identifying User-Agent; rate limits apply ([NWS API](https://www.weather.gov/documentation/services-web-api)) |
+| Environment and Climate Change Canada (MSC open data) | Canadian forecasts and alerts | Verify endpoints, licensing and attribution |
+| Commercial weather provider | Nowcasts, soil temperature, consistent cross-border data, certified historical reports for disputes | Vendor selection is open question 13 (Tomorrow.io, DTN and The Weather Company class candidates; verify terms) |
+| Telematics: Samsara, Motive, Geotab, Verizon Connect (candidates) | Vehicle positions, ignition, engine hours | OAuth or API-key connectors via the integration framework ([20](20-architecture-security.md) section 4.8); Aspire lists Motive in its marketplace ([Motive marketplace](https://marketplace.gomotive.com/app/aspire)) |
+| Google Calendar, Microsoft 365 (Graph) | Busy/free sync for office roles (estimators, designers) | Two-way for Rootline-created events; read busy/free otherwise |
+| Twilio, email, push | Client and crew notifications | Via the notifications service and [16](16-marketing-growth-communications.md) templates; 10DLC registration per Company ([Twilio A2P 10DLC](https://www.twilio.com/docs/messaging/compliance/a2p-10dlc)) |
+| Holiday data | US federal, Canadian federal/provincial holidays | Platform-curated table, reviewed annually by `platform_engineer` ([19](19-platform-admin-portal.md)) |
+| Stripe (indirect) | Deposit and booking-hold outcomes | Scheduling never calls Stripe and never sees card data. Each Company's own connected Stripe account is integrated once, by [08](08-payments-stripe.md); this module consumes `payments.*` domain events only (4.1.2, 4.13) |
+| Smart irrigation controllers (indirect, Hunter Hydrawise, Rachio) | Mow-day watering suspend and water-in requests (section 13, idea 17) | Through the controller integration and consent model owned by [14](14-service-line-modules.md) |
 
 ### 8.2 APIs (internal and public)
 
 All endpoints are tenant-scoped, permission-checked ([20](20-architecture-security.md) section 4.6) and available to the web app, the Copilot tool layer and, from, the public API with OAuth scopes `schedule:read` and `schedule:write`.
 
-| Endpoint | Purpose | Sync/async | Priority |
-|---|---|---|---|
-| `GET /scheduling/board?branch_id&from&to&cursor` | Delta feed of Visits, Crew Days, Routes for the board | Sync, cursor-based | |
-| `POST /visits/{id}/move` | Move a Visit: `service_date`, `crew_id`, `position`, `lock`, `reason`, `notify_client` | Sync; returns validation tier and new version | |
-| `POST /scheduling/diffs` | Build a ScheduleDiff from a list of operations (bulk, Copilot) | Sync up to 500 items, else async | |
-| `POST /scheduling/diffs/{id}/apply` | Apply all or selected items | Sync; idempotent with `Idempotency-Key` | |
-| `POST /scheduling/optimize` | Run an optimizer mode over a scope with a preset and overrides | `sequence`/`insertion` sync; others async with run id | / |
-| `GET /scheduling/runs/{id}` | Run status, objective breakdown, resulting diff | Sync | |
-| `POST /scheduling/best-day` | Ranked service-day options for a new recurring Service Schedule | Sync, < 1.5 s p95 | |
-| `GET /scheduling/availability` | Slot supply for portal, booking and receptionist | Sync, < 800 ms p95 | |
-| `POST /scheduling/holds`, `DELETE /scheduling/holds/{id}` | 10-minute slot holds | Sync | |
-| `GET /capacity?pool&from&to&granularity` | Supply, demand and utilization | Sync (cached 5 min) | |
-| `POST /weather/declarations` | Declare a rain day with a playbook; returns a diff | Async | manual / |
-| `GET /routes/{id}/eta` | Current ETAs for remaining stops | Sync, served from cache | |
-| `POST /scenarios`, `POST /scenarios/{id}/promote` | What-if scenarios | Async | |
-| `POST /projects/{id}/schedule` | Forward-schedule a project; returns critical path and diff | Async | |
-| `POST /sub-offers`, `POST /sub-offers/{id}/respond` | Subcontractor offers | Sync | |
+| Endpoint | Purpose | Sync/async |
+|---|---|---|
+| `GET /scheduling/board?branch_id&from&to&cursor` | Delta feed of Visits, Crew Days, Routes for the board | Sync, cursor-based |
+| `POST /visits/{id}/move` | Move a Visit: `service_date`, `crew_id`, `position`, `lock`, `reason`, `notify_client` | Sync; returns validation tier and new version |
+| `POST /scheduling/diffs` | Build a ScheduleDiff from a list of operations (bulk, Copilot) | Sync up to 500 items, else async |
+| `POST /scheduling/diffs/{id}/apply` | Apply all or selected items | Sync; idempotent with `Idempotency-Key` |
+| `POST /scheduling/optimize` | Run an optimizer mode over a scope with a preset and overrides | `sequence`/`insertion` sync; others async with run id |
+| `GET /scheduling/runs/{id}` | Run status, objective breakdown, resulting diff | Sync |
+| `POST /scheduling/best-day` | Ranked service-day options for a new recurring Service Schedule | Sync, < 1.5 s p95 |
+| `GET /scheduling/availability` | Slot supply for portal, booking and receptionist | Sync, < 800 ms p95 |
+| `POST /scheduling/holds`, `DELETE /scheduling/holds/{id}` | 10-minute slot holds | Sync |
+| `GET /capacity?pool&from&to&granularity` | Supply, demand and utilization | Sync (cached 5 min) |
+| `POST /weather/declarations` | Declare a rain day with a playbook; returns a diff | Async |
+| `GET /routes/{id}/eta` | Current ETAs for remaining stops | Sync, served from cache |
+| `POST /scenarios`, `POST /scenarios/{id}/promote` | What-if scenarios | Async |
+| `POST /projects/{id}/schedule` | Forward-schedule a project; returns critical path and diff | Async |
+| `POST /sub-offers`, `POST /sub-offers/{id}/respond` | Subcontractor offers | Sync |
 
 ### 8.3 Domain events emitted
 
@@ -2565,22 +2569,22 @@ Rules:
 
 The rule throughout: **deterministic engines decide feasibility and cost; AI predicts inputs, proposes changes and explains them.** The LLM never computes a route; it calls the optimizer. Platform-wide AI strategy, guardrails and credit metering are in [17](17-ai-copilot-automation.md).
 
-| # | Opportunity | How it works | Value | Priority |
-|---|---|---|---|---|
-| AI-1 | **Learned visit durations** | EWMA per Service Schedule (4.1.4), then a gradient-boosted model using property features (turf area, beds, slope), crew, season, weather and visit history | Tighter routes, fewer overruns, re-price candidates | |
-| AI-2 | **Natural-language rescheduling** | Copilot tool calls produce ScheduleDiffs (4.14.1) | Minutes instead of 20 drags | |
-| AI-3 | **Scheduling Agent (A7)** | Weather replans, sick-day rebalancing, gap fill, capacity proposals ([17](17-ai-copilot-automation.md)) | The 5 a.m. scramble disappears | |
-| AI-4 | **Growth-adaptive mowing model** | Predicts next-week growth class per Property from weather, turf type, irrigation and crew clipping tags (4.2.6) | Fewer wasted mows in droughts, extra billable mows in flushes | |
-| AI-5 | **ETA accuracy model** | Residual model by stop position, time of day, crew and service; calibrates client windows (4.10.4) | Hit the 80% within-window target | |
-| AI-6 | **No-access prediction** | Predicts the chance a Visit fails for locked gates, dogs or vehicles in the driveway from history and client signals; triggers a day-before "please unlock the side gate" message | Fewer wasted trips | |
-| AI-7 | **Territory advisor** | Explains density problems in plain language ("Fridays drive 31% more because 14 clients are east of the river") and proposes zone changes or re-pricing | Owner understands, not just accepts | |
-| AI-8 | **Dispatcher morning brief** | 05:00 summary: weather risk, call-outs, equipment down, late-risk routes, backlog items about to expire, proposed diffs | One screen to start the day | |
-| AI-9 | **Demand and capacity forecast** | Combines pipeline, renewals, seasonality and weather into weekly demand by pool, shared with [18](18-reporting-analytics.md) | Hiring and sales throttle decisions | |
-| AI-10 | **Anomaly detection** | Unusual on-site durations, repeated idle periods, route deviations, visits completed far from the property | Quality control and fraud signals (handled carefully, see 11.2) | |
-| AI-11 | **Voice dispatch for crew leads** | "Running 40 minutes behind" -> late flow; Spanish and English ([05](05-field-crew-mobile-app.md)) | Hands-free updates from the truck | |
-| AI-12 | **Photo-based growth tags** | Vision model classifies clipping volume and turf height from routine after-photos to feed AI-4 | Labels without extra taps | |
-| AI-13 | **Learned travel times** | Corrects provider drive times per crew, truck-trailer combo and neighborhood from breadcrumbs | Better plans in tight subdivisions and cul-de-sacs | |
-| AI-14 | **Policy learning for dispatch** | Learns which diffs a dispatcher accepts or edits and adjusts weights and playbook suggestions per Company | Fewer edits over time | |
+| # | Opportunity | How it works | Value |
+|---|---|---|---|
+| AI-1 | **Learned visit durations** | EWMA per Service Schedule (4.1.4), then a gradient-boosted model using property features (turf area, beds, slope), crew, season, weather and visit history | Tighter routes, fewer overruns, re-price candidates |
+| AI-2 | **Natural-language rescheduling** | Copilot tool calls produce ScheduleDiffs (4.14.1) | Minutes instead of 20 drags |
+| AI-3 | **Scheduling Agent (A7)** | Weather replans, sick-day rebalancing, gap fill, capacity proposals ([17](17-ai-copilot-automation.md)) | The 5 a.m. scramble disappears |
+| AI-4 | **Growth-adaptive mowing model** | Predicts next-week growth class per Property from weather, turf type, irrigation and crew clipping tags (4.2.6) | Fewer wasted mows in droughts, extra billable mows in flushes |
+| AI-5 | **ETA accuracy model** | Residual model by stop position, time of day, crew and service; calibrates client windows (4.10.4) | Hit the 80% within-window target |
+| AI-6 | **No-access prediction** | Predicts the chance a Visit fails for locked gates, dogs or vehicles in the driveway from history and client signals; triggers a day-before "please unlock the side gate" message | Fewer wasted trips |
+| AI-7 | **Territory advisor** | Explains density problems in plain language ("Fridays drive 31% more because 14 clients are east of the river") and proposes zone changes or re-pricing | Owner understands, not just accepts |
+| AI-8 | **Dispatcher morning brief** | 05:00 summary: weather risk, call-outs, equipment down, late-risk routes, backlog items about to expire, proposed diffs | One screen to start the day |
+| AI-9 | **Demand and capacity forecast** | Combines pipeline, renewals, seasonality and weather into weekly demand by pool, shared with [18](18-reporting-analytics.md) | Hiring and sales throttle decisions |
+| AI-10 | **Anomaly detection** | Unusual on-site durations, repeated idle periods, route deviations, visits completed far from the property | Quality control and fraud signals (handled carefully, see 11.2) |
+| AI-11 | **Voice dispatch for crew leads** | "Running 40 minutes behind" -> late flow; Spanish and English ([05](05-field-crew-mobile-app.md)) | Hands-free updates from the truck |
+| AI-12 | **Photo-based growth tags** | Vision model classifies clipping volume and turf height from routine after-photos to feed AI-4 | Labels without extra taps |
+| AI-13 | **Learned travel times** | Corrects provider drive times per crew, truck-trailer combo and neighborhood from breadcrumbs | Better plans in tight subdivisions and cul-de-sacs |
+| AI-14 | **Policy learning for dispatch** | Learns which diffs a dispatcher accepts or edits and adjusts weights and playbook suggestions per Company | Fewer edits over time |
 
 **Guardrails (summary):** locks, fixed dates, compliance windows and license checks are hard constraints for any AI-originated change; AI never changes a recurring client's service day or sends a client notice without human approval unless the Company opted into an auto-apply rule for that action type; every AI-applied change is attributed (`actor_type = ai_agent`) with the initiating user or automation; explanations come from the solver's objective breakdown, not invented text.
 

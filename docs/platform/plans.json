@@ -1456,7 +1456,7 @@
     },
     {
       "key": "report_builder",
-      "name": "Report builder (scheduled delivery ships at)",
+      "name": "Report builder with scheduled delivery",
       "module": "Reports",
       "docs": [
         "18"

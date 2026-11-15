@@ -559,12 +559,11 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
   <section class="intro" aria-labelledby="page-title">
     <p class="eyebrow">Concept screens · Field, client and platform surfaces</p>
     <h1 id="page-title">Crew, client and admin</h1>
-    <p class="lede">These hi-fi concepts show Rootline outside the office: a crew working a route on a phone, homeowners and an HOA board using the company's branded portal, and Rootline staff watching platform health from the operator console. All data belongs to the fictional tenant Greenleaf Grounds Co. of Columbus, Ohio (USDA zone 6b).</p>
+    <p class="lede">These hi-fi concepts show Rootline outside the office: a crew working a route on a phone, homeowners and an HOA board using the company's branded portal, and the founder watching platform health from the operator console, where Rootline's operator agents do the daily work. All data belongs to the fictional tenant Greenleaf Grounds Co. of Columbus, Ohio (USDA zone 6b, 120 clients).</p>
     <div class="legend" aria-label="How to read these screens">
       <span><i class="ok-dot"></i>Moss: primary actions and healthy states</span>
       <span><i class="warn-dot"></i>Marigold: offline and warnings</span>
       <span><i class="ai-dot"></i>Iris: AI-generated content and AI credit costs only</span>
-      <span><span class="tag mvp">MVP</span> first sellable release · <span class="tag v1">V1</span> next scope wave · <span class="tag v2">V2</span> later wave</span>
     </div>
     <nav class="jump" aria-label="Screens on this page">
       <a href="#crew-app">A. Crew app (4 phones)</a>
@@ -579,12 +578,12 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
   <!-- ===================== PART A: CREW APP ===================== -->
   <div class="part" id="part-crew">
     <p class="eyebrow">Part A · Field</p>
-    <p class="part-title">Crew mobile app: offline-first, glove-friendly, Spanish-first</p>
-    <p class="muted small">React Native (Expo) app on a shared truck phone. Every primary target is at least 48 to 58 px high in these frames (56 dp and up on device), status always pairs an icon and a word with color, and the route works with no signal.</p>
+    <p class="part-title">The Rootline app in crew mode: offline-first, glove-friendly, Spanish-first</p>
+    <p class="muted small">One native app (React Native, Expo) with crew, manager and sales modes, shown here in crew mode on a shared truck phone. Every primary target is at least 48 to 58 px high in these frames (56 dp and up on device), status always pairs an icon and a word with color, and the route works with no signal.</p>
   </div>
 
   <section class="screen" id="crew-app" aria-labelledby="crew-app-h">
-    <div class="screen-head"><h2 id="crew-app-h">A day on Crew 2, in four screens</h2><span class="pill info">crew_lead · technician</span><span class="tag mvp">MVP</span></div>
+    <div class="screen-head"><h2 id="crew-app-h">A day on Crew 2, in four screens</h2><span class="pill info">crew_lead · technician</span></div>
     <p class="screen-note">Spec: 05-field-crew-mobile-app.md sections 4.1 (Today), 4.4 (visit workflow), 4.7 (chemical application records) and 4.9 (field payments), drawn from wireframes 6.2, 6.3, 6.5 and 6.8. Use the EN / ES switch on the first phone to flip the crew-facing labels to Spanish.</p>
   <div class="phones" id="crew-phones">
 
@@ -698,7 +697,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
           </div>
         </div>
       </div>
-      <figcaption><b>1 · Today</b> route list, offline chip, crew punch, hazards <span class="tag mvp">MVP</span></figcaption>
+      <figcaption><b>1 · Today</b> route list, offline chip, crew punch, hazards</figcaption>
     </figure>
 
     <!-- Phone 2: Visit run sheet -->
@@ -800,7 +799,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
           </div>
         </div>
       </div>
-      <figcaption><b>2 · Visit run sheet</b> checklist, photo slots, Spot it <span class="tag mvp">MVP</span></figcaption>
+      <figcaption><b>2 · Visit run sheet</b> checklist, photo slots, Spot it</figcaption>
     </figure>
 
     <!-- Phone 3: Pesticide application record -->
@@ -883,7 +882,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
           </div>
         </div>
       </div>
-      <figcaption><b>3 · Pesticide record</b> area from map, weather auto-filled <span class="tag mvp">MVP</span></figcaption>
+      <figcaption><b>3 · Pesticide record</b> area from map, weather auto-filled</figcaption>
     </figure>
 
     <!-- Phone 4: Collect payment -->
@@ -946,7 +945,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
           </div>
         </div>
       </div>
-      <figcaption><b>4 · Tap to Pay</b> invoice, tip, Company's own Stripe <span class="tag v1">V1</span> <span class="small">(check, cash and link are MVP)</span></figcaption>
+      <figcaption><b>4 · Tap to Pay</b> invoice, tip, Company's own Stripe <span class="small">(check, cash and pay link too)</span></figcaption>
     </figure>
   </div>
   </section>
@@ -960,12 +959,12 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 
   <!-- B1 Homeowner home -->
   <section class="screen" id="portal-home" aria-labelledby="portal-home-h">
-    <div class="screen-head"><h2 id="portal-home-h">Homeowner home: everything that needs Karen today</h2><span class="pill info">client_residential · primary</span><span class="tag mvp">MVP</span></div>
-    <p class="screen-note">Spec: 06-customer-portal.md section 4.3 (ranked card stack), 4.6 (project tracker), 4.7 (visits) and 4.12 (plant care). Live crew ETA and watering reminders are V1; the cards are ranked by the score rules in section 4.3.1.</p>
+    <div class="screen-head"><h2 id="portal-home-h">Homeowner home: everything that needs Karen today</h2><span class="pill info">client_residential · primary</span></div>
+    <p class="screen-note">Spec: 06-customer-portal.md section 4.3 (ranked card stack), 4.6 (project tracker), 4.7 (visits) and 4.12 (plant care). The cards include live crew ETA and watering reminders and are ranked by the score rules in section 4.3.1.</p>
     <p class="scroll-hint">Scroll sideways inside the frame to see the full desktop layout.</p>
     <div class="frame-scroll">
       <div class="browser">
-        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://portal.greenleafgrounds.com/home</span></div>
+        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://portal.greenleafgrounds.example/home</span></div>
         <div class="pt">
           <div class="pt-top">
             <span class="brand">
@@ -1150,11 +1149,11 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 
   <!-- B2 Pay drawer -->
   <section class="screen" id="portal-pay" aria-labelledby="portal-pay-h">
-    <div class="screen-head"><h2 id="portal-pay-h">Pay invoice drawer with autopay enrollment</h2><span class="pill info">client_residential · primary</span><span class="tag mvp">MVP</span></div>
+    <div class="screen-head"><h2 id="portal-pay-h">Pay invoice drawer with autopay enrollment</h2><span class="pill info">client_residential · primary</span></div>
     <p class="screen-note">Spec: 06-customer-portal.md sections 4.9.1 to 4.9.3 (pay, saved methods, autopay with caps and Regulation E notices) and 08-payments-stripe.md section 4.10 (surcharge rules and disclosure). Pick card or bank to see the total update; the payment is a direct charge on Greenleaf's own Stripe account.</p>
     <div class="frame-scroll">
       <div class="browser">
-        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://portal.greenleafgrounds.com/invoices/INV-10688/pay</span></div>
+        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://portal.greenleafgrounds.example/invoices/INV-10688/pay</span></div>
         <div class="pt dr-wrap">
           <div class="dr-back">
             <div class="crumb">Invoices › INV-10688</div>
@@ -1225,11 +1224,11 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 
   <!-- B3 HOA portfolio -->
   <section class="screen" id="portal-hoa" aria-labelledby="portal-hoa-h">
-    <div class="screen-head"><h2 id="portal-hoa-h">Maple Ridge HOA portfolio for the community manager</h2><span class="pill info">client_commercial · primary + approver</span><span class="tag v1">V1</span></div>
-    <p class="screen-note">Spec: 06-customer-portal.md section 4.16 (portfolio dashboard, approval workflows with budgets and POs, site inspections, monthly reports, budgets and forecast) and wireframes 6.6 and 6.8; consolidated billing per 07-invoicing-billing-contracts.md. Board voting with quorum is V2; the property switcher and per-property pages ship at MVP.</p>
+    <div class="screen-head"><h2 id="portal-hoa-h">Maple Ridge HOA portfolio for the community manager</h2><span class="pill info">client_commercial · primary + approver</span></div>
+    <p class="screen-note">Spec: 06-customer-portal.md section 4.16 (portfolio dashboard, approval workflows with budgets and POs, site inspections, monthly reports, budgets and forecast) and wireframes 6.6 and 6.8; consolidated billing per 07-invoicing-billing-contracts.md. Board voting with quorum, sequential approvals, the property switcher and per-property pages are all part of this workspace.</p>
     <div class="frame-scroll">
       <div class="browser">
-        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://portal.greenleafgrounds.com/portfolio/maple-ridge-hoa</span></div>
+        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://portal.greenleafgrounds.example/portfolio/maple-ridge-hoa</span></div>
         <div class="pt">
           <div class="pt-top">
             <span class="brand">
@@ -1390,24 +1389,24 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 
   <!-- ===================== PART C: PLATFORM ADMIN ===================== -->
   <div class="part" id="part-admin">
-    <p class="eyebrow">Part C · Rootline staff</p>
+    <p class="eyebrow">Part C · Rootline operations</p>
     <p class="part-title">Operator console: a dense cockpit that observes and never touches client money</p>
-    <p class="muted small">Internal console for platform staff. Tenant data is redacted by default, every view and action is audited, and anything inside a tenant needs a consent-based support access grant.</p>
+    <p class="muted small">Internal console for the founder and Rootline's operator agents (support, plant curator, finance and engineering), each acting inside its platform role. Tenant data is redacted by default, every view and action is audited, and anything inside a tenant needs a consent-based support access grant.</p>
   </div>
 
   <!-- C1 Tenant directory + Tenant 360 -->
   <section class="screen" id="admin-tenant" aria-labelledby="admin-tenant-h">
-    <div class="screen-head"><h2 id="admin-tenant-h">Tenant directory and Tenant 360 for Greenleaf Grounds Co.</h2><span class="pill info">platform_owner</span><span class="tag mvp">MVP</span></div>
+    <div class="screen-head"><h2 id="admin-tenant-h">Tenant directory and Tenant 360 for Greenleaf Grounds Co.</h2><span class="pill info">platform_owner</span></div>
     <p class="screen-note">Spec: 19-platform-admin-portal.md PA-010 (tenant directory), PA-011 (Tenant 360), PA-013 (health score), PA-051 (support access grants) and PA-110 (connected account health), wireframes 6.3, 6.8 and 6.10. Client names, addresses and invoice lines are never shown here; counts and statuses only.</p>
     <div class="frame-scroll">
       <div class="browser con">
-        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://console.rootline.internal/tenants/TNT-51207</span></div>
+        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://console.rootline.example/tenants/TNT-51207</span></div>
         <div class="con-top">
           <span class="logo">ROOTLINE<small>CONSOLE</small></span>
           <span class="con-search"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>Search tenants, users, acct_, flags, prompts, plants…<span class="kbd">⌘K</span></span>
           <span class="env">prod-us</span>
           <span class="sevok"><i></i>SEV none</span>
-          <span class="who"><span>Ana P. · <b>platform_owner</b></span><span class="avt">AP</span></span>
+          <span class="who"><span>Founder · <b>platform_owner</b></span><span class="avt">F</span></span>
         </div>
         <div class="app">
           <div class="app-side" aria-hidden="true">
@@ -1427,7 +1426,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
             <span class="item"><svg class="ic"><use href="#i-chart"/></svg>Analytics</span>
             <span class="item"><svg class="ic"><use href="#i-pulse"/></svg>Health</span>
             <span class="item"><svg class="ic"><use href="#i-users"/></svg>Partners</span>
-            <span class="item"><svg class="ic"><use href="#i-eye"/></svg>Staff and audit</span>
+            <span class="item"><svg class="ic"><use href="#i-eye"/></svg>Operators and audit</span>
           </div>
           <div class="app-main">
             <!-- Directory -->
@@ -1442,15 +1441,15 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
               </div>
               <div class="table-scroll">
                 <table class="data dense nw">
-                  <thead><tr><th>Tenant · region</th><th>Plan</th><th>State</th><th>Health</th><th class="num">MRR</th><th class="num">Seats office · field</th><th class="num">AI credits</th><th>Stripe chg · pay</th><th>10DLC</th><th>CSM</th></tr></thead>
+                  <thead><tr><th>Tenant · region</th><th>Plan</th><th>State</th><th>Health</th><th class="num">MRR</th><th class="num">Seats office · field</th><th class="num">AI credits</th><th>Stripe chg · pay</th><th>10DLC</th></tr></thead>
                   <tbody>
-                    <tr class="sel"><td><b>Greenleaf Grounds Co.</b><span class="sub"><span class="mono-s">TNT-51207</span> · Columbus OH · 6b</span></td><td>grow</td><td><span class="pill ok">active · 461 d</span></td><td><span class="hs"><i class="band-g"></i>82</span></td><td class="num">$456</td><td class="num">6 · 19</td><td class="num">86%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>Priya S.</td></tr>
-                    <tr><td><b>Buckeye Turf and Tree</b><span class="sub"><span class="mono-s">TNT-49932</span> · Dayton OH · 6b</span></td><td>pro</td><td><span class="pill ok">active · 702 d</span></td><td><span class="hs"><i class="band-g"></i>74</span></td><td class="num">$725</td><td class="num">11 · 34</td><td class="num">52%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>Priya S.</td></tr>
-                    <tr><td><b>Prairie Edge Design</b><span class="sub"><span class="mono-s">TNT-58122</span> · Indianapolis IN · 6b</span></td><td>grow</td><td><span class="pill ok">active · 188 d</span></td><td><span class="hs"><i class="band-g"></i>91</span></td><td class="num">$416</td><td class="num">5 · 12</td><td class="num">97%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>Owen T.</td></tr>
-                    <tr><td><b>Hocking Hills Hardscape</b><span class="sub"><span class="mono-s">TNT-55810</span> · Lancaster OH · 6b</span></td><td>grow</td><td><span class="pill warn">past_due · day 4</span></td><td><span class="hs"><i class="band-y"></i>48</span></td><td class="num">$288</td><td class="num">4 · 8</td><td class="num">31%</td><td><span class="warn-t b">1 req. due May 19</span></td><td>live</td><td>Priya S.</td></tr>
-                    <tr><td><b>Three Rivers Landscape</b><span class="sub"><span class="mono-s">TNT-52244</span> · Fort Wayne IN · 6a</span></td><td>grow</td><td><span class="pill danger">restricted · day 16</span></td><td><span class="hs"><i class="band-r"></i>37</span></td><td class="num">$298</td><td class="num">4 · 11</td><td class="num">AI paused</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>Owen T.</td></tr>
-                    <tr><td><b>Lakeshore Lawn Care</b><span class="sub"><span class="mono-s">TNT-47781</span> · Sandusky OH · 6b</span></td><td>starter</td><td><span class="pill ok">active · 530 d</span></td><td><span class="hs"><i class="band-y"></i>66</span></td><td class="num">$81</td><td class="num">1 · 4</td><td class="num">12%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td><td>pooled</td></tr>
-                    <tr><td><b>Cardinal Outdoor</b><span class="sub"><span class="mono-s">TNT-60318</span> · Columbus OH · 6b</span></td><td>grow</td><td><span class="pill info">trial · day 9 of 14</span></td><td><span class="hs"><i class="band-g"></i>80</span></td><td class="num">–</td><td class="num">3 · 6</td><td class="num">41% of 500</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · off</span></td><td><span class="warn-t b">pending d9</span></td><td>Priya S.</td></tr>
+                    <tr class="sel"><td><b>Greenleaf Grounds Co.</b><span class="sub"><span class="mono-s">TNT-51207</span> · Columbus OH · 6b</span></td><td>grow</td><td><span class="pill ok">active · 461 d</span></td><td><span class="hs"><i class="band-g"></i>82</span></td><td class="num">$456</td><td class="num">6 · 19</td><td class="num">86%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td></tr>
+                    <tr><td><b>Buckeye Turf and Tree</b><span class="sub"><span class="mono-s">TNT-49932</span> · Dayton OH · 6b</span></td><td>pro</td><td><span class="pill ok">active · 702 d</span></td><td><span class="hs"><i class="band-g"></i>74</span></td><td class="num">$725</td><td class="num">11 · 34</td><td class="num">52%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td></tr>
+                    <tr><td><b>Prairie Edge Design</b><span class="sub"><span class="mono-s">TNT-58122</span> · Indianapolis IN · 6b</span></td><td>grow</td><td><span class="pill ok">active · 188 d</span></td><td><span class="hs"><i class="band-g"></i>91</span></td><td class="num">$416</td><td class="num">5 · 12</td><td class="num">97%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td></tr>
+                    <tr><td><b>Hocking Hills Hardscape</b><span class="sub"><span class="mono-s">TNT-55810</span> · Lancaster OH · 6b</span></td><td>grow</td><td><span class="pill warn">past_due · day 4</span></td><td><span class="hs"><i class="band-y"></i>48</span></td><td class="num">$288</td><td class="num">4 · 8</td><td class="num">31%</td><td><span class="warn-t b">1 req. due May 19</span></td><td>live</td></tr>
+                    <tr><td><b>Three Rivers Landscape</b><span class="sub"><span class="mono-s">TNT-52244</span> · Fort Wayne IN · 6a</span></td><td>grow</td><td><span class="pill danger">restricted · day 16</span></td><td><span class="hs"><i class="band-r"></i>37</span></td><td class="num">$298</td><td class="num">4 · 11</td><td class="num">AI paused</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td></tr>
+                    <tr><td><b>Lakeshore Lawn Care</b><span class="sub"><span class="mono-s">TNT-47781</span> · Sandusky OH · 6b</span></td><td>starter</td><td><span class="pill ok">active · 530 d</span></td><td><span class="hs"><i class="band-y"></i>66</span></td><td class="num">$81</td><td class="num">1 · 4</td><td class="num">12%</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · on</span></td><td>live</td></tr>
+                    <tr><td><b>Cardinal Outdoor</b><span class="sub"><span class="mono-s">TNT-60318</span> · Columbus OH · 6b</span></td><td>grow</td><td><span class="pill info">trial · day 9 of 14</span></td><td><span class="hs"><i class="band-g"></i>80</span></td><td class="num">–</td><td class="num">3 · 6</td><td class="num">41% of 500</td><td><span class="yes"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>on · off</span></td><td><span class="warn-t b">pending d9</span></td></tr>
                   </tbody>
                 </table>
               </div>
@@ -1462,10 +1461,10 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                 <span class="tlogo" aria-hidden="true">GG</span>
                 <div class="who-t">
                   <h3>Greenleaf Grounds Co.</h3>
-                  <div class="ids"><span class="mono-s">TNT-51207</span> · Greenleaf Grounds Co. LLC · owner Jordan Ellis · since Feb 6 · design-build-maintain, 28 staff · Columbus OH, USDA 6b · data residency us · cell us-2</div>
+                  <div class="ids"><span class="mono-s">TNT-51207</span> · Greenleaf Grounds Co. LLC · owner Erin Castillo · since Feb 6 · design-build-maintain, 28 people, 120 clients · Columbus OH, USDA 6b · data residency us · cell us-2</div>
                 </div>
                 <div class="acts">
-                  <span class="pill">Grow · annual</span><span class="pill ok">active · 461 d</span><span class="pill">CSM Priya S.</span>
+                  <span class="pill">Grow · annual</span><span class="pill ok">active · 461 d</span>
                   <span class="pill danger"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Access: none</span>
                   <button class="btn sm primary" type="button">Request access</button><button class="btn sm" type="button">Actions<svg class="ic" aria-hidden="true"><use href="#i-chev-down"/></svg></button><button class="btn sm" type="button">Open in helpdesk</button>
                 </div>
@@ -1556,7 +1555,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                   <h3><svg class="ic" aria-hidden="true"><use href="#i-box"/></svg>Migration MIG-2207<span class="r"><span class="pill ok">completed</span></span></h3>
                   <dl class="kv">
                     <dt>Source</dt><dd>Jobber + QuickBooks Online</dd>
-                    <dt>Type · duration</dt><dd>white-glove · 21 days</dd>
+                    <dt>Type · duration</dt><dd>concierge, run by the support agent · 21 days</dd>
                     <dt>Cutover</dt><dd>Mar 2 · parallel run closed Mar 9</dd>
                     <dt>Clients · properties</dt><dd>412 · 486</dd>
                     <dt>Invoices · visit history</dt><dd>1,906 · 3,914</dd>
@@ -1572,7 +1571,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                   <dl class="kv">
                     <dt>Last grant</dt><dd class="mono-s">SAG-88213</dd>
                     <dt>Scope · modules</dt><dd>read_only · scheduling</dd>
-                    <dt>Approved by</dt><dd>Jordan E. (owner, MFA)</dd>
+                    <dt>Approved by</dt><dd>Erin C. (owner, MFA)</dd>
                     <dt>Window</dt><dd>May 3 9:47 am → May 6 (72 h)</dd>
                     <dt>Sessions</dt><dd>1 · 22 min · 0 writes</dd>
                   </dl>
@@ -1599,7 +1598,7 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 
                 <div class="cbox c4">
                   <h3><svg class="ic" aria-hidden="true"><use href="#i-flag"/></svg>Notes and activation</h3>
-                  <div class="pinned"><b>Pinned note (Priya S.):</b> Owner Jordan prefers text. Crew leads are Spanish-first. Ask before scheduling calls during Mon–Thu dispatch hours.</div>
+                  <div class="pinned"><b>Pinned note (support agent):</b> Owner Erin prefers text. Crew leads are Spanish-first. Ask before scheduling calls during Mon–Thu dispatch hours.</div>
                   <ul class="check-list">
                     <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Stripe charges_enabled</li>
                     <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Portal branding</li>
@@ -1618,12 +1617,12 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                     <table class="data dense log">
                       <thead><tr><th>Time</th><th>Actor</th><th>Event</th><th>Ref</th></tr></thead>
                       <tbody>
-                        <tr><td>May 13 08:14</td><td>ana.p · platform_owner</td><td>Viewed Tenant 360 (redacted view, no grant) · reason: weekly review</td><td class="mono-s">–</td></tr>
+                        <tr><td>May 13 08:14</td><td>founder · platform_owner</td><td>Viewed Tenant 360 (redacted view, no grant) · reason: weekly review</td><td class="mono-s">–</td></tr>
                         <tr><td>May 06 09:47</td><td>system</td><td>Support access grant expired</td><td class="mono-s">SAG-88213</td></tr>
-                        <tr><td>May 04 15:31</td><td>maria.g · platform_support</td><td>Ended session "view as Marco R. (crew_lead)", read-only, 22 min, 0 writes</td><td class="mono-s">HD-30417</td></tr>
-                        <tr><td>May 04 15:09</td><td>maria.g · platform_support</td><td>Started impersonation under grant; tenant header showed support indicator</td><td class="mono-s">SAG-88213</td></tr>
-                        <tr><td>May 03 09:47</td><td>jordan.e · tenant owner</td><td>Approved read_only grant, scheduling module, 72 h (MFA)</td><td class="mono-s">SAG-88213</td></tr>
-                        <tr><td>May 03 09:40</td><td>maria.g · platform_support</td><td>Requested access: “Crew 2 Thursday visits missing from route”</td><td class="mono-s">HD-30417</td></tr>
+                        <tr><td>May 04 15:31</td><td>support agent · platform_support</td><td>Ended session "view as Marco R. (crew_lead)", read-only, 22 min, 0 writes</td><td class="mono-s">HD-30417</td></tr>
+                        <tr><td>May 04 15:09</td><td>support agent · platform_support</td><td>Started impersonation under grant; tenant header showed support indicator</td><td class="mono-s">SAG-88213</td></tr>
+                        <tr><td>May 03 09:47</td><td>erin.c · tenant owner</td><td>Approved read_only grant, scheduling module, 72 h (MFA)</td><td class="mono-s">SAG-88213</td></tr>
+                        <tr><td>May 03 09:40</td><td>support agent · platform_support</td><td>Requested access: “Crew 2 Thursday visits missing from route”</td><td class="mono-s">HD-30417</td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -1654,17 +1653,17 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
 
   <!-- C2 Platform overview -->
   <section class="screen" id="admin-overview" aria-labelledby="admin-overview-h">
-    <div class="screen-head"><h2 id="admin-overview-h">Platform overview: revenue, activation, AI economics and health</h2><span class="pill info">platform_owner</span><span class="tag mvp">MVP</span></div>
+    <div class="screen-head"><h2 id="admin-overview-h">Platform overview: revenue, activation, AI economics and health</h2><span class="pill info">platform_owner</span></div>
     <p class="screen-note">Spec: 19-platform-admin-portal.md section 4.14 (PA-140 to PA-143 revenue, retention, cohorts and activation funnel), 4.9 (AI operations), 4.15 (system health and status page) and 4.7 (Plant KB operations), following wireframe 6.2 (Command Center). Churn uses a trailing 12-month basis so Winter Mode pauses do not count as churn.</p>
     <div class="frame-scroll">
       <div class="browser con">
-        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://console.rootline.internal/home</span></div>
+        <div class="browser-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">https://console.rootline.example/home</span></div>
         <div class="con-top">
           <span class="logo">ROOTLINE<small>CONSOLE</small></span>
           <span class="con-search"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>Search tenants, users, acct_, flags, prompts, plants…<span class="kbd">⌘K</span></span>
           <span class="env">prod-us</span>
           <span class="sevok"><i></i>SEV none · 1 SEV3 open</span>
-          <span class="who"><span>Ana P. · <b>platform_owner</b></span><span class="avt">AP</span></span>
+          <span class="who"><span>Founder · <b>platform_owner</b></span><span class="avt">F</span></span>
         </div>
         <div class="app">
           <div class="app-side" aria-hidden="true">
@@ -1684,11 +1683,11 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
             <span class="item"><svg class="ic"><use href="#i-chart"/></svg>Analytics</span>
             <span class="item"><svg class="ic"><use href="#i-pulse"/></svg>Health</span>
             <span class="item"><svg class="ic"><use href="#i-users"/></svg>Partners</span>
-            <span class="item"><svg class="ic"><use href="#i-eye"/></svg>Staff and audit</span>
+            <span class="item"><svg class="ic"><use href="#i-eye"/></svg>Operators and audit</span>
           </div>
           <div class="app-main">
             <div class="dir-head">
-              <h3>Good morning, Ana.</h3>
+              <h3>Good morning.</h3>
               <span class="small muted">Thu May 13 · spring rush week 7 · data as of 6:00 am ET</span>
               <span class="right seg" role="group" aria-label="Range (static)"><button type="button" aria-pressed="false">7 d</button><button type="button" aria-pressed="true">30 d</button><button type="button" aria-pressed="false">12 mo</button></span>
             </div>
@@ -1781,9 +1780,9 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
               <div class="cbox c7">
                 <h3><svg class="ic" aria-hidden="true"><use href="#i-sprout"/></svg>Plant knowledge base health<span class="r muted">KB release 2027.05.13 published 4:00 am</span></h3>
                 <div class="tiles">
-                  <div class="tile"><b>6</b><span>Wave 1 Regions published · 1 profile review open</span></div>
+                  <div class="tile"><b>6</b><span>Great Lakes launch Regions published · 1 profile review open</span></div>
                   <div class="tile"><b>3,412</b><span>plants with Region profiles</span></div>
-                  <div class="tile warn"><b>212</b><span>curator queue · 38 critical traits · oldest 3 d</span></div>
+                  <div class="tile warn"><b>212</b><span>curator agent queue · 38 critical traits for founder approval · oldest 3 d</span></div>
                   <div class="tile"><b>1.8%</b><span>records not reviewed in 24 months</span></div>
                   <div class="tile ai"><b>81%</b><span>AI enrichment suggestions accepted (prompt v14)</span></div>
                   <div class="tile"><b>3</b><span>images blocked, CC BY-NC license</span></div>
@@ -1798,14 +1797,14 @@ table.dense .sub { display: block; font-size: .68rem; color: var(--text-3); }
                   <span>West Michigan (~5b–6b)</span><span class="fb"><i style="width:91%"></i></span><span class="v">91% · 1,012</span>
                   <span>SE Wisconsin (~5a–6a)</span><span class="fb"><i class="rev" style="width:88%"></i></span><span class="v">88% · 968</span>
                 </div>
-                <p class="small muted" style="margin-top:6px">The six Wave 1 Great Lakes Regions; Chicagoland includes Northwest Indiana and SE Michigan includes Toledo. Zones from the 2023 USDA map, approximate. Marigold bar: profile review open.</p>
+                <p class="small muted" style="margin-top:6px">The six Great Lakes launch Regions; Chicagoland includes Northwest Indiana and SE Michigan includes Toledo. Zones from the 2023 USDA map, approximate. Marigold bar: profile review open.</p>
               </div>
 
               <div class="cbox c5">
                 <h3><svg class="ic" aria-hidden="true"><use href="#i-flag"/></svg>Needs you<span class="r"><span class="pill warn">4</span></span></h3>
                 <ul class="needs">
-                  <li><svg class="ic warn-t" aria-hidden="true"><use href="#i-alert"/></svg>Approve price version “Pro 2028 list” (two-person)<button class="btn sm" type="button">Review</button></li>
-                  <li><svg class="ic warn-t" aria-hidden="true"><use href="#i-alert"/></svg>Break-glass request TNT-50211, SEV2 data fix<button class="btn sm" type="button">Review</button></li>
+                  <li><svg class="ic warn-t" aria-hidden="true"><use href="#i-alert"/></svg>Approve price version “Pro 2028 list” (step-up and written reason)<button class="btn sm" type="button">Review</button></li>
+                  <li><svg class="ic warn-t" aria-hidden="true"><use href="#i-alert"/></svg>Break-glass request from the engineering agent, TNT-50211, SEV2 data fix<button class="btn sm" type="button">Review</button></li>
                   <li><svg class="ic" aria-hidden="true"><use href="#i-scale"/></svg>Surcharge rule set v2027.05 (Louisiana) effective May 20<button class="btn sm" type="button">Review</button></li>
                   <li><svg class="ic" aria-hidden="true"><use href="#i-scale"/></svg>Legal hold release: Matter 2026-07<button class="btn sm" type="button">Review</button></li>
                 </ul>

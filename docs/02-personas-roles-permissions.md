@@ -833,9 +833,8 @@ journey
 1. **Dependencies are explicit and auto-granted in the editor with a notice:** `X.update` implies `X.read`; `invoice.send` requires `invoice.read` and `field.price.read`; `payment.refund` requires `payment.read`. The editor refuses to save inconsistent roles; the API validates again.
 2. **Danger flags:** some permissions are marked `sensitive` and show a red badge plus a confirmation: `stripe_connection.*`, `bank_account.update`, `vendor.banking.update`, `data_export.run`, `user.assign_role`, `role.update`, `period.unlock`, `ledger.control_account.adjust`, `ledger.posting_rule.manage`, `security_policy.update`, `support_access.grant`, `api_key.create`.
 3. **Owner-only permissions** cannot be granted to any other role: `stripe_connection.connect` / `disconnect` (covers both the Connect OAuth path and pasting restricted API keys on the advanced path, per [Payments](08-payments-stripe.md)), `rootline_subscription.cancel`, `company.delete`, `ownership.transfer`, `security.lockdown` (section 14, item 13), and `security_policy.update` when SSO is enforced. Multiple users can hold `owner` (partners); see 5.18.6 for partner-dispute protections.
-4. **Time entries are two capabilities** ([24](24-product-scope-decisions-catalog.md) R25-C6): `time_entry.own` covers the user's own punches and takes only the `own` scope; `time_entry.others` covers other people's time and takes the `crew`, `branch` or `all` scope. A role can therefore let everyone punch while limiting who may see or edit anyone else's hours. They are separate rows in the role editor, the matrix in 10.1 and `platform/roles.json`.
-5. **Permission keys are stable API.** Renames ship as aliases for 2 major versions; tenants' custom roles are migrated automatically, and a changelog entry appears in the role editor.
-6. **This document is the canonical permission catalog.** Sibling docs sometimes use illustrative spellings. They map one-to-one, and the code generator registers them as aliases so nobody has to rename prose:
+4. **Permission keys are stable API.** Renames ship as aliases for 2 major versions; tenants' custom roles are migrated automatically, and a changelog entry appears in the role editor.
+5. **This document is the canonical permission catalog.** Sibling docs sometimes use illustrative spellings. They map one-to-one, and the code generator registers them as aliases so nobody has to rename prose:
 
 | Spelling used elsewhere | Canonical key here | Where it appears |
 |---|---|---|
@@ -852,6 +851,8 @@ journey
 | scope `assigned` | scope `own` (assignment is one of the `own` resolvers in 5.3) | [Architecture](20-architecture-security.md) |
 | `time_entry` (unsplit), `time_entry:own` | `time_entry.own` for the user's own punches; `time_entry.others` for anyone else's time | Earlier drafts of this doc and the blueprint data |
 | Growth namespaced keys such as `growth.campaigns.send`, `growth.site.publish`, `reputation.reviews.reply`, `comms.messages.send`, `growth.referrals.approve_reward` | `campaign.send`, `website.publish`, `review.respond`, `inbox.conversation.send`, `referral.approve` (and the other Marketing resources above) | [Marketing](16-marketing-growth-communications.md) |
+
+6. **Time entries are two capabilities** ([24](24-product-scope-decisions-catalog.md) R25-C6): `time_entry.own` covers the user's own punches and takes only the `own` scope; `time_entry.others` covers other people's time and takes the `crew`, `branch` or `all` scope. A role can therefore let everyone punch while limiting who may see or edit anyone else's hours. They are separate rows in the role editor, the matrix in 10.1 and `platform/roles.json`.
 
 ### 5.3 Scopes: `own`, `crew`, `branch`, `all`
 
@@ -959,19 +960,32 @@ Rootline ships nine tenant role templates matching the personas. Templates are v
 
 | Template | Summary | Surfaces | Seat type (derived from permissions, per [Pricing](22-business-model-pricing-gtm.md) 4.3) | MFA default |
 |---|---|---|---|---|
-| `owner` | Everything, plus owner-only permissions | Web, mobile | Office | Required |
-| `office_manager` | Front office: CRM, scheduling, invoicing, collections, team admin (no role editing), no Ledger P&L by default | Web, mobile | Office | Required |
-| `estimator` | Own pipeline, Estimates and Proposals; cost and margin on own Estimates; branch lead pool | Web, tablet | Office | Required |
-| `designer` | Design Studio, Mockups, Plant KB, prices (no cost or margin by default) | Web, tablet | Office + Designer entitlement | Required |
-| `ops_manager` | Branch operations: Jobs, Visits, dispatch, Crews, equipment, timesheet approval, job cost (hours and cost; margin per setting), as-built reconciliation and publishing (`design.as_built`, `design.as_built_publish`); `mockup.generate` is off by default and a Company can enable it for account managers who sell enhancements ([AI Mockups](11-ai-design-mockups.md) 5.9) | Web, mobile | Office | Required |
-| `crew_lead` | Crew app: crew Visits, crew time edits, checklists, chemical logs, field change-order drafts, optional field payments | Mobile, kiosk | Field (billed only when active) | App PIN or biometrics |
-| `technician` | Crew app: own time, crew Visits (limited), photos, checklists | Mobile, kiosk | Field (billed only when active) | Kiosk PIN or app PIN |
+| `owner` | Everything, plus owner-only permissions | Web, native app (manager mode) | Office | Required |
+| `office_manager` | Front office: CRM, scheduling, invoicing, collections, team admin (no role editing), no Ledger P&L by default | Web, native app (manager mode) | Office | Required |
+| `estimator` | Own pipeline, Estimates and Proposals; cost and margin on own Estimates; branch lead pool | Web, native app (sales mode) | Office | Required |
+| `designer` | Design Studio, Mockups, Plant KB, prices (no cost or margin by default) | Web, native app (sales mode) | Office + Designer entitlement | Required |
+| `ops_manager` | Branch operations: Jobs, Visits, dispatch, Crews, equipment, timesheet approval, job cost (hours and cost; margin per setting), as-built reconciliation and publishing (`design.as_built`, `design.as_built_publish`); `mockup.generate` is off by default and a Company can enable it for account managers who sell enhancements ([AI Mockups](11-ai-design-mockups.md) 5.9) | Web, native app (manager mode) | Office | Required |
+| `crew_lead` | Crew app: crew Visits, crew time edits, checklists, chemical logs, field change-order drafts, optional field payments | Native app (crew mode), kiosk | Field (billed only when active) | App PIN or biometrics |
+| `technician` | Crew app: own time, crew Visits (limited), photos, checklists | Native app (crew mode), kiosk | Field (billed only when active) | Kiosk PIN or app PIN |
 | `bookkeeper` | Ledger, AR/AP, bank rec, reports, payroll export, read-only ops drill-down | Web | Free bookkeeper seat (1 per Company; more when linked to a verified Accountant Partner firm) | Required |
-| `subcontractor` | Assigned subcontract orders only; bills to the Company | Sub portal (web/PWA) | Free, unlimited | Required for the full sub portal; single-order links need none (5.12) |
+| `subcontractor` | Assigned subcontract orders only; bills to the Company | Sub portal (web/PWA); restricted crew mode in the native app | Free, unlimited | Required for the full sub portal; single-order links need none (5.12) |
 
 **Seat consequences are shown before save.** Because seat type follows permissions, the role editor and the invite screen show the seat effect of every change: "Giving Miguel `estimate.update:own` makes him an office seat ($39/month on Grow, as of the [Pricing](22-business-model-pricing-gtm.md) draft)." Field-only roles stay field seats however many crew-app permissions they hold.
 
-Additional **starter custom roles** offered in the role gallery: Branch Manager (`ops_manager` + branch P&L), Sales Manager (estimator team scope + pipeline reports), Irrigation Technician (technician + irrigation controller access + `chemical_application` none), Snow Plow Operator (night-shift, snow Routes only), **Observer** (read-only investor, silent partner or family member: dashboards, `field.margin.read`, no PII, no Client-list exports; up to 3 free per Company per [Pricing](22-business-model-pricing-gtm.md)), Payroll Clerk, Mechanic (equipment and work orders only), Kiosk Supervisor (unlock PINs only).
+Additional **starter custom roles** offered in the role gallery: Branch Manager (`ops_manager` + branch P&L), Sales Manager (estimator team scope + pipeline reports), Irrigation Technician (technician + irrigation controller access + `chemical_application` none), Snow Plow Operator (night-shift, snow Routes only), **Observer** (defined below), Payroll Clerk, Mechanic (equipment and work orders only), Kiosk Supervisor (unlock PINs only).
+
+**Observer starter role** ([24](24-product-scope-decisions-catalog.md) R25-C5). A free, read-only role for an investor, silent partner, lender or family member who needs to see how the business is doing and nothing else. Unlike the other gallery roles, its grants are fixed by Rootline, and the template lives in `platform/roles.json` (`custom_role_templates`).
+
+| Attribute | Observer |
+|---|---|
+| Seat | Observer seat, free (up to 3 per Company, [Pricing](22-business-model-pricing-gtm.md) 4.3) |
+| Surfaces and navigation | Company web app only; the nav shows **Today** and **Reports**, and the role lands on Today |
+| Grants | `dashboard` R/a, `financial_report` R/a (P&L, balance sheet, cash flow), `job_cost_report` R/a. Every other row of the 10.1 matrix is `-` |
+| Field classes | `price`, `cost` and `margin` read. No other field class |
+| Never | Client PII (names, phones, emails, addresses, gate codes): dashboards and reports show service lines, branches, Crews and Job numbers instead; pay rates and HR records; any export (`report.export`, `data_export.run`) or scheduled report delivery; any write, approval, message or AI action, including Copilot |
+| MFA | Required |
+
+A Company can clone the Observer into a custom role like any other template; the clone is an ordinary custom role, and its seat type follows the permissions it ends up with.
 
 ### 5.8 Custom roles, multi-role users and anti-escalation
 
@@ -1030,12 +1044,12 @@ flowchart TD
 
 ### 5.10 Delegated access for external accountants: the Accountant Hub
 
-**MVP (basic delegated access):**
+**Delegated access:**
 - An owner invites "my accountant" by email. The invitee gets (or reuses) their Rootline identity and a membership with the `bookkeeper` template (or a custom variant).
 - Delegated access is **free**: one bookkeeper seat per Company at no charge, and more when the bookkeeper belongs to a verified Accountant Partner firm ([Pricing](22-business-model-pricing-gtm.md) 4.3). This mirrors how accounting products court accountants (e.g. QuickBooks Online lets owners invite accountant users; verify current limits).
 - MFA is mandatory for delegated accountants.
 
-**V1 (Accountant Hub):**
+**Accountant Hub** (the firm-level layer on top of delegated access):
 1. **Accountant Firm** entity with its own staff and roles (`firm_admin`, `firm_staff`). The firm admin assigns which staff work which client Companies.
 2. **Client grants:** the Company owner grants the **firm** (not just a person) access with a role, optional entity restriction, and optional expiry (e.g. "through April 30 for tax season"). The firm maps its staff to that client.
 3. **Hub dashboard:** all client Companies with close status (the close checklist from journey 4.7), unreconciled transaction counts, AR over 90 days, sales tax deadlines, and period lock state.
@@ -1110,13 +1124,15 @@ Client contacts are not staff. Their permissions are relationship-based: **conta
 
 ### 5.13 Platform staff permissions, support impersonation and break-glass
 
-**Separate realm.** Platform staff authenticate in a **separate identity realm**:
-- a distinct admin domain and cookie scope;
-- mandatory SSO through Rootline's corporate IdP;
-- phishing-resistant MFA (FIDO2 security keys or device-bound passkeys);
-- managed devices only.
+**Who holds platform roles.** The founder holds `platform_owner`. The support agent, the plant curator agent, the finance agent and the engineering agent hold `platform_support`, `platform_curator`, `platform_finance` and `platform_engineer`: permission sets held by AI operator agents, which a hired person could hold later without any product change ([24](24-product-scope-decisions-catalog.md) section 1.2).
 
-Platform staff have **no tenant memberships**. They reach tenant data only through the mechanisms below.
+**Separate realm.** Platform principals live in a **separate identity realm** with a distinct admin domain and cookie scope.
+- A person holding a platform role (today, the founder) signs in with mandatory SSO through Rootline's corporate IdP, phishing-resistant MFA (FIDO2 security keys or device-bound passkeys) and managed devices only.
+- Operator agents authenticate as service principals with short-lived credentials scoped to their role, issued per agent by Rootline's agent runtime. They act through the Admin API, never through an interactive console session, and cannot complete step-up, so any step-up action an agent wants becomes a request to the founder ([Platform Admin](19-platform-admin-portal.md) PA-002). Every agent action is recorded under the agent's own principal ID.
+
+Platform principals have **no tenant memberships**. They reach tenant data only through the mechanisms below.
+
+**Approvals between Rootline's own principals.** Wherever this document or [Platform Admin](19-platform-admin-portal.md) once required a second Rootline approver, the rule is now: an agent's request needs the founder's approval, and an agent can never approve its own or another agent's request. The founder's own privileged actions need step-up authentication and a written reason, are written to the platform audit log, and notify the affected Company where this spec says so ([Platform Admin](19-platform-admin-portal.md) PA-004). Dual control inside a customer Company (5.6) is a customer feature and is unchanged.
 
 **Platform permissions** (prefix `platform.`) are matrixed in section 10.4. Key principles:
 - `platform_curator` never sees tenant business data.
@@ -1130,12 +1146,12 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 | **Metadata view** | Tenant profile, plan, usage, feature flags, error logs (PII-redacted), sync health, integration status, user list (names, roles, last active) | None (covered by ToS; logged) | n/a |
 | **View as user (read-only)** | See the app exactly as a specific user sees it (that user's permissions, never more). Writes are blocked at the API layer | Tenant grant with scope `read_only` by owner or office_manager (`support_access.grant`), per ticket or standing read-only consent (opt-in, reconfirmed by the owner every 90 days) | 72 h per grant by default, maximum 7 days; each session max 60 min |
 | **Act as user (read-write)** | Perform actions as the user, e.g. fix a Route or re-run an import | Explicit per-ticket grant with scope `read_write`; owner approval required | 24 h by default, maximum 72 h; each session max 30 min |
-| **Break-glass** | Engineer access to production data for incident response or data repair (SQL via audited bastion, scoped to one tenant) | Two-person rule: `platform_owner` approval (or a second designated approver if the founder is unavailable) with a legal or security reason code, as in [Platform Admin](19-platform-admin-portal.md); tenant notified within 24 h unless legally prohibited | 30-120 min, auto-revoked |
+| **Break-glass** | Engineer access to production data for incident response or data repair (SQL via audited bastion, scoped to one tenant) | The engineering agent requests with a legal or security reason code; the founder approves with step-up authentication ([Platform Admin](19-platform-admin-portal.md) PA-004). If the founder cannot be reached, the request waits. Tenant notified within 24 h unless legally prohibited | 30-120 min, auto-revoked |
 
 **Grant scopes.** Each grant names one scope: `read_only` ("view as user"), `read_write` ("act as user"), or one of the task scopes `billing_setup`, `ledger` and `migration`. The task scopes use the same consent model, banners and logs and are approved only by an `owner` (`migration` adds a `bookkeeper` co-sign for financial objects; `ledger` is an explicit opt-in). Their default and maximum durations and session caps are set in [Platform Admin](19-platform-admin-portal.md) PA-051 and enforced as described in [Architecture](20-architecture-security.md).
 
 **Impersonation rules:**
-1. Support can only impersonate users whose role is equal to or lower than the granting user's (an office_manager cannot grant access to "view as owner").
+1. The support agent (or the founder) can only impersonate users whose role is equal to or lower than the granting user's (an office_manager cannot grant access to "view as owner").
 2. Even in "Act as", these remain blocked:
    - viewing or changing credentials, MFA, passkeys or SSO config;
    - reading `employee_pii` and `vendor_banking`;
@@ -1143,17 +1159,18 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
    - bulk exports;
    - sending messages to Clients (unless explicitly granted per ticket);
    - deleting records (soft-delete only, flagged).
-3. Every request carries `actor_id` (staff), `subject_id` (impersonated user) and `ticket_id`. The UI shows an unmissable orange banner (the Clay impersonation band, token `color.banner.impersonation` in [UX](21-ux-design-system-sitemaps.md) section 8.3, deliberately not the red danger color) "Viewing as Miguel Hernández - Rootline Support (Maya) - Ticket 4821 - ends in 42 min".
+3. Every request carries `actor_id` (the founder or the operator agent), `subject_id` (impersonated user) and `ticket_id`. The UI shows an unmissable orange banner (the Clay impersonation band, token `color.banner.impersonation` in [UX](21-ux-design-system-sitemaps.md) section 8.3, deliberately not the red danger color) "Viewing as Miguel Hernández - Rootline support agent - Ticket 4821 - ends in 42 min".
 4. **Tenant transparency:** Settings > Security > Support access log lists every session (who, when, duration, mode, ticket, pages and records touched). Owners get an email summary after each session.
 5. Copilot is disabled inside impersonation sessions to avoid confusing attribution.
 6. **Viewing the portal as a Client contact** is allowed only when the Company grants it for a named contact on a ticket (e.g. "Jennifer can't see her Mockups"). Payment-method, signature and contact-management screens render as placeholders. Rootline support never contacts a Company's Clients directly; the Company owns that relationship.
-7. **Founder access follows the same rules.** `platform_owner` sessions in tenant data use the same grants, banners and logs. The founder's only extra power is approving break-glass, which is itself logged and reviewed by a second person within 5 business days ([Platform Admin](19-platform-admin-portal.md)).
+7. **Founder access follows the same rules.** `platform_owner` sessions in tenant data use the same grants, banners and logs. The founder's only extra power is approving break-glass and the agents' other privileged requests. When the founder acts directly, the action needs step-up authentication and a written reason, is written to the platform audit log, notifies the affected Company (break-glass always does) and appears in the founder's weekly digest of sensitive actions ([Platform Admin](19-platform-admin-portal.md) PA-004, PA-173).
 
 ### 5.14 Authentication per persona
 
 | Persona / role | Primary method | Second factor / step-up | Options | Notes |
 |---|---|---|---|---|
-| `platform_*` | SSO through Rootline corporate IdP (OIDC) | FIDO2 hardware key or platform passkey, required | None | Separate realm; 8 h max session |
+| `platform_owner` (the founder), and any person who later holds a platform role | SSO through Rootline corporate IdP (OIDC) | FIDO2 hardware key or platform passkey, required | None | Separate realm; 8 h max session |
+| `platform_support`, `platform_curator`, `platform_finance`, `platform_engineer` held by operator agents | Service principal with short-lived credentials scoped to the role, issued per agent by Rootline's agent runtime ([Platform Admin](19-platform-admin-portal.md) PA-002) | None: agents cannot complete step-up, so a step-up action becomes a request to the founder | None | Admin API only; no interactive console session |
 | `owner`, `office_manager`, `bookkeeper` | Passkey (WebAuthn), email + password, or Google / Microsoft / Apple sign-in | **MFA required:** passkey or TOTP; SMS OTP only as fallback with a risk banner | Enforced SSO for tenants on SSO plans | Step-up for sensitive actions (5.16) |
 | `estimator`, `designer`, `ops_manager` | Same | MFA required by default (Company can relax to "recommended" only on the Starter plan, with a warning) | | MFA can never be relaxed for anyone holding `payment.refund`, any `ledger.*` write, `api_key.create` or `stripe_connection.*`, per [Architecture](20-architecture-security.md) |
 | Enterprise tenants (all staff) | **SAML 2.0 / OIDC SSO** with Okta, Microsoft Entra ID, Google Workspace, JumpCloud; **SCIM 2.0** provisioning and deprovisioning, both on the Enterprise plan ([Pricing](22-business-model-pricing-gtm.md)) | IdP-enforced MFA | JIT provisioning with default role mapping by IdP group | Break-glass local owner account retained (hardware key) for IdP outages |
@@ -1185,7 +1202,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 - Staff: recovery via a verified second factor or an owner-initiated reset.
 - Owners: recovery requires two factors or a support-verified identity process with a 48-hour delay and notifications to all owners.
 - Clients: magic link is recovery.
-- Platform staff: recovery only via the corporate IdP.
+- Platform principals: the founder recovers only via the corporate IdP; agent credentials are never recovered, only revoked and reissued by the agent runtime.
 
 > **Competitive edge - no bearer links, no PIN at every login.** Jobber's own help center says anyone holding a Client Hub link sees what the client sees, and an Aspire reviewer describes a PIN at each portal login. Rootline splits the two needs. Acting on one document is instant from a scoped link, while saved-card payments, larger signatures and contact changes need a 6-digit code or a passkey on the contact's own phone. A forwarded Crossroads email exposes one invoice, not 9 properties, and Jennifer never types a password.
 
@@ -1195,14 +1212,14 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 - device ID, platform and model, app version, user(s), first seen and last seen, IP and approximate geo, and trust level (`unknown`, `user_device`, `company_enrolled`, `kiosk`);
 - encryption state as reported by the OS.
 
-**Shared-device modes** follow the device modes in [Field Crew App](05-field-crew-mobile-app.md): a **crew device** (truck tablet or phone shared by one crew) is; a **yard shop kiosk** (wall tablet for the whole branch) is. Both use the same enrollment and PIN rules:
+**Shared-device modes** follow the device modes in [Field Crew App](05-field-crew-mobile-app.md): a **crew device** (truck tablet or phone shared by one crew) and a **yard shop kiosk** (wall tablet for the whole branch). Both use the same enrollment and PIN rules:
 1. An `owner`, `office_manager` or `ops_manager` enrolls a device by scanning a one-time enrollment QR code from the web app. This binds the device to a Company and branch with a device certificate (key in iOS Keychain / Android Keystore).
 2. The home screen shows the crew's members (crew device) or the branch's active employees (kiosk), as photo plus first name plus initial, or a search box. The user taps their name, enters a PIN and chooses Clock in, Clock out, Break or Switch job.
 3. PIN rules:
    - 4-6 digits, unique per user within the Company; no 1234, 0000 or birth-year patterns;
    - 5 wrong attempts locks that user on that device for 5 minutes, doubling on each repeat lockout the same day, and notifies the crew lead (the base rule matches [Field Crew App](05-field-crew-mobile-app.md));
    - PIN reset by crew_lead (for their crew), ops_manager or office_manager.
-4. Optional **photo at punch** (anti-buddy-punching) stores a photo for human review only. No face templates or biometric matching. A consented face-verification option is no earlier than, off by default, and requires the written-consent workflow where biometric privacy laws apply (e.g. Illinois BIPA); see 12.2.
+4. Optional **photo at punch** (anti-buddy-punching) stores a photo for human review only. No face templates or biometric matching: Rootline offers no face verification ([24](24-product-scope-decisions-catalog.md) OD-54). Where a state's rules call for notice or consent even for a photo, the Company uses the consent templates in 12.2.
 5. Optional **geofence** check: punches outside the yard or Property geofence are flagged, not blocked.
 6. **Crew session on a truck tablet:** the crew lead signs in (PIN plus device trust), and the tablet becomes a crew device for the day. Technicians can add photos and checklist items under their own identity by tapping their avatar and entering their PIN (attribution without full logins).
 7. Yard kiosks return to the home screen 30 seconds after each interaction. Crew devices lock back to the "Who are you?" picker after 2 minutes idle (configurable), and personal screens (my pay, my messages) always need the PIN. No Client data is visible on either home screen.
@@ -1220,7 +1237,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 | Surface | Idle timeout (default) | Absolute lifetime | Offline grace | Step-up required for |
 |---|---|---|---|---|
 | Company web app | 12 h (configurable 15 min - 24 h), per [Architecture](20-architecture-security.md) | 14 days on a remembered device, else 24 h | n/a | Viewing `employee_pii`; changing bank, Stripe, roles, security policy; exports; period unlock; refunds over $500; deleting Clients; editing closed periods (re-auth if the last authentication is more than 10 min old, per [Architecture](20-architecture-security.md)) |
-| Company mobile app (office roles) | App lock after 15 min background (biometric unlock) | 30 days refresh | 72 h of read-only cached data | Same as web |
+| Native app in manager or sales mode (office roles) | App lock after 15 min background (biometric unlock) | 30 days refresh | 72 h of read-only cached data | Same as web |
 | Crew app (own device) | App PIN or biometric after 30 min background | Device-bound refresh token, 30-day rolling; full re-OTP at least every 90 days | **7 days** of offline operation; after that, local data is locked until re-auth | n/a (no sensitive actions available) |
 | Crew app (truck tablet, crew session) | Ends at crew lead clock-out or 14 h, whichever comes first | 14 h | 7 days (device stays enrolled) | n/a |
 | Crew device (per person on the shared tablet) | Back to the PIN picker after 2 min idle | Device enrollment, renewable | Same as crew session | Personal screens need the PIN every time |
@@ -1230,7 +1247,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 | Accountant Hub | 8 h | 14 days | n/a | Period unlock, journal entry delete, employee PII |
 | Platform Admin | 30 min | 8 h | n/a | Every tenant-touching privileged action (hardware key tap) |
 
-**Crew offline lock exceptions.** When a crew device passes the 7-day offline grace, new work is locked until re-authentication, but two things stay available, as specified in [Field Crew App](05-field-crew-mobile-app.md) section 4.0.2 (offline session limit): the emergency screen (05 section 4.12.6, from), and PIN-verified time punches, so a crew is never blocked from clocking in. Those punches are append-only, signed with the device key and flagged `stale_session` for the approver. The lock never deletes queued field work; it syncs once the user re-authenticates. The 14-day device-key offline lease in [Architecture](20-architecture-security.md) 4.11.1 remains the cryptographic backstop.
+**Crew offline lock exceptions.** When a crew device passes the 7-day offline grace, new work is locked until re-authentication, but two things stay available, as specified in [Field Crew App](05-field-crew-mobile-app.md) section 4.0.2 (offline session limit): the emergency screen (05 section 4.12.6) and PIN-verified time punches, so a crew is never blocked from clocking in. Those punches are append-only, signed with the device key and flagged `stale_session` for the approver. The lock never deletes queued field work; it syncs once the user re-authenticates. The 14-day device-key offline lease in [Architecture](20-architecture-security.md) 4.11.1 remains the cryptographic backstop.
 
 **Revocation semantics:**
 - Every access token carries `perm_version` (per membership) and `session_version` (per identity).
@@ -1256,7 +1273,7 @@ Platform staff have **no tenant memberships**. They reach tenant data only throu
 
 **Properties:**
 - **Append-only.** Each event is hash-chained per tenant per day, and the daily root hash is anchored in a separate write-once (object-lock) bucket, so tampering is detectable.
-- Event schema: `actor` (identity, membership, role at the time), `actor_type` (`user`, `api_client`, `automation`, `ai_agent`, `platform_staff`, matching [Architecture](20-architecture-security.md)), `on_behalf_of` (impersonation subject), `tenant_id`, `entity_id`, `action`, `resource_type`, `resource_id`, `before` and `after` (diff, with sensitive fields hashed rather than stored), `reason`, `ip`, `user_agent`, `device_id`, `auth_method`, `request_id`, `timestamp`.
+- Event schema: `actor` (identity, membership, role at the time), `actor_type` (`user`, `api_client`, `automation`, `ai_agent`, `platform_staff` for the founder or a named operator agent, matching [Architecture](20-architecture-security.md)), `on_behalf_of` (impersonation subject), `tenant_id`, `entity_id`, `action`, `resource_type`, `resource_id`, `before` and `after` (diff, with sensitive fields hashed rather than stored), `reason`, `ip`, `user_agent`, `device_id`, `auth_method`, `request_id`, `timestamp`.
 - **Tenant UI:** filter by user, resource, action, date; "Show everything Miguel did on May 14"; export CSV.
 - **Saved alerts**: e.g. "notify me when anyone exports Clients" or "when a refund over $1,000 is issued".
 - **SIEM export**: streaming to Splunk, Datadog or a customer S3 bucket for enterprise tenants.
@@ -1291,7 +1308,7 @@ stateDiagram-v2
    - invalid E.164 numbers;
    - returning workers matched by phone or name + DOB, who are offered **rehire** instead of a new record;
    - missing branch.
-3. Invites go out by **SMS in the worker's language** with a link to the crew app install and a 6-digit code, or the worker is set to **shared-device only** (no personal device needed; they punch on the crew device or, from V1, the yard kiosk). A PIN is set at first use with supervisor confirmation.
+3. Invites go out by **SMS in the worker's language** with a link to the crew app install and a 6-digit code, or the worker is set to **shared-device only** (no personal device needed; they punch on the crew device or the yard kiosk). A PIN is set at first use with supervisor confirmation.
 4. **Onboarding checklist per hire**:
    - e-sign handbook and safety policy acknowledgment (ES/EN);
    - emergency contact;
@@ -1357,7 +1374,7 @@ Summer crews often include 16- and 17-year-olds, and some Companies hire 14- and
 ### 5.20 Enforcement architecture (summary; details in [Architecture](20-architecture-security.md))
 
 1. **Tenant isolation:** Postgres RLS on `tenant_id` with the tenant set per transaction from the verified token. Large tenants on dedicated databases keep identical policies.
-2. **Policy decision point (PDP):** the in-process policy engine defined in [Architecture](20-architecture-security.md) evaluates `can(principal, action, resource)`. That engine uses Cedar policies, with each tenant's roles compiled to policy templates and a typed TypeScript DSL as the documented fallback. The `access` domain module owns role definitions and compiles them for the engine. Key spellings in the Architecture doc map to this catalog through the alias table in 5.2 (rule 6).
+2. **Policy decision point (PDP):** the in-process policy engine defined in [Architecture](20-architecture-security.md) evaluates `can(principal, action, resource)`. That engine uses Cedar policies, with each tenant's roles compiled to policy templates and a typed TypeScript DSL as the documented fallback. The `access` domain module owns role definitions and compiles them for the engine. Key spellings in the Architecture doc map to this catalog through the alias table in 5.2 (rule 5).
    - Compiled grants are cached in Redis, keyed by `membership_id:perm_version`.
    - Relationship checks (Client contacts, delegations, subcontract assignments, crew membership on a date) use a relationship index (Zanzibar-style tuples in Postgres).
    - Policies are data, not code branches, so the role editor and the "View as" simulator use the same evaluator.
@@ -1370,11 +1387,11 @@ Summer crews often include 16- and 17-year-olds, and some Companies hire 14- and
 
 - Owners and office managers (with `role.read`) can preview the app **as a role** (synthetic user) or **as a specific user** within their own scope. Preview is always read-only and never shows data beyond the previewer's own rights: the intersection is used.
 - "Why can't I see this?" explainer: hovering a redacted field or a denied action shows the missing permission and which roles grant it ("Requires `field.margin.read`, granted by Owner, Bookkeeper. Ask Dana.").
-- **Request access** button sends a structured request to the owner (5.8 JIT elevation, V2).
+- **Request access** button sends a structured request to the owner (5.8 JIT elevation).
 
 ### 5.22 Localization and accessibility of the access experience
 
-- All auth flows, invites, PIN screens, permission explanations and onboarding checklists ship in **English and Spanish** at MVP, with French-Canadian later ([UX](21-ux-design-system-sitemaps.md)).
+- All auth flows, invites, PIN screens, permission explanations and onboarding checklists ship in **English, Spanish and French-Canadian** ([UX](21-ux-design-system-sitemaps.md); [24](24-product-scope-decisions-catalog.md) R24-19).
 - Language is chosen per identity (staff) and per contact (Clients), and SMS templates are localized.
 - Kiosk and crew screens:
   - 56 px minimum touch targets (gloved hands);
@@ -1437,7 +1454,7 @@ flowchart TD
 sequenceDiagram
     participant Owner
     participant App as CompanyApp
-    participant Support
+    participant Support as Support agent
     participant Admin as PlatformAdmin
     participant Audit
     Owner->>App: Opens chat - crew app missing today's Route
@@ -1540,7 +1557,7 @@ sequenceDiagram
 | Portal: Sign-in, People and access, Approvals inbox | Customer Portal | client_residential, client_commercial |
 | Accountant Hub: client list, close status, firm staff | Accountant web | bookkeeper (firm) |
 | Sub portal: orders, documents, bills | Sub portal | subcontractor |
-| Platform: staff and roles, support access console, impersonation banner, break-glass requests | Platform Admin | platform_* |
+| Platform: platform principals and roles (the founder and each operator agent), support access console, impersonation banner, break-glass requests, the founder's Approvals inbox | Platform Admin | platform_* (agents through the Admin API) |
 
 ### 7.2 Wireframe: Role editor (Company web)
 
@@ -1645,7 +1662,7 @@ sequenceDiagram
 +-------------------------------------------------------------+
 |  Rootline Support is asking for access                       |
 |  Ticket 4821: "Crew M3 can't see today's route"              |
-|  Requested by: Maya S. (Rootline Support)                    |
+|  Requested by: the Rootline support agent (AI)               |
 |                                                              |
 |  Access type:  (o) View only   ( ) View and make changes     |
 |  As user:      [ Miguel Hernandez (crew_lead) v ]            |
@@ -2066,7 +2083,7 @@ erDiagram
 - `role_grant (role_id, permission_key)` unique, and `scope in permission.allowed_scopes`.
 - `crew_member` uses effective-dated ranges with an exclusion constraint preventing overlapping memberships in two Crews on the same day (borrowing uses Visit-level assignment, not crew membership).
 - `audit_event` is partitioned by month and tenant hash. Its insert-only role has no `UPDATE` or `DELETE` grants at the database level.
-- Platform staff tables (`platform_staff`, `platform_role`, `break_glass_request`) live in a **separate schema and database role** not reachable from tenant request paths ([Platform Admin](19-platform-admin-portal.md)).
+- Platform staff tables (`platform_staff`, with one row per platform principal: the founder and each operator agent; `platform_role`; `break_glass_request`) live in a **separate schema and database role** not reachable from tenant request paths ([Platform Admin](19-platform-admin-portal.md)).
 - All tenant tables carry `tenant_id` and RLS policies. `identity`, `accountant_firm` and `organization` are global tables accessed only through the access module's service role.
 
 ---
@@ -2080,14 +2097,14 @@ erDiagram
 | Twilio Verify (SMS, WhatsApp, voice OTP) | Crew and Client phone verification, step-up | 10DLC registration for the Company's sending numbers is handled in [Marketing](16-marketing-growth-communications.md). OTP traffic uses verification channels |
 | Twilio masked numbers (number pool or proxy pattern) | Masked calling and texting between crew/subs and Clients | Real numbers never reach field devices. Verify the current Twilio product for proxying |
 | Postmark / SendGrid | Magic links, invites, security notices | Separate transactional stream for auth mail. Strict DMARC alignment on Company custom domains ([Customer Portal](06-customer-portal.md)) |
-| WebAuthn / passkeys (FIDO2) | Passwordless staff and Client login, platform hardware keys | W3C WebAuthn standard. Discoverable credentials. Attestation not required except for platform staff (allowlist of security key models) |
+| WebAuthn / passkeys (FIDO2) | Passwordless staff and Client login, platform hardware keys | W3C WebAuthn standard. Discoverable credentials. Attestation not required except for platform users (allowlist of security key models) |
 | Google, Microsoft and Apple sign-in (OIDC) | Social and business sign-in for staff and Clients | Link to an existing identity only by verified email |
-| Enterprise SSO (SAML 2.0, OIDC) | Okta, Microsoft Entra ID, Google Workspace, JumpCloud | Build-vs-buy: use an SSO/SCIM broker or open-source SAML bridge to reach market faster; decision recorded in [Architecture](20-architecture-security.md) |
+| Enterprise SSO (SAML 2.0, OIDC) | Okta, Microsoft Entra ID, Google Workspace, JumpCloud | Build-vs-buy: use an SSO/SCIM broker or open-source SAML bridge to keep the build small; decision recorded in [Architecture](20-architecture-security.md) |
 | SCIM 2.0 (RFC 7644) | User and group provisioning and deprovisioning | Group-to-role mapping table per tenant; aligned with [Architecture](20-architecture-security.md) and [Pricing](22-business-model-pricing-gtm.md) |
 | Payroll providers (e.g. Gusto, ADP, Paychex, QuickBooks Payroll; Wagepoint and similar in Canada) | Onboarding handoff, employee sync, pay rates | Detail in [Team, HR and Payroll](15-team-hr-payroll.md) |
-| MDM (Apple Business Manager, Jamf, Microsoft Intune, Android Enterprise) | Kiosk lockdown, managed app config, wipe | Optional for larger tenants; same priority as [Field Crew App](05-field-crew-mobile-app.md) |
+| MDM (Apple Business Manager, Jamf, Microsoft Intune, Android Enterprise) | Kiosk lockdown, managed app config, wipe | Optional for larger tenants; device modes as in [Field Crew App](05-field-crew-mobile-app.md) |
 | Stripe (Company-owned accounts) | Only `owner` can connect or disconnect. Payment roles map to charge, refund and payout visibility | Stripe dashboard access is the Company's own business. Rootline never creates Stripe dashboard users |
-| Rootline corporate IdP (e.g. Google Workspace or Okta) | Platform staff SSO | Separate realm |
+| Rootline corporate IdP (e.g. Google Workspace or Okta) | SSO for the founder and any person who later holds a platform role; operator agents use service-principal credentials from the agent runtime | Separate realm |
 
 ### 9.2 Public API surface (Company-scoped)
 
@@ -2141,6 +2158,8 @@ erDiagram
 - Actions: `R` read; `W` create and update; `D` delete, void or archive; `X` the special action named in the row.
 - Scope after the slash: `a` all, `b` branch, `c` crew (within the visibility window), `o` own/assigned.
 - `-` no access. `cfg` = off by default, Company can enable. `<=lim` = subject to approval limits (5.6).
+
+**Observer:** the Observer starter role (5.7) has no column here. It holds only `dashboard` R/a, `financial_report` R/a and `job_cost_report` R/a, and is `-` on every other row.
 
 **Footnotes:**
 1. Anti-escalation applies: users can assign only roles whose grants are less than or equal to their own; `ops_manager` can assign field roles in their branch.
@@ -2222,8 +2241,8 @@ erDiagram
 
 | Capability | owner | office_manager | estimator | designer | ops_manager | crew_lead | technician | bookkeeper | subcontractor |
 |---|---|---|---|---|---|---|---|---|---|
-| `time_entry` (own punches) | RW/o | RW/o | RW/o | RW/o | RW/o | RW/o | W/o + R/o | - | - |
-| `time_entry` (others) | RWD/a | RWD/a | - | - | RWD/b | RW/c <=lim | - | R/a | - |
+| `time_entry.own` (own punches) | RW/o | RW/o | RW/o | RW/o | RW/o | RW/o | W/o + R/o | - | - |
+| `time_entry.others` (other people's time) | RWD/a | RWD/a | - | - | RWD/b | RW/c <=lim | - | R/a | - |
 | `timesheet.approve` | X/a | X/a | - | - | X/b | X/c first level, cfg | - | - | - |
 | `employee` | RWD/a | RWD/a | - | - | R/b | R/c roster, emergency contacts | R/o | R/a | - |
 | `certification`, `training` | RWD/a | RWD/a | R/o | R/o | RW/b | R/c | RW/o upload own | R/a | RW/o COI, licenses |

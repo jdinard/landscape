@@ -1767,7 +1767,7 @@
       "nav": "Design my yard",
       "label": "Start",
       "path": "/design",
-      "purpose": "Address autocomplete or upload a yard photo; no account. (Photo widget on Company sites ships.)",
+      "purpose": "Address autocomplete or upload a yard photo; no account. The same flow runs as a photo widget on Company sites (home.widget).",
       "roles": [
         "homeowner"
       ],

@@ -1,10 +1,10 @@
 # 22 - Business Model, Pricing and Go-to-Market
 
-> Rootline earns money mainly from a seasonally aware SaaS subscription. On top of that sit metered usage (AI credits, AI receptionist minutes, SMS) and add-ons that match landscaping work (Design Studio seats, a snow module billed only in snow months, payroll, advanced accounting, websites). Basic snow work (Snow Lite: storm visit logs, per-push invoices and proof-of-service PDFs) is included in every tier from launch. Payments are bring-your-own-Stripe, so client money never passes through Rootline. We turn that into a selling point: Rootline adds no markup on processing by default, and a cheaper subscription paid for with a small, disclosed application fee is offered only as an opt-in. Three newer revenue lines grow from the same assets: a free homeowner AI design app that sends qualified, design-ready leads to subscribing Companies; licensing of the curated Plant Knowledge Base and anonymized industry benchmarks; and a partner network of distributors, nurseries, associations, franchise systems and CPAs. The product, every plan and every offer work across the US and Canada from launch. Marketing and Plant KB seeding start with one beachhead: 5-40 employee residential design-build-maintain firms in one launch region, the Great Lakes (six Regions from Columbus to Milwaukee, OD-01), chosen with the weighted criteria in section 6.2 because curated plant knowledge matters most there and the winter planning season is long. Rootline is two people, the founder and Claude, so sales are self-serve: a free trial timed to the November-to-March planning season, a migration concierge that makes switching cheap, and founder demos for Enterprise ("talk to the founder"). Claude's marketing agent does the rest under [26](26-agent-led-marketing-playbook.md). This doc specifies the packaging, the entitlement and metering system engineers must build, the per-account unit economics with every assumption stated, positioning, the pricing page and the main risks.
+> Rootline earns money mainly from a seasonally aware SaaS subscription. On top of that sit metered usage (AI credits, AI receptionist minutes, SMS) and add-ons that match landscaping work (Design Studio seats, a snow module billed only in snow months, payroll, advanced accounting, websites). Basic snow work (Snow Lite: storm visit logs, per-push invoices and proof-of-service PDFs) is included in every tier from launch. Payments are bring-your-own-Stripe, so client money never passes through Rootline. We turn that into a selling point: Rootline adds no markup on processing by default, and a cheaper subscription paid for with a small, disclosed application fee is offered only as an opt-in. Three newer revenue lines grow from the same assets: a free homeowner AI design app that sends qualified, design-ready leads to subscribing Companies; licensing of the curated Plant Knowledge Base and anonymized industry benchmarks; and a partner network of distributors, nurseries, associations, franchise systems and CPAs. The product, every plan and every offer work across the US and Canada from launch. Marketing and Plant KB seeding start with one beachhead: 5-40 employee residential design-build-maintain firms in one launch region, the Great Lakes (six Regions from Columbus to Milwaukee, OD-01), chosen with the weighted criteria in section 6.2 because curated plant knowledge matters most there and the winter planning season is long. Rootline is two people, the founder and Claude, so sales are self-serve: a free trial timed to the November-to-March planning season, a migration concierge that makes switching cheap, and founder demos for Enterprise ("talk to the founder"). Claude's marketing agent does the rest under [26](26-agent-led-marketing-playbook.md). This doc specifies the packaging, the entitlement and metering system the build agent must build ([25](25-platform-blueprint-build-handoff.md)), the per-account unit economics with every assumption stated, positioning, the pricing page and the main risks.
 
 **At a glance**
 
-- **What it is:** Rootline's commercial model and go-to-market: packaging, prices, seats, usage meters, AI credits, add-ons, new revenue lines, unit economics, GTM plan, and the entitlement and metering system engineers must build. This doc is the pricing authority for every other doc.
+- **What it is:** Rootline's commercial model and go-to-market: packaging, prices, seats, usage meters, AI credits, add-ons, new revenue lines, unit economics, GTM plan, and the entitlement and metering system the build agent must build. This doc is the pricing authority for every other doc.
 - **Decision - three self-serve tiers plus Enterprise:** Starter $69, Grow $249 and Pro $529 per month on annual billing ($79 / $289 / $599 billed monthly; CAD set as separate price points), Enterprise from $1,500/month on an annual contract. Catalog codes are `starter`, `grow`, `pro` and `enterprise` (4.2.2). Grow, the ICP plan, includes every differentiator.
 - **Decision - seats that follow the season:** office seats are named; field seats are billed only when **active** in a period; Winter Mode (25% of list, up to 4 months in any 12, with Studio editing kept for paid designer seats), a snow module billed only November-March, and Snow Lite (storm visit logs, per-push and per-application invoices, per-site proof-of-service PDFs) included in every tier (4.5).
 - **Decision - published AI credits:** 300 / 2,000 / 6,000 credits per month included on Starter / Grow / Pro; packs of 1,000 for $25, 5,000 for $100 and 20,000 for $340. Every action shows its credit cost before it runs, and published action prices hold for at least 12 months (4.4.1).
@@ -19,7 +19,7 @@
 
 **Reading note on numbers.** Competitor prices below are "as of November 2026, verify". They come from third-party pricing trackers and review sites, which often disagree with each other, and are cross-checked against the raw research in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and the sibling module docs. Claude model prices in section 7.4 match Anthropic's published model table as of October 2026. Every Rootline price, cost and conversion figure in this doc is a **proposed value or a labeled estimate**, not a measured fact. All of them are meant to be tested and replaced with real data from paying Companies, which the finance and marketing agents measure (6.10).
 
-**What this doc decides for other docs.** This doc is the pricing authority. Where a sibling doc proposed a commercial number or deferred a decision here, this doc settles it: the AI credit rate card and allotments ([11](11-ai-design-mockups.md), [17](17-ai-copilot-automation.md)), how SMS, 10DLC and AI receptionist minutes are charged ([16](16-marketing-growth-communications.md)), the pay-as-you-grow application fee ([08](08-payments-stripe.md) option B), the dunning timings the tenant lifecycle uses ([19](19-platform-admin-portal.md)), and the plan codes the catalog uses (section 4.2.2).
+**What this doc decides for other docs.** This doc is the pricing authority. Where a sibling doc proposed a commercial number or left a decision to this doc, this doc settles it: the AI credit rate card and allotments ([11](11-ai-design-mockups.md), [17](17-ai-copilot-automation.md)), how SMS, 10DLC and AI receptionist minutes are charged ([16](16-marketing-growth-communications.md)), the pay-as-you-grow application fee ([08](08-payments-stripe.md) option B), the dunning timings the tenant lifecycle uses ([19](19-platform-admin-portal.md)), and the plan codes the catalog uses (section 4.2.2).
 
 ---
 
@@ -192,7 +192,7 @@ Role keys follow [02-personas-roles-permissions.md](02-personas-roles-permission
 
 ### 3.2 Platform-side personas for this module
 
-Rootline is two people: the founder holds `platform_owner`, and the other four platform roles are permission sets held by Claude's operator agents (24 section 1.2). A hired person could hold the same role later without any product change.
+Rootline is two people: the founder holds `platform_owner`, and the other four platform roles are permission sets held by Claude's operator agents (24 section 1.2). A hired person could hold the same role without any product change.
 
 | Persona (role key) | Jobs-to-be-done here |
 |---|---|
@@ -597,7 +597,7 @@ Rules:
 Privacy and antitrust guardrails (all, required before any external sale):
 1. **Opt-in** at the Company level by `owner` only. Separate opt-ins for (a) in-app peer benchmarks and (b) inclusion in external aggregated products. Both revocable. Revocation excludes the Company from the next publication cycle.
 2. **Aggregation thresholds:** each published cell needs ≥ 10 contributing Companies, no single Company may contribute > 25% of the cell's weight, and the top two no more than 40% (the full disclosure-control rules are in [18](18-reporting-analytics.md) section 4.11.4). Otherwise the cell is suppressed.
-3. **Lag and historic only:** external indices publish data at least 60 days old (at least 3 months for any price or wage index, per [18](18-reporting-analytics.md) section 4.11.7), describe historic averages only, never forward-looking prices, and never per-competitor figures. This lowers the risk of the benchmarks being used to coordinate prices; counsel must review (see 14.4).
+3. **Lag and historic only:** external indices publish data at least 60 days old (at least 3 months for any price or wage index, per [18](18-reporting-analytics.md) section 4.11.7), describe historic averages only, never forward-looking prices, and never per-competitor figures. This lowers the risk of the benchmarks being used to coordinate prices; the founder has counsel review the method before any price index ships (OD-69, 14.4).
 4. **No re-identification:** licensees agree contractually not to re-identify. Rootline audits output for small-cell leakage.
 5. **Price data waits for counsel:** price benchmarks and price indices (maintenance, labor rate, materials) stay off until the founder has had them checked by counsel (OD-69); the other benchmarks and indices ship with k of 10 or more and the lags above.
 
@@ -1083,7 +1083,7 @@ TAM and SAM sizing (number of US and Canadian landscaping firms by employee band
 ### 7.9 Operating model implications (summary)
 
 - **Gross margin:** 72-74% once early cohorts are steady, 77%+ at scale (targets).
-- **Sales and marketing:** acquisition spend runs ahead of recognized revenue while the installed base is small, then falls as a share of revenue as SEO, referrals, partners and the homeowner app take share from trade shows, outbound and founder demos (7.5). Total S&M including brand, community and partner programs runs about 5 points above acquisition spend alone (target).
+- **Marketing and acquisition:** acquisition spend runs ahead of recognized revenue while the installed base is small, then falls as a share of revenue as SEO, referrals, partners and the homeowner app take share from trade shows, outbound and founder demos (7.5). Total marketing spend including brand, community and partner programs runs about 5 points above acquisition spend alone (target).
 - **Cash seasonality:** annual prepay is collected mostly Nov-Feb. Spring onboarding costs peak Feb-Apr. Plan cash with a winter-collections bias.
 
 ---
@@ -1972,7 +1972,7 @@ Validation rules (selected):
 | `billing.invoice_paid` / `billing.invoice_failed` | amount, attempt_count | Dunning, partner commissions, revenue reporting |
 | `payment_pricing.changed` | model, bps, cap, accepted_by | Payments module, audit |
 | `payment_pricing.breakeven_crossed` | trailing_volume_2mo, breakeven_amount, cheaper_model | Owner notification with one-click switch back (5.1.2), CS |
-| `match.region_throttled` / `match.region_restored` | region_id, cost_per_accepted_lead, eligible_company_count | Rootline Home render budgets (5.3.4), sales waitlist targeting |
+| `match.region_throttled` / `match.region_restored` | region_id, cost_per_accepted_lead, eligible_company_count | Rootline Home render budgets (5.3.4), marketing waitlist targeting |
 | `application_fee.recorded` / `application_fee.refunded` | amount, client_payment_id | Company Ledger posting, platform revenue |
 | `partner.referral_attributed` / `partner.commission_accrued` | partner_id, amounts | Partner portal |
 | `lead.offered` / `lead.accepted` / `lead.declined` / `lead.disputed` / `lead.dispute_resolved` | lead_id, tenant_id, fee | CRM module (creates Lead + Design), billing |
@@ -2042,7 +2042,7 @@ All platform actions in this module are audit-logged with actor, reason code, be
 | 3 | **Churn and expansion prediction** | Season-aware model on top of the health score. Surfaces why: "crew app usage fell 60% after Memorial Day, office still active" | The support agent acts within its autonomy level; the founder decides anything above it. Explanations required |
 | 4 | **Migration mapping assistant** | Maps competitor exports to Rootline objects, detects duplicates and bad addresses, proposes production-rate equivalents from LMN-style data | Dry run + human review before commit |
 | 5 | **Pre-demo research brief** | For a booked founder demo (Enterprise and franchise), compiles the prospect's public website and business profile (services, service area, review themes) into a one-page brief and a demo script. The prospect is invited to upload a photo of a real project for a live mockup | Public business information only. No scraping behind logins. Prospect-provided photos only |
-| 6 | **AI inbound chat and AI SDR** | Answers pricing and feature questions on the website, books Enterprise demos with the founder, qualifies by the ICP scorecard | Clearly disclosed as AI. Hands off to the founder on request |
+| 6 | **AI inbound chat and qualification** | Answers pricing and feature questions on the website, books Enterprise demos with the founder, qualifies by the ICP scorecard | Clearly disclosed as AI. Hands off to the founder on request |
 | 7 | **Lead qualification and dynamic lead pricing (Match)** | Predicts project value band and acceptance and win likelihood. The lead fee is set within published bands | Price shown before acceptance. Explainable factors. No protected-class features. Pricing bands reviewed quarterly |
 | 8 | **Lead dispute triage** | Pre-classifies disputes (wrong number, not owner, duplicate) using verification evidence | The founder decides anything not clear-cut |
 | 9 | **SEO content with curator-in-the-loop** | The marketing agent drafts Region × use plant guides from Plant KB data. The plant curator agent (`platform_curator`) checks every page | No page publishes without the plant curator agent's check and both gates (section 6.5 and [12](12-plant-knowledge-base.md) KB-API-04). The founder approves the page template and each Region's first pages ([26](26-agent-led-marketing-playbook.md) section 4.1). No AI-generated plant facts outside KB data |
@@ -2149,7 +2149,7 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 | Acquisition | Trial → paid | Paid within 45 days / trials | ≥ 12% (ICP ≥ 25%) |
 | Acquisition | CAC by channel and tier | Section 7.5 | Under ceilings |
 | Acquisition | CAC payback | CAC / (ARPA × GM) | ≤ 12 months |
-| Acquisition | Sales cycle (Grow) | First touch → closed won | ≤ 21 days median |
+| Acquisition | Buying cycle (Grow) | First touch → closed won | ≤ 21 days median |
 | Activation | Time to first proposal sent | Signup → first proposal | ≤ 3 days median |
 | Activation | Time to first online client payment | Signup → first successful client payment | ≤ 14 days median |
 | Activation | Stripe connect rate | Trials connecting Stripe / trials | ≥ 50% |
@@ -2204,7 +2204,7 @@ All KPI definitions live in the metrics layer of [18-reporting-analytics.md](18-
 
 ## 17. Decisions on former open questions
 
-Each former open question, with its answer from [24](24-product-scope-decisions-catalog.md) section 1 or this doc's own default. Nothing here waits for a later release.
+Each former open question, with its answer from [24](24-product-scope-decisions-catalog.md) section 1 or this doc's own default. Every answer applies to v1.
 
 1. **Beachhead regions:** the launch region is the Great Lakes: six Regions where marketing and Plant KB seeding start (OD-01, 6.2). The product works across the US and Canada from launch; adjacent Regions, Ontario and a second US cluster get marketing on the 6.11 signals.
 2. **Pay-as-you-grow:** in v1 as an opt-in plan, with zero markup as the default (OD-09). One rate and the $10 cap apply to card and ACH, as specified in [08](08-payments-stripe.md); the holdout test (6.10 step 7) decides whether the founder keeps it.

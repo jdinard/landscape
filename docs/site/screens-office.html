@@ -639,23 +639,22 @@ table.data.je th { font-size: .62rem; }
 <section class="section intro" aria-labelledby="page-h"><div class="wrap">
   <p class="eyebrow">Rootline design proposal · Office app concepts</p>
   <h1 id="page-h">The office app, one Saturday in November</h1>
-  <p class="lede">Six hi-fi concept screens of the Rootline office web app, following one day at the sample tenant Greenleaf Grounds Co., a 28-person design-build-maintain firm in Columbus, Ohio (USDA zone 6b): the owner's morning, a client record, the dispatch board under a rain forecast, an estimate, the proposal the client sees, and the books. Every number on a screen ties to the others and to the spec docs.</p>
+  <p class="lede">Six hi-fi concept screens of the Rootline office web app, following one day at the sample tenant Greenleaf Grounds Co., a 28-person design-build-maintain firm with 120 clients in Columbus, Ohio (USDA zone 6b): the owner's morning, a client record, the dispatch board under a rain forecast, an estimate, the proposal the client sees, and the books. Every number on a screen ties to the others and to the spec docs.</p>
   <div class="legend" aria-label="How to read these screens">
     <span><i class="swatch-ai"></i>Iris marks AI output, Copilot and AI credits, nothing else</span>
     <span><i class="swatch-moss"></i>Moss is the primary action</span>
     <span><i class="swatch-warn"></i>Marigold warns</span>
     <span><i class="swatch-info"></i>Sky is info, weather and irrigation</span>
-    <span><span class="tag mvp">[MVP]</span> first sellable release · <span class="tag v1">[V1]</span> next scope wave</span>
   </div>
   <ul class="jump" aria-label="Screens on this page"><li><a href="#today"><span class="n">01</span>Owner Today</a></li><li><a href="#client"><span class="n">02</span>Client record</a></li><li><a href="#dispatch"><span class="n">03</span>Dispatch board</a></li><li><a href="#estimate"><span class="n">04</span>Estimate builder</a></li><li><a href="#proposal"><span class="n">05</span>Proposal, client view</a></li><li><a href="#money"><span class="n">06</span>Job costing and ledger</a></li></ul>
 </div></section>
 <div class="wrap">
 <section class="screen" id="today" aria-labelledby="today-h">
-  <div class="screen-head"><h2 id="today-h">1. Owner Today dashboard</h2><span class="pill">Persona <code>owner</code></span><span class="tag mvp">[MVP]</span></div>
-  <p class="screen-note">Role-aware home where every widget answers one question and ends in an action; the rain plan and daily brief are AI drafts (Iris) that wait for approval. Spec: 21-ux-design-system-sitemaps.md sections 6.3 and 18.2, KPI definitions in 18-reporting-analytics.md, Scheduling Agent and credits in 17-ai-copilot-automation.md sections 4.5.8 and 4.11.5 (daily brief and agent rain plan are <span class="tag v1">[V1]</span>).</p>
+  <div class="screen-head"><h2 id="today-h">1. Owner Today dashboard</h2><span class="pill">Persona <code>owner</code></span></div>
+  <p class="screen-note">Role-aware home where every widget answers one question and ends in an action; the rain plan and daily brief are AI drafts (Iris) that wait for approval. Spec: 21-ux-design-system-sitemaps.md sections 6.3 and 18.2, KPI definitions in 18-reporting-analytics.md, Scheduling Agent and credits in 17-ai-copilot-automation.md sections 4.5.8 and 4.11.5 (daily brief and agent rain plan).</p>
   <div class="frame-scroll">
 <div class="browser wide" role="group" aria-label="Owner Today dashboard concept">
-  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.com/t/greenleaf/today</span></div>
+  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.example/t/greenleaf/today</span></div>
   <div class="app">
   <nav class="app-side" aria-label="Rootline app navigation (concept)">
   <div class="co"><span class="co-logo"><svg aria-hidden="true"><use href="#g-leaf"/></svg></span><span><b>Greenleaf Grounds Co.</b><small>Columbus, OH · Pro plan</small></span></div>
@@ -685,7 +684,7 @@ table.data.je th { font-size: .62rem; }
     <div class="wx-days"><span class="hit"><b>Sat</b>Rain pm 80%</span><span><b>Sun</b>Cloudy 20%</span><span><b>Mon</b>Clear 46°F</span><span><b>Tue</b>Frost am 29°F</span><span><b>Wed</b>Clear 51°F</span></div>
   </div>
   <div class="wx-r">
-    <div class="row"><span class="ai-label"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Scheduling Agent · rain plan ready</span><span class="tag v1">V1</span><span class="cost" style="margin-left:auto">Built 5:00 am · 6 credits</span></div>
+    <div class="row"><span class="ai-label"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Scheduling Agent · rain plan ready</span><span class="cost" style="margin-left:auto">Built 5:00 am · 6 credits</span></div>
     <div><b>17 visits at risk</b> (8 mowing, 7 cleanups, 2 weed control). Proposed split day: crews work until 12:30, then the 17 visits move to Mon Nov 9 and Tue Nov 10.</div>
     <ul><li>+0.8 h overtime for Crew 2 on Monday; Install A and Irrigation are unaffected</li><li>15 client texts and 2 emails drafted in EN and ES, sent only after you approve</li></ul>
     <div class="row"><button class="btn ai sm" type="button">Review moves</button><button class="btn sm" type="button">Hold until 11:30</button><span class="sub">Decide by 11:30 am</span></div>
@@ -704,7 +703,7 @@ table.data.je th { font-size: .62rem; }
     <ul class="att"><li><span class="ic warn"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg></span><div><b>Approve estimate E-2290 · Maple Ridge HOA entrance</b><span class="sub">$46,600 · gross margin 31.0%, below the 35% floor · Jose R. asked 7:12 am</span></div><span class="pill warn">Below floor</span><span class="acts"><button class="btn xs primary" type="button">Approve</button><button class="btn xs" type="button">Open</button></span></li><li><span class="ic danger"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></span><div><b>Crew 2 · Marco R. is running 45 min late</b><span class="sub">Stop 6 of 16 in Dublin · projected end 4:02 pm, shift ends 3:30 pm</span></div><span class="pill danger">Late</span><span class="acts"><button class="btn xs" type="button">Message</button><button class="btn xs" type="button">Rebalance</button></span></li><li><span class="ic danger"><svg class="icon" aria-hidden="true"><use href="#i-card"/></svg></span><div><b>Card dispute on INV-3307 · Patel · $1,240.00</b><span class="sub">Reason: product not received · evidence due Nov 20 in Stripe</span></div><span class="pill danger">Dispute</span><span class="acts"><button class="btn xs" type="button">Review</button></span></li><li><span class="ic info"><svg class="icon" aria-hidden="true"><use href="#i-team"/></svg></span><div><b>3 timesheets need approval · Crew 1</b><span class="sub">Luis M., Hector V., Andre T. · 27.5 h this week · payroll runs Monday</span></div><span class="pill info">Payroll Mon</span><span class="acts"><button class="btn xs" type="button">Approve all</button></span></li><li><span class="ic accent"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg></span><div><b>PR-2281 · The Hendersons viewed 3 times, unsigned</b><span class="sub">$18,680 · last view 8:41 am on iPhone · toggled Best tier twice</span></div><span class="pill accent">Hot</span><span class="acts"><button class="btn xs" type="button">Nudge</button></span></li><li><span class="ic "><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg></span><div><b>Renewal due · Oakmont Office Park 2027</b><span class="sub">$64,800 per year · expires Dec 31 · 3.5% escalator per contract</span></div><span class="pill">Due Dec 1</span><span class="acts"><button class="btn xs" type="button">Draft renewal</button></span></li></ul>
   </section>
   <section class="panel ai" aria-label="Copilot daily brief, AI generated">
-    <div class="panel-h"><span class="ai-label"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Copilot daily brief</span><span class="sub">6:00 am</span><span class="tag v1">V1</span><span class="act"><button class="btn ai xs" type="button">Listen · 1 credit</button></span></div>
+    <div class="panel-h"><span class="ai-label"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Copilot daily brief</span><span class="sub">6:00 am</span><span class="act"><button class="btn ai xs" type="button">Listen · 1 credit</button></span></div>
     <ul class="brief">
   <li><div><b>Rain 80% after 1 pm.</b> 17 visits are at risk (8 mowing, 7 cleanups, 2 weed control). A split-day plan is ready for review.<div class="refs"><span class="ref">Rain plan Nov 7</span><span class="ref">17 visits</span></div></div></li>
   <li><div><b>$18,420 overdue more than 30 days</b> across 9 clients; 4 of them have a failed autopay card on file.<div class="refs"><span class="ref">AR aging</span><span class="ref">4 failed cards</span></div></div></li>
@@ -824,11 +823,11 @@ table.data.je th { font-size: .62rem; }
 </div>
 </div>
 </section><section class="screen" id="client" aria-labelledby="client-h">
-  <div class="screen-head"><h2 id="client-h">2. Client record: The Hendersons</h2><span class="pill">Persona <code>office_manager</code></span><span class="tag mvp">[MVP]</span></div>
+  <div class="screen-head"><h2 id="client-h">2. Client record: The Hendersons</h2><span class="pill">Persona <code>office_manager</code></span></div>
   <p class="screen-note">One record anatomy for every object: header with status pills and one primary action, a key-facts strip, URL-addressable tabs, and a filterable timeline that separates client-visible from internal events. Spec: 21-ux-design-system-sitemaps.md sections 6.4, 6.5 and 18.3; 03-crm-sales-estimating-proposals.md CRM-01 and CRM-03; proposal tracking in 03 PROP-10 and 06-customer-portal.md section 4.4.</p>
   <div class="frame-scroll">
 <div class="browser wide" role="group" aria-label="Client record concept for The Hendersons">
-  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.com/t/greenleaf/clients/C-0412</span></div>
+  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.example/t/greenleaf/clients/C-0412</span></div>
   <div class="app">
   <nav class="app-side" aria-label="Rootline app navigation (concept)">
   <div class="co"><span class="co-logo"><svg aria-hidden="true"><use href="#g-leaf"/></svg></span><span><b>Greenleaf Grounds Co.</b><small>Columbus, OH · Pro plan</small></span></div>
@@ -966,11 +965,11 @@ table.data.je th { font-size: .62rem; }
 </div>
 </div>
 </section><section class="screen" id="dispatch" aria-labelledby="dispatch-h">
-  <div class="screen-head"><h2 id="dispatch-h">3. Dispatch board</h2><span class="pill">Persona <code>ops_manager</code></span><span class="tag mvp">[MVP]</span></div>
-  <p class="screen-note">Gantt by crew with service-line colors, drive-time connectors, a now line, the rain-risk band, an unassigned tray and a map split that previews the optimizer before anything moves. Every drag also has a select-then-"Move to" alternative (WCAG 2.5.7). Spec: 04-scheduling-dispatch-routing.md sections 4.6 (board), 4.8 (route optimizer, density metrics) and 4.9.3 (rain-delay playbooks, <span class="tag v1">[V1]</span>); wireframe in 21-ux-design-system-sitemaps.md section 18.4.</p>
+  <div class="screen-head"><h2 id="dispatch-h">3. Dispatch board</h2><span class="pill">Persona <code>ops_manager</code></span></div>
+  <p class="screen-note">Gantt by crew with service-line colors, drive-time connectors, a now line, the rain-risk band, an unassigned tray and a map split that previews the optimizer before anything moves. Every drag also has a select-then-"Move to" alternative (WCAG 2.5.7). Spec: 04-scheduling-dispatch-routing.md sections 4.6 (board), 4.8 (route optimizer, density metrics) and 4.9.3 (rain-delay playbooks); wireframe in 21-ux-design-system-sitemaps.md section 18.4.</p>
   <div class="frame-scroll">
 <div class="browser wide" role="group" aria-label="Dispatch board concept">
-  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.com/t/greenleaf/schedule/board?date=2026-11-07&amp;view=day&amp;split=map</span></div>
+  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.example/t/greenleaf/schedule/board?date=2026-11-07&amp;view=day&amp;split=map</span></div>
   <div class="app">
   <nav class="app-side" aria-label="Rootline app navigation (concept)">
   <div class="co"><span class="co-logo"><svg aria-hidden="true"><use href="#g-leaf"/></svg></span><span><b>Greenleaf Grounds Co.</b><small>Columbus, OH · Pro plan</small></span></div>
@@ -1000,7 +999,7 @@ table.data.je th { font-size: .62rem; }
 <div class="playbook" role="status">
   <svg class="icon" aria-hidden="true"><use href="#i-rain"/></svg>
   <div><b>Rain 80% after 1 pm (0.4 in).</b> Playbook "Fall rain" · split day: work until 12:30, then move 17 at-risk visits to Mon Nov 9 and Tue Nov 10 · +0.8 h overtime · 15 texts and 2 emails (EN/ES).
-    <span class="who"><span class="pill ai"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Proposed by Scheduling Agent · 6 credits</span><span class="tag v1">V1</span></span></div>
+    <span class="who"><span class="pill ai"><svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>Proposed by Scheduling Agent · 6 credits</span></span></div>
   <span class="acts"><button class="btn sm" type="button">Hold for decision</button><button class="btn sm primary" type="button">Review moves</button></span>
 </div>
 <div class="disp">
@@ -1114,11 +1113,11 @@ table.data.je th { font-size: .62rem; }
 </div>
 </div>
 </section><section class="screen" id="estimate" aria-labelledby="estimate-h">
-  <div class="screen-head"><h2 id="estimate-h">4. Estimate builder: paver patio and plantings</h2><span class="pill">Persona <code>estimator</code></span><span class="tag mvp">[MVP]</span></div>
-  <p class="screen-note">Production-rate labor, waste and purchase rounding, equipment, subs and overhead recovery build up to a price from a target margin, with markup and margin shown side by side so nobody confuses them. Quantities stay linked to the Design Studio takeoff. Spec: 03-crm-sales-estimating-proposals.md EST-02 to EST-09 and EST-17 (AI estimating EST-18 is <span class="tag v1">[V1]</span>); wireframe in 21-ux-design-system-sitemaps.md section 18.5.</p>
+  <div class="screen-head"><h2 id="estimate-h">4. Estimate builder: paver patio and plantings</h2><span class="pill">Persona <code>estimator</code></span></div>
+  <p class="screen-note">Production-rate labor, waste and purchase rounding, equipment, subs and overhead recovery build up to a price from a target margin, with markup and margin shown side by side so nobody confuses them. Quantities stay linked to the Design Studio takeoff. Spec: 03-crm-sales-estimating-proposals.md EST-02 to EST-09, EST-17 and EST-18 (AI estimating); wireframe in 21-ux-design-system-sitemaps.md section 18.5.</p>
   <div class="frame-scroll">
 <div class="browser wide" role="group" aria-label="Estimate builder concept">
-  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.com/t/greenleaf/sales/estimates/E-2281/v3</span></div>
+  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.example/t/greenleaf/sales/estimates/E-2281/v3</span></div>
   <div class="app">
   <nav class="app-side" aria-label="Rootline app navigation (concept)">
   <div class="co"><span class="co-logo"><svg aria-hidden="true"><use href="#g-leaf"/></svg></span><span><b>Greenleaf Grounds Co.</b><small>Columbus, OH · Pro plan</small></span></div>
@@ -1182,11 +1181,11 @@ table.data.je th { font-size: .62rem; }
 </div>
 </div>
 </section><section class="screen" id="proposal" aria-labelledby="proposal-h">
-  <div class="screen-head"><h2 id="proposal-h">5. Proposal: client view</h2><span class="pill">Persona <code>client_residential</code></span><span class="tag mvp">[MVP]</span></div>
-  <p class="screen-note">The client sees the Company's brand, an AI concept rendering (labeled), the to-scale plan, Good/Better/Best tiers and add-ons that recalculate the total and deposit, plant cards with Plant Library care notes, and e-sign plus deposit on the Company's own Stripe account. Try selecting another option. Spec: 03-crm-sales-estimating-proposals.md PROP-03 to PROP-07 (financing PROP-09 is <span class="tag v1">[V1]</span>); 06-customer-portal.md section 4.4; wireframe in 21-ux-design-system-sitemaps.md section 18.6.</p>
+  <div class="screen-head"><h2 id="proposal-h">5. Proposal: client view</h2><span class="pill">Persona <code>client_residential</code></span></div>
+  <p class="screen-note">The client sees the Company's brand, an AI concept rendering (labeled), the to-scale plan, Good/Better/Best tiers and add-ons that recalculate the total and deposit, plant cards with Plant Library care notes, and e-sign plus deposit on the Company's own Stripe account. Try selecting another option. Spec: 03-crm-sales-estimating-proposals.md PROP-03 to PROP-07 and PROP-09 (financing); 06-customer-portal.md section 4.4; wireframe in 21-ux-design-system-sitemaps.md section 18.6.</p>
   <div class="frame-scroll">
 <div class="browser" role="group" aria-label="Client proposal concept, white-labeled for Greenleaf Grounds Co.">
-  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">proposals.greenleafgrounds.com/p/PR-2281?t=•••</span></div>
+  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">proposals.greenleafgrounds.example/p/PR-2281?t=•••</span></div>
   <div class="pp">
   <div class="pp-brand">
     <div class="pp-logo"><span class="mark"><svg aria-hidden="true"><use href="#g-leaf"/></svg></span><span><b>Greenleaf Grounds Co.</b><small>Design · Build · Care · Columbus, Ohio</small></span></div>
@@ -1483,7 +1482,7 @@ table.data.je th { font-size: .62rem; }
         <div class="rowx tot"><span>Total</span><span id="pp-total">$18,680.00</span></div>
         <div class="rowx dep"><span>Deposit due today (30%)</span><span id="pp-dep">$5,604.00</span></div>
         <p class="sched">Then <b id="pp-s2">$7,472.00</b> (40%) when the patio is finished and <b id="pp-s3">$5,604.00</b> (30%) at the final walkthrough. Price includes materials, labor, disposal and Ohio tax on materials.</p>
-        <div class="fin">Or as low as <b id="pp-fin">$397/mo</b>* with our financing partner. Checking your rate does not affect your credit score. <span class="tag v1">V1</span><br><span class="sub">*Partner-supplied example for the selected option before add-ons; APR and terms shown by the partner.</span></div>
+        <div class="fin">Or as low as <b id="pp-fin">$397/mo</b>* with our financing partner. Checking your rate does not affect your credit score.<br><span class="sub">*Partner-supplied example for the selected option before add-ons; APR and terms shown by the partner.</span></div>
       </div>
       <div class="esign">
         <div class="fld">Signing as<span class="sig">Dana Henderson</span>dana.henderson@example.com · code sent to (614) •••-0142 for totals over $10,000</div>
@@ -1498,11 +1497,11 @@ table.data.je th { font-size: .62rem; }
 </div>
 </div>
 </section><section class="screen" id="money" aria-labelledby="money-h">
-  <div class="screen-head"><h2 id="money-h">6. Money: job costing and ledger</h2><span class="pill">Persona <code>owner / bookkeeper</code></span><span class="tag mvp">[MVP]</span></div>
+  <div class="screen-head"><h2 id="money-h">6. Money: job costing and ledger</h2><span class="pill">Persona <code>owner / bookkeeper</code></span></div>
   <p class="screen-note">Job cost is the general ledger tagged by job, so estimate vs actual ties to the books by construction; the Stripe payout posts itself from the payments module with fees split out, is proved against its balance transactions and auto-matched to the bank line. Spec: 09-accounting-ledger-integrations.md sections 4.1.5 (period locks), 4.3.2 (payments.payout and payments.fee posting rules), 4.7 (job costing) and 4.17.1 (QuickBooks mirror mode); 08-payments-stripe.md for fees per payout; KPIs in 18-reporting-analytics.md.</p>
   <div class="frame-scroll">
 <div class="browser wide" role="group" aria-label="Money concept: job costing and journal entry">
-  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.com/t/greenleaf/money/jobs/J-1031?split=journal/JE-10518</span></div>
+  <div class="browser-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url">app.rootline.example/t/greenleaf/money/jobs/J-1031?split=journal/JE-10518</span></div>
   <div class="app">
   <nav class="app-side" aria-label="Rootline app navigation (concept)">
   <div class="co"><span class="co-logo"><svg aria-hidden="true"><use href="#g-leaf"/></svg></span><span><b>Greenleaf Grounds Co.</b><small>Columbus, OH · Pro plan</small></span></div>

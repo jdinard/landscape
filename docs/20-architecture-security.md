@@ -45,20 +45,20 @@
 
 Every goal below has a number so engineering can be held to it. Targets are **design targets (estimates)**. Load tests and production telemetry will confirm or revise them.
 
-| # | Quality attribute | Target | Why it matters to a landscaper | Priority |
-|---|---|---|---|---|
-| G1 | **Tenant isolation** | Zero cross-tenant data exposures. Every tenant table is protected by Postgres RLS **and** by application policy checks (defense in depth) | A competitor seeing your client list or pricing would end trust in the product | |
-| G2 | **Financial correctness** | Every journal entry balances at commit time, enforced by the database. Posting is exactly-once. Posted entries are immutable. Nightly subledger-to-control-account reconciliation drift = $0.00 | The ledger is the "system of record" pitch against QuickBooks | |
-| G3 | **Field durability** | 0 lost field mutations (visit completions, time punches, photos, chemical logs). ≥ 99.5% of mutations apply on first sync attempt | Crews work in backyards, ravines and new subdivisions with poor coverage | |
-| G4 | **Availability** | Core API 99.9% monthly at MVP, 99.95% at V1. Webhook ingest 99.99% (buffered) | Monday 6:30 am dispatch cannot wait for a status page |/ |
-| G5 | **Latency** | API p95 < 150 ms reads, < 300 ms writes. Dispatch board interaction < 100 ms perceived | Office managers drag 300 visits around on a rain-delay morning | |
-| G6 | **Recoverability** | Tier-0 data RPO ≤ 1 min, RTO ≤ 1 h (regional). AZ failure RTO ≤ 2 min | Losing a day of invoices in April is unrecoverable for a small business |/ |
-| G7 | **Data residency** | Canadian tenants' primary data stored and processed in Canadian AWS regions | PIPEDA expectations, Quebec Law 25, municipal/commercial contracts | |
-| G8 | **Openness** | 100% of user-visible objects reachable via the public API. Every state change is emitted as an event/webhook | Integrators and power users were burned by closed platforms | (core) / (full) |
-| G9 | **Cost efficiency** | Infra COGS (excluding AI, SMS, maps pass-through) < $20 per Company per month at 10k Companies (estimate) | Pricing has to work for a 2-truck lawn company (see [Business model](22-business-model-pricing-gtm.md)) | |
-| G10 | **Evolvability** | Any module can be extracted into a service without changing its public contract. Schema changes ship with zero downtime | We will be wrong about boundaries. We need to change them cheaply | |
-| G11 | **Security assurance** | SOC 2 Type I at MVP, Type II at V1 after its observation period. OWASP ASVS Level 2 baseline, Level 3 for auth, payments, ledger and admin | Commercial property managers and HOAs send security questionnaires |/ |
-| G12 | **AI safety and cost control** | All model calls pass through the AI Gateway. 100% metered in AI credits. Per-tenant budgets. No training on customer data | AI is a margin risk and a trust risk if ungoverned | |
+| # | Quality attribute | Target | Why it matters to a landscaper |
+|---|---|---|---|
+| G1 | **Tenant isolation** | Zero cross-tenant data exposures. Every tenant table is protected by Postgres RLS **and** by application policy checks (defense in depth) | A competitor seeing your client list or pricing would end trust in the product |
+| G2 | **Financial correctness** | Every journal entry balances at commit time, enforced by the database. Posting is exactly-once. Posted entries are immutable. Nightly subledger-to-control-account reconciliation drift = $0.00 | The ledger is the "system of record" pitch against QuickBooks |
+| G3 | **Field durability** | 0 lost field mutations (visit completions, time punches, photos, chemical logs). ≥ 99.5% of mutations apply on first sync attempt | Crews work in backyards, ravines and new subdivisions with poor coverage |
+| G4 | **Availability** | Core API 99.9% monthly at MVP, 99.95% at V1. Webhook ingest 99.99% (buffered) | Monday 6:30 am dispatch cannot wait for a status page |
+| G5 | **Latency** | API p95 < 150 ms reads, < 300 ms writes. Dispatch board interaction < 100 ms perceived | Office managers drag 300 visits around on a rain-delay morning |
+| G6 | **Recoverability** | Tier-0 data RPO ≤ 1 min, RTO ≤ 1 h (regional). AZ failure RTO ≤ 2 min | Losing a day of invoices in April is unrecoverable for a small business |
+| G7 | **Data residency** | Canadian tenants' primary data stored and processed in Canadian AWS regions | PIPEDA expectations, Quebec Law 25, municipal/commercial contracts |
+| G8 | **Openness** | 100% of user-visible objects reachable via the public API. Every state change is emitted as an event/webhook | Integrators and power users were burned by closed platforms |
+| G9 | **Cost efficiency** | Infra COGS (excluding AI, SMS, maps pass-through) < $20 per Company per month at 10k Companies (estimate) | Pricing has to work for a 2-truck lawn company (see [Business model](22-business-model-pricing-gtm.md)) |
+| G10 | **Evolvability** | Any module can be extracted into a service without changing its public contract. Schema changes ship with zero downtime | We will be wrong about boundaries. We need to change them cheaply |
+| G11 | **Security assurance** | SOC 2 Type I at MVP, Type II at V1 after its observation period. OWASP ASVS Level 2 baseline, Level 3 for auth, payments, ledger and admin | Commercial property managers and HOAs send security questionnaires |
+| G12 | **AI safety and cost control** | All model calls pass through the AI Gateway. 100% metered in AI credits. Per-tenant budgets. No training on customer data | AI is a margin risk and a trust risk if ungoverned |
 
 ### 1.2 Non-goals
 
@@ -287,18 +287,18 @@ flowchart TB
   API --> TELE
 ```
 
-| Container | Runtime | Scales on | Failure blast radius | Priority |
-|---|---|---|---|---|
-| `core:api` | Node 22 LTS on ECS Fargate, 2 vCPU / 4 GB tasks | CPU and p95 latency | Interactive web/API. Mitigated by multi-AZ, ≥ 6 tasks/region | |
-| `core:sync` | Same image | Requests/s, payload bytes | Crew sync only. Field keeps working offline | |
-| `core:realtime` | Same image, sticky WebSockets via ALB | Concurrent connections (target ≤ 20k/task) | Live updates degrade to 15 s polling | |
-| `core:webhook-ingest` | Same image, minimal deps | Requests/s | Inbound events are buffered (verify signature, persist, ack), so an outage delays processing without losing events | |
-| `core:worker` | Same image, Temporal workers + consumers | Queue depth, schedule-to-start latency | Background latency (invoices, notifications) | |
-| AI Gateway | Node on ECS, holds provider keys | Tokens/s, concurrent streams | AI features degrade with a graceful message. Core unaffected | |
-| Route optimizer | Python 3.12 + OR-Tools on ECS (CPU-optimized) | Solve queue depth | Fall back to greedy nearest-neighbor ordering | |
-| GPU workers | Python on serverless GPU, EKS + Karpenter GPU pools | Job queue depth per lane | Mockups delayed. Interactive lane protected |/ |
-| Media processor | Node (sharp/libvips) + Python (vision) | S3 event queue depth | Thumbnails delayed; originals safe in S3 | |
-| Search indexer | Node consumer | Event lag | Search stale, falls back to Postgres FTS | |
+| Container | Runtime | Scales on | Failure blast radius |
+|---|---|---|---|
+| `core:api` | Node 22 LTS on ECS Fargate, 2 vCPU / 4 GB tasks | CPU and p95 latency | Interactive web/API. Mitigated by multi-AZ, ≥ 6 tasks/region |
+| `core:sync` | Same image | Requests/s, payload bytes | Crew sync only. Field keeps working offline |
+| `core:realtime` | Same image, sticky WebSockets via ALB | Concurrent connections (target ≤ 20k/task) | Live updates degrade to 15 s polling |
+| `core:webhook-ingest` | Same image, minimal deps | Requests/s | Inbound events are buffered (verify signature, persist, ack), so an outage delays processing without losing events |
+| `core:worker` | Same image, Temporal workers + consumers | Queue depth, schedule-to-start latency | Background latency (invoices, notifications) |
+| AI Gateway | Node on ECS, holds provider keys | Tokens/s, concurrent streams | AI features degrade with a graceful message. Core unaffected |
+| Route optimizer | Python 3.12 + OR-Tools on ECS (CPU-optimized) | Solve queue depth | Fall back to greedy nearest-neighbor ordering |
+| GPU workers | Python on serverless GPU, EKS + Karpenter GPU pools | Job queue depth per lane | Mockups delayed. Interactive lane protected |
+| Media processor | Node (sharp/libvips) + Python (vision) | S3 event queue depth | Thumbnails delayed; originals safe in S3 |
+| Search indexer | Node consumer | Event lag | Search stale, falls back to Postgres FTS |
 
 ### 4.3 Bounded contexts and modules
 
@@ -400,18 +400,18 @@ CREATE INDEX visit_tenant_date_idx ON ops.visit (tenant_id, service_date, crew_i
 
 A 60-crew commercial maintenance company importing 40,000 properties must not slow down a 2-truck lawn company's Monday morning.
 
-| Resource | Control | Default (estimate, tune by plan) | Priority |
-|---|---|---|---|
-| API requests | Token bucket per tenant **and** per API client in Redis | Web app: 50 req/s per user burst 100. Public API: see 4.7.5 | |
-| DB statement time | `SET LOCAL statement_timeout` per request class | Interactive 5 s, report 30 s, export runs on replica/lake | |
-| Heavy reads | Report builder and exports run on Aurora reader endpoints or the lake, never the writer | n/a | |
-| Background work | Temporal task-queue fairness: per-tenant concurrency caps on activities | Concurrent activities per tenant per queue: Starter 10, Grow 15, Pro 25, Enterprise negotiated | |
-| Bulk imports | Chunked (1,000 rows per transaction), throttled, run in `bulk` lane | ≤ 200 rows/s per tenant | |
-| AI | Credit budgets + per-tenant concurrent stream caps | Concurrent copilot streams per tenant: Starter 5, Grow 10, Pro 20 | |
-| GPU | Per-tenant concurrent mockup jobs, interactive vs batch lanes | 3 interactive, 10 batch | |
-| Webhooks out | Per-endpoint concurrency, backoff | 10 in-flight per endpoint | |
-| Tenant heat score | Composite of CPU-ms, rows read and IOPS attributed by `app.tenant_id` (pg_stat_statements + sampled tracing) | Alert at > 5% of cell capacity | |
-| Cell rebalancing | Move hot tenants to a less-loaded or dedicated cell | Manual tool, assisted | |
+| Resource | Control | Default (estimate, tune by plan) |
+|---|---|---|
+| API requests | Token bucket per tenant **and** per API client in Redis | Web app: 50 req/s per user burst 100. Public API: see 4.7.5 |
+| DB statement time | `SET LOCAL statement_timeout` per request class | Interactive 5 s, report 30 s, export runs on replica/lake |
+| Heavy reads | Report builder and exports run on Aurora reader endpoints or the lake, never the writer | n/a |
+| Background work | Temporal task-queue fairness: per-tenant concurrency caps on activities | Concurrent activities per tenant per queue: Starter 10, Grow 15, Pro 25, Enterprise negotiated |
+| Bulk imports | Chunked (1,000 rows per transaction), throttled, run in `bulk` lane | ≤ 200 rows/s per tenant |
+| AI | Credit budgets + per-tenant concurrent stream caps | Concurrent copilot streams per tenant: Starter 5, Grow 10, Pro 20 |
+| GPU | Per-tenant concurrent mockup jobs, interactive vs batch lanes | 3 interactive, 10 batch |
+| Webhooks out | Per-endpoint concurrency, backoff | 10 in-flight per endpoint |
+| Tenant heat score | Composite of CPU-ms, rows read and IOPS attributed by `app.tenant_id` (pg_stat_statements + sampled tracing) | Alert at > 5% of cell capacity |
+| Cell rebalancing | Move hot tenants to a less-loaded or dedicated cell | Manual tool, assisted |
 
 #### 4.4.5 Cells and the dedicated-database option
 
@@ -494,15 +494,15 @@ Provisioning seeds a chart-of-accounts template (US or CA, landscape-specific: "
 
 Details of personas and journeys live in [Personas and permissions](02-personas-roles-permissions.md). This section specifies the mechanisms.
 
-| Persona group | Primary login | Second factor | Session | Notes | Priority |
-|---|---|---|---|---|---|
-| Company staff (`owner`, `office_manager`, `estimator`, `designer`, `ops_manager`, `bookkeeper`) | Email + password (Argon2id, min 12 chars, breached-password check via k-anonymity range API), **passkeys (WebAuthn)**, Google/Microsoft OIDC | TOTP, passkey, SMS OTP (fallback only). **MFA mandatory for `owner` and `bookkeeper`** and for any role holding `payment.refund`, `ledger.*` or `api_key.create` | HttpOnly, Secure, SameSite=Lax cookie. 12 h idle, 14 day absolute. Re-auth (step-up) for sensitive actions | Tenant setting can enforce MFA for all staff | |
-| Enterprise SSO | SAML 2.0 / OIDC per tenant (Okta, Microsoft Entra ID, Google Workspace, JumpCloud), with domain verification (DNS TXT) and JIT provisioning by IdP group. **SCIM 2.0** provisioning and deprovisioning follows at, as specified in [02](02-personas-roles-permissions.md) | Delegated to the IdP | Same as staff, plus IdP session max | Via a self-hostable SAML/OIDC broker or a vendor broker, chosen for residency (ADR-016). A **local owner account protected by a hardware key** is kept for IdP outages | (SCIM) |
-| Field (`crew_lead`, `technician`) | Phone number + SMS OTP *or* email magic link at first device login. Then a device-bound refresh token and a **4-6 digit app PIN or biometric** | Device binding counts as possession. PIN/biometric as the knowledge/inherence factor | Refresh token in Keychain/Keystore, 30 day rolling, revocable per device | **Shared crew device mode**: one tablet per truck; each crew member clocks in with a personal PIN; all mutations are attributed per person | |
-| `subcontractor` | Email invite, password or passkey | **MFA mandatory** | 8 h idle | Sees only assigned work orders. Client contact data masked by default | |
-| Clients (`client_residential`, `client_commercial`, contacts) | **Magic link** (email/SMS), optional password or passkey. **Single-purpose document links** for proposals and invoices (signed token, scoped to one document, 30-day expiry, revocable) | Optional TOTP. Required for commercial approvers above a tenant-set threshold | 30 day rolling on trusted device | Portal SSO for large commercial clients | |
-| Platform staff (`platform_*`) | Corporate IdP (SSO) only | **Phishing-resistant FIDO2 hardware keys mandatory** | 8 h; admin console reachable only via SSO + device posture check | Just-in-time elevation for production data access (4.24.6) | |
-| API clients | API key (tenant-scoped, permission-scoped) or OAuth 2.1 access token (authorization code + PKCE) | n/a | Access token 1 h; refresh token rotation with reuse detection | See 4.7 |/ |
+| Persona group | Primary login | Second factor | Session | Notes |
+|---|---|---|---|---|
+| Company staff (`owner`, `office_manager`, `estimator`, `designer`, `ops_manager`, `bookkeeper`) | Email + password (Argon2id, min 12 chars, breached-password check via k-anonymity range API), **passkeys (WebAuthn)**, Google/Microsoft OIDC | TOTP, passkey, SMS OTP (fallback only). **MFA mandatory for `owner` and `bookkeeper`** and for any role holding `payment.refund`, `ledger.*` or `api_key.create` | HttpOnly, Secure, SameSite=Lax cookie. 12 h idle, 14 day absolute. Re-auth (step-up) for sensitive actions | Tenant setting can enforce MFA for all staff |
+| Enterprise SSO | SAML 2.0 / OIDC per tenant (Okta, Microsoft Entra ID, Google Workspace, JumpCloud), with domain verification (DNS TXT) and JIT provisioning by IdP group. **SCIM 2.0** provisioning and deprovisioning follows at, as specified in [02](02-personas-roles-permissions.md) | Delegated to the IdP | Same as staff, plus IdP session max | Via a self-hostable SAML/OIDC broker or a vendor broker, chosen for residency (ADR-016). A **local owner account protected by a hardware key** is kept for IdP outages |
+| Field (`crew_lead`, `technician`) | Phone number + SMS OTP *or* email magic link at first device login. Then a device-bound refresh token and a **4-6 digit app PIN or biometric** | Device binding counts as possession. PIN/biometric as the knowledge/inherence factor | Refresh token in Keychain/Keystore, 30 day rolling, revocable per device | **Shared crew device mode**: one tablet per truck; each crew member clocks in with a personal PIN; all mutations are attributed per person |
+| `subcontractor` | Email invite, password or passkey | **MFA mandatory** | 8 h idle | Sees only assigned work orders. Client contact data masked by default |
+| Clients (`client_residential`, `client_commercial`, contacts) | **Magic link** (email/SMS), optional password or passkey. **Single-purpose document links** for proposals and invoices (signed token, scoped to one document, 30-day expiry, revocable) | Optional TOTP. Required for commercial approvers above a tenant-set threshold | 30 day rolling on trusted device | Portal SSO for large commercial clients |
+| Platform staff (`platform_*`) | Corporate IdP (SSO) only | **Phishing-resistant FIDO2 hardware keys mandatory** | 8 h; admin console reachable only via SSO + device posture check | Just-in-time elevation for production data access (4.24.6) |
+| API clients | API key (tenant-scoped, permission-scoped) or OAuth 2.1 access token (authorization code + PKCE) | n/a | Access token 1 h; refresh token rotation with reuse detection | See 4.7 |
 
 **Account security rules:**
 
@@ -553,13 +553,13 @@ when {
 
 #### 4.7.1 Surfaces
 
-| API | Consumers | Style | Contract source | Priority |
-|---|---|---|---|---|
-| **Public API** `https://api.rootline.com/v1` (US), `https://api.ca.rootline.com/v1` (CA) | Integrators, partner apps, Zapier/Make, tenants' own scripts, AI agents through MCP | REST/JSON, resource-oriented | **OpenAPI 3.1** generated from Zod schemas in each module, published at `/v1/openapi.json` and in the developer portal | core objects (clients, properties, jobs, visits, invoices, payments, webhooks); full surface |
-| **Internal app API** | Next.js web apps, Admin console | Typed RPC over HTTP (ts-rest contracts shared by client and server) | TypeScript contracts in `packages/contracts` | |
-| **Sync API** `/sync/v1` | Crew app | Custom pull/push protocol (4.11) | Versioned protocol spec + TypeScript types | |
-| **Service RPC** | Route optimizer, GPU workers, media vision | gRPC via the Connect protocol with Protobuf schemas in a schema registry (buf) | `.proto` files with breaking-change detection in CI | |
-| **MCP server** | Tenants' AI assistants (Claude and others) | Model Context Protocol over the public API with OAuth scopes | Generated from OpenAPI with curated tool descriptions | |
+| API | Consumers | Style | Contract source |
+|---|---|---|---|
+| **Public API** `https://api.rootline.com/v1` (US), `https://api.ca.rootline.com/v1` (CA) | Integrators, partner apps, Zapier/Make, tenants' own scripts, AI agents through MCP | REST/JSON, resource-oriented | **OpenAPI 3.1** generated from Zod schemas in each module, published at `/v1/openapi.json` and in the developer portal |
+| **Internal app API** | Next.js web apps, Admin console | Typed RPC over HTTP (ts-rest contracts shared by client and server) | TypeScript contracts in `packages/contracts` |
+| **Sync API** `/sync/v1` | Crew app | Custom pull/push protocol (4.11) | Versioned protocol spec + TypeScript types |
+| **Service RPC** | Route optimizer, GPU workers, media vision | gRPC via the Connect protocol with Protobuf schemas in a schema registry (buf) | `.proto` files with breaking-change detection in CI |
+| **MCP server** | Tenants' AI assistants (Claude and others) | Model Context Protocol over the public API with OAuth scopes | Generated from OpenAPI with curated tool descriptions |
 
 #### 4.7.2 Conventions
 
@@ -635,35 +635,35 @@ interface SyncObjectDefinition {
 
 **Capabilities:**
 
-| Capability | Behavior and rules | Priority |
-|---|---|---|
-| **OAuth token vault** | Tokens encrypted with per-tenant data keys (envelope encryption, KMS CMK `integrations`), with the KMS encryption context `{tenant_id, connector, purpose}`. Refresh happens under a **distributed lock per connection**, because providers that rotate refresh tokens (Intuit, Xero) invalidate the old token on use, and two concurrent refreshes would brick the connection *[verify current provider token lifetimes]*. The new token is persisted in the same transaction that records the refresh | |
-| **External reference map** | `external_ref(tenant_id, entity_type, entity_id, connector, external_id, external_version, last_synced_hash, last_synced_at)`. It is the single source of truth for "which QBO customer is this Client". A unique constraint on both directions prevents duplicate customers | |
-| **Sync runs** | A Temporal workflow per connection (long-running, continue-as-new daily). Inbound changes are triggered by provider webhooks (signals) plus scheduled change-data polling (every 15 min) as a safety net. Outbound changes are triggered by domain events | |
-| **Idempotent writes** | Deterministic idempotency key `hash(tenant, connector, entity, entity_version)`. Where the provider supports request IDs or idempotency headers, they are passed through. Otherwise the connector does a lookup-before-create via `external_ref` plus a provider-side search on a stored marker (for example, a Rootline ID in a memo or custom field) | |
-| **Retries and backoff** | Exponential backoff with full jitter. `429` honors `Retry-After`. A per-connection **circuit breaker** opens after 5 consecutive failures for 10 min | |
-| **Error UX** | Each failure becomes a `sync_error` with a human-readable explanation ("QuickBooks rejected invoice INV-2041: tax code 'NY-Suffolk' is not mapped"), a deep link to fix the mapping, and "retry" or "skip" actions. Errors never block unrelated objects | |
-| **Per-record quarantine (ADR-020)** | Failure scope is the **smallest dependent set**, never the whole client. If invoice INV-2041 fails, only INV-2041 and payments allocated to it are held. The client's other 14 invoices and their payments keep syncing. A failing *Customer* holds only objects that need that customer's `external_ref`. Held objects retry automatically when the blocking mapping is fixed (signal `mapping_changed`). A quarantine older than 72 h escalates to the `bookkeeper` and appears in the Platform Admin integrity center | |
-| **Provider API cost governor** | Accounting and data providers may meter or tier API usage (see Q13). Each connector declares a per-connection daily read budget. The engine prefers webhooks and change-data endpoints over list scans, caches reference objects (accounts, tax codes, items) for 24 h, and shows read volume per connection in the Platform Admin console, so a pricing change by a provider becomes a dashboard number and not a surprise | |
-| **Mapping UI** | Account mapping (Rootline ledger account to QBO account), tax code mapping, item/service mapping, class/location mapping, with AI-suggested mappings (Section 10) | |
-| **Connector health** | Health score per connection (last success, error rate, token expiry) is shown to the tenant and aggregated in the Platform Admin console ([19](19-platform-admin-portal.md)) | |
-| **Partner connector program** | Third parties build connectors with the SDK against the public API (out-of-process) | |
+| Capability | Behavior and rules |
+|---|---|
+| **OAuth token vault** | Tokens encrypted with per-tenant data keys (envelope encryption, KMS CMK `integrations`), with the KMS encryption context `{tenant_id, connector, purpose}`. Refresh happens under a **distributed lock per connection**, because providers that rotate refresh tokens (Intuit, Xero) invalidate the old token on use, and two concurrent refreshes would brick the connection *[verify current provider token lifetimes]*. The new token is persisted in the same transaction that records the refresh |
+| **External reference map** | `external_ref(tenant_id, entity_type, entity_id, connector, external_id, external_version, last_synced_hash, last_synced_at)`. It is the single source of truth for "which QBO customer is this Client". A unique constraint on both directions prevents duplicate customers |
+| **Sync runs** | A Temporal workflow per connection (long-running, continue-as-new daily). Inbound changes are triggered by provider webhooks (signals) plus scheduled change-data polling (every 15 min) as a safety net. Outbound changes are triggered by domain events |
+| **Idempotent writes** | Deterministic idempotency key `hash(tenant, connector, entity, entity_version)`. Where the provider supports request IDs or idempotency headers, they are passed through. Otherwise the connector does a lookup-before-create via `external_ref` plus a provider-side search on a stored marker (for example, a Rootline ID in a memo or custom field) |
+| **Retries and backoff** | Exponential backoff with full jitter. `429` honors `Retry-After`. A per-connection **circuit breaker** opens after 5 consecutive failures for 10 min |
+| **Error UX** | Each failure becomes a `sync_error` with a human-readable explanation ("QuickBooks rejected invoice INV-2041: tax code 'NY-Suffolk' is not mapped"), a deep link to fix the mapping, and "retry" or "skip" actions. Errors never block unrelated objects |
+| **Per-record quarantine (ADR-020)** | Failure scope is the **smallest dependent set**, never the whole client. If invoice INV-2041 fails, only INV-2041 and payments allocated to it are held. The client's other 14 invoices and their payments keep syncing. A failing *Customer* holds only objects that need that customer's `external_ref`. Held objects retry automatically when the blocking mapping is fixed (signal `mapping_changed`). A quarantine older than 72 h escalates to the `bookkeeper` and appears in the Platform Admin integrity center |
+| **Provider API cost governor** | Accounting and data providers may meter or tier API usage (see Q13). Each connector declares a per-connection daily read budget. The engine prefers webhooks and change-data endpoints over list scans, caches reference objects (accounts, tax codes, items) for 24 h, and shows read volume per connection in the Platform Admin console, so a pricing change by a provider becomes a dashboard number and not a surprise |
+| **Mapping UI** | Account mapping (Rootline ledger account to QBO account), tax code mapping, item/service mapping, class/location mapping, with AI-suggested mappings (Section 10) |
+| **Connector health** | Health score per connection (last success, error rate, token expiry) is shown to the tenant and aggregated in the Platform Admin console ([19](19-platform-admin-portal.md)) |
+| **Partner connector program** | Third parties build connectors with the SDK against the public API (out-of-process) |
 
 **Connector catalog (initial):**
 
-| Connector | Direction | Mechanism | Priority |
-|---|---|---|---|
-| Stripe (Company accounts) | Bidirectional | Connect OAuth/account links, or restricted key; webhooks |, see 4.19 and [08](08-payments-stripe.md) |
-| QuickBooks Online | Outbound (default), bidirectional optional | OAuth 2.0, REST, webhooks + change-data polling | |
-| Xero | Outbound (default), bidirectional optional | OAuth 2.0, REST, webhooks | |
-| QuickBooks Desktop | Outbound | Web Connector (SOAP polling client on the customer's PC) | |
-| Plaid | Inbound bank transactions | Link + a cursor-based transactions sync endpoint | |
-| Payroll (Gusto, ADP, QuickBooks Payroll; Canadian payroll provider) | Outbound hours/earnings | API or file export | |
-| Google / Microsoft calendars | Outbound (estimator appointments) | OAuth, push notifications | |
-| Regrid parcels | Inbound | REST by lat/lng or parcel id, cached per property | |
-| Weather (forecast + observed precipitation and snowfall) | Inbound | REST polling per service-area grid cell | |
-| Supplier/nursery catalogs and availability | Inbound | CSV/EDI/API per supplier |, see [12](12-plant-knowledge-base.md) |
-| Zapier / Make | Both | Public API + webhooks | |
+| Connector | Direction | Mechanism |
+|---|---|---|
+| Stripe (Company accounts) | Bidirectional | Connect OAuth/account links, or restricted key; webhooks (see 4.19 and [08](08-payments-stripe.md)) |
+| QuickBooks Online | Outbound (default), bidirectional optional | OAuth 2.0, REST, webhooks + change-data polling |
+| Xero | Outbound (default), bidirectional optional | OAuth 2.0, REST, webhooks |
+| QuickBooks Desktop | Outbound | Web Connector (SOAP polling client on the customer's PC) |
+| Plaid | Inbound bank transactions | Link + a cursor-based transactions sync endpoint |
+| Payroll (Gusto, ADP, QuickBooks Payroll; Canadian payroll provider) | Outbound hours/earnings | API or file export |
+| Google / Microsoft calendars | Outbound (estimator appointments) | OAuth, push notifications |
+| Regrid parcels | Inbound | REST by lat/lng or parcel id, cached per property |
+| Weather (forecast + observed precipitation and snowfall) | Inbound | REST polling per service-area grid cell |
+| Supplier/nursery catalogs and availability | Inbound | CSV/EDI/API per supplier (see [12](12-plant-knowledge-base.md)) |
+| Zapier / Make | Both | Public API + webhooks |
 
 ### 4.9 Event architecture
 
@@ -762,17 +762,17 @@ CREATE TABLE platform.outbox_event (
 
 **Workflow catalog (examples):**
 
-| Workflow | Trigger | Steps (abridged) | Timers / signals | Priority |
-|---|---|---|---|---|
-| `ProposalAcceptedWorkflow` | `proposal.accepted` | Billing creates the Service Agreement, Work Order and Project shells (+ phases from proposal options) in `pending_deposit` with their billing schedules; nothing is schedulable yet ([03](03-crm-sales-estimating-proposals.md) section 4.8) → create a **Deposit Request** (a `DEP-` document, not a revenue invoice; for example, 30% of an $18,400 paver patio = $5,520) on the Company's connected account → send payment link → **wait for `payment.succeeded` signal**; when paid, the ledger posts 1050 Stripe Clearing to 2150 Customer Deposits (`billing.P2`, [07](07-invoicing-billing-contracts.md), [09](09-accounting-ledger-integrations.md)) → sales emits `proposal.executed` → shells become active and Jobs enter the "Ready to schedule" queue ([04](04-scheduling-dispatch-routing.md)), purchasing tasks fire → notify `ops_manager` → if design attached, generate install packet (plan PDF, plant list, takeoff). Proposals with no deposit emit `proposal.accepted` and `proposal.executed` together and skip the wait | Deposit-chaser reminders at day 2 and day 5; at day 10, escalate to estimator. In "required to sign" mode the payment window is 72 h (configurable 24-168 h), after which `proposal.signature_lapsed` voids the shells. Ends on `proposal.executed`; cancels on `proposal.declined`, `proposal.expired`, `proposal.signature_lapsed` or when a revision supersedes the version | |
-| `AgreementBillingWorkflow` | `agreement.activated` (alias `service_agreement.activated`) | For each billing period (for example, 8 equal installments Apr-Nov for a $3,360 season maintenance plan): draft invoice → apply autopay with saved payment method (off-session PaymentIntent on the Company's Stripe) → on failure, retry per [08](08-payments-stripe.md) section 4.15 (soft card declines on day 1, 3, 7 and 14; no retry on hard declines; ACH R01/R09 re-presented at most twice) with the failed-payment notices (SMS + email), then hand off to the [07](07-invoicing-billing-contracts.md) dunning policy → post to ledger via events | Durable monthly timers, pause/resume signals, early-termination signal with proration | |
-| `SnowEventWorkflow` | Forecast ≥ 2 in, or a manual "Storm declared" | Pre-alert crews and salt inventory → when the observed trigger (≥ 2 in) is met, generate visits for every snow contract by priority tier (hospitals and HOA entrances first) → optimize routes → monitor completions → repeat pushes every N inches → post-event: per-push / per-event / seasonal billing per contract | Signals: `trigger_met`, `additional_push`, `storm_ended`. Timers for re-push checks | |
-| `MockupGenerationWorkflow` | User requests a mockup | Reserve AI credits → preprocess (segmentation, depth) → GPU generation (4 variants) → safety and quality checks → upscale → store derivatives → commit credits (or refund on failure) → notify | Activity timeouts 120 s with heartbeat. Cancel signal from UI | |
-| `AccountingSyncWorkflow` | Integration connected | Initial backfill (chunked) → loop: wait for outbound events or inbound webhook signals → push/pull with idempotency → every 15 min poll for changes → continue-as-new daily | Signals: `pause`, `resync_object`, `mapping_changed` | |
-| `TenantOnboardingWorkflow` | Signup | Provision tenant and seeds → choose region/cell → Stripe connect pending → A2P 10DLC brand + campaign registration (multi-day carrier review) → custom domain verification → onboarding checklist nudges | Waits days for 10DLC approval signals. Nudges on day 1, 3 and 7 | |
-| `PeriodCloseWorkflow` | Bookkeeper starts close | Checklist: unreconciled bank lines = 0 → WIP review → accrual suggestions → lock period → notify integrations → snapshot reports | Human approval signal before lock | |
-| `DsarWorkflow` | DSAR case opened | Identify the subject across clients, contacts, messages and media → legal-hold check → export package → controller (Company) approval → delete or pseudonymize → certificate of completion | SLA timers (Section 4.25.4) | |
-| `WarrantyFollowUpWorkflow` | Install job completed with plants | Schedule plant-warranty check visits (for example, 30 days and 11 months) → client photo request via portal → open replacement tasks if failures are reported | 1-year timers | |
+| Workflow | Trigger | Steps (abridged) | Timers / signals |
+|---|---|---|---|
+| `ProposalAcceptedWorkflow` | `proposal.accepted` | Billing creates the Service Agreement, Work Order and Project shells (+ phases from proposal options) in `pending_deposit` with their billing schedules; nothing is schedulable yet ([03](03-crm-sales-estimating-proposals.md) section 4.8) → create a **Deposit Request** (a `DEP-` document, not a revenue invoice; for example, 30% of an $18,400 paver patio = $5,520) on the Company's connected account → send payment link → **wait for `payment.succeeded` signal**; when paid, the ledger posts 1050 Stripe Clearing to 2150 Customer Deposits (`billing.P2`, [07](07-invoicing-billing-contracts.md), [09](09-accounting-ledger-integrations.md)) → sales emits `proposal.executed` → shells become active and Jobs enter the "Ready to schedule" queue ([04](04-scheduling-dispatch-routing.md)), purchasing tasks fire → notify `ops_manager` → if design attached, generate install packet (plan PDF, plant list, takeoff). Proposals with no deposit emit `proposal.accepted` and `proposal.executed` together and skip the wait | Deposit-chaser reminders at day 2 and day 5; at day 10, escalate to estimator. In "required to sign" mode the payment window is 72 h (configurable 24-168 h), after which `proposal.signature_lapsed` voids the shells. Ends on `proposal.executed`; cancels on `proposal.declined`, `proposal.expired`, `proposal.signature_lapsed` or when a revision supersedes the version |
+| `AgreementBillingWorkflow` | `agreement.activated` (alias `service_agreement.activated`) | For each billing period (for example, 8 equal installments Apr-Nov for a $3,360 season maintenance plan): draft invoice → apply autopay with saved payment method (off-session PaymentIntent on the Company's Stripe) → on failure, retry per [08](08-payments-stripe.md) section 4.15 (soft card declines on day 1, 3, 7 and 14; no retry on hard declines; ACH R01/R09 re-presented at most twice) with the failed-payment notices (SMS + email), then hand off to the [07](07-invoicing-billing-contracts.md) dunning policy → post to ledger via events | Durable monthly timers, pause/resume signals, early-termination signal with proration |
+| `SnowEventWorkflow` | Forecast ≥ 2 in, or a manual "Storm declared" | Pre-alert crews and salt inventory → when the observed trigger (≥ 2 in) is met, generate visits for every snow contract by priority tier (hospitals and HOA entrances first) → optimize routes → monitor completions → repeat pushes every N inches → post-event: per-push / per-event / seasonal billing per contract | Signals: `trigger_met`, `additional_push`, `storm_ended`. Timers for re-push checks |
+| `MockupGenerationWorkflow` | User requests a mockup | Reserve AI credits → preprocess (segmentation, depth) → GPU generation (4 variants) → safety and quality checks → upscale → store derivatives → commit credits (or refund on failure) → notify | Activity timeouts 120 s with heartbeat. Cancel signal from UI |
+| `AccountingSyncWorkflow` | Integration connected | Initial backfill (chunked) → loop: wait for outbound events or inbound webhook signals → push/pull with idempotency → every 15 min poll for changes → continue-as-new daily | Signals: `pause`, `resync_object`, `mapping_changed` |
+| `TenantOnboardingWorkflow` | Signup | Provision tenant and seeds → choose region/cell → Stripe connect pending → A2P 10DLC brand + campaign registration (multi-day carrier review) → custom domain verification → onboarding checklist nudges | Waits days for 10DLC approval signals. Nudges on day 1, 3 and 7 |
+| `PeriodCloseWorkflow` | Bookkeeper starts close | Checklist: unreconciled bank lines = 0 → WIP review → accrual suggestions → lock period → notify integrations → snapshot reports | Human approval signal before lock |
+| `DsarWorkflow` | DSAR case opened | Identify the subject across clients, contacts, messages and media → legal-hold check → export package → controller (Company) approval → delete or pseudonymize → certificate of completion | SLA timers (Section 4.25.4) |
+| `WarrantyFollowUpWorkflow` | Install job completed with plants | Schedule plant-warranty check visits (for example, 30 days and 11 months) → client photo request via portal → open replacement tasks if failures are reported | 1-year timers |
 
 ### 4.11 Offline sync for the crew app
 
@@ -857,17 +857,17 @@ flowchart LR
   AI --> STORE["Move to tenant prefix; media.processed event"]
 ```
 
-| Capability | Rules | Priority |
-|---|---|---|
-| Direct-to-S3 upload | Presigned URLs (5 min) scoped to `t/{tenant_id}/quarantine/{uuid}`. Max 50 MB per photo, 2 GB per video, 200 MB per PDF/CAD. Resumable multipart | |
-| Validation | MIME by magic bytes, never by extension. SVG is **sanitized** (or rasterized) before display to prevent stored XSS. PDFs flattened for preview. ClamAV-class scanning | |
-| EXIF/GPS | Stored in `media_asset.capture_meta`. **Stripped from all client-facing derivatives** (homeowner location privacy). The original is kept access-controlled | |
-| Proof-of-service stamp | Capture time + GPS + property geofence distance + device ID, recorded as signed metadata. Optional visible watermark on exported reports. Flag if GPS is > 150 m from the property polygon or capture time is outside the visit window | |
-| Derivatives | libvips (sharp). AVIF with WebP and JPEG fallbacks. Responsive srcset via CloudFront with signed cookies or URLs | |
-| AI derivatives | Segmentation masks (lawn, beds, hardscape, house, sky) and monocular depth maps for [AI mockups](11-ai-design-mockups.md). Auto-tags ("mulch bed", "irrigation head", "brown patch") for search | (mockup inputs), (auto-tags) |
-| Lifecycle | S3 Standard for 180 days → Glacier Instant Retrieval. Derivatives stay Standard. Versioning on. Deletes are soft for 30 days | |
-| Video | Short clips (≤ 60 s) transcoded to HLS for portal playback | |
-| 3D/LiDAR scans | Phone LiDAR scans (USDZ/PLY) stored and converted for the [Design Studio](10-design-studio.md) | |
+| Capability | Rules |
+|---|---|
+| Direct-to-S3 upload | Presigned URLs (5 min) scoped to `t/{tenant_id}/quarantine/{uuid}`. Max 50 MB per photo, 2 GB per video, 200 MB per PDF/CAD. Resumable multipart |
+| Validation | MIME by magic bytes, never by extension. SVG is **sanitized** (or rasterized) before display to prevent stored XSS. PDFs flattened for preview. ClamAV-class scanning |
+| EXIF/GPS | Stored in `media_asset.capture_meta`. **Stripped from all client-facing derivatives** (homeowner location privacy). The original is kept access-controlled |
+| Proof-of-service stamp | Capture time + GPS + property geofence distance + device ID, recorded as signed metadata. Optional visible watermark on exported reports. Flag if GPS is > 150 m from the property polygon or capture time is outside the visit window |
+| Derivatives | libvips (sharp). AVIF with WebP and JPEG fallbacks. Responsive srcset via CloudFront with signed cookies or URLs |
+| AI derivatives | Segmentation masks (lawn, beds, hardscape, house, sky) and monocular depth maps for [AI mockups](11-ai-design-mockups.md). Auto-tags ("mulch bed", "irrigation head", "brown patch") for search |
+| Lifecycle | S3 Standard for 180 days → Glacier Instant Retrieval. Derivatives stay Standard. Versioning on. Deletes are soft for 30 days |
+| Video | Short clips (≤ 60 s) transcoded to HLS for portal playback |
+| 3D/LiDAR scans | Phone LiDAR scans (USDZ/PLY) stored and converted for the [Design Studio](10-design-studio.md) |
 
 ### 4.13 AI Gateway
 
@@ -886,30 +886,30 @@ flowchart LR
   GW --> EVALS["Eval harness and quality monitors"]
 ```
 
-| Capability | Behavior and rules | Priority |
-|---|---|---|
-| Task-based routing | Tasks such as `copilot.chat`, `estimate.draft_from_notes`, `proposal.write_scope`, `inbox.classify`, `kb.answer`, `review.reply_draft`, `receipt.extract`, plus the mockup and layout routes whose task keys are owned by the [AI mockups route table](11-ai-design-mockups.md) (`restyle.preview`, `restyle.hd`, `restyle.4k`, `p2p.harmonize`, `layout.plan`, `chat.design_agent` and so on). Each task maps to a model chain in the **model registry** (primary + fallback + max cost), e.g. classification on a Haiku-tier model, chat and drafting on a Sonnet-tier model, and layout planning on a Sonnet-tier model that escalates to an Opus-tier model after repeated validation failure. As of Nov 2026 the current models are Claude Haiku 5.5 ($0.10 / $0.50 per million input/output tokens, for prompts up to 100K tokens), Sonnet 5.5 ($2 / $10), Opus 5.5 ($4 / $20) and the Fable 5.1 top tier ($10 / $50) ([Claude docs](https://platform.claude.com/docs); verify before committing). **Rules:** (1) the registry pins exact model IDs, never "latest" aliases, so a provider release never silently changes behavior or cost; (2) a model swap is a registry change that must pass the task's eval suite at ≥ baseline before rollout; (3) each task also pins an **effort level**. Current Claude models think adaptively and bill thinking as output tokens, so `effort: low` on classification and extraction routes is the main cost lever after caching; (4) Fable-tier models require 30-day provider-side data retention (not zero-retention eligible), so the registry marks them **ineligible for tasks that carry Confidential data** unless the DPA analysis approves it | |
-| Structured outputs | Every task that feeds code (estimate lines, takeoff suggestions, layout JSON) uses JSON-schema-constrained output and strict tool schemas. Outputs are validated again server-side before use | |
-| Grounding and retrieval | Retrieval over tenant data uses **the same policy engine as the user** (E8) through pgvector embeddings that live in tenant-scoped, RLS-protected tables. Plant answers are grounded in the Plant KB with citations to KB records | |
-| Dimension-aware layout | Layout tasks receive the property geometry (meters, from the Design), setbacks, utilities and constraints. Generated layouts must pass a **geometry validator** (no plant within 2 ft of the foundation for shrubs over 6 ft mature width, no trees under power lines, no overlaps, spacing ≥ mature-spread rules) before display. See [11](11-ai-design-mockups.md) | |
-| Prompt registry | Versioned prompt templates with owners, linked eval suites and staged rollout (5% → 50% → 100%) behind flags | |
-| Caching | Provider prompt caching for long static prefixes (system prompts, KB context). Semantic cache for KB Q&A (global, non-tenant content only) | |
-| Batch lane | Non-urgent jobs (nightly review-reply drafts, KB enrichment drafts for curators, embeddings backfills) use provider batch APIs. Anthropic's Message Batches API runs asynchronously at 50% of standard price as of Nov 2026 (verify). Results arrive in any order and are keyed by `custom_id = {tenant_id}:{task}:{entity_id}` | |
-| Metering and credits | Every call produces an `ai_usage_event` (tenant, user, task, model, input/output tokens, images, GPU-seconds, provider cost, credits). Credits are deducted from the tenant's balance with reserve → commit → refund semantics. Rate card in [22](22-business-model-pricing-gtm.md) | |
-| Budgets | Per-tenant monthly credit allowance, hard and soft caps, per-user daily caps, and owner alerts at 50/80/100% | |
-| Privacy | Contractual no-training terms and zero/limited data retention with providers where available. PII redaction (phone, email, card-like numbers) for tasks that do not need it. **Geography pinning:** the gateway sets the provider's inference-geography control on every call. That is the Claude API's `inference_geo` request parameter (Opus 4.6 / Sonnet 4.6 and later) or a regional cloud endpoint such as Amazon Bedrock in a chosen AWS region. The geography actually used is read back from the response (`usage.inference_geo`) and stored on the `ai_usage_event` as audit evidence. Whether a **Canadian** inference geography exists for each model is unverified (Q15). Until it is confirmed, Canadian tenants' AI tasks run under the cross-border disclosure in 4.4.6, or the feature is disabled per tenant setting | |
-| Safety | Prompt-injection defenses: untrusted content (client messages, web pages, emails) is wrapped and labeled. Tool calls that move money or send external messages always require **human confirmation** unless an Automation explicitly allows them with limits. Output filters for image generation (no people, no text artifacts on mockups) | |
-| Provider resilience | Circuit breakers per provider/model. Automatic fallback to a secondary model for the task. Streaming with resumable UX | |
-| Evals | Golden datasets per task (for example, 300 real anonymized estimator notes paired with expected line items). Nightly regression runs and online quality signals (thumbs, edit distance of AI drafts vs final) | |
-| Observability | OpenTelemetry spans per call with token counts, latency and cost. Per-tenant AI COGS dashboard in [19](19-platform-admin-portal.md) | |
+| Capability | Behavior and rules |
+|---|---|
+| Task-based routing | Tasks such as `copilot.chat`, `estimate.draft_from_notes`, `proposal.write_scope`, `inbox.classify`, `kb.answer`, `review.reply_draft`, `receipt.extract`, plus the mockup and layout routes whose task keys are owned by the [AI mockups route table](11-ai-design-mockups.md) (`restyle.preview`, `restyle.hd`, `restyle.4k`, `p2p.harmonize`, `layout.plan`, `chat.design_agent` and so on). Each task maps to a model chain in the **model registry** (primary + fallback + max cost), e.g. classification on a Haiku-tier model, chat and drafting on a Sonnet-tier model, and layout planning on a Sonnet-tier model that escalates to an Opus-tier model after repeated validation failure. As of Nov 2026 the current models are Claude Haiku 5.5 ($0.10 / $0.50 per million input/output tokens, for prompts up to 100K tokens), Sonnet 5.5 ($2 / $10), Opus 5.5 ($4 / $20) and the Fable 5.1 top tier ($10 / $50) ([Claude docs](https://platform.claude.com/docs); verify before committing). **Rules:** (1) the registry pins exact model IDs, never "latest" aliases, so a provider release never silently changes behavior or cost; (2) a model swap is a registry change that must pass the task's eval suite at ≥ baseline before rollout; (3) each task also pins an **effort level**. Current Claude models think adaptively and bill thinking as output tokens, so `effort: low` on classification and extraction routes is the main cost lever after caching; (4) Fable-tier models require 30-day provider-side data retention (not zero-retention eligible), so the registry marks them **ineligible for tasks that carry Confidential data** unless the DPA analysis approves it |
+| Structured outputs | Every task that feeds code (estimate lines, takeoff suggestions, layout JSON) uses JSON-schema-constrained output and strict tool schemas. Outputs are validated again server-side before use |
+| Grounding and retrieval | Retrieval over tenant data uses **the same policy engine as the user** (E8) through pgvector embeddings that live in tenant-scoped, RLS-protected tables. Plant answers are grounded in the Plant KB with citations to KB records |
+| Dimension-aware layout | Layout tasks receive the property geometry (meters, from the Design), setbacks, utilities and constraints. Generated layouts must pass a **geometry validator** (no plant within 2 ft of the foundation for shrubs over 6 ft mature width, no trees under power lines, no overlaps, spacing ≥ mature-spread rules) before display. See [11](11-ai-design-mockups.md) |
+| Prompt registry | Versioned prompt templates with owners, linked eval suites and staged rollout (5% → 50% → 100%) behind flags |
+| Caching | Provider prompt caching for long static prefixes (system prompts, KB context). Semantic cache for KB Q&A (global, non-tenant content only) |
+| Batch lane | Non-urgent jobs (nightly review-reply drafts, KB enrichment drafts for curators, embeddings backfills) use provider batch APIs. Anthropic's Message Batches API runs asynchronously at 50% of standard price as of Nov 2026 (verify). Results arrive in any order and are keyed by `custom_id = {tenant_id}:{task}:{entity_id}` |
+| Metering and credits | Every call produces an `ai_usage_event` (tenant, user, task, model, input/output tokens, images, GPU-seconds, provider cost, credits). Credits are deducted from the tenant's balance with reserve → commit → refund semantics. Rate card in [22](22-business-model-pricing-gtm.md) |
+| Budgets | Per-tenant monthly credit allowance, hard and soft caps, per-user daily caps, and owner alerts at 50/80/100% |
+| Privacy | Contractual no-training terms and zero/limited data retention with providers where available. PII redaction (phone, email, card-like numbers) for tasks that do not need it. **Geography pinning:** the gateway sets the provider's inference-geography control on every call. That is the Claude API's `inference_geo` request parameter (Opus 4.6 / Sonnet 4.6 and later) or a regional cloud endpoint such as Amazon Bedrock in a chosen AWS region. The geography actually used is read back from the response (`usage.inference_geo`) and stored on the `ai_usage_event` as audit evidence. Whether a **Canadian** inference geography exists for each model is unverified (Q15). Until it is confirmed, Canadian tenants' AI tasks run under the cross-border disclosure in 4.4.6, or the feature is disabled per tenant setting |
+| Safety | Prompt-injection defenses: untrusted content (client messages, web pages, emails) is wrapped and labeled. Tool calls that move money or send external messages always require **human confirmation** unless an Automation explicitly allows them with limits. Output filters for image generation (no people, no text artifacts on mockups) |
+| Provider resilience | Circuit breakers per provider/model. Automatic fallback to a secondary model for the task. Streaming with resumable UX |
+| Evals | Golden datasets per task (for example, 300 real anonymized estimator notes paired with expected line items). Nightly regression runs and online quality signals (thumbs, edit distance of AI drafts vs final) |
+| Observability | OpenTelemetry spans per call with token counts, latency and cost. Per-tenant AI COGS dashboard in [19](19-platform-admin-portal.md) |
 
 ### 4.14 GPU job orchestration
 
-| Lane | Workloads | SLO (estimate) | Placement | Priority |
-|---|---|---|---|---|
-| `interactive` | Mockup preview (1 low-res variant), segmentation of an uploaded photo, inpainting a single bed | First preview < 20 s p90 | Serverless GPU provider → own warm pool | |
-| `standard` | Full mockup set (4 variants at 2K), upscaling, plan-to-mockup re-render | < 90 s p90 | Same | |
-| `batch` | Before/after galleries, nightly re-renders after KB updates, embeddings, auto-tagging backfills | < 6 h | Spot GPU capacity (EKS + Karpenter), preemptible | |
+| Lane | Workloads | SLO (estimate) | Placement |
+|---|---|---|---|
+| `interactive` | Mockup preview (1 low-res variant), segmentation of an uploaded photo, inpainting a single bed | First preview < 20 s p90 | Serverless GPU provider → own warm pool |
+| `standard` | Full mockup set (4 variants at 2K), upscaling, plan-to-mockup re-render | < 90 s p90 | Same |
+| `batch` | Before/after galleries, nightly re-renders after KB updates, embeddings, auto-tagging backfills | < 6 h | Spot GPU capacity (EKS + Karpenter), preemptible |
 
 **Job state machine:**
 
@@ -939,27 +939,27 @@ stateDiagram-v2
 
 ### 4.15 Search
 
-| Need | Engine | Notes | Priority |
-|---|---|---|---|
-| Global omnibox (clients, properties, jobs, invoices, contacts by name, address, phone, invoice #) | **Postgres FTS + `pg_trgm`** with tenant-leading GIN indexes | Typo-tolerant on addresses ("123 Mapel" finds "123 Maple"). Target p95 < 200 ms | |
-| Plant KB faceted search (zone, sun, water, deer resistance, native to ecoregion, bloom month, mature size) | Postgres with precomputed facet tables → **OpenSearch** index `kb-plants-{release}` | Global index (not tenant-scoped) + tenant overlay filter. Blue/green index swap on `kb.release_published` |/ |
-| Semantic search ("shade-tolerant evergreen screen under 8 ft for Zone 6b clay") | **pgvector** embeddings (HNSW) on plant records and tenant knowledge | Hybrid ranking: BM25 + vector + region performance rating | |
-| Cross-entity search at scale, activity search, inbox search | OpenSearch per region, index-per-cell, tenant filter mandatory in the query builder (E7) | Indexed from events (MSK). Search lag p95 < 5 s | |
+| Need | Engine | Notes |
+|---|---|---|
+| Global omnibox (clients, properties, jobs, invoices, contacts by name, address, phone, invoice #) | **Postgres FTS + `pg_trgm`** with tenant-leading GIN indexes | Typo-tolerant on addresses ("123 Mapel" finds "123 Maple"). Target p95 < 200 ms |
+| Plant KB faceted search (zone, sun, water, deer resistance, native to ecoregion, bloom month, mature size) | Postgres with precomputed facet tables → **OpenSearch** index `kb-plants-{release}` | Global index (not tenant-scoped) + tenant overlay filter. Blue/green index swap on `kb.release_published` |
+| Semantic search ("shade-tolerant evergreen screen under 8 ft for Zone 6b clay") | **pgvector** embeddings (HNSW) on plant records and tenant knowledge | Hybrid ranking: BM25 + vector + region performance rating |
+| Cross-entity search at scale, activity search, inbox search | OpenSearch per region, index-per-cell, tenant filter mandatory in the query builder (E7) | Indexed from events (MSK). Search lag p95 < 5 s |
 
 ### 4.16 Notifications service
 
 A `comms` module capability used by every other module. Product behavior is in [Marketing and communications](16-marketing-growth-communications.md).
 
-| Capability | Rules | Priority |
-|---|---|---|
-| Channels | Email (Postmark for transactional; a separate stream/provider for marketing), SMS/MMS (Twilio), push (APNs/FCM via Expo), in-app, voice (AI receptionist,) | |
-| Templates | MJML email + plain-text SMS templates per event, per locale (en, es; fr-CA later), with tenant branding and a preview with sample data. Variables are validated at save time | |
-| Preferences and consent | Per contact, per channel, per category (transactional vs marketing). SMS marketing requires recorded **express written consent** under TCPA, stored as a `consent_record` with source, timestamp, IP and wording version. STOP/HELP keywords handled automatically. **Revocation by any reasonable means:** the FCC's 2024 consent-revocation order (effective April 2025 per background knowledge; verify with counsel) requires honoring opt-outs sent in any reasonable way, within a fixed number of business days. Rootline applies opt-outs **immediately**. Inbound free text such as "stop texting me", "unsubscribe" or "no more messages" is classified by a rules-first matcher plus an AI classifier (`inbox.classify`) and creates a revocation `consent_record` with the message as evidence. A single confirmation SMS is allowed, and nothing else is sent on that category | |
-| Quiet hours | Calling and texting windows come from a **per-jurisdiction rule table** keyed by the recipient's location (property time zone and state or province), not a hard-coded constant. Defaults: **marketing** SMS 8 am-8 pm local, which is stricter than the federal 8 am-9 pm window and covers states with tighter telephone-solicitation laws such as Florida's (verify the state table with counsel annually), with a per-state cap on marketing messages per 24 h where state law sets one. **Transactional service** messages (on-my-way, visit complete) 7 am-9 pm. Messages outside the window are queued until it opens. Snow-event completion notices generated at 3 a.m. go out at 7 a.m. unless the client opted into overnight storm alerts | |
-| Sender identity | **Per-tenant email domain** (DKIM/SPF/DMARC set up via a guided DNS wizard), with a shared `mail.rootline.app` fallback. **Per-tenant Twilio subaccount** with its own A2P 10DLC brand and campaign (Rootline registers as the ISV). US carriers require 10DLC registration for application-to-person traffic ([Twilio A2P 10DLC](https://www.twilio.com/docs/messaging/compliance/a2p-10dlc)); verify current enforcement rules and fees. Toll-free verification as the fallback path | |
-| Delivery tracking | Provider webhooks → `message.delivered/failed`. Bounces and complaints auto-suppress the address. Carrier error codes are mapped to human messages | |
-| Dedupe and digests | Idempotent `notification_key` per event and recipient. Digest mode for staff (for example, an "18 visits completed today" summary instead of 18 pushes) | |
-| Rate limiting | Per-tenant SMS throughput matched to the 10DLC campaign throughput tier. Queue with fairness | |
+| Capability | Rules |
+|---|---|
+| Channels | Email (Postmark for transactional; a separate stream/provider for marketing), SMS/MMS (Twilio), push (APNs/FCM via Expo), in-app, voice (AI receptionist,) |
+| Templates | MJML email + plain-text SMS templates per event, per locale (en, es; fr-CA later), with tenant branding and a preview with sample data. Variables are validated at save time |
+| Preferences and consent | Per contact, per channel, per category (transactional vs marketing). SMS marketing requires recorded **express written consent** under TCPA, stored as a `consent_record` with source, timestamp, IP and wording version. STOP/HELP keywords handled automatically. **Revocation by any reasonable means:** the FCC's 2024 consent-revocation order (effective April 2025 per background knowledge; verify with counsel) requires honoring opt-outs sent in any reasonable way, within a fixed number of business days. Rootline applies opt-outs **immediately**. Inbound free text such as "stop texting me", "unsubscribe" or "no more messages" is classified by a rules-first matcher plus an AI classifier (`inbox.classify`) and creates a revocation `consent_record` with the message as evidence. A single confirmation SMS is allowed, and nothing else is sent on that category |
+| Quiet hours | Calling and texting windows come from a **per-jurisdiction rule table** keyed by the recipient's location (property time zone and state or province), not a hard-coded constant. Defaults: **marketing** SMS 8 am-8 pm local, which is stricter than the federal 8 am-9 pm window and covers states with tighter telephone-solicitation laws such as Florida's (verify the state table with counsel annually), with a per-state cap on marketing messages per 24 h where state law sets one. **Transactional service** messages (on-my-way, visit complete) 7 am-9 pm. Messages outside the window are queued until it opens. Snow-event completion notices generated at 3 a.m. go out at 7 a.m. unless the client opted into overnight storm alerts |
+| Sender identity | **Per-tenant email domain** (DKIM/SPF/DMARC set up via a guided DNS wizard), with a shared `mail.rootline.app` fallback. **Per-tenant Twilio subaccount** with its own A2P 10DLC brand and campaign (Rootline registers as the ISV). US carriers require 10DLC registration for application-to-person traffic ([Twilio A2P 10DLC](https://www.twilio.com/docs/messaging/compliance/a2p-10dlc)); verify current enforcement rules and fees. Toll-free verification as the fallback path |
+| Delivery tracking | Provider webhooks → `message.delivered/failed`. Bounces and complaints auto-suppress the address. Carrier error codes are mapped to human messages |
+| Dedupe and digests | Idempotent `notification_key` per event and recipient. Digest mode for staff (for example, an "18 visits completed today" summary instead of 18 pushes) |
+| Rate limiting | Per-tenant SMS throughput matched to the 10DLC campaign throughput tier. Queue with fairness |
 
 ### 4.17 Route optimization and geo services
 
@@ -1056,23 +1056,23 @@ Service control policies deny resource creation outside approved regions per acc
 
 #### 4.21.2 Service map
 
-| Concern | AWS service | Configuration notes | Priority |
-|---|---|---|---|
-| Edge, CDN, TLS | CloudFront, AWS WAF, Shield Standard, Route 53, ACM | Custom domains for client portals and tenant websites (`portal.greenacreslandscaping.com`) via a multi-tenant CloudFront distribution with per-domain certificates. AWS introduced multi-tenant distributions with per-tenant "distribution tenants" and managed certificates (marketed as CloudFront SaaS Manager) in 2025, per background knowledge. Verify current quotas (domains per distribution, certificate issuance rate) against the projected ~10k portal domains plus ~4k tenant websites before committing, versus a dedicated managed-certificate edge (Q8). **Onboarding rule:** a portal domain goes live only after a CNAME/TXT ownership check and successful certificate issuance. Until then the portal is served at `{tenant}.rootline.app`. **Dangling-DNS protection:** domains are re-verified daily and detached on failure | |
-| Compute (core, AI Gateway, optimizer, media) | **ECS on Fargate** (Graviton/ARM64 where dependencies allow) | Separate ECS services per role. ALB with path routing. Autoscaling on CPU, requests and queue depth | |
-| Compute (GPU, batch) | **EKS + Karpenter** GPU node pools (on-demand + spot) | Only in the `ai-gpu` account. NVIDIA device plugin, node-local NVMe model cache | |
-| OLTP database | **Aurora PostgreSQL** (I/O-Optimized when I/O exceeds ~25% of spend), Multi-AZ, 1 writer + 1-2 readers per cell. Extensions: PostGIS, pgvector, pg_trgm, pg_stat_statements | Aurora Global Database for cross-region DR. Fast database cloning for staging refreshes from **sanitized** snapshots | |
-| Telemetry DB | Aurora PostgreSQL (separate cluster), daily partitions | GPS and device telemetry | |
-| Cache, rate limits, pub/sub | **ElastiCache (Valkey/Redis OSS)**, cluster mode, Multi-AZ | No durable state. Losing it costs only latency | |
-| Object storage | **S3** (SSE-KMS, versioning, Block Public Access), CloudFront signed URLs/cookies | Cross-region replication with Replication Time Control for Tier-1 buckets | |
-| Messaging | SNS + SQS, **Amazon MSK** | DLQs everywhere. Redrive tooling in the admin console |/ |
-| Workflows | **Temporal Cloud** (namespace per region), workers on ECS | Payload codec encryption with KMS | |
-| Search | **Amazon OpenSearch Service** | Per region. UltraWarm for older activity indexes | |
-| Keys and secrets | **KMS** (customer-managed keys per environment, per region, per data class), **Secrets Manager** (automatic rotation for DB credentials) | Key policies restrict `Decrypt` by role and encryption context | |
-| Identity for workloads | IAM roles for ECS tasks / EKS IRSA or Pod Identity. No long-lived access keys. GitHub OIDC for CI | n/a | |
-| Email (platform) | Postmark/SendGrid (external). SES for internal alerting only | n/a | |
-| Observability | OpenTelemetry Collector (ECS sidecar/daemon) → vendor backend. CloudWatch for AWS-native metrics and alarms | See 4.23 | |
-| IaC | **Terraform** (modules per stack: network, data, compute, edge, security), Atlantis or Terraform Cloud for plan/apply on PR, Checkov/tfsec + OPA policies, nightly drift detection | n/a | |
+| Concern | AWS service | Configuration notes |
+|---|---|---|
+| Edge, CDN, TLS | CloudFront, AWS WAF, Shield Standard, Route 53, ACM | Custom domains for client portals and tenant websites (`portal.greenacreslandscaping.com`) via a multi-tenant CloudFront distribution with per-domain certificates. AWS introduced multi-tenant distributions with per-tenant "distribution tenants" and managed certificates (marketed as CloudFront SaaS Manager) in 2025, per background knowledge. Verify current quotas (domains per distribution, certificate issuance rate) against the projected ~10k portal domains plus ~4k tenant websites before committing, versus a dedicated managed-certificate edge (Q8). **Onboarding rule:** a portal domain goes live only after a CNAME/TXT ownership check and successful certificate issuance. Until then the portal is served at `{tenant}.rootline.app`. **Dangling-DNS protection:** domains are re-verified daily and detached on failure |
+| Compute (core, AI Gateway, optimizer, media) | **ECS on Fargate** (Graviton/ARM64 where dependencies allow) | Separate ECS services per role. ALB with path routing. Autoscaling on CPU, requests and queue depth |
+| Compute (GPU, batch) | **EKS + Karpenter** GPU node pools (on-demand + spot) | Only in the `ai-gpu` account. NVIDIA device plugin, node-local NVMe model cache |
+| OLTP database | **Aurora PostgreSQL** (I/O-Optimized when I/O exceeds ~25% of spend), Multi-AZ, 1 writer + 1-2 readers per cell. Extensions: PostGIS, pgvector, pg_trgm, pg_stat_statements | Aurora Global Database for cross-region DR. Fast database cloning for staging refreshes from **sanitized** snapshots |
+| Telemetry DB | Aurora PostgreSQL (separate cluster), daily partitions | GPS and device telemetry |
+| Cache, rate limits, pub/sub | **ElastiCache (Valkey/Redis OSS)**, cluster mode, Multi-AZ | No durable state. Losing it costs only latency |
+| Object storage | **S3** (SSE-KMS, versioning, Block Public Access), CloudFront signed URLs/cookies | Cross-region replication with Replication Time Control for Tier-1 buckets |
+| Messaging | SNS + SQS, **Amazon MSK** | DLQs everywhere. Redrive tooling in the admin console |
+| Workflows | **Temporal Cloud** (namespace per region), workers on ECS | Payload codec encryption with KMS |
+| Search | **Amazon OpenSearch Service** | Per region. UltraWarm for older activity indexes |
+| Keys and secrets | **KMS** (customer-managed keys per environment, per region, per data class), **Secrets Manager** (automatic rotation for DB credentials) | Key policies restrict `Decrypt` by role and encryption context |
+| Identity for workloads | IAM roles for ECS tasks / EKS IRSA or Pod Identity. No long-lived access keys. GitHub OIDC for CI | n/a |
+| Email (platform) | Postmark/SendGrid (external). SES for internal alerting only | n/a |
+| Observability | OpenTelemetry Collector (ECS sidecar/daemon) → vendor backend. CloudWatch for AWS-native metrics and alarms | See 4.23 |
+| IaC | **Terraform** (modules per stack: network, data, compute, edge, security), Atlantis or Terraform Cloud for plan/apply on PR, Checkov/tfsec + OPA policies, nightly drift detection | n/a |
 
 #### 4.21.3 Network
 
@@ -1191,19 +1191,19 @@ Modes, durations and approvers below are those defined in [02](02-personas-roles
 
 #### 4.24.7 Application security program
 
-| Practice | Implementation | Priority |
-|---|---|---|
-| Standard | **OWASP ASVS** (current version 5.0; verify) as the requirements baseline: **Level 2** for all surfaces, **Level 3** for authentication, session management, payments, ledger and the Platform Admin console ([OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/)) | |
-| Secure SDLC | Threat model per new module (STRIDE worksheet in the design doc template). Security champion per stream team. Security review gate for changes touching auth, payments, ledger, sync or tenancy | |
-| SAST / SCA / secrets | CodeQL or Semgrep, Renovate + OSV scanning, gitleaks. **Blocking** on critical findings | |
-| DAST | Authenticated DAST (ZAP-class) nightly against staging with seeded tenants | |
-| Container and IaC scanning | Trivy (images), Checkov (Terraform). Base images rebuilt weekly | |
-| SBOM and signing | Syft SBOM per image. Cosign signatures verified at deploy (admission check in the deploy pipeline) | |
-| Pen testing | Third-party pen test before the first sellable release (web, API, mobile, tenant isolation), then annually and before major launches. Separate test for the Platform Admin console | |
-| Bug bounty | Private program at V1, public at V2 | |
-| Vulnerability SLAs | Critical: 7 days, High: 30 days, Medium: 90 days, tracked as SOC 2 evidence | |
-| Security headers | CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, COOP/COEP where compatible | |
-| Mobile | Jailbreak/root detection (warn, not block), encrypted SQLite, certificate pinning, no secrets in the bundle, app attestation (App Attest / Play Integrity) for sync calls | |
+| Practice | Implementation |
+|---|---|
+| Standard | **OWASP ASVS** (current version 5.0; verify) as the requirements baseline: **Level 2** for all surfaces, **Level 3** for authentication, session management, payments, ledger and the Platform Admin console ([OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/)) |
+| Secure SDLC | Threat model per new module (STRIDE worksheet in the design doc template). Security champion per stream team. Security review gate for changes touching auth, payments, ledger, sync or tenancy |
+| SAST / SCA / secrets | CodeQL or Semgrep, Renovate + OSV scanning, gitleaks. **Blocking** on critical findings |
+| DAST | Authenticated DAST (ZAP-class) nightly against staging with seeded tenants |
+| Container and IaC scanning | Trivy (images), Checkov (Terraform). Base images rebuilt weekly |
+| SBOM and signing | Syft SBOM per image. Cosign signatures verified at deploy (admission check in the deploy pipeline) |
+| Pen testing | Third-party pen test before the first sellable release (web, API, mobile, tenant isolation), then annually and before major launches. Separate test for the Platform Admin console |
+| Bug bounty | Private program at V1, public at V2 |
+| Vulnerability SLAs | Critical: 7 days, High: 30 days, Medium: 90 days, tracked as SOC 2 evidence |
+| Security headers | CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, COOP/COEP where compatible |
+| Mobile | Jailbreak/root detection (warn, not block), encrypted SQLite, certificate pinning, no secrets in the bundle, app attestation (App Attest / Play Integrity) for sync calls |
 
 #### 4.24.8 SOC 2 control mapping (excerpt)
 
@@ -1283,14 +1283,14 @@ Retention is executed by a nightly `RetentionWorkflow` per tenant per data class
 
 ### 4.26 Backup and disaster recovery
 
-| Tier | Data / service | RPO | RTO | Mechanism | Priority |
-|---|---|---|---|---|---|
-| **Tier 0** | Aurora OLTP (all modules incl. ledger, payments), Temporal state | ≤ 1 min (regional); ~0 (AZ) | ≤ 2 min (AZ); ≤ 1 h (regional) | Aurora Multi-AZ; continuous backup with point-in-time restore (35 days); **Aurora Global Database** secondary in the DR region (typical replication lag around a second; verify); Temporal Cloud regional replication (verify) | in-region, cross-region |
-| **Tier 1** | S3 media and documents | ≤ 15 min | ≤ 4 h | Versioning + cross-region replication with Replication Time Control (designed for 99.99% of objects within 15 minutes); deletes protected by versioning | |
-| **Tier 1** | Audit archive | 0 | 24 h | S3 Object Lock (compliance mode), replicated | |
-| **Tier 2** | Redis, OpenSearch, data lake serving store | Rebuildable | ≤ 24 h | Rebuild from Postgres/lake/events | |
-| **Tier 2** | Telemetry DB (GPS) | ≤ 1 h | ≤ 24 h | Snapshots | |
-| **Field** | Unsynced device data | n/a | n/a | The device queue is durable and retries indefinitely; a backend outage never loses field work | |
+| Tier | Data / service | RPO | RTO | Mechanism |
+|---|---|---|---|---|
+| **Tier 0** | Aurora OLTP (all modules incl. ledger, payments), Temporal state | ≤ 1 min (regional); ~0 (AZ) | ≤ 2 min (AZ); ≤ 1 h (regional) | Aurora Multi-AZ; continuous backup with point-in-time restore (35 days); **Aurora Global Database** secondary in the DR region (typical replication lag around a second; verify); Temporal Cloud regional replication (verify) |
+| **Tier 1** | S3 media and documents | ≤ 15 min | ≤ 4 h | Versioning + cross-region replication with Replication Time Control (designed for 99.99% of objects within 15 minutes); deletes protected by versioning |
+| **Tier 1** | Audit archive | 0 | 24 h | S3 Object Lock (compliance mode), replicated |
+| **Tier 2** | Redis, OpenSearch, data lake serving store | Rebuildable | ≤ 24 h | Rebuild from Postgres/lake/events |
+| **Tier 2** | Telemetry DB (GPS) | ≤ 1 h | ≤ 24 h | Snapshots |
+| **Field** | Unsynced device data | n/a | n/a | The device queue is durable and retries indefinitely; a backend outage never loses field work |
 
 - **Logical backups:** a weekly per-cell logical dump to a separate, locked-down backup account (protects against a compromised production account or a logical corruption that replicates).
 - **Restore drills:** monthly automated restore of a random cell snapshot into an isolated account, with row-count and ledger-integrity checks. **DR game day** twice a year (one before spring peak in February, one before snow season in October): fail over a staging region end-to-end and measure the actual RTO.
@@ -1573,17 +1573,17 @@ sequenceDiagram
 
 Architecture capabilities surface in a few product screens. Sitemaps are in [UX and sitemaps](21-ux-design-system-sitemaps.md); admin console screens are in [Platform admin](19-platform-admin-portal.md).
 
-| Screen | Surface | Primary roles | Purpose | Priority |
-|---|---|---|---|---|
-| Settings → Developers (API keys, OAuth apps, webhooks, event log) | Company web | `owner`, `office_manager` (with permission) | Self-serve integrations | |
-| Settings → Security and access (MFA policy, SSO, sessions, support access, audit log) | Company web | `owner` | Security posture and transparency | (SSO) |
-| Settings → Data and privacy (export center, retention, DSAR cases, data location) | Company web | `owner`, `bookkeeper` (exports) | Portability and compliance |/ |
-| Settings → Integrations (connections, health, sync errors, mappings) | Company web | `owner`, `bookkeeper` | Connector management | |
-| Crew app → Sync status and "Needs attention" | Crew app | `crew_lead`, `technician` | Offline trust | |
-| Admin → Fleet and cells (tenant placement, heat, moves) | Platform Admin | `platform_owner`, `platform_engineer` | Capacity and isolation | |
-| Admin → Integrity center (ledger drift, webhook DLQs, sync rejections) | Platform Admin | `platform_engineer`, `platform_support` | Correctness operations | |
-| Admin → Access grants and break-glass log | Platform Admin | `platform_owner` | Insider-risk control | |
-| Public trust center (status, SOC 2, subprocessors, data locations) | Marketing site | Everyone | Sales enablement | |
+| Screen | Surface | Primary roles | Purpose |
+|---|---|---|---|
+| Settings → Developers (API keys, OAuth apps, webhooks, event log) | Company web | `owner`, `office_manager` (with permission) | Self-serve integrations |
+| Settings → Security and access (MFA policy, SSO, sessions, support access, audit log) | Company web | `owner` | Security posture and transparency |
+| Settings → Data and privacy (export center, retention, DSAR cases, data location) | Company web | `owner`, `bookkeeper` (exports) | Portability and compliance |
+| Settings → Integrations (connections, health, sync errors, mappings) | Company web | `owner`, `bookkeeper` | Connector management |
+| Crew app → Sync status and "Needs attention" | Crew app | `crew_lead`, `technician` | Offline trust |
+| Admin → Fleet and cells (tenant placement, heat, moves) | Platform Admin | `platform_owner`, `platform_engineer` | Capacity and isolation |
+| Admin → Integrity center (ledger drift, webhook DLQs, sync rejections) | Platform Admin | `platform_engineer`, `platform_support` | Correctness operations |
+| Admin → Access grants and break-glass log | Platform Admin | `platform_owner` | Insider-risk control |
+| Public trust center (status, SOC 2, subprocessors, data locations) | Marketing site | Everyone | Sales enablement |
 
 ### 6.1 Settings → Developers
 
@@ -2544,18 +2544,18 @@ Full role definitions are in [02](02-personas-roles-permissions.md). The matrice
 
 AI here is for running the platform itself (AIOps, security, data quality) and for making integrations self-serve. Product-facing AI is in [17](17-ai-copilot-automation.md).
 
-| Opportunity | Description | Priority |
-|---|---|---|
-| **AI-assisted integration mapping** | When a Company connects QuickBooks, an LLM proposes account, tax-code and item mappings from names and historical usage ("'Lawn Maint Income' → Rootline 4010 Maintenance Revenue, 96% confidence"). A human confirms. Saves the bookkeeper an hour per onboarding | |
-| **Sync error explainer** | Converts raw provider errors into plain-English fixes with deep links ("Xero rejected this invoice because the contact is archived. Unarchive the contact or map to a new one.") | |
-| **Import wizard** | Upload a messy CSV export from another tool. The AI maps columns, normalizes addresses, detects duplicate clients and suggests recurring schedules from visit history | |
-| **Incident copilot** | For on-call: summarizes alerts, recent deploys, top affected tenants and probable cause from traces. Drafts the status page update for human approval | |
-| **Anomaly detection** | Unusual bulk exports, refund spikes, API key use from new countries, sudden webhook failures, ledger drift precursors. Combines statistical baselines with LLM triage summaries | |
-| **Security review assistant** | PR bot that flags missing tenant scoping, unmasked Restricted fields, raw SQL outside `withTenant`, or new columns lacking a classification tag. Advisory, never a replacement for CI rules | |
-| **Natural-language reporting with guardrails** | Copilot translates questions to queries over the **semantic layer** (never raw SQL against OLTP), with tenant filters injected and costs capped | (see [18](18-reporting-analytics.md)) |
-| **Synthetic data generation** | LLM-assisted generation of realistic landscaping companies, client notes and messages for test environments, so production PII is never needed | |
-| **Test generation from incidents** | Every production bug produces a regression test proposal (including tenant-isolation and sync-conflict cases) | |
-| **Capacity forecasting** | Forecast seasonal peaks per cell from historical visit volume and weather outlooks (early spring, early snow) to pre-scale | |
+| Opportunity | Description |
+|---|---|
+| **AI-assisted integration mapping** | When a Company connects QuickBooks, an LLM proposes account, tax-code and item mappings from names and historical usage ("'Lawn Maint Income' → Rootline 4010 Maintenance Revenue, 96% confidence"). A human confirms. Saves the bookkeeper an hour per onboarding |
+| **Sync error explainer** | Converts raw provider errors into plain-English fixes with deep links ("Xero rejected this invoice because the contact is archived. Unarchive the contact or map to a new one.") |
+| **Import wizard** | Upload a messy CSV export from another tool. The AI maps columns, normalizes addresses, detects duplicate clients and suggests recurring schedules from visit history |
+| **Incident copilot** | For on-call: summarizes alerts, recent deploys, top affected tenants and probable cause from traces. Drafts the status page update for human approval |
+| **Anomaly detection** | Unusual bulk exports, refund spikes, API key use from new countries, sudden webhook failures, ledger drift precursors. Combines statistical baselines with LLM triage summaries |
+| **Security review assistant** | PR bot that flags missing tenant scoping, unmasked Restricted fields, raw SQL outside `withTenant`, or new columns lacking a classification tag. Advisory, never a replacement for CI rules |
+| **Natural-language reporting with guardrails** | Copilot translates questions to queries over the **semantic layer** (never raw SQL against OLTP), with tenant filters injected and costs capped (see [18](18-reporting-analytics.md)) |
+| **Synthetic data generation** | LLM-assisted generation of realistic landscaping companies, client notes and messages for test environments, so production PII is never needed |
+| **Test generation from incidents** | Every production bug produces a regression test proposal (including tenant-isolation and sync-conflict cases) |
+| **Capacity forecasting** | Forecast seasonal peaks per cell from historical visit volume and weather outlooks (early spring, early snow) to pre-scale |
 
 ---
 
@@ -2586,19 +2586,19 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 
 ### 11.2 Compliance summary
 
-| Regime | Scope for Rootline | Key controls | Priority |
-|---|---|---|---|
-| SOC 2 Type II | Security, Availability, Confidentiality, Processing Integrity (Privacy at V2) | 4.24.8 | Type I, Type II |
-| PCI DSS | SAQ-A-style scope by design. Companies are merchants on their own Stripe accounts | 4.24.5 | |
-| CCPA/CPRA (California) and other US state privacy laws | Service provider for Company client data; controller for user data | DPA, DSAR tooling, no sale/share |/ |
-| PIPEDA, Quebec Law 25 | Canadian tenants and Canadian clients | Canadian residency, PIA template, privacy officer, breach records | |
-| GDPR | Limited (EU residents among clients, EU staff vendors). Design is GDPR-ready | DSAR, DPA, SCCs with subprocessors | |
-| TCPA / CTIA / A2P 10DLC, state telephone-solicitation laws | SMS from Companies to clients | Consent records, revocation by any reasonable means applied immediately, per-jurisdiction quiet hours and caps, STOP handling, brand/campaign registration (4.16) | |
-| CAN-SPAM / CASL | Marketing email (CASL requires express or implied consent in Canada) | Consent tracking, unsubscribe, sender identity | |
-| State pesticide recordkeeping | Companies' application records | Immutable logs, per-state retention table, exports for regulators | |
-| Employee monitoring notices (state laws) | GPS and time tracking | Notice acknowledgment in the crew app, clock-in-only tracking | |
-| Call recording consent | AI receptionist recordings | Disclosure at call start; all-party-consent state handling | |
-| Accessibility (ADA/AODA/WCAG 2.2 AA) | All surfaces | See [21](21-ux-design-system-sitemaps.md) | |
+| Regime | Scope for Rootline | Key controls |
+|---|---|---|
+| SOC 2 Type II | Security, Availability, Confidentiality, Processing Integrity (Privacy at V2) | 4.24.8 |
+| PCI DSS | SAQ-A-style scope by design. Companies are merchants on their own Stripe accounts | 4.24.5 |
+| CCPA/CPRA (California) and other US state privacy laws | Service provider for Company client data; controller for user data | DPA, DSAR tooling, no sale/share |
+| PIPEDA, Quebec Law 25 | Canadian tenants and Canadian clients | Canadian residency, PIA template, privacy officer, breach records |
+| GDPR | Limited (EU residents among clients, EU staff vendors). Design is GDPR-ready | DSAR, DPA, SCCs with subprocessors |
+| TCPA / CTIA / A2P 10DLC, state telephone-solicitation laws | SMS from Companies to clients | Consent records, revocation by any reasonable means applied immediately, per-jurisdiction quiet hours and caps, STOP handling, brand/campaign registration (4.16) |
+| CAN-SPAM / CASL | Marketing email (CASL requires express or implied consent in Canada) | Consent tracking, unsubscribe, sender identity |
+| State pesticide recordkeeping | Companies' application records | Immutable logs, per-state retention table, exports for regulators |
+| Employee monitoring notices (state laws) | GPS and time tracking | Notice acknowledgment in the crew app, clock-in-only tracking |
+| Call recording consent | AI receptionist recordings | Disclosure at call start; all-party-consent state handling |
+| Accessibility (ADA/AODA/WCAG 2.2 AA) | All surfaces | See [21](21-ux-design-system-sitemaps.md) |
 
 ### 11.3 Top risks and mitigations
 
