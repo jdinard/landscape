@@ -1048,7 +1048,7 @@ Weighted for the Great Lakes, where seeding starts: trees and sedges up, succule
 | Great Lakes-native and pollinator palettes | 900 or more plants native to at least one Great Lakes ecoregion | `native_status` (KB-RGN-07), `pollinator_value` |
 | Rain gardens and bioswales on clay | 150 or more plants placed in rain-garden bottom, slope or rim zones, with wet and drought tolerance cited | `drainage`, `wet_tolerance`, `drought_tolerance`; palette sub-zones (KB-PAL-01) |
 
-**KB-SEED-04 First Regions (founder decision: Great Lakes launch)**
+**KB-SEED-04 First Regions (founder decision: the Great Lakes, OD-01)**
 - **Decision (OD-01).** The Great Lakes is where the Plant KB seed and marketing start: Central Ohio, Northeast Ohio, Southeast Michigan and Toledo, West Michigan, Chicagoland and Northwest Indiana, and Southeast Wisconsin, inside the macro-region "Great Lakes and Ohio Valley". The product works in every US state and Canadian province; more Regions are curation work, not product work. This answers the beachhead question in [22](22-business-model-pricing-gtm.md) section 6.2 and decision 1 in section 14.
 - **The six Great Lakes Regions, seeded to Excellent.** Each is built with a KB-RGN-03 recipe from EPA Level III and IV ecoregions intersected with 2023 USDA zones and metro extents. Together they span roughly zones 5a-6b on the 2023 map, with lake-moderated pockets. The ecoregion mapping and zones below are planning assumptions to verify per Region before publishing.
 
@@ -1086,7 +1086,7 @@ The plant curator agent builds the seed as an ordered sequence of steps; the eng
 
 **KB-SEED-06 Curation quality bar and process**
 - **Scope of review (estimate):** 3,000 plants x about 70 traits = about 210,000 values. AI enrichment (KB-CUR-03) drafts them with verified citations; the plant curator agent reviews individually every value that is low-confidence, conflicting, uncited or outside the bulk-accept rule (non-critical traits only, confidence above 0.9, two agreeing sources; PA-073).
-- **Critical traits:** about 24,000 critical values (8 per plant) each get the plant curator agent's review and the founder's approval (the founder's inbox shows each value with its citations side by side); no critical value publishes on a single review, and critical traits are never bulk-accepted.
+- **Critical traits:** about 24,000 critical values (8 per plant) each get the plant curator agent's review and the founder's approval, plant by plant, with every critical value and its citations side by side in the founder's inbox; no critical value publishes on a single review, and critical traits are never bulk-accepted.
 - **Region ratings:** each of the six Great Lakes Regions gets blind-then-reconcile rating sessions (KB-CUR-11) with at least 3 raters per published rating, and 5/5 ratings publish only with 2 or more local evidence items.
 - **Beyond trait review:** imports, palettes, duplicate resolution, photo gaps and rework are planned as first-class curation work, not squeezed in after review. If the share of values needing individual review runs higher than expected, the quality bar holds: a Region's coverage switches on only when it meets KB-SEED-07, and the bar is never lowered to make a release.
 - AI enrichment spend for the seed set is expected in the low thousands of US dollars of model usage (estimate; depends on model choice and retrieval volume), metered through the AI Gateway.
@@ -2306,7 +2306,7 @@ Legend: Y allowed, O own records only, P per Company setting, - none.
 | Override validation errors | - (only legal exceptions via `platform_owner`) | - | - | - | - | - | - | - | - | - | - |
 | Suggest corrections to global KB | Y | Y | Y | Y | Y | Y | Y | - | - | - | - |
 | File plant failure reports | Y | Y | Y | Y | Y | Y | Y | - | Assigned jobs | Via warranty request ([06](06-customer-portal.md)) | Via warranty request |
-| Plant ID by photo | Y | Y | Y | Y | Y | Y | Y | - | Assigned jobs | "What's this plant?" | |
+| Plant ID by photo | Y | Y | Y | Y | Y | Y | Y | - | Assigned jobs | "What's this plant?" | "What's this plant?" |
 | Upload client or HOA plant lists | Y | Y | Y | Y | Y | - | - | - | - | - | Upload for review |
 | Import Company plant list | Y | P | - | Y | P | - | - | - | - | - | - |
 | View legal timeline and enacted-ban alerts for own work | Y | Y | Y | Y | Y | Assigned Visits | - | - | - | - | - |

@@ -173,7 +173,7 @@ RL.screen('www.home', (c) => {
   + sec({ eyebrow: 'Built for how you work', title: 'Solutions by service line and size', body: grid(200, RL.P.segments.segments.map(s => `<button type="button" data-set="t=${esc(s.sample_tenant)}&r=www.solutions" class="card" style="text-align:left;cursor:pointer;display:grid;gap:4px;align-content:start;font:inherit;color:inherit"><span class="flex between"><b class="small">${esc(s.name)}</b></span><span class="tiny t3">${esc(s.size)}${/location/.test(s.size) ? '' : ' people'} · ${esc(s.plan.replace(/\s*\(.*?\)/g, ''))}</span><span class="small" style="font-family:var(--font-display);font-size:.98rem">${esc(s.message.headline)}</span></button>`), { gap: 10 }) })
   + band(`<span class="eyebrow" style="color:var(--moss-200)">Fair and transparent</span><h2 style="color:#fff;font-size:clamp(1.3rem,2.3vw,1.7rem)">Published prices. Zero payment markup. Crew users billed only when they work.</h2>
       ${grid(170, [['Starter', pl('starter').annual], ['Grow', pl('grow').annual], ['Pro', pl('pro').annual]].map(([n, p]) => `<div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:12px"><div class="small" style="color:var(--moss-100)">${n}</div><div style="font-size:1.5rem;font-weight:760" class="num">$${p}<span style="font-size:.8rem;font-weight:600">/mo annual</span></div></div>`).concat([`<div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:12px"><div class="small" style="color:var(--moss-100)">On every payment</div><div style="font-size:1.5rem;font-weight:760">0% <span style="font-size:.8rem;font-weight:600">Rootline fee</span></div></div>`]), { gap: 10 })}
-      <div class="flex">${B('See pricing and the stack calculator', { go: 'www.pricing', icon: 'arrow-r' })}<span class="small" style="color:var(--moss-100)">Enterprise from $1,500/mo is the only plan that says "talk to sales".</span></div>`)
+      <div class="flex">${B('See pricing and the stack calculator', { go: 'www.pricing', icon: 'arrow-r' })}<span class="small" style="color:var(--moss-100)">Enterprise from $1,500/mo is the only plan that starts with a call with the founder.</span></div>`)
   + sec({ eyebrow: 'For homeowners', title: 'Design your yard with plants that thrive where you live', lede: 'Rootline Home is free: enter your address, measure on the satellite view, get three AI concepts from your Region\'s curated plant palette and a realistic budget range. When you are ready, a local pro gets the design, not just your phone number.', body: grid(260, [h.photo('mockup', { label: 'AI artist rendering of a backyard concept with patio and beds', badge: 'AI artist rendering' }), card(`${checks(['3 AI concepts a month on the free tier', 'Plants rated "recommended" for your ZIP\'s Region only', 'Installed-cost range labeled as an estimate', 'You choose which Company gets your request'])}<div class="flex">${B('Design my yard', { kind: 'primary', set: 'as=homeowner&r=home.start', icon: 'sprout' })}${B('What grows here?', { go: 'www.plants' })}</div><p class="tiny t3">Landscape companies: the photo-based Dream Yard Visualizer widget for your own website is on by default; leads from it go to you only.</p>`)]) })
   + conversions(c);
 });
@@ -263,7 +263,7 @@ RL.screen('www.pricing', (c) => {
       ${on ? `<span class="pill accent" style="justify-self:start">${icon('check', 's')}Fits ${esc(fit.id)} · ${esc(c.t.name)}</span>` : ''}
       <span class="tiny t3" style="min-height:2.6em">${esc(String(p.for || '').replace(/^ICP:\s*/, '').replace(/^./, m => m.toUpperCase()))}</span>${price}
       ${checks(inc.concat(TIER_PTS[p.code]))}
-      <div style="margin-top:auto;padding-top:6px">${ent ? B('Talk to sales', { modal: 'pub-demo' }) : B('Start free trial', { kind: pop || on ? 'primary' : '', go: 'www.start' })}</div></div>`;
+      <div style="margin-top:auto;padding-top:6px">${ent ? B('Talk to the founder', { modal: 'pub-demo' }) : B('Start free trial', { kind: pop || on ? 'primary' : '', go: 'www.start' })}</div></div>`;
   };
   // capability matrix summary
   const cols = ['starter', 'grow', 'pro', 'enterprise'];
@@ -663,7 +663,7 @@ RL.act('pub-toast', (el) => { RL.toast(esc(el.dataset.msg || 'Done (mock).')); r
 RL.act('pub-tour', (el) => { RL.ui['pub.pt'] = el.dataset.val; RL.go('www.product'); return false; });
 RL.act('pub-report', () => { RL.toast(RL.ui['sc.consent'] === true ? 'Report emailed (mock). You opted in to Rootline news.' : 'Report emailed (mock). No marketing consent recorded.'); return false; });
 RL.act('pub-send', (el, ev, c) => { if (RL.ui['hm.c1'] !== true) { RL.toast('Tick the first box to send your request.'); return false; } RL.ui['hm.sent'] = '1'; RL.toast(`Sent to ${esc(c.t.name)} (mock). Lead, Opportunity, Property and Design draft created.`); });
-RL.act('pub-demo-send', () => { RL.closeModal(); RL.toast('Demo requested (mock). Someone from our team confirms by email.'); return false; });
+RL.act('pub-demo-send', () => { RL.closeModal(); RL.toast('Demo requested (mock). We confirm the time by email.'); return false; });
 RL.modal('pub-demo', (c) => {
   const slots = c.winter ? ['Wed Jan 13, 10:00 am ET', 'Wed Jan 13, 2:00 pm ET', 'Thu Jan 14, 9:30 am ET'] : ['Wed May 12, 7:00 pm ET', 'Thu May 13, 6:30 am ET', 'Sat May 15, 8:00 am ET'];
   return {
