@@ -2317,6 +2317,8 @@ erDiagram
 | `commission` | RW | R cfg | self | - | - | - | - | R | - |
 | `vendor_banking` | RW dual control | - | - | - | - | - | - | RW dual control | own org only |
 
+The Observer starter role (5.7) reads `price`, `cost` and `margin` only; every other field class is `-` for it.
+
 ### 10.3 Client contact permissions
 
 See the matrix in 5.11. Additional rules:
@@ -2325,19 +2327,21 @@ See the matrix in 5.11. Additional rules:
 
 ### 10.4 Platform staff matrix
 
+The founder holds `platform_owner`; the other four columns are held by the support, plant curator, finance and engineering agents ([24](24-product-scope-decisions-catalog.md) section 1.2). "With approval" and "request" mean an agent's request that lands in the founder's Approvals inbox; the founder approves with step-up authentication, and no agent can approve its own or another agent's request. The founder's own privileged actions (`X` in the first column) need step-up authentication and a written reason and are written to the platform audit log ([Platform Admin](19-platform-admin-portal.md) PA-004).
+
 | Capability | platform_owner | platform_support | platform_curator | platform_finance | platform_engineer |
 |---|---|---|---|---|---|
 | Tenant directory and metadata (plan, usage, health) | RW | R | - | R | R |
 | Tenant lifecycle: create, suspend, reactivate | X | X suspend for abuse, with reason | - | X suspend for non-payment | - |
-| Tenant deletion (after retention) | X dual control | - | - | - | X execution only |
+| Tenant deletion (after retention) | X (step-up and written reason) | - | - | - | X execution only, after the founder approves |
 | Tenant data: view as user (consented, `read_only` scope) | X | X | - | - | X with ticket |
 | Tenant data: act as user (consented, `read_write` scope) | X | X owner-approved grant | - | - | X owner-approved grant |
 | Break-glass production data access | approve | - | - | - | request |
 | Tenants' Client payments and payouts | **impossible by design** (held in each Company's Stripe; metadata only: connection status) | metadata | - | metadata | metadata |
-| Rootline SaaS billing: invoices, credits, refunds | RWX | R | - | RWX (refunds over $1,000 dual control) | - |
+| Rootline SaaS billing: invoices, credits, refunds | RWX | R | - | RWX (refunds over $1,000 need the founder's approval) | - |
 | Plan and price catalog | RWX | - | - | RW draft | - |
 | Plant KB: plants, Plant Region Profiles, palettes | RWX | R | RW draft | - | R |
-| Plant KB release publish | X | - | X senior curator | - | - |
+| Plant KB release publish | X | - | X daily release of approved records; Region publication and critical traits it wrote need the founder's approval ([Platform Admin](19-platform-admin-portal.md) PA-070) | - | - |
 | Region definitions | RWX | - | RW | - | - |
 | Content: templates, gallery roles, help articles | RWX | RW | RW plant content | - | - |
 | AI ops: model routing, prompts, safety settings | RWX | R | - | R cost | RW staging; X prod with approval |
@@ -2350,7 +2354,7 @@ See the matrix in 5.11. Additional rules:
 | Security incidents | RWX | R | - | - | RWX |
 | Tenant announcements and in-app messages | RWX | RW | - | - | - |
 | Anonymized aggregate analytics and benchmarks | R | R | R plant usage | R | R |
-| Market intelligence: claims, battlecards, price observations, win/loss ([01](01-market-landscape.md) section 12.7) | RWX (publishes externally) | RW with the market-intel set | RW plant and Region claims only | RW prices and sizing workbook | R; RW switch kits |
+| Market intelligence: claims, battlecards, price observations, win/loss ([01](01-market-landscape.md) section 12.7) | RWX (publishes externally, on the marketing agent's proposal) | RW with the market-intel set (held by the marketing agent) | RW plant and Region claims only | RW prices and sizing workbook | R; RW switch kits |
 
 > **Competitive edge - support you can see.** We found no public documentation of a customer-visible support-access log at Jobber, LMN, Aspire or Housecall Pro (absence of evidence, so confirm on sales calls; see 2.4). Rootline makes support access an owner-granted, time-boxed, read-only-by-default grant with a visible log. That is a trust feature commercial clients and auditors care about, and it costs almost nothing to build if designed in from day one.
 
