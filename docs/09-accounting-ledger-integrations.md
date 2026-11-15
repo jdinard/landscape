@@ -1,22 +1,21 @@
 # 09 - Accounting: Built-in Double-Entry Ledger and Integrations
 
-> Rootline keeps the books of a landscape company as a by-product of running the company. Every completed mowing visit, mulch delivery, paver patio milestone, snow push, Stripe payout, vendor bill, payroll run and depreciating zero-turn mower becomes a balanced, immutable journal entry in a real double-entry general ledger, posted automatically from domain events by versioned posting rules and tagged with the dimensions a landscaper actually manages by (division, branch, job, phase, cost type, property, crew). On top of that ledger sit the subledgers (AR, AP with 1099s, inventory, fixed assets, loans, payroll imports), bank and card feeds with AI categorization, landscape-grade job costing (estimated vs actual by phase and cost type, burdened labor, equipment recovery), a WIP schedule with percentage-of-completion and over/under billing for installs, deferred revenue for prepaid programs, LMN-style overhead recovery tracking against the Company Budget, the full statement set, a period-close checklist, an Accountant Hub for outside CPAs, and multi-entity consolidation. Companies that want QuickBooks Online, QuickBooks Desktop, Xero or (later) Sage Intacct keep them, through a sync engine that is explicit about which system is the book of record, maps every account, class and tax code, quarantines failures per record and never double-posts. This module is why a landscaper can cancel two subscriptions, why a CPA can close a 20-person company in under four hours, and why an owner finally sees whether the irrigation division made money in June.
+> Rootline keeps the books of a landscape company as a by-product of running the company. Every completed mowing visit, mulch delivery, paver patio milestone, snow push, Stripe payout, vendor bill, payroll run and depreciating zero-turn mower becomes a balanced, immutable journal entry in a real double-entry general ledger, posted automatically from domain events by versioned posting rules and tagged with the dimensions a landscaper actually manages by (division, branch, job, phase, cost type, property, crew). On top of that ledger sit the subledgers (AR, AP with 1099s, inventory, fixed assets, loans, payroll imports), bank and card feeds with AI categorization, landscape-grade job costing (estimated vs actual by phase and cost type, burdened labor, equipment recovery), a WIP schedule with percentage-of-completion and over/under billing for installs, deferred revenue for prepaid programs, LMN-style overhead recovery tracking against the Company Budget, the full statement set, a period-close checklist, an Accountant Hub for outside CPAs, and multi-entity consolidation. Companies that want QuickBooks Online, QuickBooks Desktop, Xero or Sage Intacct keep them, through a sync engine that is explicit about which system is the book of record, maps every account, class and tax code, quarantines failures per record and never double-posts. This module is why a landscaper can cancel two subscriptions, why a CPA can close a 20-person company in under four hours, and why an owner finally sees whether the irrigation division made money in June.
 
 **At a glance**
 
 - **What it is:** the built-in double-entry general ledger, which is the Company's system of record by default, plus the subledgers, banking, job costing, revenue recognition, close, Accountant Hub and accounting integrations that sit on it.
-- **Decision 1, the ledger always runs:** every tenant gets the append-only, always-balanced, idempotent ledger from MVP, because AR, deferred revenue, Stripe clearing and job costing need it even when QuickBooks is the book of record ([4.0](#40-feature-index-and-phasing), [20](20-architecture-security.md) L1-L12).
+- **Decision 1, the ledger always runs:** every tenant gets the append-only, always-balanced, idempotent ledger from its first day, because AR, deferred revenue, Stripe clearing and job costing need it even when QuickBooks is the book of record ([4.0](#40-feature-index-and-phasing), [20](20-architecture-security.md) L1-L12).
 - **Decision 2, this doc owns the posting rules and account codes:** posting rules are versioned data bound to account roles, and the canonical chart (4.2.2) and rule registry (4.3) here are what [07](07-invoicing-billing-contracts.md) (`billing.P1`-`P42`) and [08](08-payments-stripe.md) (`payments.*`) use, for example 1200 Accounts Receivable, 1050 Stripe Clearing, 2150 Customer Deposits, 2200 Deferred Revenue, 6150 Merchant Processing Fees ([4.2](#42-chart-of-accounts-and-dimensions), [4.3](#43-automatic-posting-rules)).
 - **Decision 3, dimensions instead of account sprawl:** division and branch are required on every revenue and direct-cost line; job, phase and cost type drive landscape job costing ([4.2.4](#424-dimensions-mvp-core-v1-custom)).
-- **Decision 4, exactly one book of record per entity:** Mode A native, Mode B native plus a read-only QuickBooks or Xero mirror, or Mode C with QuickBooks Online, QuickBooks Desktop or Xero as the book of record and Rootline as the operational subledger ([4.17.1](#4171-books-of-record-modes-mvp)).
+- **Decision 4, exactly one book of record per entity:** Mode A native, Mode B native plus a read-only QuickBooks or Xero mirror, or Mode C with QuickBooks Online, QuickBooks Desktop, Xero or Sage Intacct as the book of record and Rootline as the operational subledger. A new Company that names a CPA starts in Mode B; every other new Company starts in Mode A ([4.17.1](#4171-books-of-record-modes-mvp)).
 - **Decision 5, bank truth from feeds:** Plaid bank and card feeds with rules and AI categorization; every Stripe payout is proven against its balance transactions and matched to the bank line ([4.6](#46-banking-receipts-and-reconciliation)).
-- **MVP:** ledger engine and rule registry, landscape chart templates, core dimensions, automatic postings for billing, payments, AP, inventory and labor, AR and inventory subledgers, bills recorded, payroll file import, bank feeds and reconciliation, receipt capture, job costing, deferred revenue, core statements, basic close checklist, delegated accountant access, audit trail, US sales tax payable, QuickBooks Online connector and migration.
-- **Later:** USD/CAD multi-currency, AP approvals and checks, 1099/T5018, fixed assets and loans, AI categorization, WIP and percentage-of-completion, budgets and overhead recovery, cash forecast, Accountant Hub, year-end, multi-entity, Canadian GST/HST/QST worksheets, QuickBooks Desktop and Xero; tax-basis views, embedded bill pay, cross-tenant consolidation, Sage Intacct and long-tail systems.
-- **Packaging:** sold as Ledger Essentials (all tiers), Ledger Plus (included from Grow) and Ledger Advanced (included in Pro), with prices owned by [22](22-business-model-pricing-gtm.md); entitlements gate breadth, never correctness.
+- **In v1:** the ledger engine with the rule registry and simulation; every chart template, dimension and dimension policy; automatic postings from every module; USD/CAD multi-currency with FX revaluation; AR, AP (approvals, checks, NACHA files, positive pay and embedded bill pay), 1099/T5018 with partner e-file, inventory, fixed asset, lease, loan and payroll subledgers; Plaid bank and card feeds with rules and AI categorization, receipts and reconciliation; job costing by phase and cost type; deferred revenue, WIP and percentage-of-completion; tax-basis and cash-basis views; budgets, overhead recovery and the cash forecast; the full statement set, the 24-check close and year-end close; the Accountant Hub; multi-entity books with consolidation inside a Company and across an Organization; US sales and use tax and Canadian GST/HST/QST; connectors for QuickBooks Online, QuickBooks Desktop, Xero, Sage Intacct and long-tail systems; and migration from QuickBooks and Xero.
+- **Packaging:** sold as Ledger Essentials (every plan), Ledger Plus (an add-on on Starter, included from Grow) and Ledger Advanced (an add-on on Grow, included in Pro), with prices owned by [22](22-business-model-pricing-gtm.md); entitlements gate breadth, never correctness. Job costing by phase and cost type is in every plan; WIP and percent-complete come with Ledger Advanced.
 - **Differentiators:** books as a by-product of operations, estimate-to-actual job cost and WIP from the same data, overhead recovery against the Company Budget, a free Accountant Hub for CPAs, and the best-behaved QuickBooks sync in the category.
 - **Key cross-links:** billing events in [07](07-invoicing-billing-contracts.md); Stripe flows in [08](08-payments-stripe.md); POs and inventory in [13](13-operations-inventory-equipment.md); payroll in [15](15-team-hr-payroll.md); KPIs in [18](18-reporting-analytics.md); invariants and connector framework in [20](20-architecture-security.md).
 
-**Document status:** Design proposal v1.0 (2026-11-07). Modules: `ledger` and `integrations`. Related docs: [Personas and permissions](02-personas-roles-permissions.md), [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md), [Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md), [Customer portal](06-customer-portal.md), [Invoicing and billing](07-invoicing-billing-contracts.md), [Payments (BYO Stripe)](08-payments-stripe.md), [Operations, inventory and equipment](13-operations-inventory-equipment.md), [Service lines](14-service-line-modules.md), [Team, HR and payroll](15-team-hr-payroll.md), [AI copilot and automation](17-ai-copilot-automation.md), [Reporting and analytics](18-reporting-analytics.md), [Platform admin](19-platform-admin-portal.md), [Architecture and security](20-architecture-security.md), [UX and sitemaps](21-ux-design-system-sitemaps.md), [Pricing and GTM](22-business-model-pricing-gtm.md), [Moonshots](23-innovation-moonshots.md), [Product scope](24-product-scope-decisions-catalog.md).
+**Document status:** Module specification, updated 2026-11-15 to follow the decision record in [24](24-product-scope-decisions-catalog.md) section 1. Modules: `ledger` and `integrations`. Related docs: [Personas and permissions](02-personas-roles-permissions.md), [CRM, estimating and proposals](03-crm-sales-estimating-proposals.md), [Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md), [Customer portal](06-customer-portal.md), [Invoicing and billing](07-invoicing-billing-contracts.md), [Payments (BYO Stripe)](08-payments-stripe.md), [Operations, inventory and equipment](13-operations-inventory-equipment.md), [Service lines](14-service-line-modules.md), [Team, HR and payroll](15-team-hr-payroll.md), [AI copilot and automation](17-ai-copilot-automation.md), [Reporting and analytics](18-reporting-analytics.md), [Platform admin](19-platform-admin-portal.md), [Architecture and security](20-architecture-security.md), [UX and sitemaps](21-ux-design-system-sitemaps.md), [Pricing and GTM](22-business-model-pricing-gtm.md), [Moonshots](23-innovation-moonshots.md), [Product scope](24-product-scope-decisions-catalog.md).
 
 **Scope boundary.** This doc owns: the ledger engine and its accounting semantics, the Chart of Accounts and dimensions, the posting-rule registry (including the canonical account codes and role keys that [07](07-invoicing-billing-contracts.md) and [08](08-payments-stripe.md) use in their posting tables), AP and bill pay, 1099/T5018, the inventory, fixed asset, loan and payroll subledgers on the accounting side, banking and reconciliation, job costing, WIP and revenue recognition, budgets and overhead recovery tracking, financial statements, period close, the Accountant Hub workflows, year-end, multi-entity consolidation, accounting integrations and QuickBooks migration. It does **not** own: invoice generation, billing schedules, sales tax calculation, collections ([07](07-invoicing-billing-contracts.md)); Stripe money movement and dispute handling ([08](08-payments-stripe.md)); POs, receiving, stock movements and equipment operations ([13](13-operations-inventory-equipment.md)); payroll calculation and time capture ([15](15-team-hr-payroll.md), [05](05-field-crew-mobile-app.md)); management dashboards, KPI definitions and the semantic layer ([18](18-reporting-analytics.md)); the technical invariants L1-L12 and the connector framework ([20](20-architecture-security.md)). Where those meet the ledger we summarize and link.
 
@@ -53,7 +52,7 @@
 - [11. Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 - [12. Metrics and KPIs](#12-metrics-and-kpis)
 - [13. Beyond the brief: extra ideas](#13-beyond-the-brief-extra-ideas)
-- [14. Open questions](#14-open-questions)
+- [14. Decisions on former open questions](#14-open-questions)
 - [Sources](#sources)
 
 > **Verification note.** Items marked **(verify)** are from secondary sources or general knowledge and need first-hand confirmation before build. Claims that link to a source are cited to the original page; claims marked (verify) about vendor APIs, tax rules and accounting standards are stated because the design depends on them, and each must be checked against the primary source (listed at the end of the Sources section) before engineering commits or anything is said externally. No statistic in this document is invented; numeric examples are labeled illustrative.
@@ -73,16 +72,16 @@
 | G5 | **CPA-trusted.** Outside accountants get free delegated access, a multi-client hub, standard exports and an audit trail they would sign off on. | 300+ accounting firms active in the Hub; 60%+ of native-ledger tenants have an outside accountant connected. |
 | G6 | **Optional, honest integrations.** QuickBooks Online, Desktop and Xero are supported in clearly labeled modes; sync failures are per record, explained and fixable in one click. | Fewer than 2 unresolved sync errors per 1,000 synced objects at month-end; zero duplicate customers created by sync. |
 | G7 | **Painless migration.** A QuickBooks company moves to the native ledger with opening balances that tie to the cent. | Opening trial balance, AR aging and AP aging tie to the source on 100% of assisted migrations; median migration under 2 working days. |
-| G8 | **Replace a subscription.** Small Companies can drop QuickBooks entirely. | 35% of tenants under $2M revenue run native-only after their first year on Rootline (estimate to validate in pilots). |
-| G9 | **North American from day one.** US and Canada, USD and CAD, sales tax and GST/HST/QST, 1099 and T5018/T4A, GAAP and ASPE-friendly reporting. | Canadian pilot tenants close and file GST/HST from Rootline with no spreadsheet. |
+| G8 | **Replace a subscription.** Small Companies can drop QuickBooks entirely. | 35% of tenants under $2M revenue run native-only after their first year on Rootline (estimate). |
+| G9 | **North American from day one.** US and Canada, USD and CAD, sales tax and GST/HST/QST, 1099 and T5018/T4A, GAAP and ASPE-friendly reporting. | Canadian tenants close and file GST/HST from Rootline with no spreadsheet. |
 | G10 | **Explainable numbers.** Any number on any report drills to journal lines, then to the source document (visit, invoice, bill, time entry, payout) and the posting rule that created it. | 100% of system entries carry a source link and rule version. |
 
 ### 1.2 Non-goals
 
 - **Not a tax preparer.** Rootline produces tax-ready trial balances, depreciation schedules, 1099 files and sales tax reports; it does not prepare or file income tax returns.
-- **Not a payroll engine.** Gross-to-net, payroll tax filing and W-2/T4 issuance stay with the payroll provider ([15](15-team-hr-payroll.md)). Rootline imports the payroll journal and allocates labor cost. When [15](15-team-hr-payroll.md)'s embedded payroll option ships ( for a limited set of Companies, for all), the licensed partner still computes, moves money and files; its journal posts through the same `payroll.PR1`-`PR3` rules, just without a file.
+- **Not a payroll engine.** Gross-to-net, payroll tax filing and W-2/T4 issuance stay with the payroll provider ([15](15-team-hr-payroll.md)). Rootline imports the payroll journal and allocates labor cost. When a Company uses [15](15-team-hr-payroll.md)'s embedded payroll (available once the payroll partner approves that Company), the licensed partner still computes, moves money and files; its journal posts through the same `payroll.PR1`-`PR3` rules, just without a file.
 - **Not a bank or money transmitter.** Client money stays in the Company's Stripe account and bank ([08](08-payments-stripe.md)); vendor payments leave the Company's own bank, through the bank or a licensed payables partner. Rootline never holds funds.
-- **Not a full ERP for $100M roll-ups at launch.** Multi-entity consolidation is in scope; revenue sharing across franchise systems, statutory consolidation of foreign subsidiaries and IFRS reporting are not.
+- **Not a full ERP for $100M roll-ups.** Multi-entity consolidation is in scope; revenue sharing across franchise systems, statutory consolidation of foreign subsidiaries and IFRS reporting are not.
 - **Not an audit firm.** The audit trail and evidence locker make audits and reviews cheaper; they do not replace them.
 - **Not two books of record.** At any moment exactly one system is the book of record for a legal entity, and every screen says which ([20](20-architecture-security.md) L12).
 
@@ -143,7 +142,7 @@ No landscape or field-service product in our research keeps a real general ledge
 | "My vendors and bills live somewhere else." | Aspire reads vendors from the accounting system; Vergo sells AP automation for it ([Aspire](https://www.youraspire.com/features/purchasing), [Vergo](https://www.getvergo.com/learn/best-ap-automation-software-for-landscape-companies-using-aspire)). | Rootline owns the vendor master ([13](13-operations-inventory-equipment.md)) and the AP subledger with 3-way match and bill approval ([4.5.2](#452-accounts-payable-bills-approvals-and-bill-pay)). |
 | "I priced with overhead recovery but never know if I recovered it." | LMN teaches FLH/SORS/MORS for pricing ([LMN help](https://intercom.help/lmn/en/articles/15939065-how-lmn-calculates-overhead-labor-burden-and-profit-in-estimates)); actual recovery lives in spreadsheets. | Overhead recovery tracker with seasonal pacing, fed by actual billable hours and actual overhead from the GL ([4.9.2](#492-overhead-recovery-tracker-v1)). |
 | "QuickBooks Desktop isn't supported." | Jobber ([QBO FAQ](https://help.getjobber.com/es/articles/quickbooks-integration-faqs/)); FieldEdge's niche is built on it ([R1](research/R1-field-service-platforms.md)). | Desktop via Web Connector, plus a one-way migration path to native books ([4.17.3](#4173-quickbooks-desktop-via-web-connector-v1), [4.18](#418-migration-from-quickbooks-and-opening-balances)). |
-| "QuickBooks keeps getting more expensive, and Desktop is being pushed to Online." | Intuit's repeated price increases, the end of new US sales of several Desktop editions after 2024 and the 2025 App Partner Program are background facts in [R4](research/R4-industry-payments-accounting.md) sections 21 and 23 (verify); forum complaint quotes were not retrieved, so this is an **interview hypothesis**, not evidence. | Native books that replace the subscription (Ledger Plus), a Desktop-to-native migration kit, and a QuickBooks mirror for CPAs who are not ready ([4.17](#417-accounting-integrations), [4.18](#418-migration-from-quickbooks-and-opening-balances)). |
+| "QuickBooks keeps getting more expensive, and Desktop is being pushed to Online." | Intuit's repeated price increases, the end of new US sales of several Desktop editions after 2024 and the 2025 App Partner Program are background facts in [R4](research/R4-industry-payments-accounting.md) sections 21 and 23 (verify); forum complaint quotes were not retrieved, so this is a **hypothesis**, not evidence. | Native books that replace the subscription (Ledger Plus), a Desktop-to-native migration kit, and a QuickBooks mirror for CPAs who are not ready ([4.17](#417-accounting-integrations), [4.18](#418-migration-from-quickbooks-and-opening-balances)). |
 | "Snow seasons wreck my books." Seasonal contracts, per-push billing and salt inventory straddle fiscal years. | Snow bookkeeping guidance discusses seasonal deferral under ASC 606 and per-push triggers ([Beancount](https://beancount.io/blog/2026/06/03/snow-removal-plowing-ice-management-contractor-bookkeeping-asc-606-seasonal-deferred-revenue-per-push-trigger-section-179-plow-truck-salt-spreader-sima-asca-revenue-per-truck-hour-kpi-guide)). | Seasonal recognition curves, per-event accruals and a snow "risk ledger" per site ([4.8](#48-revenue-recognition-wip-and-deferred-revenue), [13](#13-beyond-the-brief-extra-ideas)). |
 
 ### 2.4 The gap we exploit
@@ -174,8 +173,8 @@ Role keys follow [02](02-personas-roles-permissions.md). Running examples: **Rey
 | Crew Lead / Foreman (`crew_lead`) | Snap receipts for field purchases; confirm materials used; record cash collected. | "Add expense" takes 15 seconds offline; never asked twice for the same receipt. |
 | Field Technician (`technician`) | Clock time to the right job (drives labor cost); snap receipts when they hold a card. | Invisible accounting. |
 | Subcontractor (`subcontractor`) | Submit invoices against sub work orders, see payment status, provide W-9 and lien waivers. | Paid on time, no phone calls; retainage visible ([13](13-operations-inventory-equipment.md)). |
-| Platform Operator (`platform_owner`) | Know how many tenants run native books, sync health across the fleet, integrity incidents; manage chart templates and posting-rule packs. | A fleet "books health" board in the admin console ([19](19-platform-admin-portal.md)) with zero integrity cases open. |
-| Platform staff (`platform_support`, `platform_finance`, `platform_engineer`, `platform_curator`) | Support: diagnose sync errors and posting questions under consented access. Finance: Rootline's own SaaS revenue (not tenant books). Engineer: posting engine, connectors, integrity jobs, break-glass only. Curator: no ledger access; the Plant KB regional survival data they curate feeds warranty-reserve suggestions (AI15) as aggregate signals only. | Support resolves "why is my P&L wrong" tickets with the explain tool, never by editing data. |
+| Founder (`platform_owner`) | Know how many tenants run native books, sync health across the fleet, integrity incidents; approve chart templates and posting-rule packs before they publish. | A fleet "books health" board in the admin console ([19](19-platform-admin-portal.md)) with zero integrity cases open. |
+| Operator agents (`platform_support`, `platform_finance`, `platform_engineer`, `platform_curator`) | The support agent diagnoses sync errors and posting questions under consented access. The finance agent keeps Rootline's own books (on the Rootline ledger, mirrored to QuickBooks for Rootline's accountant, OD-25), never tenant books. The engineering agent runs the posting engine, connectors and integrity jobs, with tenant data access only by break-glass. The plant curator agent has no ledger access; the Plant KB regional survival data it curates feeds warranty-reserve suggestions (AI15) as aggregate signals only. | The support agent resolves "why is my P&L wrong" tickets with the explain tool, never by editing data. |
 | Client contacts (`client_residential`, `client_commercial`) | Indirect: statements, credits and deposits shown in the portal come from the AR subledger ([06](06-customer-portal.md)). | The balance in the portal always equals the balance in the books. |
 
 **Top jobs-to-be-done, phrased the way customers say them:**
@@ -193,69 +192,69 @@ Role keys follow [02](02-personas-roles-permissions.md). Running examples: **Rey
 
 ## 4. Feature specification
 
-### 4.0 Feature index and phasing
+### 4.0 Feature index and packaging
 
-The phasing reflects one opinion: **the ledger engine runs for every tenant from MVP**, because AR, deferred revenue, Stripe clearing, job costing and WIP need it even when QuickBooks is the book of record ([20](20-architecture-security.md) L12). What phases in is the breadth that lets a Company drop QuickBooks entirely.
+One opinion shapes this module: **the ledger engine runs for every tenant**, because AR, deferred revenue, Stripe clearing, job costing and WIP need it even when QuickBooks is the book of record ([20](20-architecture-security.md) L12). Every feature below is in v1; the packaging map that follows decides which plans include the breadth that lets a Company drop QuickBooks entirely.
 
-| ID | Feature | Section | Priority |
-|---|---|---|---|
-| LG-01 | Ledger engine: append-only journal, balanced entries, reversals, periods and locks, idempotent posting | 4.1 | |
-| LG-02 | Posting-rule registry with versioning, preview and simulation | 4.1.4 | registry, simulation UI |
-| LG-03 | Multi-currency (USD/CAD), realized FX | 4.1.6 | |
-| LG-04 | Unrealized FX revaluation with auto-reversal | 4.1.6 | |
-| LG-05 | Manual, recurring, auto-reversing and accrual entries with approvals | 4.1.8 | manual, recurring and approvals |
-| COA-01 | Landscape Chart of Accounts templates by business type, account roles | 4.2 | |
-| COA-02 | Dimensions: division, branch, department, job, phase, cost type, property, custom | 4.2.4 | core, custom |
-| COA-03 | Dimension policies per account | 4.2.5 | |
-| COA-04 | Statistical accounts (man-hours, properties, acres) | 4.2.2 | |
-| PR-01 | Automatic posting rules for billing, payments, AP, inventory, labor, equipment, assets, loans, WIP, FX | 4.3 | billing/payments/AP/inventory/labor, remainder |
-| SL-AR | AR subledger tie-out, aging, allowance provisioning | 4.5.1 |, allowance |
-| SL-AP | Bills, vendor credits, approval workflow, payment batches, check printing, positive pay | 4.5.2 | bills and payments recorded, approvals and checks, embedded bill pay |
-| SL-1099 | 1099-NEC/MISC tracking and e-file; T5018/T4A | 4.5.3 | tracking and files, e-file via partner |
-| SL-INV | Inventory valuation subledger, GRNI, PPV | 4.5.4 | |
-| SL-FA | Fixed assets, multiple books, depreciation, disposals | 4.5.5 | |
-| SL-LN | Loans, lines of credit, amortization, seasonal schedules | 4.5.6 | |
-| SL-PR | Payroll journal import and labor allocation | 4.5.7 | file import, API |
-| BK-01 | Bank and card feeds via Plaid; file import (CSV, OFX/QFX, CAMT.053) | 4.6.1 | |
-| BK-02 | AI-assisted categorization and rules | 4.6.3 | rules, AI |
-| BK-03 | Receipt capture and matching | 4.6.4 | |
-| BK-04 | Reconciliation workspace | 4.6.5 | |
-| BK-05 | Fuel card program import (card, driver, vehicle, gallons) with fraud flags | 4.6.1 | |
-| JC-01 | Job costing by job, phase, cost type; applied labor and burden | 4.7 | |
-| JC-02 | Equipment cost allocation and over/under recovery | 4.7.3 | |
-| JC-03 | Commitments and projected cost at completion | 4.7.5 | |
-| RR-01 | Deferred revenue for agreements (posting from [07](07-invoicing-billing-contracts.md)) | 4.8.2 | |
-| RR-02 | WIP schedule, percentage-of-completion, over/under billing, loss provisions | 4.8.3 | |
-| RR-03 | Tax-basis views (cash, completed contract) | 4.8.5 | |
-| BU-01 | Budgets by account, division and month; versions | 4.9 | (Company Budget for estimating is in [03](03-crm-sales-estimating-proposals.md)) |
-| BU-02 | Overhead recovery tracker | 4.9.2 | |
-| BU-03 | 13-week and seasonal cash forecast | 4.9.4 | |
-| RP-01 | Core statements, aging, trial balance, GL detail, sales tax liability | 4.10 | |
-| RP-02 | Budget vs actual, cash flow statement, report packages | 4.10 | |
-| CL-01 | Period close checklist with automated checks | 4.11 | basic, full |
-| AH-01 | Accountant access (delegated) | 4.12 | |
-| AH-02 | Accountant Hub (multi-client) and client-question workflow | 4.12 | |
-| AU-01 | Audit trail, hash chain, explain-this-number | 4.13 | |
-| YE-01 | Year-end close, retained earnings, tax exports | 4.14 | |
-| ME-01 | Multi-entity books inside one Company, intercompany | 4.15 | |
-| ME-02 | Consolidation with eliminations; Organization-level consolidation | 4.15 | in-Company, cross-tenant |
-| TX-01 | Sales tax payable by agency, use-tax accrual, GST/HST ITCs | 4.16 | US, Canada |
-| IN-QBO | QuickBooks Online connector (external_sync and mirror modes) | 4.17.2 | |
-| IN-QBD | QuickBooks Desktop via Web Connector | 4.17.3 | |
-| IN-XERO | Xero connector | 4.17.4 | |
-| IN-INT | Sage Intacct connector | 4.17.5 | |
-| IN-LT | Long-tail accounting via unified API vendor | 4.17.6 | |
-| IN-PAY | Payroll journal connectors (Gusto, ADP, QuickBooks Payroll, Canadian providers) | 4.17.7 | files, APIs |
-| IN-TAX | Tax-prep exports (TB with tax lines, GIFI) | 4.17.8 | |
-| MG-01 | QuickBooks migration with opening balances | 4.18 | QBO, QBD and Xero |
+| ID | Feature | Section |
+|---|---|---|
+| LG-01 | Ledger engine: append-only journal, balanced entries, reversals, periods and locks, idempotent posting | 4.1 |
+| LG-02 | Posting-rule registry with versioning, preview and simulation | 4.1.4 |
+| LG-03 | Multi-currency (USD/CAD), realized FX | 4.1.6 |
+| LG-04 | Unrealized FX revaluation with auto-reversal | 4.1.6 |
+| LG-05 | Manual, recurring, auto-reversing and accrual entries with approvals | 4.1.8 |
+| COA-01 | Landscape Chart of Accounts templates by business type, account roles | 4.2 |
+| COA-02 | Dimensions: division, branch, department, job, phase, cost type, property, custom | 4.2.4 |
+| COA-03 | Dimension policies per account | 4.2.5 |
+| COA-04 | Statistical accounts (man-hours, properties, acres) | 4.2.2 |
+| PR-01 | Automatic posting rules for billing, payments, AP, inventory, labor, equipment, assets, loans, WIP, FX | 4.3 |
+| SL-AR | AR subledger tie-out, aging, allowance provisioning | 4.5.1 |
+| SL-AP | Bills, vendor credits, approval workflow, payment batches, check printing, NACHA files, positive pay, embedded bill pay | 4.5.2 |
+| SL-1099 | 1099-NEC/MISC tracking and e-file through a filing partner; T5018/T4A | 4.5.3 |
+| SL-INV | Inventory valuation subledger, GRNI, PPV | 4.5.4 |
+| SL-FA | Fixed assets, multiple books, depreciation, disposals | 4.5.5 |
+| SL-LN | Loans, lines of credit, amortization, seasonal schedules | 4.5.6 |
+| SL-PR | Payroll journal import (files and APIs) and labor allocation | 4.5.7 |
+| BK-01 | Bank and card feeds via Plaid; file import (CSV, OFX/QFX, CAMT.053) | 4.6.1 |
+| BK-02 | AI-assisted categorization and rules | 4.6.3 |
+| BK-03 | Receipt capture and matching | 4.6.4 |
+| BK-04 | Reconciliation workspace | 4.6.5 |
+| BK-05 | Fuel card program import (card, driver, vehicle, gallons) with fraud flags | 4.6.1 |
+| JC-01 | Job costing by job, phase, cost type; applied labor and burden | 4.7 |
+| JC-02 | Equipment cost allocation and over/under recovery | 4.7.3 |
+| JC-03 | Commitments and projected cost at completion | 4.7.5 |
+| RR-01 | Deferred revenue for agreements (posting from [07](07-invoicing-billing-contracts.md)) | 4.8.2 |
+| RR-02 | WIP schedule, percentage-of-completion, over/under billing, loss provisions | 4.8.3 |
+| RR-03 | Tax-basis and cash-basis views (cash, completed contract) | 4.8.5 |
+| BU-01 | Budgets by account, division and month; versions (the Company Budget for estimating in [03](03-crm-sales-estimating-proposals.md) is one of them) | 4.9 |
+| BU-02 | Overhead recovery tracker | 4.9.2 |
+| BU-03 | 13-week and seasonal cash forecast | 4.9.4 |
+| RP-01 | Core statements, aging, trial balance, GL detail, sales tax liability | 4.10 |
+| RP-02 | Budget vs actual, cash flow statement, report packages | 4.10 |
+| CL-01 | Period close checklist with 24 automated checks, close calendar and readiness score | 4.11 |
+| AH-01 | Accountant access (delegated) | 4.12 |
+| AH-02 | Accountant Hub (multi-client) and client-question workflow | 4.12 |
+| AU-01 | Audit trail, hash chain, explain-this-number | 4.13 |
+| YE-01 | Year-end close, retained earnings, tax exports | 4.14 |
+| ME-01 | Multi-entity books inside one Company, intercompany | 4.15 |
+| ME-02 | Consolidation with eliminations, inside one Company and across an Organization's tenants | 4.15 |
+| TX-01 | Sales tax payable by agency and use-tax accrual (US); GST/HST/QST and ITCs (Canada) | 4.16 |
+| IN-QBO | QuickBooks Online connector (external_sync and mirror modes) | 4.17.2 |
+| IN-QBD | QuickBooks Desktop via Web Connector | 4.17.3 |
+| IN-XERO | Xero connector | 4.17.4 |
+| IN-INT | Sage Intacct connector | 4.17.5 |
+| IN-LT | Long-tail accounting via unified API vendor | 4.17.6 |
+| IN-PAY | Payroll journal connectors (Gusto, ADP, QuickBooks Payroll, Canadian providers), by file and API | 4.17.7 |
+| IN-TAX | Tax-prep exports (TB with tax lines, GIFI) | 4.17.8 |
+| MG-01 | Migration from QuickBooks Online, QuickBooks Desktop and Xero with opening balances | 4.18 |
 
 **Packaging map.** [22](22-business-model-pricing-gtm.md) sells the ledger as three entitlements. The engine itself is never gated: posting, control-account proofs and the operational subledger run for every tenant because billing, payments and job costing depend on them. Entitlements gate breadth and workload, never correctness.
 
 | Entitlement ([22](22-business-model-pricing-gtm.md) codes) | Feature IDs from the index above | Notes |
 |---|---|---|
-| **Ledger Essentials** (all tiers) | LG-01, LG-02 registry, COA-01, COA-02 core dimensions (division, branch, job, phase, cost type, property), PR-01, SL-AR, SL-INV, SL-PR file import, BK-01 (one feed), BK-03, JC-01, RR-01, RP-01, CL-01 basic, AH-01, AU-01, TX-01, IN-QBO, MG-01 | Division and branch stay required dimensions in every package because posting rules and job cost depend on them; what [22](22-business-model-pricing-gtm.md) calls "classes and departments" in Advanced maps to the `department` dimension, dimension policies (COA-03) and custom dimensions |
-| **Ledger Plus** (`ledger_plus`) | SL-AP, SL-1099, BK-01 unlimited feeds, BK-02, BK-04, BK-05, BU-01, BU-02, BU-03, RP-02, CL-01 full, AH-02, YE-01, SL-FA, SL-LN, IN-XERO, IN-PAY APIs, IN-TAX | The "drop QuickBooks" package; included from Grow up per [22](22-business-model-pricing-gtm.md) |
-| **Ledger Advanced** (`ledger_advanced`) | RR-02 WIP and percentage-of-completion, JC-02, JC-03, COA-03, COA-04, custom dimensions, ME-01, ME-02, LG-03, LG-04 | Design-build, commercial and multi-entity firms |
+| **Ledger Essentials** (every plan) | LG-01, LG-02 registry, COA-01, COA-02 core dimensions (division, branch, job, phase, cost type, property), PR-01, SL-AR, SL-INV, SL-PR file import, BK-01 (one feed), BK-03, BK-04 for that one account, JC-01, RR-01, RP-01, CL-01 core checks, AH-01, AU-01, TX-01, IN-QBO, MG-01 | Job costing by phase and cost type against the estimate (JC-01) is in every plan ([24](24-product-scope-decisions-catalog.md) R25-C2). Division and branch stay required dimensions in every package because posting rules and job cost depend on them; what [22](22-business-model-pricing-gtm.md) calls "classes and departments" in Advanced maps to the `department` dimension, dimension policies (COA-03) and custom dimensions |
+| **Ledger Plus** (`ledger_plus`) | SL-AP, SL-1099, BK-01 unlimited feeds, BK-02, BK-04 for every account, BK-05, BU-01, BU-02, BU-03, RP-02, CL-01 full 24 checks, AH-02, YE-01, SL-FA, SL-LN, IN-XERO, IN-PAY APIs, IN-TAX | The "drop QuickBooks" package; an add-on on Starter, included from Grow per [22](22-business-model-pricing-gtm.md) |
+| **Ledger Advanced** (`ledger_advanced`) | RR-02 WIP and percentage-of-completion, JC-02, JC-03, COA-03, COA-04, custom dimensions, ME-01, ME-02, LG-03, LG-04 | Design-build, commercial and multi-entity firms; an add-on on Grow, included in Pro |
 | QuickBooks Desktop connector (`qbd_connector`) | IN-QBD | Add-on below Pro |
 
 ### 4.1 Ledger engine
@@ -269,13 +268,13 @@ The phasing reflects one opinion: **the ledger engine runs for every tenant from
 | Reversals, not edits | Correcting an entry creates a reversing entry (mirror lines, same dimensions, `reverses_entry_id`) and, usually, a corrected replacement entry. Both link to the original and to the reason. | Reversal API is the only mutation path; UI shows original, reversal and replacement as a struck-through stack. |
 | Periods and locks | Each legal entity has fiscal years and monthly periods with states `open`, `soft_closed`, `locked`. Posting dates must fall in a postable period. | Trigger on period state ([20](20-architecture-security.md) L3); late events redirect to the first open period with the original `service_date` kept (4.1.5). |
 | Multi-currency | One functional currency per legal entity (USD or CAD); lines can carry a transaction currency, rate and rate source. | [20](20-architecture-security.md) L9 plus 4.1.6. |
-| Idempotent posting from domain events | A domain event processed twice, or the same business fact emitted twice under two different event IDs, produces one entry. | Unique `(tenant_id, posting_key)` where `posting_key` is a deterministic **business key** built by the rule from the source document, never from the event ID: `invoice:{invoice_id}:issue`, `invoice:{invoice_id}:void`, `stripe_bt:{balance_transaction_id}`, `payout:{payout_id}:settle`, `timesheet:{time_segment_id}:approve:{revision}` ([20](20-architecture-security.md) L4). The event ID is used only for consumer-inbox deduplication. Keys should not include the rule version, so a replay after a pack update cannot mint a second key for the same fact (open question 16). |
+| Idempotent posting from domain events | A domain event processed twice, or the same business fact emitted twice under two different event IDs, produces one entry. | Unique `(tenant_id, posting_key)` where `posting_key` is a deterministic **business key** built by the rule from the source document, never from the event ID: `invoice:{invoice_id}:issue`, `invoice:{invoice_id}:void`, `stripe_bt:{balance_transaction_id}`, `payout:{payout_id}:settle`, `timesheet:{time_segment_id}:approve:{revision}` ([20](20-architecture-security.md) L4). The event ID is used only for consumer-inbox deduplication. Keys never include the rule version, so a replay after a pack update cannot mint a second key for the same fact (section 14 item 16). |
 | Gapless numbering | Journal numbers are sequential per legal entity with no gaps, which auditors and some tax authorities expect. | Sequence row locked in the posting transaction ([20](20-architecture-security.md) L5). |
 | Tamper evidence | Each entry is hash-chained to the previous one per tenant; daily chain heads anchored to write-once storage. | [20](20-architecture-security.md) L8. |
 | Money is integers | Amounts in minor units; rounding at line level; tax rounding per jurisdiction. | [20](20-architecture-security.md) L10. |
 | Rules are versioned | Each entry records the posting-rule version that produced it; rule edits never rewrite history. | [20](20-architecture-security.md) L11. |
 
-**Proposed ledger invariants L13-L18** (to be added to [20](20-architecture-security.md) 4.18; they are accounting rules the database can enforce):
+**Ledger invariants L13-L18** (they extend [20](20-architecture-security.md) 4.18 and are accounting rules the database can enforce):
 
 | # | Invariant | Enforcement |
 |---|---|---|
@@ -360,15 +359,15 @@ Behaviors and rules:
 #### 4.1.4 Posting rules as data
 
 - A **posting rule** has: `rule_key` (for example `billing.P1`, `inventory.IN3`), name, triggering event type(s), conditions (expression over event payload: service line, client tax status, billing mode), line templates (account role, amount expression, sign, dimension mapping), dependencies, batching policy, and effective dates.
-- **Rule packs.** The platform ships versioned packs (US Standard, Canada Standard, Lawn Care Program, Design-Build POC). The Platform Operator publishes pack versions from the admin console ([19](19-platform-admin-portal.md)); tenants inherit updates unless they have overridden a rule, in which case they get a diff and a one-click accept.
+- **Rule packs.** The platform ships versioned packs (US Standard, Canada Standard, Lawn Care Program, Design-Build POC). The engineering agent prepares and tests pack versions and the founder (`platform_owner`) publishes them from the admin console ([19](19-platform-admin-portal.md)); tenants inherit updates unless they have overridden a rule, in which case they get a diff and a one-click accept.
 - **Tenant overrides**: a bookkeeper can change which account role a rule line uses (for example "post Stripe fees to 6150 per payout instead of per payment", which [08](08-payments-stripe.md) already exposes as a setting), or add a condition ("snow revenue from HOA clients goes to 4610 Seasonal Contracts even when invoiced per push"). Overrides create a new rule version effective from a chosen date; they never apply retroactively.
 - **Preview and simulation**: before activating a rule change, the bookkeeper sees the entries it would have produced for last month's events side by side with what actually posted, and the P&L difference. Activation requires `ledger.posting_rule.manage` and step-up authentication.
 - **Explainability.** Every system journal line links to the rule version and to the event; the "Why this entry?" panel renders the rule in plain English: "Rule billing.P1 v3: when an invoice is issued, debit Accounts Receivable for the total and credit revenue by service line and sales tax payable by agency."
 
 #### 4.1.5 Accounting periods, fiscal years and locks
 
-- **Fiscal year** per legal entity, any start month (many landscapers use calendar years; some snow-heavy companies use a May-April fiscal year so a winter is not split across two years; Rootline supports both). 52-53 week years are.
-- **Periods** are calendar months by default; 13-period years are.
+- **Fiscal year** per legal entity, any start month (many landscapers use calendar years; some snow-heavy companies use a May-April fiscal year so a winter is not split across two years; Rootline supports both). 52-53 week years are supported.
+- **Periods** are calendar months by default; 13-period years are supported.
 - **States:**
 
 | State | Who can post | Typical use |
@@ -396,14 +395,14 @@ stateDiagram-v2
 
 #### 4.1.6 Multi-currency and FX
 
-Scope at launch: US Companies in USD, Canadian Companies in CAD, with cross-border billing and bank accounts in the other currency (Windsor snow contractor billing a Detroit property manager in USD, per [08](08-payments-stripe.md) Example 8).
+Scope: US Companies in USD, Canadian Companies in CAD, with cross-border billing and bank accounts in the other currency (Windsor snow contractor billing a Detroit property manager in USD, per [08](08-payments-stripe.md) Example 8).
 
 - **Functional currency** per legal entity, fixed at creation.
 - **Transaction currency** per document (invoice, bill, bank account, Stripe balance). Lines store `amount_txn_minor`, `currency`, `fx_rate`, `fx_rate_source`, `fx_rate_date` and `amount_minor` (functional).
 - **Rates.** Daily reference rates from a configured source (Bank of Canada daily exchange rates for CAD entities is the natural default; a commercial rate API as fallback; verify licensing). Manual override per document with permission and audit. Rate types: `spot` (transaction date), `closing` (period end, for revaluation), `average` (period average, for consolidation translation).
 - **Realized FX** posts at settlement: the difference between the functional amount at the document rate and at the settlement rate goes to `7910 Realized FX Gain/Loss`. When Stripe converts currency, the balance transaction's actual converted amount is the settlement amount ([08](08-payments-stripe.md) 4.17).
 - **Unrealized FX revaluation** runs at period end for monetary balances in foreign currency (open AR and AP, foreign-currency bank accounts, foreign Stripe clearing): it posts the difference to `7920 Unrealized FX Gain/Loss` as an `accrual` entry that auto-reverses on day 1 of the next period.
-- **Balancing semantics.** [20](20-architecture-security.md) L1 is implemented as: every entry balances to zero in functional currency; single-currency entries also balance in their transaction currency; multi-currency entries (FX settlement, revaluation, foreign-currency transfers) carry an explicit FX line and are validated in functional currency. This is a proposed clarification of L1's "per currency" wording (open question 2).
+- **Balancing semantics.** [20](20-architecture-security.md) L1 is implemented as: every entry balances to zero in functional currency; single-currency entries also balance in their transaction currency; multi-currency entries (FX settlement, revaluation, foreign-currency transfers) carry an explicit FX line and are validated in functional currency. This is how L1's "per currency" wording is read (section 14 item 2).
 - **Rounding.** Functional-currency rounding residues from conversion post to `7930 FX Rounding` (never more than 1 minor unit per line; larger residues fail validation).
 
 **Worked revaluation (illustrative rates).** The Windsor Company has a USD 4,000.00 invoice open at month end, booked at 1.3700 (CAD 5,480.00). The closing rate is 1.3850, so the receivable is worth CAD 5,540.00:
@@ -519,7 +518,7 @@ System accounts (marked **S**) carry an account role and cannot be deleted, only
 | 2330 | Benefits and Deductions Payable | `payroll_deductions_payable` | 401(k), garnishments, health |
 | 2350 | Accrued PTO | `accrued_pto` | |
 | 2360 | Payroll Clearing (Net Pay) | `payroll_clearing` S | Must clear to zero |
-| 2380 | Backup Withholding Payable | `backup_withholding` |, 4.5.3 |
+| 2380 | Backup Withholding Payable | `backup_withholding` | 4.5.3 |
 | 2390 | Applied Labor Burden Clearing | `applied_burden` S | Over/under-applied burden |
 | 2410 | Warranty Reserve | `warranty_reserve` S | Plant and install warranties |
 | 2420 | Accrued Workers' Compensation | `accrued_wc` | Premium audits |
@@ -676,7 +675,7 @@ Per account and dimension: `required`, `optional`, `forbidden`, with a default v
 
 #### 4.2.6 Crosswalk to codes used in 07 and 08
 
-**Priority:** (role aliases must resolve before the first payments posting).
+**Dependency:** role aliases must resolve before the first payments posting.
 
 [07](07-invoicing-billing-contracts.md) 4.11 and [08](08-payments-stripe.md) 4.17 both quote the canonical codes and role keys from 4.2.2 directly. Posting rules bind to roles, so the table below is the binding **alias map** for the posting-rule registry: it lists the alternate role spellings the registry resolves to each canonical role (registered as aliases, as [02](02-personas-roles-permissions.md) does for permission keys) and the provisional account numbers used for billing and payments before this chart existed, so any prototype, test fixture or migration script built on them can be remapped by role.
 
@@ -1057,11 +1056,11 @@ Invoices, payments, credits, statements, write-offs and collections are specifie
 
 #### 4.5.2 Accounts payable: bills, approvals and bill pay
 
-**Priority:** bills, vendor credits and recorded payments; approval workflow, payment batches, printed checks, NACHA files and positive pay; embedded bill pay.
+**Scope:** bills, vendor credits and recorded payments; the approval workflow, payment batches, printed checks, NACHA files and positive pay; and embedded bill pay through a licensed partner.
 
-Bill intake ( basic, AI extraction through the A9 AP Agent in [17](17-ai-copilot-automation.md)), duplicate detection and the 2-way/3-way match engine are specified in [13](13-operations-inventory-equipment.md) 4.11. The ledger owns the bill as an accounting document and everything after matching.
+Bill intake (basic rules-based capture, and AI extraction through the A9 AP Agent in [17](17-ai-copilot-automation.md)), duplicate detection and the 2-way/3-way match engine are specified in [13](13-operations-inventory-equipment.md) 4.11. The ledger owns the bill as an accounting document and everything after matching.
 
-**Bill lifecycle
+**Bill lifecycle**
 
 ```mermaid
 stateDiagram-v2
@@ -1099,13 +1098,13 @@ stateDiagram-v2
 - **Payment batches**: select bills by due date, vendor or job; Rootline proposes a batch that captures expiring early-pay discounts (2/10 Net 30 shown with its roughly 37% annualized return, per [13](13-operations-inventory-equipment.md)) and shows the batch's effect on the 13-week cash forecast (4.9.4). Approval by `owner` (or `bookkeeper` up to a limit, [02](02-personas-roles-permissions.md) `bill_payment.approve`).
 - **Payment methods:**
 
-| Method | How money moves | Priority |
-|---|---|---|
-| Record payment made outside Rootline | Check written by hand, bank bill pay, wire; bank feed match closes it | |
-| Printed checks | Rootline prints MICR checks on blank check stock or pre-printed stock (laser, 3-per-page or check-on-top with stubs showing invoice numbers); check register with void tracking; signature image only below a threshold, two signature lines above | |
-| ACH via bank file | NACHA-format file generated for upload to the Company's bank portal; remittance advice emailed to vendors | |
-| Positive pay export | Issued-check file in the bank's format to block forged checks | |
-| Embedded bill pay | A licensed payables partner debits the Company's bank and pays vendors by ACH, check or virtual card; Rootline never holds funds | |
+| Method | How money moves |
+|---|---|
+| Record payment made outside Rootline | Check written by hand, bank bill pay, wire; bank feed match closes it |
+| Printed checks | Rootline prints MICR checks on blank check stock or pre-printed stock (laser, 3-per-page or check-on-top with stubs showing invoice numbers); check register with void tracking; signature image only below a threshold, two signature lines above |
+| ACH via bank file | NACHA-format file generated for upload to the Company's bank portal; remittance advice emailed to vendors |
+| Positive pay export | Issued-check file in the bank's format to block forged checks |
+| Embedded bill pay | A licensed payables partner debits the Company's bank and pays vendors by ACH, check or virtual card; Rootline never holds funds |
 
 - **Vendor banking security**: changes to vendor or subcontractor bank details require dual control and a call-back verification task with the phone number on file before the change (business email compromise is a known contractor risk, [02](02-personas-roles-permissions.md) 5.6); payments to a bank account changed in the last 10 days require `owner` approval.
 - **Vendor credits** (`ap.AP8`): from returns, nursery guarantee claims, pricing corrections; applied to open bills or refunded (refund matched from the bank feed).
@@ -1123,7 +1122,7 @@ Landscapers pay many unincorporated subcontractors (mow-and-blow subs, snow plow
 - **Eligibility rules**: corporations are generally exempt except for attorneys' fees; payments for merchandise are excluded; **payments made by credit card, debit card or third-party payment network are excluded** because the payment settlement entity reports them on Form 1099-K (verify current IRS instructions). Rootline therefore counts only check, ACH and cash bill payments toward 1099 totals, by payment method, automatically.
 - **Thresholds**: $600 for payments made through 2025; the One Big Beautiful Bill Act raised the 1099-NEC and 1099-MISC threshold to $2,000 for payments made after December 31, 2025, with inflation indexing after 2026 (verify). Thresholds are stored as dated platform parameters so each tax year applies its own rule.
 - **Deadlines**: 1099-NEC to recipients and the IRS by January 31 (no automatic extension); 1099-MISC to recipients by January 31 and to the IRS by the end of February on paper or March 31 electronically (verify). The year-end checklist (4.14) starts in November with a "W-9 missing" campaign to vendors paid over the threshold.
-- **E-file**: electronic filing is required when a filer has 10 or more information returns in aggregate (verify). Rootline e-files through the IRS Information Returns Intake System (IRIS) application-to-application interface or through a certified filing partner at (build-vs-partner is open question 9), including the Combined Federal/State Filing program where available and direct state filing exports where a state requires it (verify per state).
+- **E-file**: electronic filing is required when a filer has 10 or more information returns in aggregate (verify). Rootline e-files through a certified filing partner that submits to the IRS Information Returns Intake System (IRIS) (decision OD-30 in [24](24-product-scope-decisions-catalog.md)), including the Combined Federal/State Filing program where available and direct state filing exports where a state requires it (verify per state).
 - **Recipient copies**: delivered electronically through the sub portal with the recipient's prior consent (the IRS requires affirmative consent for electronic statements; verify), otherwise printed for mailing.
 - **TIN matching**: bulk TIN matching through the IRS e-Services program (verify enrollment requirements) when the W-9 is received, so January surprises are eliminated.
 - **Backup withholding**: when a payee fails to provide a TIN, a 24% backup withholding is applied at payment (`2380 Backup Withholding Payable`), tracked for Form 945 (verify).
@@ -1184,21 +1183,21 @@ Equipment-heavy landscapers carry many notes: truck loans, dealer financing on m
 
 Payroll calculation stays with the payroll provider ([15](15-team-hr-payroll.md)); Rootline sends approved hours out and brings the payroll journal back.
 
-- **Sources**: Gusto, ADP (RUN and Workforce Now), QuickBooks Payroll, Paychex, Paycor; Canadian providers such as Wagepoint, Payworks, ADP Canada and Ceridian Dayforce (verify current export formats and APIs per provider). MVP accepts each provider's standard payroll journal or general ledger export file; pulls via API where the provider offers one.
+- **Sources**: Gusto, ADP (RUN and Workforce Now), QuickBooks Payroll, Paychex, Paycor; Canadian providers such as Wagepoint, Payworks, ADP Canada and Ceridian Dayforce (verify current export formats and APIs per provider). Rootline accepts each provider's standard payroll journal or general ledger export file, and pulls the journal via API where the provider offers one.
 - **Mapping**: provider pay items (regular, overtime, bonus, PTO, tips, reimbursement), employee and employer tax types, deductions and benefits map once to account roles; employees map to department (admin) or field (cleared against 2310 applied wages).
 - **Validation before posting**:
   - Import gross equals the sum of its lines; net pay plus withholdings plus deductions equals gross; employer taxes recorded separately.
   - For each field employee, paid regular hours vs approved time in Rootline within a tolerance (default 0.25 hours); mismatches list "paid but not clocked" and "clocked but not paid".
   - Tips paid this run reconcile against 2160 Tips Payable allocations ([08](08-payments-stripe.md) Example 3).
   - The funding amount matches the bank feed debits (or creates expected bank lines for matching).
-- **Posting**: `payroll.PR1`-`PR3` as in E13-E14. Field wage variance (overtime premium, bonuses, PTO paid in season) goes to 5190 by default; can **re-allocate variance to jobs pro rata to hours** in the pay period so job cost carries real overtime.
+- **Posting**: `payroll.PR1`-`PR3` as in E13-E14. Field wage variance (overtime premium, bonuses, PTO paid in season) goes to 5190 by default; a Company setting **re-allocates variance to jobs pro rata to hours** in the pay period so job cost carries real overtime.
 - **QuickBooks Payroll in external mode**: payroll is already in QBO; Rootline does not import a journal for the book of record, but still needs labor cost for job costing, which it computes from approved time at standard burdened rates and reconciles to QBO payroll totals monthly (difference shown, not posted).
 
 ### 4.6 Banking, receipts and reconciliation
 
 #### 4.6.1 Bank and card connections
 
-- **Plaid Link** connects checking, savings, credit card and line-of-credit accounts at US and Canadian institutions (verify current Canadian coverage; a Canadian-specialist aggregator is the fallback, open question 4). Products used: transactions and balances only; no money movement through the aggregator.
+- **Plaid Link** connects checking, savings, credit card and line-of-credit accounts at US and Canadian institutions (verify current Canadian coverage; a Canadian-specialist aggregator is the fallback, section 14 item 4). Products used: transactions and balances only; no money movement through the aggregator.
 - **History on connect**: up to 24 months where the institution supports it (verify Plaid's maximum history request), but Rootline only creates bank lines on or after the account's **ledger start date** (the migration conversion date, 4.18) to avoid double-counting history that is already in the opening balance.
 - **File import** for any account without a feed or as a fallback: CSV with a column-mapping wizard, OFX/QFX, and BAI2 and ISO 20022 CAMT.053 for commercial banking portals. Imports are deduplicated against feed data.
 - **Fuel card programs**: fleet fuel cards (WEX, Fuelman and similar; verify each program's data export or API) carry one of a maintenance company's largest and hardest-to-allocate field costs. Aggregator feeds usually show only merchant and amount; the fuel card program's own file adds card, driver, vehicle, odometer, product (diesel, unleaded, DEF) and gallons. Rootline imports that file daily or weekly, maps card to vehicle or asset ([13](13-operations-inventory-equipment.md)), posts fuel to 5330 with the `asset` dimension, flags fills larger than the vehicle's tank capacity or two fills within 30 minutes (a classic fuel-card fraud pattern), and feeds the off-highway fuel credit tracker (section 13, idea 1). Statement payments reconcile against 2040-2049 like any card.
@@ -1226,7 +1225,7 @@ flowchart TD
     R1 -->|"Yes, suggest only"| RV["Review queue with suggestion"]
     R1 -->|"No"| AI["AI suggestion: account, dimensions, vendor, job, split"]
     AI --> C{"Confidence above tenant auto-post threshold?"}
-    C -->|"Yes            "| RP
+    C -->|"Yes (tenant opt-in)"| RP
     C -->|"No"| RV
     RV --> ASK{"Bookkeeper knows?"}
     ASK -->|"Yes"| RP
@@ -1419,7 +1418,7 @@ When a project's EAC exceeds its contract value, `wip.WP3` provisions the remain
 
 #### 4.9.1 Budget model
 
-- The **Company Budget** that estimating uses ([03](03-crm-sales-estimating-proposals.md) EST-01,) is the summary view of a ledger **budget version**: amounts by account (or account group), division, branch and month, plus statistical budgets (billable hours by month).
+- The **Company Budget** that estimating uses ([03](03-crm-sales-estimating-proposals.md) EST-01) is the summary view of a ledger **budget version**: amounts by account (or account group), division, branch and month, plus statistical budgets (billable hours by month).
 - **Versions**: original, revised (for example after a slow spring), and rolling forecast; one version is the "estimating budget" pinned by estimates.
 - **Phasing methods**: even; seasonal curve from last year's actuals; custom per month; **driver-based** (revenue = budgeted billable hours x budgeted revenue per man-hour; field wages = hours x average wage; burden = wages x burden %; equipment recovery = hours x rates).
 - **Inputs**: guided wizard (03), XLSX import, copy last year's actuals with a percentage change, or an AI-drafted budget from history and the sales pipeline that the owner edits.
@@ -1466,29 +1465,29 @@ This is the same forecast engine as the 13-week cash flow forecast in [Reporting
 
 Management dashboards, KPI definitions and the report builder belong to [18](18-reporting-analytics.md); this module owns the **accounting reports** that must tie to the ledger to the cent. All reports drill from any amount to journal lines, then to source documents and posting rules.
 
-| Report | Key behaviors | Priority |
-|---|---|---|
-| **Profit and loss** | Two layouts: *Landscape management* (revenue by division, direct costs by cost type, gross profit and GP%, overhead, net operating income, other, net income) and *Standard* (accountant layout). Columns by month, quarter, YTD, by division, branch or department; comparatives (prior period, prior year, budget); % of revenue; statistical ratios (revenue per man-hour). | |
-| **Division P&L with allocations** | Overhead allocated to divisions by a chosen driver (billable hours default, revenue, or direct cost) so each division shows a net profit, with the unallocated view one click away. | |
-| **Balance sheet** | Comparative; classified (current vs long-term, with current portion of debt); retainage, contract assets and liabilities shown separately. | |
-| **Statement of cash flows** | Indirect method from balance sheet movements with account-role classification (operating, investing, financing). | |
-| **Trial balance** | Unadjusted, adjustments and adjusted columns (worksheet view); by entity; as of any date. | |
-| **General ledger detail** | By account and date range with running balance, dimensions, source links; export to XLSX. | |
-| **Journal register** | All entries with filters by type, actor (user, accountant, automation, AI), rule. | |
-| **Budget vs actual** | 4.9.3, with flex budget. | |
-| **AR aging** and **AP aging** | Summary and detail, by due or document date; retainage separate; GRNI aging beside AP. | |
-| **Sales tax liability** | By agency and jurisdiction: taxable and exempt sales, tax collected, adjustments (bad debt, credits), tax paid, payable; ties to 2101+; use tax accrued. | US, GST/HST/QST worksheet |
-| **Deferred revenue roll-forward** | 4.8.2. | |
-| **WIP schedule**, **closed jobs**, **backlog** | 4.8.3. | |
-| **Job cost** and **job profitability summary** | 4.7.6. | |
-| **Overhead recovery** | 4.9.2. | |
-| **Equipment over/under recovery** | 4.7.3. | |
-| **Inventory valuation**, **GRNI**, **PPV** | 4.5.4. | |
-| **Fixed asset register and depreciation schedule**; **debt schedule** | 4.5.5, 4.5.6. | |
-| **1099 / T5018 summary and detail** | 4.5.3. | |
-| **Bank reconciliation reports** | 4.6.5. | |
-| **Cash forecast** | 4.9.4. | |
-| **Financial package** | Branded PDF: cover, highlights, P&L, balance sheet, cash flow, division P&L, WIP, AR aging, KPI page, Copilot narrative in English or Spanish; scheduled monthly to the owner and lender. | |
+| Report | Key behaviors |
+|---|---|
+| **Profit and loss** | Two layouts: *Landscape management* (revenue by division, direct costs by cost type, gross profit and GP%, overhead, net operating income, other, net income) and *Standard* (accountant layout). Columns by month, quarter, YTD, by division, branch or department; comparatives (prior period, prior year, budget); % of revenue; statistical ratios (revenue per man-hour). |
+| **Division P&L with allocations** | Overhead allocated to divisions by a chosen driver (billable hours default, revenue, or direct cost) so each division shows a net profit, with the unallocated view one click away. |
+| **Balance sheet** | Comparative; classified (current vs long-term, with current portion of debt); retainage, contract assets and liabilities shown separately. |
+| **Statement of cash flows** | Indirect method from balance sheet movements with account-role classification (operating, investing, financing). |
+| **Trial balance** | Unadjusted, adjustments and adjusted columns (worksheet view); by entity; as of any date. |
+| **General ledger detail** | By account and date range with running balance, dimensions, source links; export to XLSX. |
+| **Journal register** | All entries with filters by type, actor (user, accountant, automation, AI), rule. |
+| **Budget vs actual** | 4.9.3, with flex budget. |
+| **AR aging** and **AP aging** | Summary and detail, by due or document date; retainage separate; GRNI aging beside AP. |
+| **Sales tax liability** | By agency and jurisdiction: taxable and exempt sales, tax collected, adjustments (bad debt, credits), tax paid, payable; ties to 2101+; use tax accrued; the GST/HST/QST return worksheet for Canadian entities. |
+| **Deferred revenue roll-forward** | 4.8.2. |
+| **WIP schedule**, **closed jobs**, **backlog** | 4.8.3. |
+| **Job cost** and **job profitability summary** | 4.7.6. |
+| **Overhead recovery** | 4.9.2. |
+| **Equipment over/under recovery** | 4.7.3. |
+| **Inventory valuation**, **GRNI**, **PPV** | 4.5.4. |
+| **Fixed asset register and depreciation schedule**; **debt schedule** | 4.5.5, 4.5.6. |
+| **1099 / T5018 summary and detail** | 4.5.3. |
+| **Bank reconciliation reports** | 4.6.5. |
+| **Cash forecast** | 4.9.4. |
+| **Financial package** | Branded PDF: cover, highlights, P&L, balance sheet, cash flow, division P&L, WIP, AR aging, KPI page, Copilot narrative in English or Spanish; scheduled monthly to the owner and lender. |
 
 **Report engine behaviors:**
 
@@ -1501,7 +1500,7 @@ Management dashboards, KPI definitions and the report builder belong to [18](18-
 
 ### 4.11 Period close
 
-**Priority:** checklist with C1-C8, C18, C21 and sign-off; the full 24-check list, close calendar, readiness score and AI flux commentary.
+**Scope:** the full 24-check list with sign-off, the close calendar, the readiness score and AI flux commentary. Ledger Essentials runs the core checks (C1-C8, C18, C21 and sign-off); Ledger Plus adds the rest (packaging map in 4.0).
 
 Close is a **checklist with automated checks**, generated for each legal entity on day 1 of the new month (the bookkeeper can start it earlier for a continuous close). Each check runs automatically on open and again on demand; hard checks block locking, soft checks require a note to waive.
 
@@ -1536,7 +1535,7 @@ Close is a **checklist with automated checks**, generated for each legal entity 
 
 ### 4.12 Accountant Hub and the external CPA
 
-Delegated access, the firm model and revocation are specified in [02](02-personas-roles-permissions.md) 5.10 ( basic delegated access, Hub). This module specifies what the accountant does inside it.
+Delegated access, the firm model and revocation are specified in [02](02-personas-roles-permissions.md) 5.10 (delegated access and the multi-client Hub). This module specifies what the accountant does inside it.
 
 - **Multi-client dashboard**: each client Company with close status and readiness score, unreconciled and uncategorized counts, open sync errors, suspense balance, AR over 90 days, upcoming sales tax and 1099 deadlines, period lock state, last owner login. Queries run per tenant under the delegation; there are no cross-tenant joins ([02](02-personas-roles-permissions.md)).
 - **Firm templates**: a firm's preferred chart of accounts variant, bank rules, recurring entries, close checklist additions and report layouts can be applied to a new client in one step.
@@ -1562,7 +1561,7 @@ Delegated access, the firm model and revocation are specified in [02](02-persona
 
 ### 4.14 Year-end
 
-**Priority:** (year lock, retained earnings roll-forward and the year-end calendar); the optional closing entry for exports is; prior-period adjustment flags are because they follow from period locks.
+**Scope:** the year lock, the retained earnings roll-forward, the year-end calendar, the optional closing entry for exports, and prior-period adjustment flags (which follow from period locks).
 
 | When | Step | Owner |
 |---|---|---|
@@ -1582,7 +1581,7 @@ Delegated access, the firm model and revocation are specified in [02](02-persona
 Organization structure (branches, divisions, legal entities, multi-company organizations) is defined in [02](02-personas-roles-permissions.md) 5.9. Branches and divisions are **dimensions inside one set of books**; legal entities are **separate books**.
 
 - **Legal entity books**: each entity has its own functional currency, fiscal calendar, periods and locks, journal sequence, bank accounts, tax IDs, sales tax registrations, 1099 filer profile and optionally its own Stripe account ([08](08-payments-stripe.md)). Every document (invoice, bill, time entry, stock movement) belongs to exactly one entity, defaulted from the job or branch.
-- **Shared chart**: entities share the Company chart of accounts by default (consolidation then needs no mapping); accounts can be restricted to specific entities. A fully separate chart for an acquired firm is supported with a consolidation mapping.
+- **Shared chart** (OD-28): entities share one Company chart of accounts, with accounts restricted to specific entities where needed, so consolidation needs no mapping. The shared chart is the rule; a fully separate chart for an acquired firm is supported only through a consolidation mapping onto it.
 - **Intercompany**: when an activity in one entity serves another (crews employed by Summit Grounds LLC plowing for Summit Snow Services LLC; trucks owned by one entity carrying plows owned by the other; shared office staff; intercompany loans), Rootline generates **linked pairs** (`interco.IC1`) at a configured transfer rate, keeping due-from and due-to equal (L18). Monthly settlement nets and records the payment between entities.
 - **Consolidation**: choose entities and period; Rootline aggregates, applies **elimination rules** (intercompany receivables and payables, intercompany revenue and expense or recovery, intercompany loans and interest) in a separate elimination book (never in the entities' books), and produces consolidated statements with an entity-column view. Cross-currency consolidation translates a CAD entity into a USD parent using the current-rate method (balance sheet at closing rate, P&L at average rate, equity at historical rates) with the difference in 3400 Cumulative Translation Adjustment.
 
@@ -1602,7 +1601,7 @@ On consolidation, 1910 and 2910 eliminate, and the charge and recovery net to ze
 Tax determination, exemptions and invoice tax lines are owned by [07](07-invoicing-billing-contracts.md) 4.5. The ledger provides:
 
 - **Payable sub-accounts per agency** (state, county, city, special district; provincial and federal in Canada) so the liability report ties to returns.
-- **Filing worksheets**: per agency and filing period, taxable sales, exempt sales by reason, tax collected, adjustments (credit memos, bad-debt deductions where allowed), vendor collection allowances, and net due; marking a return filed and matching the payment posts `tax.TX1`. Automated filing and remittance through a tax-compliance partner (Avalara Returns or a Stripe Tax filing partner) is, as owned by [07](07-invoicing-billing-contracts.md) 4.5.5; Rootline never remits on the Company's behalf itself (open question 10).
+- **Filing worksheets**: per agency and filing period, taxable sales, exempt sales by reason, tax collected, adjustments (credit memos, bad-debt deductions where allowed), vendor collection allowances, and net due; marking a return filed and matching the payment posts `tax.TX1`. Automated filing and remittance run through a tax-compliance partner (Avalara Returns or a Stripe Tax filing partner), as owned by [07](07-invoicing-billing-contracts.md) 4.5.5; Rootline never remits on the Company's behalf itself (section 14 item 10).
 - **Use tax accrual** (`ap.AP9`) for purchases on which the vendor did not charge tax but tax is owed (contractor-as-consumer materials bought out of state, online parts purchases), with a use tax report.
 - **Canada**: GST/HST and QST collected (2125, 2126) vs input tax credits on purchases and capital assets (1260); return worksheet with net tax; filing frequency per registration; **Quick Method** support for small registrants who elect it (remittance computed as a prescribed percentage of tax-included sales, with ITCs generally limited to capital purchases; verify eligibility and rates), with the difference between tax collected and remitted posted to other income (verify presentation with the CPA).
 - **Liability reconciliation** in the close checklist (C17).
@@ -1615,9 +1614,11 @@ The connector framework (OAuth token vault with refresh locks, external referenc
 
 Every legal entity is in exactly one mode ([20](20-architecture-security.md) L12, `ledger_mode`), chosen in onboarding and changeable at a period boundary.
 
+**Default book of record (OD-24).** The ledger always runs. A new Company that names a CPA during onboarding starts in Mode B (native plus a QuickBooks mirror for the CPA, or Xero where the CPA works in Xero); every other new Company starts in Mode A. Mode C is an explicit choice. Rootline keeps its own books the same way: on the Rootline ledger from the first day, mirrored to QuickBooks for Rootline's accountant (OD-25).
+
 | | **A. Native** | **B. Native + mirror** | **C. External sync** |
 |---|---|---|---|
-| Book of record | Rootline ledger | Rootline ledger | QuickBooks Online/Desktop or Xero |
+| Book of record | Rootline ledger | Rootline ledger | QuickBooks Online/Desktop, Xero or Sage Intacct |
 | `ledger_mode` | `native` | `native` with `mirror_target` | `external_sync` |
 | What Rootline posts | Everything | Everything | Everything, as an operational subledger (job cost, WIP, deferred revenue, Stripe clearing) |
 | What syncs | Nothing | Push only: **summary** journal entries (daily per account x class x location) or **detail** documents (customers, invoices, payments, bills) to a read-only mirror for the CPA | Push operational documents (clients, items, invoices, credit memos, payments, deposits, payouts as transfers, optionally bills and vendors) and accounting adjustments (deferred revenue, WIP, labor accruals) as journal entries; pull payments and credits recorded in the external system, plus its trial balance for dashboards |
@@ -1625,7 +1626,7 @@ Every legal entity is in exactly one mode ([20](20-architecture-security.md) L12
 | Period locks | Rootline (pushed to mirror's closing date) | Rootline (pushed to mirror's closing date) | External closing date pulled into Rootline |
 | Statements labeled | Book of record | Book of record; mirror labeled "copy" | "Operational subledger, not book of record" watermark (L15) |
 | Typical Company | Small firm dropping QuickBooks; new firms | CPA wants QuickBooks access during transition; lender requires QuickBooks reports | CPA and owner committed to QuickBooks or Xero; larger firms with established processes |
-| Priority | | QBO summary, QBO detail, Xero, QBD | QBO, Xero and QBD |
+| Systems | None | QBO (summary or detail), QBD, Xero, Sage Intacct, long-tail systems (summary only) | QBO, QBD, Xero, Sage Intacct |
 
 ```mermaid
 flowchart LR
@@ -1673,7 +1674,7 @@ flowchart LR
 - **Triggers**: outbound from domain events; inbound from QBO webhooks plus change-data-capture polling every 15 minutes as a safety net ([20](20-architecture-security.md) 4.8). CDC has a limited lookback window (about 30 days; verify), so a connection that has been down longer is repaired by a full reconciliation sweep rather than CDC.
 - **Rate limits**: QBO enforces per-company request and concurrency limits (on the order of hundreds of requests per minute and about 10 concurrent requests; verify current values). Rootline keeps a per-company token bucket, honors `Retry-After` on 429, and uses batch operations (verify batch size limits) for backfills.
 - **API call economics**: Intuit's App Partner Program (2025) meters certain read and query calls by partner tier (verify current terms). Rootline therefore avoids read polling: it relies on webhooks and CDC, caches reference data, and writes with idempotency rather than read-before-every-write.
-- **Idempotency and duplicates**: the external reference map plus a marker in the QBO object's private note (for example `[rl:inv_01J...]`) allows lookup-before-create after a timeout; zero duplicate customers is a release criterion (G6).
+- **Idempotency and duplicates**: the external reference map plus a marker in the QBO object's private note (for example `[rl:inv_01J...]`) allows lookup-before-create after a timeout; zero duplicate customers is a hard requirement (G6).
 - **Concurrency**: QBO's optimistic concurrency token on updates; on a stale-token error, Rootline re-reads, re-applies if no conflicting field changed, otherwise opens a conflict task.
 - **Dependency ordering without cascades**: a customer must exist before its invoice, but an error on one invoice never blocks other invoices or payments for the same client (the opposite of the behavior Jobber documents, [Jobber sync errors](https://help.getjobber.com/hc/en-us/articles/10466688449431-Common-QuickBooks-Sync-Errors-and-How-to-Fix-Them)).
 - **Conflict matrix** (Mode C):
@@ -1699,7 +1700,7 @@ flowchart LR
 - **Supported modes**: Mode B summary (recommended) and Mode C for customers, items, invoices, credit memos, payments and journal entries; bills optional.
 - **Change detection**: no webhooks; modified-date queries with iterators on each poll; object identity by Desktop list and transaction IDs, with edit-sequence concurrency.
 - **Gotchas**: name length limits on lists and hierarchical full names (verify), single-user vs multi-user mode, company file closed or on a different PC, Canadian editions' tax codes, the user forgetting to run the Web Connector (Rootline shows "last poll 3 days ago" on the dashboard and emails the bookkeeper).
-- **Strategy**: Intuit has narrowed Desktop availability for new US customers since 2024 while Enterprise continues (verify). Rootline supports Desktop to win those customers and offers a one-click migration to native books (4.18). A third-party Desktop API service is a build-vs-buy option (open question 8).
+- **Strategy**: Intuit has narrowed Desktop availability for new US customers since 2024 while Enterprise continues (verify). Rootline supports Desktop to win those customers and offers a one-click migration to native books (4.18). Rootline builds the Web Connector integration itself (OD-30); no third-party Desktop API service sits in between.
 
 #### 4.17.4 Xero
 
@@ -1716,7 +1717,7 @@ For $20M+ commercial firms and private-equity roll-ups that standardize on Intac
 
 #### 4.17.6 Long-tail accounting systems
 
-Sage 50, Zoho Books, FreshBooks, NetSuite and others through a unified accounting API vendor, in Mode B summary only (lowest common denominator: chart of accounts, journal entries, contacts). Building QBO and Xero natively remains the right call because they carry 90%+ of the target market's books (estimate to validate in pilots) and need deep mapping control.
+Sage 50, Zoho Books, FreshBooks, NetSuite and others through a unified accounting API vendor, in Mode B summary only (lowest common denominator: chart of accounts, journal entries, contacts). Building QBO and Xero natively remains the right call because they carry 90%+ of the target market's books (estimate, verify) and need deep mapping control.
 
 #### 4.17.7 Payroll journal connectors
 
@@ -1834,7 +1835,7 @@ sequenceDiagram
 ### 5.3 A card purchase in the field becomes a coded, reconciled expense
 
 1. Crew lead Luis buys 6 bags of quick-set concrete at a big-box store on the shop card ($86.40) and snaps the receipt in the crew app, offline ([05](05-field-crew-mobile-app.md), [13](13-operations-inventory-equipment.md) 4.4.4).
-2. The receipt syncs; rules-based OCR reads merchant, date, total and tax (line items are added by AI extraction from, AI2); the app's job context suggests J-2291 Phase 2.
+2. The receipt syncs; rules-based OCR reads merchant, date, total and tax (AI extraction adds the line items, AI2); the app's job context suggests J-2291 Phase 2.
 3. Two days later the card line arrives through Plaid; Rootline matches it to the receipt (last four, amount, date) and proposes Dr 5210 J-2291 / Cr 2040 Credit Card.
 4. Beth confirms with one click and accepts "Always code this merchant's receipts with job context to materials".
 5. At month end, the card statement reconciles with this line already cleared.
@@ -2003,38 +2004,38 @@ flowchart TD
 
 All ledger screens live in the Company web app under **Money** (sitemap in [21](21-ux-design-system-sitemaps.md)); the Accountant Hub is a separate firm-level surface; owners get read-only summaries on mobile.
 
-| # | Screen | Surface | Primary roles | Priority |
-|---|---|---|---|---|
-| 1 | Money home (cash, AR, AP, close readiness, overhead recovery, alerts) | Web, mobile summary | `owner`, `bookkeeper` | |
-| 2 | Chart of Accounts (tree, roles, dimension policies) | Web | `bookkeeper`, `owner` | |
-| 3 | Journal entries list and register | Web | `bookkeeper` | |
-| 4 | Journal entry editor (manual, recurring, auto-reversing) | Web | `bookkeeper` | |
-| 5 | Entry detail with provenance, rule explanation, reversal stack | Web | `bookkeeper`, `owner` | |
-| 6 | Bank feed review (categorize, match, ask) | Web | `bookkeeper`, `office_manager` | |
-| 7 | Bank rules manager with test-against-history | Web | `bookkeeper` | |
-| 8 | Reconciliation workspace | Web | `bookkeeper` | |
-| 9 | Receipts inbox | Web, crew app | `office_manager`, `crew_lead` | |
-| 10 | Bills list, bill detail and coding | Web | `office_manager`, `ops_manager` | |
-| 11 | Approvals inbox (bills, entries, batches, reopen requests) | Web, mobile | `owner`, `ops_manager` | |
-| 12 | Payment batch builder and check printing | Web | `office_manager`, `owner` | |
-| 13 | Vendor 1099 / T5018 workspace | Web | `office_manager`, `bookkeeper` | |
-| 14 | Job cost report | Web, mobile summary | `ops_manager`, `owner`, `estimator` | |
-| 15 | WIP schedule | Web | `bookkeeper`, `owner` | |
-| 16 | Deferred revenue roll-forward | Web | `bookkeeper` | |
-| 17 | Budget editor and budget vs actual | Web | `owner`, `bookkeeper` | |
-| 18 | Overhead recovery tracker | Web, mobile tile | `owner` | |
-| 19 | Cash forecast and scenarios | Web | `owner`, `bookkeeper` | |
-| 20 | Financial statements and report library | Web | `owner`, `bookkeeper` | |
-| 21 | Close checklist | Web | `bookkeeper`, `owner` | |
-| 22 | Fixed asset register and depreciation | Web | `bookkeeper` | |
-| 23 | Loans and debt schedule | Web | `bookkeeper`, `owner` | |
-| 24 | Payroll import and labor variance | Web | `bookkeeper`, `office_manager` | |
-| 25 | Entities, intercompany and consolidation | Web | `bookkeeper`, `owner` | |
-| 26 | Integrations: QuickBooks, Xero, payroll (connection, mapping, sync health, errors) | Web | `bookkeeper`, `owner` | |
-| 27 | Migration wizard and opening balance proof | Web | `bookkeeper`, `owner`, `platform_support` (assisted) | |
-| 28 | Accountant Hub (client list, close status, questions) | Accountant web | `bookkeeper` (firm) | |
-| 29 | Audit trail and evidence locker | Web | `owner`, `bookkeeper` | |
-| 30 | Posting rules and overrides (with simulation) | Web | `bookkeeper` | |
+| # | Screen | Surface | Primary roles |
+|---|---|---|---|
+| 1 | Money home (cash, AR, AP, close readiness, overhead recovery, alerts) | Web, mobile summary | `owner`, `bookkeeper` |
+| 2 | Chart of Accounts (tree, roles, dimension policies) | Web | `bookkeeper`, `owner` |
+| 3 | Journal entries list and register | Web | `bookkeeper` |
+| 4 | Journal entry editor (manual, recurring, auto-reversing) | Web | `bookkeeper` |
+| 5 | Entry detail with provenance, rule explanation, reversal stack | Web | `bookkeeper`, `owner` |
+| 6 | Bank feed review (categorize, match, ask) | Web | `bookkeeper`, `office_manager` |
+| 7 | Bank rules manager with test-against-history | Web | `bookkeeper` |
+| 8 | Reconciliation workspace | Web | `bookkeeper` |
+| 9 | Receipts inbox | Web, crew app | `office_manager`, `crew_lead` |
+| 10 | Bills list, bill detail and coding | Web | `office_manager`, `ops_manager` |
+| 11 | Approvals inbox (bills, entries, batches, reopen requests) | Web, mobile | `owner`, `ops_manager` |
+| 12 | Payment batch builder and check printing | Web | `office_manager`, `owner` |
+| 13 | Vendor 1099 / T5018 workspace | Web | `office_manager`, `bookkeeper` |
+| 14 | Job cost report | Web, mobile summary | `ops_manager`, `owner`, `estimator` |
+| 15 | WIP schedule | Web | `bookkeeper`, `owner` |
+| 16 | Deferred revenue roll-forward | Web | `bookkeeper` |
+| 17 | Budget editor and budget vs actual | Web | `owner`, `bookkeeper` |
+| 18 | Overhead recovery tracker | Web, mobile tile | `owner` |
+| 19 | Cash forecast and scenarios | Web | `owner`, `bookkeeper` |
+| 20 | Financial statements and report library | Web | `owner`, `bookkeeper` |
+| 21 | Close checklist | Web | `bookkeeper`, `owner` |
+| 22 | Fixed asset register and depreciation | Web | `bookkeeper` |
+| 23 | Loans and debt schedule | Web | `bookkeeper`, `owner` |
+| 24 | Payroll import and labor variance | Web | `bookkeeper`, `office_manager` |
+| 25 | Entities, intercompany and consolidation | Web | `bookkeeper`, `owner` |
+| 26 | Integrations: QuickBooks, Xero, payroll (connection, mapping, sync health, errors) | Web | `bookkeeper`, `owner` |
+| 27 | Migration wizard and opening balance proof | Web | `bookkeeper`, `owner`, `platform_support` (assisted) |
+| 28 | Accountant Hub (client list, close status, questions) | Accountant web | `bookkeeper` (firm) |
+| 29 | Audit trail and evidence locker | Web | `owner`, `bookkeeper` |
+| 30 | Posting rules and overrides (with simulation) | Web | `bookkeeper` |
 
 ### 6.2 Wireframe: bank feed review
 
@@ -2267,7 +2268,7 @@ The owner is a reader (design principle 7): three numbers, one sentence, and a d
 
 ## 7. Data model
 
-All tables live in the `ledger` schema (integrations tables in `integrations`), carry `tenant_id` with row-level security ([20](20-architecture-security.md)), and most carry `legal_entity_id`. Money is `bigint` minor units with an ISO currency code; rates are `numeric(18,8)`; quantities `numeric(18,4)`. Shared entities owned elsewhere are referenced, not copied: `client`, `property`, `job`, `visit`, `agreement` ([04](04-scheduling-dispatch-routing.md), [07](07-invoicing-billing-contracts.md)), `invoice`, `credit_memo` ([07](07-invoicing-billing-contracts.md)), `payment`, `balance_entry`, `payout` ([08](08-payments-stripe.md)), `vendor`, `stock_movement`, `asset`, `purchase_order`, `receipt` ([13](13-operations-inventory-equipment.md)), `employee`, `time_segment` (the `time_entry` of [20](20-architecture-security.md)'s module map) ([15](15-team-hr-payroll.md)), `legal_entity`, `org_unit` ([02](02-personas-roles-permissions.md)).
+All tables live in the `ledger` schema (integrations tables in `integrations`), carry `tenant_id` with row-level security ([20](20-architecture-security.md)), and most carry `legal_entity_id`. Canadian Companies' ledger data lives in the Canadian regional stack (OD-62). Money is `bigint` minor units with an ISO currency code; rates are `numeric(18,8)`; quantities `numeric(18,4)`. Shared entities owned elsewhere are referenced, not copied: `client`, `property`, `job`, `visit`, `agreement` ([04](04-scheduling-dispatch-routing.md), [07](07-invoicing-billing-contracts.md)), `invoice`, `credit_memo` ([07](07-invoicing-billing-contracts.md)), `payment`, `balance_entry`, `payout` ([08](08-payments-stripe.md)), `vendor`, `stock_movement`, `asset`, `purchase_order`, `receipt` ([13](13-operations-inventory-equipment.md)), `employee`, `time_segment` (the `time_entry` of [20](20-architecture-security.md)'s module map) ([15](15-team-hr-payroll.md)), `legal_entity`, `org_unit` ([02](02-personas-roles-permissions.md)).
 
 ### 7.1 Entities
 
@@ -2470,23 +2471,23 @@ erDiagram
 
 ### 8.1 External services
 
-| Service | Purpose | Mechanism | Priority |
-|---|---|---|---|
-| Plaid (or a similar aggregator; Canadian specialist as fallback) | Bank, card and loan feeds; balances | Link, transactions sync with cursor, webhooks | |
-| Bank file formats | Feeds without aggregator coverage; ACH and positive pay out | CSV, OFX/QFX in; BAI2, CAMT.053 in; NACHA and bank positive-pay formats out |/ |
-| QuickBooks Online | Mirror or book of record | OAuth 2.0, REST, webhooks, change data capture | |
-| QuickBooks Desktop | Mirror or book of record | Web Connector (SOAP, qbXML) | |
-| Xero | Mirror or book of record | OAuth 2.0, REST, webhooks | |
-| Sage Intacct | Upmarket book of record | XML web services / REST (verify) | |
-| Unified accounting API vendor | Long-tail systems | Vendor API, summary JEs only | |
-| Payroll providers (Gusto, ADP, QuickBooks Payroll, Paychex, Paycor; Wagepoint, Payworks, ADP Canada, Dayforce) | Payroll journal import | Files, APIs (verify per provider) |/ |
-| IRS IRIS or a certified 1099 filing partner | 1099 e-file, TIN matching | A2A API or partner API (verify) | |
-| CRA | T5018 and T4A filing | XML Internet file transfer export | |
-| Exchange-rate source (Bank of Canada daily rates; commercial fallback) | FX | Daily pull (verify licensing) | |
-| Sales tax compliance partner (Avalara Returns or a Stripe Tax filing partner, per [07](07-invoicing-billing-contracts.md) 4.5.5) | Automated sales tax filing and remittance | Partner API | |
-| Embedded payables partner | Bill pay by ACH, check, virtual card | Partner API; funds move from the Company's bank | |
-| AI Gateway ([17](17-ai-copilot-automation.md)) | Chart and integration mapping and sync-error explanations; LLM receipt and bill extraction (MVP uses rules-based OCR outside the gateway), AI categorization and narratives | Internal |/ |
-| Stripe ([08](08-payments-stripe.md)) | Balance transactions and payouts | Via the payments module only, never directly | |
+| Service | Purpose | Mechanism |
+|---|---|---|
+| Plaid (or a similar aggregator; Canadian specialist as fallback) | Bank, card and loan feeds; balances | Link, transactions sync with cursor, webhooks |
+| Bank file formats | Feeds without aggregator coverage; ACH and positive pay out | CSV, OFX/QFX in; BAI2, CAMT.053 in; NACHA and bank positive-pay formats out |
+| QuickBooks Online | Mirror or book of record | OAuth 2.0, REST, webhooks, change data capture |
+| QuickBooks Desktop | Mirror or book of record | Web Connector (SOAP, qbXML) |
+| Xero | Mirror or book of record | OAuth 2.0, REST, webhooks |
+| Sage Intacct | Upmarket book of record | XML web services / REST (verify) |
+| Unified accounting API vendor | Long-tail systems | Vendor API, summary JEs only |
+| Payroll providers (Gusto, ADP, QuickBooks Payroll, Paychex, Paycor; Wagepoint, Payworks, ADP Canada, Dayforce) | Payroll journal import | Files, APIs (verify per provider) |
+| Certified 1099 filing partner (files through IRS IRIS, OD-30); IRS e-Services | 1099 e-file; bulk TIN matching | Partner API; e-Services TIN matching (verify) |
+| CRA | T5018 and T4A filing | XML Internet file transfer export |
+| Exchange-rate source (Bank of Canada daily rates; commercial fallback) | FX | Daily pull (verify licensing) |
+| Sales tax compliance partner (Avalara Returns or a Stripe Tax filing partner, per [07](07-invoicing-billing-contracts.md) 4.5.5) | Automated sales tax filing and remittance | Partner API |
+| Embedded payables partner | Bill pay by ACH, check, virtual card | Partner API; funds move from the Company's bank |
+| AI Gateway ([17](17-ai-copilot-automation.md)) | Chart and integration mapping and sync-error explanations; LLM receipt and bill extraction (basic intake uses rules-based OCR outside the gateway), AI categorization and narratives | Internal |
+| Stripe ([08](08-payments-stripe.md)) | Balance transactions and payouts | Via the payments module only, never directly |
 
 ### 8.2 Domain events consumed
 
@@ -2571,13 +2572,13 @@ Permission keys follow the `resource.action` taxonomy of [02](02-personas-roles-
 | Audit trail and evidence locker (`audit_log.view`) | V | - | - | - | - | - | - | V | - |
 | Full GL data export (`data_export.ledger`) | F S | - | - | - | - | - | - | F S | - |
 
-**Platform roles** (see [02](02-personas-roles-permissions.md) 5.13 and [19](19-platform-admin-portal.md)):
+**Platform roles** (see [02](02-personas-roles-permissions.md) 5.13 and [19](19-platform-admin-portal.md)). The founder holds `platform_owner`; the other four platform roles are permission sets held by Rootline's operator agents. An agent's privileged request needs the founder's approval; the founder's own privileged actions need step-up authentication and a written reason and are written to the platform audit log.
 
 | Capability | platform_owner | platform_support | platform_finance | platform_curator | platform_engineer |
 |---|---|---|---|---|---|
-| Publish chart templates and posting-rule packs | F | - | - | - | C (with review) |
+| Publish chart templates and posting-rule packs | F (approves and publishes) | - | - | - | C (drafts; the founder approves) |
 | Fleet books health, integrity cases, connector health (aggregate, no tenant amounts) | V | V | - | - | V |
-| View a tenant's ledger | Consented support session only | Consented, time-boxed, read-only | - | - | Break-glass with dual approval |
+| View a tenant's ledger | Consented support session only | Consented, time-boxed, read-only | - | - | Break-glass, on the founder's approval |
 | Assist a migration | - | With tenant owner's consent, in an "assisted migration" session; every action attributed | - | - | - |
 | Correct a tenant's posted data | Never directly; only by guiding the tenant to post reversals | - | - | - | Never directly |
 | Rootline's own SaaS revenue and Stripe Billing | V | - | F | - | - |
@@ -2588,24 +2589,24 @@ Permission keys follow the `resource.action` taxonomy of [02](02-personas-roles-
 
 All AI runs through the AI Gateway with tenant isolation, prompt and model versioning, and metering as AI credits ([17](17-ai-copilot-automation.md)). Guardrails specific to the ledger: AI never posts into a locked period; AI-drafted entries need human approval unless the tenant has an explicit auto-post policy with thresholds and sampling; every AI-originated line carries `actor_type = ai_agent`, the model version and its stated reason; financial answers cite journal lines or reports, never free text alone.
 
-| ID | Opportunity | How it works | Priority |
-|---|---|---|---|
-| AI1 | **Bank and card categorization** | Merchant, MCC, amount, tenant history, receipt lines and crew job context produce account, dimensions and splits with confidence and a reason (4.6.3) | (rules) |
-| AI2 | **Receipt and bill extraction** | Document understanding for receipts, vendor invoices, sub invoices, dump tickets and nursery pick tickets; PO and job detection. basic** means manual or rules-based intake with no LLM extraction and no AI credits: a dedicated OCR pass reads header fields (merchant or vendor, date, total, tax, card last four, invoice and PO numbers) through deterministic rules and per-vendor templates, and the user confirms or keys the rest. adds LLM document understanding (header and line items, sub invoices, scale and dump tickets), metered at 2 credits per page on [22](22-business-model-pricing-gtm.md)'s rate card; bill-side extraction runs as the A9 AP Agent in [17](17-ai-copilot-automation.md) and matches [13](13-operations-inventory-equipment.md) 4.11.1 (Bill intake) | basic (rules/OCR, no LLM), AI extraction |
-| AI3 | **Chart and integration mapping** | Maps a QuickBooks chart, items and tax codes to Rootline roles during migration and sync setup, with confidence | |
-| AI4 | **Close copilot** | Runs checks, nudges assignees, drafts flux commentary ("Dump fees up 41% vs April: 3 more demolition jobs; per-ton rate unchanged"), assembles the close binder | |
-| AI5 | **Anomaly and fraud detection** | Duplicate bills across channels; vendor bank details changed shortly before a large payment; payments to a vendor sharing an employee's address or bank account; purchases split just under approval limits; round-dollar manual entries at odd hours; sudden fuel spikes per card | |
-| AI6 | **Ask your books** | Natural-language questions answered with cited numbers: "What did the irrigation division make in June after overhead?" "Why is the Stripe deposit $3,339.32?" ([08](08-payments-stripe.md) AI6) | |
-| AI7 | **Entry drafting** | "Reclass $1,200 of May fuel from Admin to Snow" drafts a balanced entry with dimensions for approval | |
-| AI8 | **Job overrun prediction** | Early signals (hours burned vs physical progress, material variances, crew mix) predict which jobs will miss margin, two to three weeks before the cost lands | |
-| AI9 | **Payment timing model** | Predicts when each open invoice will be paid from client history, method and season, feeding the 13-week cash forecast | |
-| AI10 | **1099 and T5018 classification** | Reads W-9s, flags vendors likely reportable, explains exclusions (card payments) | |
-| AI11 | **Tax line and GIFI mapping** | Suggests tax lines for new accounts; flags inconsistent mappings | |
-| AI12 | **Sync error explainer** | Translates QuickBooks and Xero error codes into a fix ("This tax code exists in QuickBooks but is inactive; reactivate it or map to OH-Franklin-2027") | |
-| AI13 | **Owner money brief** | Weekly narrative in English or Spanish: cash, margin by division, overhead pacing, one recommended action | |
-| AI14 | **Budget drafting** | Proposes next season's budget from history, the signed agreement book and the pipeline; explains each assumption | |
-| AI15 | **Warranty reserve rate** | Suggests the reserve percentage per install type from the Company's replacement history and Plant KB regional mortality signals ([12](12-plant-knowledge-base.md)) | |
-| AI16 | **Audit sampling assistant** | Selects samples, assembles evidence, drafts a PBC response for the CPA | |
+| ID | Opportunity | How it works |
+|---|---|---|
+| AI1 | **Bank and card categorization** | Merchant, MCC, amount, tenant history, receipt lines and crew job context produce account, dimensions and splits with confidence and a reason (4.6.3) |
+| AI2 | **Receipt and bill extraction** | Document understanding for receipts, vendor invoices, sub invoices, dump tickets and nursery pick tickets; PO and job detection. Two levels: **basic intake** is manual or rules-based, with no LLM extraction and no AI credits: a dedicated OCR pass reads header fields (merchant or vendor, date, total, tax, card last four, invoice and PO numbers) through deterministic rules and per-vendor templates, and the user confirms or keys the rest; **AI extraction** adds LLM document understanding (header and line items, sub invoices, scale and dump tickets), metered at 2 credits per page on [22](22-business-model-pricing-gtm.md)'s rate card; bill-side extraction runs as the A9 AP Agent in [17](17-ai-copilot-automation.md) and matches [13](13-operations-inventory-equipment.md) 4.11.1 (Bill intake) |
+| AI3 | **Chart and integration mapping** | Maps a QuickBooks chart, items and tax codes to Rootline roles during migration and sync setup, with confidence |
+| AI4 | **Close copilot** | Runs checks, nudges assignees, drafts flux commentary ("Dump fees up 41% vs April: 3 more demolition jobs; per-ton rate unchanged"), assembles the close binder |
+| AI5 | **Anomaly and fraud detection** | Duplicate bills across channels; vendor bank details changed shortly before a large payment; payments to a vendor sharing an employee's address or bank account; purchases split just under approval limits; round-dollar manual entries at odd hours; sudden fuel spikes per card |
+| AI6 | **Ask your books** | Natural-language questions answered with cited numbers: "What did the irrigation division make in June after overhead?" "Why is the Stripe deposit $3,339.32?" ([08](08-payments-stripe.md) AI6) |
+| AI7 | **Entry drafting** | "Reclass $1,200 of May fuel from Admin to Snow" drafts a balanced entry with dimensions for approval |
+| AI8 | **Job overrun prediction** | Early signals (hours burned vs physical progress, material variances, crew mix) predict which jobs will miss margin, two to three weeks before the cost lands |
+| AI9 | **Payment timing model** | Predicts when each open invoice will be paid from client history, method and season, feeding the 13-week cash forecast |
+| AI10 | **1099 and T5018 classification** | Reads W-9s, flags vendors likely reportable, explains exclusions (card payments) |
+| AI11 | **Tax line and GIFI mapping** | Suggests tax lines for new accounts; flags inconsistent mappings |
+| AI12 | **Sync error explainer** | Translates QuickBooks and Xero error codes into a fix ("This tax code exists in QuickBooks but is inactive; reactivate it or map to OH-Franklin-2027") |
+| AI13 | **Owner money brief** | Weekly narrative in English or Spanish: cash, margin by division, overhead pacing, one recommended action |
+| AI14 | **Budget drafting** | Proposes next season's budget from history, the signed agreement book and the pipeline; explains each assumption |
+| AI15 | **Warranty reserve rate** | Suggests the reserve percentage per install type from the Company's replacement history and Plant KB regional mortality signals ([12](12-plant-knowledge-base.md)) |
+| AI16 | **Audit sampling assistant** | Selects samples, assembles evidence, drafts a PBC response for the CPA |
 
 ---
 
@@ -2658,9 +2659,9 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 | Area | Requirement | Rootline approach |
 |---|---|---|
 | Record retention | IRS and CRA retention periods (CRA generally six years; IRS varies by situation) | 7 years after fiscal year end for ledger, invoices, bills, receipts and tax records ([20](20-architecture-security.md)) |
-| Electronic records | IRS and CRA expectations for electronic books (accessibility, integrity, retrievability; verify Rev. Proc. 97-22 and CRA guidance, including where records may be kept for Canadian businesses) | Immutable journal, hash chain, evidence locker, export on demand; Canadian data residency evaluated (open question 12) |
+| Electronic records | IRS and CRA expectations for electronic books (accessibility, integrity, retrievability; verify Rev. Proc. 97-22 and CRA guidance, including where records may be kept for Canadian businesses) | Immutable journal, hash chain, evidence locker, export on demand; Canadian Companies' books kept in the Canadian regional stack (OD-62) |
 | Financial reporting frameworks | US GAAP (ASC 606 revenue, ASC 842 leases) for private companies; ASPE in Canada | Policy engine with CPA-selectable treatments; Rootline does not opine |
-| Information returns | 1099-NEC/MISC rules, e-file mandate, recipient consent; T5018/T4A | Dated rule parameters, partner or IRIS filing, consent capture (4.5.3) |
+| Information returns | 1099-NEC/MISC rules, e-file mandate, recipient consent; T5018/T4A | Dated rule parameters, partner filing (OD-30), consent capture (4.5.3) |
 | Sales and use tax; GST/HST/QST | Jurisdiction rules ([07](07-invoicing-billing-contracts.md)) | Agency sub-accounts, liability reconciliation, use tax accrual, ITCs |
 | Assurance | SOC 2 Type II with Processing Integrity ([20](20-architecture-security.md)) | Plus a **SOC 1 Type II** report, because auditors of Companies whose books live in Rootline will need comfort over the ledger's controls (internal control over financial reporting relevance) |
 | Privacy and security | TINs, bank details and payroll data are sensitive | Field encryption, masking, step-up for views, dual control for banking changes ([02](02-personas-roles-permissions.md)) |
@@ -2670,16 +2671,16 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| CPAs refuse to trust a new GL | High | High | Free Hub, accountant-led onboarding, open exports, migration proofs, SOC 1, a landscape-CPA advisory board in the design-partner program, Mode B mirror as a bridge |
+| CPAs refuse to trust a new GL | High | High | Free Hub, accountant-led onboarding, open exports, migration proofs, SOC 1, the accountant partner track ([22](22-business-model-pricing-gtm.md)), Mode B mirror as a bridge (the default for Companies with a CPA, OD-24) |
 | A ledger bug damages trust | Medium | Severe | DB invariants L1-L18, property-based tests, nightly proofs, shadow "dual-run" of each new posting-engine version against a reference implementation before it serves tenants, integrity cases paged as incidents |
-| Scope creep into a full construction ERP | High | Medium | Phasing in 4.0; certified payroll, AIA billing depth and job-cost accounting for union labor are explicitly out of MVP |
+| Scope creep into a full construction ERP | High | Medium | The scope boundary and non-goals (1.2): certified payroll belongs to [15](15-team-hr-payroll.md) and AIA-style pay applications to [07](07-invoicing-billing-contracts.md); the ledger posts their results and does not grow its own construction-ERP modules |
 | Intuit or Xero API terms and pricing change | Medium | Medium | Webhooks and CDC over polling, batching, mirror-summary option, native-first positioning; cost to serve tracked in [22](22-business-model-pricing-gtm.md) |
 | QuickBooks Desktop declines faster than expected | Medium | Low | Desktop support built thin (summary mirror); migration path to native |
-| Tax rule changes (1099 thresholds, bonus depreciation) | High | Medium | Dated platform parameters managed in the admin console; annual rules review each October |
+| Tax rule changes (1099 thresholds, bonus depreciation) | High | Medium | Dated platform parameters in the admin console, maintained as rule-pack data (the plant curator agent drafts each change and the founder approves it, OD-60); an annual rules review each October |
 | AI miscategorization goes unnoticed | Medium | Medium | Suggest-only default, auto-post only above high confidence with weekly sampling, precision metric per tenant |
 | Liability for filing errors | Low | High | Partner filing with approvals and CPA sign-off, clear terms, professional liability insurance |
 | Performance at scale (hundreds of millions of lines) | Medium | Medium | Partitioning, balance buckets, analytics replica for dimensional reports ([18](18-reporting-analytics.md)) |
-| Support load from being the book of record | High | Medium | Explain-this-number, AI explainers, certified accountant directory, accounting-specialist support tier |
+| Support load from being the book of record | High | Medium | Explain-this-number, AI explainers, the certified accountant directory, and the support agent working from accounting playbooks and escalating to the founder |
 
 ---
 
@@ -2690,7 +2691,7 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 | Adoption | Share of tenants in Mode A / B / C | 30% / 15% / 55% (estimate); native share rising each quarter |
 | Adoption | Tenants with bank feeds connected | 85% of Mode A and B tenants |
 | Automation | Journal lines system-posted | 97% or more |
-| Automation | Bank lines auto-matched or auto-categorized without edits | 80% at MVP (rules plus matching), 90% at V1 (AI) |
+| Automation | Bank lines auto-matched or auto-categorized without edits | 90% with matching, rules and AI together; 80% from matching and rules alone |
 | Automation | Stripe payouts auto-matched to bank lines | 98% or more ([08](08-payments-stripe.md) G3) |
 | Automation | Card spend with matched receipts | 90% within 7 days |
 | Close | Median business days to close | 5 or fewer |
@@ -2743,26 +2744,28 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 
 ---
 
-## 14. Open questions
+## 14. Decisions on former open questions
 
-1. **Bank feed scope tier.** This doc and [08](08-payments-stripe.md) and [13](13-operations-inventory-equipment.md) treat Plaid bank feeds as; the connector catalog in [20](20-architecture-security.md) lists Plaid as. Native books (Mode A) are not credible without feeds and reconciliation, so the recommendation is MVP; if feeds move to, Mode A at MVP should offer only file import and be limited to design partners.
-2. **L1 wording.** [20](20-architecture-security.md) L1 says entries balance "per currency". This doc proposes functional-currency balance for all entries plus transaction-currency balance for single-currency entries, with explicit FX lines (4.1.6). Agree and update L1, or adopt a trading-account method that balances every currency.
-3. **Native ledger in every tier? (largely resolved by [22](22-business-model-pricing-gtm.md)).** [22](22-business-model-pricing-gtm.md) puts Ledger Essentials in every tier, Ledger Plus from Grow up and Ledger Advanced at Pro (mapping in 4.0). Remaining question: [22](22-business-model-pricing-gtm.md) lists "classes and departments" under Advanced, but division and branch are required dimensions for every tenant here. Proposed wording for [22](22-business-model-pricing-gtm.md): "department dimension, custom dimensions and dimension policies" in Advanced; division and branch reporting in all tiers. Second issue: [22](22-business-model-pricing-gtm.md) places bank reconciliation in Ledger Plus, but a Company cannot credibly run native books (Mode A) without reconciling its bank. Recommendation: Essentials tenants either get single-account reconciliation (BK-04 for their one feed) or default to Mode C with QuickBooks or Xero as the book of record until they upgrade.
-4. **Canadian aggregator.** Plaid's Canadian institution coverage for business accounts must be validated with design partners; a Canadian-specialist aggregator may be needed at launch.
-5. **Shared vs per-entity chart.** [02](02-personas-roles-permissions.md) says each legal entity has its own chart; this doc defaults to a shared chart with entity restrictions for easier consolidation. Confirm with the CPA advisory board.
-6. **Cash-basis demand.** How many target Companies report on the cash basis to their CPA? If most do, the derived cash-basis view should move from to.
-7. **WIP threshold default.** $10,000 or 30 days is a guess; validate with design-build pilots and their CPAs.
-8. **QuickBooks Desktop build vs buy.** Build on the Web Connector ourselves or use a third-party Desktop API service? Depends on the share of Desktop pilots and the vendor's reliability.
-9. **1099 e-file build vs partner.** IRIS A2A directly (more control, compliance burden) or a certified filing partner (faster, per-form cost)? Recommendation: partner at V1, revisit at scale.
-10. **Sales tax filing partner.** [07](07-invoicing-billing-contracts.md) 4.5.5 schedules partner filing at V1, with worksheets only at MVP. Which partner first (Avalara Returns for multi-state commercial tenants, a Stripe Tax filing partner for single-state residential tenants, or both), and does Canada (GST/HST, QST, PST returns) need a partner at all or only the worksheet?
-11. **Embedded bill pay partner.** Which payables partner, and does a partner model affect the "Rootline never holds funds" promise in practice (it must not)?
-12. **Canadian data residency.** Do Canadian tenants (or their accountants) require books stored in Canada? Affects the cell architecture in [20](20-architecture-security.md).
-13. **SOC 1 timing.** Is a SOC 1 Type II needed before larger design-build firms with audited statements will move their books, and should it come before V2?
-14. **Mode B detail vs summary default.** Do CPAs prefer the detail mirror (more QuickBooks objects, more sync errors) or the summary mirror (cleaner, less drill-down)? Pilot both.
-15. **Labor variance allocation default.** Leave overtime premium in 5190 (simpler, cleaner P&L) or allocate to jobs by default (truer job cost)? Pilot estimators and owners disagree in early interviews (to be run).
-16. **Rule version in posting keys.** [20](20-architecture-security.md) L4 gives `stripe_bt:{balance_transaction_id}:{posting_rule_version}` as an example key. Including the rule version lets a replay after a retroactively effective pack update mint a second key for the same balance transaction. Proposal: drop the version from all posting keys (the entry already records its rule version) and update L4's example.
-17. **Alias retirement.** [07](07-invoicing-billing-contracts.md) and [08](08-payments-stripe.md) now use the canonical codes and role keys (4.2.6). Keep the registered role aliases (`operating_bank`, `disputed_payments`, `card_surcharge_income`, `platform_application_fees`) permanently, or retire them after MVP once no posting-rule pack, fixture or partner integration references them? Recommendation: keep them through V1 under the same two-major-version alias policy [02](02-personas-roles-permissions.md) applies to permission keys, then retire.
-18. **Ohio-style single-agency states.** Should the default agency sub-account structure be per agency (one Ohio account with jurisdiction detail, as in E19) or per jurisdiction (separate state, county and transit accounts)? Per agency matches the return and the payment; per jurisdiction is what some CPAs expect to see. Pilot with Summit-style multi-county commercial tenants.
+Each former open question with its decision. OD and R numbers refer to the decision record in [24](24-product-scope-decisions-catalog.md) section 1.
+
+1. **Bank feeds.** Plaid bank and card feeds, matching and reconciliation are in v1 for every tenant (R24-4), so native books (Mode A) always have feeds; file import stays as the fallback for accounts without aggregator coverage. [20](20-architecture-security.md)'s connector catalog follows.
+2. **L1 wording.** Every entry balances in functional currency, single-currency entries also balance in their transaction currency, and multi-currency entries carry explicit FX lines (4.1.6). [20](20-architecture-security.md)'s L1 follows this wording.
+3. **Ledger packaging and dimensions.** Ledger Essentials is in every plan, Ledger Plus is an add-on on Starter and included from Grow, and Ledger Advanced is an add-on on Grow and included in Pro (R25-C2). Division and branch reporting is in every plan; "classes and departments" in [22](22-business-model-pricing-gtm.md)'s Advanced means the department dimension, custom dimensions and dimension policies. Because OD-24 starts most new Companies in Mode A, Essentials reconciles its one connected account (BK-04 for that feed); Ledger Plus adds unlimited feeds and reconciliation of every account.
+4. **Canadian aggregator.** Plaid first; a Canadian-specialist aggregator covers Canadian business accounts that Plaid does not reach (verify coverage). Canada is in v1 (R24-19).
+5. **Shared vs per-entity chart.** One shared chart with entity restrictions (OD-28); [02](02-personas-roles-permissions.md)'s per-entity wording follows this doc.
+6. **Cash-basis view.** The derived cash-basis view is in v1 (OD-29), alongside the completed-contract view (4.8.5).
+7. **WIP threshold default.** $10,000 contract value or 30 days duration, adjustable per Company by its CPA (4.8.1).
+8. **QuickBooks Desktop.** Rootline builds on Intuit's Web Connector itself (OD-30).
+9. **1099 e-file.** Through a certified filing partner (OD-30); Rootline does not file with IRIS directly.
+10. **Sales tax filing partner.** Both partners that [07](07-invoicing-billing-contracts.md) 4.5.5 names: Avalara Returns for Companies with multi-state exposure or already on Avalara, and a Stripe Tax filing partner for the rest where Stripe supports it. Canadian GST/HST, QST and PST returns use the worksheet in 4.16, with no partner.
+11. **Embedded bill pay partner.** A licensed payables partner that debits the Company's own bank and pays vendors by ACH, check or virtual card; funds never pass through a Rootline account. The build agent picks the partner and records the choice in the decision log.
+12. **Canadian data residency.** All Canadian Companies run on the Canadian regional stack in v1 (OD-62), so their books are stored in Canada ([20](20-architecture-security.md)).
+13. **SOC 1.** Rootline obtains a SOC 1 Type II report as well as SOC 2 Type II, because auditors of Companies whose books live in Rootline rely on the ledger's controls; those controls (invariants, hash chain, period locks, approvals, audit trail) are v1 requirements.
+14. **Mode B mirror style.** Summary journal entries by default; the detail mirror is a setting per connection.
+15. **Labor variance allocation.** Overtime premium and other wage variance stay in 5190 by default; allocating them to jobs pro rata to hours is a Company setting (4.5.7, 4.7.2).
+16. **Rule version in posting keys.** Posting keys never include the rule version (each entry records its rule version separately); [20](20-architecture-security.md)'s L4 example follows.
+17. **Alias retirement.** Keep the registered role aliases (`operating_bank`, `disputed_payments`, `card_surcharge_income`, `platform_application_fees`) under the two-major-version alias policy [02](02-personas-roles-permissions.md) applies to permission keys, and retire each one once no posting-rule pack, fixture or partner integration references it.
+18. **Single-agency states.** One payable sub-account per agency, with jurisdiction detail on each tax line (as in E19), because that matches the return and the payment; the liability report shows the jurisdiction split CPAs expect.
 
 ---
 
@@ -2810,7 +2813,7 @@ Sources are cited where used. Verification note: items marked **(verify)** in th
 - [13 - Operations](13-operations-inventory-equipment.md) (stock movements, 3-way match, equipment cost per hour, subcontractors)
 - [20 - Architecture](20-architecture-security.md) (ledger invariants L1-L12, connector framework, events)
 - [22 - Business model and pricing](22-business-model-pricing-gtm.md) (Ledger Essentials, Plus and Advanced entitlements)
-- [15 - Team, HR and payroll](15-team-hr-payroll.md) (burden, workers' compensation class allocation BURD-04, embedded payroll roadmap)
+- [15 - Team, HR and payroll](15-team-hr-payroll.md) (burden, workers' compensation class allocation BURD-04, embedded payroll)
 
 **Primary sources to check first**
 

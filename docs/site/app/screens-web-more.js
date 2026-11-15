@@ -872,7 +872,7 @@ RL.screen('web.automations', (c, a) => {
 const AGENTS_V1 = [['A8', 'Bookkeeping', 'L2', 'Bank feed sync', 2], ['A9', 'AP (bills)', 'L2', 'Per bill page', 2], ['A13', 'Renewal', 'L2', '60 days before end', 6], ['A17', 'Timesheet Anomaly', 'L2', 'Daily before export', 0.5], ['A21', 'Procurement', 'L2', 'Job created', 4]];
 const TIER = { A1: 'T0', A2: 'T1', A3: 'T3', A4: 'T1', A5: 'T3', A6: 'T1', A7: 'T2', A8: 'T2', A9: 'T2', A13: 'T3', A17: 'T1', A21: 'T2', A18: 'T3' };
 RL.screen('web.agents', (c) => {
-  const D = c.D, can = writes(c, 'ai_agent.configure'), cr = credits(c), v1 = c.feat('agents_v1');
+  const D = c.D, can = writes(c, 'ai_agent.configure'), cr = credits(c), v1 = c.feat('agents_ops');
   const mvp = D.agents.filter(x => !/V1/.test(x.name)).concat([{ id: 'A18', name: 'Review and Reputation', level: 'L2', cadence: 'Job completed', credits: 1 }]);
   const v1list = D.agents.filter(x => /V1/.test(x.name)).map(x => ({ id: x.id, name: x.name.replace(' (V1)', ''), level: x.level, cadence: x.cadence, credits: x.credits })).concat(AGENTS_V1.map(([id, name, level, cadence, credits]) => ({ id, name, level, cadence, credits })));
   const v1ok = v1.s === 'Y' || v1.s === 'L', v1cap = v1.s === 'L' ? 3 : null;
@@ -1122,7 +1122,7 @@ function planDiff(c, to) {
 }
 const PCS = ['starter', 'grow', 'pro', 'enterprise'];
 const CMP = [['automations', 'Active automation rules', ['5', '50', 'Unlimited', '']], ['custom_roles', 'Custom roles', ['', '2', '', '']], ['equipment', 'Equipment assets', ['10', '25', '', '']], ['inventory', 'Inventory', ['Off mode', '1 yard', 'Multi-site', '']],
-  ['agents_v1', 'V1 AI agents', ['', '3', '', '']], ['report_builder', 'Report builder', []], ['benchmarks', 'Benchmarks', []], ['forecasts', '13-week forecasts', []], ['website', 'Website builder', ['', '', '1 site', '']], ['ai_receptionist', 'AI receptionist', ['', '', '200 min', '']], ['marketing_advanced', 'Journey builder', []], ['sso', 'SSO (SAML, OIDC)', []]];
+  ['agents_ops', 'V1 AI agents', ['', '3', '', '']], ['report_builder', 'Report builder', []], ['benchmarks', 'Benchmarks', []], ['forecasts', '13-week forecasts', []], ['website', 'Website builder', ['', '', '1 site', '']], ['ai_receptionist', 'AI receptionist', ['', '', '200 min', '']], ['marketing_advanced', 'Journey builder', []], ['sso', 'SSO (SAML, OIDC)', []]];
 RL.screen('web.settings.subscription', (c) => {
   const t = c.t, pl = c.plan, S = seats(c), cr = credits(c), own = isOwner(c);
   const iv = interval(c), base = basePrice(c);

@@ -63,7 +63,6 @@ def check(d):
         if r['surface'] == 'console' and r['nav'] not in nav['console']['items']: errs.append(f"{w}: nav {r['nav']} not in console nav table")
         if r['surface'] == 'portal' and r['nav'] not in nav['portal']['items'] and r['nav'] != 'Commercial workspace':
             errs.append(f"{w}: nav {r['nav']} not in portal nav table")
-        if r['scope'] not in ('MVP', 'V1', 'V2', 'V3'): errs.append(f"{w}: bad scope {r['scope']}")
     for p in d['personas']['personas']:
         if p['role'] not in roles: errs.append(f"persona {p['id']}: unknown role {p['role']}")
         if p.get('tenant') and p['tenant'] not in tenants: errs.append(f"persona {p['id']}: unknown tenant {p['tenant']}")

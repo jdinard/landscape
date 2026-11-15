@@ -1,23 +1,23 @@
 # 22 - Business Model, Pricing and Go-to-Market
 
-> Rootline earns money mainly from a seasonally aware SaaS subscription. On top of that sit metered usage (AI credits, AI receptionist minutes, SMS) and add-ons that match landscaping work (Design Studio seats, a snow module billed only in snow months, payroll, advanced accounting, websites). Basic snow work (Snow Lite: storm visit logs, per-push invoices and proof-of-service PDFs) is included in every tier from launch. Payments are bring-your-own-Stripe, so client money never passes through Rootline. We turn that into a selling point: Rootline adds no markup on processing by default, and a cheaper subscription paid for with a small, disclosed application fee is offered only as an opt-in. Three newer revenue lines grow from the same assets: a free homeowner AI design app that sends qualified, design-ready leads to subscribing Companies; licensing of the curated Plant Knowledge Base and anonymized industry benchmarks; and a partner network of distributors, nurseries, associations, franchise systems and CPAs. The go-to-market starts with one beachhead: 5-40 employee residential design-build-maintain firms in one launch region, the Great Lakes (six Wave 1 Regions from Columbus to Milwaukee), chosen with the weighted criteria in section 6.2 because curated plant knowledge matters most there and the winter planning season is long. Sales run as a free trial plus inside sales, timed to the November-to-March planning season, with a migration concierge that makes switching cheap. This doc specifies the packaging, the entitlement and metering system engineers must build, the per-account unit economics with every assumption stated, positioning, the pricing page and the main risks.
+> Rootline earns money mainly from a seasonally aware SaaS subscription. On top of that sit metered usage (AI credits, AI receptionist minutes, SMS) and add-ons that match landscaping work (Design Studio seats, a snow module billed only in snow months, payroll, advanced accounting, websites). Basic snow work (Snow Lite: storm visit logs, per-push invoices and proof-of-service PDFs) is included in every tier from launch. Payments are bring-your-own-Stripe, so client money never passes through Rootline. We turn that into a selling point: Rootline adds no markup on processing by default, and a cheaper subscription paid for with a small, disclosed application fee is offered only as an opt-in. Three newer revenue lines grow from the same assets: a free homeowner AI design app that sends qualified, design-ready leads to subscribing Companies; licensing of the curated Plant Knowledge Base and anonymized industry benchmarks; and a partner network of distributors, nurseries, associations, franchise systems and CPAs. The product, every plan and every offer work across the US and Canada from launch. Marketing and Plant KB seeding start with one beachhead: 5-40 employee residential design-build-maintain firms in one launch region, the Great Lakes (six Regions from Columbus to Milwaukee, OD-01), chosen with the weighted criteria in section 6.2 because curated plant knowledge matters most there and the winter planning season is long. Rootline is two people, the founder and Claude, so sales are self-serve: a free trial timed to the November-to-March planning season, a migration concierge that makes switching cheap, and founder demos for Enterprise ("talk to the founder"). Claude's marketing agent does the rest under [26](26-agent-led-marketing-playbook.md). This doc specifies the packaging, the entitlement and metering system engineers must build, the per-account unit economics with every assumption stated, positioning, the pricing page and the main risks.
 
 **At a glance**
 
 - **What it is:** Rootline's commercial model and go-to-market: packaging, prices, seats, usage meters, AI credits, add-ons, new revenue lines, unit economics, GTM plan, and the entitlement and metering system engineers must build. This doc is the pricing authority for every other doc.
 - **Decision - three self-serve tiers plus Enterprise:** Starter $69, Grow $249 and Pro $529 per month on annual billing ($79 / $289 / $599 billed monthly; CAD set as separate price points), Enterprise from $1,500/month on an annual contract. Catalog codes are `starter`, `grow`, `pro` and `enterprise` (4.2.2). Grow, the ICP plan, includes every differentiator.
-- **Decision - seats that follow the season:** office seats are named; field seats are billed only when **active** in a period; Winter Mode (25% of list, up to 4 months in any 12), a snow module billed only November-March, and Snow Lite (storm visit logs, per-push and per-application invoices, per-site proof-of-service PDFs) included in every tier from MVP (4.5).
+- **Decision - seats that follow the season:** office seats are named; field seats are billed only when **active** in a period; Winter Mode (25% of list, up to 4 months in any 12, with Studio editing kept for paid designer seats), a snow module billed only November-March, and Snow Lite (storm visit logs, per-push and per-application invoices, per-site proof-of-service PDFs) included in every tier (4.5).
 - **Decision - published AI credits:** 300 / 2,000 / 6,000 credits per month included on Starter / Grow / Pro; packs of 1,000 for $25, 5,000 for $100 and 20,000 for $340. Every action shows its credit cost before it runs, and published action prices hold for at least 12 months (4.4.1).
 - **Decision - zero markup on client payments:** each Company connects its own Stripe account (Connect direct charges) and Rootline never holds client funds. The only payments revenue is an opt-in pay-as-you-grow plan (Starter at $39 plus a 0.5% application fee capped at $10). Rootline bills its own subscriptions on a separate Stripe Billing account.
-- **Decision - GTM:** a beachhead of 5-40 person residential design-build-maintain firms in one launch region, the Great Lakes: six Wave 1 Regions at MVP, Ontario and four more Regions in Wave 2 at V1, and a second US cluster in Wave 3 at V2, chosen later on traction (6.2); a free trial (14 days, 30 in winter) plus inside sales timed to the November-March planning season, a migration concierge and a Spring-Ready Guarantee.
-- **MVP:** the three self-serve tiers, active field-seat billing, AI credit ledger and packs, SMS meter, trials, dunning, the Founding Customer program and Snow Lite in every tier. **V1:** Enterprise, Winter Mode, pay-as-you-grow, Rootline Home and Rootline Match (design-ready homeowner leads), the partner program and in-app Pulse benchmarks. **V2:** the Plant API, external data products and franchise rollups.
+- **Decision - GTM:** a beachhead of 5-40 person residential design-build-maintain firms. Marketing and Plant KB seeding start in the six Great Lakes Regions (OD-01, 6.2); signups from anywhere in the US and Canada are welcome from launch (R24-19, R26-10). Sales are self-serve: a free trial (14 days, 30 in winter) timed to the November-March planning season, a migration concierge and a Spring-Ready Guarantee, with founder demos for Enterprise and Claude's marketing agent running the channels ([26](26-agent-led-marketing-playbook.md)).
+- **In v1:** every plan, add-on and offer in this doc: Starter, Grow, Pro, Enterprise, Design Solo and Archive; active field-seat billing, the AI credit ledger and packs, the SMS meter, trials, dunning, Winter Mode, pay-as-you-grow (OD-09), the Founding Customer program and Snow Lite in every tier; Rootline Home and Rootline Match (design-ready homeowner leads), the partner program, in-app Pulse benchmarks (on once a cell has 10 contributing Companies, 24 section 1.4), the Plant API, external data products and franchise rollups.
 - **Differentiators:** cheaper than the 5-10 tool stack it replaces, published prices and credit costs, a Price Lock Promise, and a trust rule that dunning, Winter Mode and limit overruns never stop a Company from getting paid.
-- **Unit economics (estimates):** blended gross margin of 72% or more, rising to 77% or more at scale, with CAC payback of 12 months or less in every self-serve and inside-sales segment (section 7). The doc models per-account economics only; it makes no multi-year revenue projections.
+- **Unit economics (estimates):** blended gross margin of 72% or more, rising to 77% or more at scale, with CAC payback of 12 months or less in every segment (section 7). The doc models per-account economics only; it makes no multi-year revenue projections.
 - **Cross-links:** billing, entitlement and dunning tooling in [19](19-platform-admin-portal.md); access per lifecycle state in [20](20-architecture-security.md) section 4.4.7; payments mechanics in [08](08-payments-stripe.md); AI credit metering in [17](17-ai-copilot-automation.md); module-level feature detail behind the tier matrix in [4.2.1](#421-feature-by-tier-matrix-summary-module-docs-hold-the-detail).
 
 **Related docs:** [Market landscape](01-market-landscape.md) - [Personas and RBAC](02-personas-roles-permissions.md) - [Payments (BYO Stripe)](08-payments-stripe.md) - [Ledger and integrations](09-accounting-ledger-integrations.md) - [Design Studio](10-design-studio.md) - [AI design and mockups](11-ai-design-mockups.md) - [Plant Knowledge Base](12-plant-knowledge-base.md) - [Service line modules](14-service-line-modules.md) - [Team, HR, payroll](15-team-hr-payroll.md) - [Marketing and growth](16-marketing-growth-communications.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Platform admin portal](19-platform-admin-portal.md) - [Architecture and security](20-architecture-security.md) - [UX and sitemaps](21-ux-design-system-sitemaps.md) - [Innovation moonshots](23-innovation-moonshots.md) - [Product scope and feature catalog](24-product-scope-decisions-catalog.md)
 
-**Reading note on numbers.** Competitor prices below are "as of November 2026, verify". They come from third-party pricing trackers and review sites, which often disagree with each other, and are cross-checked against the raw research in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and the sibling module docs. Claude model prices in section 7.4 match Anthropic's published model table as of October 2026. Every Rootline price, cost and conversion figure in this doc is a **proposed value or a labeled estimate**, not a measured fact. All of them are meant to be tested and replaced with real data from design partners and paying Companies.
+**Reading note on numbers.** Competitor prices below are "as of November 2026, verify". They come from third-party pricing trackers and review sites, which often disagree with each other, and are cross-checked against the raw research in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md) and the sibling module docs. Claude model prices in section 7.4 match Anthropic's published model table as of October 2026. Every Rootline price, cost and conversion figure in this doc is a **proposed value or a labeled estimate**, not a measured fact. All of them are meant to be tested and replaced with real data from paying Companies, which the finance and marketing agents measure (6.10).
 
 **What this doc decides for other docs.** This doc is the pricing authority. Where a sibling doc proposed a commercial number or deferred a decision here, this doc settles it: the AI credit rate card and allotments ([11](11-ai-design-mockups.md), [17](17-ai-copilot-automation.md)), how SMS, 10DLC and AI receptionist minutes are charged ([16](16-marketing-growth-communications.md)), the pay-as-you-grow application fee ([08](08-payments-stripe.md) option B), the dunning timings the tenant lifecycle uses ([19](19-platform-admin-portal.md)), and the plan codes the catalog uses (section 4.2.2).
 
@@ -55,10 +55,10 @@
 | G1 | A price that is cheaper than the stack it replaces. A 15-person design-build-maintain firm should pay less for Rootline than for its current field-service tool + QuickBooks Online + design tool + website + review tool. | Pricing calculator shows a net saving for at least 70% of ICP prospects who enter their current stack |
 | G2 | Packaging that follows how landscapers buy and use software: seasonal crews, a winter planning season, add-ons by service line | Field-seat billing on **active** users. Snow module billed only Nov-Mar, with Snow Lite included in every tier. Seasonal "Winter Mode" |
 | G3 | Transparency as a brand asset: published prices, published AI credit costs, no processing markup by default, a written price-increase policy | Public pricing page for every tier except Enterprise. Zero hidden fees. A "Price Lock Promise" written into the terms of service |
-| G4 | Healthy SaaS unit economics even with heavy AI and GPU use | Blended gross margin of 72% or more, rising to 77% or more at scale. CAC payback of 12 months or less in every self-serve and inside-sales segment |
-| G5 | A low-cost, defensible demand engine that competitors cannot copy quickly | Homeowner app plus Plant KB SEO produce 25% or more of new Grow/Pro logos once both are live |
-| G6 | Win a beachhead before going broad | 40% or more of the logos won before Wave 2 opens come from the six Wave 1 Regions of the Great Lakes launch region (6.2). Logo share among ICP firms in those Regions measurable through association membership lists |
-| G7 | A billing and entitlement system that lets the platform operator change packaging without engineering releases | All plan, price, entitlement, meter and discount changes made in the [Platform Admin console](19-platform-admin-portal.md) with versioning and audit |
+| G4 | Healthy SaaS unit economics even with heavy AI and GPU use | Blended gross margin of 72% or more, rising to 77% or more at scale. CAC payback of 12 months or less in every segment |
+| G5 | A low-cost, defensible demand engine that competitors cannot copy quickly | Homeowner app plus Plant KB SEO produce 25% or more of new Grow/Pro logos at the steady-state channel mix (6.5) |
+| G6 | Win the launch region | 40% or more of new logos come from the six Great Lakes Regions where marketing starts (6.2), while signups from the rest of the US and Canada are welcome. Logo share among ICP firms in those Regions measurable through association membership lists |
+| G7 | A billing and entitlement system that lets the founder change packaging without engineering releases | All plan, price, entitlement, meter and discount changes made in the [Platform Admin console](19-platform-admin-portal.md) with versioning and audit |
 
 ### 1.2 Non-goals
 
@@ -66,7 +66,7 @@
 - **Lowest price in the market.** Free and near-free tools (Yardbook's free core plan, for example) will always undercut us. We compete on total cost of ownership and on outcomes (higher close rates on designed proposals, fewer tools, cleaner books). Solo mow-and-blow operators are a secondary segment we serve self-serve, not one we chase.
 - **Selling shared, low-quality leads.** The homeowner lead marketplace must never become the "same lead sold to five contractors" model that has hurt trust in home-services lead generation. Section 5.3 sets hard guardrails.
 - **Selling tenant-identifiable data.** Data products use opt-in, aggregated, k-anonymized data only (section 5.2), plus Plant KB content that the platform owns or has licensed.
-- **Field sales at MVP.** Enterprise field sales begins at V1 at the earliest. The MVP motion is a free trial plus inside sales.
+- **A sales or customer success team.** Rootline is the founder and Claude. There are no inside or field sales reps and no CSMs. Sales are self-serve (trial, checkout, import tools and the migration concierge run by the support agent); Enterprise and franchise prospects get a demo and quote from the founder ("talk to the founder"); Claude's marketing agent runs everything else under [26](26-agent-led-marketing-playbook.md).
 - **Custom per-tenant code.** Enterprise deals may change price, limits and SLAs. They do not get forked features.
 
 ---
@@ -127,7 +127,7 @@ The honest headline is "your account, your rate, your data, and nothing added by
 
 ### 2.3 What users complain about (pricing and buying experience)
 
-Sources: review-site summaries and pricing trackers cited above, plus the synthesized pain points in [R2](research/R2-landscape-specific-platforms.md) section 15 and [R1](research/R1-field-service-platforms.md). Forum-level (Reddit, LawnSite, Facebook group) complaints are not independently sourced here (verify). R2 records recurring themes (three to five tools glued together with spreadsheets, software built for HVAC that does not understand seasons, dread of switching in spring) as unverified; collect verbatim quotes during the 6.10 interviews before using them in marketing.
+Sources: review-site summaries and pricing trackers cited above, plus the synthesized pain points in [R2](research/R2-landscape-specific-platforms.md) section 15 and [R1](research/R1-field-service-platforms.md). Forum-level (Reddit, LawnSite, Facebook group) complaints are not independently sourced here (verify). R2 records recurring themes (three to five tools glued together with spreadsheets, software built for HVAC that does not understand seasons, dread of switching in spring) as unverified; the marketing agent collects verbatim quotes from win/loss notes and support conversations (6.10), with the customer's written permission, before any is used in marketing.
 
 | Complaint theme | Evidence | Rootline response |
 |---|---|---|
@@ -151,7 +151,7 @@ Sources: review-site summaries and pricing trackers cited above, plus the synthe
 
 ### 2.5 The stack we price against (worked example)
 
-[R2](research/R2-landscape-specific-platforms.md) estimates that a 12-person company running estimating, measurement, design, QuickBooks Online, a review tool and a website "will plausibly spend $1,000 to $1,500 per month on software" before payments and implementation fees. This section makes that concrete for the beachhead ICP so the pricing page, the calculator (9.3) and sales all use the same numbers. Every competitor figure is a third-party list price "as of November 2026, verify". The calculator lets the prospect overwrite each one.
+[R2](research/R2-landscape-specific-platforms.md) estimates that a 12-person company running estimating, measurement, design, QuickBooks Online, a review tool and a website "will plausibly spend $1,000 to $1,500 per month on software" before payments and implementation fees. This section makes that concrete for the beachhead ICP so the pricing page, the calculator (9.3), founder demos and the marketing agent all use the same numbers. Every competitor figure is a third-party list price "as of November 2026, verify". The calculator lets the prospect overwrite each one.
 
 **Example Company:** "Ridgeview Outdoor", 15 people at peak. Owner (sells and designs), office manager, estimator/ops manager, one designer, 11 field staff in season (Apr-Nov) and 4 in winter. About $1.6M revenue, 55% design-build installs, 45% maintenance.
 
@@ -169,7 +169,7 @@ Sources: review-site summaries and pricing trackers cited above, plus the synthe
 
 Payroll, insurance and payment processing are left out on both sides because they are similar or are add-ons on Rootline too. The example shows about **$280-$600/month in software savings** (estimate) before any value from time saved, bigger design-led tickets or books that close themselves. The calculator presents this as a range, never as a promise.
 
-**Value-based check on the Grow price.** Grow annual costs $2,988/year. One additional design-build job won per year because the proposal carried a mockup of the client's own yard (for example a $14,000 front-yard renovation at a 35% gross margin, about $4,900 of gross profit, estimate) more than pays for the subscription by itself. Recovering about 2 hours a week of office re-typing at a $28/hour loaded wage (about $2,900/year) roughly does too. Together the two levers return about 2.6x the Grow price (($4,900 + $2,900) / $2,988), which is the margin of safety we want in a skeptical, price-sensitive trade. If design-partner data shows neither lever materializing within 6 months, the Grow price is wrong, not the customer.
+**Value-based check on the Grow price.** Grow annual costs $2,988/year. One additional design-build job won per year because the proposal carried a mockup of the client's own yard (for example a $14,000 front-yard renovation at a 35% gross margin, about $4,900 of gross profit, estimate) more than pays for the subscription by itself. Recovering about 2 hours a week of office re-typing at a $28/hour loaded wage (about $2,900/year) roughly does too. Together the two levers return about 2.6x the Grow price (($4,900 + $2,900) / $2,988), which is the margin of safety we want in a skeptical, price-sensitive trade. If customer data, measured by the finance agent, shows neither lever materializing within 6 months of go-live, the Grow price is wrong, not the customer.
 
 > **Competitive edge - total cost.** Jobber's price page and LMN's demo both quote one product. Rootline quotes the whole stack, shows the prospect's own numbers side by side, and shows the winter bill next to the July bill (section 16, idea 12). The comparison is fair because the prospect enters the competitor prices.
 
@@ -183,22 +183,25 @@ Role keys follow [02-personas-roles-permissions.md](02-personas-roles-permission
 
 | Persona (role key) | Role in the purchase | Jobs-to-be-done | Top objections | What convinces them |
 |---|---|---|---|---|
-| Business Owner (`owner`) | Economic buyer, final signer. Often also the lead designer or estimator in 5-15 person firms | "Grow revenue without adding office staff." "Know my real margin per job." "Stop paying for six tools." | Switching risk in spring. Price. "My crews won't use it." | Stack calculator. Migration concierge with a date guarantee. Spanish crew app demo. Design-to-proposal demo on their own property photo |
+| Business Owner (`owner`) | Economic buyer, final signer. Often also the main designer or estimator in 5-15 person firms | "Grow revenue without adding office staff." "Know my real margin per job." "Stop paying for six tools." | Switching risk in spring. Price. "My crews won't use it." | Stack calculator. Migration concierge with a date guarantee. Spanish crew app demo. Design-to-proposal demo on their own property photo |
 | Office / Admin Manager (`office_manager`) | Champion and daily power user. Often runs the trial | "Stop double entry between FSM and QuickBooks." "Get invoices out faster." "Fewer phone calls." | Learning curve. Data migration pain | Import wizard. Unified inbox. Clean invoicing to payment to ledger flow |
 | Bookkeeper / CPA (`bookkeeper`) | Influencer and sometimes a veto. Sometimes recommends software across many clients | "Clean books, correct job costing, easy month-end close." | "Not QuickBooks." Audit trail. Payroll | Free accountant seat. QBO/Xero sync as an option. Built-in GL with close tools. Accountant Partner program |
 | Landscape Designer (`designer`) | Influencer for design-build firms | "Faster designs, accurate takeoffs, beautiful presentations." | "My CAD tool is more powerful." | Takeoff to estimate link. AI mockups. Region-aware plant palettes |
-| Ops Manager / Crew Lead (`ops_manager`, `crew_lead`) | User veto on field usability | "Simple daily route, fewer calls from the office." | Offline reliability. Language | Offline-first app. Spanish UI. Live pilot with one crew |
+| Ops Manager / Crew Lead (`ops_manager`, `crew_lead`) | User veto on field usability | "Simple daily route, fewer calls from the office." | Offline reliability. Language | Offline-first app. Spanish UI. A trial run with one crew, or shadow mode alongside the old system (OD-72) |
 | Estimator (`estimator`) | Influencer | "Win more bids at the right margin." | Production-rate setup effort | Starter production-rate library by service line |
 
 ### 3.2 Platform-side personas for this module
 
+Rootline is two people: the founder holds `platform_owner`, and the other four platform roles are permission sets held by Claude's operator agents (24 section 1.2). A hired person could hold the same role later without any product change.
+
 | Persona (role key) | Jobs-to-be-done here |
 |---|---|
-| Platform Operator (`platform_owner`) | Set strategy, approve price changes, review cohort economics, approve Enterprise deals above discount guardrails, choose launch and expansion Regions (launch region decided: Great Lakes, 6.2; the Wave 3 cluster is chosen later) |
-| Platform finance (`platform_finance`) | Maintain the plan and price catalog, revenue recognition exports, partner commissions, refunds and credits, SaaS sales tax |
-| Platform support (`platform_support`) | Issue goodwill credits within limits, run dunning recovery, process plan changes for customers who call in |
-| Platform curator (`platform_curator`) | Own Plant KB content quality, the engine behind SEO pages and API licensing |
-| Platform engineer (`platform_engineer`) | Operate billing jobs, meters and webhooks. Never changes prices |
+| The founder (`platform_owner`) | Set strategy, approve price changes and plan contents, review cohort economics, run Enterprise demos and approve Enterprise deals, approve anything above an agent's limit, choose where marketing and Plant KB seeding extend next (launch region decided: Great Lakes, 6.2) |
+| Finance agent (`platform_finance`) | Maintain the plan and price catalog (drafts; the founder approves), revenue recognition exports, partner commissions, refunds and credits within limits, SaaS sales tax, the live unit-economics model (section 7) |
+| Support agent (`platform_support`) | Issue goodwill credits within limits, run dunning recovery and the migration concierge, process plan changes for customers who ask |
+| Plant curator agent (`platform_curator`) | Plant KB content quality, the engine behind SEO pages and API licensing |
+| Engineering agent (`platform_engineer`) | Operate billing jobs, meters and webhooks. Never changes prices |
+| Marketing agent (Claude, under [26](26-agent-led-marketing-playbook.md)) | Run the channels in 6.5, the trial nurture, PQL notes for the founder and the pricing measurements in 6.10 |
 
 ### 3.3 External personas
 
@@ -230,7 +233,7 @@ This section is the commercial spec that the billing, entitlement and metering s
 
 | | **Starter** | **Grow** | **Pro** | **Enterprise** |
 |---|---|---|---|---|
-| Who it's for | 1-6 person maintenance or small install crews moving off spreadsheets or a basic app | **ICP**: 5-25 person residential design-build-maintain firms | 20-80 person firms, multi-crew, commercial plus residential, serious job costing | 80+ people, multi-branch, franchise systems, dedicated infrastructure needs |
+| Who it's for | 1-6 person maintenance or small install crews moving off spreadsheets or a basic app | **ICP plan**: 5-25 person residential design-build-maintain firms (S2 firms above 25 people are pointed to Pro, R26-8) | 20-80 person firms, multi-crew, commercial plus residential, serious job costing | 80+ people, multi-branch, franchise systems, dedicated infrastructure needs |
 | Monthly billing | **$79**/mo (C$109) | **$289**/mo (C$395) | **$599**/mo (C$819) | Custom |
 | Annual (per month, prepaid) | **$69**/mo (C$95) | **$249**/mo (C$339) | **$529**/mo (C$725) | From **$1,500**/mo, annual contract |
 | Included office seats | 1 | 3 | 8 | Negotiated (typically 15+) |
@@ -242,95 +245,95 @@ This section is the commercial spec that the billing, entitlement and metering s
 | AI credits included / month | 300 | 2,000 | 6,000 | Pooled, from 25,000 |
 | SMS segments included / month | 500 | 2,500 | 8,000 | Pooled, negotiated |
 | Storage (photos, designs, documents) | 50 GB | 250 GB | 1 TB | Custom |
-| Support | Help center, chat (business hours) | Chat + phone, onboarding webinar series | Named onboarding specialist, priority phone | CSM, SLA, sandbox, SSO |
+| Support | Help center, chat with the support agent | Chat + phone with the support agent, onboarding webinar series | Priority chat and phone, a guided onboarding plan run by the support agent | SLA, sandbox, SSO, a direct line to the founder |
 | Migration concierge | Self-serve import tools | Free on annual (one source system) | Free (up to 3 source systems) | Included, scoped project |
 
-CAD prices are set as separate price points, not live FX conversions, and are reviewed twice a year by `platform_finance`. All prices exclude applicable taxes. *All figures proposed; validate in pricing tests (section 6.10).*
+CAD prices are set as separate price points, not live FX conversions; the finance agent (`platform_finance`) reviews them twice a year and the founder approves any change. All prices exclude applicable taxes. *All figures proposed; validate in pricing tests (section 6.10).*
 
 #### 4.2.1 Feature-by-tier matrix (summary; module docs hold the detail)
 
-Legend: Y = included, L = included with limits, A = add-on, - = not available. The Priority column is the scope tier in which the capability first ships, so the packaging becomes real with that tier; [24-product-scope-decisions-catalog.md](24-product-scope-decisions-catalog.md) is the authority if tags differ.
+Legend: Y = included, L = included with limits, A = add-on, - = not available. Every capability below is in v1 ([24](24-product-scope-decisions-catalog.md) section 1.1); the matrix decides who pays for what, not what exists.
 
-| Capability | Starter | Grow | Pro | Ent. | Module doc | Priority |
-|---|---|---|---|---|---|---|
-| CRM, leads, opportunities, client and property records | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | |
-| Estimates with production rates, Price Book | L (1 price book, 200 items) | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | |
-| Proposals with options/tiers, e-signature, deposits | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | |
-| Change orders and agreement renewals, basic (office and field change orders with signature and price delta, fixed escalators, auto-renewal with notice rules) | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md), [07](07-invoicing-billing-contracts.md) | (24 section 4.6 #13) |
-| Change orders and renewals, full (verbal-emergency change orders, CPI and margin-target escalators, renewal review grid) | - | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) | |
-| Scheduling, dispatch board, recurring visits | Y | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) | |
-| Single-crew route ordering | Y | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) | |
-| Multi-crew route optimization (VRP) | - | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) | |
-| Offline crew app (EN/ES), time, photos, checklists | Y | Y | Y | Y | [05](05-field-crew-mobile-app.md) | |
-| Chemical application logs (state recordkeeping) | L (lawn/PHC basic) | Y | Y | Y | [05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md) | |
-| Client portal (Rootline-branded) | Y | - | - | - | [06](06-customer-portal.md) | |
-| White-label client portal + custom domain | - | Y | Y | Y | [06](06-customer-portal.md) | |
-| Commercial multi-property portal + approval workflows | - | L (5 commercial clients) | Y | Y | [06](06-customer-portal.md) | |
-| Invoicing, service agreement billing, sales tax, AR | Y | Y | Y | Y | [07](07-invoicing-billing-contracts.md) | |
-| BYO Stripe payments (cards, ACH, card on file, autopay) | Y | Y | Y | Y | [08](08-payments-stripe.md) | |
-| Ledger Essentials: double-entry GL, auto-posting, 1 bank feed, P&L/BS | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | |
-| Ledger Plus: AP and bills, unlimited bank feeds, bank rec, 1099 tracking, budgets | A | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | |
-| Ledger Advanced: WIP / percent-complete, classes and departments, multi-entity, consolidations | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) | |
-| QuickBooks Online sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | |
-| Xero sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) | (24 section 4.6 #5) |
-| QuickBooks Desktop sync (Web Connector) | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) | |
-| Design Studio 2D + takeoffs to estimate | A | Y (1 seat) | Y (3 seats) | Y | [10](10-design-studio.md) | |
-| Design Studio 3D, sun/shade, growth-over-time | - | A | Y | Y | [10](10-design-studio.md) | |
-| AI photo mockups | L (credits) | Y (credits) | Y (credits) | Y | [11](11-ai-design-mockups.md) | |
-| Dimension-aware AI layout generation | - | Y (credits) | Y (credits) | Y | [11](11-ai-design-mockups.md) | |
-| Plant KB search, region profiles, palettes | Y | Y | Y | Y | [12](12-plant-knowledge-base.md) | |
-| Nursery availability, wholesale ordering links | - | Y | Y | Y | [12](12-plant-knowledge-base.md) | |
-| Inventory, purchasing, vendor bills | L (Off mode: Price Book materials, receipts to jobs) | L (1 yard; Light, Standard from V1) | Y (multi-location; Advanced mode from V1) | Y | [13](13-operations-inventory-equipment.md) | Off and Light modes, per-job buy lists, POs, receiving, 2-way bill match; Standard and Advanced modes, purchasing workbench, 3-way match (24 section 4.6 #6) |
-| Equipment and fleet | L (registry, manual meters and DVIR, up to 10 assets) | L (25 assets) | Y | Y | [13](13-operations-inventory-equipment.md) | asset registry, manual meters, DVIR, rate calculator; PM schedules and work orders, telematics, fuel cards (24 section 4.6 #7) |
-| Service line modules: lawn/PHC, irrigation, lighting, hardscape projects | Y | Y | Y | Y | [14](14-service-line-modules.md) | (landscape lighting, per [14](14-service-line-modules.md) section 4.0.1) |
-| Snow Lite: crew-app storm visit logging per site (timestamped GPS photos, notes), basic snow site list with priority order, per-push / per-application invoices from those logs, per-site PDF proof-of-service export (no hash sealing) | Y | Y | Y | Y | [14](14-service-line-modules.md), [05](05-field-crew-mobile-app.md), [07](07-invoicing-billing-contracts.md) | (included at no charge; stays included after the Snow & Ice add-on launches) |
-| Snow and ice module (full: storm events, triggers, Storm Command Center, proof packets; Snow & Ice add-on) | A | A | A | Y | [14](14-service-line-modules.md) | |
-| Tree care module (ANSI A300 notes, crane/climb tasks) | A | A | Y | Y | [14](14-service-line-modules.md) | |
-| Team, timesheets, certifications, training | L | Y | Y | Y | [15](15-team-hr-payroll.md) | |
-| Payroll (embedded partner) | A | A | A | A | [15](15-team-hr-payroll.md) | |
-| Payroll export (ADP, Gusto, QuickBooks Payroll, etc.) | Y | Y | Y | Y | [15](15-team-hr-payroll.md) | |
-| Website builder | A | A | Y (1 site) | Y | [16](16-marketing-growth-communications.md) | |
-| Review requests (no gating) and NPS | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | (24 section 4.6 #11) |
-| Referral program with rewards | L | Y | Y | Y | [16](16-marketing-growth-communications.md) | (24 section 4.6 #11; referral as a manually entered lead source at) |
-| Online booking and instant quotes | L | Y | Y | Y | [16](16-marketing-growth-communications.md) | (24 section 4.6 #9; turf auto-measure for internal estimating stays) |
-| Unified inbox (SMS, email, chat, calls, portal) | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | |
-| Campaigns, basic (segments, one-off email/SMS with price blocks, prebuilt journeys) | L (one-off campaigns and prebuilt journeys) | Y | Y | Y | [16](16-marketing-growth-communications.md) | basic (24 section 4.6 #10) |
-| Journey builder (multi-step campaigns), landing pages, multi-touch attribution (Advanced Marketing add-on) | A | A | Y | Y | [16](16-marketing-growth-communications.md) | |
-| Call tracking, call recording and transcription, missed-call text-back | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) | basic, full |
-| AI receptionist (voice) | A | A | Y (200 min) | Y | [16](16-marketing-growth-communications.md) | (24 section 4.6 #12; until then, call tracking, voicemail with transcription and missed-call text-back cover after-hours calls) |
-| Copilot (chat, drafting) | Y (credits) | Y | Y | Y | [17](17-ai-copilot-automation.md) | |
-| Automation builder | L (5 active rules) | L (50) | Y (unlimited) | Y | [17](17-ai-copilot-automation.md) | |
-| MVP agents: Daily Owner Briefing, Inbox Triage, Lead Follow-up, Field-Note, Estimating from notes (A1-A4, A6), collections reminders (A5) | Y (credits) | Y (credits) | Y (credits) | Y | [17](17-ai-copilot-automation.md) | |
-| V1 agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A17, A19, A21; A18 review requests ship at with [16](16-marketing-growth-communications.md), and A20 Snow Event is) | - | L | Y | Y | [17](17-ai-copilot-automation.md) | |
-| Standard dashboards | Y | Y | Y | Y | [18](18-reporting-analytics.md) | |
-| Report builder (scheduled delivery ships at) | - | Y | Y | Y | [18](18-reporting-analytics.md) | |
-| Benchmarking (opt-in peer comparisons) | - | Y | Y | Y | [18](18-reporting-analytics.md) | |
-| 13-week cash and capacity forecasts | - | - | Y | Y | [18](18-reporting-analytics.md) | |
-| Scenario planner, seasonal ML forecast | - | - | Y | Y | [18](18-reporting-analytics.md) | |
-| Data warehouse export (data shares), multi-company rollup | - | - | A | Y | [18](18-reporting-analytics.md) | |
-| Custom roles (granular permissions) | - | L (2 custom roles) | Y | Y | [02](02-personas-roles-permissions.md) | |
-| Multi-branch / divisions | - | - | Y | Y | [02](02-personas-roles-permissions.md) | |
-| SSO (SAML/OIDC) | - | - | - | Y | [02](02-personas-roles-permissions.md), [20](20-architecture-security.md) | (24 section 4.6 #16) |
-| SCIM provisioning | - | - | - | Y | [02](02-personas-roles-permissions.md) | (24 section 4.6 #16) |
-| Public API and webhooks | L (read-only, 10k calls/day) | Y (50k/day) | Y (250k/day) | Custom | [20](20-architecture-security.md) | core objects, full surface and daily quotas |
-| Sandbox tenant | - | - | A | Y | [20](20-architecture-security.md) | |
-| Dedicated database option | - | - | - | A | [20](20-architecture-security.md) | |
-| Franchise rollup (franchisor console, royalty reporting) | - | - | - | Y | Section 5.4 | |
+| Capability | Starter | Grow | Pro | Ent. | Module doc |
+|---|---|---|---|---|---|
+| CRM, leads, opportunities, client and property records | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) |
+| Estimates with production rates, Price Book | L (1 price book, 200 items) | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) |
+| Proposals with options/tiers, e-signature, deposits | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) |
+| Change orders and agreement renewals, basic (office and field change orders with signature and price delta, fixed escalators, auto-renewal with notice rules) | Y | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md), [07](07-invoicing-billing-contracts.md) |
+| Change orders and renewals, full (verbal-emergency change orders, CPI and margin-target escalators, renewal review grid) | - | Y | Y | Y | [03](03-crm-sales-estimating-proposals.md) |
+| Scheduling, dispatch board, recurring visits | Y | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) |
+| Single-crew route ordering | Y | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) |
+| Multi-crew route optimization (VRP) | - | Y | Y | Y | [04](04-scheduling-dispatch-routing.md) |
+| Offline crew app (EN/ES), time, photos, checklists | Y | Y | Y | Y | [05](05-field-crew-mobile-app.md) |
+| Chemical application logs (state recordkeeping) | L (lawn/PHC basic) | Y | Y | Y | [05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md) |
+| Client portal (Rootline-branded) | Y | - | - | - | [06](06-customer-portal.md) |
+| White-label client portal + custom domain | - | Y | Y | Y | [06](06-customer-portal.md) |
+| Commercial multi-property portal + approval workflows | - | L (5 commercial clients) | Y | Y | [06](06-customer-portal.md) |
+| Invoicing, service agreement billing, sales tax, AR | Y | Y | Y | Y | [07](07-invoicing-billing-contracts.md) |
+| BYO Stripe payments (cards, ACH, card on file, autopay) | Y | Y | Y | Y | [08](08-payments-stripe.md) |
+| Ledger Essentials: double-entry GL, auto-posting, 1 bank feed, P&L/BS | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
+| Ledger Plus: AP and bills, unlimited bank feeds, bank rec, 1099 tracking, budgets | A | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
+| Ledger Advanced: WIP / percent-complete, classes and departments, multi-entity, consolidations | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) |
+| QuickBooks Online sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
+| Xero sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
+| QuickBooks Desktop sync (Web Connector) | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) |
+| Design Studio 2D + takeoffs to estimate | A | Y (1 seat) | Y (3 seats) | Y | [10](10-design-studio.md) |
+| Design Studio 3D, sun/shade, growth-over-time | - | A | Y | Y | [10](10-design-studio.md) |
+| AI photo mockups | L (credits) | Y (credits) | Y (credits) | Y | [11](11-ai-design-mockups.md) |
+| Dimension-aware AI layout generation | - | Y (credits) | Y (credits) | Y | [11](11-ai-design-mockups.md) |
+| Plant KB search, region profiles, palettes | Y | Y | Y | Y | [12](12-plant-knowledge-base.md) |
+| Nursery availability, wholesale ordering links | - | Y | Y | Y | [12](12-plant-knowledge-base.md) |
+| Inventory, purchasing, vendor bills (Off, Light, Standard and Advanced modes; per-job buy lists, POs, receiving, 2-way and 3-way bill match, purchasing workbench; default mode per OD-43) | L (Off mode: Price Book materials, receipts to jobs) | L (1 yard; Off, Light and Standard modes) | Y (multi-location; Advanced mode) | Y | [13](13-operations-inventory-equipment.md) |
+| Equipment and fleet (asset registry, meters, DVIR, rate calculator, PM schedules and work orders, telematics, fuel cards) | L (registry, manual meters and DVIR, up to 10 assets) | L (25 assets) | Y | Y | [13](13-operations-inventory-equipment.md) |
+| Service line modules: lawn/PHC, irrigation, lighting, hardscape projects | Y | Y | Y | Y | [14](14-service-line-modules.md) |
+| Snow Lite, included at no charge alongside the Snow & Ice add-on: crew-app storm visit logging per site (timestamped GPS photos, notes), basic snow site list with priority order, per-push / per-application invoices from those logs, per-site PDF proof-of-service export (no hash sealing) | Y | Y | Y | Y | [14](14-service-line-modules.md), [05](05-field-crew-mobile-app.md), [07](07-invoicing-billing-contracts.md) |
+| Snow and ice module (full: storm events, triggers, Storm Command Center, proof packets; Snow & Ice add-on) | A | A | A | Y | [14](14-service-line-modules.md) |
+| Tree care module (ANSI A300 notes, crane/climb tasks) | A | A | Y | Y | [14](14-service-line-modules.md) |
+| Team, timesheets, certifications, training | L | Y | Y | Y | [15](15-team-hr-payroll.md) |
+| Payroll (embedded partner) | A | A | A | A | [15](15-team-hr-payroll.md) |
+| Payroll export (ADP, Gusto, QuickBooks Payroll, etc.) | Y | Y | Y | Y | [15](15-team-hr-payroll.md) |
+| Website builder | A | A | Y (1 site) | Y | [16](16-marketing-growth-communications.md) |
+| Review requests (no gating) and NPS | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) |
+| Referral program with rewards | L | Y | Y | Y | [16](16-marketing-growth-communications.md) |
+| Online booking and instant quotes | L | Y | Y | Y | [16](16-marketing-growth-communications.md) |
+| Unified inbox (SMS, email, chat, calls, portal) | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) |
+| Campaigns, basic (segments, one-off email/SMS with price blocks, prebuilt journeys) | L (one-off campaigns and prebuilt journeys) | Y | Y | Y | [16](16-marketing-growth-communications.md) |
+| Journey builder (multi-step campaigns), landing pages, multi-touch attribution (Advanced Marketing add-on) | A | A | Y | Y | [16](16-marketing-growth-communications.md) |
+| Call tracking, call recording and transcription, missed-call text-back | Y | Y | Y | Y | [16](16-marketing-growth-communications.md) |
+| AI receptionist (voice) | A | A | Y (200 min) | Y | [16](16-marketing-growth-communications.md) |
+| Copilot (chat, drafting) | Y (credits) | Y | Y | Y | [17](17-ai-copilot-automation.md) |
+| Automation builder | L (5 active rules) | L (50) | Y (unlimited) | Y | [17](17-ai-copilot-automation.md) |
+| Core agents: Daily Owner Briefing, Inbox Triage, Lead Follow-up, Field-Note, Estimating from notes (A1-A4, A6), collections reminders (A5) | Y (credits) | Y (credits) | Y (credits) | Y | [17](17-ai-copilot-automation.md) |
+| Operations agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A17, A19, A21; A18 review requests run with [16](16-marketing-growth-communications.md), and A20 Snow Event runs with the Snow & Ice add-on) | - | L | Y | Y | [17](17-ai-copilot-automation.md) |
+| Standard dashboards | Y | Y | Y | Y | [18](18-reporting-analytics.md) |
+| Report builder with scheduled delivery | - | Y | Y | Y | [18](18-reporting-analytics.md) |
+| Benchmarking (opt-in peer comparisons; on once a cell has 10 contributing Companies; Starter contributes and sees a teaser, OD-14) | - | Y | Y | Y | [18](18-reporting-analytics.md) |
+| 13-week cash and capacity forecasts | - | - | Y | Y | [18](18-reporting-analytics.md) |
+| Scenario planner, seasonal ML forecast | - | - | Y | Y | [18](18-reporting-analytics.md) |
+| Data warehouse export (data shares), multi-company rollup | - | - | A | Y | [18](18-reporting-analytics.md) |
+| Custom roles (granular permissions) | - | L (2 custom roles) | Y | Y | [02](02-personas-roles-permissions.md) |
+| Multi-branch / divisions | - | - | Y | Y | [02](02-personas-roles-permissions.md) |
+| SSO (SAML/OIDC) | - | - | - | Y | [02](02-personas-roles-permissions.md), [20](20-architecture-security.md) |
+| SCIM provisioning | - | - | - | Y | [02](02-personas-roles-permissions.md) |
+| Public API and webhooks | L (read-only, 10k calls/day) | Y (50k/day) | Y (250k/day) | Custom | [20](20-architecture-security.md) |
+| Sandbox tenant | - | - | A | Y | [20](20-architecture-security.md) |
+| Dedicated database option | - | - | - | A | [20](20-architecture-security.md) |
+| Franchise rollup (franchisor console, royalty reporting) | - | - | - | Y | Section 5.4 |
 
 #### 4.2.2 Catalog codes (canonical; used by the entitlement engine and the admin console)
 
-The operator console in [19](19-platform-admin-portal.md) shows illustrative plan keys. These are the canonical codes. Codes never change once published; a new price or packaging creates a new `plan.version` under the same code.
+The operator console in [19](19-platform-admin-portal.md) shows illustrative plan keys. These are the canonical codes. Codes never change once published; a new price or packaging creates a new `plan.version` under the same code. Every plan and add-on below exists from launch. Each grants entitlements of three kinds, `flag`, `limit` and `meter` (10.1, 24 R25-C11), and feature keys are those in [`plans.json`](platform/plans.json) (for example `design_3d`).
 
-| `plan.code` | Name | Public | Notes | Priority |
-|---|---|---|---|---|
-| `starter` | Starter | Yes | Also carries the `pay_as_you_grow` payment-pricing variant (5.1.2) | |
-| `grow` | Grow | Yes | Default trial entitlements | |
-| `pro` | Pro | Yes | | |
-| `enterprise` | Enterprise | No (sales-quoted) | Contract terms in `entitlement_override` and `discount_grant` | |
-| `design_solo` | Design Solo | Yes | Independent designers without crews (section 16, idea 2) | |
-| `archive` | Archive | Offered only after cancellation | Read-only records retention ($9/mo) | |
-| `education` | Education | No | Free classroom tenant, non-commercial (4.8) | |
-| `franchise_location` | Franchise location | No | Per-location price under a franchisor contract (5.4.1) | |
+| `plan.code` | Name | Public | Notes |
+|---|---|---|---|
+| `starter` | Starter | Yes | Also carries the `pay_as_you_grow` payment-pricing variant (5.1.2) |
+| `grow` | Grow | Yes | Default trial entitlements |
+| `pro` | Pro | Yes | |
+| `enterprise` | Enterprise | No (quoted by the founder) | Contract terms in `entitlement_override` and `discount_grant` |
+| `design_solo` | Design Solo | Yes | Independent designers without crews (section 16, idea 2) |
+| `archive` | Archive | Offered only after cancellation | Read-only records retention ($9/mo) |
+| `education` | Education | No | Free classroom tenant, non-commercial (4.8) |
+| `franchise_location` | Franchise location | No | Per-location price under a franchisor contract (5.4.1) |
 
 Add-on codes follow the same rule: `design_seat`, `design_3d`, `ai_receptionist`, `website`, `payroll`, `ledger_plus`, `ledger_advanced`, `qbd_connector`, `snow_ice`, `tree_care`, `marketing_advanced`, `sandbox`, `dedicated_db`, `premium_success`, `match_territory`. Meter keys are listed in 4.4.
 
@@ -366,21 +369,21 @@ Rules:
 
 ### 4.4 Usage components and meters
 
-| Meter key | Unit | Included (Starter / Grow / Pro) | Overage or pack price (proposed) | Enforcement | Priority |
-|---|---|---|---|---|---|
-| `ai_credits` | credit | 300 / 2,000 / 6,000 per month | Packs: 1,000 for $25. 5,000 for $100. 20,000 for $340. Optional auto top-up | Soft stop at 0 with a one-click pack purchase. Owner can enable auto top-up with a monthly ceiling | |
-| `sms_segments` | outbound segment (MMS = 3 segments) | 500 / 2,500 / 8,000 | $0.02 per segment overage, or 5,000-segment pack for $79 | Overage billed. Hard cap at the owner's configured monthly ceiling (default 3x included) | |
-| `voice_ai_minutes` | AI receptionist minute (rounded up per call) | 0 / 0 / 200 | Add-on: $49/mo for 100 min, then $0.39/min | Overage billed. Ceiling configurable. Once the ceiling is hit, calls fall back to voicemail with transcription | |
-| `voice_minutes` | Call-tracking, forwarded and click-to-call minutes | 300 / 1,000 / 3,000 | $0.03/min | Overage billed | call tracking and forwarding; click-to-call softphone ([16](16-marketing-growth-communications.md) 4.19) |
-| `storage_gb` | GB-month | 50 / 250 / 1,000 | $5 per additional 100 GB-month | Soft. Warned at 90%. Old photo originals can move to cold storage | |
-| `marketing_emails` | email sent via campaigns | 2,000 / 10,000 / 50,000 | $1 per 1,000 | Overage billed | (basic campaigns ship at MVP) |
-| `parcel_lookups` | parcel boundary/attribute lookup; one AI auto-measure run per parcel and imagery date counts as one lookup (re-runs on the same imagery are cached and free) | 100 / 500 / 2,000 | $0.10 per lookup | Soft, fair use | |
-| `premium_imagery` | high-res aerial pull (Nearmap/EagleView-class) | 0 / 0 / 0 | Cost plus 20%, shown before purchase | Explicit per-pull confirmation | |
-| `api_calls` | request | 10k / 50k / 250k per day | Enterprise only | Hard rate limit with HTTP 429 | |
+| Meter key | Unit | Included (Starter / Grow / Pro) | Overage or pack price (proposed) | Enforcement |
+|---|---|---|---|---|
+| `ai_credits` | credit | 300 / 2,000 / 6,000 per month | Packs: 1,000 for $25. 5,000 for $100. 20,000 for $340. Optional auto top-up | Soft stop at 0 with a one-click pack purchase. Owner can enable auto top-up with a monthly ceiling |
+| `sms_segments` | outbound segment (MMS = 3 segments) | 500 / 2,500 / 8,000 | $0.02 per segment overage, or 5,000-segment pack for $79 | Overage billed. Hard cap at the owner's configured monthly ceiling (default 3x included) |
+| `voice_ai_minutes` | AI receptionist minute (rounded up per call) | 0 / 0 / 200 | Add-on: $49/mo for 100 min, then $0.39/min | Overage billed. Ceiling configurable. Once the ceiling is hit, calls fall back to voicemail with transcription |
+| `voice_minutes` | Call-tracking, forwarded and click-to-call (softphone, [16](16-marketing-growth-communications.md) 4.19) minutes | 300 / 1,000 / 3,000 | $0.03/min | Overage billed |
+| `storage_gb` | GB-month | 50 / 250 / 1,000 | $5 per additional 100 GB-month | Soft. Warned at 90%. Old photo originals can move to cold storage |
+| `marketing_emails` | email sent via campaigns | 2,000 / 10,000 / 50,000 | $1 per 1,000 | Overage billed |
+| `parcel_lookups` | parcel boundary/attribute lookup; one AI auto-measure run per parcel and imagery date counts as one lookup (re-runs on the same imagery are cached and free) | 100 / 500 / 2,000 | $0.10 per lookup | Soft, fair use |
+| `premium_imagery` | high-res aerial pull (Nearmap/EagleView-class) | 0 / 0 / 0 | Cost plus 20%, shown before purchase | Explicit per-pull confirmation |
+| `api_calls` | request | 10k / 50k / 250k per day | Enterprise only | Hard rate limit with HTTP 429 |
 
 **AI receptionist minutes are their own meter, not AI credits.** The decision here is simple for the buyer: one published per-minute price (`voice_ai_minutes`) that already includes telephony, speech recognition, speech synthesis and the LLM, as [16](16-marketing-growth-communications.md) section 4.18.4 and [17](17-ai-copilot-automation.md) section 4.11.5 also state. A call shows as "6 min" on the meter, never as a mix of credits and carrier charges. Transcription and summaries of ordinary (human-answered) calls and voicemails remain credit actions (4.4.1).
 
-**AI auto-measure is metered as a parcel lookup, not in credits.** Turf auto-measure ([03](03-crm-sales-estimating-proposals.md) INTEL-03,) and the instant-quote measurement pipeline ([16](16-marketing-growth-communications.md) 4.3.2) consume one `parcel_lookups` unit per parcel and imagery date. The segmentation runs on self-hosted models at a fraction of a cent, so a separate credit price would only add noise. The V1 classes (beds, hardscape, commercial) use the same meter; high-resolution imagery is the separate `premium_imagery` pull. The aerial-measured estimate draft (A6 in [17](17-ai-copilot-automation.md)) adds estimate-drafting work on top of the measurement and is quoted before it runs like an agent task (planning estimate 25-60 credits).
+**AI auto-measure is metered as a parcel lookup, not in credits.** Turf auto-measure ([03](03-crm-sales-estimating-proposals.md) INTEL-03) and the instant-quote measurement pipeline ([16](16-marketing-growth-communications.md) 4.3.2) consume one `parcel_lookups` unit per parcel and imagery date. The segmentation runs on self-hosted models at a fraction of a cent, so a separate credit price would only add noise. The other measurement classes (beds, hardscape, commercial) use the same meter; high-resolution imagery is the separate `premium_imagery` pull. The aerial-measured estimate draft (A6 in [17](17-ai-copilot-automation.md)) adds estimate-drafting work on top of the measurement and is quoted before it runs like an agent task (planning estimate 25-60 credits).
 
 #### Messaging and telephony fee policy
 
@@ -402,33 +405,33 @@ Rules:
 
 A credit is a unit of AI work that is published and stable. The raw provider cost behind each action varies by model and is managed by the AI Gateway. We commit to the credit price of an action for at least 12 months. Raw-cost estimates are explained in section 7.4.
 
-| AI action | Credits | Notes | Priority |
-|---|---|---|---|
-| Copilot question/answer (standard) | 1 | Routed to a small or medium model when possible | |
-| Copilot drafting (email, client message, review reply) | 1 | | |
-| Estimate or proposal draft from site notes, photos or voice memo | 8 | Includes line-item mapping to the Price Book | |
-| Photo mockup set (4 variants, ~1 MP) | 40 | Segmentation + depth + image generation. Plants constrained to the Region palette | |
-| Mockup refinement (inpaint or edit one area) | 10 | | |
-| Restyle "more like this" (2 variants re-seeded around a chosen mockup) | 20 | Part of the photo restyle flow in [11](11-ai-design-mockups.md) (Mode A) | |
-| High-resolution render or upscale (HD final, 2-4 MP) | 20 | Raised from an earlier draft of 10 credits. Uses the self-hosted upscale route by default; needed at MVP for the field restyle flow in [11](11-ai-design-mockups.md) | |
-| Presentation 4K re-render (vendor 4K route, optional) | 40 | A 4K image from a premium image model can cost about $0.16-$0.25 raw, which breaches the 7.4 cost guardrail at 20 credits; offered for print boards and large screens only | |
-| Dimension-aware AI layout (3 to-scale options into Design Studio) | 60 | Uses the property dimensions the user entered and Plant KB constraints | |
-| Plant palette recommendation for a bed or design | 3 | | |
-| Document understanding (vendor bill, receipt, PO) per page | 2 | Feeds AP in the [Ledger](09-accounting-ledger-integrations.md) | |
-| Call or voicemail transcription + summary | 2 | Separate from AI receptionist minutes. Ships with call tracking and voicemail transcription ([16](16-marketing-growth-communications.md) 4.19) | |
-| Daily Owner Briefing (A1 in [17](17-ai-copilot-automation.md)) | 2 (+1 for the audio version) | Text briefing with three one-tap decisions | |
-| Inbox triage per inbound message (A2) | 0.5 | Small-model classification plus a draft reply. Fractional credits accrue on the credit ledger and settle daily, rounded up | |
-| Lead follow-up conversation, full nurture (A3) | 3-6 | Charged per conversation as it runs; shown on the agent's run log and limited by per-agent caps | |
-| Field voice note per minute (A4: speech-to-text, EN/ES translation, extraction) | 1 | | |
-| Agent task run (e.g., "draft next week's routes and flag weather conflicts") | 10-30, quoted before run | The agent quotes an upper bound and the user approves it | |
-| Marketing content (blog, social post set, landing-page copy) | 5 | | |
-| Homeowner-app lead enrichment and qualification | 0 to Company | Paid by Rootline from marketplace revenue | |
-| Plan-to-photo render (project a Design onto the property photo, [11](11-ai-design-mockups.md)) | 20 | Re-render of only the changed areas after a plan edit: 8 | |
-| Seasonal or growth-over-time set (4 renders: spring, summer, fall, "in 3 years") | 30 | | |
-| Night mood render (basic relight) / physically based night lighting | 20 / 40 | [11](11-ai-design-mockups.md) AIM-GEN-E | / |
-| Design assistant chat turn ([11](11-ai-design-mockups.md) AIM-GEN-D) | 1 (question or clarification) / 2 (turn that commits a plan edit) | Re-renders are charged separately and quoted first | |
-| Website visualizer preview set (a homeowner on the Company's own website, [16](16-marketing-growth-communications.md)) | 24 | Drawn from the Company's pool. The Company sets a monthly cap for the widget (default 600 credits). The default is deliberately small: at the visitor mix in [11](11-ai-design-mockups.md) section 8.6 (about 41 credits per visitor) it funds only about 15 visitors a month, so owners raise it and fund it with packs for spring campaigns (one-tap "raise cap" from the cap alert). On Starter (300 included credits) the setup wizard recommends funding the widget from purchased packs only, so it cannot use up the office's allowance. Anonymous visitors get 1 teaser set; more after one-time-code verification, per the gate modes in [11](11-ai-design-mockups.md) AIM-AUD-01. The widget ships at MVP behind the `verify_first` gate for design partners (24 section 4.6 #14) | |
-| Immersive 3D walkthrough capture (photo scan to navigable scene) | 600 | GPU-heavy. Quoted before run. Phased by [11](11-ai-design-mockups.md) (Mode F) | |
+| AI action | Credits | Notes |
+|---|---|---|
+| Copilot question/answer (standard) | 1 | Routed to a small or medium model when possible |
+| Copilot drafting (email, client message, review reply) | 1 | |
+| Estimate or proposal draft from site notes, photos or voice memo | 8 | Includes line-item mapping to the Price Book |
+| Photo mockup set (4 variants, ~1 MP) | 40 | Segmentation + depth + image generation. Plants constrained to the Region palette |
+| Mockup refinement (inpaint or edit one area) | 10 | |
+| Restyle "more like this" (2 variants re-seeded around a chosen mockup) | 20 | Part of the photo restyle flow in [11](11-ai-design-mockups.md) (Mode A) |
+| High-resolution render or upscale (HD final, 2-4 MP) | 20 | Raised from an earlier draft of 10 credits. Uses the self-hosted upscale route by default; needed for the field restyle flow in [11](11-ai-design-mockups.md) |
+| Presentation 4K re-render (vendor 4K route, optional) | 40 | A 4K image from a premium image model can cost about $0.16-$0.25 raw, which breaches the 7.4 cost guardrail at 20 credits; offered for print boards and large screens only |
+| Dimension-aware AI layout (3 to-scale options into Design Studio) | 60 | Uses the property dimensions the user entered and Plant KB constraints |
+| Plant palette recommendation for a bed or design | 3 | |
+| Document understanding (vendor bill, receipt, PO) per page | 2 | Feeds AP in the [Ledger](09-accounting-ledger-integrations.md) |
+| Call or voicemail transcription + summary | 2 | Separate from AI receptionist minutes. Ships with call tracking and voicemail transcription ([16](16-marketing-growth-communications.md) 4.19) |
+| Daily Owner Briefing (A1 in [17](17-ai-copilot-automation.md)) | 2 (+1 for the audio version) | Text briefing with three one-tap decisions |
+| Inbox triage per inbound message (A2) | 0.5 | Small-model classification plus a draft reply. Fractional credits accrue on the credit ledger and settle daily, rounded up |
+| Lead follow-up conversation, full nurture (A3) | 3-6 | Charged per conversation as it runs; shown on the agent's run log and limited by per-agent caps |
+| Field voice note per minute (A4: speech-to-text, EN/ES translation, extraction) | 1 | |
+| Agent task run (e.g., "draft next week's routes and flag weather conflicts") | 10-30, quoted before run | The agent quotes an upper bound and the user approves it |
+| Marketing content (blog, social post set, landing-page copy) | 5 | |
+| Homeowner-app lead enrichment and qualification | 0 to Company | Paid by Rootline from marketplace revenue |
+| Plan-to-photo render (project a Design onto the property photo, [11](11-ai-design-mockups.md)) | 20 | Re-render of only the changed areas after a plan edit: 8 |
+| Seasonal or growth-over-time set (4 renders: spring, summer, fall, "in 3 years") | 30 | |
+| Night mood render (basic relight) / physically based night lighting | 20 / 40 | [11](11-ai-design-mockups.md) AIM-GEN-E |
+| Design assistant chat turn ([11](11-ai-design-mockups.md) AIM-GEN-D) | 1 (question or clarification) / 2 (turn that commits a plan edit) | Re-renders are charged separately and quoted first |
+| Website visualizer preview set (a homeowner on the Company's own website, [16](16-marketing-growth-communications.md)) | 24 | Drawn from the Company's pool. The Company sets a monthly cap for the widget (default 600 credits). The default is deliberately small: at the visitor mix in [11](11-ai-design-mockups.md) section 8.6 (about 41 credits per visitor) it funds only about 15 visitors a month, so owners raise it and fund it with packs for spring campaigns (one-tap "raise cap" from the cap alert). On Starter (300 included credits) the setup wizard recommends funding the widget from purchased packs only, so it cannot use up the office's allowance. Anonymous visitors get 1 teaser set; more after one-time-code verification, per the gate modes in [11](11-ai-design-mockups.md) AIM-AUD-01. The widget is on by default for every Company with AI mockups (OD-33), with `teaser_then_verify` as the default gate |
+| Immersive 3D walkthrough capture (photo scan to navigable scene) | 600 | GPU-heavy. Quoted before run. Mode F in [11](11-ai-design-mockups.md) |
 
 **One credit unit across all docs.** At pack prices one credit sells for $0.017-$0.025. Every module that meters AI ([11](11-ai-design-mockups.md), [16](16-marketing-growth-communications.md), [17](17-ai-copilot-automation.md)) prices its actions in this unit and maps them to this rate card, which wins any conflict; a module's proposed price is not billable until it is listed here. Included credits do **not** roll over (rule 2 below), because rollover makes the monthly allotment a growing liability on Rootline's balance sheet and complicates breakage accounting (14.5). Purchased packs last 12 months, which covers the seasonal pattern (heavy mockup use Feb-May) without a rollover.
 
@@ -447,32 +450,32 @@ A credit is a unit of AI work that is published and stable. The raw provider cos
 
 ### 4.5 Add-on catalog
 
-| Add-on | Price (proposed) | Available on | What it includes | Why it's an add-on | Priority |
-|---|---|---|---|---|---|
-| **Design Studio seat** | $79/mo (Starter), $69 (Grow extra), $59 (Pro extra) | All | Edit access to 2D Design Studio, takeoffs, AI mockups (uses credits) | Not every user designs | |
-| **Design Studio 3D** | $49/mo per designer seat on Grow; included in Pro | Grow | 3D walkthrough, sun/shade study, growth-over-time | GPU-heavy rendering | |
-| **AI credit packs** | 1k $25 / 5k $100 / 20k $340 | All | See 4.4.1 | Variable cost | |
-| **AI Receptionist** | $49/mo incl. 100 min, then $0.39/min | Starter, Grow (Pro includes 200 min) | 24/7 voice answering, qualification, booking into the schedule, bilingual EN/ES | Variable cost. Not everyone wants it | |
-| **SMS packs** | 5,000 segments $79 | All | Pooled segments | Variable cost | |
-| **Website + Online Booking** | $49/mo per site (Pro includes 1) | All | Hosted site builder, templates, custom domain, booking widget, SEO plant pages for the Company's region | Many already have a website | |
-| **Payroll (embedded)** | $39/mo + $6 per paid employee per month (estimate; depends on the embedded payroll partner's wholesale cost) | US first, Canada later | Full-service payroll, tax filings, direct deposit, piece-rate and overtime from Rootline timesheets | Partner cost per employee | |
-| **Ledger Plus** | $49/mo | Starter | AP, unlimited bank feeds, bank reconciliation, budgets | Bank-feed aggregator cost and support | |
-| **Ledger Advanced** | $99/mo | Grow (included in Pro) | WIP and percent-complete revenue recognition, classes and departments, multi-entity, consolidations | Complexity and support cost | |
-| **QuickBooks Desktop connector** | $29/mo | Grow (included in Pro) | Web Connector sync | Support burden | |
-| **Snow & Ice module** | **$99/mo billed Nov-Mar only** ($495 per season); $79/mo in season on annual plans ($395 per season) | All | Storm events, trigger depths (e.g., 2-inch push trigger), per-push / per-event / seasonal billing, salt and ice-melt logs, timestamped photo proof for slip-and-fall defense, weather feeds. Builds on Snow Lite, which every tier includes at no charge (rule below) | Regional | |
-| **Tree Care module** | $59/mo | Starter, Grow (included in Pro) | Tree inventory, ANSI A300-aligned work specs, risk notes, crane/climb job types | Specialty | |
-| **Advanced Marketing** | $79/mo | Starter, Grow (included in Pro) | Journey builder (multi-step campaigns), advanced segmentation, landing pages, multi-touch attribution. Basic segments, one-off campaigns, prebuilt journeys and first/last-touch attribution are in every plan from MVP (4.2.1) | Overlaps third-party tools | |
-| **Extra storage** | $5 per 100 GB-month | All | Photo- and video-heavy companies | Variable cost | |
-| **Premium aerial imagery** | Cost + 20% per pull | Grow, Pro, Ent. | High-res aerial (Nearmap/EagleView-class) for measurement | Third-party per-use cost | |
-| **Sandbox tenant** | $99/mo | Pro (Ent. included) | Copy of config + anonymized sample data for training and testing | Infra cost | |
-| **Dedicated database** | From $1,000/mo | Ent. | Isolated Postgres per tenant (see [Architecture](20-architecture-security.md)) | Infra cost | |
-| **Premium Success** | 10% of annual contract value (minimum $3,000/yr) | Pro | Named CSM, quarterly business reviews with benchmark pack, custom report builds | Human cost | |
-| **Rootline Match (leads)** | Pay per accepted lead or territory subscription (section 5.3) | Grow, Pro, Ent. | Design-ready homeowner leads | Marketplace | |
-| **Archive plan** | $9/mo | After cancellation | Read-only records retention: invoices, ledger, chemical application records, photos | Compliance retention needs | |
+| Add-on | Price (proposed) | Available on | What it includes | Why it's an add-on |
+|---|---|---|---|---|
+| **Design Studio seat** | $79/mo (Starter), $69 (Grow extra), $59 (Pro extra) | All | Edit access to 2D Design Studio, takeoffs, AI mockups (uses credits) | Not every user designs |
+| **Design Studio 3D** | $49/mo per designer seat on Grow; included in Pro | Grow | 3D walkthrough, sun/shade study, growth-over-time | GPU-heavy rendering |
+| **AI credit packs** | 1k $25 / 5k $100 / 20k $340 | All | See 4.4.1 | Variable cost |
+| **AI Receptionist** | $49/mo incl. 100 min, then $0.39/min | Starter, Grow (Pro includes 200 min) | 24/7 voice answering, qualification, booking into the schedule, bilingual EN/ES | Variable cost. Not everyone wants it |
+| **SMS packs** | 5,000 segments $79 | All | Pooled segments | Variable cost |
+| **Website + Online Booking** | $49/mo per site (Pro includes 1) | All | Hosted site builder, templates, custom domain, booking widget, SEO plant pages for the Company's region | Many already have a website |
+| **Payroll (embedded)** | $39/mo + $6 per paid employee per month (estimate; depends on the embedded payroll partner's wholesale cost) | US and Canada, where the payroll partner supports the Company (24 section 1.4) | Full-service payroll, tax filings, direct deposit, piece-rate and overtime from Rootline timesheets | Partner cost per employee |
+| **Ledger Plus** | $49/mo | Starter | AP, unlimited bank feeds, bank reconciliation, budgets | Bank-feed aggregator cost and support |
+| **Ledger Advanced** | $99/mo | Grow (included in Pro) | WIP and percent-complete revenue recognition, classes and departments, multi-entity, consolidations | Complexity and support cost |
+| **QuickBooks Desktop connector** | $29/mo | Grow (included in Pro) | Web Connector sync | Support burden |
+| **Snow & Ice module** | **$99/mo billed Nov-Mar only** ($495 per season); $79/mo in season on annual plans ($395 per season) | All | Storm events, trigger depths (e.g., 2-inch push trigger), per-push / per-event / seasonal billing, salt and ice-melt logs, timestamped photo proof for slip-and-fall defense, weather feeds. Builds on Snow Lite, which every tier includes at no charge (rule below) | Regional |
+| **Tree Care module** | $59/mo | Starter, Grow (included in Pro) | Tree inventory, ANSI A300-aligned work specs, risk notes, crane/climb job types | Specialty |
+| **Advanced Marketing** | $79/mo | Starter, Grow (included in Pro) | Journey builder (multi-step campaigns), advanced segmentation, landing pages, multi-touch attribution. Basic segments, one-off campaigns, prebuilt journeys and first/last-touch attribution are in every plan (4.2.1) | Overlaps third-party tools |
+| **Extra storage** | $5 per 100 GB-month | All | Photo- and video-heavy companies | Variable cost |
+| **Premium aerial imagery** | Cost + 20% per pull | Grow, Pro, Ent. | High-res aerial (Nearmap/EagleView-class) for measurement | Third-party per-use cost |
+| **Sandbox tenant** | $99/mo | Pro (Ent. included) | Copy of config + anonymized sample data for training and testing | Infra cost |
+| **Dedicated database** | From $1,000/mo | Ent. | Isolated Postgres per tenant (see [Architecture](20-architecture-security.md)) | Infra cost |
+| **Premium Success** | 10% of annual contract value (minimum $3,000/yr) | Pro | Priority support-agent queue, a quarterly business review prepared by the agents and held with the founder, benchmark pack, custom report builds | Founder time and custom work |
+| **Rootline Match (leads)** | Pay per accepted lead or territory subscription (section 5.3) | Grow, Pro, Ent. | Design-ready homeowner leads | Marketplace |
+| **Archive plan** | $9/mo | After cancellation | Read-only records retention: invoices, ledger, chemical application records, photos | Compliance retention needs |
 
 Add-on rules:
 - Add-ons follow the subscription's billing interval and currency, and are prorated on add and remove.
-- **Snow Lite (included in every tier).** Great Lakes firms commonly run snow and ice in winter, and owners evaluate and switch software in the winter months when snow is running, so a basic snow scope ships at MVP: crew-app storm visit logging per site with timestamped GPS photos and notes, a basic snow site list with priority order, per-push / per-application invoices generated from those logs, and a per-site PDF proof-of-service export (no hash sealing). It is an entitlement on every plan, not an add-on, and carries no seasonal charge. Until the Snow & Ice add-on launches, Snow Lite is the whole snow offer; after that, Snow Lite stays included and the add-on adds the full module (storm events from weather data, trigger depths, per-event and seasonal billing, salt logs, sealed proof packets). When a Company adds the add-on, its Snow Lite site list becomes the starting snow site list and past storm visits stay on the Property timeline as history (they are not re-sealed as proof packets), so nothing is re-entered. Module mechanics in [14](14-service-line-modules.md) section 4.3.0.
+- **Snow Lite (included in every tier).** Great Lakes firms commonly run snow and ice in winter, and owners evaluate and switch software in the winter months when snow is running, so a basic snow scope is in every plan: crew-app storm visit logging per site with timestamped GPS photos and notes, a basic snow site list with priority order, per-push / per-application invoices generated from those logs, and a per-site PDF proof-of-service export (no hash sealing). It is an entitlement on every plan, not an add-on, and carries no seasonal charge. Snow Lite stays included alongside the Snow & Ice add-on, which adds the full module (storm events from weather data, trigger depths, per-event and seasonal billing, salt logs, sealed proof packets). When a Company adds the add-on, its Snow Lite site list becomes the starting snow site list and past storm visits stay on the Property timeline as history (they are not re-sealed as proof packets), so nothing is re-entered. Module mechanics in [14](14-service-line-modules.md) section 4.3.0.
 - **Seasonal add-ons** (Snow & Ice) carry a `billing_months` mask. Outside those months the add-on stays enabled (read-only history, storm planning, pre-season contract renewals) at $0. Season price: $99 x 5 = $495 on monthly plans; $79 x 5 = $395 on annual plans, billed as one seasonal charge on Nov 1 or in 5 monthly installments. Companies that want an even monthly budget can spread the seasonal charge over 12 months ($395 / 12 = $32.92/mo); the total never exceeds the seasonal price. The mask is per Company, so a Company in a region with an October or April snow risk can extend it by one month at the same monthly rate.
 - **Snow carve-out in dunning.** A Company in `restricted` or `suspended` (8.2) with an active snow agreement keeps crew dispatch and per-push logging (Snow Lite storm visit logging included) during a forecast event, capped at 72 hours per event, exactly as specified in [19](19-platform-admin-portal.md). Blocking plowing on a commercial lot over a Rootline invoice would create slip-and-fall liability for the Company's client.
 - An add-on that a higher tier includes is removed automatically when the Company upgrades, with prorated credit.
@@ -480,45 +483,47 @@ Add-on rules:
 
 ### 4.6 Trials, sandboxes and onboarding offers
 
-| Item | Rule | Priority |
-|---|---|---|
-| **Free trial** | 14 days of Grow features. No card required. Field seats unlimited. 500 AI credits. Payments live once Stripe is connected (it is the Company's own account) | |
-| **Winter trial** | Trials started between Nov 1 and Feb 28 default to **30 days**, because buyers are evaluating during the planning season | |
-| **Earned extension** | +14 days if the trial completes 4 of 6 onboarding milestones (import clients, connect Stripe, send a proposal, schedule a visit, invite a crew member, connect bank feed) | |
-| **Demo company** | Every trial can toggle a fully populated sample Company ("Greenleaf Grounds Co.", 120 clients, a year of visits, designs, invoices, GL) to explore before importing their own data | |
-| **SMS in trial** | Disabled until the Company submits 10DLC brand and campaign registration (started on day 1 from a guided form). Email and push work immediately. See [Marketing](16-marketing-growth-communications.md) | |
-| **Trial end** | Choose a plan, or the tenant drops into a **read-only** state for 60 days (exports allowed), then archive | |
-| **Module add-on trial** | A paying Company can trial a service-line module its plan does not include (for example Tree Care or Snow & Ice) for **30 days**, once per module per Company. The length is operator-configurable (the operator manages entitlements and trials in the [admin console](19-platform-admin-portal.md)). No charge during the trial; the add-on bills from conversion. At expiry with open commitments (a live storm event, enrolled programs) the module winds down instead of switching off, so no client work is stranded. Separate from the account trial above, during which every module the trial plan includes is simply available. Mechanics in [14](14-service-line-modules.md) section 4.0.3 | mechanism; the first paid service-line add-ons ship at |
-| **Spring-Ready Guarantee** | Companies that sign an annual Grow or Pro plan by **Feb 15** and complete the onboarding checklist are guaranteed live (imported, crews on app, first invoices sent) by **Mar 31**, or the first 3 months are free | |
-| **Founding Customer program** | The first 100 paying Companies in the Wave 1 Regions of the Great Lakes launch region (6.2) get 25% off base plan list price for as long as they stay subscribed, plus a seat on the Customer Advisory Board | |
+| Item | Rule |
+|---|---|
+| **Free trial** | 14 days of Grow features. No card required. Field seats unlimited. 500 AI credits. Payments live once Stripe is connected (it is the Company's own account) |
+| **Winter trial** | Trials started between Nov 1 and Feb 28 default to **30 days**, because buyers are evaluating during the planning season |
+| **Earned extension** | +14 days if the trial completes 4 of 6 onboarding milestones (import clients, connect Stripe, send a proposal, schedule a visit, invite a crew member, connect bank feed) |
+| **Demo company** | Every trial can toggle a fully populated sample Company ("Greenleaf Grounds Co.", 120 clients, a year of visits, designs, invoices, GL) to explore before importing their own data |
+| **SMS in trial** | Disabled until the Company submits 10DLC brand and campaign registration (started on day 1 from a guided form). Email and push work immediately. See [Marketing](16-marketing-growth-communications.md) |
+| **Trial end** | Choose a plan, or the tenant drops into a **read-only** state for 60 days (exports allowed), then archive |
+| **Module add-on trial** | A paying Company can trial a service-line module its plan does not include (for example Tree Care or Snow & Ice) for **30 days**, once per module per Company. The length is configurable in the [admin console](19-platform-admin-portal.md), where the founder manages entitlements and trials. No charge during the trial; the add-on bills from conversion. At expiry with open commitments (a live storm event, enrolled programs) the module winds down instead of switching off, so no client work is stranded. Separate from the account trial above, during which every module the trial plan includes is simply available. Mechanics in [14](14-service-line-modules.md) section 4.0.3 |
+| **Spring-Ready Guarantee** | Companies that sign an annual Grow or Pro plan by **Feb 15** and complete the onboarding checklist are guaranteed live (imported, crews on app, first invoices sent) by **Mar 31**, or the first 3 months are free |
+| **Founding Customer program** | The first 100 paying Companies in the six Great Lakes Regions (6.2) get 25% off base plan list price for as long as they stay subscribed, plus the Price Lock Promise (4.7) and a direct line to the founder (24 R26-12). There is no advisory board. The pricing page shows the real remaining count (9.2) |
 
 ### 4.7 Billing intervals, commitments and plan changes
 
-| Rule | Behavior | Priority |
-|---|---|---|
-| Intervals | Monthly. Annual prepaid. Annual commitment billed monthly (annual price + 5%) | |
-| Currency | USD for US-addressed Companies, CAD for Canada. Fixed at subscription creation. Change requires `platform_finance` (cancel and recreate with credit transfer) | |
-| Upgrades | Immediate. Prorated charge. New entitlements effective instantly | |
-| Downgrades | Effective at the end of the current period (monthly) or the term (annual). Entitlement check runs first and lists what will go read-only (e.g., "2 of your 3 designers lose edit access") | |
-| Annual seat bank | On annual plans, removing a paid office seat mid-term creates a **seat credit** usable for a future seat in the same term. No refunds | |
-| Winter Mode | Monthly plans only. Up to 4 months in any rolling 12. Base price drops to 25% of plan list. Office seats limited to 2 editable users (others read-only, and extra office seats are not billed while paused). Field app off (except Snow Lite and Snow module users, for storm visit logging). **Invoicing, autopay, portal, client payments, ledger, CRM read and inbox stay on.** No new proposals, designs or AI generation (included credits pause). One-click resume, prorated | |
-| Pause vs cancel | The cancel flow always offers Winter Mode (if eligible) and Archive. Cancellation must be completable online in the same number of steps as signup or fewer (see 14.3) | |
-| Refunds | Monthly: none, cancel any time effective end of period. Annual: 30-day money-back guarantee from first annual charge. After that, no refunds except where law requires | |
-| Price Lock Promise | Annual and annual-commit customers keep their list price for 24 months from first subscription. After that, increases are capped at 7% per year with at least 90 days' notice by email and in-app. Monthly customers get 60 days' notice. Grandfathered plan versions are honored in the entitlement engine | |
-| Taxes on Rootline's own invoices | Calculated per jurisdiction (US state SaaS taxability varies. Canada GST/HST, plus PST/QST where applicable). Use an automated tax engine on Rootline's Stripe Billing account (e.g., Stripe Tax; verify coverage). Tax IDs collected for B2B exemptions where applicable | |
-| Payment methods for SaaS bills | Card, ACH debit (US), pre-authorized debit (Canada). ACH/PAD encouraged on annual plans to cut processing cost | |
+| Rule | Behavior |
+|---|---|
+| Intervals | Monthly. Annual prepaid. Annual commitment billed monthly (annual price + 5%) |
+| Currency | USD for US-addressed Companies, CAD for Canada. Fixed at subscription creation. Change requires `platform_finance` (cancel and recreate with credit transfer) |
+| Upgrades | Immediate. Prorated charge. New entitlements effective instantly |
+| Downgrades | Effective at the end of the current period (monthly) or the term (annual). Entitlement check runs first and lists what will go read-only (e.g., "2 of your 3 designers lose edit access") |
+| Annual seat bank | On annual plans, removing a paid office seat mid-term creates a **seat credit** usable for a future seat in the same term. No refunds |
+| Winter Mode | Monthly plans only. Up to 4 months in any rolling 12. Base price drops to 25% of plan list. Office seats limited to 2 editable users (others read-only, and extra office seats are not billed while paused). Field app off (except Snow Lite and Snow module users, for storm visit logging). **Invoicing, autopay, portal, client payments, ledger, CRM read and inbox stay on.** No new proposals or AI generation (included credits pause; packs stay valid). Paid designer seats (included in the plan or bought as add-ons) keep Design Studio editing, in addition to the 2 editable users, and add-on designer seats stay billed while they do (OD-15, 24 R26-13). One-click resume, prorated |
+| Pause vs cancel | The cancel flow always offers Winter Mode (if eligible) and Archive. Cancellation must be completable online in the same number of steps as signup or fewer (see 14.3) |
+| Refunds | Monthly: none, cancel any time effective end of period. Annual: 30-day money-back guarantee from first annual charge. After that, no refunds except where law requires |
+| Price Lock Promise | Annual and annual-commit customers keep their list price for 24 months from first subscription. After that, increases are capped at 7% per year with at least 90 days' notice by email and in-app. Monthly customers get 60 days' notice. Grandfathered plan versions are honored in the entitlement engine |
+| Taxes on Rootline's own invoices | Calculated per jurisdiction (US state SaaS taxability varies. Canada GST/HST, plus PST/QST where applicable). Use an automated tax engine on Rootline's Stripe Billing account (e.g., Stripe Tax; verify coverage). Tax IDs collected for B2B exemptions where applicable |
+| Payment methods for SaaS bills | Card, ACH debit (US), pre-authorized debit (Canada). ACH/PAD encouraged on annual plans to cut processing cost |
 
 ### 4.8 Discounts, promotions and approval guardrails
 
-| Discount type | Amount | Stacking | Approval | Priority |
-|---|---|---|---|---|
-| Annual prepay | Built into list (about 12-14% depending on tier: Starter 12.7%, Grow 13.8%, Pro 11.7%) | Base | None | |
-| Founding Customer | 25% off base plan, while subscribed | Not with association discount | Automatic for the first 100 in the Wave 1 Regions | |
-| Association member (NALP, Landscape Ontario, state associations) | 10% off base plan in year 1 | Stacks with annual | Automatic via partner code | |
-| Accountant Partner client | 10% off base plan in year 1 | Stacks with annual | Automatic via partner link | |
-| Switching credit | Up to 3 months free to cover overlap with a competitor contract. Proof of current contract required | Stacks with annual | `platform_support` or sales up to 3 months | |
-| Education (horticulture and landscape programs) | Free classroom tenant, non-commercial | N/A | `platform_owner` | |
-| Sales-negotiated | Up to 10% (rep), up to 20% (sales lead), above that `platform_owner` | Never on usage meters except Enterprise | Logged in deal desk record | |
+| Discount type | Amount | Stacking | Approval |
+|---|---|---|---|
+| Annual prepay | Built into list (about 12-14% depending on tier: Starter 12.7%, Grow 13.8%, Pro 11.7%) | Base | None |
+| Founding Customer | 25% off base plan, while subscribed, plus the Price Lock Promise | Not with association discount | Automatic for the first 100 paying Companies in the six Great Lakes Regions |
+| Association member (NALP, Landscape Ontario, state associations) | 10% off base plan in year 1 | Stacks with annual | Automatic via partner code |
+| Accountant Partner client | 10% off base plan in year 1 | Stacks with annual | Automatic via partner link |
+| Switching credit | Up to 3 months free to cover overlap with a competitor contract. Proof of current contract required (OD-08) | Stacks with annual | The support agent (`platform_support`), up to 3 months |
+| Forced re-onboarding credit | 1 month free for a Company switching because its vendor forced it to re-onboard payments (6.5) | Not with the switching credit; the larger one applies | Automatic in the switching campaign |
+| Contract buyout | Full buyout of the remaining competitor contract (OD-08) | Replaces the switching credit | Pro and Enterprise on annual prepay only; the founder approves |
+| Education (horticulture and landscape programs) | Free classroom tenant, non-commercial | N/A | `platform_owner` |
+| Founder-negotiated (Enterprise) | Set by the founder in the Enterprise quote; above 20% needs a written reason | Never on usage meters except Enterprise | The founder; logged in the deal desk record, which the finance agent drafts |
 
 Rules: discounts never apply to usage meters (credits, SMS, minutes) except in Enterprise contracts. Every discount has an expiry or an explicit "while subscribed" flag. Discounts are visible on the Company's invoice. No "secret" pricing that differs from public list without a recorded reason.
 
@@ -537,30 +542,30 @@ Architecture is fixed by [08-payments-stripe.md](08-payments-stripe.md). Each Co
 | **A. None (zero markup)** | Direct charges with no `application_fee_amount`. Company pays Stripe's standard fees directly | Strongest trust and marketing message. No reconciliation of platform fees. Simplest support. Company sees Stripe fees exactly in its own dashboard | Gives up a revenue line that competitors with embedded payments treat as material | **Default for all plans** |
 | **B. Percentage application fee** | `application_fee_amount` = bps × amount, optional cap, set per charge on the PaymentIntent ([Stripe docs](https://docs.stripe.com/connect/direct-charges)) | Revenue scales with Company growth. Aligns price with value | Fee is **on top of** Stripe's fees (Stripe docs), which is hard to sell as "transparent" unless the Company opts in and gets something back | **Opt-in only**, as "Pay-as-you-grow" pricing (below) |
 | **C. Flat platform fee per transaction** | Fixed `application_fee_amount` (e.g., $0.25) | Predictable | Punishes small maintenance invoices ($45 weekly mow), the most common landscaping transaction | Rejected |
-| **D. Flat monthly "Payments Plus" fee** | Subscription add-on, no per-charge fees | Transparent | Little to sell: the processor features belong to Stripe | Rejected for MVP. Revisit if Rootline builds paid payment features (e.g., consumer financing marketplace) |
+| **D. Flat monthly "Payments Plus" fee** | Subscription add-on, no per-charge fees | Transparent | Little to sell: the processor features belong to Stripe | Rejected. Revisit if Rootline builds paid payment features (e.g., consumer financing marketplace) |
 
 #### 5.1.2 Decision (proposed)
 
 1. **Zero-Markup Pledge**. On every standard plan, Rootline adds **no** fee to client payments. The pricing page says, in plain words: *"Your clients pay you through your own Stripe account. Stripe's fees go to Stripe. We add nothing. Ever, unless you choose our pay-as-you-grow plan."*
-2. **Pay-as-you-grow option**. An opt-in alternative for new and small businesses: Starter at **$39/mo** (instead of $69-$79) **plus a 0.5% application fee** on online client payments processed through Rootline, capped at $10 per payment. The Company sees the fee as a separate line in Rootline's payout reconciliation and in its own Stripe dashboard. An in-app calculator shows the break-even point. At $69 annual Starter, the opt-in is cheaper below about $6,000/month of online volume ((69 - 39) / 0.005 = $6,000). (At the $79 monthly Starter price the break-even is about $8,000/month.) The Company is told when it crosses that threshold for 2 consecutive months and is offered a one-click switch back. Fee mechanics are specified in [08](08-payments-stripe.md) option B, where this plan was first sketched as "Flex": tips are excluded from the fee base, the same rule applies to in-person Terminal payments, ACH and card carry the same rate (the $10 cap protects large ACH payments), and Companies on the restricted-API-key path cannot use this plan because there is no Connect relationship to carry an application fee.
+2. **Pay-as-you-grow option** (in v1, OD-09). An opt-in alternative for new and small businesses: Starter at **$39/mo** (instead of $69-$79) **plus a 0.5% application fee** on online client payments processed through Rootline, capped at $10 per payment. The Company sees the fee as a separate line in Rootline's payout reconciliation and in its own Stripe dashboard. An in-app calculator shows the break-even point. At $69 annual Starter, the opt-in is cheaper below about $6,000/month of online volume ((69 - 39) / 0.005 = $6,000). (At the $79 monthly Starter price the break-even is about $8,000/month.) The Company is told when it crosses that threshold for 2 consecutive months and is offered a one-click switch back. Fee mechanics are specified in [08](08-payments-stripe.md) option B, where this plan was first sketched as "Flex": tips are excluded from the fee base, the same rule applies to in-person Terminal payments, ACH and card carry the same rate (the $10 cap protects large ACH payments), and Companies on the restricted-API-key path cannot use this plan because there is no Connect relationship to carry an application fee.
 3. **Enterprise**. Payment terms negotiable. Default remains zero markup.
 4. **Refund and dispute behavior** for opt-in fees. On full refunds, Rootline refunds the application fee too (`refund_application_fee=true`). On lost disputes, Rootline refunds the application fee. A Company never pays Rootline on money it did not keep.
-5. **Surcharging and convenience fees.** The Company may configure card surcharges or ACH incentives in [Invoicing](07-invoicing-billing-contracts.md). The surcharge is the Company's revenue, not Rootline's. Rootline enforces rule guardrails: credit cards only, not debit; a configurable cap; disclosure on invoice and checkout; state-level blocklist maintained by `platform_finance`. Card-network and state surcharge rules change, so legal must verify them at launch.
+5. **Surcharging and convenience fees.** The Company may configure card surcharges or ACH incentives in [Invoicing](07-invoicing-billing-contracts.md). The surcharge is the Company's revenue, not Rootline's. Rootline enforces rule guardrails: credit cards only, not debit; a configurable cap; disclosure on invoice and checkout; state-level blocklist maintained by `platform_finance`. Card-network and state surcharge rules change, so surcharging ships off and the founder has counsel check the rule table before any default is loosened (24 section 1.7).
 
 **Revenue foregone, made explicit (estimate).** A $1.5M-revenue design-build-maintain Company that collects 70% of revenue online processes about $1.05M per year. A hypothetical 0.5% platform spread on that would be about $5,250/year, comparable to its whole Grow subscription. Zero markup therefore gives up roughly as much revenue as the subscription brings in for mid-size Companies. We accept that trade because (a) it is the clearest differentiator we can state in one sentence, (b) BYO Stripe already removes payments-facilitator economics from our model, and (c) the [Ledger](09-accounting-ledger-integrations.md) and portal create retention that processing lock-in would otherwise provide.
 
-**Pay-as-you-grow economics, stated honestly (estimate).** Because Rootline nudges every opt-in Company back to standard Starter once it passes break-even, the plan is roughly revenue-neutral by design. A typical opt-in Company processing about $4,500/month online pays about $22.50/month in fees, which is less than the $30/month discount it receives, so Rootline nets about -$90/year per opt-in Company against annual Starter. The plan exists to win price-sensitive first-year operators away from free tools and $39-$49 entry tiers, not to earn payments revenue. It is worth keeping only if it lifts Starter gross adds by about 4% or more (the break-even lift, section 7.8). If the holdout test does not show that lift, retire it and keep the pledge absolute (open question 17.2).
+**Pay-as-you-grow economics, stated honestly (estimate).** Because Rootline nudges every opt-in Company back to standard Starter once it passes break-even, the plan is roughly revenue-neutral by design. A typical opt-in Company processing about $4,500/month online pays about $22.50/month in fees, which is less than the $30/month discount it receives, so Rootline nets about -$90/year per opt-in Company against annual Starter. The plan exists to win price-sensitive first-year operators away from free tools and $39-$49 entry tiers, not to earn payments revenue. It is worth keeping only if it lifts Starter gross adds by about 4% or more (the break-even lift, section 7.8). If the holdout test (6.10 step 7) does not show that lift, the founder retires it and keeps the pledge absolute (17.2).
 
 > **Competitive edge - payments.** Jobber and Housecall Pro run their own embedded payments products, and the landscape specialists are moving the same way: LMN Pay relaunched on Stripe in 2026 as vendor-controlled accounts (per one consultant), and Service Autopilot reviewers say they lost their choice of processor after the Xplor acquisition ([R2](research/R2-landscape-specific-platforms.md)). Rootline's pitch: *your Stripe account, your payouts, your disputes, your data, zero markup.* If a Company ever leaves Rootline, its payment history, saved cards (stored in its own Stripe account) and payouts stay with it. No vendor-run payments product in the benchmark offers that portability. We do not claim a lower card rate than Jobber's list price; we claim ownership, negotiability and no hidden take (section 2.2).
 
-#### 5.1.3 Other payments-adjacent revenue (later)
+#### 5.1.3 Other payments-adjacent revenue
 
-| Idea | Model | Priority |
-|---|---|---|
-| Consumer financing for installs (patio, irrigation system, full design-build) via a lending partner | The financing **feature** ships at V1 in proposals ([03](03-crm-sales-estimating-proposals.md) PROP-09) with no revenue to Rootline. A referral fee per funded loan is negotiated later, disclosed to the Company, and never affects which lender or offer the homeowner sees (ranking by approval odds and cost to the homeowner only, per [08](08-payments-stripe.md) option D) | |
-| Processor partner economics | Any partner economics Stripe may offer platforms. Disclosed in Rootline's terms; never changes the Company's rate ([08](08-payments-stripe.md) option E) | |
-| Equipment financing referrals (mowers, skid steers) | Referral fee from dealer or lender partners | |
-| Working-capital offers based on Ledger data (spring ramp financing) | Partner-funded. See [Moonshots](23-innovation-moonshots.md) | |
+| Idea | Model |
+|---|---|
+| Consumer financing for installs (patio, irrigation system, full design-build) via a lending partner | The financing **feature** is in proposals ([03](03-crm-sales-estimating-proposals.md) PROP-09). A referral fee per funded loan applies only where the founder has agreed one with the lending partner; it is disclosed to the Company and never affects which lender or offer the homeowner sees (ranking by approval odds and cost to the homeowner only, per [08](08-payments-stripe.md) option D) |
+| Processor partner economics | Any partner economics Stripe may offer platforms. Disclosed in Rootline's terms; never changes the Company's rate ([08](08-payments-stripe.md) option E) |
+| Equipment financing referrals (mowers, skid steers) | Referral fee from dealer or lender partners |
+| Working-capital offers based on Ledger data (spring ramp financing) | Partner-funded. See [Moonshots](23-innovation-moonshots.md) |
 
 ### 5.2 Data products
 
@@ -579,21 +584,22 @@ Rules:
 - **Licensable fields only.** Each Plant KB field carries `license_class` (owned / CC-BY / restricted). The API returns only fields licensed for redistribution. Third-party photos are excluded unless the license permits. Rootline-commissioned photos are included.
 - **Attribution and provenance** are returned with each record (curator, last reviewed date, sources).
 - **Usage metering** through the same meter infrastructure (`api_calls` meter on a `data_customer` account rather than a Company).
-- **No tenant data** ever flows into the Plant API, except aggregated "planted frequency by region" signals that pass k-anonymity (k ≥ 20 Companies) and the operator's approval.
+- **No tenant data** ever flows into the Plant API, except aggregated "planted frequency by region" signals that pass k-anonymity (k ≥ 20 Companies) and the founder's approval.
 
 #### 5.2.2 Rootline Pulse: benchmarks and indices
 
 | Product | Audience | Content | Price (proposed) |
 |---|---|---|---|
-| In-app benchmarks | Opted-in Companies (Grow+) | Compare your labor efficiency, gross margin by service line, AR days, close rate, price per 1,000 sq ft mowing, mulch install price per cubic yard against peers by region and size band | Included. Opt-in required to *see* peers ("give to get") |
+| In-app benchmarks | Opted-in Companies (Grow+; Starter contributes and sees a teaser, OD-14) | On once a cell has 10 contributing Companies (24 section 1.4). Compare your labor efficiency, gross margin by service line, AR days, close rate, price per 1,000 sq ft mowing, mulch install price per cubic yard against peers by region and size band. Price comparisons stay off until the founder has had them checked by counsel (OD-69) | Included. Opt-in required to *see* peers ("give to get") |
 | State of the Landscape Industry report | Public | Annual report: wage trends, pricing trends, seasonality, adoption of practices | Free (marketing asset), co-branded with associations |
-| Pulse Indices | Distributors, manufacturers, OEMs, investors, associations | Quarterly regional indices (release cadence per [18](18-reporting-analytics.md) section 4.11.4; monthly only after privacy and counsel review): maintenance price index, install backlog weeks, labor rate index, materials price index (mulch, stone, sod), snow event volume | $1,000-$5,000/mo subscriptions (estimate; validate with 5 design partners) |
+| Pulse Indices | Distributors, manufacturers, OEMs, investors, associations | Quarterly regional indices (release cadence per [18](18-reporting-analytics.md) section 4.11.4; monthly only after privacy and counsel review): maintenance price index, install backlog weeks, labor rate index, materials price index (mulch, stone, sod), snow event volume | $1,000-$5,000/mo subscriptions (estimate; the finance agent validates it with the first data customers) |
 
 Privacy and antitrust guardrails (all, required before any external sale):
 1. **Opt-in** at the Company level by `owner` only. Separate opt-ins for (a) in-app peer benchmarks and (b) inclusion in external aggregated products. Both revocable. Revocation excludes the Company from the next publication cycle.
 2. **Aggregation thresholds:** each published cell needs ≥ 10 contributing Companies, no single Company may contribute > 25% of the cell's weight, and the top two no more than 40% (the full disclosure-control rules are in [18](18-reporting-analytics.md) section 4.11.4). Otherwise the cell is suppressed.
 3. **Lag and historic only:** external indices publish data at least 60 days old (at least 3 months for any price or wage index, per [18](18-reporting-analytics.md) section 4.11.7), describe historic averages only, never forward-looking prices, and never per-competitor figures. This lowers the risk of the benchmarks being used to coordinate prices; counsel must review (see 14.4).
 4. **No re-identification:** licensees agree contractually not to re-identify. Rootline audits output for small-cell leakage.
+5. **Price data waits for counsel:** price benchmarks and price indices (maintenance, labor rate, materials) stay off until the founder has had them checked by counsel (OD-69); the other benchmarks and indices ship with k of 10 or more and the lags above.
 
 ### 5.3 Homeowner freemium AI design app ("Rootline Home") and lead marketplace ("Rootline Match")
 
@@ -601,11 +607,11 @@ Privacy and antitrust guardrails (all, required before any external sale):
 
 #### 5.3.1 Product tiers for homeowners
 
-| Tier | Price (proposed) | Features | Priority |
-|---|---|---|---|
-| Free | $0 | 3 AI mockups/month from a photo. Region-aware plant suggestions (Plant KB, curated palette for their ZIP's Region). "What grows here" plant finder. Rough budget range by scope (e.g., "front foundation bed refresh: $4k-$9k in your area", from Pulse data when cells pass thresholds, otherwise curated ranges). Save and share | |
-| Plus | $9.99/mo or $39/yr | Unlimited mockups (fair use). To-scale plan from satellite + their measurements. Plant list with mature sizes. DIY shopping list. Seasonal care calendar | |
-| Get it installed | Free to homeowner | Request a pro: design + photos + dimensions + budget + timeline sent to matched Companies | |
+| Tier | Price (proposed) | Features |
+|---|---|---|
+| Free | $0 | 3 AI mockups/month from a photo. Region-aware plant suggestions (Plant KB, curated palette for their ZIP's Region). "What grows here" plant finder. Rough budget range by scope (e.g., "front foundation bed refresh: $4k-$9k in your area", from Pulse data when cells pass thresholds, otherwise curated ranges). Save and share |
+| Plus | $9.99/mo or $39/yr | Unlimited mockups (fair use). To-scale plan from satellite + their measurements. Plant list with mature sizes. DIY shopping list. Seasonal care calendar |
+| Get it installed | Free to homeowner | Request a pro: design + photos + dimensions + budget + timeline sent to matched Companies |
 
 #### 5.3.2 Lead qualification and routing rules
 
@@ -617,13 +623,13 @@ Privacy and antitrust guardrails (all, required before any external sale):
 
 #### 5.3.3 Monetization options for Companies
 
-| Model | Price (proposed) | When to use | Priority |
-|---|---|---|---|
-| **Pay per accepted lead** | Maintenance lead $15-$30. Small install (< $10k est.) $35-$60. Major design-build (≥ $10k est.) $75-$150. Price shown before acceptance | Default | |
-| **Territory subscription** | $199-$599/mo for first-look rights in a set of ZIP codes, capped lead count | Mature markets with dense supply | |
-| **Success fee** | 2% of first signed Proposal value, capped at $500. Only if state law allows (some contractor regulations restrict referral or finder fees; verify per state) | Optional, for Companies that prefer pay-on-win | |
+| Model | Price (proposed) | When to use |
+|---|---|---|
+| **Pay per accepted lead** | Maintenance lead $15-$30. Small install (< $10k est.) $35-$60. Major design-build (≥ $10k est.) $75-$150. Price shown before acceptance | Default |
+| **Territory subscription** | $199-$599/mo for first-look rights in a set of ZIP codes, capped lead count | Mature markets with dense supply |
+| **Success fee** | 2% of first signed Proposal value, capped at $500. Only if state law allows (some contractor regulations restrict referral or finder fees; verify per state) | Optional, for Companies that prefer pay-on-win |
 
-Guardrails: free replacement or credit for invalid leads (wrong contact, not the owner, outside service area, duplicate) when disputed within 7 days. AI pre-screens disputes and `platform_support` decides. Lead fees appear on the Company's Rootline invoice as a separate line. Companies set monthly lead budgets and pause anytime.
+Guardrails: free replacement or credit for invalid leads (wrong contact, not the owner, outside service area, duplicate) when disputed within 7 days. AI pre-screens disputes; the support agent (`platform_support`) decides clear cases and escalates the rest to the founder. Lead fees appear on the Company's Rootline invoice as a separate line. Companies set monthly lead budgets and pause anytime.
 
 > **Competitive edge - lead quality.** Traditional home-service lead marketplaces have been widely criticized by contractors for selling the same lead to several competitors. Rootline Match sells exclusive first-look leads, limits each lead to at most 3 Companies, refunds invalid leads, and the lead arrives **with a to-scale draft design, photos, dimensions and a stated budget**. Jobber, LMN and Aspire are back-office tools that do not run a design-led homeowner funnel in this form. Design services such as Yardzen sell a homeowner a picture and then a referral to an installer ([R2](research/R2-landscape-specific-platforms.md) section 11); Rootline Match hands the installer the editable design itself.
 
@@ -636,7 +642,7 @@ This table works the funnel through at one illustrative annual scale (about 1.3M
 | Homeowners creating at least 1 mockup in the year | Back-solved from the steps below | about 1.3M (roughly 1-2% of US and Canadian owner-occupied homes per year; estimate) |
 | "Get it installed" request rate | 6% of homeowners with a mockup (KPI in section 15) | about 78,000 requests |
 | Passes verification, ownership and scope checks | 85% | about 66,000 qualified leads |
-| Accepted by at least one eligible Company (up to 3 offers) | 90%; the rest hit supply gaps and feed the sales waitlist | about 60,000 accepted leads |
+| Accepted by at least one eligible Company (up to 3 offers) | 90%; the rest hit supply gaps and feed the marketing waitlist | about 60,000 accepted leads |
 | Lead revenue | $55 average fee x 85% net of refunds | about $2.8M |
 | AI cost of free usage | 2.5 mockup sets per homeowner at about $0.20 raw each, plus plant and budget calls | about $0.55-$0.75M |
 | Paid homeowner acquisition | Most traffic is organic (Plant Finder SEO, shared designs, Company referrals); paid budget capped | about $0.5M |
@@ -654,23 +660,23 @@ Guardrails that keep this from becoming a cash sink:
 
 #### 5.4.1 Partner tracks
 
-| Track | Examples (illustrative, not endorsements or signed partners) | What they get | What Rootline gets | Commercial terms (proposed) | Priority |
-|---|---|---|---|---|---|
-| **Distributors** | National and regional landscape and irrigation supply (e.g., SiteOne Landscape Supply, Ewing Irrigation & Landscape Supply, Horizon Distribution), turf and chemical distributors | Catalog and price feeds inside contractors' Price Books, Design Studio and purchase orders. Demand signal (aggregated) | Catalog data, co-marketing at branch events, possibly referral fees | Free integration. Optional "verified catalog" listing fee **never affects ranking in design suggestions** | |
-| **Nurseries and growers** | Wholesale growers, regional nurseries | Availability exchange into Plant KB and designs, wholesale ordering links | Inventory data, regional plant performance knowledge | Free Nursery Partner API (5.2.1) | |
-| **Equipment dealers and OEMs** | Dealers for mower, compact equipment and handheld brands | Fleet integration (hours, service intervals), service reminders | Fleet data integrations, co-marketing, financing referrals | Revenue share on referred subscriptions (15% year 1). Optional OEM co-op funding: a dealer bundles 3 months of Grow with a fleet purchase and the OEM's co-op budget pays Rootline at list. Neutrality rule (5.4.2) applies: no influence on fleet or equipment recommendations | |
-| **Associations** | NALP (US), Landscape Ontario, Landscape Canada, state associations in the Wave 1 Regions (e.g., ONLA in Ohio, which runs CENTS, and ILCA in Illinois, which runs iLandscape, plus Michigan and Wisconsin associations; verify), and later TNLA in Texas or FNGLA in Florida as the footprint grows | Member discount, education content, co-branded benchmark reports, sponsorship | Credibility, member lists via sponsorship, speaking slots | 10% member discount + 10% revenue share to association for year 1 (or sponsorship) | |
-| **Franchise systems** | Lawn and landscape franchisors | Franchisor console: standardized price books, brand templates, rollup KPIs, royalty reporting | Many tenants in one contract | Enterprise contract. Per-location pricing at volume discount (e.g., $199-$399/location/mo) | |
-| **Accountants / CPAs** | Firms serving trades and green industry | Free multi-client console, free bookkeeper seats, certification, practice listing | High-trust referrals, reduced churn (books stay in Rootline) | 15% revenue share for 24 months **or** 10% client discount. Partner chooses per client | |
-| **Consultants, coaches, peer groups** | Landscape business coaches, estimating trainers | Partner dashboard, implementation services revenue, certification | Referrals, best-practice templates (production rates, KPIs) | 20% revenue share year 1. Paid "Certified Implementer" services marketplace | |
-| **Creators / affiliates** | YouTube and social creators in lawn care and landscaping | Affiliate links, sponsor deals, early features | Top-of-funnel reach | 20% of first-year revenue, 60-day cookie, plus flat sponsorship fees | |
-| **Technology partners** | Telematics, payroll, insurance, review platforms | Listed integrations, API | Ecosystem breadth | Marketplace listing free. Rev share on paid integrations | |
-| **Schools** | Horticulture and landscape design programs | Free education tenants, curriculum | Future hires trained on Rootline | Free | |
+| Track | Examples (illustrative, not endorsements or signed partners) | What they get | What Rootline gets | Commercial terms (proposed) |
+|---|---|---|---|---|
+| **Distributors** | National and regional landscape and irrigation supply (e.g., SiteOne Landscape Supply, Ewing Irrigation & Landscape Supply, Horizon Distribution), turf and chemical distributors | Catalog and price feeds inside contractors' Price Books, Design Studio and purchase orders. Demand signal (aggregated) | Catalog data, co-marketing at branch events, possibly referral fees | Free integration. Optional "verified catalog" listing fee **never affects ranking in design suggestions** |
+| **Nurseries and growers** | Wholesale growers, regional nurseries | Availability exchange into Plant KB and designs, wholesale ordering links | Inventory data, regional plant performance knowledge | Free Nursery Partner API (5.2.1) |
+| **Equipment dealers and OEMs** | Dealers for mower, compact equipment and handheld brands | Fleet integration (hours, service intervals), service reminders | Fleet data integrations, co-marketing, financing referrals | Revenue share on referred subscriptions (15% year 1). Optional OEM co-op funding: a dealer bundles 3 months of Grow with a fleet purchase and the OEM's co-op budget pays Rootline at list. Neutrality rule (5.4.2) applies: no influence on fleet or equipment recommendations |
+| **Associations** | NALP (US), Landscape Ontario, Landscape Canada, state associations in the six launch Regions (e.g., ONLA in Ohio, which runs CENTS, and ILCA in Illinois, which runs iLandscape, plus Michigan and Wisconsin associations; verify), and others such as TNLA in Texas or FNGLA in Florida wherever marketing extends | Member discount, education content, co-branded benchmark reports, sponsorship | Credibility, member lists via sponsorship, speaking slots | 10% member discount + 10% revenue share to association for year 1 (or sponsorship) |
+| **Franchise systems** | Lawn and landscape franchisors | Franchisor console: standardized price books, brand templates, rollup KPIs, royalty reporting | Many tenants in one contract | Enterprise contract. Per-location pricing at volume discount (e.g., $199-$399/location/mo) |
+| **Accountants / CPAs** | Firms serving trades and green industry | Free multi-client console (Accountant Hub, 24 R26-6), free bookkeeper seats, certification, practice listing | High-trust referrals, reduced churn (books stay in Rootline) | 15% revenue share for 24 months **or** 10% client discount. Partner chooses per client |
+| **Consultants, coaches, peer groups** | Landscape business coaches, estimating trainers | Partner dashboard, implementation services revenue, certification | Referrals, best-practice templates (production rates, KPIs) | 20% revenue share year 1. Paid "Certified Implementer" services marketplace |
+| **Creators / affiliates** | YouTube and social creators in lawn care and landscaping | Affiliate links, sponsor deals | Top-of-funnel reach | 20% of first-year revenue, 60-day cookie, plus flat sponsorship fees, paid through the partner program (24 R26-5). Every sponsored piece carries a clear paid-partnership disclosure |
+| **Technology partners** | Telematics, payroll, insurance, review platforms | Listed integrations, API | Ecosystem breadth | Marketplace listing free. Rev share on paid integrations |
+| **Schools** | Horticulture and landscape design programs | Free education tenants, curriculum | Future hires trained on Rootline | Free |
 
 #### 5.4.2 Partner program mechanics
 
-- **Partner tiers:** Registered (0-4 referred paying Companies), Silver (5-19), Gold (20+). Gold gets co-marketing funds, a dedicated partner manager, roadmap previews.
-- **Attribution:** first-touch partner link or code, valid for 60 days; a partner-registered deal locks attribution for 90 days. Conflicts (two partners) are resolved by `platform_finance` using the earliest valid registration.
+- **Partner tiers:** Registered (0-4 referred paying Companies), Silver (5-19), Gold (20+). Gold gets co-marketing funds, a direct line to the founder and previews of new features.
+- **Attribution:** first-touch partner link or code, valid for 60 days; a partner-registered deal locks attribution for 90 days. Conflicts (two partners) are resolved by the finance agent (`platform_finance`) using the earliest valid registration.
 - **Commission accrual:** monthly, on **collected** subscription revenue (excluding usage, taxes and refunds). Clawback if the Company refunds within 60 days. Payouts monthly once balance ≥ $100, through a payout provider. Partner tax forms (W-9 or equivalent) are collected before the first payout.
 - **Partner portal:** referral links, deal registration, commission statements, co-branded collateral, certification courses.
 - **Neutrality rule:** no partner payment may influence plant recommendations, design suggestions or Price Book defaults. Sponsored placements are labeled "Sponsored" and appear only in clearly marked catalog surfaces.
@@ -681,15 +687,15 @@ Guardrails that keep this from becoming a cash sink:
 
 ### 6.1 Segments and ideal customer profile (ICP)
 
-| Segment | Size (employees) | Typical revenue band (estimate) | Service mix | Current stack | Fit | Plan | Motion | GTM focus (scope tag) |
+| Segment | Size (employees) | Typical revenue band (estimate) | Service mix | Current stack | Fit | Plan | Motion | Marketing focus |
 |---|---|---|---|---|---|---|---|---|
 | S1 Solo / micro mow-and-maintain | 1-3 | < $250k | Weekly mowing Apr-Nov, cleanups | Free apps, Yardbook, paper, QuickBooks | Low ARPA, high churn | Starter | Self-serve only | Secondary, self-serve |
-| **S2 Residential design-build-maintain (BEACHHEAD)** | **5-40** | **$750k-$6M** | Installs (beds, plantings, paver patios, walls, lighting, irrigation) + maintenance programs | Jobber/LMN/SingleOps/SynkedUP + QuickBooks + separate design or CAD tool + spreadsheets | **Highest**: every differentiator matters | Grow / Pro | Trial + inside sales | **Primary |
-| S3 Residential maintenance + lawn/PHC programs | 5-30 | $500k-$4M | Mowing, 5-step fertilizer and weed-control programs, aeration/overseeding, cleanups | Jobber, Service Autopilot, Real Green | Medium-high (routing, programs, chemical logs, portal) | Grow | Trial + inside sales | Primary follow-on |
-| S4 Commercial maintenance | 40-200 | $3M-$25M | HOA, commercial properties, snow | Aspire, LMN, Service Autopilot | High value, longer cycle, needs job costing and commercial portal | Pro / Enterprise | Sales-led | Expansion |
-| S5 Specialty: irrigation, lighting, tree care, snow | 5-50 | varies | Service-line specific | Mixed | Medium (needs modules) | Grow / Pro + modules | Trial + inside sales | Expansion- |
+| **S2 Residential design-build-maintain (BEACHHEAD)** | **5-40** | **$750k-$6M** | Installs (beds, plantings, paver patios, walls, lighting, irrigation) + maintenance programs | Jobber/LMN/SingleOps/SynkedUP + QuickBooks + separate design or CAD tool + spreadsheets | **Highest**: every differentiator matters | Grow (5-25 people) / Pro (above 25, R26-8) | Self-serve trial + founder note on PQL | **Primary** |
+| S3 Residential maintenance + lawn/PHC programs | 5-30 | $500k-$4M | Mowing, 5-step fertilizer and weed-control programs, aeration/overseeding, cleanups | Jobber, Service Autopilot, Real Green | Medium-high (routing, programs, chemical logs, portal) | Grow | Self-serve trial + founder note on PQL | Primary follow-on |
+| S4 Commercial maintenance | 40-200 | $3M-$25M | HOA, commercial properties, snow | Aspire, LMN, Service Autopilot | High value, longer cycle, needs job costing and commercial portal | Pro / Enterprise | Self-serve trial; founder demo for Enterprise | Secondary |
+| S5 Specialty: irrigation, lighting, tree care, snow | 5-50 | varies | Service-line specific | Mixed | Medium (needs modules) | Grow / Pro + modules | Self-serve trial + module trials | Secondary |
 | S6 Independent landscape designers (no crews) | 1-3 | < $500k | Design fees, install coordination | CAD tools, Canva, spreadsheets | Medium (Design Studio, proposals, plant KB) | **Design Solo** plan (section 16) | Self-serve | Wedge |
-| S7 Enterprise and franchise | 200+ / multi-location | $25M+ | All | Aspire, ServiceTitan, custom | High value, high demands | Enterprise | Field + partner | Expansion |
+| S7 Enterprise and franchise | 200+ / multi-location | $25M+ | All | Aspire, ServiceTitan, custom | High value, high demands | Enterprise | Founder demo and quote + partners | Secondary |
 
 **ICP scorecard** (used in lead scoring and outbound targeting; total 100):
 
@@ -697,18 +703,18 @@ Guardrails that keep this from becoming a cash sink:
 |---|---|
 | 5-40 employees (peak season) | 20 |
 | ≥ 30% of revenue from design/build or enhancements | 20 |
-| Located in a launch Region (the six Wave 1 Great Lakes Regions at MVP; Wave 2 Regions once they open, 6.2) | 15 |
+| Located in a Region where the marketing agent is marketing (the six Great Lakes Regions first, 6.2) | 15 |
 | Uses ≥ 3 separate tools (FSM + accounting + design + other) | 10 |
 | Has an office manager or admin | 10 |
 | Residential-heavy (≥ 60% residential) | 10 |
 | Growth intent (hiring, new trucks, expanding service area) | 10 |
 | Bilingual crews (Spanish UI valued) | 5 |
 
-A score of 70 or more marks the account as ICP for routing to inside sales. Scores of 50-69 go to a self-serve nurture track.
+A score of 70 or more marks the account as ICP: the marketing agent gives it the high-touch nurture (migration-slot offers, Greenleaf sandbox tours, switch guides for its declared tool). Scores of 50-69 go to a self-serve nurture track. Any trial that becomes a PQL gets a personal note from the founder (6.7).
 
 ### 6.2 Beachhead selection
 
-**Decision (founder): the launch region is the Great Lakes.** Rootline launches in a single US cluster, the Plant KB macro-region that keeps its existing name "Great Lakes and Ohio Valley" ([12](12-plant-knowledge-base.md)). This replaces the earlier plan of two beachhead clusters (Great Lakes and Ohio Valley plus the higher-scoring of Mid-Atlantic Piedmont or Front Range) and closes open question 17.1. The brief says to start "where the operator's plant knowledge is strongest"; the weighted criteria below are how the launch region was scored, and they stay in force for choosing every later cluster (Wave 3 below). The ICP (6.1), tier prices (4.2), the sample tenant Greenleaf Grounds Co. (Columbus, Ohio) and the Canada scope  do not change.
+**Decision (founder, OD-01): marketing and plant seeding start in the Great Lakes.** The product, every plan and every offer work in every US state and Canadian province from launch (24 R24-19, R26-10); the launch region decides only where the plant curator agent seeds the Plant KB first and where the marketing agent spends first. The region is a single US cluster, the Plant KB macro-region that keeps its existing name "Great Lakes and Ohio Valley" ([12](12-plant-knowledge-base.md)). This replaces the earlier plan of two beachhead clusters (Great Lakes and Ohio Valley plus the higher-scoring of Mid-Atlantic Piedmont or Front Range) and closes open question 17.1. The brief says to start "where the operator's plant knowledge is strongest"; the weighted criteria below are how the launch region was scored, and they stay in force whenever the founder chooses where curation and marketing extend next. The ICP (6.1), tier prices (4.2), the sample tenant Greenleaf Grounds Co. (Columbus, Ohio) and Canada support (R24-19) are the same everywhere. More Regions are curation work, not product work.
 
 **Weighted criteria:**
 
@@ -722,45 +728,45 @@ A score of 70 or more marks the account as ICP for routing to inside sales. Scor
 | Competitive intensity (incumbent satisfaction, recent price increases) | 10% | Switching propensity |
 | Bilingual workforce share | 5% | Spanish crew app advantage |
 
-**Wave 1 launch Regions.** Six curated Regions, all at "Excellent" Plant KB coverage before launch. Together they span roughly USDA zones 5a-6b on the 2023 map, with lake-moderated pockets; zones and microregions are verified per Region by `platform_curator` ([12](12-plant-knowledge-base.md)).
+**Launch Regions.** Six curated Regions, which the plant curator agent brings to "Excellent" Plant KB coverage first; Region-specific plant claims and Plant Finder pages go live in each Region once its profiles reach "Excellent" (24 section 1.4). Together they span roughly USDA zones 5a-6b on the 2023 map, with lake-moderated pockets; zones and microregions are verified per Region by the plant curator agent (`platform_curator`, [12](12-plant-knowledge-base.md)).
 
-| Wave 1 Region | Metro core | What sets it apart (approx.; verify per Region) | Nearest anchor show (verify dates) |
+| Launch Region | Metro core | What sets it apart (approx.; verify per Region) | Nearest anchor show (verify dates) |
 |---|---|---|---|
 | Central Ohio | Columbus | Worked-example Region in the Plant KB and home of the sample tenant Greenleaf Grounds Co.; clay soils, growing suburbs | CENTS (Columbus) |
 | Northeast Ohio | Cleveland-Akron | Lake Erie Shore / snow-belt microregion; older housing stock needing renovation | CENTS (Columbus) |
 | Southeast Michigan and Toledo | Detroit-Ann Arbor-Toledo | Affluent design-build suburbs; one Region across the Michigan-Ohio line | Great Lakes Trade Expo (Michigan) |
 | West Michigan | Grand Rapids-Holland-Kalamazoo | Lake-effect snow belt; strong nursery industry nearby | Great Lakes Trade Expo (Michigan) |
-| Chicagoland and Northwest Indiana | Chicago suburbs, Northwest Indiana | Largest metro in Wave 1; heavy clay, deer pressure on the suburban edge | Mid-Am (Chicago), iLandscape (Illinois) |
+| Chicagoland and Northwest Indiana | Chicago suburbs, Northwest Indiana | Largest metro of the six; heavy clay, deer pressure on the suburban edge | Mid-Am (Chicago), iLandscape (Illinois) |
 | Southeast Wisconsin | Milwaukee-Madison | Colder end of the launch region; lake-moderated shore | Mid-Am (Chicago), iLandscape (Illinois) |
 
 **Why Great Lakes** (scored against the criteria above):
 
 - **Plant knowledge where curation pays (30%).** Deer browse, road-salt spray along drives and walks, heavy clay and freeze-thaw cycles kill generic plant lists, so Region-rated palettes are visibly better than a plant encyclopedia here. Six adjacent Regions share one macro-region profile, so curation effort compounds instead of starting over in each Region.
 - **Dense design-build suburbs (20% + 15%).** Columbus, Cleveland-Akron, Detroit-Ann Arbor, Grand Rapids, Chicago's suburbs and Milwaukee-Madison hold many owner-led residential design-build-maintain firms and an older housing stock that needs renovation (to be sized bottom-up from association and license lists; [01](01-market-landscape.md) MI-13).
-- **Long winter planning season and a strong snow upsell (10%).** Owners plan, design and buy software through a long winter, which matches the trial and migration motion (6.6). Many firms also run snow and ice, so snow is both a reason to open Rootline in January and an upsell: Snow Lite is included in every tier from MVP, and the Snow & Ice add-on follows at V1 (4.5).
-- **Regional winter shows (10%).** Mid-Am, CENTS, the Great Lakes Trade Expo and iLandscape are regional shows held in the winter buying season, each reaching a share of the Wave 1 Regions, so the booth demo (6.5) reaches most of the launch region without national-show costs.
-- **Competitive intensity (10%).** The same incumbents sell here as elsewhere (Jobber, LMN, Aspire, Service Autopilot), so the consolidation-driven switching triggers in section 2.1 apply in full; win/loss (6.10 step 6) measures whether switching propensity differs by Region.
+- **Long winter planning season and a strong snow upsell (10%).** Owners plan, design and buy software through a long winter, which matches the trial and migration motion (6.6). Many firms also run snow and ice, so snow is both a reason to open Rootline in January and an upsell: Snow Lite is included in every tier, and the Snow & Ice add-on serves firms that need the full module (4.5).
+- **Regional winter shows (10%).** Mid-Am, CENTS, the Great Lakes Trade Expo and iLandscape are regional shows held in the winter buying season, each reaching a share of the six Regions, so the booth demo (6.5) reaches most of the launch region without national-show costs.
+- **Competitive intensity (10%).** The same incumbents sell here as elsewhere (Jobber, LMN, Aspire, Service Autopilot), so the consolidation-driven switching triggers in section 2.1 apply in full; win/loss notes (6.10 step 6) measure whether switching propensity differs by Region.
 - **Bilingual crews (5%).** Spanish-speaking crews are common in the metro Regions, as they are nationally, so the Spanish crew app counts here too.
-- **A natural extension into Ontario.** The Southern Ontario Golden Horseshoe shares the lake-moderated climate and many of the same plants, so the Canadian Region inherits Great Lakes profiles instead of starting from zero, and Landscape Ontario Congress opens the Canadian wave.
+- **A natural extension into Ontario.** The Southern Ontario Golden Horseshoe shares the lake-moderated climate and many of the same plants, so the Canadian Region inherits Great Lakes profiles instead of starting from zero, and Landscape Ontario Congress is the natural Canadian show.
 
 **Shortlist as scored** (illustrative clusters that each share an ecoregion and climate and have a strong regional show; status after the decision in the Notes column):
 
 | Cluster | Climate/ecology (approx.) | Anchor show (typical month; verify dates) | Notes |
 |---|---|---|---|
-| Mid-Atlantic Piedmont and Coastal Plain (DC, Baltimore, Northern Virginia, Richmond) | USDA zones roughly 7a-8a | MANTS (Baltimore, January) | Wave 3 candidate. Affluent suburbs, strong design-build, snow-adjacent |
-| Great Lakes and Ohio Valley (Columbus, Cleveland-Akron, Detroit-Ann Arbor-Toledo, Grand Rapids, Chicago suburbs, Milwaukee-Madison) | Zones roughly 5a-6b (2023 map), lake-moderated pockets | CENTS (Columbus, January), Mid-Am (Chicago, January), Great Lakes Trade Expo (Michigan, January), iLandscape (Illinois, February) | **Selected: the launch region (Wave 1).** Long planning season, strong snow upsell. Wave 2 adds Cincinnati-Dayton, Indianapolis, Western New York (Buffalo-Rochester) and Erie/Pittsburgh |
-| Southern Ontario Golden Horseshoe (Toronto, Hamilton, Kitchener-Waterloo) | Canadian zones roughly 5-7 | Landscape Ontario Congress (Toronto, January) | **Wave 2, with Canadian support. CAD pricing, strong association, inherits Great Lakes profiles |
-| North Texas Blackland Prairie (Dallas-Fort Worth) | Zones roughly 8a-8b | TNLA-affiliated events (verify) | Wave 3 candidate. Year-round season, irrigation-heavy, water restrictions |
-| Front Range Colorado (Denver, Boulder, Colorado Springs) | Zones roughly 5b-6a, semi-arid | ProGreen EXPO (Denver, February) | Wave 3 candidate. Xeriscape, water-wise design demand |
-| Pacific Northwest (Portland, Seattle) | Zones roughly 8a-8b, maritime | Farwest Show (Portland, August; verify) | Wave 3 candidate. Plant-savvy clientele, strong nursery industry |
+| Mid-Atlantic Piedmont and Coastal Plain (DC, Baltimore, Northern Virginia, Richmond) | USDA zones roughly 7a-8a | MANTS (Baltimore, January) | Candidate for the second US marketing cluster. Affluent suburbs, strong design-build, snow-adjacent |
+| Great Lakes and Ohio Valley (Columbus, Cleveland-Akron, Detroit-Ann Arbor-Toledo, Grand Rapids, Chicago suburbs, Milwaukee-Madison) | Zones roughly 5a-6b (2023 map), lake-moderated pockets | CENTS (Columbus, January), Mid-Am (Chicago, January), Great Lakes Trade Expo (Michigan, January), iLandscape (Illinois, February) | **Selected: the launch region.** Long planning season, strong snow upsell. Adjacent Regions for curation and marketing: Cincinnati-Dayton, Indianapolis, Western New York (Buffalo-Rochester) and Erie/Pittsburgh |
+| Southern Ontario Golden Horseshoe (Toronto, Hamilton, Kitchener-Waterloo) | Canadian zones roughly 5-7 | Landscape Ontario Congress (Toronto, January) | **Adjacent; served from launch** with Canadian support (R24-19). CAD pricing, strong association, inherits Great Lakes profiles |
+| North Texas Blackland Prairie (Dallas-Fort Worth) | Zones roughly 8a-8b | TNLA-affiliated events (verify) | Candidate for the second US marketing cluster. Year-round season, irrigation-heavy, water restrictions |
+| Front Range Colorado (Denver, Boulder, Colorado Springs) | Zones roughly 5b-6a, semi-arid | ProGreen EXPO (Denver, February) | Candidate for the second US marketing cluster. Xeriscape, water-wise design demand |
+| Pacific Northwest (Portland, Seattle) | Zones roughly 8a-8b, maritime | Farwest Show (Portland, August; verify) | Candidate for the second US marketing cluster. Plant-savvy clientele, strong nursery industry |
 
-**Decision and expansion path:**
+**Where curation and marketing go:**
 
-- **Wave 1: the Great Lakes launch region.** The six Regions above, with the Plant KB at "excellent" quality (curated palettes for every common use: foundation, pollinator, shade, rain garden, screening, deer-resistant, salt-tolerant parkway (xeric deferred to Wave 3)) before launch. All 20 design partners are in Wave 1 Regions (roughly 6-8 in Chicagoland and Southeast Wisconsin, 6-8 in Ohio and 4-6 in Michigan; 6.10 step 2), so early product evidence comes from the market we sell into. The Founding Customer program (4.6), the ICP scorecard (6.1) and the regional shows (6.5) all point at Wave 1. Snow Lite ships with it because owners in the region evaluate, switch and onboard during the snow season (4.5).
-- **Wave 2: extend within the region and across the border.** The Southern Ontario Golden Horseshoe ships with Canadian support (the Canada scope in [24](24-product-scope-decisions-catalog.md)), inheriting Great Lakes profiles, plus Cincinnati-Dayton, Indianapolis, Western New York (Buffalo-Rochester) and Erie/Pittsburgh. Wave 2 opens when Wave 1 meets its traction signals (6.11), not on a date.
-- **Wave 3: the second US cluster.** Chosen later, based on traction in the launch region, by scoring the remaining candidates (Mid-Atlantic Piedmont, Front Range, North Texas, Pacific Northwest) with the weighted criteria above. Whether an arid-West cluster should also be scored for its turf-water deadlines is [01](01-market-landscape.md) open question Q11.
+- **The six launch Regions.** The plant curator agent brings the Plant KB to "excellent" quality here first (curated palettes for every common use: foundation, pollinator, shade, rain garden, screening, deer-resistant, salt-tolerant parkway; xeric palettes come with arid Regions). The Founding Customer program (4.6), the ICP scorecard (6.1) and the regional shows (6.5) all point here. Snow Lite matters here because owners in the region evaluate, switch and onboard during the snow season (4.5).
+- **Adjacent Regions and Ontario.** Cincinnati-Dayton, Indianapolis, Western New York (Buffalo-Rochester) and Erie/Pittsburgh are curated next, inheriting Great Lakes profiles; the marketing agent spends in each once its coverage is "Excellent" and the 6.11 signals hold. Canadian Companies sign up and are served from launch (R24-19, R26-10): marketing in Ontario runs through Landscape Ontario and partners because of CASL (14.3), and marketing to Quebec waits for the founder's French-language check (OD-70).
+- **A second US cluster.** The founder chooses it by scoring the remaining candidates (Mid-Atlantic Piedmont, Front Range, North Texas, Pacific Northwest) with the weighted criteria above, on measured traction (6.11). The product already works there. Whether an arid-West cluster should also be scored for its turf-water deadlines is [01](01-market-landscape.md) question Q11.
 
-Other Regions launch with "good" coverage (validated taxonomy and traits, coarser region profiles) and a visible coverage badge, so we never over-promise. Self-serve signups from outside the launch region are welcome at every stage; sales capacity, shows and design-partner work stay in the open waves.
+Every other US and Canadian Region works from launch with "good" coverage (validated taxonomy and traits, coarser region profiles) and a visible coverage badge, so we never over-promise. Signups from anywhere in the US and Canada are welcome from launch; shows and paid marketing stay in Regions at "Excellent" coverage.
 
 ### 6.3 Positioning and messaging
 
@@ -787,39 +793,39 @@ Other Regions launch with "good" coverage (validated taxonomy and traits, coarse
 | **Jobber** | Brand, simplicity, huge ecosystem, polished mobile app, broad home-services base | Landscape depth (design studio, plant KB, production-rate estimating, chemical logs, snow), built-in GL, zero payment markup, active field seats | "How do you produce a to-scale design and takeoff today?" "Where do your books live and who reconciles?" "What do you pay per user in July vs January?" | Migration concierge + up to 3 months switching credit |
 | **Housecall Pro** | SMB marketing features, home-services breadth | Same as above. Landscape-native programs and recurring Service Agreements | "Can it run a season-long 5-step lawn program with chemical records?" | Same |
 | **LMN (Granum)** | Landscape estimating and budgeting methodology, education content, established in the industry. Now one company with SingleOps | Integrated design + AI mockups, built-in GL (no QuickBooks dependency), modern portal, published pricing, no implementation fee, a payments account the Company owns | "What does your client see when you present a design?" "How many tools between estimate and books?" "If you left, would your saved cards and payout history come with you?" | Free LMN import (budgets, production rates, price book, clients). File-based, since LMN has no public REST API per a third-party report ([R2](research/R2-landscape-specific-platforms.md)) |
-| **Aspire** | Enterprise commercial depth, job costing, scale | Time-to-value (days, not months), SMB price, design-led residential sales, self-serve | "How long did implementation take and what did it cost?" | Not targeted at MVP. Compete in S4 at V1 |
-| **SingleOps (Granum) / Arborgold** | Tree care and design-build workflows, strong proposals and client portal | Design studio + AI + plant KB + Ledger, broader service lines, no roadmap uncertainty from a post-merger product convergence | "How are your designs and plant lists created?" "What has Granum told you about SingleOps' roadmap next to LMN?" | Import (SingleOps export importer at V1) |
+| **Aspire** | Enterprise commercial depth, job costing, scale | Time-to-value (days, not months), SMB price, design-led residential sales, self-serve | "How long did implementation take and what did it cost?" | Founder demo for S4 and Enterprise prospects; migration concierge (a scoped project on Enterprise) |
+| **SingleOps (Granum) / Arborgold** | Tree care and design-build workflows, strong proposals and client portal | Design studio + AI + plant KB + Ledger, broader service lines, no roadmap uncertainty from a post-merger product convergence | "How are your designs and plant lists created?" "What has Granum told you about SingleOps' roadmap next to LMN?" | SingleOps export importer (24 R24-15) |
 | **Service Autopilot (Xplor) / Real Green (WorkWave)** | Automation-heavy maintenance and lawn-care programs, deep chemical-program heritage | Modern UX, design-build, Ledger, portal, choice of processor (your own Stripe) | "How much time do you spend maintaining automations?" "Did your processing rate change after the acquisition?" | Import + card re-collection campaign kit with an autopay incentive |
 | **Copilot CRM** | All-in-one lawn and landscape positioning for small residential firms (verify current packaging) | Design studio + plant KB + Ledger + estimating depth | "How do you price a paver patio or a planting plan today?" | Import |
 | **SynkedUP** | Coaching-led estimating, strong reviews on value | Integrated design + Ledger + crew app + AI at lower per-user cost | "What do you pay per user, and what's included?" | Import |
 | **Spreadsheets + QuickBooks + CAD** | "Free", familiar | Everything connected, less double entry | "How many hours a week does your office spend re-typing?" | Free onboarding |
 
-Full battlecards live in the sales enablement wiki and are refreshed quarterly against [01-market-landscape.md](01-market-landscape.md).
+Full battlecards live in the console's market intelligence area ([01-market-landscape.md](01-market-landscape.md) MI-06); the marketing agent refreshes them quarterly and the founder approves publication. They serve founder demos and the marketing agent's own copy.
 
 ### 6.5 Channels
 
-| Channel | Tactics | Target share of new logos (steady-state mix, first-touch, estimate; column sums to 100%) | CAC band (estimate) | Priority |
-|---|---|---|---|---|
-| **Content and SEO** | (1) **Programmatic, curated Plant Finder pages** by Region and use ("Deer-resistant shrubs for zone 6b clay soil in Central Ohio", "Salt-tolerant perennials for Chicago parkways"), built from the Plant KB with curator review. Thin pages are blocked by a quality gate: minimum 8 curated plants, a curator note, photos. (2) Pricing and estimating guides ("How to price mulch per cubic yard this season", "Paver patio cost calculator"). (3) Free tools: mulch/stone calculators, mowing price calculator, profit-margin calculator. (4) Comparison and switching pages | 22% | Low ($300-$900) | |
-| **Homeowner app (Rootline Home)** | Homeowners invite their contractor ("Send this design to my landscaper"). Contractors receiving a design import are offered a trial | 2% (rising to about 10% as Rootline Home scales) | Very low | |
-| **YouTube and creators** | Sponsor lawn/landscape business channels (business-ops, design-build, Spanish-language channels). "Build a business on Rootline" series with real Companies. Affiliate program | 12% | Medium ($800-$1,500) | |
-| **Trade shows** | Great Lakes launch-region shows first: Mid-Am (Chicago), CENTS (Columbus), Great Lakes Trade Expo (Michigan) and iLandscape (Illinois), all verify dates; Landscape Ontario Congress (Toronto) with the Ontario wave (Wave 2); then Equip Exposition (Louisville, KY, typically October; verify dates), state association shows, and the anchor show of the Wave 3 cluster (MANTS, ProGreen EXPO or another, per 6.2). Booth demo: "Bring a photo of a client's yard, leave with a mockup and proposal." Speaking slots on pricing and margins | 12% | Medium-high ($1,500-$4,000) | Great Lakes shows, Ontario and national |
-| **Facebook groups and communities** | Founder and team participate as helpful practitioners in owner-run lawn and landscape business groups, Reddit (r/landscaping, r/lawncare) and LawnSite. Share free tools, never spam. Host a Rootline community (forum + monthly live Q&A) | 5% | Low | |
-| **Switching campaigns + migration concierge** | Targeted campaigns around competitor price changes and renewal seasons. "Switch by Feb 15, live by spring" with the Spring-Ready Guarantee. **Consolidation triggers** (section 2.1): when a vendor forces a payments re-onboarding (LMN Pay's move to Stripe), merges product lines (Granum), or changes processor terms (Service Autopilot), run a dated campaign: "You have to re-onboard payments anyway. Re-onboard to an account you own." Each campaign ships with the matching importer and a card re-collection kit (portal link, autopay incentive template) | 8% | Medium | |
-| **Partners** (associations, CPAs, distributors, coaches) | Section 5.4 | 15% | Low-medium (rev share) | |
-| **Paid search and social** | Competitor and category keywords ("landscape design software", "landscaping estimating software"), retargeting of calculator users | 6% | Higher ($1,200-$2,500) | limited |
-| **Outbound** | Inside sales to ICP lists built from public license and association data, with **email-first, compliant** outreach (CAN-SPAM; no cold texting or auto-dialed calls without consent under TCPA). In Canada, CASL requires consent for commercial email, so Ontario outbound runs through association and partner channels instead (14.3) | 5% | High ($2,500-$5,000) | |
-| **Customer referrals** | Give one month, get one month. Referral link in-app and in client-facing emails ("Powered by Rootline" footer, which Pro can remove) | 13% | Very low | |
+| Channel | Tactics | Target share of new logos (steady-state mix, first-touch, estimate; column sums to 100%) | CAC band (estimate) |
+|---|---|---|---|
+| **Content and SEO** | (1) **Programmatic, curated Plant Finder pages** by Region and use ("Deer-resistant shrubs for zone 6b clay soil in Central Ohio", "Salt-tolerant perennials for Chicago parkways"), built from the Plant KB and checked by the plant curator agent. Thin pages are blocked by a quality gate: minimum 8 curated plants, a curator note, photos; a page publishes only when it passes both this gate and [12](12-plant-knowledge-base.md) KB-API-04 (24 R26-2). (2) Pricing and estimating guides ("How to price mulch per cubic yard this season", "Paver patio cost calculator"). (3) Free tools: mulch/stone calculators, mowing price calculator, profit-margin calculator. (4) Switch guides and named comparison pages, each competitor claim checked against a primary source dated within 90 days (24 R26-3) | 22% | Low ($300-$900) |
+| **Homeowner app (Rootline Home)** | Homeowners invite their contractor ("Send this design to my landscaper"). Contractors receiving a design import are offered a trial | 2% (rising to about 10% as Rootline Home scales) | Very low |
+| **YouTube and creators** | Sponsor lawn/landscape business channels (business-ops, design-build, Spanish-language channels). "Build a business on Rootline" series with real Companies. Affiliate program paid through the partner program, with a clear paid-partnership disclosure on every sponsored piece | 12% | Medium ($800-$1,500) |
+| **Trade shows** | Great Lakes shows: Mid-Am (Chicago), CENTS (Columbus), Great Lakes Trade Expo (Michigan) and iLandscape (Illinois), all verify dates; Landscape Ontario Congress (Toronto) for Ontario; Equip Exposition (Louisville, KY, typically October; verify dates) and state association shows; the anchor show of any second cluster the founder opens to marketing (MANTS, ProGreen EXPO or another, per 6.2). The founder works the booth; the marketing agent prepares the demo kit and the follow-ups. Booth demo: "Bring a photo of a client's yard, leave with a mockup and proposal." Speaking slots on pricing and margins | 12% | Medium-high ($1,500-$4,000) |
+| **Facebook groups and communities** | The founder participates as a helpful practitioner (the marketing agent drafts; the founder approves and posts under their own account) in owner-run lawn and landscape business groups, Reddit (r/landscaping, r/lawncare) and LawnSite. Share free tools, never spam. Host a Rootline community (forum + monthly live Q&A) | 5% | Low |
+| **Switching campaigns + migration concierge** | Targeted campaigns around competitor price changes and renewal seasons. "Switch by Feb 15, live by spring" with the Spring-Ready Guarantee. **Consolidation triggers** (section 2.1): when a vendor forces a payments re-onboarding (LMN Pay's move to Stripe), merges product lines (Granum), or changes processor terms (Service Autopilot), run a dated campaign: "You have to re-onboard payments anyway. Re-onboard to an account you own." Each campaign ships with the matching importer and a card re-collection kit (portal link, autopay incentive template) | 8% | Medium |
+| **Partners** (associations, CPAs, distributors, coaches) | Section 5.4 | 15% | Low-medium (rev share) |
+| **Paid search and social** | Category keywords ("landscape design software", "landscaping estimating software") and competitor names as keywords, with ads that never use competitor trademarks in the copy; retargeting only of consented visitors to non-results pages, never calculator results (24 R26-11) | 6% | Higher ($1,200-$2,500) |
+| **Outbound** | The marketing agent emails ICP lists built from public license and association data: **email only, compliant** outreach (CAN-SPAM; no cold texting or auto-dialed calls without consent under TCPA). In Canada, CASL requires consent for commercial email, so Ontario outbound runs through association and partner channels instead (14.3) | 5% | High ($2,500-$5,000) |
+| **Customer referrals** | Give one month, get one month. Referral link in-app and in client-facing emails ("Powered by Rootline" footer, which Pro can remove) | 13% | Very low |
 
 ### 6.6 Seasonality of buying and the GTM calendar
 
-Landscaping software buying is seasonal. Owners evaluate and switch in the off-season and resist change once crews are running. The calendar below sets campaign timing, onboarding staffing and cash planning. Month labels describe a northern US/Canada business, which is what the Great Lakes launch region is. Southern year-round markets have a flatter but similar curve.
+Landscaping software buying is seasonal. Owners evaluate and switch in the off-season and resist change once crews are running. The calendar below sets campaign timing, onboarding capacity and cash planning. Month labels describe a northern US/Canada business, which is what the Great Lakes launch region is. Southern year-round markets have a flatter but similar curve.
 
-| Months | Owner's reality | Buying behavior | Rootline GTM focus | Onboarding/CS load |
+| Months | Owner's reality | Buying behavior | Rootline GTM focus | Onboarding and support load |
 |---|---|---|---|---|
-| **Oct** | Fall cleanups, aeration/overseeding, irrigation winterizations, budgeting for next year | Starting to look, Equip Exposition | Equip Exposition, "next-season" webinars, price-lock offers, Snow Lite site-list setup for snow Companies, Snow & Ice add-on promotion  | Low |
-| **Nov-Dec** | Leaf cleanups, holiday lighting, snow prep, year-end books | **Shortlist and trials begin**. Year-end tax planning (annual prepay attractive before year end; owners should consult their tax advisor) | Winter trials (30 days), annual prepay promotion, migration slots booking, CPA channel (year-end close) | Rising |
-| **Jan-Feb** | Planning, hiring, design season for spring installs, trade shows, snow events | **Peak buying and switching** | Mid-Am, CENTS, Great Lakes Trade Expo, iLandscape (Wave 1); LO Congress from the Ontario wave. Switching campaigns. Spring-Ready deadline Feb 15 | **Peak**: migration concierge at max capacity |
+| **Oct** | Fall cleanups, aeration/overseeding, irrigation winterizations, budgeting for next year | Starting to look, Equip Exposition | Equip Exposition, "next-season" webinars, price-lock offers, Snow Lite site-list setup for snow Companies, Snow & Ice add-on promotion | Low |
+| **Nov-Dec** | Leaf cleanups, holiday lighting, snow prep, year-end books | **Shortlist and trials begin**. Year-end tax planning (annual prepay attractive before year end; owners should consult their tax advisor) | Winter trials (30 days), annual prepay promotion, migration slots booking, CPA push through the accountant partner track (year-end close, 24 R26-6) | Rising |
+| **Jan-Feb** | Planning, hiring, design season for spring installs, trade shows, snow events | **Peak buying and switching** | Mid-Am, CENTS, Great Lakes Trade Expo, iLandscape and Landscape Ontario Congress. Switching campaigns. Spring-Ready deadline Feb 15 | **Peak**: migration concierge at max capacity |
 | **Mar-Apr** | Spring cleanups, irrigation start-ups, mowing starts, crews hired | Last-minute buyers, mostly go-live | Go-live support, crew app training (EN/ES), Rootline Home homeowner campaigns start | **Peak** go-live |
 | **May-Aug** | Full production: weekly mowing, installs, fertilizer rounds | Low new buying, high usage | Expansion: add-ons, AI credits, Match leads, designer seats. Content production. Homeowner app peak | Steady, support-heavy |
 | **Sep** | Overseeding, fall install push, renewals of maintenance agreements | Evaluation starts for some | Agreement-renewal features marketing, case studies | Medium |
@@ -828,24 +834,25 @@ Landscaping software buying is seasonal. Owners evaluate and switch in the off-s
 Operational implications:
 - **Onboarding peak (Jan-Apr):** concurrent migrations run at about 2x the rest of the year. The self-serve importers, the AI mapping assistant (6.8) and the public migration-slot calendar (section 16, idea 18) must carry that peak without lowering migration quality.
 - **Cash:** annual prepay concentrated in Nov-Feb makes Rootline's cash flow strongest in winter, while spring go-live support costs peak Feb-Apr.
-- **Crew-app change window:** avoid major UX changes to the crew app between Apr 1 and Sep 30 ("field freeze"). Ship big crew-facing changes in the off-season with training.
+- **Crew-app change window:** avoid major UX changes to the crew app between Apr 1 and Sep 30 ("field freeze"). Crew-facing changes ship behind flags that each Company can defer until fall, with training (24 section 1.8).
 
-### 6.7 Sales motion: free trial plus inside sales
+### 6.7 Sales motion: self-serve trial plus founder demos
+
+Rootline has no sales team. Every plan below Enterprise is bought self-serve; the founder gives Enterprise and franchise demos ("talk to the founder"); Claude's marketing agent runs the channels, the nurture and the PQL notes under [26](26-agent-led-marketing-playbook.md).
 
 ```mermaid
 flowchart LR
   V["Visitor (SEO, creator, show, partner)"] --> S["Self-serve signup (14 or 30 day trial)"]
   S --> O["Guided onboarding checklist"]
   O --> Q{"PQL criteria met?"}
-  Q -- "Yes and ICP score at least 70" --> I["Inside sales: discovery + tailored demo"]
-  Q -- "Yes and ICP score below 70" --> SS["Self-serve conversion nudges"]
-  Q -- "No by day 7" --> N["Rescue: onboarding call offer + demo company tour"]
+  Q -- "Yes" --> F["Personal note from the founder, drafted by the marketing agent"]
+  Q -- "No by day 7" --> N["Rescue: support agent help + demo company tour"]
   N --> O
-  I --> P["Plan + migration proposal"]
-  P --> W["Closed won: annual Grow or Pro"]
-  SS --> W2["Closed won: Starter or Grow self-serve"]
-  W --> M["Migration concierge + Spring-Ready plan"]
-  W2 --> M2["Self-serve import + webinars"]
+  F --> SS["Self-serve conversion: plan picker, migration slot booking"]
+  SS --> W["Paid: Starter, Grow or Pro"]
+  W --> M["Migration concierge (annual Grow/Pro) or self-serve import + webinars"]
+  E["Enterprise or franchise inquiry"] --> D["Talk to the founder: demo and quote"]
+  D --> WE["Enterprise contract"]
 ```
 
 **Product-qualified lead (PQL) definition**: within the first 7 days of the trial, at least 4 of the following:
@@ -857,32 +864,33 @@ flowchart LR
 6. ≥ 5 visits scheduled
 7. Bank feed connected or QuickBooks/Xero connected
 
+**Activation and PQL are two measures with two jobs (24 R26-7).** **Activation** is 4 of the 6 onboarding milestones in 4.6 and earns the trial extension. A **PQL** is 4 of the 7 signals above within 7 days and triggers a personal note from the founder, drafted by the marketing agent. Both are reported (15).
+
 **Routing:**
 
-| Segment signal | Owner of the deal | SLA |
+| Segment signal | Who handles it | SLA |
 |---|---|---|
-| Starter intent (1-3 users, no design) | Self-serve, lifecycle emails, chat | Chat response < 5 min in business hours |
-| Grow intent / ICP ≥ 70 | Inside sales (SDR qualifies, AE closes) | First touch < 2 business hours after PQL |
-| Pro / > 20 field users / commercial | AE with solutions engineer | Demo within 3 business days |
-| Enterprise / franchise | Enterprise AE | Discovery within 1 week |
-
+| Starter intent (1-3 users, no design) | Self-serve: lifecycle emails, support agent chat | Chat response < 5 min |
+| Any PQL | The marketing agent drafts a personal note; the founder reviews and sends it | Draft within 2 business hours after PQL |
+| Grow or Pro intent / ICP ≥ 70 | Self-serve conversion with migration-slot booking; high-touch nurture by the marketing agent | First nurture touch within 1 business day |
+| Enterprise / franchise | "Talk to the founder": demo and quote | Demo offered within 1 week |
 
 ### 6.8 Onboarding and customer success
 
-**Onboarding phases** (Grow/Pro; Starter gets the self-serve version):
+**Onboarding phases** (Grow/Pro; Starter gets the self-serve version). The support agent runs onboarding and the migration concierge in the app, with the AI mapping assistant; it escalates to the founder only what it cannot resolve.
 
-| Phase | Days | Milestones | Owner |
+| Phase | Days | Milestones | Run by |
 |---|---|---|---|
-| Kickoff | 0-3 | Goals, data inventory, go-live date. Stripe connect. 10DLC registration submitted | Onboarding specialist + `owner` |
-| Migrate | 3-14 | Clients, properties, contacts, Service Agreements, price book, open invoices/AR, opening balances to the Ledger (or QBO/Xero sync configured), equipment, employees | Migration concierge + `office_manager` |
-| Configure | 7-21 | Production rates, proposal templates, portal branding, automations starter pack, chemical logs, crews and routes | Specialist + `ops_manager` |
-| Train | 14-28 | Office training (2 x 90 min), crew training (EN/ES, 30 min, in-app video), designer training | Specialist |
+| Kickoff | 0-3 | Goals, data inventory, go-live date. Stripe connect. 10DLC registration submitted | Support agent + `owner` |
+| Migrate | 3-14 | Clients, properties, contacts, Service Agreements, price book, open invoices/AR, opening balances to the Ledger (or QBO/Xero sync configured), equipment, employees | Migration concierge (support agent with the AI mapping assistant) + `office_manager` |
+| Configure | 7-21 | Production rates, proposal templates, portal branding, automations starter pack, chemical logs, crews and routes | Support agent + `ops_manager` |
+| Train | 14-28 | Office training (2 x 90 min, guided in-app sessions and recorded webinars), crew training (EN/ES, 30 min, in-app video), designer training | Support agent |
 | Go-live | 21-30 | First routes run, first invoices paid online, first month-end close checklist | Company |
-| Adopt | 30-90 | Health check at day 45 and day 90. Expansion review (designer seats, add-ons) | CSM (Pro) / pooled CS (Grow) |
+| Adopt | 30-90 | Health check at day 45 and day 90. Expansion review (designer seats, add-ons) | Support agent (Pro and Grow) |
 
-**Migration concierge** scope: CSV/XLSX import templates for every core object. Guided importers for common exports (Jobber, LMN, QuickBooks Online customer and item lists; others V1). An AI mapping assistant that proposes column mappings and flags anomalies (duplicate clients, addresses failing geocode, items without cost). A dry-run report before commit. Rollback within 72 hours. **The free concierge covers one source system on annual Grow and up to three on Pro.** Monthly plans pay $499 per source system (credited back if they switch to annual within 60 days).
+**Migration concierge** scope: CSV/XLSX import templates for every core object. Guided importers for Jobber, LMN, SingleOps, Service Autopilot, Real Green and QuickBooks exports, plus CSV (24 R24-15). An AI mapping assistant that proposes column mappings and flags anomalies (duplicate clients, addresses failing geocode, items without cost). A dry-run report before commit. Rollback within 7 days or until the first financial posting against imported records, whichever comes first (24 R24-22). **The free concierge covers one source system on annual Grow and up to three on Pro.** Monthly plans pay $499 per source system (credited back if they switch to annual within 60 days).
 
-**Customer health score** (0-100), computed daily: weekly active office users / seats (20), crew app active ratio in season (15), invoices sent and paid online (15), proposals sent (10), Ledger used as system of record or sync healthy (10), AI and design usage (10), support sentiment and ticket volume (10), billing health (10). Bands: green ≥ 70, yellow 50-69, red < 50. Red triggers a CSM task (Pro) or an automated rescue sequence (Grow/Starter). Health is seasonally adjusted: crew metrics are excluded in Nov-Feb for non-snow Companies.
+**Customer health score** (0-100), computed daily: weekly active office users / seats (20), crew app active ratio in season (15), invoices sent and paid online (15), proposals sent (10), Ledger used as system of record or sync healthy (10), AI and design usage (10), support sentiment and ticket volume (10), billing health (10). Bands: green ≥ 70, yellow 50-69, red < 50. Red triggers a rescue task for the support agent (Pro) or an automated rescue sequence (Grow/Starter); the support agent escalates to the founder what it cannot fix. Health is seasonally adjusted: crew metrics are excluded in Nov-Feb for non-snow Companies.
 
 **Customer education:** Rootline Academy (EN/ES) with role-based tracks (Owner, Office, Designer, Crew Lead, Bookkeeper), certifications, and a public directory of Certified Rootline Implementers.
 
@@ -897,58 +905,54 @@ flowchart LR
 | **Price Lock Promise** | Predictable cost | Reduces renewal friction |
 | **Benchmarks** | Peer comparisons only available while subscribed and opted-in | Ongoing value |
 | **Community and Academy** | Peer learning, certifications | Emotional switching cost |
-| **Annual prepay** | Default on sales-assisted deals with incentives | Lower logo churn |
-| **Proactive CS triggers** | Health score, failed payment rescue, usage drops after the spring peak | Earlier intervention |
-| **Cancel flow alternatives** | Winter Mode, downgrade, Archive, talk to a human | Save rate target ≥ 20% of cancel attempts (estimate) |
+| **Annual prepay** | Default in the Nov-Feb plan picker and on Enterprise quotes, with incentives | Lower logo churn |
+| **Proactive support triggers** | Health score, failed payment rescue, usage drops after the spring peak, acted on by the support agent | Earlier intervention |
+| **Cancel flow alternatives** | Winter Mode, downgrade, Archive, write to the founder | Save rate target ≥ 20% of cancel attempts (estimate) |
 
-**Churn reasons taxonomy** (captured in the cancel flow and by CS): business closed or sold, seasonal pause, price, missing feature (tagged to module), crew adoption failure, poor onboarding, moved to competitor (named), moved to free tool, consolidated into parent company. Each reason maps to an owner and a quarterly review.
+**Churn reasons taxonomy** (captured in the cancel flow and by the support agent): business closed or sold, seasonal pause, price, missing feature (tagged to module), crew adoption failure, poor onboarding, moved to competitor (named), moved to free tool, consolidated into parent company. Each reason maps to the agent that acts on it (support, marketing or engineering) and to the founder's quarterly review.
 
 **Expansion paths** (NRR drivers): office seats as the Company grows, designer seats as design-build grows, Starter to Grow (design + ledger + white-label), Grow to Pro (3D, WIP, multi-branch, unlimited automations), add-ons (snow, where Snow Lite users are the natural base for the Snow & Ice add-on; payroll, receptionist, website), AI credit packs, Match leads.
 
 ### 6.10 Pricing validation plan
 
-| Step | Method | When | Decision it informs |
+There are no design partners and no research firm. The finance and marketing agents measure every step from real trial users and paying Companies, and the founder makes each decision.
+
+| Step | Method (who measures) | When | Decision it informs |
 |---|---|---|---|
-| 1 | Van Westendorp price-sensitivity survey + feature MaxDiff with 150+ landscape owners (association lists, show intercepts) | Before prices are published | Tier price ranges, which features anchor Grow vs Pro |
-| 2 | Design-partner pricing (20 design partners, all in the Wave 1 Great Lakes Regions: roughly 6-8 Chicagoland and Southeast Wisconsin, 6-8 Ohio, 4-6 Michigan; founding pricing) with willingness-to-pay interviews at day 60 | Design-partner stage | Validate ARPA and add-on attach |
-| 3 | Live A/B test of pricing-page *presentation* (not different prices for the same plan to similar customers at the same time): annual vs monthly default, calculator placement | From | Conversion |
-| 4 | Cohort-based price tests on **new** regions or seasons (e.g., Grow at $249 vs $279 annual in different Regions or selling seasons) | | Elasticity |
-| 5 | AI credit consumption analysis: per-action cost vs credit price; credit-pack attach | Monthly | Credit prices, included allotments |
-| 6 | Win/loss interviews, 10 per month | Ongoing | Packaging fixes |
-| 7 | Pay-as-you-grow holdout test: offer it to a random half of eligible Starter trials in one selling season | | Keep it only if Starter gross adds rise by about 4% or more (5.1.2) |
-| 8 | "2-minute bill test" in moderated usability sessions with 12 owners: can they predict their July and January bill from the pricing page alone? | Before the pricing page ships, then after every packaging change | Pricing-page copy and calculator defaults (risk register, 14.6) |
+| 1 | In-product price-sensitivity survey (Van Westendorp + feature MaxDiff) offered to trial users and paying Companies who opt in (marketing agent) | Each selling season | Tier price ranges, which features anchor Grow vs Pro |
+| 2 | Founding Customer economics: ARPA, add-on attach and plan mix of the first 100 paying Companies in the six Great Lakes Regions, plus willingness-to-pay questions in an in-app check-in at day 60 (finance agent) | From the first paying Company | Validate ARPA and add-on attach |
+| 3 | Live A/B test of pricing-page *presentation* (not different prices for the same plan to similar customers at the same time): annual vs monthly default, calculator placement (marketing agent) | Always on | Conversion |
+| 4 | Cohort-based price tests on **new** regions or seasons (e.g., Grow at $249 vs $279 annual in different Regions or selling seasons); the finance agent drafts the plan and the founder approves it | Between selling seasons | Elasticity |
+| 5 | AI credit consumption analysis: per-action cost vs credit price; credit-pack attach (finance agent) | Monthly | Credit prices, included allotments |
+| 6 | Win/loss notes, at least 10 per month: a one-question reason at conversion and cancellation, follow-up emails with consent, and tagged support conversations (marketing agent) | Ongoing | Packaging fixes |
+| 7 | Pay-as-you-grow holdout test: offer it to a random half of eligible Starter trials in one selling season (finance agent) | One selling season | Keep it only if Starter gross adds rise by about 4% or more (5.1.2) |
+| 8 | "2-minute bill test": an in-product prompt asks trial users to predict their July and January bill from the pricing page alone, and the marketing agent compares the answers with their real bill preview | Always on; re-checked after every packaging change | Pricing-page copy and calculator defaults (risk register, 14.6) |
 
 <a id="611-launch-sequence-and-stage-gates"></a>
 ### 6.11 Expansion sequence and traction signals
 
-The GTM opens the next wave only when the current one proves its numbers, not on a calendar. Each step is a decision for `platform_owner`, reviewed with the cohort dashboards in [19](19-platform-admin-portal.md).
+The product, every plan and every offer are live across the US and Canada from launch, and there is no release sequence. What extends step by step is where the plant curator agent curates to "Excellent" and where the marketing agent spends. The founder extends marketing when the signals below hold on actual numbers, not on a calendar, reviewed with the cohort dashboards in [19](19-platform-admin-portal.md).
 
 ```mermaid
 flowchart LR
-  DP["Design partners (20 Companies, Great Lakes Wave 1 Regions)"] --> R0{"Ready to sell the MVP?"}
-  R0 -- "Yes" --> W1["Wave 1: Great Lakes launch region (Founding 100, Snow Lite)"]
-  R0 -- "No" --> DP
-  W1 --> R1{"Wave 1 signals met?"}
-  R1 -- "Yes" --> W2["Wave 2: Ontario plus 4 Great Lakes Regions, partners, national shows, Match pilot"]
-  R1 -- "No" --> FIX["Fix packaging or onboarding, repeat the Wave 1 playbook"]
-  FIX --> W1
-  W2 --> R2{"Wave 2 signals met?"}
-  R2 -- "Yes" --> W3["Wave 3: second US cluster (6.2 scoring), then US and Canada broad, commercial S4 push, Enterprise AE"]
-  R2 -- "No" --> W2
+  L["Launch: the whole product, US and Canada; marketing in the six Great Lakes Regions"] --> R1{"Signals met in the marketed Regions?"}
+  R1 -- "Yes" --> X["Founder extends marketing: adjacent Regions and Ontario partners, then a second US cluster (6.2)"]
+  R1 -- "No" --> FIX["Fix packaging, onboarding or the weakest channel"]
+  FIX --> R1
+  X --> R1
 ```
 
-| Step | Traction signals (all required; proposed) | If missed |
+| Founder decision | Traction signals (all required; proposed) | If missed |
 |---|---|---|
-| **Ready to sell the (design partners to open sales in Wave 1) | 15 of 20 design partners live through one full month-end close. Median migration ≤ 21 days. Crew app crash-free sessions ≥ 99.5%. At least 8 partners would pay list price (day-60 interview). No P1 data-integrity bug open | Keep working with design partners only. Do not open sales into a spring with a broken migration |
-| **Open Wave 2** (expand regions) | ≥ 120 paying Companies in the Wave 1 Great Lakes Regions. Trial-to-paid ≥ 12% overall and ≥ 25% for ICP ≥ 70. Grow CAC payback ≤ 12 months on actual spend. 12-month logo retention forecast ≥ 80% for Grow. Design-led proposal share ≥ 30% | Stay in the Wave 1 Regions. Fix the weakest metric before adding a Region |
-| **Open Wave 3 and go broad** | Partner-sourced share of new ARR ≥ 15%. NRR ≥ 105% on the first full cohort. Plant KB "excellent" in at least 7 Regions (the six Wave 1 Regions plus Southern Ontario). Onboarding proven at 2x steady state (6.6) | Add Regions one at a time instead of going broad; hold the Wave 3 cluster until the signals are met |
+| **Extend marketing to the adjacent Regions** | ≥ 120 paying Companies in the six Great Lakes Regions. Trial-to-paid ≥ 12% overall and ≥ 25% for ICP ≥ 70. Grow CAC payback ≤ 12 months on actual spend. 12-month logo retention forecast ≥ 80% for Grow. Design-led proposal share ≥ 30%. The new Region's Plant KB at "Excellent" | Keep marketing spend in the six Regions and fix the weakest metric first. Signups from everywhere continue |
+| **Market a second US cluster** | Partner-sourced share of new ARR ≥ 15%. NRR ≥ 105% on the first full cohort. Plant KB "excellent" in at least 7 Regions (the six launch Regions plus Southern Ontario). Onboarding proven at 2x steady state (6.6) | Add Regions one at a time instead of going broad |
 
 ---
 
 <a id="7-unit-economics-and-revenue-scenarios"></a>
 ## 7. Unit economics
 
-> Every number in this section is a **modeling assumption or an estimate**, chosen to be plausible for B2B SMB vertical SaaS and to make the model's logic explicit. None is a measured Rootline result. Replace with measured data from design partners and paying Companies as it arrives. The section works per account and per funnel step; it deliberately makes no year-by-year revenue projection, because those depend on build and sales timing that this proposal does not estimate. The live model should be a spreadsheet owned by `platform_finance`, with this section as its specification.
+> Every number in this section is a **modeling assumption or an estimate**, chosen to be plausible for B2B SMB vertical SaaS and to make the model's logic explicit. None is a measured Rootline result. The finance agent replaces each with measured data from paying Companies as it arrives. The section works per account and per funnel step; it deliberately makes no year-by-year revenue projection. The live model is a spreadsheet kept by the finance agent (`platform_finance`), with this section as its specification; the founder reviews it.
 
 ### 7.1 Model structure
 
@@ -962,14 +966,14 @@ Reported ARR      = Contracted ARR + trailing-12-month usage and field-seat over
 Gross margin      = (Revenue - COGS) / Revenue
 COGS              = SaaS payment processing + cloud infra + maps/GIS/data + AI inference + SMS/voice
                     + bank-feed aggregator + other per-tenant third-party + support/onboarding-run cost
-CAC (per segment) = (sales + marketing spend incl. salaries, tools, events, partner commissions,
+CAC (per segment) = (marketing and sales spend incl. agent and tool costs, events, partner commissions,
                      referral credits, pre-go-live onboarding and migration) / new paying logos
 Payback (months)  = CAC / (ARPA x gross margin)
 LTV               = ARPA x gross margin x expected lifetime months  (lifetime = 1 / monthly logo churn, capped at 60)
 NRR               = (starting MRR + expansion - contraction - churned MRR) / starting MRR, for a cohort over 12 months
 ```
 
-Because field seats are billed on active users, **MRR is seasonal**: field-seat overage rises from April to October and falls in winter. Board reporting therefore uses Contracted ARR as the headline, and Reported ARR uses a trailing-12-month average for overage, so a strong July does not inflate ARR.
+Because field seats are billed on active users, **MRR is seasonal**: field-seat overage rises from April to October and falls in winter. Reporting therefore uses Contracted ARR as the headline, and Reported ARR uses a trailing-12-month average for overage, so a strong July does not inflate ARR.
 
 ### 7.2 Revenue assumptions per tier (steady state)
 
@@ -993,7 +997,7 @@ Blended ARPA at the steady-state mix: 0.36 × 95 + 0.45 × 340 + 0.16 × 860 + 0
 | SMS and voice (included allotments) | $3.30 | $18 | $57 | $150 | Assumes about $0.011 all-in per segment incl. carrier fees (estimate; verify) and 60-65% utilization. Click-to-call minutes are assumed at about $0.014/min and under 15% utilization, which adds about $2/mo on Grow and is inside this estimate's rounding. 10DLC one-time fees absorbed on annual Grow/Pro (4.4) are counted in CAC, not here |
 | Bank-feed aggregator | $1 | $3 | $6 | $20 | Plaid-class per-connection fees (estimate; verify contract) |
 | Other per-tenant third-party (e-sign, email, push, error tracking seats, tax engine) | $1 | $3 | $7 | $20 | |
-| Support and run-time CS (allocated) | $8 | $22 | $40 | $180 | Excludes pre-sale onboarding (counted in CAC) |
+| Support and run-time customer success (support agent and escalations, allocated) | $8 | $22 | $40 | $180 | Excludes pre-sale onboarding (counted in CAC) |
 | **Total COGS** | **$26.80** | **$90.50** | **$225** | **$850** | |
 | **ARPA** | $95 | $340 | $860 | $3,200 | |
 | **Gross margin** | **71.8%** | **73.4%** | **73.8%** | **73.4%** | Target blended ≥ 72%, ≥ 77% at scale |
@@ -1014,7 +1018,7 @@ Model prices used: Anthropic API list prices as of October 2026 (verify before u
 | Document understanding (per page) | 2 | $0.034-$0.05 | about $0.005-$0.01 | 70-90% | Batchable |
 | AI receptionist (per minute; not credits) | - | $0.39-$0.49 | about $0.04-$0.10 (telephony + speech-to-text + text-to-speech + LLM) | 75-90% | Call length, model latency tier |
 
-**Guardrails:** each action has a `max_raw_cost` circuit breaker in the AI Gateway. If an action's trailing 7-day median raw cost exceeds 45% of its credit revenue at the lowest pack price, `platform_finance` and `platform_engineer` get an alert and the action is a candidate for re-pricing (with 60 days' notice) or re-routing.
+**Guardrails:** each action has a `max_raw_cost` circuit breaker in the AI Gateway. If an action's trailing 7-day median raw cost exceeds 45% of its credit revenue at the lowest pack price, the finance and engineering agents get an alert and the action is a candidate for re-routing, or for re-pricing with 60 days' notice, which the founder approves.
 
 ### 7.5 Customer acquisition cost (estimates)
 
@@ -1026,11 +1030,11 @@ Model prices used: Anthropic API list prices as of October 2026 (verify before u
 | Partners (associations, CPAs, coaches) | $1,000-$1,800 incl. rev share | Grow, Pro |
 | Trade shows | $1,500-$4,000 | Grow, Pro |
 | Paid search/social | $1,200-$2,500 | Grow |
-| Outbound + AE-led | $3,000-$8,000 | Pro, Enterprise |
+| Outbound + founder demos | $3,000-$8,000 | Pro, Enterprise |
 
-**Target CAC ceilings** (to keep payback ≤ 12 months): Starter ≤ $600 (self-serve only), Grow ≤ $2,500, Pro ≤ $7,500, Enterprise ≤ $25,000.
+**Target CAC ceilings** (to keep payback ≤ 12 months): Starter ≤ $600 (self-serve only), Grow ≤ $2,500, Pro ≤ $7,500, Enterprise ≤ $25,000. Design Solo CAC must also pay back within 12 months, like every other plan (CAC ≤ 12 x ARPA x gross margin, 7.1).
 
-**Read channel CAC fully loaded.** Per the CAC definition in 7.1, each channel's CAC must carry the sales and pre-go-live onboarding time it consumes, not only program spend; sales-assisted Grow+ deals from trade shows and outbound carry most of it. Blended CAC therefore falls only as SEO, referrals, partners and the homeowner app take share from AE-led deals and trade shows (the channel mix in 6.5).
+**Read channel CAC fully loaded.** Per the CAC definition in 7.1, each channel's CAC must carry the founder's demo and booth time, the agents' token and tool costs and the pre-go-live onboarding it consumes, not only program spend; trade shows, outbound and Enterprise demos carry most of it. Blended CAC therefore falls only as SEO, referrals, partners and the homeowner app take share from trade shows and outbound (the channel mix in 6.5).
 
 ### 7.6 Churn, LTV and payback by tier
 
@@ -1042,7 +1046,7 @@ Model prices used: Anthropic API list prices as of October 2026 (verify before u
 | Enterprise | $3,200 | 73% | $2,336 | 0.6% | 60 | $140,160 | $25,000 | 5.6x | 10.7 mo |
 
 Interpretation:
-- **Starter only works self-serve.** Any sales touch on Starter breaks the economics. Starter's job is to feed Grow upgrades (target: 20% of Starter logos upgrade within 18 months).
+- **Starter only works self-serve.** Any founder time spent selling Starter breaks the economics. Starter's job is to feed Grow upgrades (target: 20% of Starter logos upgrade within 18 months).
 - **Grow is the engine.** Payback around 10 months with LTV:CAC around 6x leaves room to spend on trade shows and creators in the Great Lakes launch region.
 - **Seasonal churn must be measured on a 12-month basis.** Monthly churn spikes in Nov-Dec, offset by Winter Mode and annual prepay. Year-over-year cohort retention is the metric that matters.
 - **NRR targets:** 105% or more per 12-month cohort, and about 115% for mature cohorts where designer seats, add-ons and tier upgrades have been adopted.
@@ -1054,7 +1058,7 @@ The business model rests on a small set of funnel and per-account drivers. Each 
 
 | Driver | Conservative | Base | Aggressive |
 |---|---|---|---|
-| Beachhead win rate vs incumbents (sales-assisted) | 15% | 25% | 35% |
+| Beachhead win rate vs incumbents (ICP 70+ trials) | 15% | 25% | 35% |
 | Trial to paid conversion (all trials) | 8% | 12% | 18% |
 | Share of logos on Grow or above | 50% | 64% | 70% |
 | Blended ARPA at the steady-state mix (7.2) | about $360 | about $420 | about $440 |
@@ -1079,7 +1083,7 @@ TAM and SAM sizing (number of US and Canadian landscaping firms by employee band
 ### 7.9 Operating model implications (summary)
 
 - **Gross margin:** 72-74% once early cohorts are steady, 77%+ at scale (targets).
-- **Sales and marketing:** acquisition spend runs ahead of recognized revenue while the installed base is small, then falls as a share of revenue as SEO, referrals, partners and the homeowner app take share from trade shows and AE-led deals (7.5). Total S&M including brand, community and partner programs runs about 5 points above acquisition spend alone (target).
+- **Sales and marketing:** acquisition spend runs ahead of recognized revenue while the installed base is small, then falls as a share of revenue as SEO, referrals, partners and the homeowner app take share from trade shows, outbound and founder demos (7.5). Total S&M including brand, community and partner programs runs about 5 points above acquisition spend alone (target).
 - **Cash seasonality:** annual prepay is collected mostly Nov-Feb. Spring onboarding costs peak Feb-Apr. Plan cash with a winter-collections bias.
 
 ---
@@ -1128,7 +1132,7 @@ Dunning schedule: Stripe Smart Retries (or a fixed retry schedule of day 1, 3, 5
 Dunning exceptions:
 - **Snow carve-out:** during a forecast snow event, a `restricted` or `suspended` Company with an active snow agreement keeps crew dispatch and per-push logging (including Snow Lite storm visit logging) for up to 72 hours per event (4.5 add-on rules; [19](19-platform-admin-portal.md)).
 - **No crew-facing billing messages:** crew users never see Rootline billing banners in any state.
-- **Grace on request:** `platform_finance` may extend `past_due` by up to 14 days once per 12 months with a reason code (for example, a stolen card).
+- **Grace on request:** the finance agent (`platform_finance`) may extend `past_due` by up to 14 days once per 12 months with a reason code (for example, a stolen card).
 
 State names: the values below are `tenant_subscription.status`. [19](19-platform-admin-portal.md) maps them to the platform-level tenant lifecycle (for example `trialing` = `trial`, `cancel_pending` = `pending_cancellation`, `canceled` = `churned`, `archive_plan` = `archive_plan`, and `archived` here = subscription closed, with the tenant in `pending_deletion` or `deleted` there). Keep that mapping table in 19 as the single source when either doc changes.
 
@@ -1245,7 +1249,7 @@ flowchart TD
   V --> QL["AI qualification: scope, budget band, timeline"]
   QL --> E["Eligible Companies: Grow+, Match on, area, service line, SLA, rating"]
   E --> X{"Any eligible?"}
-  X -- "No" --> W["Waitlist + notify homeowner, use as supply-gap signal for sales"]
+  X -- "No" --> W["Waitlist + notify homeowner, use as supply-gap signal for marketing"]
   X -- "Yes" --> O1["Exclusive offer to top-ranked Company (4 business hours)"]
   O1 --> A1{"Accepted?"}
   A1 -- "Yes" --> HD["Create Lead + Opportunity + draft Design, charge lead fee"]
@@ -1259,7 +1263,7 @@ flowchart TD
 
 ### 8.7 Partner referral attribution and commission
 
-1. Partner shares a referral link (`rootline.com/p/{partner_code}`) or registers a deal in the partner portal.
+1. Partner shares a referral link (`rootline.example/p/{partner_code}`) or registers a deal in the partner portal.
 2. Visitor signs up. Attribution is stored on the `company` (first-touch within 60 days, or a registered deal within 90 days).
 3. Company converts to paid. A `partner_referral` becomes `qualified`.
 4. Monthly, on collected subscription revenue (excluding usage, tax and refunds), a `partner_commission` accrues at the partner's rate.
@@ -1273,7 +1277,7 @@ flowchart TD
   R --> O{"Reason"}
   O -- "Seasonal / slow period" --> WM["Offer Winter Mode (25% price, invoicing and payments stay on)"]
   O -- "Price" --> DG["Offer downgrade or annual price, show stack-savings report"]
-  O -- "Missing feature" --> FR["Show roadmap status, offer call with product"]
+  O -- "Missing feature" --> FR["Show where the feature is, or log the request for the founder"]
   O -- "Crew adoption" --> TR["Offer free crew retraining session in EN or ES"]
   O -- "Business closed or sold" --> AR["Offer Archive plan for records retention"]
   WM --> K{"Accepts?"}
@@ -1289,11 +1293,11 @@ The cancel flow must never take more steps than signup. The "Confirm cancellatio
 
 ### 8.9 Migration concierge (Grow/Pro)
 
-1. Kickoff call books a **go-live date** and a **migration slot** (capacity-managed calendar, prioritized by Spring-Ready deadline).
+1. Kickoff with the support agent (in-app) books a **go-live date** and a **migration slot** (capacity-managed calendar, prioritized by Spring-Ready deadline).
 2. The Company uploads exports (e.g., client list, properties, recurring jobs, price book, open invoices, AR aging, chart of accounts, trial balance as of the cutover date).
-3. The AI mapping assistant proposes field mappings and flags anomalies. A specialist reviews them.
+3. The AI mapping assistant proposes field mappings and flags anomalies. The support agent reviews them with the office manager and escalates exceptions to the founder.
 4. A dry run imports into a **staging copy** of the tenant. The Company reviews the reconciliation report: client count, open AR total equal to the source's AR aging, trial balance tying out to opening balances.
-5. Production import with a 72-hour rollback window.
+5. Production import with a rollback window of 7 days or until the first financial posting against imported records, whichever comes first (24 R24-22).
 6. Opening balances posted to the Ledger as a dated opening journal entry, or QBO/Xero sync configured for Companies keeping external books.
 7. Sign-off by `owner` (and `bookkeeper`, if present).
 
@@ -1303,23 +1307,23 @@ The cancel flow must never take more steps than signup. The "Confirm cancellatio
 
 ### 9.1 Screen inventory
 
-| Screen | Surface | Primary users | Purpose | Priority |
-|---|---|---|---|---|
-| Public pricing page | Marketing site | Prospects | Tiers, add-ons, payments pledge, FAQ, calculator entry | |
-| Stack savings and ROI calculator | Marketing site + in-app | Prospects, `owner` | Compare current stack cost to Rootline. Payments break-even | |
-| Compare pages ("Rootline vs Jobber", etc.) | Marketing site | Prospects | Sourced, dated comparisons | |
-| Plan picker and checkout | Company web app | `owner` | Purchase, upgrade, downgrade | |
-| Settings > Plan & Billing | Company web app | `owner`, `office_manager` (view), `bookkeeper` (invoices) | Seats, meters, add-ons, invoices, payment method, Winter Mode | |
-| AI credits drawer + pre-run confirmation | All AI surfaces | All office users | Cost transparency, pack purchase, budgets | |
-| Payment pricing chooser (zero markup vs pay-as-you-grow) | Company web app | `owner` | Opt-in or out of the application fee model with a break-even view | |
-| Cancel and save flow | Company web app | `owner` | Section 8.8 | |
-| Winter Mode scheduler | Company web app | `owner` | Schedule pause and resume, see what keeps working (9.8) | |
-| Rootline Match settings + lead inbox | Company web app | `owner`, `office_manager`, `estimator` | Service area, budget, lead acceptance, disputes | |
-| Partner portal | Partner web | Partners | Links, deal registration, commissions, assets | |
-| Rootline Home (homeowner app) | Web/PWA, later native | Homeowners | Mockups, plant finder, get it installed | |
-| Plan and price catalog editor | Platform Admin | `platform_finance`, `platform_owner` | Versioned plans, prices, entitlements, meters, coupons ([19](19-platform-admin-portal.md)) | |
-| Revenue and cohort dashboards | Platform Admin | `platform_owner`, `platform_finance` | ARR, NRR, churn, CAC, AI margin ([18](18-reporting-analytics.md)) | |
-| Deal desk | Platform Admin | Sales, `platform_owner` | Discount approvals, Enterprise quotes | |
+| Screen | Surface | Primary users | Purpose |
+|---|---|---|---|
+| Public pricing page | Marketing site | Prospects | Tiers, add-ons, payments pledge, FAQ, calculator entry |
+| Stack savings and ROI calculator | Marketing site + in-app | Prospects, `owner` | Compare current stack cost to Rootline. Payments break-even |
+| Compare pages ("Rootline vs Jobber", etc.) | Marketing site | Prospects | Sourced, dated comparisons |
+| Plan picker and checkout | Company web app | `owner` | Purchase, upgrade, downgrade |
+| Settings > Plan & Billing | Company web app | `owner`, `office_manager` (view), `bookkeeper` (invoices) | Seats, meters, add-ons, invoices, payment method, Winter Mode |
+| AI credits drawer + pre-run confirmation | All AI surfaces | All office users | Cost transparency, pack purchase, budgets |
+| Payment pricing chooser (zero markup vs pay-as-you-grow) | Company web app | `owner` | Opt-in or out of the application fee model with a break-even view |
+| Cancel and save flow | Company web app | `owner` | Section 8.8 |
+| Winter Mode scheduler | Company web app | `owner` | Schedule pause and resume, see what keeps working (9.8) |
+| Rootline Match settings + lead inbox | Company web app | `owner`, `office_manager`, `estimator` | Service area, budget, lead acceptance, disputes |
+| Partner portal | Partner web | Partners | Links, deal registration, commissions, assets |
+| Rootline Home (homeowner app) | Web/PWA and native app shell | Homeowners | Mockups, plant finder, get it installed |
+| Plan and price catalog editor | Platform Admin | `platform_finance`, `platform_owner` | Versioned plans, prices, entitlements, meters, coupons ([19](19-platform-admin-portal.md)) |
+| Revenue and cohort dashboards | Platform Admin | `platform_owner`, `platform_finance` | ARR, NRR, churn, CAC, AI margin ([18](18-reporting-analytics.md)) |
+| Deal desk | Platform Admin | `platform_owner` (the finance agent drafts) | Discount approvals, Enterprise quotes |
 
 ### 9.2 Public pricing page (mock)
 
@@ -1342,13 +1346,13 @@ The cancel flow must never take more steps than signup. The "Confirm cancellatio
 |  |                   |  ||                        ||  |                   |  |                   | |
 |  | 1 office user     |  || 3 office users         ||  | 8 office users    |  | SSO, sandbox,     | |
 |  | 3 crew users*     |  || 10 crew users*         ||  | 30 crew users*    |  | dedicated DB opt, | |
-|  | 300 AI credits    |  || 1 designer seat        ||  | 3 designer seats  |  | CSM + SLA         | |
+|  | 300 AI credits    |  || 1 designer seat        ||  | 3 designer seats  |  | Founder line + SLA| |
 |  | Ledger Essentials |  || 2,000 AI credits       ||  | 6,000 AI credits  |  |                   | |
 |  | Client portal     |  || Full Ledger + bank rec ||  | 2D + 3D design    |  |                   | |
 |  | Crew app EN/ES    |  || White-label portal     ||  | Job costing + WIP |  |                   | |
 |  |                   |  || Route optimization     ||  | AI receptionist   |  |                   | |
 |  |                   |  || Design Studio + mockups||  | Website included  |  |                   | |
-|  | [Start free trial]|  || [Start free trial]     ||  | [Start free trial]|  | [Talk to sales]   | |
+|  | [Start free trial]|  || [Start free trial]     ||  | [Start free trial]|  | [Talk to founder] | |
 |  +-------------------+  +=========================+  +-------------------+  +-------------------+ |
 |  * Crew users are billed only in months they're active. Extra: $12 / $10 / $8 per active crew user.|
 |                                                                                                  |
@@ -1380,7 +1384,7 @@ The cancel flow must never take more steps than signup. The "Confirm cancellatio
 +--------------------------------------------------------------------------------------------------+
 ```
 
-Behavior notes: the annual/monthly toggle defaults to annual from Nov 1 to Feb 28 and to monthly otherwise (test). Currency defaults by geo-IP and can be changed. Prices render from the live catalog API (never hard-coded), so the page always matches the entitlement engine. A "Prices last updated" date is shown. The Founding Customer badge shows only to visitors from the Wave 1 Regions while program seats remain. The add-ons block carries a note that Snow Lite (storm visit logs, per-push invoices, proof-of-service PDFs) is included in every plan, so the Snow & Ice price is never read as the price of any snow capability.
+Behavior notes: the annual/monthly toggle defaults to annual from Nov 1 to Feb 28 and to monthly otherwise (test). Currency defaults by geo-IP and can be changed. Prices render from the live catalog API (never hard-coded), so the page always matches the entitlement engine. A "Prices last updated" date is shown. The Founding Customer badge, with the real number of the 100 places still open (read from billing data), shows to visitors from the six Great Lakes Regions while places remain. The add-ons block carries a note that Snow Lite (storm visit logs, per-push invoices, proof-of-service PDFs) is included in every plan, so the Snow & Ice price is never read as the price of any snow capability.
 
 ### 9.3 Stack savings and payments calculator
 
@@ -1534,10 +1538,11 @@ Rules: the radio defaults to whichever option is cheaper at the Company's traili
 |--------------------------------------------------------------------------------------|
 | KEEPS WORKING                                 PAUSES                                 |
 |  [x] Invoicing, autopay, statements          [ ] Crew app (no snow module)           |
-|  [x] Client portal and client payments       [ ] New proposals and designs           |
+|  [x] Client portal and client payments       [ ] New proposals                       |
 |  [x] Ledger, bank feeds, month-end close     [ ] AI generation (included credits     |
 |  [x] CRM (read) and unified inbox                 pause; packs stay valid)           |
 |  [x] Service Agreement billing to clients    [ ] Campaigns and Match leads           |
+|  [x] Design Studio editing (paid designer seats keep it, OD-15)                      |
 |--------------------------------------------------------------------------------------|
 | Editable users in winter (pick 2):  [x] Dana (owner)  [x] Luis (office)  [ ] Kim     |
 | We'll remind you 14 days before resume to re-invite crews and check spring routes.   |
@@ -1545,7 +1550,7 @@ Rules: the radio defaults to whichever option is cheaper at the Company's traili
 +--------------------------------------------------------------------------------------+
 ```
 
-Rules: monthly plans only; 4 months in any rolling 12 (4.7). The resume date can be moved earlier at any time with proration. 14 days before resume, a "Spring restart" checklist is created: re-activate field users, confirm Service Agreement start dates (first mowing round, irrigation start-ups), review the price increase letter for maintenance renewals ([07](07-invoicing-billing-contracts.md)).
+Rules: monthly plans only; 4 months in any rolling 12 (4.7). Paid designer seats keep Design Studio editing during Winter Mode (OD-15, 24 R26-13), so February design work for spring installs never waits for a resume. The resume date can be moved earlier at any time with proration. 14 days before resume, a "Spring restart" checklist is created: re-activate field users, confirm Service Agreement start dates (first mowing round, irrigation start-ups), review the price increase letter for maintenance renewals ([07](07-invoicing-billing-contracts.md)).
 
 ---
 
@@ -1924,18 +1929,18 @@ Validation rules (selected):
 
 ### 11.1 External services
 
-| Service | Purpose | Notes | Priority |
-|---|---|---|---|
-| **Stripe Billing (Rootline's own platform account)** | Products and prices, subscriptions, checkout, invoices, proration, smart retries, usage meters | Rootline's tables hold entitlements. Stripe holds the money. Webhook-driven reconciliation | |
-| **Tax engine for Rootline's own invoices** (e.g., Stripe Tax; verify) | US state SaaS tax, Canada GST/HST/PST/QST | Nexus and registration monitoring by `platform_finance` | |
-| **Stripe Connect (Company accounts)** | Application fees only for pay-as-you-grow Companies. Refund and dispute fee reversal | Payment flows owned by [08](08-payments-stripe.md) | |
-| **CRM for Rootline's own sales** (e.g., HubSpot) | Leads, deals, PQL scores, sequences | Product events streamed via the event bus | |
-| **Product analytics** (e.g., PostHog or Amplitude) | Funnels, activation, feature adoption, experiments | No PII in event properties beyond IDs | |
-| **Lifecycle messaging** (e.g., Customer.io or Intercom) | Trial nurture, onboarding, dunning emails, in-app guides | Respect unsubscribe and consent | |
-| **Partner payouts** (e.g., a payout platform, or Stripe Connect Express accounts on Rootline's platform account) | Commission payouts, tax forms | Evaluate cost per payout and tax-form support | |
-| **Embedded payroll partner** | Payroll add-on | Partner selection in [15](15-team-hr-payroll.md) | |
-| **Review sites (G2, Capterra)** | Review generation campaigns, badges | Ask only active, healthy customers, following the sites' review policies | |
-| **API gateway** for Plant API | Keys, quotas, metering | Separate from the tenant public API | |
+| Service | Purpose | Notes |
+|---|---|---|
+| **Stripe Billing (Rootline's own platform account)** | Products and prices, subscriptions, checkout, invoices, proration, smart retries, usage meters | Rootline's tables hold entitlements. Stripe holds the money. Webhook-driven reconciliation |
+| **Tax engine for Rootline's own invoices** (e.g., Stripe Tax; verify) | US state SaaS tax, Canada GST/HST/PST/QST | Nexus and registration monitoring by the finance agent (`platform_finance`); the founder signs registrations |
+| **Stripe Connect (Company accounts)** | Application fees only for pay-as-you-grow Companies. Refund and dispute fee reversal | Payment flows owned by [08](08-payments-stripe.md) |
+| **Marketing CRM and prospect consent ledger** | Leads, PQL scores, nurture sequences, consent per contact, channel and purpose | Lives in the console's Comms and Content areas ([19](19-platform-admin-portal.md)) and uses the product's own consent engine ([16](16-marketing-growth-communications.md) section 4.21); product events streamed via the event bus |
+| **Product analytics** (e.g., PostHog or Amplitude) | Funnels, activation, feature adoption, experiments | No PII in event properties beyond IDs |
+| **Lifecycle messaging** (e.g., Customer.io or Intercom) | Trial nurture, onboarding, dunning emails, in-app guides | Reads consent from the console's consent ledger; respects unsubscribe |
+| **Partner payouts** (e.g., a payout platform, or Stripe Connect Express accounts on Rootline's platform account) | Commission payouts for partners and creators, tax forms | The build agent picks by cost per payout and tax-form support |
+| **Embedded payroll partner** | Payroll add-on | Check, with Gusto Embedded as the fallback (OD-53); details in [15](15-team-hr-payroll.md) |
+| **Review sites (Google, Capterra, G2)** | Review requests, badges | One uniform ask to every active Company at the same lifecycle point, no filtering by satisfaction and no incentives of any kind, following each site's policy |
+| **API gateway** for Plant API | Keys, quotas, metering | Separate from the tenant public API |
 
 ### 11.2 Internal APIs
 
@@ -2004,10 +2009,12 @@ Full RBAC lives in [02-personas-roles-permissions.md](02-personas-roles-permissi
 
 ### 12.2 Platform side
 
+`platform_owner` is the founder. `platform_finance`, `platform_support`, `platform_engineer` and `platform_curator` are held by the finance, support, engineering and plant curator agents (24 section 1.2); the limits below are the agents' limits, and anything above a limit becomes a request the founder approves. The founder's own privileged actions here (catalog publishes, grants above the agents' limits, payouts above $10,000) need step-up authentication and a written reason, and go to the platform audit log.
+
 | Capability | platform_owner | platform_finance | platform_support | platform_engineer | platform_curator |
 |---|---|---|---|---|---|
 | Draft plan, price, add-on, entitlement, meter changes | Y | Y | - | - | - |
-| Publish catalog changes (two-person rule: draft by finance, approve by owner) | Y (approve) | Y (submit) | - | - | - |
+| Publish catalog changes (the finance agent submits; the founder approves) | Y (approve) | Y (submit) | - | - | - |
 | Grant credits/discounts to a tenant | Unlimited | Up to $5,000 per grant | Up to $250 or 1 month base per grant, once per tenant per quarter (plus the switching credit, 4.8) | - | - |
 | Waive usage or field-seat overage | Y | Y | Up to $100 per period | - | - |
 | Issue refunds on Rootline invoices | Y | Y | - (request) | - | - |
@@ -2022,26 +2029,26 @@ Full RBAC lives in [02-personas-roles-permissions.md](02-personas-roles-permissi
 | Approve external benchmark publications | Y | Y | - | - | - |
 | Replay billing webhooks, re-run true-up jobs | - | V | - | Y (no price edits) | - |
 
-All platform actions in this module are audit-logged with actor, reason code, before/after values and, for discounts and waivers, the approving user. Impersonation of a tenant for billing support follows the consented-impersonation rules in [19](19-platform-admin-portal.md).
+All platform actions in this module are audit-logged with actor, reason code, before/after values and, for discounts and waivers, the approver (the founder, for anything above an agent's limit). Impersonation of a tenant for billing support follows the consented-impersonation rules in [19](19-platform-admin-portal.md).
 
 ---
 
 ## 13. AI opportunities in this module
 
-| # | Opportunity | Description | Guardrails | Priority |
-|---|---|---|---|---|
-| 1 | **Right-size plan advisor** | Analyzes entitlement usage, seat activity and stated goals, then recommends a plan and add-ons. It also recommends **downgrades** when a Company is over-provisioned ("You haven't used 3D in 6 months - drop to Grow and save $280/mo") | Recommendations shown with the evidence. Never auto-changes the plan | |
-| 2 | **Usage forecasting** | Predicts AI credit, SMS and field-seat usage by month using the Company's seasonality (e.g., SMS spikes during spring cleanup scheduling) and suggests pack sizes or ceilings | Forecasts labeled as estimates | |
-| 3 | **Churn and expansion prediction** | Season-aware model on top of the health score. Surfaces why: "crew app usage fell 60% after Memorial Day, office still active" | Human CS decides the action. Explanations required | |
-| 4 | **Migration mapping assistant** | Maps competitor exports to Rootline objects, detects duplicates and bad addresses, proposes production-rate equivalents from LMN-style data | Dry run + human review before commit | |
-| 5 | **Pre-demo research brief** | For a booked demo, compiles the prospect's public website and business profile (services, service area, review themes) into a one-page brief and a demo script. The prospect is invited to upload a photo of a real project for a live mockup | Public business information only. No scraping behind logins. Prospect-provided photos only | |
-| 6 | **AI inbound chat and AI SDR** | Answers pricing and feature questions on the website, books demos, qualifies by the ICP scorecard | Clearly disclosed as AI. Hands off to humans on request | |
-| 7 | **Lead qualification and dynamic lead pricing (Match)** | Predicts project value band and acceptance and win likelihood. The lead fee is set within published bands | Price shown before acceptance. Explainable factors. No protected-class features. Pricing bands reviewed quarterly | |
-| 8 | **Lead dispute triage** | Pre-classifies disputes (wrong number, not owner, duplicate) using verification evidence | Human decision for anything not clear-cut | |
-| 9 | **SEO content with curator-in-the-loop** | Drafts Region × use plant guides from Plant KB data. A `platform_curator` approves every page | No page publishes without curator approval. Quality gate (section 6.5). No AI-generated plant facts outside KB data | |
-| 10 | **Win/loss and call insights** | Summarizes sales calls (with consent) into objection themes that feed packaging and battlecards | Consent and recording laws (two-party consent states) respected | |
-| 11 | **AI cost governor** | Continuously evaluates cheaper model routes for each AI action against quality evals and shifts traffic when quality holds, improving the margin in 7.4 | Quality regression tests per action. Rollback on eval drop | |
-| 12 | **Pricing experiment analyst** | Reads experiment results, cohorts and elasticity, and drafts recommendations for `platform_finance` | Advisory only. Price changes go through the two-person rule | |
+| # | Opportunity | Description | Guardrails |
+|---|---|---|---|
+| 1 | **Right-size plan advisor** | Analyzes entitlement usage, seat activity and stated goals, then recommends a plan and add-ons. It also recommends **downgrades** when a Company is over-provisioned ("You haven't used 3D in 6 months - drop to Grow and save $280/mo") | Recommendations shown with the evidence. Never auto-changes the plan |
+| 2 | **Usage forecasting** | Predicts AI credit, SMS and field-seat usage by month using the Company's seasonality (e.g., SMS spikes during spring cleanup scheduling) and suggests pack sizes or ceilings | Forecasts labeled as estimates |
+| 3 | **Churn and expansion prediction** | Season-aware model on top of the health score. Surfaces why: "crew app usage fell 60% after Memorial Day, office still active" | The support agent acts within its autonomy level; the founder decides anything above it. Explanations required |
+| 4 | **Migration mapping assistant** | Maps competitor exports to Rootline objects, detects duplicates and bad addresses, proposes production-rate equivalents from LMN-style data | Dry run + human review before commit |
+| 5 | **Pre-demo research brief** | For a booked founder demo (Enterprise and franchise), compiles the prospect's public website and business profile (services, service area, review themes) into a one-page brief and a demo script. The prospect is invited to upload a photo of a real project for a live mockup | Public business information only. No scraping behind logins. Prospect-provided photos only |
+| 6 | **AI inbound chat and AI SDR** | Answers pricing and feature questions on the website, books Enterprise demos with the founder, qualifies by the ICP scorecard | Clearly disclosed as AI. Hands off to the founder on request |
+| 7 | **Lead qualification and dynamic lead pricing (Match)** | Predicts project value band and acceptance and win likelihood. The lead fee is set within published bands | Price shown before acceptance. Explainable factors. No protected-class features. Pricing bands reviewed quarterly |
+| 8 | **Lead dispute triage** | Pre-classifies disputes (wrong number, not owner, duplicate) using verification evidence | The founder decides anything not clear-cut |
+| 9 | **SEO content with curator-in-the-loop** | The marketing agent drafts Region × use plant guides from Plant KB data. The plant curator agent (`platform_curator`) checks every page | No page publishes without the plant curator agent's check and both gates (section 6.5 and [12](12-plant-knowledge-base.md) KB-API-04). The founder approves the page template and each Region's first pages ([26](26-agent-led-marketing-playbook.md) section 4.1). No AI-generated plant facts outside KB data |
+| 10 | **Win/loss and call insights** | Summarizes founder demo calls and support conversations (with consent) into objection themes that feed packaging and battlecards | Consent and recording laws (two-party consent states) respected |
+| 11 | **AI cost governor** | Continuously evaluates cheaper model routes for each AI action against quality evals and shifts traffic when quality holds, improving the margin in 7.4 | Quality regression tests per action. Rollback on eval drop |
+| 12 | **Pricing experiment analyst** | Reads experiment results, cohorts and elasticity, and drafts recommendations for the finance agent | Advisory only. Price changes are proposed by the finance agent and approved by the founder |
 
 ---
 
@@ -2055,16 +2062,16 @@ All platform actions in this module are audit-logged with actor, reason code, be
 | Downgrade below current usage (e.g., 4 designers on a plan with 1 included) | Allowed. Extra designers stay as paid add-on seats, or the owner picks who loses edit access before the change applies. Data never deleted |
 | Company moves from US to Canada (or vice versa) | Currency cannot change in-place. `platform_finance` cancels and recreates at the period end with an unused-value credit. Tax profile updated. Connected Stripe account may need to be re-onboarded per [08](08-payments-stripe.md) |
 | Multi-branch business with separate legal entities | Each legal entity is a Company (tenant) with its own Ledger. Enterprise "billing group" consolidates Rootline invoices across Companies with volume pricing. Franchise systems choose franchisor-pays or franchisee-pays |
-| Two Rootline Companies merge (acquisition) | V2 tenant-merge service. Billing: the surviving Company's subscription absorbs seats. The acquired Company's remaining prepaid term is credited |
-| Trial abuse (repeated trials) | Fingerprint on email domain, phone, Stripe connected account ID and device. Second trial in 12 months requires sales approval |
+| Two Rootline Companies merge (acquisition) | Tenant-merge service. Billing: the surviving Company's subscription absorbs seats. The acquired Company's remaining prepaid term is credited |
+| Trial abuse (repeated trials) | Fingerprint on email domain, phone, Stripe connected account ID and device. Second trial in 12 months requires the founder's approval (the support agent proposes) |
 | Shared logins to avoid seats | Anomaly flag (4.3). Notify owner. Never auto-bill on suspicion |
 | Scripted AI credit abuse | Per-user rate limits (e.g., 60 AI actions/hour), anomaly detection on raw cost, auto top-up ceilings |
 | ACH return days after a "paid" Rootline invoice | Status returns to `past_due` with the original dunning clock restarted from the return date. One courtesy re-attempt |
 | Chargeback on Rootline's own invoice | Move to `restricted` immediately. `platform_finance` contacts owner. Client-facing functions keep working |
 | Annual refund within the 30-day guarantee | Refund base fee minus purchased packs consumed. Included credits consumed are not charged |
 | Winter Mode with active Service Agreements | Agreement billing to clients (autopay) continues. That is the point: the Company keeps getting paid while paused |
-| Snow add-on in a no-snow winter | Add-on still billed in season (it covers readiness, contracts and seasonal billing setup). Offer a "no-snow year" rollover credit of 1 month as goodwill at `platform_owner` discretion (policy decision, see 17) |
-| Snow Lite Company when the Snow & Ice add-on launches | Snow Lite stays included at no charge; nobody is enrolled in the paid add-on automatically. If the Company adds the full module (or starts a module add-on trial, 4.6), its Snow Lite site list becomes the starting snow site list and past storm visits stay on the Property timeline as history, not re-sealed as proof packets; nothing is re-entered |
+| Snow add-on in a no-snow winter | Add-on still billed in season (it covers readiness, contracts and seasonal billing setup). No automatic refund; if no storm events were recorded all season, the finance agent applies a goodwill credit of 1 month toward next season (OD-16, 17.13) |
+| Snow Lite Company considering the Snow & Ice add-on | Snow Lite stays included at no charge; nobody is enrolled in the paid add-on automatically. If the Company adds the full module (or starts a module add-on trial, 4.6), its Snow Lite site list becomes the starting snow site list and past storm visits stay on the Property timeline as history, not re-sealed as proof packets; nothing is re-entered |
 | Founding Customer lapses | Discount retained if reactivated within 30 days. Lost after |
 | Period boundaries across time zones | Stripe billing anchors in UTC. The UI shows Company-local dates. Active-seat counting uses Company-local calendar months |
 | Grandfathered plan retired | Customers stay on the old version until they change plans. At least 12 months' notice before a forced migration, with a price no higher than Price Lock rules allow |
@@ -2073,7 +2080,7 @@ All platform actions in this module are audit-logged with actor, reason code, be
 ### 14.2 Payments-related compliance
 
 - **No custody:** Direct charges on Company accounts keep Rootline out of fund flows. Application fees are Rootline revenue paid by the Company's account, governed by Stripe's Connect terms and disclosed in Rootline's terms of service and in-app at opt-in.
-- **Surcharging:** Card-network rules and state laws on credit card surcharges differ and change. Rootline ships a maintained jurisdiction rules table, defaults surcharging **off**, never surcharges debit cards, and requires the Company to accept a compliance acknowledgement. In Canada, card-network rules have allowed capped credit surcharges since October 2022, but Quebec's consumer protection law is generally understood to prohibit them, so the Quebec rule ships as "blocked" (verify both). Legal review is required before launch (verify current rules).
+- **Surcharging:** Card-network rules and state laws on credit card surcharges differ and change. Rootline ships a maintained jurisdiction rules table, defaults surcharging **off**, never surcharges debit cards, and requires the Company to accept a compliance acknowledgement. In Canada, card-network rules have allowed capped credit surcharges since October 2022, but Quebec's consumer protection law is generally understood to prohibit them, so the Quebec rule ships as "blocked" (verify both). The rule table ships with conservative values and surcharging off; the founder has counsel check it before any default is loosened (24 section 1.7; verify current rules).
 - **PCI:** Unchanged. Card data only in Stripe Elements and Checkout (SAQ-A scope; see [20](20-architecture-security.md)).
 
 ### 14.3 Subscription and consumer-protection law
@@ -2081,12 +2088,12 @@ All platform actions in this module are audit-logged with actor, reason code, be
 - **B2B subscriptions** (Companies): clear renewal terms, an online cancellation path at least as easy as signup, renewal reminders for annual plans 30 days before renewal (good practice, and required in some jurisdictions for some contracts). Some US states regulate automatic renewal of certain service contracts between businesses (e.g., New York General Obligations Law § 5-903; verify applicability to SaaS).
 - **Consumer subscriptions** (Rootline Home Plus): state automatic-renewal laws (e.g., California's Automatic Renewal Law, amended in 2024 with more online-cancellation and reminder requirements effective July 2025; verify) and Canadian provincial consumer protection rules apply. Requirements include clear pre-purchase disclosure, affirmative consent, an acknowledgment email, simple online cancellation and annual renewal reminders. The FTC's 2024 "click-to-cancel" negative option rule was vacated by a federal appeals court in 2025 (verify current status). We design to the strictest common standard regardless.
 - **Marketing consent:** CAN-SPAM for US email. **CASL in Canada** requires consent for commercial electronic messages, which significantly limits cold email in Canadian outbound. TCPA and 10DLC rules for any SMS to prospects or homeowners. Match consent records stored per lead (10.2); the consent text names each receiving Company even though the FCC's one-to-one consent rule was vacated in January 2025 (5.3.2; verify current status).
-- **Reviews:** the FTC's rule on fake reviews and testimonials (finalized 2024; verify) prohibits fake or suppressed reviews. G2/Capterra campaigns must disclose incentives and follow site policies. The same applies to Companies' review requests ([16](16-marketing-growth-communications.md)).
+- **Reviews:** the FTC's rule on fake reviews and testimonials (finalized 2024; verify) prohibits fake or suppressed reviews. Rootline asks for reviews on Google, Capterra and G2 with one uniform ask, no filtering and no incentives of any kind, following each site's policy. The same rules apply to Companies' review requests ([16](16-marketing-growth-communications.md)).
 
 ### 14.4 Data products: privacy and antitrust
 
 - **Privacy:** Aggregated, opt-in, k-anonymized outputs only (section 5.2.2). Homeowner app data is governed by its own privacy policy (CCPA/CPRA, PIPEDA, and Quebec's Law 25 for Quebec residents). Homeowner data is shared with a Company only after explicit consent to be contacted.
-- **Antitrust:** Sharing pricing information among competitors can raise antitrust concerns. US agencies withdrew older "safe harbor" guidance on information exchanges in 2023 (verify). Rootline Pulse publishes only historic, aggregated, lagged data with minimum-contributor thresholds, never forward-looking prices or per-competitor views. AI pricing suggestions inside a Company's estimates ([03](03-crm-sales-estimating-proposals.md)) must **never** use other Companies' non-public prices, or data derived from them (including Pulse indices), as inputs. The live precedent is the US Department of Justice's 2024 suit against RealPage, whose rent-pricing software was alleged to pool landlords' nonpublic pricing data; several states have since legislated against shared pricing algorithms (for example California's 2025 amendments to its Cartwright Act; verify scope and status of both). A landscape price-recommendation engine fed by peers' live prices would sit in the same frame, so it is a hard product rule, not a counsel preference. Legal counsel signs off before V1 benchmark launch.
+- **Antitrust:** Sharing pricing information among competitors can raise antitrust concerns. US agencies withdrew older "safe harbor" guidance on information exchanges in 2023 (verify). Rootline Pulse publishes only historic, aggregated, lagged data with minimum-contributor thresholds, never forward-looking prices or per-competitor views. AI pricing suggestions inside a Company's estimates ([03](03-crm-sales-estimating-proposals.md)) must **never** use other Companies' non-public prices, or data derived from them (including Pulse indices), as inputs. The live precedent is the US Department of Justice's 2024 suit against RealPage, whose rent-pricing software was alleged to pool landlords' nonpublic pricing data; several states have since legislated against shared pricing algorithms (for example California's 2025 amendments to its Cartwright Act; verify scope and status of both). A landscape price-recommendation engine fed by peers' live prices would sit in the same frame, so it is a hard product rule, not a counsel preference. Benchmarks ship with k of 10 or more and lags; price benchmarks stay off until the founder has had them checked by counsel (OD-69).
 - **Lead marketplace:** Contractor licensing checks where states license landscape or irrigation contractors (verify per state), referral and success-fee legality per state, consent records, and no steering based on protected characteristics.
 
 ### 14.5 Rootline's own revenue recognition (for finance; verify with auditors)

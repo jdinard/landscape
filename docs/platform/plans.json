@@ -1,15 +1,13 @@
 {
   "_about": "Packages, capabilities by plan, add-ons, meters, AI credit rate card, seat rules, trial offers, homeowner tiers and partner tracks. Parsed from 22 §4 and §5 unless marked as a blueprint assumption.",
   "_legend": {
-    "s": "Y included, L included with limits, A add-on, '-' not available",
-    "scope": "MVP / V1 / V2 / V3 scope tier (24 is the authority if tags differ)"
+    "s": "Y included, L included with limits, A add-on, '-' not available"
   },
   "plans": [
     {
       "code": "starter",
       "name": "Starter",
       "public": true,
-      "scope": "MVP",
       "monthly": 79,
       "annual": 69,
       "monthly_cad": 109,
@@ -35,7 +33,6 @@
       "code": "grow",
       "name": "Grow",
       "public": true,
-      "scope": "MVP",
       "icp": true,
       "monthly": 289,
       "annual": 249,
@@ -65,7 +62,6 @@
       "code": "pro",
       "name": "Pro",
       "public": true,
-      "scope": "MVP",
       "monthly": 599,
       "annual": 529,
       "monthly_cad": 819,
@@ -93,7 +89,6 @@
       "code": "enterprise",
       "name": "Enterprise",
       "public": false,
-      "scope": "V1",
       "monthly": null,
       "annual": 1500,
       "annual_note": "From $1,500/mo, annual contract",
@@ -120,7 +115,6 @@
       "code": "design_solo",
       "name": "Design Solo",
       "public": true,
-      "scope": "V1",
       "monthly": 49,
       "annual": null,
       "annual_note": "About $49/mo (proposed)",
@@ -141,7 +135,6 @@
       "code": "archive",
       "name": "Archive",
       "public": false,
-      "scope": "V1",
       "monthly": 9,
       "segments": [],
       "for": "Offered only after cancellation: read-only records retention"
@@ -152,8 +145,6 @@
       "key": "crm",
       "name": "CRM, leads, opportunities, client and property records",
       "module": "Clients",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "03"
       ],
@@ -180,8 +171,6 @@
       "key": "estimating",
       "name": "Estimates with production rates, Price Book",
       "module": "Sales",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "03"
       ],
@@ -209,8 +198,6 @@
       "key": "proposals",
       "name": "Proposals with options/tiers, e-signature, deposits",
       "module": "Sales",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "03"
       ],
@@ -237,8 +224,6 @@
       "key": "change_orders_basic",
       "name": "Change orders and agreement renewals, basic (office and field change orders with signature and price delta, fixed escalators, auto-renewal with notice rules)",
       "module": "Sales",
-      "scope": "MVP",
-      "scope_note": "[MVP] (24 section 4.6 #13)",
       "docs": [
         "03",
         "07"
@@ -265,8 +250,6 @@
       "key": "change_orders_full",
       "name": "Change orders and renewals, full (verbal-emergency change orders, CPI and margin-target escalators, renewal review grid)",
       "module": "Sales",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "03"
       ],
@@ -292,8 +275,6 @@
       "key": "scheduling",
       "name": "Scheduling, dispatch board, recurring visits",
       "module": "Schedule",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "04"
       ],
@@ -319,8 +300,6 @@
       "key": "route_single",
       "name": "Single-crew route ordering",
       "module": "Schedule",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "04"
       ],
@@ -346,8 +325,6 @@
       "key": "route_vrp",
       "name": "Multi-crew route optimization (VRP)",
       "module": "Schedule",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "04"
       ],
@@ -373,8 +350,6 @@
       "key": "crew_app",
       "name": "Offline crew app (EN/ES), time, photos, checklists",
       "module": "Crew app",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "05"
       ],
@@ -400,8 +375,6 @@
       "key": "chemical_logs",
       "name": "Chemical application logs (state recordkeeping)",
       "module": "Crew app",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "05",
         "14"
@@ -429,8 +402,6 @@
       "key": "portal_branded",
       "name": "Client portal (Rootline-branded)",
       "module": "Customer portal",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "06"
       ],
@@ -457,8 +428,6 @@
       "key": "portal_white_label",
       "name": "White-label client portal + custom domain",
       "module": "Customer portal",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "06"
       ],
@@ -484,8 +453,6 @@
       "key": "portal_commercial",
       "name": "Commercial multi-property portal + approval workflows",
       "module": "Customer portal",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "06"
       ],
@@ -512,8 +479,6 @@
       "key": "invoicing",
       "name": "Invoicing, service agreement billing, sales tax, AR",
       "module": "Money",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "07"
       ],
@@ -540,8 +505,6 @@
       "key": "payments",
       "name": "BYO Stripe payments (cards, ACH, card on file, autopay)",
       "module": "Money",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "08"
       ],
@@ -568,8 +531,6 @@
       "key": "ledger_essentials",
       "name": "Ledger Essentials: double-entry GL, auto-posting, 1 bank feed, P&L/BS",
       "module": "Books",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "09"
       ],
@@ -595,8 +556,6 @@
       "key": "ledger_plus",
       "name": "Ledger Plus: AP and bills, unlimited bank feeds, bank rec, 1099 tracking, budgets",
       "module": "Books",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "09"
       ],
@@ -623,8 +582,6 @@
       "key": "ledger_advanced",
       "name": "Ledger Advanced: WIP / percent-complete, classes and departments, multi-entity, consolidations",
       "module": "Books",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "09"
       ],
@@ -651,8 +608,6 @@
       "key": "qbo_sync",
       "name": "QuickBooks Online sync",
       "module": "Books",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "09"
       ],
@@ -679,8 +634,6 @@
       "key": "xero_sync",
       "name": "Xero sync",
       "module": "Books",
-      "scope": "V1",
-      "scope_note": "[V1] (24 section 4.6 #5)",
       "docs": [
         "09"
       ],
@@ -706,8 +659,6 @@
       "key": "qbd_sync",
       "name": "QuickBooks Desktop sync (Web Connector)",
       "module": "Books",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "09"
       ],
@@ -734,8 +685,6 @@
       "key": "design_2d",
       "name": "Design Studio 2D + takeoffs to estimate",
       "module": "Design",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "10"
       ],
@@ -765,8 +714,6 @@
       "key": "design_3d",
       "name": "Design Studio 3D, sun/shade, growth-over-time",
       "module": "Design",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "10"
       ],
@@ -793,8 +740,6 @@
       "key": "ai_mockups",
       "name": "AI photo mockups",
       "module": "Design",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "11"
       ],
@@ -824,8 +769,6 @@
       "key": "ai_layouts",
       "name": "Dimension-aware AI layout generation",
       "module": "Design",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "11"
       ],
@@ -853,8 +796,6 @@
       "key": "plant_kb",
       "name": "Plant KB search, region profiles, palettes",
       "module": "Design",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "12"
       ],
@@ -881,8 +822,6 @@
       "key": "nursery_availability",
       "name": "Nursery availability, wholesale ordering links",
       "module": "Design",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "12"
       ],
@@ -908,8 +847,6 @@
       "key": "inventory",
       "name": "Inventory, purchasing, vendor bills",
       "module": "Operations",
-      "scope": "MVP",
-      "scope_note": "[MVP] Off and Light modes, per-job buy lists, POs, receiving, 2-way bill match; [V1] Standard and Advanced modes, purchasing workbench, 3-way match (24 section 4.6 #6)",
       "docs": [
         "13"
       ],
@@ -920,11 +857,11 @@
         },
         "grow": {
           "s": "L",
-          "note": "1 yard; Light, Standard from V1"
+          "note": "1 yard; Light, Standard"
         },
         "pro": {
           "s": "Y",
-          "note": "multi-location; Advanced mode from V1"
+          "note": "multi-location; Advanced mode"
         },
         "enterprise": {
           "s": "Y"
@@ -938,8 +875,6 @@
       "key": "equipment",
       "name": "Equipment and fleet",
       "module": "Operations",
-      "scope": "MVP",
-      "scope_note": "[MVP] asset registry, manual meters, DVIR, rate calculator; [V1] PM schedules and work orders, telematics, fuel cards (24 section 4.6 #7)",
       "docs": [
         "13"
       ],
@@ -967,8 +902,6 @@
       "key": "service_lines",
       "name": "Service line modules: lawn/PHC, irrigation, lighting, hardscape projects",
       "module": "Jobs",
-      "scope": "MVP",
-      "scope_note": "[MVP] (landscape lighting [V1], per 14 section 4.0.1)",
       "docs": [
         "14"
       ],
@@ -994,8 +927,6 @@
       "key": "snow_lite",
       "name": "Snow Lite: crew-app storm visit logging per site (timestamped GPS photos, notes), basic snow site list with priority order, per-push / per-application invoices from those logs, per-site PDF proof-of-service export (no hash sealing)",
       "module": "Jobs",
-      "scope": "MVP",
-      "scope_note": "[MVP] (included at no charge; stays included after the Snow & Ice add-on launches)",
       "docs": [
         "14",
         "05",
@@ -1023,8 +954,6 @@
       "key": "snow_ice",
       "name": "Snow and ice module (full: storm events, triggers, Storm Command Center, proof packets; Snow & Ice add-on)",
       "module": "Jobs",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "14"
       ],
@@ -1053,8 +982,6 @@
       "key": "tree_care",
       "name": "Tree care module (ANSI A300 notes, crane/climb tasks)",
       "module": "Jobs",
-      "scope": "V2",
-      "scope_note": "[V2]",
       "docs": [
         "14"
       ],
@@ -1082,8 +1009,6 @@
       "key": "team",
       "name": "Team, timesheets, certifications, training",
       "module": "Team",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "15"
       ],
@@ -1109,8 +1034,6 @@
       "key": "payroll",
       "name": "Payroll (embedded partner)",
       "module": "Team",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "15"
       ],
@@ -1140,8 +1063,6 @@
       "key": "payroll_export",
       "name": "Payroll export (ADP, Gusto, QuickBooks Payroll, etc.)",
       "module": "Team",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "15"
       ],
@@ -1167,8 +1088,6 @@
       "key": "website",
       "name": "Website builder",
       "module": "Marketing",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "16"
       ],
@@ -1197,8 +1116,6 @@
       "key": "reviews",
       "name": "Review requests (no gating) and NPS",
       "module": "Marketing",
-      "scope": "MVP",
-      "scope_note": "[MVP] (24 section 4.6 #11)",
       "docs": [
         "16"
       ],
@@ -1225,8 +1142,6 @@
       "key": "referrals",
       "name": "Referral program with rewards",
       "module": "Marketing",
-      "scope": "V1",
-      "scope_note": "[V1] (24 section 4.6 #11; referral as a manually entered lead source at [MVP])",
       "docs": [
         "16"
       ],
@@ -1252,8 +1167,6 @@
       "key": "online_booking",
       "name": "Online booking and instant quotes",
       "module": "Marketing",
-      "scope": "V1",
-      "scope_note": "[V1] (24 section 4.6 #9; turf auto-measure for internal estimating stays [MVP])",
       "docs": [
         "16"
       ],
@@ -1279,8 +1192,6 @@
       "key": "inbox",
       "name": "Unified inbox (SMS, email, chat, calls, portal)",
       "module": "Inbox",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "16"
       ],
@@ -1307,8 +1218,6 @@
       "key": "campaigns_basic",
       "name": "Campaigns, basic (segments, one-off email/SMS with price blocks, prebuilt journeys)",
       "module": "Marketing",
-      "scope": "MVP",
-      "scope_note": "[MVP] basic (24 section 4.6 #10)",
       "docs": [
         "16"
       ],
@@ -1335,8 +1244,6 @@
       "key": "marketing_advanced",
       "name": "Journey builder (multi-step campaigns), landing pages, multi-touch attribution (Advanced Marketing add-on)",
       "module": "Marketing",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "16"
       ],
@@ -1364,8 +1271,6 @@
       "key": "call_tracking",
       "name": "Call tracking, call recording and transcription, missed-call text-back",
       "module": "Inbox",
-      "scope": "MVP",
-      "scope_note": "[MVP] basic, [V1] full",
       "docs": [
         "16"
       ],
@@ -1391,8 +1296,6 @@
       "key": "ai_receptionist",
       "name": "AI receptionist (voice)",
       "module": "Marketing",
-      "scope": "V1",
-      "scope_note": "[V1] (24 section 4.6 #12; until then, call tracking, voicemail with transcription and missed-call text-back cover after-hours calls)",
       "docs": [
         "16"
       ],
@@ -1421,8 +1324,6 @@
       "key": "copilot",
       "name": "Copilot (chat, drafting)",
       "module": "AI",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "17"
       ],
@@ -1450,8 +1351,6 @@
       "key": "automations",
       "name": "Automation builder",
       "module": "Automations",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "17"
       ],
@@ -1477,11 +1376,9 @@
       }
     },
     {
-      "key": "agents_mvp",
-      "name": "MVP agents: Daily Owner Briefing, Inbox Triage, Lead Follow-up, Field-Note, Estimating from notes (A1-A4, A6), collections reminders (A5)",
+      "key": "agents_core",
+      "name": "Core agents: Daily Owner Briefing, Inbox Triage, Lead Follow-up, Field-Note, Estimating from notes (A1-A4, A6), collections reminders (A5)",
       "module": "AI",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "17"
       ],
@@ -1507,11 +1404,9 @@
       }
     },
     {
-      "key": "agents_v1",
-      "name": "V1 agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A17, A19, A21; A18 review requests ship at [MVP] with 16, and A20 Snow Event is [V2])",
+      "key": "agents_ops",
+      "name": "Operations agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A17, A19, A21; A18 Review Requests runs under Reputation in 16; A20 Snow Event comes with the Snow and Ice add-on)",
       "module": "AI",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "17"
       ],
@@ -1537,8 +1432,6 @@
       "key": "dashboards",
       "name": "Standard dashboards",
       "module": "Reports",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "18"
       ],
@@ -1563,10 +1456,8 @@
     },
     {
       "key": "report_builder",
-      "name": "Report builder (scheduled delivery ships at [MVP])",
+      "name": "Report builder (scheduled delivery ships at)",
       "module": "Reports",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "18"
       ],
@@ -1592,8 +1483,6 @@
       "key": "benchmarks",
       "name": "Benchmarking (opt-in peer comparisons)",
       "module": "Reports",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "18"
       ],
@@ -1619,8 +1508,6 @@
       "key": "forecasts",
       "name": "13-week cash and capacity forecasts",
       "module": "Reports",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "18"
       ],
@@ -1646,8 +1533,6 @@
       "key": "scenario_planner",
       "name": "Scenario planner, seasonal ML forecast",
       "module": "Reports",
-      "scope": "V2",
-      "scope_note": "[V2]",
       "docs": [
         "18"
       ],
@@ -1673,8 +1558,6 @@
       "key": "data_share",
       "name": "Data warehouse export (data shares), multi-company rollup",
       "module": "Reports",
-      "scope": "V2",
-      "scope_note": "[V2]",
       "docs": [
         "18"
       ],
@@ -1700,8 +1583,6 @@
       "key": "custom_roles",
       "name": "Custom roles (granular permissions)",
       "module": "Settings",
-      "scope": "MVP",
-      "scope_note": "[MVP]",
       "docs": [
         "02"
       ],
@@ -1728,8 +1609,6 @@
       "key": "multi_branch",
       "name": "Multi-branch / divisions",
       "module": "Settings",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "02"
       ],
@@ -1755,8 +1634,6 @@
       "key": "sso",
       "name": "SSO (SAML/OIDC)",
       "module": "Settings",
-      "scope": "V1",
-      "scope_note": "[V1] (24 section 4.6 #16)",
       "docs": [
         "02",
         "20"
@@ -1783,8 +1660,6 @@
       "key": "scim",
       "name": "SCIM provisioning",
       "module": "Settings",
-      "scope": "V2",
-      "scope_note": "[V2] (24 section 4.6 #16)",
       "docs": [
         "02"
       ],
@@ -1810,8 +1685,6 @@
       "key": "api",
       "name": "Public API and webhooks",
       "module": "Settings",
-      "scope": "MVP",
-      "scope_note": "[MVP] core objects, [V1] full surface and daily quotas",
       "docs": [
         "20"
       ],
@@ -1840,8 +1713,6 @@
       "key": "sandbox",
       "name": "Sandbox tenant",
       "module": "Settings",
-      "scope": "V1",
-      "scope_note": "[V1]",
       "docs": [
         "20"
       ],
@@ -1868,8 +1739,6 @@
       "key": "dedicated_db",
       "name": "Dedicated database option",
       "module": "Settings",
-      "scope": "V2",
-      "scope_note": "[V2]",
       "docs": [
         "20"
       ],
@@ -1896,8 +1765,6 @@
       "key": "franchise_rollup",
       "name": "Franchise rollup (franchisor console, royalty reporting)",
       "module": "Enterprise",
-      "scope": "V2",
-      "scope_note": "[V2]",
       "docs": null,
       "plans": {
         "starter": {
@@ -1910,8 +1777,7 @@
           "s": "-"
         },
         "enterprise": {
-          "s": "Y",
-          "from": "V2"
+          "s": "Y"
         },
         "design_solo": {
           "s": "-"
@@ -1926,8 +1792,7 @@
       "price": "$79/mo (Starter), $69 (Grow extra), $59 (Pro extra)",
       "available_on": "All",
       "includes": "Edit access to 2D Design Studio, takeoffs, AI mockups (uses credits)",
-      "why": "Not every user designs",
-      "scope": "MVP"
+      "why": "Not every user designs"
     },
     {
       "code": "design_3d",
@@ -1935,8 +1800,7 @@
       "price": "$49/mo per designer seat on Grow; included in Pro",
       "available_on": "Grow",
       "includes": "3D walkthrough, sun/shade study, growth-over-time",
-      "why": "GPU-heavy rendering",
-      "scope": "V1"
+      "why": "GPU-heavy rendering"
     },
     {
       "code": "ai_credit_packs",
@@ -1944,8 +1808,7 @@
       "price": "1k $25 / 5k $100 / 20k $340",
       "available_on": "All",
       "includes": "See 4.4.1",
-      "why": "Variable cost",
-      "scope": "MVP"
+      "why": "Variable cost"
     },
     {
       "code": "ai_receptionist",
@@ -1953,8 +1816,7 @@
       "price": "$49/mo incl. 100 min, then $0.39/min",
       "available_on": "Starter, Grow (Pro includes 200 min)",
       "includes": "24/7 voice answering, qualification, booking into the schedule, bilingual EN/ES",
-      "why": "Variable cost. Not everyone wants it",
-      "scope": "V1"
+      "why": "Variable cost. Not everyone wants it"
     },
     {
       "code": "sms_packs",
@@ -1962,8 +1824,7 @@
       "price": "5,000 segments $79",
       "available_on": "All",
       "includes": "Pooled segments",
-      "why": "Variable cost",
-      "scope": "MVP"
+      "why": "Variable cost"
     },
     {
       "code": "website",
@@ -1971,8 +1832,7 @@
       "price": "$49/mo per site (Pro includes 1)",
       "available_on": "All",
       "includes": "Hosted site builder, templates, custom domain, booking widget, SEO plant pages for the Company's region",
-      "why": "Many already have a website",
-      "scope": "V1"
+      "why": "Many already have a website"
     },
     {
       "code": "payroll",
@@ -1980,8 +1840,7 @@
       "price": "$39/mo + $6 per paid employee per month (estimate; depends on the embedded payroll partner's wholesale cost)",
       "available_on": "US first, Canada later",
       "includes": "Full-service payroll, tax filings, direct deposit, piece-rate and overtime from Rootline timesheets",
-      "why": "Partner cost per employee",
-      "scope": "V1"
+      "why": "Partner cost per employee"
     },
     {
       "code": "ledger_plus",
@@ -1989,8 +1848,7 @@
       "price": "$49/mo",
       "available_on": "Starter",
       "includes": "AP, unlimited bank feeds, bank reconciliation, budgets",
-      "why": "Bank-feed aggregator cost and support",
-      "scope": "MVP"
+      "why": "Bank-feed aggregator cost and support"
     },
     {
       "code": "ledger_advanced",
@@ -1998,8 +1856,7 @@
       "price": "$99/mo",
       "available_on": "Grow (included in Pro)",
       "includes": "WIP and percent-complete revenue recognition, classes and departments, multi-entity, consolidations",
-      "why": "Complexity and support cost",
-      "scope": "V1"
+      "why": "Complexity and support cost"
     },
     {
       "code": "qbd_connector",
@@ -2007,8 +1864,7 @@
       "price": "$29/mo",
       "available_on": "Grow (included in Pro)",
       "includes": "Web Connector sync",
-      "why": "Support burden",
-      "scope": "V1"
+      "why": "Support burden"
     },
     {
       "code": "snow_ice",
@@ -2017,7 +1873,6 @@
       "available_on": "All",
       "includes": "Storm events, trigger depths (e.g., 2-inch push trigger), per-push / per-event / seasonal billing, salt and ice-melt logs, timestamped photo proof for slip-and-fall defense, weather feeds. Builds on Snow Lite, which every tier includes at no charge (rule below)",
       "why": "Regional",
-      "scope": "V1",
       "billing_months": [
         "Nov",
         "Dec",
@@ -2032,17 +1887,15 @@
       "price": "$59/mo",
       "available_on": "Starter, Grow (included in Pro)",
       "includes": "Tree inventory, ANSI A300-aligned work specs, risk notes, crane/climb job types",
-      "why": "Specialty",
-      "scope": "V2"
+      "why": "Specialty"
     },
     {
       "code": "marketing_advanced",
       "name": "Advanced Marketing",
       "price": "$79/mo",
       "available_on": "Starter, Grow (included in Pro)",
-      "includes": "Journey builder (multi-step campaigns), advanced segmentation, landing pages, multi-touch attribution. Basic segments, one-off campaigns, prebuilt journeys and first/last-touch attribution are in every plan from MVP (4.2.1)",
-      "why": "Overlaps third-party tools",
-      "scope": "V1"
+      "includes": "Journey builder (multi-step campaigns), advanced segmentation, landing pages, multi-touch attribution. Basic segments, one-off campaigns, prebuilt journeys and first/last-touch attribution are in every plan (4.2.1)",
+      "why": "Overlaps third-party tools"
     },
     {
       "code": "extra_storage",
@@ -2050,8 +1903,7 @@
       "price": "$5 per 100 GB-month",
       "available_on": "All",
       "includes": "Photo- and video-heavy companies",
-      "why": "Variable cost",
-      "scope": "MVP"
+      "why": "Variable cost"
     },
     {
       "code": "premium_imagery",
@@ -2059,8 +1911,7 @@
       "price": "Cost + 20% per pull",
       "available_on": "Grow, Pro, Ent.",
       "includes": "High-res aerial (Nearmap/EagleView-class) for measurement",
-      "why": "Third-party per-use cost",
-      "scope": "V1"
+      "why": "Third-party per-use cost"
     },
     {
       "code": "sandbox",
@@ -2068,8 +1919,7 @@
       "price": "$99/mo",
       "available_on": "Pro (Ent. included)",
       "includes": "Copy of config + anonymized sample data for training and testing",
-      "why": "Infra cost",
-      "scope": "V1"
+      "why": "Infra cost"
     },
     {
       "code": "dedicated_db",
@@ -2077,8 +1927,7 @@
       "price": "From $1,000/mo",
       "available_on": "Ent.",
       "includes": "Isolated Postgres per tenant (see Architecture)",
-      "why": "Infra cost",
-      "scope": "V2"
+      "why": "Infra cost"
     },
     {
       "code": "premium_success",
@@ -2086,8 +1935,7 @@
       "price": "10% of annual contract value (minimum $3,000/yr)",
       "available_on": "Pro",
       "includes": "Named CSM, quarterly business reviews with benchmark pack, custom report builds",
-      "why": "Human cost",
-      "scope": "V1"
+      "why": "Human cost"
     },
     {
       "code": "match_territory",
@@ -2095,8 +1943,7 @@
       "price": "Pay per accepted lead or territory subscription (section 5.3)",
       "available_on": "Grow, Pro, Ent.",
       "includes": "Design-ready homeowner leads",
-      "why": "Marketplace",
-      "scope": "V1"
+      "why": "Marketplace"
     },
     {
       "code": "archive",
@@ -2104,8 +1951,7 @@
       "price": "$9/mo",
       "available_on": "After cancellation",
       "includes": "Read-only records retention: invoices, ledger, chemical application records, photos",
-      "why": "Compliance retention needs",
-      "scope": "V1"
+      "why": "Compliance retention needs"
     }
   ],
   "meters": [
@@ -2114,224 +1960,190 @@
       "unit": "credit",
       "included": "300 / 2,000 / 6,000 per month",
       "overage": "Packs: 1,000 for $25. 5,000 for $100. 20,000 for $340. Optional auto top-up",
-      "enforcement": "Soft stop at 0 with a one-click pack purchase. Owner can enable auto top-up with a monthly ceiling",
-      "scope": "MVP"
+      "enforcement": "Soft stop at 0 with a one-click pack purchase. Owner can enable auto top-up with a monthly ceiling"
     },
     {
       "key": "sms_segments",
       "unit": "outbound segment (MMS = 3 segments)",
       "included": "500 / 2,500 / 8,000",
       "overage": "$0.02 per segment overage, or 5,000-segment pack for $79",
-      "enforcement": "Overage billed. Hard cap at the owner's configured monthly ceiling (default 3x included)",
-      "scope": "MVP"
+      "enforcement": "Overage billed. Hard cap at the owner's configured monthly ceiling (default 3x included)"
     },
     {
       "key": "voice_ai_minutes",
       "unit": "AI receptionist minute (rounded up per call)",
       "included": "0 / 0 / 200",
       "overage": "Add-on: $49/mo for 100 min, then $0.39/min",
-      "enforcement": "Overage billed. Ceiling configurable. Once the ceiling is hit, calls fall back to voicemail with transcription",
-      "scope": "V1"
+      "enforcement": "Overage billed. Ceiling configurable. Once the ceiling is hit, calls fall back to voicemail with transcription"
     },
     {
       "key": "voice_minutes",
       "unit": "Call-tracking, forwarded and click-to-call minutes",
       "included": "300 / 1,000 / 3,000",
       "overage": "$0.03/min",
-      "enforcement": "Overage billed",
-      "scope": "MVP"
+      "enforcement": "Overage billed"
     },
     {
       "key": "storage_gb",
       "unit": "GB-month",
       "included": "50 / 250 / 1,000",
       "overage": "$5 per additional 100 GB-month",
-      "enforcement": "Soft. Warned at 90%. Old photo originals can move to cold storage",
-      "scope": "MVP"
+      "enforcement": "Soft. Warned at 90%. Old photo originals can move to cold storage"
     },
     {
       "key": "marketing_emails",
       "unit": "email sent via campaigns",
       "included": "2,000 / 10,000 / 50,000",
       "overage": "$1 per 1,000",
-      "enforcement": "Overage billed",
-      "scope": "MVP"
+      "enforcement": "Overage billed"
     },
     {
       "key": "parcel_lookups",
       "unit": "parcel boundary/attribute lookup; one AI auto-measure run per parcel and imagery date counts as one lookup (re-runs on the same imagery are cached and free)",
       "included": "100 / 500 / 2,000",
       "overage": "$0.10 per lookup",
-      "enforcement": "Soft, fair use",
-      "scope": "MVP"
+      "enforcement": "Soft, fair use"
     },
     {
       "key": "premium_imagery",
       "unit": "high-res aerial pull (Nearmap/EagleView-class)",
       "included": "0 / 0 / 0",
       "overage": "Cost plus 20%, shown before purchase",
-      "enforcement": "Explicit per-pull confirmation",
-      "scope": "V1"
+      "enforcement": "Explicit per-pull confirmation"
     },
     {
       "key": "api_calls",
       "unit": "request",
       "included": "10k / 50k / 250k per day",
       "overage": "Enterprise only",
-      "enforcement": "Hard rate limit with HTTP 429",
-      "scope": "V1"
+      "enforcement": "Hard rate limit with HTTP 429"
     }
   ],
   "ai_credit_rates": [
     {
       "action": "Copilot question/answer (standard)",
       "credits": "1",
-      "notes": "Routed to a small or medium model when possible",
-      "scope": "MVP"
+      "notes": "Routed to a small or medium model when possible"
     },
     {
       "action": "Copilot drafting (email, client message, review reply)",
       "credits": "1",
-      "notes": "",
-      "scope": "MVP"
+      "notes": ""
     },
     {
       "action": "Estimate or proposal draft from site notes, photos or voice memo",
       "credits": "8",
-      "notes": "Includes line-item mapping to the Price Book",
-      "scope": "MVP"
+      "notes": "Includes line-item mapping to the Price Book"
     },
     {
       "action": "Photo mockup set (4 variants, ~1 MP)",
       "credits": "40",
-      "notes": "Segmentation + depth + image generation. Plants constrained to the Region palette",
-      "scope": "MVP"
+      "notes": "Segmentation + depth + image generation. Plants constrained to the Region palette"
     },
     {
       "action": "Mockup refinement (inpaint or edit one area)",
       "credits": "10",
-      "notes": "",
-      "scope": "MVP"
+      "notes": ""
     },
     {
       "action": "Restyle \"more like this\" (2 variants re-seeded around a chosen mockup)",
       "credits": "20",
-      "notes": "Part of the photo restyle flow in 11 (Mode A)",
-      "scope": "MVP"
+      "notes": "Part of the photo restyle flow in 11 (Mode A)"
     },
     {
       "action": "High-resolution render or upscale (HD final, 2-4 MP)",
       "credits": "20",
-      "notes": "Raised from an earlier draft of 10 credits. Uses the self-hosted upscale route by default; needed at MVP for the field restyle flow in 11",
-      "scope": "MVP"
+      "notes": "Raised from an earlier draft of 10 credits. Uses the self-hosted upscale route by default; needed for the field restyle flow in 11"
     },
     {
       "action": "Presentation 4K re-render (vendor 4K route, optional)",
       "credits": "40",
-      "notes": "A 4K image from a premium image model can cost about $0.16-$0.25 raw, which breaches the 7.4 cost guardrail at 20 credits; offered for print boards and large screens only",
-      "scope": "V1"
+      "notes": "A 4K image from a premium image model can cost about $0.16-$0.25 raw, which breaches the 7.4 cost guardrail at 20 credits; offered for print boards and large screens only"
     },
     {
       "action": "Dimension-aware AI layout (3 to-scale options into Design Studio)",
       "credits": "60",
-      "notes": "Uses the property dimensions the user entered and Plant KB constraints",
-      "scope": "V1"
+      "notes": "Uses the property dimensions the user entered and Plant KB constraints"
     },
     {
       "action": "Plant palette recommendation for a bed or design",
       "credits": "3",
-      "notes": "",
-      "scope": "MVP"
+      "notes": ""
     },
     {
       "action": "Document understanding (vendor bill, receipt, PO) per page",
       "credits": "2",
-      "notes": "Feeds AP in the Ledger",
-      "scope": "V1"
+      "notes": "Feeds AP in the Ledger"
     },
     {
       "action": "Call or voicemail transcription + summary",
       "credits": "2",
-      "notes": "Separate from AI receptionist minutes. Ships with call tracking and voicemail transcription (16 4.19)",
-      "scope": "MVP"
+      "notes": "Separate from AI receptionist minutes. Ships with call tracking and voicemail transcription (16 4.19)"
     },
     {
       "action": "Daily Owner Briefing (A1 in 17)",
       "credits": "2 (+1 for the audio version)",
-      "notes": "Text briefing with three one-tap decisions",
-      "scope": "MVP"
+      "notes": "Text briefing with three one-tap decisions"
     },
     {
       "action": "Inbox triage per inbound message (A2)",
       "credits": "0.5",
-      "notes": "Small-model classification plus a draft reply. Fractional credits accrue on the credit ledger and settle daily, rounded up",
-      "scope": "MVP"
+      "notes": "Small-model classification plus a draft reply. Fractional credits accrue on the credit ledger and settle daily, rounded up"
     },
     {
       "action": "Lead follow-up conversation, full nurture (A3)",
       "credits": "3-6",
-      "notes": "Charged per conversation as it runs; shown on the agent's run log and limited by per-agent caps",
-      "scope": "MVP"
+      "notes": "Charged per conversation as it runs; shown on the agent's run log and limited by per-agent caps"
     },
     {
       "action": "Field voice note per minute (A4: speech-to-text, EN/ES translation, extraction)",
       "credits": "1",
-      "notes": "",
-      "scope": "MVP"
+      "notes": ""
     },
     {
       "action": "Agent task run (e.g., \"draft next week's routes and flag weather conflicts\")",
       "credits": "10-30, quoted before run",
-      "notes": "The agent quotes an upper bound and the user approves it",
-      "scope": "V1"
+      "notes": "The agent quotes an upper bound and the user approves it"
     },
     {
       "action": "Marketing content (blog, social post set, landing-page copy)",
       "credits": "5",
-      "notes": "",
-      "scope": "V1"
+      "notes": ""
     },
     {
       "action": "Homeowner-app lead enrichment and qualification",
       "credits": "0 to Company",
-      "notes": "Paid by Rootline from marketplace revenue",
-      "scope": "V1"
+      "notes": "Paid by Rootline from marketplace revenue"
     },
     {
       "action": "Plan-to-photo render (project a Design onto the property photo, 11)",
       "credits": "20",
-      "notes": "Re-render of only the changed areas after a plan edit: 8",
-      "scope": "V1"
+      "notes": "Re-render of only the changed areas after a plan edit: 8"
     },
     {
       "action": "Seasonal or growth-over-time set (4 renders: spring, summer, fall, \"in 3 years\")",
       "credits": "30",
-      "notes": "",
-      "scope": "V1"
+      "notes": ""
     },
     {
       "action": "Night mood render (basic relight) / physically based night lighting",
       "credits": "20 / 40",
-      "notes": "11 AIM-GEN-E",
-      "scope": "V1"
+      "notes": "11 AIM-GEN-E"
     },
     {
       "action": "Design assistant chat turn (11 AIM-GEN-D)",
       "credits": "1 (question or clarification) / 2 (turn that commits a plan edit)",
-      "notes": "Re-renders are charged separately and quoted first",
-      "scope": "V1"
+      "notes": "Re-renders are charged separately and quoted first"
     },
     {
       "action": "Website visualizer preview set (a homeowner on the Company's own website, 16)",
       "credits": "24",
-      "notes": "Drawn from the Company's pool. The Company sets a monthly cap for the widget (default 600 credits). The default is deliberately small: at the visitor mix in 11 section 8.6 (about 41 credits per visitor) it funds only about 15 visitors a month, so owners raise it and fund it with packs for spring campaigns (one-tap \"raise cap\" from the cap alert). On Starter (300 included credits) the setup wizard recommends funding the widget from purchased packs only, so it cannot use up the office's allowance. Anonymous visitors get 1 teaser set; more after one-time-code verification, per the gate modes in 11 AIM-AUD-01. The widget ships at MVP behind the `verify_first` gate for design partners (24 section 4.6 #14)",
-      "scope": "MVP"
+      "notes": "Drawn from the Company's pool. The Company sets a monthly cap for the widget (default 600 credits). The default is deliberately small: at the visitor mix in 11 section 8.6 (about 41 credits per visitor) it funds only about 15 visitors a month, so owners raise it and fund it with packs for spring campaigns (one-tap \"raise cap\" from the cap alert). On Starter (300 included credits) the setup wizard recommends funding the widget from purchased packs only, so it cannot use up the office's allowance. Anonymous visitors get 1 teaser set; more after one-time-code verification, per the gate modes in 11 AIM-AUD-01. The widget is on by default for every Company with AI mockups (24 section 1.6, OD-33)"
     },
     {
       "action": "Immersive 3D walkthrough capture (photo scan to navigable scene)",
       "credits": "600",
-      "notes": "GPU-heavy. Quoted before run. Phased by 11 (Mode F)",
-      "scope": "V3"
+      "notes": "GPU-heavy. Quoted before run. Phased by 11 (Mode F)"
     }
   ],
   "seat_types": [
@@ -2381,68 +2193,56 @@
   "trial_and_offers": [
     {
       "item": "Free trial",
-      "rule": "14 days of Grow features. No card required. Field seats unlimited. 500 AI credits. Payments live once Stripe is connected (it is the Company's own account)",
-      "scope": "MVP"
+      "rule": "14 days of Grow features. No card required. Field seats unlimited. 500 AI credits. Payments live once Stripe is connected (it is the Company's own account)"
     },
     {
       "item": "Winter trial",
-      "rule": "Trials started between Nov 1 and Feb 28 default to 30 days, because buyers are evaluating during the planning season",
-      "scope": "MVP"
+      "rule": "Trials started between Nov 1 and Feb 28 default to 30 days, because buyers are evaluating during the planning season"
     },
     {
       "item": "Earned extension",
-      "rule": "+14 days if the trial completes 4 of 6 onboarding milestones (import clients, connect Stripe, send a proposal, schedule a visit, invite a crew member, connect bank feed)",
-      "scope": "MVP"
+      "rule": "+14 days if the trial completes 4 of 6 onboarding milestones (import clients, connect Stripe, send a proposal, schedule a visit, invite a crew member, connect bank feed)"
     },
     {
       "item": "Demo company",
-      "rule": "Every trial can toggle a fully populated sample Company (\"Greenleaf Grounds Co.\", 120 clients, a year of visits, designs, invoices, GL) to explore before importing their own data",
-      "scope": "MVP"
+      "rule": "Every trial can toggle a fully populated sample Company (\"Greenleaf Grounds Co.\", 120 clients, a year of visits, designs, invoices, GL) to explore before importing their own data"
     },
     {
       "item": "SMS in trial",
-      "rule": "Disabled until the Company submits 10DLC brand and campaign registration (started on day 1 from a guided form). Email and push work immediately. See Marketing",
-      "scope": "MVP"
+      "rule": "Disabled until the Company submits 10DLC brand and campaign registration (started on day 1 from a guided form). Email and push work immediately. See Marketing"
     },
     {
       "item": "Trial end",
-      "rule": "Choose a plan, or the tenant drops into a read-only state for 60 days (exports allowed), then archive",
-      "scope": "MVP"
+      "rule": "Choose a plan, or the tenant drops into a read-only state for 60 days (exports allowed), then archive"
     },
     {
       "item": "Module add-on trial",
-      "rule": "A paying Company can trial a service-line module its plan does not include (for example Tree Care or Snow & Ice) for 30 days, once per module per Company. The length is operator-configurable (the operator manages entitlements and trials in the admin console). No charge during the trial; the add-on bills from conversion. At expiry with open commitments (a live storm event, enrolled programs) the module winds down instead of switching off, so no client work is stranded. Separate from the account trial above, during which every module the trial plan includes is simply available. Mechanics in 14 section 4.0.3",
-      "scope": "MVP"
+      "rule": "A paying Company can trial a service-line module its plan does not include (for example Tree Care or Snow & Ice) for 30 days, once per module per Company. The length is operator-configurable (the operator manages entitlements and trials in the admin console). No charge during the trial; the add-on bills from conversion. At expiry with open commitments (a live storm event, enrolled programs) the module winds down instead of switching off, so no client work is stranded. Separate from the account trial above, during which every module the trial plan includes is simply available. Mechanics in 14 section 4.0.3"
     },
     {
       "item": "Spring-Ready Guarantee",
-      "rule": "Companies that sign an annual Grow or Pro plan by Feb 15 and complete the onboarding checklist are guaranteed live (imported, crews on app, first invoices sent) by Mar 31, or the first 3 months are free",
-      "scope": "V1"
+      "rule": "Companies that sign an annual Grow or Pro plan by Feb 15 and complete the onboarding checklist are guaranteed live (imported, crews on app, first invoices sent) by Mar 31, or the first 3 months are free"
     },
     {
       "item": "Founding Customer program",
-      "rule": "The first 100 paying Companies in the Wave 1 Regions of the Great Lakes launch region (6.2) get 25% off base plan list price for as long as they stay subscribed, plus a seat on the Customer Advisory Board",
-      "scope": "MVP"
+      "rule": "The first 100 paying Companies in the Great Lakes Regions (22 section 4.6) get 25% off base plan list price for as long as they stay subscribed, plus the Price Lock Promise and a direct line to the founder. No advisory board (24 section 1.5, R26-12)"
     }
   ],
   "homeowner_tiers": [
     {
       "tier": "Free",
       "price": "$0",
-      "features": "3 AI mockups/month from a photo. Region-aware plant suggestions (Plant KB, curated palette for their ZIP's Region). \"What grows here\" plant finder. Rough budget range by scope (e.g., \"front foundation bed refresh: $4k-$9k in your area\", from Pulse data when cells pass thresholds, otherwise curated ranges). Save and share",
-      "scope": "V1"
+      "features": "3 AI mockups/month from a photo. Region-aware plant suggestions (Plant KB, curated palette for their ZIP's Region). \"What grows here\" plant finder. Rough budget range by scope (e.g., \"front foundation bed refresh: $4k-$9k in your area\", from Pulse data when cells pass thresholds, otherwise curated ranges). Save and share"
     },
     {
       "tier": "Plus",
       "price": "$9.99/mo or $39/yr",
-      "features": "Unlimited mockups (fair use). To-scale plan from satellite + their measurements. Plant list with mature sizes. DIY shopping list. Seasonal care calendar",
-      "scope": "V2"
+      "features": "Unlimited mockups (fair use). To-scale plan from satellite + their measurements. Plant list with mature sizes. DIY shopping list. Seasonal care calendar"
     },
     {
       "tier": "Get it installed",
       "price": "Free to homeowner",
-      "features": "Request a pro: design + photos + dimensions + budget + timeline sent to matched Companies",
-      "scope": "V1"
+      "features": "Request a pro: design + photos + dimensions + budget + timeline sent to matched Companies"
     }
   ],
   "partner_tracks": [
@@ -2451,80 +2251,70 @@
       "examples": "National and regional landscape and irrigation supply (e.g., SiteOne Landscape Supply, Ewing Irrigation & Landscape Supply, Horizon Distribution), turf and chemical distributors",
       "they_get": "Catalog and price feeds inside contractors' Price Books, Design Studio and purchase orders. Demand signal (aggregated)",
       "rootline_gets": "Catalog data, co-marketing at branch events, possibly referral fees",
-      "terms": "Free integration. Optional \"verified catalog\" listing fee never affects ranking in design suggestions",
-      "scope": "V1"
+      "terms": "Free integration. Optional \"verified catalog\" listing fee never affects ranking in design suggestions"
     },
     {
       "track": "Nurseries and growers",
       "examples": "Wholesale growers, regional nurseries",
       "they_get": "Availability exchange into Plant KB and designs, wholesale ordering links",
       "rootline_gets": "Inventory data, regional plant performance knowledge",
-      "terms": "Free Nursery Partner API (5.2.1)",
-      "scope": "V1"
+      "terms": "Free Nursery Partner API (5.2.1)"
     },
     {
       "track": "Equipment dealers and OEMs",
       "examples": "Dealers for mower, compact equipment and handheld brands",
       "they_get": "Fleet integration (hours, service intervals), service reminders",
       "rootline_gets": "Fleet data integrations, co-marketing, financing referrals",
-      "terms": "Revenue share on referred subscriptions (15% year 1). Optional OEM co-op funding: a dealer bundles 3 months of Grow with a fleet purchase and the OEM's co-op budget pays Rootline at list. Neutrality rule (5.4.2) applies: no influence on fleet or equipment recommendations",
-      "scope": "V2"
+      "terms": "Revenue share on referred subscriptions (15% year 1). Optional OEM co-op funding: a dealer bundles 3 months of Grow with a fleet purchase and the OEM's co-op budget pays Rootline at list. Neutrality rule (5.4.2) applies: no influence on fleet or equipment recommendations"
     },
     {
       "track": "Associations",
-      "examples": "NALP (US), Landscape Ontario, Landscape Canada, state associations in the Wave 1 Regions (e.g., ONLA in Ohio, which runs CENTS, and ILCA in Illinois, which runs iLandscape, plus Michigan and Wisconsin associations; verify), and later TNLA in Texas or FNGLA in Florida as the footprint grows",
+      "examples": "NALP (US), Landscape Ontario, Landscape Canada, state associations in the Great Lakes Regions (e.g., ONLA in Ohio, which runs CENTS, and ILCA in Illinois, which runs iLandscape, plus Michigan and Wisconsin associations; verify), and TNLA in Texas or FNGLA in Florida as the footprint grows",
       "they_get": "Member discount, education content, co-branded benchmark reports, sponsorship",
       "rootline_gets": "Credibility, member lists via sponsorship, speaking slots",
-      "terms": "10% member discount + 10% revenue share to association for year 1 (or sponsorship)",
-      "scope": "V1"
+      "terms": "10% member discount + 10% revenue share to association for year 1 (or sponsorship)"
     },
     {
       "track": "Franchise systems",
       "examples": "Lawn and landscape franchisors",
       "they_get": "Franchisor console: standardized price books, brand templates, rollup KPIs, royalty reporting",
       "rootline_gets": "Many tenants in one contract",
-      "terms": "Enterprise contract. Per-location pricing at volume discount (e.g., $199-$399/location/mo)",
-      "scope": "V2"
+      "terms": "Enterprise contract. Per-location pricing at volume discount (e.g., $199-$399/location/mo)"
     },
     {
       "track": "Accountants / CPAs",
       "examples": "Firms serving trades and green industry",
       "they_get": "Free multi-client console, free bookkeeper seats, certification, practice listing",
       "rootline_gets": "High-trust referrals, reduced churn (books stay in Rootline)",
-      "terms": "15% revenue share for 24 months or 10% client discount. Partner chooses per client",
-      "scope": "V1"
+      "terms": "15% revenue share for 24 months or 10% client discount. Partner chooses per client"
     },
     {
       "track": "Consultants, coaches, peer groups",
       "examples": "Landscape business coaches, estimating trainers",
       "they_get": "Partner dashboard, implementation services revenue, certification",
       "rootline_gets": "Referrals, best-practice templates (production rates, KPIs)",
-      "terms": "20% revenue share year 1. Paid \"Certified Implementer\" services marketplace",
-      "scope": "V1"
+      "terms": "20% revenue share year 1. Paid \"Certified Implementer\" services marketplace"
     },
     {
       "track": "Creators / affiliates",
       "examples": "YouTube and social creators in lawn care and landscaping",
       "they_get": "Affiliate links, sponsor deals, early features",
       "rootline_gets": "Top-of-funnel reach",
-      "terms": "20% of first-year revenue, 60-day cookie, plus flat sponsorship fees",
-      "scope": "MVP"
+      "terms": "20% of first-year revenue, 60-day cookie, plus flat sponsorship fees"
     },
     {
       "track": "Technology partners",
       "examples": "Telematics, payroll, insurance, review platforms",
       "they_get": "Listed integrations, API",
       "rootline_gets": "Ecosystem breadth",
-      "terms": "Marketplace listing free. Rev share on paid integrations",
-      "scope": "V2"
+      "terms": "Marketplace listing free. Rev share on paid integrations"
     },
     {
       "track": "Schools",
       "examples": "Horticulture and landscape design programs",
       "they_get": "Free education tenants, curriculum",
       "rootline_gets": "Future hires trained on Rootline",
-      "terms": "Free",
-      "scope": "V1"
+      "terms": "Free"
     }
   ],
   "entitlement_ux": {
@@ -2533,7 +2323,6 @@
       "Module the Company has not enabled (Snow & Ice not added, Books off because QuickBooks is the system of record, a service line not offered): hidden from navigation for everyone (21 §5.2: 'hidden, not greyed out').",
       "Capability not in the plan ('-') or sold as an add-on ('A'): visible to roles that can buy (owner; anyone with rootline_subscription write) as a locked entry with the plan or add-on that unlocks it and its price; hidden for every other role.",
       "Capability included with limits ('L'): fully usable; the limit is shown where it bites (for example '5 of 5 automation rules active') with an upgrade path for the owner and 'Ask Erin to upgrade' for others.",
-      "Capability above the current scope lens (for example V1 while building the MVP): shown in the explorer with its scope tag; not built yet.",
       "Never block a Company from getting paid: invoicing, the portal, client payments and the ledger stay available through dunning, Winter Mode and limit overruns (22 §4.1 rule 5)."
     ]
   },
@@ -2541,7 +2330,7 @@
     "Never block a Company from getting paid (22 §4.1 rule 5).",
     "Usage is visible before it is billed: every AI action shows its credit cost before it runs.",
     "Seat type is derived from permissions, not the role name (22 §4.3).",
-    "Snow Lite is included in every plan from MVP.",
+    "Snow Lite is included in every plan.",
     "An add-on that a higher tier includes is removed on upgrade with prorated credit; removing an add-on keeps its data read-only."
   ]
 }

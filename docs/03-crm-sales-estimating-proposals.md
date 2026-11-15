@@ -8,11 +8,10 @@
 - **The flow:** Lead (`new` -> `contacted` -> `qualified` -> `converted`) -> Opportunity on a pipeline -> site assessment and property intel -> Estimate (internal costing, versioned) -> Proposal (customer-facing, tiered) -> `proposal.accepted` -> deposit on the Company's own Stripe -> `proposal.executed` -> Work Order, Project or Service Agreement ([4.8](#48-conversion-to-jobs-mvp), [5.4](#54-proposal-lifecycle)).
 - **Decision 1, budget-first pricing:** every estimate pins a Company Budget version, so every price carries burdened labor, overhead recovery (FLH, SORS or MORS, with a solver that balances MORS to the budget) and a target **net** margin on break-even: `price = break_even / (1 - target_net_margin)` ([EST-01](#est-01-company-budget-wizard-mvp), [EST-02](#est-02-overhead-recovery-methods-mvp-flh--sors--mors-v1-revenue-view-recovery-tracker), [EST-09](#est-09-pricing-math-margin-markup-and-the-truth-mvp)).
 - **Decision 2, margin is never confused with markup:** the sidebar always shows break-even, gross margin, net margin and markup (a 30% markup is a 23.1% margin), and approval limits and margin floors come from [02](02-personas-roles-permissions.md) section 5.6.
-- **Decision 3, one engine, two speeds:** Quick Quote (about 2 minutes, at most 5 inputs) and the full cost builder are the same `estimate_version` priced by the same production rates, kits and budget; the public instant quote  uses a pricing rule generated from the same cost model ([EST-11](#est-11-quick-quote-mode-mvp), [EST-12](#est-12-recurring-maintenance-pricing-mvp)).
+- **Decision 3, one engine, two speeds:** Quick Quote (about 2 minutes, at most 5 inputs) and the full cost builder are the same `estimate_version` priced by the same production rates, kits and budget; the public instant quote uses a pricing rule generated from the same cost model ([EST-11](#est-11-quick-quote-mode-mvp), [EST-12](#est-12-recurring-maintenance-pricing-mvp)).
 - **Decision 4, geometry is shared:** property measurements and Design Studio takeoffs feed kit inputs directly, so a polygon edit reprices the job ([INTEL-01](#intel-01-property-measurement-profile-mvp-manual--parcel--ai-turf-v1-other-ai-classes), [EST-17](#est-17-takeoff-from-design-studio-mvp-basic-v1-live-sync)).
 - **Decision 5, money flows to the Company:** deposits are direct charges on the Company's own connected Stripe account and post Dr 1050 Stripe Clearing / Cr 2150 Customer Deposits under the posting rules owned by [09](09-accounting-ledger-integrations.md); AI never sets a price.
-- **MVP:** unified Lead inbox and core channels (forms, phone and SMS, email and marketplace email parsing, crew upsells, the visualizer widget), CRM records, pipelines and kanban, mobile assessments, parcel data and AI turf measurement, the Company Budget wizard, production rates, kits, Quick Quote, Price Book, Good/Better/Best proposals with e-sign and deposits, conversion to Jobs, basic change orders and renewals, and AI help that runs through the agents in [17](17-ai-copilot-automation.md): lead triage and first replies, estimate drafts from notes, voice memos and photos, proposal writing and Copilot commands.
-- **Later:** online booking with instant quotes, AI receptionist intake, native LSA and Angi APIs, referral rewards, structured voice-to-scope, aerial-measured AI estimate drafts, AI measurement of beds and hardscape, HOA multi-signer approvals, financing, bulk enhancement campaigns, commercial bids and RFPs, commissions, smart follow-ups; photo-first estimating, living proposals and CRM sync connectors; bounded auto-quoting.
+- **In v1:** the unified Lead inbox with every channel (forms, online booking with instant quotes, phone and SMS, AI receptionist intake, email and marketplace parsing plus the native LSA and Angi APIs, crew upsells, referral links and rewards, the visualizer widget), CRM records with Salesforce and HubSpot sync, pipelines and kanban, offline assessments, Quick Quote and Field Design Mode capture in the native app's sales mode, parcel data and AI measurement of turf, beds and hardscape, the Company Budget wizard, production rates, kits, the Price Book, Good/Better/Best visual and living proposals with e-sign, HOA multi-signer approvals, deposits and financing, conversion to Jobs, full change orders and renewals, bulk enhancement campaigns, commercial bids and RFPs, commissions, smart follow-ups, and AI help that runs through the agents in [17](17-ai-copilot-automation.md): lead triage and first replies, structured voice-to-scope, assisted estimate drafts (from notes, voice memos, photos and aerial measurement), photo-first estimating, proposal writing, Copilot commands and bounded auto-quoting (off by default per Company).
 - **Differentiators:** Jobber's speed with LMN's math, proposals built from the same object graph as the design (each tier swaps its own mockup, plan and plant list), measurement native to the platform, and HOA quorum signing bound to a proposal version.
 - **Key cross-links:** permissions in [02](02-personas-roles-permissions.md); booking, instant-quote gating and the AI receptionist in [16](16-marketing-growth-communications.md); deposits in [08](08-payments-stripe.md); billing after conversion in [07](07-invoicing-billing-contracts.md); takeoffs in [10](10-design-studio.md); mockups in [11](11-ai-design-mockups.md); credit prices in [22](22-business-model-pricing-gtm.md).
 
@@ -37,7 +36,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief: extra ideas](#13-beyond-the-brief-extra-ideas)
-14. [Open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-open-questions)
 15. [Sources](#sources)
 
 ---
@@ -59,12 +58,12 @@
 
 ### 1.2 Non-goals
 
-- **Not a general-purpose CRM.** We do not try to be Salesforce or HubSpot. There is no arbitrary object builder; there are custom fields, tags and pipelines tuned for landscaping. Companies that insist on Salesforce get a sync connector , not parity.
+- **Not a general-purpose CRM.** We do not try to be Salesforce or HubSpot. There is no arbitrary object builder; there are custom fields, tags and pipelines tuned for landscaping. Companies that run Salesforce or HubSpot get a sync connector ([8.1](#81-external-services)), not parity.
 - **Not marketing automation.** Campaigns, the website builder, review requests, referral programs and the AI receptionist are specified in [16 - Marketing](16-marketing-growth-communications.md). This doc covers how their output becomes Leads and Opportunities.
 - **Not the design tool.** Drawing beds, placing plants and rendering mockups belong to [10 - Design Studio](10-design-studio.md) and [11 - AI Design and Mockups](11-ai-design-mockups.md). This doc covers the takeoff contract (Design -> quantities -> Estimate) and how designs are embedded in proposals.
 - **Not invoicing or payment rails.** Deposits are requested here; the charge, payout, refund and dispute mechanics are in [08 - Payments](08-payments-stripe.md). Billing schedules after conversion are in [07 - Invoicing](07-invoicing-billing-contracts.md).
 - **Not construction bid management for general contractors.** We support landscape subcontract bids to GCs (bid packets, alternates, unit prices, retainage terms) but not plan-room aggregation or GC-side bid leveling.
-- **No auto-sent AI prices in MVP.** AI can draft estimates; a human holding `proposal.send` (and, above their approval limits, an approver holding `proposal.approve_internal`, per [02](02-personas-roles-permissions.md)) always releases a price to a Client until a tenant explicitly enables bounded auto-quoting (see [section 10](#10-ai-opportunities-in-this-module)).
+- **No auto-sent AI prices by default.** AI can draft estimates; a human holding `proposal.send` (and, above their approval limits, an approver holding `proposal.approve_internal`, per [02](02-personas-roles-permissions.md)) releases every price to a Client unless the Company turns on bounded auto-quoting (AI-15, off by default per Company, with confidence gating and first-visit verification; see [section 10](#10-ai-opportunities-in-this-module)). Even then the engine computes the price; AI never sets one.
 
 ---
 
@@ -101,18 +100,18 @@
 | Complaint | Evidence | Rootline response |
 |---|---|---|
 | Heavy tools are hard to learn and slow to roll out | Aspire: "learning curve, and some common tasks require too many steps", "intensive ramp up period" ([GetApp UK](https://www.getapp.co.uk/reviews/9108/aspire), [Capterra](https://www.capterra.com/p/161544/Aspire/reviews/?page=3)); SingleOps: steep learning curve ([Capterra](https://www.capterra.com/p/176935/SingleOps/pricing/)); LMN: "too difficult to use" (summarized in [Capterra LMN reviews](https://www.capterra.com/p/142064/LMN/reviews/)) | Progressive disclosure: a "Quick Quote" mode on the same engine; a budget wizard with sensible defaults; Copilot drafts the first estimate. |
-| High cost and add-on fees | Aspire: "High cost and added fees" in the Capterra summary ([Capterra](https://www.capterra.com/p/161544/Aspire/)); described as much more expensive than LMN or Jobber ([Searchfunder thread](https://searchfunder.com/post/what-ops-software-for-landscaping)) | Measurement, visual proposals, e-sign and kits included in core tiers; AI metered transparently as credits ([22 - Pricing](22-business-model-pricing-gtm.md)). |
+| High cost and add-on fees | Aspire: "High cost and added fees" in the Capterra summary ([Capterra](https://www.capterra.com/p/161544/Aspire/)); described as much more expensive than LMN or Jobber ([Searchfunder thread](https://searchfunder.com/post/what-ops-software-for-landscaping)) | Measurement, visual proposals, e-sign and kits included in core plans; AI metered transparently as credits ([22 - Pricing](22-business-model-pricing-gtm.md)). |
 | Cannot reuse parts of past estimates | Aspire reviewer could not copy selected parts of a previous opportunity into an unrelated one ([Capterra](https://www.capterra.com/p/161544/Aspire/reviews/?page=3)) | `EST-15` "Copy anything": copy any section, line or kit from any past estimate via search, with costs refreshed. |
 | Proposals are not visual enough | Aspire reviewer wants "adding more photos to proposals" ([Capterra](https://www.capterra.com/p/161544/Aspire/reviews/?page=3)) | Visual proposals are native: unlimited photos, before/after mockup sliders, interactive plans, KB plant cards. |
 | Simple tools are too basic for landscape | A reviewer who moved to LMN said Jobber felt too basic and tried to serve every business type ([Capterra LMN reviews](https://www.capterra.com/p/142064/LMN/reviews/)) | Landscape-native units (yd3, flats, pallets, lf of edging), production rates, seasonality and agreements. |
-| Mobile apps are buggy and slow | LMN app reviews: "buggy, slow, and deletes job cards" ([Connecteam review of LMN](https://connecteam.com/reviews/lmn/)) | Offline-first estimator mode in the React Native app with local SQLite and conflict-safe sync ([05](05-field-crew-mobile-app.md), [20](20-architecture-security.md)). |
-| Key sales automation gated to higher plans | Jobber quote follow-ups are a Grow-plan feature, and CC'd recipients do not receive follow-ups ([Jobber help](https://help.getjobber.com/en/articles/quoting-on-the-grow-plan/)) | Basic follow-up cadence in every tier; every signer and approver gets the cadence. |
+| Mobile apps are buggy and slow | LMN app reviews: "buggy, slow, and deletes job cards" ([Connecteam review of LMN](https://connecteam.com/reviews/lmn/)) | Offline-first sales mode in the one native app (crew, manager and sales modes) with local SQLite and conflict-safe sync ([05](05-field-crew-mobile-app.md), [20](20-architecture-security.md)). |
+| Key sales automation gated to higher plans | Jobber quote follow-ups are a Grow-plan feature, and CC'd recipients do not receive follow-ups ([Jobber help](https://help.getjobber.com/en/articles/quoting-on-the-grow-plan/)) | Follow-up cadences in every plan; every signer and approver gets the cadence. |
 | Materials math on irregular properties is guesswork | A Reddit r/landscaping poster asked how experienced operators calculate mulch and material volume on irregular beds (reported second-hand by [Swivl](https://swivl.tech/blog/mulch-math-how-landscapers-estimate-materials)) | Aerial and on-site polygon measurement, depth-aware volume, and unit conversion (bags vs yd3 vs tons) built in. |
-| Overhead is ignored in pricing | "If you don't recoup overhead costs, there's not even $1 of profit in a job" ([Total Landscape Care](https://www.totallandscapecare.com/business/article/15034644/how-to-properly-cost-a-job)) | Overhead recovery is mandatory in the engine (default FLH), with an explicit "break-even" line on every estimate. |
+| Overhead is ignored in pricing | "If you don't recoup overhead costs, there's not even $1 of profit in a job" ([Total Landscape Care](https://www.totallandscapecare.com/business/article/15034644/how-to-properly-cost-a-job)) | Overhead recovery is mandatory in the engine (defaults FLH for maintenance and MORS for construction), with an explicit "break-even" line on every estimate. |
 | Double entry between estimating tool and FSM | Jobber quotes are price-book line items, so estimators build the number in LMN, Excel or their head and retype it ([R1 analysis](research/R1-field-service-platforms.md), an inference from Jobber's feature set rather than a quoted complaint) | One engine from Quick Quote to commercial bid; the proposal, Job budget and invoice schedule all come from the same estimate version. |
 | Measurement is slow on big sites | An LMN reviewer said measuring large properties "would take literal days" ([G2 LMN reviews](https://www.g2.com/products/lmn)) | AI auto-measure with tiling for sites over 5 acres (`INTEL-03`), and commercial bid builder that measures a portfolio in one batch (`BID-02`). |
 | Lead marketplaces create duplicates and missing fields | Duplicate leads when both the Angi API and the email parser are enabled ([ClientTether](https://support.clienttether.com/home-advisor/)); the consumer phone number is reported missing from LSA leads in the Google Ads API ([Google Ads API forum](https://groups.google.com/g/adwords-api/c/PP7d0bCOGKg)) | One ingest path per source (email parser auto-disabled once the API path is verified) and identity resolution that tolerates partial records (`LEAD-03`). |
-| Add-ons stack up | Reviewers note that Jobber's AI Receptionist and Marketing Suite add-ons "add up fast" ([FieldCamp review](https://fieldcamp.ai/reviews/jobber-reviews/), third-party) | Measurement, e-sign and visual proposals ship in every tier. The AI receptionist is a published add-on (included on Pro) on its own per-minute meter, and other AI work is metered in published credits ([22](22-business-model-pricing-gtm.md)). |
+| Add-ons stack up | Reviewers note that Jobber's AI Receptionist and Marketing Suite add-ons "add up fast" ([FieldCamp review](https://fieldcamp.ai/reviews/jobber-reviews/), third-party) | Measurement, e-sign and visual proposals ship in every plan. The AI receptionist is a published add-on (included on Pro) on its own per-minute meter, and other AI work is metered in published credits ([22](22-business-model-pricing-gtm.md)). |
 
 ### 2.3 The gap we exploit
 
@@ -145,20 +144,20 @@ Role keys follow [02 - Personas, roles and permissions](02-personas-roles-permis
 | Subcontractor (`subcontractor`) | "Submit my price for the irrigation portion of a bid." | Emailing PDFs back and forth. | Scoped sub-bid request link: sees only their scope package, submits price and attachments. |
 | Residential homeowner (`client_residential`) | "Understand what I am getting, see what it will look like, pick a package, pay the deposit." | PDF quotes with jargon, no visuals, opaque line items. | Mobile-first visual proposal, tiers, add-ons, mockups, plant cards, sign and pay in 60 seconds. |
 | Commercial PM / HOA board (`client_commercial`) | "Compare bids across 12 sites, get board approval, issue a PO." | Bids arrive in inconsistent formats; board signatures via email chains. | Unit-price schedules, site-by-site breakdown, multi-signer quorum approvals, PO capture, exportable bid packet. |
-| Platform Curator (`platform_curator`) | "Maintain the benchmark production-rate library and plant data that tenants start from." | N/A | Curator console for production-rate benchmark ranges and assembly templates ([19](19-platform-admin-portal.md)). |
-| Platform Operator (`platform_owner`) | "Ship great default kits and templates; see adoption; keep AI costs sane." | N/A | Template marketplace, AI credit metering, adoption analytics ([19](19-platform-admin-portal.md)). |
+| Platform Curator (`platform_curator`, held by the plant curator agent) | "Maintain the benchmark production-rate library and plant data that tenants start from." | N/A | Curator console for production-rate benchmark ranges and assembly templates ([19](19-platform-admin-portal.md)). |
+| Platform Owner (`platform_owner`, the founder) | "Ship great default kits and templates; see adoption; keep AI costs sane." | N/A | Template marketplace, AI credit metering, adoption analytics ([19](19-platform-admin-portal.md)). |
 
 ### 3.1 Key journeys at a glance
 
 1. **Residential maintenance, no visit:** web form -> intel auto-fill (turf 9,000 sq ft) -> Quick Quote from the mowing model -> 3-tier proposal (Mow only / Mow + 5-step fertilization / Full care) -> client signs on phone -> Service Agreement created -> first visit scheduled on the existing Tuesday route.
-2. **Design-build install:** Google LSA call -> AI receptionist  books consult -> designer visits with assessment checklist -> Design Studio plan + AI mockups -> takeoff -> estimate with kits -> good/better/best visual proposal with financing -> e-sign + 30% deposit -> Project with phases (demo, hardscape, irrigation, planting) -> change order for buried concrete -> completion -> maintenance agreement upsell.
+2. **Design-build install:** Google LSA call -> AI receptionist books consult -> designer visits with assessment checklist -> Design Studio plan + AI mockups -> takeoff -> estimate with kits -> good/better/best visual proposal with financing -> e-sign + 30% deposit -> Project with phases (demo, hardscape, irrigation, planting) -> change order for buried concrete -> completion -> maintenance agreement upsell.
 3. **HOA renewal:** 90 days before contract end, renewal grid shows actual margin per site -> ops_manager applies CPI-based escalator with a 3% floor -> community manager approves and 3 board members receive the renewal -> 2-of-3 quorum signs -> agreement renewed, billing schedule regenerated.
 
 ---
 
 ## 4. Feature specification
 
-Every feature carries a scope tag: first sellable release, next scope wave, later wave, moonshot / long-term. Tags are scope tiers, not dates; [24](24-product-scope-decisions-catalog.md) is binding where docs differ.
+Every feature in this section is part of the product. [24](24-product-scope-decisions-catalog.md) is binding where documents differ.
 
 ### 4.1 Lead capture and intake
 
@@ -177,23 +176,23 @@ Behaviors and rules:
 
 #### LEAD-02 Capture channels
 
-| Channel | Mechanism | Priority | Notes |
-|---|---|---|---|
-| Website forms | Embeddable JS widget and hosted form; native in the Rootline website builder ([16](16-marketing-growth-communications.md)); reCAPTCHA/hCaptcha + honeypot + rate limit | | Form builder with conditional questions ("What services?" -> if Mowing ask lot size range). Photo upload (up to 10 images, 15 MB each). |
-| Online booking and instant quotes | Client picks a site-visit slot or books an instant-priced service (mowing, aeration, fertilization program, mulch, irrigation start-up) | instant quotes and online booking, per the binding retag in [24](24-product-scope-decisions-catalog.md) section 4.6 (turf auto-measure stays for internal estimating); estimator self-booking (`ASSESS-01`) | The booking flow, confidence gating and capacity rules live in [16](16-marketing-growth-communications.md) 4.3. This module supplies the price: the pricing rule is generated from the maintenance cost model (`EST-12`) so a public price never undercuts the Company's budget. See flow 5.2. |
-| AI receptionist (voice) | Inbound calls answered by the AI receptionist ([16](16-marketing-growth-communications.md)), which creates a Lead with transcript, summary, intent and requested callback/visit time | (per [24](24-product-scope-decisions-catalog.md) section 4.6; at, call tracking and missed-call text-back in [16](16-marketing-growth-communications.md) 4.19 create the Lead) | Call recording consent prompts per state (two-party consent states) handled in 16. |
-| AI design visualizer ("Dream Yard Visualizer", marketed as "See your yard redesigned") | White-label widget on the Company's website and portal; the engine is specified in [11](11-ai-design-mockups.md) AIM-AUD-01 and the marketing wrapper in [16](16-marketing-growth-communications.md) 4.4. A verified visitor's "Get a real design and quote" creates a Lead with photos, masks, dimensions, style picks, favorites, budget band and a pre-filled site assessment request | website widget behind a verify-first gate for design partners; portal-hosted page and Rootline Match leads ([22](22-business-model-pricing-gtm.md) 5.3) | Widget renders draw from the Company's AI credit pool under its widget cap (24 credits per preview set, default cap 600 credits a month, per [22](22-business-model-pricing-gtm.md)). Visualizer signals feed lead scoring (`LEAD-04`). |
-| Phone / SMS (human) | Click-to-create Lead from the unified inbox conversation | | Caller ID matched to existing Clients first. |
-| Email-to-lead | Unique inbound address per Company (`leads-{slug}@in.rootline.app`, shared with the marketplace email parser in [16](16-marketing-growth-communications.md) 4.6); AI parses body and attachments | generic parser, per-source parsers | Catches forwarded RFPs, HOA manager emails and marketplace notification emails. |
-| Google Local Services Ads | Read-only pull of LSA leads and lead conversations through the Google Ads API (`local_services_lead` and conversation resources) per connected Ads account ([Google Ads API LSA docs](https://developers.google.com/google-ads/api/docs/campaigns/local-service-campaigns)); map charge status and lead type | native API; via the email parser | Polling every 5 minutes. The consumer phone number may be missing from API data ([forum](https://groups.google.com/g/adwords-api/c/PP7d0bCOGKg)), so dedupe falls back to name + address + call-tracking number. Replies and disputes stay in Google (deep link). Full ingest spec in [16](16-marketing-growth-communications.md). |
-| Angi | Real-time JSON push to a per-tenant webhook URL with an optional `x-api-key` header; endpoint must answer HTTP 200 with a JSON body ([Angi lead API](https://intercom.help/angi/en/articles/15304819-angi-lead-integration-api)) | native API; via the email parser | When the API path is verified, the Angi email parser is auto-disabled to prevent the known duplicate problem. |
-| Thumbtack, Yelp, Nextdoor, Houzz | Partner APIs where access is granted (Thumbtack API access terms not verified); otherwise email-parse fallback | generic email parse; Thumbtack partner API where granted and per-source parsers; other native APIs | Each source tagged for cost-per-lead and ROI in [18](18-reporting-analytics.md). |
-| Referrals | Client referral link/code from the portal ([06](06-customer-portal.md)); crew-captured "neighbor asked" leads | referral as a manually entered source; referral links, codes and rewards ([16](16-marketing-growth-communications.md) 4.14) | Referrer credited; reward automation in 16. |
-| Door hangers / yard signs / truck wraps | Per-campaign QR codes with short links; optional per-route QR batch ("Elm St route, May 4") so a lead is tied to the street where the hanger went | | Print-ready PDF generation of hangers with unique QR codes per batch. |
-| Crew upsell | `crew_lead`/`technician` taps "Upsell lead" in the crew app with photo + note, attached to existing Client/Property | | Routed to the account's `ops_manager`. |
-| CSV import | Mapping wizard, dedupe on import, dry-run preview | | Migration from Jobber/LMN exports. |
-| Public API + Zapier | `POST /v1/leads`; Zapier app | API, Zapier | Idempotency key required. |
-| Facebook/Instagram Lead Ads | Meta lead ads webhook | | |
+| Channel | Mechanism | Notes |
+|---|---|---|
+| Website forms | Embeddable JS widget and hosted form; native in the Rootline website builder ([16](16-marketing-growth-communications.md)); reCAPTCHA/hCaptcha + honeypot + rate limit | Form builder with conditional questions ("What services?" -> if Mowing ask lot size range). Photo upload (up to 10 images, 15 MB each). |
+| Online booking and instant quotes | Client picks a site-visit slot or books an instant-priced service (mowing, aeration, fertilization program, mulch, irrigation start-up) | The booking flow, confidence gating, first-visit verification and capacity rules live in [16](16-marketing-growth-communications.md) 4.3. This module supplies the price: the pricing rule is generated from the maintenance cost model (`EST-12`) so a public price never undercuts the Company's budget. See flow 5.2. Estimator self-booking for site visits is `ASSESS-01`. |
+| AI receptionist (voice) | Inbound calls answered by the AI receptionist ([16](16-marketing-growth-communications.md)), which creates a Lead with transcript, summary, intent and requested callback/visit time | Call tracking and missed-call text-back ([16](16-marketing-growth-communications.md) 4.19) also create Leads, including for Companies without the receptionist. Call recording consent prompts per state (two-party consent states) handled in 16. |
+| AI design visualizer ("Dream Yard Visualizer", marketed as "See your yard redesigned") | White-label widget on the Company's website, the portal-hosted visualizer page and Rootline Home with Rootline Match leads ([22](22-business-model-pricing-gtm.md) 5.3); the engine is specified in [11](11-ai-design-mockups.md) AIM-AUD-01 and the marketing wrapper in [16](16-marketing-growth-communications.md) 4.4. A verified visitor's "Get a real design and quote" creates a Lead with photos, masks, dimensions, style picks, favorites, budget band and a pre-filled site assessment request | On by default for every Company with AI mockups (OD-33), behind a verify-first gate. Widget renders draw from the Company's AI credit pool under its widget cap (24 credits per preview set, default cap 600 credits a month, per [22](22-business-model-pricing-gtm.md)). Visualizer signals feed lead scoring (`LEAD-04`). |
+| Phone / SMS (human) | Click-to-create Lead from the unified inbox conversation | Caller ID matched to existing Clients first. |
+| Email-to-lead | Unique inbound address per Company (`leads-{slug}@in.rootline.app`, shared with the marketplace email parser in [16](16-marketing-growth-communications.md) 4.6); AI parses body and attachments with a generic parser plus per-source parsers | Catches forwarded RFPs, HOA manager emails and marketplace notification emails. |
+| Google Local Services Ads | Read-only pull of LSA leads and lead conversations through the Google Ads API (`local_services_lead` and conversation resources) per connected Ads account ([Google Ads API LSA docs](https://developers.google.com/google-ads/api/docs/campaigns/local-service-campaigns)); map charge status and lead type | Polling every 5 minutes. LSA notification emails are parsed when no Ads account is connected. The consumer phone number may be missing from API data ([forum](https://groups.google.com/g/adwords-api/c/PP7d0bCOGKg)), so dedupe falls back to name + address + call-tracking number. Replies and disputes stay in Google (deep link). Full ingest spec in [16](16-marketing-growth-communications.md). |
+| Angi | Real-time JSON push to a per-tenant webhook URL with an optional `x-api-key` header; endpoint must answer HTTP 200 with a JSON body ([Angi lead API](https://intercom.help/angi/en/articles/15304819-angi-lead-integration-api)); email parsing until the API path is verified | When the API path is verified, the Angi email parser is auto-disabled to prevent the known duplicate problem. |
+| Thumbtack, Yelp, Nextdoor, Houzz | Partner APIs where access is granted (Thumbtack API access terms not verified); otherwise per-source email parsing | Each source tagged for cost-per-lead and ROI in [18](18-reporting-analytics.md). |
+| Referrals | Client referral link/code from the portal ([06](06-customer-portal.md)); crew-captured "neighbor asked" leads; manual source entry | Referrer credited; referral links, codes and reward automation in [16](16-marketing-growth-communications.md) 4.14. |
+| Door hangers / yard signs / truck wraps | Per-campaign QR codes with short links; optional per-route QR batch ("Elm St route, May 4") so a lead is tied to the street where the hanger went | Print-ready PDF generation of hangers with unique QR codes per batch. |
+| Crew upsell | `crew_lead`/`technician` taps "Upsell lead" in the crew app with photo + note, attached to existing Client/Property | Routed to the account's `ops_manager`. |
+| CSV import | Mapping wizard, dedupe on import, dry-run preview | Migration from Jobber/LMN exports. |
+| Public API + Zapier | `POST /v1/leads`; Zapier app | Idempotency key required. |
+| Facebook/Instagram Lead Ads | Meta lead ads webhook | Form fields mapped to Lead fields; consent captured per `LEAD-01`. |
 
 #### LEAD-03 Deduplication and identity resolution
 
@@ -226,7 +225,7 @@ Scoring and actions:
 Two explainable sub-scores, 0-100 each, shown as chips with a "why" tooltip.
 - **Fit score:** in service area (+30), service interest matches high-margin lines (+20, tenant-configurable per service), property size in the sweet spot (from intel, +15), commercial with multiple properties (+20), budget range at or above the tenant's minimum job (+15), repeat or referral source (+10).
 - **Intent score:** timeline ASAP (+30), uploaded photos (+10), requested specific date (+15), opened booking link (+10), multiple touches in 7 days (+15), verified visualizer session with favorites saved (+15; render count, budget band and partner votes shown in the tooltip, per [11](11-ai-design-mockups.md) AIM-AUD-01), proposal viewed 3+ times (+20, for re-scoring open Opportunities).
-- V2 ML model trained per tenant (with a platform prior for small tenants) on lead -> won outcomes; shows the top 3 contributing features. Never uses protected-class proxies. Neighborhood-level features are allowed only as route-density signals, never demographic data (see [11](#11-edge-cases-compliance-and-risks)).
+- **ML scoring:** a model trained per tenant (with a platform prior for small tenants) on lead -> won outcomes adjusts the weights and shows the top 3 contributing features. Never uses protected-class proxies. Neighborhood-level features are allowed only as route-density signals, never demographic data (see [11](#11-edge-cases-compliance-and-risks)).
 
 #### LEAD-05 Lead routing and assignment
 
@@ -316,7 +315,7 @@ Weighted pipeline by expected close month and service line, plus a **capacity ov
 
 #### ASSESS-02 Mobile assessment checklists
 
-Template-driven forms in the estimator mode of the React Native app, fully offline (local SQLite; synced when online, per [05](05-field-crew-mobile-app.md)).
+Template-driven forms in the sales mode of the native app (`SALES-01`), fully offline (local SQLite; synced when online, per [05](05-field-crew-mobile-app.md)).
 
 Shipped templates: Maintenance walk, Design consultation, Irrigation audit (zones, controller model, backflow type, head counts per zone, leaks), Tree/shrub assessment (species via KB lookup, DBH, condition, hazards), Snow site survey (lots, sidewalks lf, stacking areas, hazards, obstacles, plow-able vs shovel areas), Commercial bid walk, Drainage assessment.
 
@@ -332,7 +331,7 @@ Rules: conditional logic (if "Existing irrigation?" = yes show irrigation sectio
 
 #### ASSESS-04 Voice-to-scope
 
-The estimator dictates while walking ("Front beds about 600 square feet, 3 inch mulch, remove the 3 dead boxwoods on the left, client wants something with color, full sun"). Speech-to-text (English/Spanish), then the Copilot structures it into scope items with quantities, linked to photos taken during the dictation window. Output is a **draft** scope list the estimator confirms (see [17](17-ai-copilot-automation.md)). Before this ships, at, a voice memo recorded during the assessment is transcribed and passed to the A6 Estimating Agent as scope context for an estimate draft (EST-18); it does not yet produce the structured, photo-linked scope list.
+The estimator dictates while walking ("Front beds about 600 square feet, 3 inch mulch, remove the 3 dead boxwoods on the left, client wants something with color, full sun"). Speech-to-text (English/Spanish), then the Copilot structures it into scope items with quantities, linked to photos taken during the dictation window. Output is a **draft** scope list the estimator confirms (see [17](17-ai-copilot-automation.md)). The transcript also goes to the A6 Estimating Agent as scope context for an estimate draft (`EST-18`).
 
 #### ASSESS-05 Assessment-to-estimate handoff
 
@@ -348,7 +347,7 @@ Every Property has a measurement profile, a set of named, versioned measurements
 |---|---|---|
 | Lot size (sq ft / acres / m2) | Parcel data (Regrid) | Sanity checks, lawn program pricing fallback |
 | House footprint (sq ft) | Building footprints (parcel/footprint datasets, aerial segmentation) | Gutter cleaning, foundation bed estimates |
-| Turf area, mowable (sq ft) | Aerial segmentation [MVP, shared with the instant-quote pipeline in [16](16-marketing-growth-communications.md)]; manual polygon | Mowing, fertilization, aeration pricing |
+| Turf area, mowable (sq ft) | Aerial segmentation (shared with the instant-quote pipeline in [16](16-marketing-growth-communications.md)); manual polygon | Mowing, fertilization, aeration pricing |
 | Turf area, trim-heavy (sq ft) | Derived: turf within 3 ft of obstacles/edges | Trim time |
 | Bed area (sq ft) | Aerial segmentation; manual polygon | Mulch, weeding, bed maintenance |
 | Bed edge length (lf) | Polygon perimeter minus hard edges | Edging, trim |
@@ -369,7 +368,7 @@ Rules:
 
 #### INTEL-02 Aerial measurement tools
 
-Map-based draw tools (polygon, line, point counter) over Mapbox/Google satellite tiles with optional high-resolution aerials (Nearmap/EagleView where the tenant subscribes,). Snap to parcel boundary, subtract-shape (house, pool), auto-labels area/perimeter live in the tenant's unit system. Keyboard shortcuts for desktop estimators (T = turf, B = bed, H = hardscape, S = snow area).
+Map-based draw tools (polygon, line, point counter) over Mapbox/Google satellite tiles with optional high-resolution aerials (Nearmap/EagleView where the tenant subscribes). Snap to parcel boundary, subtract-shape (house, pool), auto-labels area/perimeter live in the tenant's unit system. Keyboard shortcuts for desktop estimators (T = turf, B = bed, H = hardscape, S = snow area).
 
 #### INTEL-03 AI auto-measure
 
@@ -401,7 +400,7 @@ The estimating engine is the core of this module. It turns **quantities** (from 
 
 #### EST-01 Company Budget wizard
 
-A guided, 6-step wizard (about 20 minutes with defaults) producing the numbers every estimate uses. LMN popularized budget-first estimating for landscapers; LMN recommends but does not require a budget ([LMN estimating FAQ](https://intercom.help/lmn/en/articles/15939077-estimating-faq)). Rootline **requires every estimate to reference a budget version**, so no price is ever computed without burden, overhead and profit. If the owner skips the wizard, the platform default budget for the Company's region and size band (curated by `platform_curator` and `platform_finance`, labeled as a starting point, not a benchmark) is applied and every estimate shows a "Default budget, review" banner. Whether a default budget may also block discounts or sending is open question 1 ([section 14](#14-open-questions)).
+A guided, 6-step wizard (about 20 minutes with defaults) producing the numbers every estimate uses. LMN popularized budget-first estimating for landscapers; LMN recommends but does not require a budget ([LMN estimating FAQ](https://intercom.help/lmn/en/articles/15939077-estimating-faq)). Rootline **requires every estimate to reference a budget version**, so no price is ever computed without burden, overhead and profit. If the owner skips the wizard, the platform default budget for the Company's region and size band (curated by `platform_curator` and `platform_finance`, labeled as a starting point, not a benchmark) is applied and every estimate shows a persistent "Default budget, review" banner. The wizard is not required before proposals go out (OD-34): a Company on the default budget sends normally, and the only thing blocked is a discount that takes a price below its margin floor.
 
 Steps and fields:
 1. **Field labor:** headcount by role (laborer, crew lead, technician, operator), average hourly wage per role, budgeted billable field hours (season weeks x hours/week x headcount x utilization). Overtime assumption (% of hours at 1.5x).
@@ -433,7 +432,7 @@ Validations:
 
 #### EST-02 Overhead recovery methods
 
-Overhead must be recovered in every price ([Total Landscape Care](https://www.totallandscapecare.com/business/article/15034644/how-to-properly-cost-a-job)). LMN offers three methods, MORS, FLH and SORS, and applies an overhead markup to a cost base that depends on the method ([LMN help](https://intercom.help/lmn/en/articles/15939065-how-lmn-calculates-overhead-labor-burden-and-profit-in-estimates)). Trade sources describe the same family ([Lawn & Landscape on MORS](https://www.lawnandlandscape.com/article/mors-estimating-method/), [Lawn Care Millionaire](https://www.lawncaremillionaire.com/multiple-overhead-recovery-explained/), [How to Hardscape](https://howtohardscape.com/overhead-recovery-rate-formula/)). Rootline implements all of them, lets the Company pick a default per division, and shows a side-by-side comparison on every estimate.
+Overhead must be recovered in every price ([Total Landscape Care](https://www.totallandscapecare.com/business/article/15034644/how-to-properly-cost-a-job)). LMN offers three methods, MORS, FLH and SORS, and applies an overhead markup to a cost base that depends on the method ([LMN help](https://intercom.help/lmn/en/articles/15939065-how-lmn-calculates-overhead-labor-burden-and-profit-in-estimates)). Trade sources describe the same family ([Lawn & Landscape on MORS](https://www.lawnandlandscape.com/article/mors-estimating-method/), [Lawn Care Millionaire](https://www.lawncaremillionaire.com/multiple-overhead-recovery-explained/), [How to Hardscape](https://howtohardscape.com/overhead-recovery-rate-formula/)). Rootline implements all of them, lets the Company pick a default per division, and shows a side-by-side comparison on every estimate. The shipped defaults are FLH for maintenance and MORS for construction (design-build and hardscape), with both shown (OD-35).
 
 | Method | Formula from budget | Applied on estimate | Best for | Weakness |
 |---|---|---|---|---|
@@ -467,7 +466,7 @@ A production rate expresses how much work one person completes per hour (or the 
 
 Fields: `work_item_id`, `unit` (sq ft, lf, yd3, each, flat, ton, zone, visit, acre), `rate_value`, `rate_basis` (`units_per_man_hour` or `man_hours_per_unit`), `standard_conditions` (text: "open access, wheelbarrow <50 ft, loam soil, <10% slope"), `crew_size_min`/`crew_size_typical`, `equipment_required[]` (e.g., mini skid, sod cutter), `applicable_difficulty_factors[]`, `source` (`platform_seed`, `company_custom`, `calibrated`), `confidence`, `calibration_stats` (n jobs, mean variance, last calibrated).
 
-**Platform seed library.** The `platform_curator` team maintains seed rates with ranges for common landscape tasks. They are labeled clearly as **starting points to calibrate**, not industry benchmarks. Composite production rates built from labor hours by task are long-standing trade practice ([1990 trade article, MSU archive](https://archive.lib.msu.edu/tic/wetrt/article/1990jan68.pdf)). Third-party planning figures exist for some tasks; for example, one vendor guide gives 1-2 hours per cubic yard for mulch installation ([Duranta guide](https://getduranta-git-main-duranta-8e88f121.vercel.app/blog/how-to-bid-landscaping-jobs)). Companies copy seeds into their own library and edit them.
+**Platform seed library.** The plant curator agent, which holds `platform_curator`, maintains seed rates with ranges for common landscape tasks. They are labeled clearly as **starting points to calibrate**, not industry benchmarks. Composite production rates built from labor hours by task are long-standing trade practice ([1990 trade article, MSU archive](https://archive.lib.msu.edu/tic/wetrt/article/1990jan68.pdf)). Third-party planning figures exist for some tasks; for example, one vendor guide gives 1-2 hours per cubic yard for mulch installation ([Duranta guide](https://getduranta-git-main-duranta-8e88f121.vercel.app/blog/how-to-bid-landscaping-jobs)). Companies copy seeds into their own library and edit them.
 
 **Illustrative seed values used in this document's examples** (not published benchmarks; every tenant calibrates):
 
@@ -515,7 +514,7 @@ crew_hours       = man_hours / (crew_size x crew_efficiency[crew_size])
 duration_days    = ceil(crew_hours / workday_hours)  (scheduling hint only)
 ```
 
-- **Burdened rate** is blended by default ($28.16/h in the example). V1 adds per-role rates (crew lead $34.50 burdened, laborer $25.60 burdened) with a crew composition per section.
+- **Burdened rate** is blended by default ($28.16/h in the example). Per-role rates (crew lead $34.50 burdened, laborer $25.60 burdened) with a crew composition per section are a setting per estimate or template.
 - **Crew efficiency curve** (optional, off by default): 1-2 people 1.00, 3 people 0.97, 4 people 0.94, 5 people 0.90, 6+ people 0.85 (illustrative). When on, the man-hours priced grow as crew size grows.
 - **Mobilization** is a first-class line: `trips x crew_size x round_trip_hours`, plus load/unload time per trip. The engine suggests trips from `duration_days`. Drive time is billable labor; leaving it out is one of the most common underpricing errors.
 - **Minimum charge** per service line (e.g., $150 minimum for enhancement visits) applied after pricing, with the gap shown as "minimum charge uplift".
@@ -535,7 +534,7 @@ duration_days    = ceil(crew_hours / workday_hours)  (scheduling hint only)
 - **Unit conversions** (per item, with platform defaults to verify per supplier): bagged mulch 2 cu ft bags -> 13.5 bags per yd3; gravel density about 1.4 tons/yd3 (varies about 1.3-1.5 by material); sand about 1.35 tons/yd3; sod rolls or slabs per pallet (supplier-specific); plant container sizes (#1, #3, #5, #7, #15, B&B caliper).
 - **Waste factor** per item (mulch 5%, sod 5%, pavers 5% running bond / 10% herringbone or curves, steel edging 10%), editable per line.
 - **Purchase rounding:** quantities round up to the purchase increment (mulch in 0.5 yd3, steel edging in 10 ft sections, pavers in 10 sq ft, base gravel in whole tons). The difference shows as "overage", and the client price can be based on installed quantity or purchased quantity (tenant setting; default purchased).
-- **Cost freshness:** each cost has `effective_date`. Costs older than 90 days show a "stale" badge. Vendor price-list imports (CSV in MVP, EDI/API in V2) update costs and trigger an **impact report**: "Pavers +6%: 14 open estimates affected, $3,240 of margin at risk" ([13](13-operations-inventory-equipment.md)).
+- **Cost freshness:** each cost has `effective_date`. Costs older than 90 days show a "stale" badge. Vendor price-list imports (CSV, EDI or vendor API) update costs and trigger an **impact report**: "Pavers +6%: 14 open estimates affected, $3,240 of margin at risk" ([13](13-operations-inventory-equipment.md)).
 - **Plants** are Price Book items linked to a KB Plant ([12](12-plant-knowledge-base.md)) plus size/container and nursery. Region suitability from the Plant Region Profile is shown inline ("Good in your region"; "Marginal: needs winter protection in zone 5b"). Using a plant rated "Not recommended" for the Property's Region requires an override note and is flagged on the warranty terms.
 - **Plant availability and substitutions**: plant lines show a nursery availability badge (`in_stock`, `limited`, `special_order` with lead time in weeks, `unavailable`) from the vendor availability feeds in [12](12-plant-knowledge-base.md) and [13](13-operations-inventory-equipment.md). An `unavailable` or `special_order` plant whose lead time lands after the earliest start date shows up to 3 substitutes from the same Plant Palette with a Region rating at least as good, the same container size class and a mature size within 25%, ranked by price delta. Proposals can carry a standard substitution clause: a like-for-like swap within +/-10% of the line price after signing is a `no_cost` Change Order (documentation only, client notified); anything else needs client approval (`CO-01`).
 - **Markup policy per item:** the default is `cost_plus_overhead_profit` (the material cost flows into direct cost and is priced by the estimate's overhead method and target margin). An item can instead carry a fixed `markup_pct` or `target_margin_pct` (e.g., plants at 2x cost). In that case the line's price is computed directly and the sidebar shows the implied overhead recovery and net margin for that line, so a markup that fails to cover overhead is visible.
@@ -626,9 +625,9 @@ A Kit is a versioned recipe with **inputs**, **formulas** and **components**. It
 Kit definition:
 - Inputs: typed variables with defaults, units and validation, e.g., `area_sqft` (number > 0, required), `perimeter_lf`, `edge_against_structure_lf`, `base_depth_in` (default 6, min 4, max 12), `bedding_depth_in` (default 1), `paver_product` (Price Book item picker filtered to category Pavers), `pattern` (enum: running_bond, herringbone, basket_weave), `access` (difficulty enum).
 - Formulas: a safe, sandboxed expression language (arithmetic, `ceil`, `floor`, `round_to(x, inc)`, `min`, `max`, `if`, lookups into item attributes such as `paver_product.thickness_in`). No loops, no I/O, evaluated server-side and on-device identically (shared TypeScript evaluator; see [20](20-architecture-security.md)).
-- Components: Price Book items or Work Items with quantity formulas. They can be nested kits and conditional.
+- Components: Price Book items or Work Items with quantity formulas. They can be nested kits and can be conditional (for example `if pattern == 'herringbone'`).
 - Pinning: estimates pin the kit version; kit updates show "New kit version available" with a diff and one-click upgrade.
-- Kits can be created from any estimate section ("Save section as kit") and shared to the platform template marketplace.
+- Kits can be created from any estimate section ("Save section as kit") and shared to the platform template marketplace (curated by `platform_curator`).
 
 **Worked example: "Paver patio per sq ft" kit, 300 sq ft herringbone, 70 lf perimeter, 20 lf against house** (illustrative defaults; densities and coverage vary by product and supplier)
 
@@ -683,7 +682,7 @@ Shipped Quick Quote Templates (curated by `platform_curator`, copied into each t
 | Irrigation start-up or winterization | Zone count (Property irrigation profile), backflow type | Base + per-zone Price Book item | Single price |
 | Shrub and hedge trimming | Count by size class or hedge lf, height band | Trimming kit | Single price, optional debris haul-away |
 
-**Worked example: Quick Quote, mulch top-dress, 690 sq ft of beds at 2 in** (Evergreen Edge budget, enhancements at 18% target net, drive-up access): installed volume 690 x 2 / 324 = 4.26 yd3; purchased 4.26 x 1.05 waste = 4.47 -> 4.5 yd3 x $32.00 = $144.00; labor 4.26 / 0.75 + 1.00 mh mobilization (2 people x 0.5 h) = 6.68 mh x $28.16 = $188.08; direct cost $332.08; FLH overhead 6.68 x $21.00 = $140.26; break-even $472.34; price $472.34 / 0.82 = $576.02 -> **$580** (gross margin 42.3%). The estimator typed nothing but the depth; the bed area came from the Property's measurement profile (a polygon drawn on the aerial last season, or AI-measured from) and the product from last year's job.
+**Worked example: Quick Quote, mulch top-dress, 690 sq ft of beds at 2 in** (Evergreen Edge budget, enhancements at 18% target net, drive-up access): installed volume 690 x 2 / 324 = 4.26 yd3; purchased 4.26 x 1.05 waste = 4.47 -> 4.5 yd3 x $32.00 = $144.00; labor 4.26 / 0.75 + 1.00 mh mobilization (2 people x 0.5 h) = 6.68 mh x $28.16 = $188.08; direct cost $332.08; FLH overhead 6.68 x $21.00 = $140.26; break-even $472.34; price $472.34 / 0.82 = $576.02 -> **$580** (gross margin 42.3%). The estimator typed nothing but the depth; the bed area came from the Property's measurement profile (a polygon drawn on the aerial last season, or measured by AI auto-measure, `INTEL-03`) and the product from last year's job.
 
 > **Competitive edge: Quick Quote.** Jobber is fast because its quote is a line-item list the estimator prices from memory. LMN and Aspire are accurate because the estimator works the cost build-up. Quick Quote gives Jobber's speed with LMN's math: the $580 above carries burden, overhead and an 18% net target even though the estimator never saw a cost line. Real Green's Measurement Assistant also sends quotes from satellite measurements ([Real Green](https://www.realgreen.com/measurement_assistant.html)), inside a product built around lawn-care programs; Rootline's Quick Quote Templates cover mowing, mulch, cleanups, aeration and irrigation services from the same engine that prices a $40,000 patio.
 
@@ -768,7 +767,7 @@ Templates for the recurring upsell calendar:
 - **Estimate templates** per job type ("Spring cleanup - residential", "Backyard design-build starter", "HOA maintenance - full service") with sections, kits, default multipliers and proposal template.
 - **Copy anything** (`EST-15`): search any past estimate by client, address, kit, item or text; copy a line, section or whole estimate into the current one, with costs refreshed to today's Price Book (diff shown).
 - **Versioning:** estimates have versions (v1, v2, ...). Proposals reference a specific estimate version. Comparing versions shows line diffs and margin deltas.
-- **Estimate health checks**: no mobilization on a multi-day job; no disposal on a removal job; waste factor 0 on mulch/sod/pavers; stale costs older than 90 days; production rate overridden more than 30% from library; region-unsuitable plants; labor hours inconsistent with section size (outlier against similar past estimates, V1).
+- **Estimate health checks**: no mobilization on a multi-day job; no disposal on a removal job; waste factor 0 on mulch/sod/pavers; stale costs older than 90 days; production rate overridden more than 30% from library; region-unsuitable plants; labor hours inconsistent with section size (outlier against similar past estimates).
 
 #### EST-16 Estimate review and approval
 
@@ -798,7 +797,12 @@ Rules:
 
 #### EST-18 AI estimating
 
-**Phasing.** At the A6 Estimating Agent ([17](17-ai-copilot-automation.md) 4.5.7) drafts an estimate from assessment notes, a voice memo transcript and site photos used as scope context, with quantities taken from measurements already on the Property (manual, parcel or AI turf per INTEL-01 and INTEL-03). This is the "Estimate or proposal draft" action on the [22](22-business-model-pricing-gtm.md) rate card (8 credits). At the agent runs the aerial measurement pipeline, so quantities come from freshly segmented aerial geometry in a Design draft. At photos become the primary measurement source (AI-5, AI-6). At bounded auto-quote (AI-15) can send without review. Every stage produces a draft the estimator reviews; no stage sets a price.
+**Three modes.** The A6 Estimating Agent ([17](17-ai-copilot-automation.md) 4.5.7) runs all three:
+- **Assisted drafts:** the agent drafts an estimate from assessment notes, a voice memo transcript and site photos used as scope context. Quantities come from measurements already on the Property (manual, parcel or AI per INTEL-01 and INTEL-03), or the agent runs the aerial measurement pipeline so quantities come from freshly segmented aerial geometry in a Design draft. This is the "Estimate or proposal draft" action on the [22](22-business-model-pricing-gtm.md) rate card (8 credits).
+- **Photo-first:** photos are the primary measurement source (AI-5, AI-6), for sites where aerial imagery is old or obscured.
+- **Bounded auto-quote (AI-15):** for services the Company configures, a quote whose inputs are all high-confidence and inside the auto-quote bands sends without review. It is off by default per Company and runs with confidence gating and first-visit verification (OD-36).
+
+Assisted and photo-first drafts are always reviewed by the estimator. In no mode does AI set a price; the engine computes every dollar.
 
 AI produces a **draft estimate** from one or more of: property intel measurements, site photos, assessment answers and voice notes, client-entered dimensions ("backyard is 40 x 60 ft, I want a 12 x 16 patio and a bed along the fence"), and Design takeoffs. The pipeline:
 
@@ -820,27 +824,27 @@ A Proposal is the client-facing rendering of one approved estimate version. It i
 
 Block-based builder (drag to reorder, per-block visibility rules). Blocks:
 
-| Block | Content | Priority |
-|---|---|---|
-| Cover | Hero image (property photo, mockup or plan render), title, client, property, proposal number, valid-until date, estimator photo and contact | |
-| Personal letter | Rich text with merge fields; AI-drafted option ([section 10](#10-ai-opportunities-in-this-module)) | |
-| About us / credentials | Licenses (number auto-inserted where the jurisdiction requires it), insurance, certifications (e.g., ICPI, ISA, state applicator), awards, review snippets ([16](16-marketing-growth-communications.md)) | |
-| Current conditions | Assessment photos with annotations | |
-| Design plan | Interactive to-scale plan from [Design Studio](10-design-studio.md): pan/zoom, layer toggles (hardscape, planting, irrigation, lighting), measurement labels | (static image in MVP) |
-| Mockups | AI photoreal before/after slider ([11](11-ai-design-mockups.md)); multiple viewpoints; per-tier mockups | static, slider per tier |
-| 3D walkthrough | Orbit view or a rendered fly-through video of the design | |
-| Scope of work | Sections with client-facing descriptions; quantities shown or hidden per template | |
-| Options (tiers, add-ons) | See `PROP-03` | |
-| Plant list | KB plant cards: photo, common/botanical name, mature size, bloom season, sun/water needs, deer resistance, native status, "Performs well in your area" badge from the Plant Region Profile ([12](12-plant-knowledge-base.md)) | |
-| Timeline | Phases with estimated start windows from capacity ([04](04-scheduling-dispatch-routing.md)), e.g., "Earliest start: week of May 11" | |
-| Investment summary | Totals, tax, deposit, payment schedule, financing teaser | |
-| Warranty | Plant warranty terms (e.g., 1-year replacement on trees and shrubs, conditional on the client following the watering plan, or only with a maintenance agreement), workmanship warranty on hardscape | |
-| Terms and conditions | Clause library with jurisdiction packs (`PROP-08`) | |
-| Signature and payment | E-sign (`PROP-05`), deposit (`PROP-07`) | |
-| FAQ | Prep, access, pets, irrigation shut-off, utility locates | |
-| Video message | Estimator-recorded 60-second video | |
+| Block | Content |
+|---|---|
+| Cover | Hero image (property photo, mockup or plan render), title, client, property, proposal number, valid-until date, estimator photo and contact |
+| Personal letter | Rich text with merge fields; AI-drafted option ([section 10](#10-ai-opportunities-in-this-module)) |
+| About us / credentials | Licenses (number auto-inserted where the jurisdiction requires it), insurance, certifications (e.g., ICPI, ISA, state applicator), awards, review snippets ([16](16-marketing-growth-communications.md)) |
+| Current conditions | Assessment photos with annotations |
+| Design plan | Interactive to-scale plan from [Design Studio](10-design-studio.md): pan/zoom, layer toggles (hardscape, planting, irrigation, lighting), measurement labels; the PDF twin carries a static render |
+| Mockups | AI photoreal before/after slider ([11](11-ai-design-mockups.md)); multiple viewpoints; per-tier mockups |
+| 3D walkthrough | Orbit view or a rendered fly-through video of the design |
+| Scope of work | Sections with client-facing descriptions; quantities shown or hidden per template |
+| Options (tiers, add-ons) | See `PROP-03` |
+| Plant list | KB plant cards: photo, common/botanical name, mature size, bloom season, sun/water needs, deer resistance, native status, "Performs well in your area" badge from the Plant Region Profile ([12](12-plant-knowledge-base.md)) |
+| Timeline | Phases with estimated start windows from capacity ([04](04-scheduling-dispatch-routing.md)), e.g., "Earliest start: week of May 11" |
+| Investment summary | Totals, tax, deposit, payment schedule, financing teaser |
+| Warranty | Plant warranty terms (e.g., 1-year replacement on trees and shrubs, conditional on the client following the watering plan, or only with a maintenance agreement), workmanship warranty on hardscape |
+| Terms and conditions | Clause library with jurisdiction packs (`PROP-08`) |
+| Signature and payment | E-sign (`PROP-05`), deposit (`PROP-07`) |
+| FAQ | Prep, access, pets, irrigation shut-off, utility locates |
+| Video message | Estimator-recorded 60-second video |
 
-Templates are per job type and per brand (multi-brand Companies in V2). The platform ships a starter gallery designed by the Rootline design team ([21](21-ux-design-system-sitemaps.md)). Language per Contact preference (English/Spanish at launch, French-Canadian later). Static content is translated by the tenant or machine-translated with a "review" flag; prices and legal clauses are never machine-translated without review.
+Templates are per job type and per brand (a multi-brand Company keeps a template set per brand). The platform ships a starter gallery built on the design system in [21](21-ux-design-system-sitemaps.md). Language per Contact preference: English, Spanish or French-Canadian (fr-CA, R24-19). Static content is translated by the tenant or machine-translated with a "review" flag; prices and legal clauses are never machine-translated without review.
 
 #### PROP-02 Pricing display modes
 
@@ -883,7 +887,7 @@ The Better tier is the `EST-09` worked example ($3,055) plus 5 hydrangeas and a 
 
 #### PROP-05 E-signature (ESIGN / UETA)
 
-Rootline ships native e-signature. No DocuSign dependency (an optional DocuSign/Adobe Sign connector for enterprise clients that mandate it is).
+Rootline ships native e-signature with no DocuSign dependency. An optional DocuSign/Adobe Sign connector serves enterprise clients and government entities that mandate one.
 
 Legal basis: the US federal ESIGN Act (15 U.S.C. 7001 et seq.) and state UETA adoptions (New York uses its own ESRA) give electronic signatures and records legal effect. For consumer transactions where a law requires written information, ESIGN requires affirmative consumer consent after specific disclosures. Canada relies on PIPEDA Part 2 and provincial electronic commerce statutes (Quebec has its own IT framework law). (Statute references from general legal knowledge; counsel to verify before launch.)
 
@@ -913,8 +917,9 @@ Money flows to the Company's own Stripe account. The architecture is specified i
 
 Deposit rules (per template, overridable per proposal):
 - Types: percent of total, fixed amount, first installment of a payment schedule, per-tier rule, or "no deposit".
-- Timing: **required to sign** (signature and payment in one step; the proposal is not executed until payment succeeds or an ACH debit is initiated) or **after sign** (executed on signature; deposit invoice issued with due date).
-- Payment methods offered are the Company's enabled Stripe methods (cards and wallets, US ACH via `us_bank_account`, and Canadian pre-authorized debit from per [08](08-payments-stripe.md)). Large deposits default to bank payment to reduce fees, with the fee comparison shown to the client if the Company allows surcharging (where legal; [08](08-payments-stripe.md)).
+- Timing: **required to sign** (signature and payment in one step; the proposal is not executed until payment succeeds, or until a bank debit is initiated where the ACH rule below allows it) or **after sign** (executed on signature; deposit invoice issued with due date).
+- **ACH and PAD deposits** (OD-23): a debit of up to $5,000 counts as paid once it is initiated (`processing`), so the proposal executes and the Job can be scheduled at once; above $5,000 the proposal waits in `AwaitingPayment` and the Job is scheduled only after the payment clears. The threshold is a Company setting shared with the deposit gate in [04](04-scheduling-dispatch-routing.md) 4.1.2.
+- Payment methods offered are the Company's enabled Stripe methods (cards and wallets, US ACH via `us_bank_account`, and Canadian pre-authorized debit, per [08](08-payments-stripe.md)). Large deposits default to bank payment to reduce fees, with the fee comparison shown to the client if the Company allows surcharging (where legal; [08](08-payments-stripe.md)).
 - **Jurisdiction caps:** some jurisdictions cap home-improvement down payments. For example, California limits the down payment on home improvement contracts to $1,000 or 10% of the contract price, whichever is less (verify current statute). Rootline's jurisdiction pack enforces caps and offers a compliant payment schedule (e.g., progress payments tied to phase completion).
 - **Stripe mechanics** (detail in [08](08-payments-stripe.md)): the deposit is a PaymentIntent created as a **direct charge on the Company's connected account** (platform key plus the connected-account context), confirmed client-side with Stripe Elements so card data never touches Rootline (PCI SAQ-A). Idempotency key = `deposit_request.id` + attempt number, so a double tap cannot double-charge. Metadata carries `proposal_version_id`, `deposit_request_id` and `tenant_id` for reconciliation. `application_fee_amount` is set only if the Company opted into a Rootline plan that takes a fee ([22](22-business-model-pricing-gtm.md)). On the advanced restricted-key path the same PaymentIntent is created with the Company's own key. Rootline's own Stripe account is never involved.
 - **Accounting:** a deposit posts as a customer deposit liability, not revenue: Dr 1050 Stripe Clearing / Cr 2150 Customer Deposits at payment, then Dr 2150 / Cr 1200 AR when it is applied to the first invoice (posting rules `billing.P2` and `billing.P3` in [09](09-accounting-ledger-integrations.md)). Companies that sync to QuickBooks or Xero instead get the same treatment through the account mapping.
@@ -924,12 +929,12 @@ Deposit rules (per template, overridable per proposal):
 #### PROP-08 Terms, clauses and jurisdiction packs
 
 - A clause library with versions: payment terms, warranty, plant care responsibilities, change orders, unforeseen conditions (rock, buried debris, utilities), access/pets, cancellation, dispute resolution, photo release, lien notices, utility locate responsibility.
-- **Jurisdiction packs** (maintained by the platform with legal review, per state/province): required notices such as the federal 3-day cancellation notice for in-home sales, state home-improvement contract disclosures, contractor license display, lien notices and language requirements. Packs attach automatically based on Property location, client type and sale context (e.g., "signed at the client's home").
+- **Jurisdiction packs** (rule-pack data per state and province, maintained by the plant curator agent from licensed sources and approved by the founder before each pack publishes, OD-60; packs ship for federal rules, the five Great Lakes states, California and Ontario, R24-18): required notices such as the federal 3-day cancellation notice for in-home sales, state home-improvement contract disclosures, contractor license display, lien notices and language requirements. Packs attach automatically based on Property location, client type and sale context (e.g., "signed at the client's home").
 - Clauses are snapshotted into each proposal version.
 
 #### PROP-09 Financing offers
 
-- Integration with a consumer home-improvement financing partner offering prequalification without a hard credit pull, and an "as low as {monthly_amount}/month" display (partner-supplied) on proposals above a threshold (e.g., $2,500). Wisetack is the partner horizontal competitors use (Jobber, Housecall Pro, ServiceTitan per [R1](research/R1-field-service-platforms.md)), but Housecall Pro's help center says Wisetack is not available through HCP in Canada ([HCP Help](https://help.housecallpro.com/en/articles/3836042-wisetack-consumer-financing-overview)), so Canadian Companies likely need a second partner (open question 7). The partner adapter is pluggable per country.
+- Integration with a consumer home-improvement financing partner offering prequalification without a hard credit pull, and an "as low as {monthly_amount}/month" display (partner-supplied) on proposals above a threshold (e.g., $2,500). Wisetack is the partner horizontal competitors use (Jobber, Housecall Pro, ServiceTitan per [R1](research/R1-field-service-platforms.md)), but Housecall Pro's help center says Wisetack is not available through HCP in Canada ([HCP Help](https://help.housecallpro.com/en/articles/3836042-wisetack-consumer-financing-overview)), so Canadian Companies use a second partner through the same adapter, which is pluggable per country (decision 7 in [section 14](#14-open-questions)).
 - **Placement rules:** the financing teaser appears only on the investment summary and signing step, never in the tier comparison (so it does not distort tier choice), and only when the Company's partner account is active and the proposal total is inside the partner's min/max loan amount.
 - **Advertising compliance:** in the US, advertised payment amounts such as "$129/month" are Regulation Z (Truth in Lending) trigger terms that require additional disclosures (APR, repayment terms). Rootline only renders partner-supplied, compliant copy and never computes its own monthly-payment marketing figures.
 - The financed amount is funded by the partner to the Company. The Ledger records a receivable from the financing partner, and the partner fee posts as a financing expense ([09](09-accounting-ledger-integrations.md)).
@@ -1047,7 +1052,7 @@ The renewal-notice rule table is shared with [07](07-invoicing-billing-contracts
 
 ### 4.13 Sales productivity
 
-- `SALES-01` **Estimator mode in the mobile app**: My Day (visits, tasks, hot proposals), offline assessments, intel card, Quick Quote, kits, proposal preview, kitchen-table signing, and a deposit by pay link or card entry on the device (Stripe Terminal Tap to Pay on supported phones follows at, [08](08-payments-stripe.md)).
+- `SALES-01` **Sales mode in the native app**: the one native app has crew, manager and sales modes (R25-C3). Sales mode gives estimators and designers My Day (visits, tasks, hot proposals), offline site assessments, the intel card, Quick Quote with turf measurement, Field Design Mode capture ([05](05-field-crew-mobile-app.md) 4.16), kits, proposal preview, kitchen-table signing, and a deposit by pay link, by the client's own card entry on the device, or by Stripe Terminal Tap to Pay on supported phones ([08](08-payments-stripe.md)).
 - `SALES-02` **Calendar and email sync**: Google Workspace and Microsoft 365. Two-way calendar for site visits; email logging to the timeline via BCC address or OAuth mailbox sync (opt-in per user).
 - `SALES-03` **Message templates and snippets** with merge fields, in English and Spanish.
 - `SALES-04` **Sales dashboard**: pipeline by stage, weighted forecast, close rate, average ticket, speed-to-lead, speed-to-quote, proposals expiring this week, hot proposals ([18](18-reporting-analytics.md)).
@@ -1059,10 +1064,10 @@ The renewal-notice rule table is shared with [07](07-invoicing-billing-contracts
 
 ### 5.1 Lead to signed proposal (design-build, residential)
 
-1. A homeowner calls from a Google Local Services ad on a Saturday. The AI receptionist (; at MVP the call gets a missed-call text-back and a Monday callback) answers, qualifies ("backyard patio and plantings, budget $15-25k, wants it before July 4th") and books a Tuesday 10:00 design consult on the designer's calendar ([16](16-marketing-growth-communications.md)).
+1. A homeowner calls from a Google Local Services ad on a Saturday. The AI receptionist ([16](16-marketing-growth-communications.md); a Company without it gets a missed-call text-back and a Monday callback) answers, qualifies ("backyard patio and plantings, budget $15-25k, wants it before July 4th") and books a Tuesday 10:00 design consult on the designer's calendar ([16](16-marketing-growth-communications.md)).
 2. A Lead is created with transcript and summary. Dedupe finds no match. Intel auto-fills the lot (0.31 acre), house footprint, a 1,850 sq ft backyard turf area, an 8% average slope and Region (zone 6b).
 3. Monday: the designer reviews the intel card and pre-loads a "Backyard design-build" assessment template.
-4. Tuesday: the designer walks the site with the mobile app, takes 24 photos, measures the existing deck with a walk wheel, and dictates notes. Voice-to-scope drafts 9 scope items.
+4. Tuesday: the designer walks the site with the native app in sales mode, takes 24 photos, measures the existing deck with a walk wheel, and dictates notes. Voice-to-scope drafts 9 scope items.
 5. The designer builds the plan in the [Design Studio](10-design-studio.md) on top of the property base layer, with 3 Design Options (pavers / natural flagstone / pavers + seat wall), plants filtered to the zone 6b palette from the [Plant KB](12-plant-knowledge-base.md), and AI mockups for each option from the client's backyard photo ([11](11-ai-design-mockups.md)).
 6. The takeoff populates estimate sections per option through kits (patio, seat wall, beds, plantings, drip irrigation, lighting). Health checks flag "no disposal on removal" and the designer adds it.
 7. The Best option's net margin is 9% (floor 10%) because of a special-order stone. The estimate routes to the owner, who approves with the note "Premium stone, accept 9%".
@@ -1098,7 +1103,7 @@ flowchart LR
 
 ### 5.2 Instant online maintenance quote
 
-This flow ships with online booking at ([24](24-product-scope-decisions-catalog.md) section 4.6); the same turf measurement and visit model power estimator Quick Quotes from.
+Online booking, confidence gating and first-visit verification are owned by [16](16-marketing-growth-communications.md) 4.3 (R24-9). The same turf measurement and visit model power estimator Quick Quotes.
 
 1. A visitor on the Company's Rootline-built website enters an address and picks "Weekly mowing".
 2. Rootline geocodes the address, checks the service area and runs intel (parcel + cached or fresh aerial segmentation).
@@ -1193,7 +1198,7 @@ stateDiagram-v2
   Superseded --> [*]
 ```
 
-Rules: `Executed` and `Converted` are terminal for edits; any change after execution is a Change Order. `AwaitingPayment` for ACH means the debit has been initiated (`processing`); if the debit later fails, the Job is flagged "Deposit failed" and the office is alerted, but the signed contract stands ([08](08-payments-stripe.md)).
+Rules: `Executed` and `Converted` are terminal for edits; any change after execution is a Change Order. An ACH or PAD deposit of up to $5,000 executes the proposal when the debit is initiated (`processing`); a larger one keeps it in `AwaitingPayment` until the debit clears, and a debit in `processing` never lapses the signature (OD-23, `PROP-07`). If an initiated debit later fails, the Job is flagged "Deposit failed" and the office is alerted, but the signed contract stands ([08](08-payments-stripe.md)).
 
 - **Card or wallet failure in "required to sign" mode:** the signature record is kept but marked `conditional`, and the proposal is not binding. The client can retry payment on the same document hash for 72 hours (configurable 24-168 h) without re-signing; the estimator gets a push and the deposit-chaser cadence runs. After the window the signature lapses (audit entry plus the `proposal.signature_lapsed` event), the proposal returns to `Viewed`, and the `pending_deposit` shells from [4.8](#48-conversion-to-jobs-mvp) are voided.
 - **Event emission:** `proposal.signed` fires once per signer; `proposal.accepted` fires on entering `AwaitingPayment` or `Executed`, whichever comes first; `proposal.executed` fires on entering `Executed`. See [8.2](#82-domain-events-emitted) for aliases used by other docs.
@@ -1261,33 +1266,33 @@ flowchart LR
 
 ### 6.1 Screen inventory
 
-| # | Screen | Surface | Primary roles | Priority |
-|---|---|---|---|---|
-| S1 | Lead Inbox | Web, mobile | office_manager, estimator | |
-| S2 | Lead detail and dedupe review | Web | office_manager | |
-| S3 | Client / Property 360 | Web, mobile | all internal | |
-| S4 | Pipeline kanban / list / map | Web | owner, estimator, ops_manager | kanban+list, map |
-| S5 | Opportunity detail | Web, mobile | estimator, designer | |
-| S6 | Site-visit scheduler | Web | office_manager, estimator | |
-| S7 | Mobile assessment | Mobile (offline) | estimator, designer | |
-| S8 | Property measure (map draw + auto-measure) | Web, tablet | estimator | manual, AI |
-| S9 | Estimate builder | Web, tablet | estimator, designer | |
-| S10 | Kit editor | Web | owner, estimator (with permission) | |
-| S11 | Price Book | Web | owner, office_manager | |
-| S12 | Company Budget wizard | Web | owner, bookkeeper | |
-| S13 | Production rate library and calibration | Web | owner, ops_manager | library, calibration |
-| S14 | Proposal builder | Web | estimator, designer | |
-| S15 | Client proposal view | Portal (web, mobile) | client_residential, client_commercial | |
-| S16 | Signing and deposit | Portal | clients | |
-| S17 | Proposal analytics panel | Web | estimator | basic |
-| S18 | Change order composer | Web, mobile | estimator, crew_lead (request) | |
-| S19 | Renewal review grid | Web | ops_manager, owner | |
-| S20 | Enhancement campaign builder | Web | ops_manager | |
-| S21 | Commercial bid workspace | Web | estimator (commercial) | |
-| S22 | Sales dashboard | Web, mobile | owner, estimator | |
-| S23 | Commission statements | Web | estimator, designer, bookkeeper | |
-| S24 | Quick Quote | Mobile (offline), web | estimator, ops_manager, office_manager | |
-| S25 | Bid packet builder and plan-set takeoff review | Web | estimator (commercial) | packet, plan-set |
+| # | Screen | Surface | Primary roles |
+|---|---|---|---|
+| S1 | Lead Inbox | Web, mobile | office_manager, estimator |
+| S2 | Lead detail and dedupe review | Web | office_manager |
+| S3 | Client / Property 360 | Web, mobile | all internal |
+| S4 | Pipeline kanban / list / map | Web | owner, estimator, ops_manager |
+| S5 | Opportunity detail | Web, mobile | estimator, designer |
+| S6 | Site-visit scheduler | Web | office_manager, estimator |
+| S7 | Mobile assessment | Mobile, sales mode (offline) | estimator, designer |
+| S8 | Property measure (map draw + auto-measure) | Web, tablet | estimator |
+| S9 | Estimate builder | Web, tablet | estimator, designer |
+| S10 | Kit editor | Web | owner, estimator (with permission) |
+| S11 | Price Book | Web | owner, office_manager |
+| S12 | Company Budget wizard | Web | owner, bookkeeper |
+| S13 | Production rate library and calibration | Web | owner, ops_manager |
+| S14 | Proposal builder | Web | estimator, designer |
+| S15 | Client proposal view | Portal (web, mobile) | client_residential, client_commercial |
+| S16 | Signing and deposit | Portal | clients |
+| S17 | Proposal analytics panel | Web | estimator |
+| S18 | Change order composer | Web, mobile | estimator, crew_lead (request) |
+| S19 | Renewal review grid | Web | ops_manager, owner |
+| S20 | Enhancement campaign builder | Web | ops_manager |
+| S21 | Commercial bid workspace | Web | estimator (commercial) |
+| S22 | Sales dashboard | Web, mobile | owner, estimator |
+| S23 | Commission statements | Web | estimator, designer, bookkeeper |
+| S24 | Quick Quote | Mobile, sales mode (offline), web | estimator, ops_manager, office_manager |
+| S25 | Bid packet builder and plan-set takeoff review | Web | estimator (commercial) |
 
 ### 6.2 Pipeline kanban (S4)
 
@@ -1523,8 +1528,8 @@ All tables carry `tenant_id` (Company) and are protected by Postgres row-level s
 | `change_order` | job_id, number, type, status, estimate_version_id, amount_cents, schedule_impact_days, verbal_approval (jsonb), signed_at | |
 | `renewal` | service_agreement_id, opportunity_id, due_date, escalator_rule_id, proposed_price_cents, actual_margin, decision, notice_due_at, notice_sent_at | Notice dates come from the shared renewal-notice rule table |
 | `escalator_rule` | type, pct, index_series (CPI_U, CA_CPI), window, floor, cap, rounding | Same record as `price_escalator` in [07](07-invoicing-billing-contracts.md); one table, two names in prose |
-| `bid` | client_id, rfp_doc_refs, due_at, submission_method, extracted (jsonb), bid_no_bid_score, status, award_result | V1 |
-| `commission_plan`, `commission_event` | plan rules (jsonb); event user_id, source (proposal, invoice, payment), basis, amount_cents, status, clawback_of | V1 |
+| `bid` | client_id, rfp_doc_refs, due_at, submission_method, extracted (jsonb), bid_no_bid_score, status, award_result | `BID-01` to `BID-09` |
+| `commission_plan`, `commission_event` | plan rules (jsonb); event user_id, source (proposal, invoice, payment), basis, amount_cents, status, clawback_of | `COMM-01` to `COMM-03`; events immutable |
 | `lost_reason` | name, category, requires_competitor | |
 
 ### 7.2 Entity-relationship diagram
@@ -1757,25 +1762,25 @@ erDiagram
 
 ### 8.1 External services
 
-| Service | Use in this module | Priority | Notes |
-|---|---|---|---|
-| Regrid (or similar parcel provider) | Parcel boundary, lot size, owner name match (dedupe hint), land use | | Licensed per lookup or bulk by county; cache per parcel 12 months |
-| Mapbox / Google Maps | Geocoding, satellite tiles, Places autocomplete, Routes matrix for estimator scheduling | | Provider abstraction in the GIS service ([20](20-architecture-security.md)) |
-| USGS 3DEP | Elevation/slope for difficulty multipliers and grading | | Public data; pre-processed tiles |
-| Nearmap / EagleView | High-resolution, recent aerials for measurement | | Tenant-paid add-on or pass-through |
-| Segmentation and depth models | AI auto-measure (turf), then other classes and photo measurement | turf, other classes and photo measurement | Via the AI Gateway ([17](17-ai-copilot-automation.md)); metered per [22](22-business-model-pricing-gtm.md) |
-| Anthropic Claude (via AI Gateway) | Proposal writing, lead triage and first replies, estimate drafts from notes, voice memos and photos (A6 in [17](17-ai-copilot-automation.md)) and Copilot commands; structured voice-to-scope, aerial-measured estimate drafts, RFP extraction, dedupe assist | / | Prompt and response logging with PII redaction policies |
-| Google Ads API (Local Services) | Pull LSA leads and message threads | (LSA notification emails are parsed at) | Verify current API resources and access requirements |
-| Angi, Thumbtack, Yelp, Houzz, Nextdoor | Lead ingest | generic email parse; Angi push API, Thumbtack API where granted and per-source parsers; other APIs | Partner programs vary; verify |
-| Twilio | SMS/voice for auto-response and follow-ups, 10DLC | | Shared with [16](16-marketing-growth-communications.md) |
-| Postmark / SendGrid | Proposal emails, delivery/bounce webhooks | | |
-| Stripe (Company's connected account) | Deposits (PaymentIntents), saved methods (SetupIntents); Tap to Pay | | Per [08](08-payments-stripe.md); never platform account for client funds |
-| Financing partner (e.g., Wisetack, verify) | Prequal, offers, funding notifications | | |
-| Google Workspace / Microsoft 365 | Calendar and email sync | | OAuth per user |
-| BLS CPI-U / Statistics Canada CPI | Escalator index values | | Monthly fetch; manual override |
-| DocuSign / Adobe Sign | Optional external e-sign for enterprise clients | | |
-| Zapier / public API | Lead create, opportunity sync | API, Zapier | |
-| Salesforce / HubSpot | Opportunity and contact sync for larger tenants | | One-way to start |
+| Service | Use in this module | Notes |
+|---|---|---|
+| Regrid (or similar parcel provider) | Parcel boundary, lot size, owner name match (dedupe hint), land use | Licensed per lookup or bulk by county; cache per parcel 12 months |
+| Mapbox / Google Maps | Geocoding, satellite tiles, Places autocomplete, Routes matrix for estimator scheduling | Provider abstraction in the GIS service ([20](20-architecture-security.md)) |
+| USGS 3DEP | Elevation/slope for difficulty multipliers and grading | Public data; pre-processed tiles |
+| Nearmap / EagleView | High-resolution, recent aerials for measurement | Tenant-paid add-on or pass-through |
+| Segmentation and depth models | AI auto-measure for turf, beds, hardscape and commercial classes; photo measurement | Via the AI Gateway ([17](17-ai-copilot-automation.md)); metered per [22](22-business-model-pricing-gtm.md) |
+| Anthropic Claude (via AI Gateway) | Proposal writing, lead triage and first replies, estimate drafts from notes, voice memos, photos and aerial measurement (A6 in [17](17-ai-copilot-automation.md)), Copilot commands, structured voice-to-scope, RFP extraction, dedupe assist | Prompt and response logging with PII redaction policies |
+| Google Ads API (Local Services) | Pull LSA leads and message threads | LSA notification emails are parsed when no Ads account is connected. Verify current API resources and access requirements |
+| Angi, Thumbtack, Yelp, Houzz, Nextdoor | Lead ingest: the Angi push API, partner APIs where granted (Thumbtack), per-source email parsers otherwise | Partner programs vary; verify |
+| Twilio | SMS/voice for auto-response and follow-ups, 10DLC | Shared with [16](16-marketing-growth-communications.md) |
+| Postmark / SendGrid | Proposal emails, delivery/bounce webhooks | Delivery status feeds `PROP-10` |
+| Stripe (Company's connected account) | Deposits (PaymentIntents), saved methods (SetupIntents); Tap to Pay | Per [08](08-payments-stripe.md); never platform account for client funds |
+| Financing partners (e.g., Wisetack in the US, a Canadian lender; verify) | Prequal, offers, funding notifications | One `FinancingProvider` adapter per country ([08](08-payments-stripe.md)) |
+| Google Workspace / Microsoft 365 | Calendar and email sync | OAuth per user |
+| BLS CPI-U / Statistics Canada CPI | Escalator index values | Monthly fetch; manual override |
+| DocuSign / Adobe Sign | Optional external e-sign for enterprise and government clients | Connector; native e-sign stays the default |
+| Zapier / public API | Lead create, opportunity sync | Idempotency keys required |
+| Salesforce / HubSpot | Opportunity, Client and Contact sync for larger Companies (OD-37) | Rootline stays the system of record for estimates and prices. Default is one-way (Rootline to the CRM); two-way sync of Contacts and Opportunity stages is a setting |
 
 ### 8.2 Domain events emitted
 
@@ -1913,14 +1918,14 @@ Legend: **F** full, **B** branch scope (the user's branch or division), **O** ow
 | Configure commission plans | F | - | - | - | - | - | - | F | - | - | - |
 | Export sales/estimating data | F | F | O | - | B | - | - | F | - | - | - |
 
-Platform roles (operator side, see [19](19-platform-admin-portal.md)):
+Platform roles (operator side, see [19](19-platform-admin-portal.md)). `platform_owner` is the founder; the other four roles are held by Rootline's operator agents (support, plant curator, finance and engineering agents) per [24](24-product-scope-decisions-catalog.md) section 1.2:
 
 | Capability | platform_owner | platform_support | platform_curator | platform_finance | platform_engineer |
 |---|---|---|---|---|---|
 | Edit platform seed production-rate library, starter kits, starter price catalogs | F | - | F | - | - |
-| Edit jurisdiction clause packs (with legal sign-off) | F | - | A (content) | - | - |
-| View a tenant's estimates/proposals | Break-glass only | With tenant-granted, time-boxed support access; audited | - | - | Break-glass only |
-| Manage AI credit pricing for intel/AI estimating | F | - | - | F | V |
+| Edit jurisdiction clause packs | A (approves each pack before it publishes, OD-60) | - | F (drafts and maintains packs) | - | - |
+| View a tenant's estimates/proposals | Break-glass only (step-up authentication, written reason, audited) | With tenant-granted, time-boxed support access; audited | - | - | Break-glass only, with the founder's approval |
+| Manage AI credit pricing for intel/AI estimating | F (sets prices, OD-10) | - | - | V (usage reports) | V |
 | Feature flags for this module's features | F | - | - | - | F |
 
 Numeric limits ([02](02-personas-roles-permissions.md) section 5.6) decide when an action becomes an approval request. Template defaults that matter here: `discount.max_pct` (estimator 10%, ops_manager 10%, office_manager 15%, owner unlimited), `proposal.max_value_without_approval` (estimator and ops_manager $15,000, office_manager $25,000), `estimate.margin_floor_pct` (35% gross by default, switchable to a net basis per `EST-09`), and renewal price changes above 8% (owner approval).
@@ -1931,26 +1936,26 @@ Rules: `O` for estimators means records where they are owner, designer or a team
 
 ## 10. AI opportunities in this module
 
-All AI runs through the provider-agnostic AI Gateway, is metered in published AI credits ([22](22-business-model-pricing-gtm.md) 4.4.1; for example, an estimate or proposal draft from notes, photos or a voice memo costs 8 credits), logs inputs and outputs for audit (with PII redaction where required), and follows the guardrails in [17 - AI Copilot and Automation](17-ai-copilot-automation.md). **Rule zero: AI never sets a price.** It proposes quantities, scope and words. The estimating engine computes every dollar.
+All AI runs through the provider-agnostic AI Gateway, is metered in published AI credits ([22](22-business-model-pricing-gtm.md) 4.4.1; for example, an estimate or proposal draft from notes, photos or a voice memo costs 8 credits), logs inputs and outputs for audit (with PII redaction where required), shows its credit cost on or beside its button before it runs (with an explicit confirmation above 20 credits, R25-C7), and follows the guardrails in [17 - AI Copilot and Automation](17-ai-copilot-automation.md). **Rule zero: AI never sets a price.** It proposes quantities, scope and words. The estimating engine computes every dollar.
 
-| # | AI capability | Priority | How it works | Guardrails |
-|---|---|---|---|---|
-| AI-1 | Lead triage and first reply | (runs as the A2 Inbox Triage and A3 Lead Follow-up agents in [17](17-ai-copilot-automation.md)) | LLM classifies intent, service, urgency, spam; drafts a personalized first reply in the lead's language | Auto-send only for templated intents the tenant enables; others are drafts |
-| AI-2 | Dedupe assist | | Embedding similarity on names/addresses for fuzzy cases (e.g., "Bob & Sue Miller" vs "Robert Miller") | Suggest only; never auto-merge below the rules threshold |
-| AI-3 | Voice-to-scope | (at, a recorded voice memo is transcribed and used as scope context by the A6 Estimating Agent in [17](17-ai-copilot-automation.md), per EST-18) | Speech-to-text (en/es) then structured scope with quantities linked to photos taken during the dictation window (ASSESS-04) | Draft list; estimator confirms each item |
-| AI-4 | Aerial auto-measure | turf, other classes | Segmentation on aerial imagery clipped to parcel; per-polygon confidence | Under 0.75 requires human verification; public firm prices need 0.85 or higher ([16](16-marketing-growth-communications.md)) |
-| AI-5 | Photo measurement | | Depth estimation plus reference objects, or phone LiDAR | Shown as estimates with error bars; "verify on site" flag |
-| AI-6 | Photo-to-estimate draft | | Vision model identifies conditions (overgrown beds, dead shrubs, bare turf) and maps them to price book items with quantities | Draft only; confidence and "why" per line |
-| AI-7 | Dimension-to-layout-to-estimate | | Client or designer enters dimensions; AI layout in [11](11-ai-design-mockups.md) produces a Design; takeoff prices it | Layout constrained to KB plants suited to the Region |
-| AI-8 | Proposal writer | | Drafts cover letter, scope narratives and tier names from the estimate and the client's stated goals, in the Company's tone and the client's language | No price or warranty claims invented; legal clauses never generated |
-| AI-9 | Estimate anomaly detection | | Compares lines to the tenant's history: "Mulch rate 0.35 yd3/mh is half your norm"; "No disposal on a removal job" | Advisory warnings |
-| AI-10 | RFP extraction | | Long-document understanding pulls scope, frequencies, dates, insurance and forms with page citations | Human confirms every extracted field before it drives pricing |
-| AI-11 | Follow-up timing and copy | | Picks send time from engagement history; writes nudges referencing viewed options | Consent and quiet hours enforced; human can review queue |
-| AI-12 | Renewal recommendations | | Combines job-costing margin, health score and market index into recommended escalators and scope changes | Owner approval above cap |
-| AI-13 | Win-probability pricing advisor | | Per-tenant model of win probability vs price, scope and client features | Shown as model estimate with confidence band; never auto-applied; no protected-class proxies |
-| AI-14 | Copilot commands | (single-record and bulk drafts, per the acceptance scenarios in [17](17-ai-copilot-automation.md) 4.2.3 and the confirmation tiers in 4.3) | Natural language actions: "Draft spring cleanup proposals for all Maple Ridge properties at last year's scope +5%" | Creates drafts and a review grid; bulk actions over 25 records require typing the count to confirm; bulk send needs confirmation |
-| AI-15 | Bounded auto-quote | | Instant quotes sent without human review for configured services when all inputs are high-confidence and within bands | Tenant opt-in; daily cap; margin floor; automatic human review sampling |
-| AI-16 | Plan-set takeoff (`BID-09`) | | Document understanding reads scaled L-sheets and plant schedules into a Takeoff with sheet citations | Scale confirmed by the estimator; schedule vs symbol-count mismatches over 2% flagged; never prices directly |
+| # | AI capability | How it works | Guardrails |
+|---|---|---|---|
+| AI-1 | Lead triage and first reply | Runs as the A2 Inbox Triage and A3 Lead Follow-up agents in [17](17-ai-copilot-automation.md). LLM classifies intent, service, urgency, spam; drafts a personalized first reply in the lead's language | Auto-send only for templated intents the tenant enables; others are drafts |
+| AI-2 | Dedupe assist | Embedding similarity on names/addresses for fuzzy cases (e.g., "Bob & Sue Miller" vs "Robert Miller") | Suggest only; never auto-merge below the rules threshold |
+| AI-3 | Voice-to-scope | Speech-to-text (en/es) then structured scope with quantities linked to photos taken during the dictation window (ASSESS-04); the transcript is also scope context for the A6 Estimating Agent in [17](17-ai-copilot-automation.md) (EST-18) | Draft list; estimator confirms each item |
+| AI-4 | Aerial auto-measure | Segmentation on aerial imagery clipped to parcel for turf, beds, hardscape and commercial classes; per-polygon confidence | Under 0.75 requires human verification; public firm prices need 0.85 or higher ([16](16-marketing-growth-communications.md)) |
+| AI-5 | Photo measurement | Depth estimation plus reference objects, or phone LiDAR | Shown as estimates with error bars; "verify on site" flag |
+| AI-6 | Photo-to-estimate draft | Vision model identifies conditions (overgrown beds, dead shrubs, bare turf) and maps them to price book items with quantities | Draft only; confidence and "why" per line |
+| AI-7 | Dimension-to-layout-to-estimate | Client or designer enters dimensions; AI layout in [11](11-ai-design-mockups.md) produces a Design; takeoff prices it | Layout constrained to KB plants suited to the Region |
+| AI-8 | Proposal writer | Drafts cover letter, scope narratives and tier names from the estimate and the client's stated goals, in the Company's tone and the client's language | No price or warranty claims invented; legal clauses never generated |
+| AI-9 | Estimate anomaly detection | Compares lines to the tenant's history: "Mulch rate 0.35 yd3/mh is half your norm"; "No disposal on a removal job" | Advisory warnings |
+| AI-10 | RFP extraction | Long-document understanding pulls scope, frequencies, dates, insurance and forms with page citations | Human confirms every extracted field before it drives pricing |
+| AI-11 | Follow-up timing and copy | Picks send time from engagement history; writes nudges referencing viewed options | Consent and quiet hours enforced; human can review queue |
+| AI-12 | Renewal recommendations | Combines job-costing margin, health score and market index into recommended escalators and scope changes | Owner approval above cap |
+| AI-13 | Win-probability pricing advisor | Per-tenant model of win probability vs price, scope and client features | Shown as model estimate with confidence band; never auto-applied; no protected-class proxies |
+| AI-14 | Copilot commands | Natural language actions, single-record and bulk, per the acceptance scenarios in [17](17-ai-copilot-automation.md) 4.2.3 and the confirmation tiers in 4.3: "Draft spring cleanup proposals for all Maple Ridge properties at last year's scope +5%" | Creates drafts and a review grid; bulk actions over 25 records require typing the count to confirm; bulk send needs confirmation |
+| AI-15 | Bounded auto-quote | Quotes sent without human review for configured services when all inputs are high-confidence and within bands; prices come from the engine's generated pricing rule | Off by default per Company (OD-36); confidence gating and first-visit verification as in flow 5.2; daily cap; margin floor; automatic human review sampling |
+| AI-16 | Plan-set takeoff (`BID-09`) | Document understanding reads scaled L-sheets and plant schedules into a Takeoff with sheet citations | Scale confirmed by the estimator; schedule vs symbol-count mismatches over 2% flagged; never prices directly |
 
 AI quality metrics: draft line acceptance rate (accepted without edit), measurement error vs on-site measurement (mean absolute percentage error by class), time saved per estimate, and RFP extraction precision/recall on a labeled set curated by `platform_curator`.
 
@@ -1978,7 +1983,7 @@ AI quality metrics: draft line acceptance rate (accepted without edit), measurem
 | E14 | AI auto-measure picks up the neighbor's lawn (parcel misalignment) | Parcel-imagery offset detection; polygons crossing the parcel line by more than 1 m flagged; low confidence forces human verification |
 | E15 | Very large commercial estimate (5,000+ lines, 40 sites) | Virtualized grid; server-side pricing under 2 s at p95; section-level lazy loading |
 | E16 | Rounding mismatch between lines and totals | Rounding only at the designated level; a visible "rounding" line reconciles cents |
-| E17 | Client in Quebec or a Spanish-speaking client | Proposal language per Contact; legal text only from reviewed translations; French language requirements for Quebec consumer contracts handled by jurisdiction pack (later market) |
+| E17 | Client in Quebec or a Spanish-speaking client | Proposal language per Contact (en, es, fr-CA); legal text only from reviewed translations; French language requirements for Quebec consumer contracts come from the Quebec jurisdiction pack (rule-pack data, R24-18) |
 | E18 | Estimator leaves the company | Opportunities reassigned in bulk; commission rules decide pending earnings; their proposal links keep working with the new owner's contact info |
 | E19 | Client disputes an aerial measurement on an instant quote ("my lawn is not 9,000 sq ft") | The client can redraw on the turf overlay (flow 5.2); a change over 25% downgrades to a price range and routes to staff review before the agreement starts. On the first visit the crew lead confirms conditions; if the recalculated price is more than 15% higher, the first visit is honored at the quoted price and a reprice proposal goes to the client for later visits, with penalty-free cancellation (rules shared with [16](16-marketing-growth-communications.md) 4.3.4) |
 | E20 | Renewal notice window missed (e.g., New York agreement, notice not delivered 15 days before the non-renewal deadline) | Auto-renew blocked; the renewal converts to `renewal_proposal` requiring signature; the account manager gets a task; the current agreement ends on its term date unless signed |
@@ -1991,14 +1996,14 @@ AI quality metrics: draft line acceptance rate (accepted without edit), measurem
 | Area | Requirement | Rootline implementation |
 |---|---|---|
 | E-signature (US) | ESIGN Act and state UETA adoptions (New York: ESRA); consumer consent disclosures where law requires written notices | `PROP-05` consent flow, audit trail, tamper-evident PDF, retention. Counsel to verify before launch. |
-| E-signature (Canada) | PIPEDA Part 2 and provincial electronic commerce laws; Quebec IT framework law | Same flow with Canadian consent text; Quebec support with French later |
+| E-signature (Canada) | PIPEDA Part 2 and provincial electronic commerce laws; Quebec IT framework law | Same flow with Canadian consent text; Quebec signing in fr-CA (OD-70) |
 | In-home sales cancellation | FTC Cooling-Off Rule (16 CFR Part 429): for covered sales made at the buyer's home (from general knowledge: $25 or more at the home, $130 or more at temporary locations such as a home show booth), a 3-business-day right to cancel with required notice and duplicate cancellation forms, and a refund within 10 business days of a valid cancellation (verify thresholds and timing); some states add longer windows (e.g., California extends home-solicitation cancellation to 5 business days for buyers aged 65 or older, verify). Canadian provinces have their own direct-sales cooling-off periods (e.g., Ontario's Consumer Protection Act). Verify thresholds and windows per jurisdiction. | "Signed in person at the client's property" detection (kiosk mode or device GPS at the Property) attaches the notice and forms, sets a cancellation-window hold on non-emergency scheduling, and supports refunds within the required time |
 | Home-improvement contract laws | State-specific: license number display, required notices, down-payment caps (e.g., California caps home-improvement down payments at the lesser of $1,000 or 10%, verify), lien notices | Jurisdiction packs (`PROP-08`), deposit cap enforcement (`PROP-07`) |
 | SMS/calls | TCPA, 10DLC registration, quiet hours, STOP handling; FCC consent-revocation rules in effect since April 11, 2025 (opt-out by any reasonable means, honored within 10 business days; [Nixon Peabody](https://www.nixonpeabody.com/insights/alerts/2025/04/11/fcc-partially-delays-new-tcpa-consent-revocation-rules)); an inbound inquiry permits a reply, not marketing; Canada CASL for commercial electronic messages (implied consent windows after an inquiry or purchase, verify) | Consent captured at lead intake with exact text; per-contact consent ledger; messaging through registered campaigns ([16](16-marketing-growth-communications.md)) |
 | Email | CAN-SPAM, CASL | Unsubscribe in follow-up emails; transactional vs marketing classification |
 | Consumer financing ads | Regulation Z (Truth in Lending) trigger terms such as "$129 per month" require additional disclosures | Partner-provided compliant copy only (`PROP-09`) |
 | Auto-renewal | State automatic renewal laws (disclosure, affirmative consent, easy cancellation, pre-renewal notices for some terms), e.g., California ARL as amended by AB 2863 effective July 1, 2025, and New York GOL 5-903, which covers service and maintenance contracts on real property, commercial included (15-30 day written notice). The FTC's amended Negative Option Rule was vacated by a federal appeals court in 2025 (verify current status). | `REN-04` modes, notice scheduling by jurisdiction, cancellation link in portal, evidence pack |
-| Emergency pricing | State price-gouging laws during declared emergencies (relevant for storm cleanup and snow) | V2: emergency-declaration feed flags price increases above a threshold on affected services |
+| Emergency pricing | State price-gouging laws during declared emergencies (relevant for storm cleanup and snow) | Emergency-declaration feed flags price increases above a threshold on affected services |
 | Privacy | CCPA/CPRA, PIPEDA, state privacy laws; disclosure of proposal view tracking; call recording consent | Tenant privacy notice template includes proposal analytics; analytics retention 24 months default; DSAR export and delete ([20](20-architecture-security.md)) |
 | Fairness | Lead scoring and win-probability models must not use protected characteristics or proxies | Feature allow-list; bias review before release; explanations shown |
 | Accessibility | Proposals and signing usable by people with disabilities; ESIGN requires the consumer can access the records | WCAG 2.2 AA for portal proposals and signing ([21](21-ux-design-system-sitemaps.md)) |
@@ -2076,13 +2081,13 @@ Legal statements in this section come from general legal knowledge, not primary 
 6. **Warranty as a profit center**: a warranty reserve cost line (e.g., 3% of plant material, calibrated from actual replacement claims) priced into every planting estimate. A longer warranty is offered only with a maintenance agreement, which turns installs into recurring revenue.
 7. **Automatic estimate post-mortem**: when a Job closes, Rootline produces a one-page "estimate vs actual" with AI commentary ("Mulch took 31% longer; access via side gate not captured; apply haul multiplier 1.20 next time?") and a one-click "update production rate" action.
 8. **Capacity-aware seasonal pricing**: when May install capacity is sold out, proposals automatically offer "Start in June and save 4%" or add a spring-rush premium. Off-season booking incentives fill July and November.
-9. **Kitchen-table close kit**: offline tablet presentation with mockups, tier toggles, e-sign, a deposit by pay link or card entry (Tap to Pay at) and an instant thank-you text with the crew start window. Goal: close on the first visit.
+9. **Kitchen-table close kit**: offline tablet presentation with mockups, tier toggles, e-sign, a deposit by pay link, card entry or Tap to Pay, and an instant thank-you text with the crew start window. Goal: close on the first visit.
 10. **Narrated video proposals**: auto-generated 60-second fly-through of the design with an AI voiceover in English or Spanish, for clients who will not read a 12-page proposal.
 11. **Estimator training simulator**: new estimators price anonymized past jobs from the tenant's history and get scored against what the job actually took.
 12. **Realtor curb-appeal partner program**: real estate agents send sellers a pre-listing "curb appeal package" proposal (a fixed-scope Good/Better/Best). The agent earns a referral credit; the Company gets warm leads with deadlines.
 13. **Water and carbon impact panel**: proposals show estimated irrigation water savings from turf reduction and native plantings (labeled as estimates, using KB water-need traits and regional evapotranspiration data).
-14. **Anonymous regional benchmarking**: opt-in, k-anonymized (minimum 10 companies per cell) comparisons of production rates, win rates and price per sq ft by Region ([18](18-reporting-analytics.md)). "Your sod install rate is in the slowest quartile in your region."
-15. **Snow contract risk pricing** [V1, in [14](14-service-line-modules.md)]: historical snowfall events per Region drive break-even analysis for seasonal vs per-push contracts. "Seasonal at $4,800 breaks even at 14 pushes; your 10-year median is 11."
+14. **Anonymous regional benchmarking**: opt-in, k-anonymized (minimum 10 companies per cell, with lags) comparisons of production rates, win rates and price per sq ft by Region ([18](18-reporting-analytics.md)). Comparisons switch on by themselves when a cell has enough contributors; price comparisons stay off until the founder has had them checked by counsel (OD-69). "Your sod install rate is in the slowest quartile in your region."
+15. **Snow contract risk pricing** (specified in [14](14-service-line-modules.md)): historical snowfall events per Region drive break-even analysis for seasonal vs per-push contracts. "Seasonal at $4,800 breaks even at 14 pushes; your 10-year median is 11."
 16. **Pick your install week at signing**: the signing step shows the real open install weeks for the sold crew type from the capacity model in [04](04-scheduling-dispatch-routing.md) ("Week of May 11: 1 slot left; week of May 18: 3 slots"). The deposit holds the slot for 14 days after execution while the office confirms. Scarcity is shown honestly (never invented), spring weeks fill in order, and an optional "flexible start, save 3%" choice gives the scheduler room. Clients stop asking "when can you start?", and estimators stop promising weeks the crews do not have.
 17. **Budget what-if simulator**: on the Company Budget, the owner changes one input ("raise field wages $1.50/h", "add a third maintenance crew", "drop marketing $10,000") and sees the new burdened rate, overhead rate, break-even revenue and the effect on every Price Book item and open proposal. With the Evergreen Edge budget, +$1.50/h on 20,000 hours adds $38,400 of burdened labor ($1.50 x 1.28 x 20,000), which raises the per-visit labor cost of the 9,000 sq ft mowing example by about $1.92 and its price by about $2.26 at 15% net. Owners can finally answer "can I afford the raise?" before the spring hiring fight.
 18. **Enhancement audit walk for commercial accounts**: an account manager walks a site with the mobile app, drops pins on the property map (dead shrubs, erosion, turf thinning, a broken irrigation head) with photos, and each pin becomes a priced enhancement line through the Price Book. The result is a monthly "Property condition and recommendations" report for the property manager with one-tap approval per item and the PO captured in the portal. Commercial firms on Aspire or LMN buy SiteDNA or SiteRecon audits for this today ([R2](research/R2-landscape-specific-platforms.md)); in Rootline it is a built-in sales motion, and approved items convert straight to Work Orders.
@@ -2091,23 +2096,23 @@ Legal statements in this section come from general legal knowledge, not primary 
 
 ---
 
-## 14. Open questions
+## 14. Decisions on former open questions
 
-1. **Budget requirement:** should a Company be blocked from sending proposals until it completes the budget wizard, or only nudged with a default budget? (Proposal: default budget plus a persistent banner; block only discounts below floor.)
-2. **Default overhead method:** FLH for maintenance and MORS for construction by default, or one method per Company for simplicity?
-3. **Native e-sign coverage:** is native e-sign sufficient for all launch jurisdictions, or do some commercial clients and government entities require qualified providers? Legal review needed for Quebec before the French-Canadian launch.
-4. **Imagery economics:** included monthly auto-measure quota per plan vs pure credit metering; which high-resolution aerial provider to partner with first.
-5. **Bounded auto-quote:** do we allow instant online quotes to be sent without human review at V1 for mowing only, or wait for V3 as planned?
-6. **Seed rate liability:** what ToS language and UI is enough to make clear that platform seed production rates are starting points, not guarantees?
-7. **Financing partner:** which partner covers both US and Canada, and do we take a referral fee (disclosure implications)?
-8. **Commission execution:** does Rootline only compute and export commissions, or also pay them through payroll integrations in V1 ([15](15-team-hr-payroll.md))?
-9. **CRM sync demand:** how many mid-market prospects require Salesforce/HubSpot sync to switch? This decides whether it moves from V2 to V1.
-10. **Residential line-item transparency:** default to lump-sum per section (higher close rate, per common sales advice) or line items (trust)? A/B test at launch.
-11. **Proposal analytics retention:** 24 months by default? Do any jurisdictions require shorter retention for behavioral data?
-12. **Multi-currency per tenant:** do US border-region Companies serving Canadian clients need USD and CAD in one tenant at V1?
-13. **Default margin-floor basis:** the role templates in [02](02-personas-roles-permissions.md) default to a 35% gross-margin floor, but budget-priced work can hit its net target at 30% gross (the Smith example). Should Companies with a non-default budget switch to net floors automatically, or only on prompt?
-14. **Thumbtack and Houzz access:** does either grant partner API access to a multi-tenant platform, or do we stay on email parsing for them? Decides whether `LEAD-02` native ingest for them stays.
-15. **Quick Quote override band:** is +/-10% the right default for manual price nudges without approval, or should it follow the role's `discount.max_pct`?
+1. **Budget requirement:** not required before sending (OD-34). A Company without its own budget prices on the default budget under a persistent banner; only discounts below the margin floor are blocked (`EST-01`).
+2. **Default overhead method:** FLH for maintenance and MORS for construction, both shown on every estimate (OD-35, `EST-02`).
+3. **Native e-sign coverage:** native e-sign is the default everywhere; the optional DocuSign/Adobe Sign connector (`PROP-05`) serves clients and government entities that require a qualified provider. The founder has counsel check Quebec signing text before Quebec marketing starts ([24](24-product-scope-decisions-catalog.md) section 1.7, OD-70).
+4. **Imagery economics:** auto-measure runs inside each plan's published usage allowance with AI credits beyond it ([22](22-business-model-pricing-gtm.md)); aerial and parcel providers are those whose terms allow tracing, storage and client display (OD-68), and Nearmap or EagleView stay a tenant-paid add-on or pass-through.
+5. **Bounded auto-quote:** in the product for any service a Company configures, off by default per Company, with confidence gating and first-visit verification (OD-36, AI-15).
+6. **Seed rate liability:** every seed rate carries a "starting point, calibrate" label in the UI, calibration prompts appear after 10 jobs of a type, and the Terms of Service state that seed rates are not guarantees; the founder has counsel review that wording ([24](24-product-scope-decisions-catalog.md) section 1.7).
+7. **Financing partner:** one pluggable `FinancingProvider` adapter per country ([08](08-payments-stripe.md)): a Wisetack-class lender for the US and a Canadian home-improvement lender for Canada (candidates verify). Rootline takes no referral fee by default; any fee the founder agrees with a lender is disclosed to the Company and never changes which offer a homeowner sees ([22](22-business-model-pricing-gtm.md)).
+8. **Commission execution:** Rootline computes commissions and pays them through payroll: `COMM-03` sends them as a supplemental earnings code to Rootline payroll when the Company runs it ([15](15-team-hr-payroll.md)), or exports them to the Company's outside payroll provider otherwise. Rootline never pays commissions outside payroll.
+9. **CRM sync:** Salesforce and HubSpot sync are in the product (OD-37), one-way by default with two-way Contact and stage sync as a setting ([8.1](#81-external-services)).
+10. **Residential line-item transparency:** residential templates default to section totals; commercial templates default to line items with quantities and unit prices (`PROP-02`). Close rate by display mode is tracked in product analytics.
+11. **Proposal analytics retention:** 24 months by default, shortened automatically where a jurisdiction pack requires less ([11.2](#112-compliance)).
+12. **Multi-currency per tenant:** yes. A Company can hold USD and CAD price books in one tenant; each Client has one billing currency, and FX follows [08](08-payments-stripe.md) and [09](09-accounting-ledger-integrations.md) (R24-19).
+13. **Default margin-floor basis:** on prompt. When a Company publishes its first non-default budget, Rootline recommends net-margin floors and switches the template's basis in one click (`EST-09`); it never switches automatically.
+14. **Thumbtack and Houzz access:** native partner APIs where the partner grants access to a multi-tenant platform; per-source email parsing otherwise (`LEAD-02`).
+15. **Quick Quote override band:** +/-10% by default, configurable per Quick Quote Template (`EST-11`).
 
 ---
 

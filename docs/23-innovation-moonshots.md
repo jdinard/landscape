@@ -329,8 +329,6 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 #### M-01 Persistent property digital twin
 
-**Headline phase:** for the twin timeline and change detection, for the full 3D, sensor-fused twin. Rails are/.
-
 **Problem.** A landscape company's knowledge of a property is scattered: the original design PDF, a few hundred unlabeled crew photos, the account manager's memory and an irrigation map on paper in the truck. When the account manager leaves or the property changes hands, the knowledge goes with them. Commercial property managers cannot see condition across a portfolio. Estimators re-measure properties the company has maintained for six years.
 
 **Concept.** Every Property gets a living, versioned model: the **Property Twin**. It starts as the as-built Design ("Living Property Map", [10](10-design-studio.md) section on as-builts). Every source of evidence then updates it automatically: crew photos, photo stations, drone flights, LiDAR scans, homeowner photos, satellite revisits and IoT sensors. The twin knows *objects* (this 'Green Velvet' boxwood, this 4-inch pop-up head in zone 6, this 14 x 18 ft paver patio), their *condition over time* and their *history* (installed, pruned, treated, replaced). It answers questions such as "What changed since last month?", "Which plants are declining?", "Where are the dry spots?" and "What did the front bed look like last June?"
@@ -364,7 +362,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** R-01-R-04, R-12; Design Studio as-builts ([10](10-design-studio.md)); AI Gateway vision models ([17](17-ai-copilot-automation.md)); storage cost model ([20](20-architecture-security.md)).
 
-**Phasing.**
+**In v1.** The rails (object IDs, plant instances, rich photo metadata); the Living Property Map (as-built), photo stations and crew status updates; the Twin Timeline with change detection, human confirmation, the Property Health Score and enhancement suggestions; and the 3D twin (Gaussian splats per season), sensor fusion, "what-if" simulation (growth of every plant over 10 years, shade evolution, water budget) and a digital twin API for commercial Clients' facility systems. The drone, robot and sensor layers fill in when the Company connects those sources (M-02, M-05, M-07).
 - Rails: object IDs, plant instances, rich photo metadata.
 - Living Property Map (as-built), photo stations, manual object status updates from the crew app.
 - Twin Timeline, change detection with human confirmation, Property Health Score, enhancement suggestions.
@@ -372,13 +370,9 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Headline demo.** *An account manager opens a 22-acre office park on a Monday morning. The twin shows three red pins. Two 'Emerald Green' arborvitae on the north berm went from `ok` to `declining` between the June and July station photos. The irrigation zone feeding them shows 40% less flow than its baseline. The mulch on the entrance beds has thinned. One click creates a repair ticket, a warranty-replacement task and an enhancement Proposal for 18 cubic yards of mulch. The property manager approves it from her phone before lunch.*
 
-**Kill criterion.** If confirmed changes are under 50% of the candidates shown (precision) after two model iterations in the pilot, revert to crew-flagged changes only.
-
 > **Competitive edge.** SiteRecon and PropertyIntel measure a property once. Aspire and LMN store photos as attachments. None of them maintains object-level condition over time tied to warranties, irrigation zones and Proposals. The twin turns Rootline's visit frequency (about 30 mowing visits a season) into an asset a competitor cannot backfill: years of registered history cannot be imported.
 
 #### M-02 Drone capture and photogrammetry
-
-**Headline phase:** import and processing, automated capture network.
 
 **Problem.** Satellite imagery is often 1-3 years old, blurred under tree canopy and too coarse for grade work. A 6-acre HOA common area or a commercial campus takes an estimator half a day to measure on foot. Install projects need accurate grades and volumes (excavation, stockpiles, wall heights) that aerial photos and county LiDAR rarely provide at current vintage.
 
@@ -400,15 +394,11 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Python worker fleet with GPUs ([20](20-architecture-security.md)); S3 plus COG tiling; certification tracking ([15](15-team-hr-payroll.md)); credits ([22](22-business-model-pricing-gtm.md)).
 
-**Phasing.** upload, process and extract; flight plan export. pilot network marketplace (vetted Part 107 / Transport Canada pilots, booking, payouts via the pilot's own Stripe account), scheduled seasonal re-flights for large commercial portfolios, multispectral turf health, stockpile inventory for the Company's yard ([13](13-operations-inventory-equipment.md) "yard twin").
+**In v1.** Upload, processing and extraction; flight plan export; the pilot network marketplace (vetted Part 107 and Transport Canada pilots, booking, payouts through the pilot's own Stripe account); scheduled seasonal re-flights for large commercial portfolios; multispectral turf health; and stockpile inventory for the Company's yard ([13](13-operations-inventory-equipment.md) "yard twin"). Drone features switch on when the Company connects drone imagery, from its own flights or a network pilot's ([24](24-product-scope-decisions-catalog.md) section 1.4).
 
 **Headline demo.** *An estimator flies a 9-acre HOA entrance and pond in 14 minutes. Forty minutes later Rootline has drawn 61 beds, 4.2 acres of turf, 1,180 linear feet of edging and 38 tree crowns with heights. The bed polygons price the spring mulch install at 112 cubic yards. The HOA board sees a photoreal 3D flyover of the pond renovation option that night.*
 
-**Kill criterion.** If fewer than 10% of Pro tenants in drone-heavy segments (commercial, HOA) process a flight in the first two quarters of the bet's Beta stage (4.3), keep upload-only and drop the pilot network.
-
 #### M-08 Plant health AI with prescriptions
-
-**Headline phase:**. A slice offers AI-assisted symptom notes and triage.
 
 **Problem.** Crews see sick plants every day but rarely know what they are looking at. Plant health care (PHC) revenue is lost because nobody notices the problem, or it is spent on the wrong treatment. Misdiagnosis risks plant loss, warranty costs and off-label pesticide use, which is illegal ("the label is the law" under FIFRA). Homeowners send blurry photos asking "what's wrong with my tree?"
 
@@ -432,15 +422,13 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Plant KB host-pest associations ([12](12-plant-knowledge-base.md)); jurisdictional pesticide rules ([14](14-service-line-modules.md)); applicator certification tracking ([15](15-team-hr-payroll.md)); label data source (licensing to verify).
 
-**Phasing.** symptom capture with AI-written notes ("chlorosis between veins on new growth, lower leaves fine") and plant ID. differential diagnosis, IPM ladder and PHC Proposal drafts. regional early-warning network (for example "Boxwood blight reports up in your county this week; 34 of your properties have boxwood"), homeowner Plant Doctor inside Rootline Home with escalation to the Company.
+**In v1.** Symptom capture with AI-written notes ("chlorosis between veins on new growth, lower leaves fine") and plant ID; differential diagnosis, the IPM ladder and PHC Proposal drafts; the regional early-warning network (for example "Boxwood blight reports up in your county this week; 34 of your properties have boxwood"); and the homeowner Plant Doctor inside Rootline Home with escalation to the Company. Escalation to a partner diagnostic lab switches on when the Company connects one.
 
 **Headline demo.** *A technician photographs a speckled, bronzing 'Green Mountain' boxwood. Plant Doctor already knows the plant, its zone and that it is late June. It ranks boxwood mite first, then leafminer, then drought stress. It asks for a leaf-underside close-up and a white-paper tap test. The mite diagnosis is confirmed. A horticultural-oil treatment within label is drafted, the PHC lead approves it, and the homeowner gets a $165 Proposal with photos before the crew leaves the driveway.*
 
-**Kill criterion.** If expert reviewers override the top-1 diagnosis on more than 40% of non-escalated cases in the pilot, keep the slice and stop.
-
 #### M-11 Climate-adaptive planting
 
-**Headline phase:**. This card is the full specification of the climate-forward ratings idea in [12](12-plant-knowledge-base.md) section 13 (idea 1,) and builds on the Region climate summaries (KB-RGN-06,) there.
+This card is the full specification of the climate-forward ratings idea in [12](12-plant-knowledge-base.md) section 13 (idea 1) and builds on the Region climate summaries (KB-RGN-06) there.
 
 **Problem.** Plant hardiness zones are moving. USDA's 2023 map moved many areas a half-zone warmer ([USDA PHZM](https://planthardiness.ars.usda.gov/)). Trees planted today have to live through the climate of 2050 and beyond. Designers and homeowners rely on static zone labels and nursery tags. Meanwhile, more intense rainfall, longer droughts and heat waves kill installed plants and drive warranty losses.
 
@@ -462,15 +450,11 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** M-29 outcomes for calibration; Region model ([12](12-plant-knowledge-base.md)); KB release tooling ([19](19-platform-admin-portal.md)).
 
-**Phasing.** zone history (old and new USDA zone shown) and "edge of zone" warnings. Climate Fit scores, design toggle, Climate Risk review. climate-adjusted growth models in the twin's 10-year simulation (M-01), and municipal and utility partnerships for climate-ready tree programs.
+**In v1.** Zone history (old and new USDA zone shown) and "edge of zone" warnings; Climate Fit scores, the Climate horizon toggle and the Climate Risk review; climate-adjusted growth models in the twin's 10-year simulation (M-01); and municipal and utility partnerships for climate-ready tree programs. Climate Fit shows in a Region once the plant curator agent has published that Region's projections.
 
 **Headline demo.** *A designer in Columbus filters shade trees by "thrives now and in 2060". Sugar maple drops to `edge`. Swamp white oak and 'Valley Forge' American elm stay green. The client portal shows a short note: "Chosen to thrive in Columbus's climate for the next 40 years", with the source cited.*
 
-**Kill criterion.** If designers use the Climate horizon toggle on fewer than 10% of new Designs in Regions where it is live after two seasons, keep zone history and the Climate Risk review only.
-
 #### M-29 Plant Performance Science Network ("Living Lab")
-
-**Headline phase:** for the in-product signals, for the open science program.
 
 **Problem.** "What grows well here" is still mostly anecdotal: nursery tags, extension fact sheets, one designer's experience. Region Profiles curated by the operator are good, but nobody systematically measures how thousands of real installs perform. Contractors pay for those failures through warranty replacements.
 
@@ -491,11 +475,9 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** R-02 and R-13 rails; crew app outcome prompts ([05](05-field-crew-mobile-app.md)); KB console ([19](19-platform-admin-portal.md)); statistics capacity on the data platform ([18](18-reporting-analytics.md)); data-use agreements reviewed by counsel.
 
-**Phasing.** outcome capture rail (R-13) and 6/12/24-month status prompts. Evidence Scores in the curator console and on Region Profiles where thresholds are met. nursery quality sharing, the research program and public dataset releases.
+**In v1.** The outcome capture rail (R-13) and the 6, 12 and 24-month status prompts; Evidence Scores in the curator console and on Region Profiles; nursery quality sharing, the research program and public dataset releases. Evidence Scores switch on per plant and Region when the thresholds in rule 2 are met ([24](24-product-scope-decisions-catalog.md) section 1.4).
 
 **Headline demo.** *A curator sees that 'Knock Out' rose in a humid southeastern Region shows 2-year survival 18 points below expectation, with rose rosette disease the top cause. She downgrades the Region Profile, adds a curator note and pushes a KB release. Within a week, 600 open designs show a "consider an alternative" chip.*
-
-**Kill criterion.** The rails are cheap and stay regardless. If fewer than 3 Regions reach the thresholds within 2 years of Evidence Scores going live, keep evidence internal to curators and skip public Evidence Scores.
 
 > **Competitive edge.** No FSM vendor has plant identity, so none can measure plant outcomes. Consumer plant apps have identity but no install, warranty or care data. Rootline is the only system where a plant's whole life (design, purchase, install, care, failure, replacement) is recorded in one place. After a few seasons, the Evidence Scores become something a competitor cannot buy.
 
@@ -505,7 +487,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 #### M-03 AR "See it in your yard" for homeowners
 
-**Headline phase:**. It builds on Design Studio AR export (DS-3D-06, DS-MOB-06 in [10](10-design-studio.md)).
+It builds on Design Studio AR export (DS-3D-06, DS-MOB-06 in [10](10-design-studio.md)).
 
 **Problem.** Homeowners struggle to picture a plan view. Photo mockups help ([11](11-ai-design-mockups.md)), but they show one angle. The emotional "yes" usually comes when the client stands on the lawn and imagines the patio. Consumer AR apps exist, but they place generic objects at guessed scale and crash on complex scenes ([AI Tools Bakery](https://aitoolsbakery.com/blog/iscape-review/)).
 
@@ -525,17 +507,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Readiness.** TRL 7 for previews. Asset production (3D plant forms for thousands of plants) is the cost driver. Prioritize the top 500 plants by usage, and use procedural generation from KB traits for the rest.
 
-**Phasing.** Quick Look/WebAR of Proposal options with the growth slider; 3D web viewer. persistent geospatial AR that remembers the design on the property, multi-user sessions (designer remote, homeowner on site), headset support (Vision Pro-class and Android XR devices; verify), and night lighting simulation with photometric fixture data.
+**In v1.** Quick Look and WebAR of Proposal options with the growth slider; the 3D web viewer; persistent geospatial AR that remembers the design on the property; multi-user sessions (designer remote, homeowner on site); headset support (Vision Pro-class and Android XR devices; verify); and night lighting simulation with photometric fixture data.
 
 **Dependencies.** 3D scene export from the Design Studio (GLB/USDZ, [10](10-design-studio.md)); KB plant 3D asset library (curated plus procedural); portal WebAR support ([06](06-customer-portal.md)); Expo AR modules for Rootline Home ([05](05-field-crew-mobile-app.md)).
 
 **Headline demo.** *Dusk on the back lawn. The homeowner holds up her phone, the new bluestone patio appears at her feet, and she drags the slider to Year 5: the 'Bloodgood' Japanese maple frames the view of the pond. She switches to night mode and the path lights trace the steps. She taps "Approve option B". The deposit request arrives by text before the designer reaches his truck.*
 
-**Kill criterion.** If AR-viewed Proposals show no close-rate lift in an A/B test after two seasons, keep the 3D web viewer and stop investing in AR.
-
 #### M-04 AR crew layout guidance
 
-**Headline phase:** for the AR overlay. A slice offers RTK stakeout (DS-CON-03 in [10](10-design-studio.md)).
+RTK stakeout is specified as DS-CON-03 in [10](10-design-studio.md); this card adds the AR overlay and the as-built loop.
 
 **Problem.** The handoff from design to install is where landscapes go wrong. Bed lines drawn with care in the office are freehanded with a hose on site. Plant spacing is eyeballed. A 15-gallon tree goes 4 feet from where the designer intended, so the view is blocked or it lands on the irrigation main. Re-dos cost labor, and the as-built never matches the plan, which breaks the twin.
 
@@ -557,19 +537,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Expo native AR modules ([05](05-field-crew-mobile-app.md)), RTK receiver integration (Bluetooth NMEA/NTRIP client), Design export of layout geometry ([10](10-design-studio.md)), crew app offline caching.
 
-**Phasing.** RTK stakeout list (no AR): arrows and distances to points, plus as-built capture. full AR overlay, deviation workflow, glasses support and robot marking export. Rootline may resell certified RTK kits at cost plus a small margin (, partner-sourced).
+**In v1.** The RTK stakeout list (arrows and distances to points, plus as-built capture), the full AR overlay, the deviation workflow, smart-glasses support and robot marking export. Rootline may resell certified RTK kits at cost plus a small margin (partner-sourced). The RTK tier switches on when the Company connects an RTK receiver; without one, Layout mode offers the control-point and approximate tiers (rule 1).
 
 **Headline demo.** *A crew lead with a pole-mounted receiver walks a new front bed. On her phone the designer's curve glows on the turf. She sprays marking paint along it in four minutes, without a hose or an argument. Twenty-two plant spots appear as colored dots. As each shrub goes in she taps "placed". By lunch the as-built in the office matches the ground within 10 cm, and the client portal shows "Installed exactly as designed".*
-
-**Kill criterion.** If layout time does not fall by at least 15% in pilots, or more than half of pilot crews abandon Layout mode after the first week, keep the stakeout list only.
 
 > **Competitive edge (M-03 and M-04).** Consumer AR and AI garden apps (iScape, Neighborbrite) place generic objects at a guessed scale, are labeled "conceptual only" and are reported to crash in AR on complex designs ([AI Tools Bakery](https://aitoolsbakery.com/blog/iscape-review/)). PRO Landscape+ has added AI design tools ([Turf Magazine](https://turfmagazine.com/ai-meets-design-prolandscape-unveils-next-gen-tools)), but its output is not tied to an estimate, a crew or an as-built. Rootline's AR shows the *signed* Design at true scale, with KB-accurate plant sizes by age, and the same object then appears in the crew's stakeout list.
 >
 > Design tools (PRO Landscape, Vectorworks, SketchUp) stop at the drawing, and FSM tools never had the drawing. Rootline is the only platform where the same object IDs flow from design to layout to as-built to maintenance. That makes AR layout a data loop, not a gimmick.
 
 #### M-21 Generative video walkthroughs
-
-**Headline phase:** for render-based video, for generative-enhanced photoreal video.
 
 **Problem.** Proposals are documents, but people decide with their eyes, and video is the medium of social sharing. Server-rendered flythroughs ([10](10-design-studio.md) DS-3D-06) look like CAD. Off-the-shelf generative video models make beautiful clips but invent geometry, which misrepresents what the client is buying.
 
@@ -588,21 +564,17 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Readiness.** TRL 5 for faithful, controllable video at an acceptable cost. Image-level control (ControlNet-style) is mature; temporal consistency under control is improving fast (verify the state of the art at build time).
 
-**Phasing.** render-based films with seasons and grow-in time-lapses, captions and stock narration. generative-enhanced photoreal films with the truth constraint, and personalized "your yard, your family's Saturday" lifestyle scenes (opt-in, no real faces generated without consent).
+**In v1.** Render-based films with seasons and grow-in time-lapses, captions and stock narration; generative-enhanced photoreal films under the truth constraint; and personalized "your yard, your family's Saturday" lifestyle scenes (opt-in, no real faces generated without consent). Render-only is the default, and generative enhancement keeps only the segments that pass the truth constraint (rule 1).
 
 **Dependencies.** Design Studio 3D scene and camera paths ([10](10-design-studio.md)); KB growth rates and seasonal traits ([12](12-plant-knowledge-base.md)); AI Gateway video routing and credits ([17](17-ai-copilot-automation.md), [22](22-business-model-pricing-gtm.md)); C2PA signing service.
 
 **Headline demo.** *The HOA board opens an email: a 45-second film glides from the subdivision sign along the renovated entrance median. Native grasses ripple, 'Little Lime' hydrangeas bloom, and the frame dissolves to Year 5 at dusk with the uplights on. The board president forwards it to 212 homeowners. The vote passes 5-0.*
-
-**Kill criterion.** If generative-enhanced films fail the truth constraint on more than 30% of segments, or cost more than 3x render-only films without a measurable engagement lift, keep render-only films.
 
 ---
 
 ### 4.7 Theme C: Autonomy, hardware and energy
 
 #### M-05 Robotic mower fleet orchestration
-
-**Headline phase:** for the first OEM integration and robot-as-crew scheduling, for multi-OEM orchestration and hybrid crews at scale.
 
 **Problem.** Labor is the binding constraint in maintenance, and mowing is the most repetitive task. Commercial-grade autonomous and robotic mowers now exist: wire-free RTK robots for large turf such as Husqvarna CEORA with EPOS virtual boundaries, Kress (Positec) RTKn commercial robots, autonomous zero-turn and stand-on platforms such as Scythe M.52, retrofit autonomy kits such as Greenzie, operators such as Electric Sheep that combine robots with acquisitions of landscaping companies, and incumbent OEMs moving into autonomy: Toro (which also sells the Horizon360 contractor business platform) and John Deere (an autonomous battery-electric commercial mower shown at CES 2025). Consumer-grade RTK robots (Segway Navimow, Mammotion, Worx/Kress) increasingly appear on residential maintenance routes (all as of mid-2026; verify current models, availability and business models). But robots live in OEM apps. The schedule, the Client, the contract, the job cost and the invoice live in FSM software. Nobody can answer "Which of my 140 properties should get robots, and did they pay off?"
 
@@ -628,17 +600,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** R-05 device abstraction, Assets ([13](13-operations-inventory-equipment.md)), dispatch ([04](04-scheduling-dispatch-routing.md)), OEM partnerships (`platform_owner` business development), the twin (M-01).
 
-**Phasing.** robots as manually tracked Assets with manual mission logs (no API). first OEM API adapter, alert to ticket, coverage, job costing, ROI planner. three or more OEMs, autonomous mission scheduling by weather and turf growth (growing degree days), robot sharing between tenants via M-15, and robots-as-a-service marketplace listings from OEMs.
+**In v1.** Robots as manually tracked Assets with manual mission logs; OEM API adapters with alert to ticket, coverage, job costing and the ROI planner; multi-OEM orchestration; autonomous mission scheduling by weather and turf growth (growing degree days); robot sharing between tenants through M-15; and robots-as-a-service listings from OEMs. Each OEM adapter switches on when the Company connects its OEM account ([24](24-product-scope-decisions-catalog.md) section 1.4); without one, robots stay manually tracked Assets.
 
 **Headline demo.** *The dispatch board shows Crew 3 and, beneath it, "Robots: 6 active". At 5:40 a.m. one CEORA reports `stuck` at the soccer complex. Rootline drops a 10-minute task onto Crew 3's route, which is already passing the site at 7:15. The owner's dashboard shows that the six robots mowed 31 acres last week at $11.20 per acre fully loaded, against $18.70 for the gas crew (illustrative numbers).*
-
-**Kill criterion.** If loaded cost per acre is not below the gas crew's at most pilot sites after a full season, or no second OEM signs an integration agreement within 4 quarters of the first, keep robots as manually tracked Assets.
 
 > **Competitive edge.** OEM fleet apps know robots, not businesses. FSM tools know businesses, not robots. Toro's Horizon360 shows that OEMs want the business layer too (verify current scope), but an OEM-owned platform will favor its own machines and dealer channel, and it has no Design, Plant KB or double-entry Ledger. Rootline's schedule, twin and Ledger make the robot a profitable crew member that can be costed and invoiced. Because adapters are OEM-neutral, a Company can run Husqvarna on the soccer fields and a Scythe or Deere platform on the office parks from one dispatch board.
 
 #### M-06 Fleet electrification planner
 
-**Headline phase:**. A slice provides battery management and electrification reporting ([13](13-operations-inventory-equipment.md) section 4.14.11, "Electric equipment and charging management"). This card is the full specification of the electrification planner listed as idea 9 in [13](13-operations-inventory-equipment.md) section 13.
+Battery management and electrification reporting are specified in [13](13-operations-inventory-equipment.md) section 4.14.11 ("Electric equipment and charging management"). This card is the full specification of the electrification planner listed as idea 9 in [13](13-operations-inventory-equipment.md) section 13.
 
 **Problem.** California's SORE rules and a spreading patchwork of local gas leaf-blower restrictions are pushing the industry toward battery equipment (section 2.3; verify jurisdiction details). Commercial Clients increasingly ask for low-noise, low-emission service. Owners lack decision support: which machines to switch, when, at what total cost, with what charging setup, and whether batteries will last a 10-hour summer day.
 
@@ -658,17 +628,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Readiness.** TRL 7 (deterministic modeling). The main work is keeping the rule and incentive library current, which is operator content work.
 
-**Phasing.** battery registry and electrification share reporting. the full planner, rule library, incentive finder, routing constraint. utility partnerships for fleet charging programs and live charging telemetry from connected chargers and batteries (OEM APIs; verify).
+**In v1.** Battery registry and electrification share reporting; the full planner with the rule library, incentive finder and routing constraint; utility partnerships for fleet charging programs; and live charging telemetry from connected chargers and batteries (OEM APIs; verify), which switches on when the Company connects them.
 
 **Dependencies.** Equipment registry and fuel rails (R-10, [13](13-operations-inventory-equipment.md)); jurisdiction rule library curated in [19](19-platform-admin-portal.md); incentive library; route plans ([04](04-scheduling-dispatch-routing.md)); Ledger capex and financing data ([09](09-accounting-ledger-integrations.md)).
 
 **Headline demo.** *A Sacramento owner asks the Copilot, "What does going all-electric on handhelds cost me?" The planner answers in 20 seconds: replace 31 handhelds over 18 months, buy 74 batteries and 2 trailer charging kits, net cost $38,400 after a $9,000 incentive (illustrative), payback 26 months from fuel and maintenance, 11.2 tonnes CO2 avoided per year. It also flags the 12 HOA contracts whose CC&Rs now require quiet equipment.*
 
-**Kill criterion.** If the rule and incentive libraries cannot be kept current for less than about one curator-day per week per 10 jurisdictions (estimate), limit the planner to TCO math and drop the incentive finder.
-
 #### M-07 IoT sensors and closed-loop smart irrigation
 
-**Headline phase:** for closed loop. controller integrations exist ([14](14-service-line-modules.md) section 4.2.6); adds sensors and recommendations.
+Controller integrations are specified in [14](14-service-line-modules.md) section 4.2.6; this card adds sensors, the water model and the closed loop.
 
 **Problem.** Irrigation is the largest landscape water use, and much of it is wasted. EPA WaterSense estimates that a large share of outdoor water is lost to inefficient watering, and that replacing a clock timer with a WaterSense-labeled controller saves an average home thousands of gallons a year (verify current figures). Smart controllers adjust for weather, but they do not know the plants, the hydrozone design, the soil, the slope, the Company's repair history or the Client's water budget. Contractors find leaks only when a property manager complains about a soggy bed or a water bill.
 
@@ -691,17 +659,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** R-05, controller adapters, weather data provider, SSURGO import (US; Canadian soil data equivalent to verify), Client approval workflows ([06](06-customer-portal.md)).
 
-**Phasing.** controller read and alarm ingestion ([14](14-service-line-modules.md)). water model in `monitor` and `assist` modes, sensor kits, water-budget reports. `autopilot` mode, utility data integrations (AMI smart-meter feeds where utilities allow), and irrigation-as-a-service contracts with shared-savings pricing.
+**In v1.** Controller read and alarm ingestion ([14](14-service-line-modules.md)); the water model in `monitor`, `assist` and `autopilot` modes, with `monitor` as the default; sensor kits; water-budget reports; utility data integrations (AMI smart-meter feeds where utilities allow); and irrigation-as-a-service contracts with shared-savings pricing. Hydro switches on per Property when the Company connects a supported controller, and sensor calibration switches on per zone when a sensor is bound to it ([24](24-product-scope-decisions-catalog.md) section 1.4).
 
 **Headline demo.** *Heat wave week in Denver. Hydro raises run times on the blue grama and the 'Karl Foerster' feather reed grass zones by only 8%, because the probes show the clay still holds water. It suspends zone 9 at 5:12 a.m. after a 160% flow spike and books a repair for 7:30 within the $250 pre-authorization. The HOA's monthly report shows 412,000 gallons saved versus its ET budget, and the board puts the chart in its newsletter.*
-
-**Kill criterion.** If `assist` mode causes more than 1 Client-reported plant loss per 200 zone-seasons attributable to Rootline schedule changes, or water savings stay below 10%, stop at `monitor` mode.
 
 > **Competitive edge.** Rachio, Hydrawise and IQ4 know weather and valves. Rootline knows the plants, the soils, the design and the repair economics. No smart controller vendor can see that the zone with the leak is also the zone with the 'Emerald Green' arborvitae under warranty.
 
 #### M-31 Heat-safe crews
 
-**Headline phase:** for route-level heat scheduling, for multi-state compliance reporting, for opt-in wearables. The heat-plan core (written plan builder, forecast triggers, acclimatization check-ins, training records) is already specified in [15](15-team-hr-payroll.md) section 4.15 and is not repeated here. M-31 is the increment that turns heat into a *routing and scheduling* input.
+The heat-plan core (written plan builder, forecast triggers, acclimatization check-ins, training records) is specified in [15](15-team-hr-payroll.md) section 4.15 and is not repeated here. M-31 turns heat into a *routing and scheduling* input.
 
 **Problem.** Landscape crews work through summer heat. Heat illness rules (Cal/OSHA 8 CCR 3395 outdoors; Washington, Oregon, Maryland and Nevada rules; a federal OSHA rule in rulemaking since the 2024 proposal, status as of Nov 2026 to verify; citations in [15](15-team-hr-payroll.md)) require water, shade, rest, acclimatization and documentation. A heat plan in a binder does not move a 1 p.m. paver job, and heat waves arrive faster than schedules change.
 
@@ -721,19 +687,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Jurisdiction heat rules in the compliance rule set; a forecast provider with hourly heat index; wearable SDKs at (HealthKit and Health Connect class; verify).
 
-**Phasing.** exertion classes, shade factors, route reshuffle and forecast-driven start-time suggestions on top of the heat plans, prompts and attestations from [15](15-team-hr-payroll.md). multi-state rule library and heat compliance reports for insurers (M-18). opt-in wearables.
+**In v1.** Exertion classes, shade factors, route reshuffle and forecast-driven start-time suggestions on top of the heat plans, prompts and attestations from [15](15-team-hr-payroll.md); the multi-state rule library and heat compliance reports for insurers (M-18); and opt-in wearables, which switch on per worker when the worker connects a watch and gives written consent.
 
 **Headline demo.** *Sunday night the forecast shows 104 F for Tuesday in Sacramento. Rootline proposes a 5:45 a.m. start for all crews, moves two paver jobs to Wednesday and adds a Spanish heat-safety talk to Tuesday's pre-shift. The owner taps "Approve all". Every crew member's phone shows the new start time in their language before they go to bed.*
-
-**Kill criterion.** Wearables are dropped if opt-in stays below 20% of crews in pilots or if a privacy complaint cannot be resolved. The scheduling slice stays because it is compliance.
 
 ---
 
 ### 4.8 Theme D: Sustainability and public programs
 
 #### M-09 ESG and sustainability reporting for commercial Clients
-
-**Headline phase:** for the Sustainability Snapshot, for the methodology-grade ESG report and data feeds.
 
 **Problem.** Commercial property owners, REITs, universities and hospitals now report on emissions, water and biodiversity. Large companies face California's SB 253 and SB 261 and the EU CSRD for multinationals (verify the current phase-in). Landscape maintenance is a visible part of their Scope 3 emissions (purchased services) and of their water use, yet their landscape contractor sends PDFs of invoices and nothing measurable. Property managers ask for numbers, and contractors cannot answer.
 
@@ -768,19 +730,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Readiness.** TRL 7. The data exists; the work is allocation logic and methodology governance.
 
-**Phasing.** Sustainability Snapshot (native share, water use where measured, fuel emissions with grade C/B, pesticide AI). full catalog, data-quality grades, Scope 3 supplier sheet, tree carbon. feeds to ESG platforms and third-party assurance-ready packages (an auditor portal with read-only evidence access).
+**In v1.** The Sustainability Snapshot (native share, water use where measured, fuel emissions with grade C/B, pesticide AI); the full metrics catalog with data-quality grades, the Scope 3 supplier sheet and tree carbon; feeds to Client ESG platforms, which switch on when the Client's platform is connected; and third-party assurance-ready packages (an auditor portal with read-only evidence access).
 
 **Dependencies.** Fuel and energy rails (R-10); chemical application records ([05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md)); twin tree inventory (M-01) for carbon; KB native and pollinator flags ([12](12-plant-knowledge-base.md)); M-07 water data; methodology governance by `platform_curator` with an external advisor.
 
 **Headline demo.** *A REIT's sustainability director receives the Q3 landscape report for 38 sites: emissions down 22% year over year (battery handhelds plus 6 robots), 3.1 million gallons of water saved against the ET budget, native share up from 18% to 31% after the turf conversions, all with methods and grades. She asks the other two landscape vendors in her portfolio for the same report. They cannot produce it.*
 
-**Kill criterion.** If fewer than 20% of commercial Clients of pilot tenants open a report twice, keep the Snapshot and stop the methodology-grade work.
-
 > **Competitive edge.** Aspire and LMN can tell a property manager what was billed. Rootline can tell them what was emitted, saved, planted and sequestered, with an audit trail, because only Rootline joins fuel and assets, the twin's trees and plants, irrigation and chemical records in one system.
 
 #### M-10 Municipal turf-replacement rebate automation
-
-**Headline phase:** for the program library and application packets, for agent-assisted submissions.
 
 **Problem.** Water utilities in the arid West, and increasingly elsewhere, pay homeowners and businesses to replace lawn with water-wise landscape (for example SoCal Water$mart and SNWA Water Smart Landscapes; verify current rates and rules), and nonfunctional-turf bans create compliance deadlines (Nevada AB 356, California AB 1572, Colorado SB24-005; verify). Each program has its own rules: pre-approval before removal, minimum area, plant coverage at maturity, approved plant lists, irrigation conversion to drip, permeability, stormwater features, before/after photos, inspection windows and deadlines. Homeowners give up halfway, contractors lose deals, and rebates go unclaimed.
 
@@ -801,17 +759,13 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Readiness.** TRL 7. Content operations are the main cost: programs change often, and funding opens and closes.
 
-**Phasing.** library for the top 25 programs by Rootline tenant density, eligibility check, design compliance, packet generation, case tracking. submission agent, deadline automations, utility-specific photo protocols. utility partner API, program analytics for utilities ("Rootline Companies converted 1.2 million sq ft in your territory").
+**In v1.** The program library, eligibility check, design compliance, packet generation and case tracking; the submission agent, deadline automations and utility-specific photo protocols; and utility partner APIs and program analytics for utilities ("Rootline Companies converted 1.2 million sq ft in your territory"). Direct submission switches on per utility when its partner API is connected.
 
 **Dependencies.** Rebate program library operations (content team or contractor); Design takeoffs and KB mapping ([10](10-design-studio.md), [12](12-plant-knowledge-base.md)); crew photo protocols ([05](05-field-crew-mobile-app.md)); a browser-automation agent with vault credentials ([17](17-ai-copilot-automation.md)) at.
 
 **Headline demo.** *A Las Vegas homeowner's 1,400 sq ft front lawn is redesigned with desert spoon, 'Blue Elf' aloe and decomposed granite. The Design shows "Rebate-ready: pass (4 of 4 rules)" and the Proposal shows "Your cost after expected rebate". The pre-approval packet goes out the same afternoon. Five weeks later the case moves to `paid` and the homeowner leaves a 5-star review that mentions the rebate paperwork.*
 
-**Kill criterion.** If program churn makes library maintenance cost more than the measured close-rate lift is worth for two consecutive quarters, narrow to the top 10 programs by tenant density.
-
 #### M-28 Stormwater and green-infrastructure credits
-
-**Headline phase:** for design calculations and O&M compliance, for credit-program and trading integrations.
 
 **Problem.** Many cities charge stormwater fees based on impervious area and offer credits for on-site retention (examples include Philadelphia's stormwater credits and Washington, DC's RiverSmart and Stormwater Retention Credit trading program; verify current details). Rain gardens, bioswales and permeable pavers are landscape work, but contractors rarely quantify retention, file for credits or document the required operations and maintenance (O&M) that keeps credits valid.
 
@@ -830,15 +784,11 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** The program-library pattern from M-10; impervious-area measurement from imagery; a referral path to licensed engineers for projects that need stamped designs.
 
-**Phasing.** hydrology calculator, feature types and O&M templates. credit-program packets for the top 10 cities by tenant density, and credit-trading integrations where markets exist (verify).
+**In v1.** The hydrology calculator, feature types and O&M templates; credit-program packets; and credit-trading integrations where markets exist (verify), which switch on per market when connected.
 
 **Headline demo.** *A church parking lot gets two bioswales. The Design shows 2,900 gallons of retention for the 1-inch design storm. The credit packet reduces the church's monthly stormwater fee (illustrative), and a 5-year O&M agreement adds $2,400/year of recurring revenue for the Company.*
 
-**Kill criterion.** If fewer than 5% of tenants in program cities use it after a year, fold the calculator into the Design Studio and drop the program library.
-
 #### M-27 Wildfire-ready landscapes
-
-**Headline phase:**.
 
 **Problem.** In the wildland-urban interface, landscaping is fire protection. California requires defensible space around structures (PRC 4291) and is developing "Zone 0" ember-resistant rules for the first 5 feet (AB 3074; verify status). Insurers increasingly consider mitigation; California's "Safer from Wildfires" framework ties discounts to it, and IBHS runs a "Wildfire Prepared Home" designation (verify current criteria). Homeowners need inspections, compliant designs and proof.
 
@@ -857,11 +807,9 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Jurisdiction rule library (`zone0` rule type, section 7.4); curated fire-resistance data with sources per Region; conversations with insurers about report formats.
 
-**Phasing.** zone overlays, inspection checklist, mitigation report, fire-resistance filter in the plant picker. insurer and fire-safe council partnerships, and re-inspection reminders tied to insurance renewal dates.
+**In v1.** Zone overlays, the inspection checklist, the mitigation report and the fire-resistance filter in the plant picker; insurer and fire-safe council partnerships; and re-inspection reminders tied to insurance renewal dates.
 
 **Headline demo.** *A Napa homeowner's insurer asks for evidence of mitigation. Rootline's report shows Zone 0 converted to gravel and low succulents, ladder fuels removed from three oaks, with 24 dated photos. The homeowner forwards it to the insurer from the portal.*
-
-**Kill criterion.** If tenants in wildland-urban-interface Regions sell fewer than 1 inspection per 50 residential Clients per year, keep the plant filter and zone overlays only.
 
 ---
 
@@ -869,7 +817,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 #### M-12 Landscape Passport ("Carfax for landscapes")
 
-**Headline phase:** for the transferable Passport, for real estate integrations. It builds on the Digital As-Built Passport QR plate in [14](14-service-line-modules.md).
+It builds on the Digital As-Built Passport QR plate in [14](14-service-line-modules.md).
 
 **Problem.** When a house sells, its landscape knowledge disappears: where the irrigation main runs, which zones are drip, what was applied to the lawn and when, the paver brand and color lot for repairs, the warranty on the $1,800 Japanese maple, the French drain the previous owner paid $6,000 for. Buyers inherit mysteries, and crews cut lines. A landscape investment of $50,000-$150,000 on a design-build property (typical range for major installs; estimate) has no records that travel with the house.
 
@@ -890,19 +838,17 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Readiness.** TRL 7 technically. Adoption depends on homeowner awareness and agent workflows. A partnership with brokerages or MLS add-on providers (verify feasibility) could make "Landscape Passport" a listing feature.
 
-**Phasing.** QR as-built plate ([14](14-service-line-modules.md)) and portal access to as-builts ([06](06-customer-portal.md)). the Passport in Rootline Home, share links, transfer at sale, continuity offer. agent and brokerage integrations, appraisal-supporting "landscape investment summary" (consult appraisal standards; no value claims), home-inspection partner integrations.
+**In v1.** The QR as-built plate ([14](14-service-line-modules.md)) and portal access to as-builts ([06](06-customer-portal.md)); the Passport in Rootline Home with share links, transfer at sale and the continuity offer; agent and brokerage integrations; an appraisal-supporting "landscape investment summary" (consult appraisal standards; no value claims); and home-inspection partner integrations. Brokerage, MLS and inspection integrations switch on per partner when connected.
 
 **Dependencies.** Rootline Home identity and accounts (M-13); consent ledger (R-06); as-built and twin data (M-01, [10](10-design-studio.md)); QR plate from [14](14-service-line-modules.md); legal review of chemical-history sharing and real-estate disclosure interplay per state.
 
 **Headline demo.** *A buyer's agent opens a link in the listing: "Verified Landscape Passport: 9 years of records". There is the irrigation map with 11 zones, the paver patio's product and color lot, the warranty on the river birch, and lawn treatments with EPA registration numbers. At closing, the new owners claim it. A day later they get a friendly note from the Company that built and maintained the garden, and they sign up for weekly maintenance.*
 
-**Kill criterion.** If fewer than 5% of residential Clients with as-builts activate a Passport within a year of Passport transfer going live, keep the QR plate and portal as-builts and stop transfer work.
-
 > **Competitive edge.** Home-record apps exist (verify current players, e.g., HomeBinder or Centriq), but they rely on homeowners typing in data. Only the contractor's system of record can fill a Passport automatically, and only Rootline has the as-built geometry and plant identity to make it meaningful. For Companies, the continuity offer turns home sales from a churn event into a retention event.
 
 #### M-13 Homeowner app and marketplace
 
-**Headline phase:** Rootline Home free tier and Match leads ([22](22-business-model-pricing-gtm.md) section 5.3), Plus, My Yard and My Pros with identity linking, Rootline Wallet and home integrations.
+Pricing and Match routing live in [22](22-business-model-pricing-gtm.md) section 5.3. Rootline Home and Match follow OD-06 in [24](24-product-scope-decisions-catalog.md): opt-in Companies only, client-of-record first, co-branded "Powered by Rootline".
 
 **Problem.** Homeowners juggle a lawn company, a tree company, an irrigation tech and a holiday-lighting installer, each with a different portal or none. They want to know what to plant, when to water and why the hydrangea will not bloom, and they want to see ideas. Meanwhile, Companies want qualified, design-ready leads, not shared leads sold to five competitors.
 
@@ -924,11 +870,9 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Rootline Home app (portal PWA first, native later per [20](20-architecture-security.md)); Match routing and lead billing ([22](22-business-model-pricing-gtm.md)); identity linking with per-Company verification ([06](06-customer-portal.md)); Plant Doctor (M-08); Passport (M-12).
 
-**Phasing.** Rootline Home free design and Match leads ([22](22-business-model-pricing-gtm.md)). My Yard (Passport, care calendar), Plus tier, My Pros multi-Company view with per-Company identity linking. Rootline Wallet (one saved payment method across linked Companies), smart-home links and homeowner Plant Doctor.
+**In v1.** Rootline Home free design and Match leads ([22](22-business-model-pricing-gtm.md)); My Yard (Passport, care calendar), the Plus tier and the My Pros multi-Company view with per-Company identity linking; Rootline Wallet (one saved payment method across linked Companies); smart-home links; and the homeowner Plant Doctor. Match leads go only to opt-in Companies serving the homeowner's address ([24](24-product-scope-decisions-catalog.md) section 1.4), and smart-home links show only what the serving Company has connected (M-05, M-07).
 
 **Headline demo.** *A homeowner opens Rootline Home in March. It shows her weekly mowing with GreenEdge, her tree company's PHC plan, a care task ("Cut back the 'Karl Foerster' grass this week"), a Plant Doctor answer about her rhododendron and a $1,240 invoice she pays from her phone, which lands in GreenEdge's own Stripe account. She taps "Design my side yard". A to-scale concept goes first to GreenEdge, which also does design-build, before anyone else.*
-
-**Kill criterion.** If more than 25% of Companies opt out of Rootline Home (a trust signal), pause network features and fix the trust problem before scaling.
 
 ---
 
@@ -936,7 +880,7 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 #### M-14 Nursery supply network with live availability and aggregated purchasing
 
-**Headline phase:** availability ingestion, live exchange and reservations, aggregated purchasing. The ingestion is the A11 Nursery Availability Parser in [17](17-ai-copilot-automation.md) and the availability and price feeds (KB-NUR) in [12](12-plant-knowledge-base.md) section 4.11; this card adds the network layers on top.
+The ingestion is the A11 Nursery Availability Parser in [17](17-ai-copilot-automation.md) and the availability and price feeds (KB-NUR) in [12](12-plant-knowledge-base.md) section 4.11; this card adds the network layers on top.
 
 **Problem.** Wholesale plant availability still arrives mostly as weekly emailed spreadsheets and PDFs from growers and re-wholesalers, with inconsistent names, sizes and prices. Designers specify plants that turn out to be unavailable in the needed size. Purchasers phone four nurseries. Substitutions made on the truck break the design, the warranty record and the client's expectations. Small Companies pay retail-like prices because they cannot aggregate volume.
 
@@ -957,19 +901,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Readiness.** TRL 6. Parsing and mapping are feasible today. The hard parts are growers' willingness to share live data and cold-start liquidity per metro.
 
-**Phasing.** private sheet ingestion and mapping, availability badges from the Company's own sheets, substitution engine. Nursery Partner API with live feeds, reservations and holds, delivery scheduling into the install calendar. aggregated purchasing programs, grower demand forecasts and nursery quality analytics.
+**In v1.** Private sheet ingestion and mapping, availability badges from the Company's own sheets and the substitution engine; the Nursery Partner API with live feeds, reservations and holds, and delivery scheduling into the install calendar; and aggregated purchasing programs, grower demand forecasts and nursery quality analytics. Live availability and holds switch on per nursery when the nursery connects through the Partner API; until then, the Company's own sheets drive the badges.
 
 **Dependencies.** Nursery-sheet parsing agent ([17](17-ai-copilot-automation.md)); KB size and cultivar normalization ([12](12-plant-knowledge-base.md)); purchasing and POs ([13](13-operations-inventory-equipment.md)); Nursery Partner API terms ([22](22-business-model-pricing-gtm.md)); grower business development.
 
 **Headline demo.** *A designer drops 'Bobo' hydrangeas into a plan. A chip says "#3: 140 available at two growers within 25 miles, ready now". On acceptance, 42 plants are put on hold with one tap. Two weeks later one grower sells out of the 'Karl Foerster' grass. The substitution engine proposes 'Overdam' with a side-by-side note, the client approves in the portal, and the install stays on schedule.*
 
-**Kill criterion.** If fewer than 3 growers per pilot metro publish feeds within 12 months, keep private sheet ingestion and substitutions and drop aggregated purchasing.
-
 > **Competitive edge.** LMN integrates SiteOne's catalog ([Turf Magazine](https://turfmagazine.com/lmn-integrates-siteone-landscape-supply-in-2021-software/)), which is useful for hard goods. Plants are different: identity, cultivar, size, Region suitability and availability have to line up. Only a platform with a curated Plant KB can map a grower's spreadsheet row to the exact plant in a client's to-scale design.
 
 #### M-15 Labor and subcontractor marketplace between tenants
-
-**Headline phase:** for B2B overflow subcontracting, for a broader verified specialist network.
 
 **Problem.** Labor is seasonal and lumpy. In April, everyone needs more hands. In July, an install crew can sit idle after a cancellation. H-2B workers are tied to their petitioning employer ([DOL H-2B](https://www.dol.gov/agencies/whd/immigration/h2b)), so informal "crew lending" between companies risks immigration, wage-and-hour and insurance violations. Meanwhile specialists (irrigation techs, certified arborists, licensed applicators, hardscape crews) are scarce, and finding a reliable subcontractor is still done by word of mouth.
 
@@ -991,17 +931,15 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Readiness.** TRL 5 as a marketplace (liquidity and trust). The legal design is the critical path.
 
-**Phasing.** private networks first: a Company invites trusted subs and partner Companies to see its packages. Then a public regional marketplace in 2-3 dense metros. specialist directory, robot-sharing packages (M-05), storm-response mutual aid for snow and storm cleanup with pre-agreed rates.
+**In v1.** Private networks (a Company invites trusted subs and partner Companies to see its packages), the public regional marketplace, the specialist directory, robot-sharing packages (M-05) and storm-response mutual aid for snow and storm cleanup with pre-agreed rates. Packages reach only Companies that opt in to the marketplace.
 
 **Dependencies.** Subcontractor compliance records ([13](13-operations-inventory-equipment.md)); cross-tenant Job linking ([20](20-architecture-security.md)); subcontract templates reviewed by counsel per state; ratings; B2B payment flows into the sub's own Stripe account ([08](08-payments-stripe.md)).
 
 **Headline demo.** *A storm drops 40 trees across a Columbus HOA's common area. The Company posts a "Tree debris removal: 2 days, ISA-certified lead required" package to its private network. A tree-care Company accepts within 20 minutes and its crew's photos stream into the HOA's portal under the posting Company's brand. Payment lands in the tree company's Stripe account on sign-off.*
 
-**Kill criterion.** If acceptance within 48 h stays under 25% in pilot metros, or legal review cannot clear the H-2B and classification design, keep private networks only.
-
 #### M-30 Neighborhood density engine ("Street Sweep")
 
-**Headline phase:** for density insights and neighbor-rate pricing, for score-ranked targeting of digital campaigns. Route-aware neighbor campaigns (QR door hangers, neighbor postcards, EDDM, yard signs and holdout measurement) are already specified at in [16](16-marketing-growth-communications.md) section 4.15, and route-density pricing at in [03](03-crm-sales-estimating-proposals.md) and [04](04-scheduling-dispatch-routing.md); they are not repeated here. M-30 adds the marginal-profit parcel score that decides *which* neighbors those campaigns and prices target.
+Route-aware neighbor campaigns (QR door hangers, neighbor postcards, EDDM, yard signs and holdout measurement) are specified in [16](16-marketing-growth-communications.md) section 4.15, and route-density pricing in [03](03-crm-sales-estimating-proposals.md) and [04](04-scheduling-dispatch-routing.md); they are not repeated here. M-30 adds the marginal-profit parcel score that decides *which* neighbors those campaigns and prices target.
 
 **Problem.** Route density is the hidden profit lever in maintenance: a mowing stop next door costs a fraction of one across town. Companies know this but grow at random, through whoever calls.
 
@@ -1020,11 +958,9 @@ Impact and Effort are scored 1 (low) to 5 (high) by the product team (estimates)
 
 **Dependencies.** Parcel and imagery licenses that permit this use (verify Regrid and imagery terms); campaign tools in [16](16-marketing-growth-communications.md).
 
-**Phasing.** parcel scoring on the route map and neighbor-rate pricing, feeding the target sets of the neighbor campaigns in [16](16-marketing-growth-communications.md) section 4.15. score-ranked privacy-safe geo-targeted digital ads ([16](16-marketing-growth-communications.md) section 4.15.1) and neighbor referral links.
+**In v1.** Parcel scoring on the route map and neighbor-rate pricing, feeding the target sets of the neighbor campaigns in [16](16-marketing-growth-communications.md) section 4.15; score-ranked, privacy-safe geo-targeted digital ads ([16](16-marketing-growth-communications.md) section 4.15.1); and neighbor referral links. Parcel scoring works wherever licensed parcel data covers the service area (OD-68 in [24](24-product-scope-decisions-catalog.md)).
 
 **Headline demo.** *The route map lights up 63 parcels within two minutes' drive of Tuesday's mowing route. A door-hanger campaign with a "Tuesday neighbor rate" signs 9 new weekly Clients, raising Tuesday's revenue per crew-day by 14% (illustrative).*
-
-**Kill criterion.** If campaigns do not beat the Company's average cost per acquired Client, keep the map layer only.
 
 ---
 
@@ -1039,7 +975,7 @@ Common guardrails for M-16 to M-18:
 
 #### M-16 Working capital from ledger data ("Spring Ramp")
 
-**Headline phase:** for a design-partner pilot (Verified Financial Package plus 1-2 partner lenders behind a stage-2 flag), for the generally available partner-offer marketplace and seasonally shaped products. This matches [22](22-business-model-pricing-gtm.md) section 5.1.3 (working-capital offers), the lender data room in [18](18-reporting-analytics.md) (idea 5,) and early-payout partners in [07](07-invoicing-billing-contracts.md) (item 12,). The loan covenant monitor ( in [09](09-accounting-ledger-integrations.md), with analytics extensions in [18](18-reporting-analytics.md) idea 17) is a natural precursor: it already computes lender metrics from the Ledger.
+This matches [22](22-business-model-pricing-gtm.md) section 5.1.3 (working-capital offers), the lender data room in [18](18-reporting-analytics.md) (idea 5) and early-payout partners in [07](07-invoicing-billing-contracts.md) (item 12). The loan covenant monitor (in [09](09-accounting-ledger-integrations.md), with analytics extensions in [18](18-reporting-analytics.md) idea 17) already computes lender metrics from the Ledger, and M-16 builds on it.
 
 **Problem.** Landscaping has a brutal cash cycle. In February-April the Company hires, buys mulch, plants and equipment, and pays for H-2B processing before revenue ramps. Snow contractors pre-buy salt in autumn. Banks underwrite on last year's tax return. Fintech lenders underwrite on bank deposits and often price seasonality as risk. A Company with $480,000 of signed maintenance contracts for April-November is still treated like a stranger.
 
@@ -1059,17 +995,13 @@ Common guardrails for M-16 to M-18:
 
 **Readiness.** TRL 6. Lending partners exist. The work is packaging, consent, disclosure and partner integration. Regulatory complexity is moderate for commercial credit; CFPB small-business lending data rules (Section 1071) have shifting compliance dates (verify).
 
-**Phasing.** pilot: eligibility signals, Verified Financial Package, 1-2 partner lenders and offer display for design-partner Companies only. GA with 2-3 or more lenders, seasonally shaped products co-designed with partners, invoice financing ([07](07-invoicing-billing-contracts.md) item 12), and a "spring ramp" pre-approval each January based on the Company's forecast.
+**In v1.** Eligibility signals, the Verified Financial Package, the partner-offer marketplace with offer display, seasonally shaped products co-designed with partners, invoice financing ([07](07-invoicing-billing-contracts.md) item 12) and a "spring ramp" pre-approval each January based on the Company's forecast. Each lender's offers switch on when that lender's terms and approval cover the Company ([24](24-product-scope-decisions-catalog.md) section 1.4); the Verified Financial Package works with no lender connected.
 
 **Dependencies.** Ledger close discipline and bank feeds ([09](09-accounting-ledger-integrations.md)); Service Agreement backlog data ([07](07-invoicing-billing-contracts.md)); consent ledger and partner gateway (R-06, section 8.4); 2-3 partner lenders under contract; compliance review of disclosures.
 
 **Headline demo.** *On January 15 the owner receives a notification: "Based on your $612,000 of signed maintenance contracts for the coming season and reconciled books, two partners pre-qualified you for up to $90,000, drawn in March and repaid June-November." She compares two offers side by side, sees Rootline's disclosed fee, and accepts in 6 minutes. The loan appears in the Ledger with its schedule.*
 
-**Kill criterion.** If fewer than 5% of eligible owners request offers over two springs, or partner approval rates stay below 30%, keep the Verified Financial Package as a downloadable data room only.
-
 #### M-17 Equipment financing and certified pre-owned marketplace
-
-**Headline phase:**.
 
 **Problem.** Equipment is usually a landscape company's largest capital spend. Financing is arranged at the dealer counter. Used equipment trades on general marketplaces with no trustworthy service history. Fleet decisions (repair, replace, electrify) are made by gut feel.
 
@@ -1087,15 +1019,11 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Partner lenders and dealers; an optional escrow partner; telematics integrations for hour verification.
 
-**Phasing.** decision-point financing offers and CPO listings among Rootline tenants. syndication to public equipment marketplaces and dealer trade-in valuations.
+**In v1.** Decision-point financing offers, CPO listings among Rootline tenants, syndication to public equipment marketplaces and dealer trade-in valuations. Financing offers switch on per lender or dealer when that partner is connected.
 
 **Headline demo.** *An owner lists a 3-year-old 60-inch zero-turn with 1,140 telemetry-verified hours, 14 documented services and a new deck belt. It sells to a Company two towns over in four days for $1,100 above the typical comparable price (illustrative). The disposal posts to the Ledger automatically.*
 
-**Kill criterion.** If fewer than 1 in 20 retired assets in pilot tenants is listed, drop CPO listings and keep financing offers.
-
 #### M-18 Embedded insurance (GL, workers' comp, plant warranty, parametric snow)
-
-**Headline phase:** for referral quotes, for data-priced and parametric products.
 
 **Problem.** Insurance is one of the largest overhead lines for many landscape companies (owner-reported; no industry statistic cited here): general liability, commercial auto, workers' comp, inland marine (equipment) and, for snow contractors, slip-and-fall exposure that can make coverage hard to obtain. Premiums are priced on coarse class codes and payroll estimates, followed by painful audits. Companies that run safe, well-documented operations get little credit for it.
 
@@ -1115,11 +1043,9 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** A licensed agency partner; carrier data agreements; state-by-state legal review; a Weather Desk of record for parametric products (section 13, item 3).
 
-**Phasing.** referral quotes, pay-as-you-go workers' comp through partners and the snow defense file. insured plant warranties and parametric snow covers with carrier partners, and possibly a Rootline-owned licensed agency.
+**In v1.** Referral quotes, pay-as-you-go workers' comp through partners and the snow defense file; insured plant warranties and parametric snow covers with carrier partners. Each product switches on when a licensed partner's terms cover the Company ([24](24-product-scope-decisions-catalog.md) section 1.4); the snow defense file works with no partner.
 
 **Headline demo.** *A snow contractor in Buffalo gets a slip-and-fall demand letter for a January 14 incident. In three clicks the insurer receives the evidence package: the site was plowed at 4:12 a.m. at 2.4 inches, salted at 4:20 with 450 lb, photos at both times, and weather station data showing no further accumulation until 9 a.m. The claimant's attorney withdraws the demand two weeks later (illustrative outcome).*
-
-**Kill criterion.** If no carrier offers measurable pricing credit for Rootline data within 4 quarters of referral quotes going live, keep referral quotes and the snow defense file and drop data-priced products.
 
 > **Competitive edge (M-16 to M-18).** Incumbents' fintech is bolted to their own payments rail: Jobber's financing and instant payouts come through its Stripe partnership, and payouts are "at Jobber's discretion" ([ACHR News](https://www.achrnews.com/articles/143559-jobber-partners-with-stripe-to-activate-financing-and-instant-payouts-for-home-service-businesses), [Jobber Help](https://help.getjobber.com/en/articles/instant-payouts/)); Housecall Pro sells Wisetack consumer financing and 1% Instapay through its own payments product ([R4](research/R4-industry-payments-accounting.md)); LMN Pay and Service Autopilot's processing are vendor-controlled ([R4](research/R4-industry-payments-accounting.md)). None of them keeps the books, so a lender still sees bank deposits and a tax return. Rootline's offer is different in two ways that are hard to copy. The underwriting evidence is a **reconciled double-entry Ledger plus contracted Service Agreement backlog**, not deposit history. And because money always flows through the Company's own Stripe account and bank, accepting a loan or a policy never deepens lock-in: the Company can leave Rootline and keep its lender, its insurer and its payment history.
 
@@ -1129,7 +1055,7 @@ Common guardrails for M-16 to M-18:
 
 #### M-20 Voice-first crew assistant ("Oye Rootline")
 
-**Headline phase:** for offline, conversational hands-free use. The earlier slices are specified in the module docs and are not repeated here: voice notes with transcription and translation ([05](05-field-crew-mobile-app.md) section 4.11), online push-to-talk commands with read-back ([17](17-ai-copilot-automation.md) section 4.8), and the slice of expanded commands (chemical log, how-to) plus structured extraction from voice notes ([17](17-ai-copilot-automation.md) section 4.8, [05](05-field-crew-mobile-app.md) section 4.11.3).
+Voice notes with transcription and translation ([05](05-field-crew-mobile-app.md) section 4.11), online push-to-talk commands with read-back ([17](17-ai-copilot-automation.md) section 4.8), and expanded commands (chemical log, how-to) with structured extraction from voice notes ([17](17-ai-copilot-automation.md) section 4.8, [05](05-field-crew-mobile-app.md) section 4.11.3) are specified in the module docs and not repeated here. This card adds offline, conversational hands-free use.
 
 **Problem.** Crews wear gloves, run loud equipment, work in glare and often prefer Spanish. Tapping through forms is slow, so data is skipped: material usage, issues and upsell opportunities. Every missing note is lost revenue or a wrong job cost.
 
@@ -1150,17 +1076,15 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** On-device STT and intent models packaged for React Native; Bluetooth headset button handling; AI Gateway for cloud intents; a landscape glossary for translation (mulch, edging, aireación, poda).
 
-**Phasing.** voice notes, translation and online push-to-talk commands (module docs above). expanded commands and structured extraction. the offline assistant with the top 40 on-device intents and code-switching, matching "V2 on-device" in [17](17-ai-copilot-automation.md) section 4.8. proactive spoken prompts (next task, safety reminders) and smart-glasses support.
+**In v1.** Voice notes, translation and online push-to-talk commands (module docs above); expanded commands and structured extraction; the offline assistant with the top 40 on-device intents and code-switching (the on-device assistant in [17](17-ai-copilot-automation.md) section 4.8); proactive spoken prompts (next task, safety reminders); and smart-glasses support.
 
 **Headline demo.** *Wearing gloves next to a running blower, a technician presses his headset button: "Oye Rootline, terminé el césped, usamos una bolsa de semilla, y hay un árbol con ramas rotas sobre la entrada." The app marks mowing done, logs 1 bag of seed to the Visit, creates a "broken limb over driveway" issue with a photo prompt, and drafts an English upsell for the account manager: "Remove storm-damaged limb over driveway, est. $275."*
-
-**Kill criterion.** If voice produces fewer than 15% of Visit notes on pilot crews after 8 weeks, keep voice notes only.
 
 > **Competitive edge.** Competitors' voice AI faces the *customer*: Jobber's AI Receptionist and voice products answer calls and book work ([R1](research/R1-field-service-platforms.md)). Crew apps in the category are tap-first and, in the reviews collected in [R2](research/R2-landscape-specific-platforms.md), unreliable offline; Spanish crew UX was not verified for any of them. "Oye Rootline" faces the *crew*: push-to-talk, offline intents, Spanish and code-switching, and every utterance lands as a structured action on the Visit (materials, issues, upsells) that feeds job costing and the twin. That is a data-capture advantage, not just a convenience.
 
 #### M-22 Predictive pricing
 
-**Headline phase:** for ML price recommendations. A slice offers rule-based guidance from the Company's own data, specified in [17](17-ai-copilot-automation.md) section 4.7.3 and the route-density pricing of [03](03-crm-sales-estimating-proposals.md).
+Rule-based guidance from the Company's own data is specified in [17](17-ai-copilot-automation.md) section 4.7.3 and the route-density pricing of [03](03-crm-sales-estimating-proposals.md); this card adds ML price recommendations.
 
 **Problem.** Most landscape companies price by gut, by competitor rumor or by an old spreadsheet. Underpricing mowing by $5 a cut on 300 properties over 30 weeks is $45,000 a year (illustrative arithmetic). Overpricing install bids loses jobs without anyone knowing why. Annual price increases are applied flat across the board and trigger avoidable churn.
 
@@ -1185,17 +1109,15 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Win/loss reason capture in the CRM ([03](03-crm-sales-estimating-proposals.md)); a feature store on the data platform ([18](18-reporting-analytics.md)); antitrust counsel sign-off; model monitoring.
 
-**Phasing.** rule-based guidance: cost floor, target margin, price per 1,000 sq ft against the Company's own history. ML win-probability bands and the renewal optimizer. capacity-aware pricing suggestions (for example spring cleanup slots in peak weeks).
+**In v1.** Rule-based guidance (cost floor, target margin, price per 1,000 sq ft against the Company's own history); ML win-probability bands and the renewal optimizer; and capacity-aware pricing suggestions (for example spring cleanup slots in peak weeks). ML bands switch on per service category when the Company has 150 decided quotes in it (rule 2); below that, the advisor shows rule-based guidance. The pooled fallback model in rule 2 ships off and stays off until the founder has had it checked by counsel ([24](24-product-scope-decisions-catalog.md) section 1.7, OD-69).
 
 **Headline demo.** *An estimator prices a weekly mow for a corner lot with a steep bank. The advisor recommends $58-$64 (her instinct was $50), shows a 71% win probability at $60, and explains the drivers: slope, 640 linear feet of trim, and the 1-minute drive from Tuesday's route. At renewal season, the owner applies a 6.2% average increase across 410 Clients with personalized amounts, and predicted churn stays flat.*
-
-**Kill criterion.** If quotes that follow recommendations do not show a margin gain without a win-rate loss in a two-season A/B test, revert to rule-based guidance.
 
 > **Competitive edge.** LMN's estimating discipline (production rates, overhead recovery) and its Job Costing Advisor compare estimates with actuals after the fact ([Turf Magazine](https://turfmagazine.com/lmn-introduces-job-costing-advisor-for-landscapers)); a LawnSite reviewer says Jobber tracks time and expenses per job but does not turn them into insight ([LawnSite](https://www.lawnsite.com/threads/jobber-business-management-software-review.392517/)). Neither prices with win probability, property geometry and route density at the moment of quoting. Rootline's Price Advisor sees the twin's slopes and trim footage, the true burdened labor rate from the Ledger and the marginal drive time from tomorrow's route, all in the same object graph as the quote.
 
 #### M-23 Autopilot: the self-driving back office
 
-**Headline phase:** for policy-driven autonomy in select domains, for exception-only operations across the back office. It builds on Agents, the Approval Inbox and the Action Layer in [17](17-ai-copilot-automation.md).
+It builds on Agents, the Approval Inbox and the Action Layer in [17](17-ai-copilot-automation.md).
 
 **Problem.** A 25-person landscape company often carries 2-3 office staff (estimate) doing repetitive work: entering timesheets, sending invoices, chasing payments, matching bank lines, entering vendor bills, confirming tomorrow's visits, answering "when are you coming?" and rescheduling around rain. [17](17-ai-copilot-automation.md) introduces agents that draft this work for approval. Autopilot is the next step: **policies under which the system acts by itself, with an undo window and an audit trail, and humans handle only exceptions**.
 
@@ -1237,11 +1159,9 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** L2 agents proven in production ([17](17-ai-copilot-automation.md)); a versioned policy engine; undo support (compensating actions) in every tool; per-domain accuracy metrics; contract terms for autonomous actions (open question 13).
 
-**Phasing.** per-agent L1-L3 from [17](17-ai-copilot-automation.md) (agents at L2, recommended graduation and pre-approved templates). domain-level Autopilot policies at L3 for invoicing, collections, bank rec and weather rescheduling, and owner sabbatical mode (section 13, idea 7), which raises domains to L3 temporarily. L4 for bank rec (T2 matching and categorization) and, if the T3 cap is raised, for PO-matched AP bills; the Autopilot month-end close.
+**In v1.** Per-agent L1-L3 from [17](17-ai-copilot-automation.md) (agents at L2, recommended graduation and pre-approved templates); domain-level Autopilot policies at L3 for invoicing, collections, bank rec and weather rescheduling; owner sabbatical mode (section 13, idea 7), which raises domains to L3 temporarily; L4 for bank rec (T2 matching and categorization) and, if the T3 cap is raised, for PO-matched AP bills; and the Autopilot month-end close. Each level above L2 switches on per domain and Company when the graduation rules in rule 1 are met ([24](24-product-scope-decisions-catalog.md) section 1.4).
 
 **Headline demo.** *Monday 7 a.m. The owner's briefing reads: "Over the weekend Autopilot sent 186 invoices ($41,220), collected $18,900 from autopay, matched 312 bank lines, moved 22 Visits off Tuesday's rain to Wednesday and notified those Clients, and answered 47 'when are you coming' texts. 6 items need you." The office manager spends her morning on the six exceptions and on calling two new commercial prospects.*
-
-**Kill criterion.** Any domain whose undo rate stays above 2% at L3 for two months goes back to L2 until its model or policy changes.
 
 > **Competitive edge.** ServiceTitan's Atlas and Jobber's Copilot answer questions and draft work. Their back offices typically sync to external accounting systems such as QuickBooks, so autonomy stops at the accounting boundary. Rootline owns the Ledger, which lets Autopilot close the loop from Visit to invoice, payment, bank match and closed month. None of the competitors in our research combines a native general ledger with agentic operations in a way that could support a two-day close.
 
@@ -1251,7 +1171,7 @@ Common guardrails for M-16 to M-18:
 
 #### M-24 App marketplace and MCP ecosystem
 
-**Headline phase:** for the marketplace. The rails ship earlier and are specified elsewhere: public API core objects and webhooks at, the full API surface, OAuth apps and the MCP server at ([17](17-ai-copilot-automation.md) section 4.10, [20](20-architecture-security.md) section 4.7).
+The public API core objects and webhooks, the full API surface, OAuth apps and the MCP server are specified in [17](17-ai-copilot-automation.md) section 4.10 and [20](20-architecture-security.md) section 4.7; this card adds the marketplace.
 
 **Problem.** No vertical platform can build everything a landscape company needs: specialty estimating for pools, HOA-specific board portals, regional payroll quirks, OEM integrations, niche marketing. Closed platforms make customers wait. Open APIs without distribution do not get used.
 
@@ -1273,17 +1193,15 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Developer portal and sandbox tenants; an app review team (security and UX); a UI extension framework for web and mobile; partner terms.
 
-**Phasing.** public API core objects and webhooks. full API surface, OAuth apps and the MCP server. marketplace listings for OAuth apps, external MCP servers, paid-app billing and the agent and recipe marketplace ([17](17-ai-copilot-automation.md) section 4.10.4). embedded UI extensions in the crew app and portal, and a developer fund for landscape-specific apps.
+**In v1.** Public API core objects and webhooks; the full API surface, OAuth apps and the MCP server; marketplace listings for OAuth apps, external MCP servers, paid-app billing and the agent and recipe marketplace ([17](17-ai-copilot-automation.md) section 4.10.4); embedded UI extensions in the crew app and portal; and a developer fund for landscape-specific apps.
 
 **Headline demo.** *An owner types into Claude on her laptop: "Using Rootline, list every commercial property where we installed boxwood in the last 3 years, then use the distributor connector to price replacing 8 percent of them as a boxwood-blight allowance." (The distributor connector is hypothetical.) Two MCP servers, one permission model, and a draft Proposal batch waiting in her Approval Inbox.*
-
-**Kill criterion.** If fewer than 20 third-party apps or connectors are live 12 months after the marketplace opens, shift effort to first-party integrations and keep the API and MCP server.
 
 > **Competitive edge.** Jobber runs an App Marketplace on a public GraphQL API ([R1](research/R1-field-service-platforms.md)), including third-party AI apps such as an AI dispatcher ([Jobber community](https://community.getjobber.com/discussions/operations-forum/just-launched-in-the-app-marketplace-an-ai-dispatcher-that-books-right-into-your/15079)), and Aspire and ServiceTitan run partner marketplaces ([Aspire marketplace](https://marketplace.youraspire.com/partners/implementation-services?taxon_id=8)). These are app stores *around* a closed AI. Rootline's difference is **parity and direction**: every in-app capability is the same typed tool through the API and MCP server with the same permission checks ([17](17-ai-copilot-automation.md) section 1.3, design principle 1), and Rootline's own agents can call vetted external MCP servers (a distributor's catalog, an OEM's robots). A landscape company can bring its own AI assistant to its Rootline data on day one of.
 
 #### M-19 Franchise and multi-brand mode
 
-**Headline phase:** for franchise mode. Multi-company organizations arrive at ([02](02-personas-roles-permissions.md) section 5.9, [19](19-platform-admin-portal.md)).
+Multi-company organizations are specified in [02](02-personas-roles-permissions.md) section 5.9 and [19](19-platform-admin-portal.md); this card adds franchise mode.
 
 **Problem.** Franchise systems in lawn care and landscaping (national lawn, tree and mosquito franchisors; verify current brands) and multi-brand operators (one owner running a lawn-care brand and a design-build brand) need standardization *and* local autonomy. Franchisors need royalty calculation, brand compliance, territory management, rollup KPIs and benchmarks, without seeing more franchisee data than the franchise agreement allows.
 
@@ -1309,17 +1227,13 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Organization roles in [02](02-personas-roles-permissions.md); consolidated reporting ([18](18-reporting-analytics.md)); franchise attorney input on default data sharing ([02](02-personas-roles-permissions.md) open question 5); reseller billing in [19](19-platform-admin-portal.md).
 
-**Phasing.** multi-company organizations and consolidated reporting. franchise templates, lock levels, royalties from the Ledger, territories. FDD data support and a franchisor marketplace for approved vendors.
+**In v1.** Multi-company organizations and consolidated reporting; franchise templates, lock levels, royalties from the Ledger and territories; and FDD data support and a franchisor marketplace for approved vendors.
 
 **Headline demo.** *A franchisor's COO opens the system dashboard: 84 locations, March royalties computed from posted Ledger revenue (no self-reporting), a new spring aeration promo template pushed to all locations at 9 a.m., and 11 locations whose close rate on aeration upsells sits in the bottom quartile, each with a coaching task assigned.*
-
-**Kill criterion.** If no franchisor with 20 or more locations signs within 4 quarters of franchise mode going live, keep the multi-brand template and pause franchisor-specific features.
 
 > **Competitive edge.** Aspire models branches and divisions inside one company, with branch-level reporting and branch-to-branch subcontract workflows ([Aspire docs](https://guide.youraspire.com/docs/building-your-organization-in-aspire), [branch-to-branch work](https://guide.youraspire.com/docs/workflow-for-managing-branch-to-branch-subcontract-work), via [02](02-personas-roles-permissions.md)). That suits one owner with many locations, not a franchisor and independent franchisees who are separate legal entities with their own books and payment accounts. Franchisors in lawn care today typically collect royalties from self-reported sales or from exports out of each franchisee's QuickBooks (general industry practice; verify with design partners). Rootline computes royalties from each franchisee's own closed Ledger, while the franchisee keeps its own Stripe account, its own Clients and a recorded, revocable data-sharing agreement.
 
 #### M-25 Rootline Academy and certifications
-
-**Headline phase:** for software and business courses with in-app micro-learning, for credentialed programs and continuing education.
 
 **Problem.** Industry training is fragmented, often English-only and disconnected from daily work. Owners learn estimating and finance by trial and error. Crews learn safety from a binder. Software vendors' academies teach button clicks, not the business.
 
@@ -1339,15 +1253,11 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Video production in English and Spanish; LMS features (quizzes, proctoring, credential IDs); state approvals for CEU courses; partner agreements with associations.
 
-**Phasing.** product mastery and safety micro-learning in the crew app. business courses and paid certifications. CEU-approved courses in priority states and association-recognized credentials.
+**In v1.** Product mastery and safety micro-learning in the crew app; business courses and paid certifications; and CEU-approved courses and association-recognized credentials, which switch on per state or association once that body approves them.
 
 **Headline demo.** *A new H-2B crew member's phone shows a Spanish 2-minute video on safe trimmer use before his first Visit. Six weeks later his crew lead, Marco, earns "Crew Lead Fundamentals", so the dispatcher can now assign Marco to lead a second crew on Saturdays, and the insurer's workers' comp program (M-18) sees the training completion rate.*
 
-**Kill criterion.** If paid certification sales cannot cover content production after 4 quarters, keep the included tracks only.
-
 #### M-26 Community
-
-**Headline phase:** for forums and the template exchange, for peer groups and field reports.
 
 **Problem.** Landscape owners learn mostly from each other, in Facebook groups, Reddit, forums and peer groups, with no connection to their tools.
 
@@ -1366,15 +1276,11 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Moderation tooling with AI pre-screening; template import mapping per object type; facilitators for Roundtables.
 
-**Phasing.** forums and template exchange. Roundtables, field reports and local channels. paid templates and expert office hours.
+**In v1.** Forums and the template exchange; Roundtables, field reports and local channels; and paid templates and expert office hours.
 
 **Headline demo.** *A first-year owner asks, "How do I price a 5-step fertilizer program for 5,000 sq ft lawns in zone 6?" The AI summary cites three top answers, links a highly rated program template from an Ohio Company, and imports it into her Price Book with her own product costs in one click.*
 
-**Kill criterion.** If monthly active community users stay below 10% of owners after a year, keep the template exchange and close the forums in favor of external communities.
-
 #### M-32 Rootline Grounds (in-house grounds teams and public agencies)
-
-**Headline phase:**.
 
 **Problem.** Universities, hospitals, corporate campuses, parks departments and large HOAs with in-house staff maintain big landscapes with spreadsheets or generic work-order systems. They need the twin, irrigation, robots, plants and ESG reporting, but not invoicing.
 
@@ -1394,15 +1300,13 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Edition packaging and pricing ([22](22-business-model-pricing-gtm.md)); SSO and data residency options ([20](20-architecture-security.md)); procurement vehicles such as cooperative purchasing contracts (verify).
 
-**Phasing.** only, after the contractor product is proven. A design-partner campus pilot comes first.
+**In v1.** The Grounds edition on the whole platform: sites instead of Clients, request intake, budgets, ERP export and public-sector records.
 
 **Headline demo.** *A university's grounds director sees 1,400 campus trees with condition, 38 irrigation controllers under Hydro, 9 robots on the athletic fields, and an ESG report sent straight to the sustainability office, with no invoices involved.*
 
-**Kill criterion.** If two pilots fail to convert to paid contracts, stop the segment.
-
 #### M-33 Rootline Global (UK, Australia, New Zealand first)
 
-**Headline phase:**. It is referenced by [22](22-business-model-pricing-gtm.md) revenue scenarios ("English-speaking international pilots by Y4").
+It is referenced by the revenue scenarios in [22](22-business-model-pricing-gtm.md).
 
 **Problem.** Landscape businesses in English-speaking markets outside North America face the same tool sprawl, and some (Australia, for example) face the same water-wise and native-planting pressures. Rootline's curation model can travel, but the Plant KB cannot simply be translated.
 
@@ -1420,15 +1324,13 @@ Common guardrails for M-16 to M-18:
 
 **Dependencies.** Regional curation in place before launch; a VAT/GST tax engine; local payroll partners; Stripe availability per country (verify); data residency options ([20](20-architecture-security.md)).
 
-**Phasing.**: one pilot market first, and a second only after the first meets the readiness gate and kill criterion below.
+**In v1.** Market packs for the UK, Australia and New Zealand: Regions, tax, payroll export targets, units, formats, spelling and legal templates.
 
 **Readiness.** TRL 7 technically, because the platform already handles metric units and multiple currencies. Curation capacity and local integrations are the constraint.
 
 **Readiness gate.** No market launch without at least 1,500 curated plants with Region Profiles for that market's top 3 metros, and 10 design partners signed.
 
 **Headline demo.** *A Melbourne landscaper designs a native front garden with kangaroo paw and lomandra from a curated Victorian palette, sends a GST-compliant Proposal and collects the deposit into her own Stripe account.*
-
-**Kill criterion.** If the first market has fewer than 50 paying Companies 12 months after launch, pause international expansion.
 
 ---
 

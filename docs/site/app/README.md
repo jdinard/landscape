@@ -1,6 +1,6 @@
 # Platform Explorer: how it works and how to add screens
 
-`docs/site/app.html` is a static, no-build mock of the whole Rootline platform. It opens from `file://`, has no server and no framework. Every screen is gated by **role**, **package** (plan), **market** (sample tenant) and **scope lens** using the same data a real build would use.
+`docs/site/app.html` is a static, no-build mock of the whole Rootline platform. It opens from `file://`, has no server and no framework. Every screen is gated by **role**, **package** (plan), **market** (sample tenant) using the same data a real build would use.
 
 ## Files and load order
 
@@ -18,7 +18,7 @@
 
 ## The state and the URL
 
-The hash holds the whole view: `#r=web.today&as=owner&t=greenleaf&plan=pro&scope=mvp&season=winter&lang=es&x=J-1042`.
+The hash holds the whole view: `#r=web.today&as=owner&t=greenleaf&plan=pro&season=winter&lang=es&x=J-1042`.
 
 | Key | Meaning |
 |---|---|
@@ -26,7 +26,6 @@ The hash holds the whole view: `#r=web.today&as=owner&t=greenleaf&plan=pro&scope
 | `as` | View-as key: a role (`owner`), or a client role plus contact scope (`client_commercial.approver`). The list is `RL.AS`. |
 | `t` | Sample tenant id from `tenants.json` (each is one target market). |
 | `plan` | Plan override. Empty means the tenant's own plan. |
-| `scope` | Scope lens: `mvp`, `v1`, `v2` or `all`. |
 | `season` | `peak` (Tue May 11, 2027) or `winter` (Tue Jan 12, 2027). |
 | `lang` | `en` or `es`. Choosing a crew role switches to `es`. |
 | `x` | Record id for detail routes (`/jobs/:id` and so on). |
@@ -49,7 +48,6 @@ c.fcGrant('access_secret')    // raw grant string, e.g. 'R in window'
 h.mask(c, 'cost', h.money(n)) // value, or ••• with a tooltip naming the rule (partial grants are masked too)
 c.mod('lawn_phc')             // tenant has the module on (keys from 14 §4.0.1; snow_ice on = Snow Lite)
 c.has('snow_ice')             // the full Snow & Ice add-on, as opposed to Snow Lite
-c.inLens('V1')                // the scope lens includes V1; tag later features with h.tag('V1')
 ```
 
 ## Writing a screen
@@ -98,7 +96,7 @@ Phone surfaces (crew, manager mode, sub lite, portal in phone mode, Rootline Hom
 - Iris (`ai` tone, `h.aiCard`, `.btn.ai`) is reserved for AI output. Every AI action shows its credit cost (22 §4.4.1) and autonomy level (L0-L4) before it runs. Tier T4 actions (charging a card, signing) are never done by AI.
 - Respect field classes: crews never see prices, costs or margins; subcontractors never see the Company's sell price; bookkeepers see billing fields, not gate codes.
 - Never block a Company from getting paid: invoicing, portal payments and the ledger stay available in every plan and dunning state.
-- Plain language, sentence case, no em dashes. No delivery dates or effort estimates; scope uses MVP, V1, V2, V3 tags.
+- Plain language, sentence case, no em dashes. No delivery dates or effort estimates, and no scope tags: every screen is in the one release (24 §1.1).
 
 ## Testing
 

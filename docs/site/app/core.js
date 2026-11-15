@@ -26,7 +26,7 @@ RL.idx = { ROUTES, ROLES, FEATS, PLANS, ADDONS, TENANTS, SEGS, PERSONAS, SURFACE
 // ---------- view-as catalogue ----------
 const AS = [];
 const asOpt = (key, role, group, label, extra) => AS.push(Object.assign({ key, role, group, label }, extra || {}));
-[['owner', 'Owner'], ['office_manager', 'Office manager'], ['estimator', 'Estimator'], ['designer', 'Designer'], ['ops_manager', 'Operations manager'], ['bookkeeper', 'Bookkeeper / CPA'], ['observer', 'Observer (V1)']]
+[['owner', 'Owner'], ['office_manager', 'Office manager'], ['estimator', 'Estimator'], ['designer', 'Designer'], ['ops_manager', 'Operations manager'], ['bookkeeper', 'Bookkeeper / CPA'], ['observer', 'Observer']]
   .forEach(([k, l]) => asOpt(k, k, 'Company staff', l));
 [['crew_lead', 'Crew lead'], ['technician', 'Technician'], ['subcontractor', 'Subcontractor']].forEach(([k, l]) => asOpt(k, k, 'Field', l));
 asOpt('client_residential.primary', 'client_residential', 'Clients', 'Homeowner (primary contact)', { scope: 'primary' });
@@ -37,18 +37,18 @@ asOpt('client_commercial.approver', 'client_commercial', 'Clients', 'HOA board m
 asOpt('client_commercial.billing', 'client_commercial', 'Clients', 'AP clerk (billing contact)', { scope: 'billing' });
 asOpt('client_commercial.property_contact', 'client_commercial', 'Clients', 'Facilities tech (property contact)', { scope: 'property_contact' });
 asOpt('client_commercial.viewer', 'client_commercial', 'Clients', 'Consultant (viewer)', { scope: 'viewer' });
-asOpt('partner_admin', 'partner_admin', 'Partners', 'Accountant partner admin (V1)');
-asOpt('partner_member', 'partner_member', 'Partners', 'Accountant partner staff (V1)');
+asOpt('partner_admin', 'partner_admin', 'Partners', 'Accountant partner admin');
+asOpt('partner_member', 'partner_member', 'Partners', 'Accountant partner staff');
 [['platform_owner', 'Founder / Super Admin'], ['platform_support', 'Platform Support'], ['platform_curator', 'Plant Curator'], ['platform_finance', 'Platform Finance'], ['platform_engineer', 'Platform Engineer']]
   .forEach(([k, l]) => asOpt(k, k, 'Rootline staff', l));
 asOpt('prospect', 'prospect', 'Public', 'Prospect on rootline.com');
-asOpt('homeowner', 'homeowner', 'Public', 'Homeowner (Rootline Home, V1)');
+asOpt('homeowner', 'homeowner', 'Public', 'Homeowner (Rootline Home)');
 const ASK = by(AS, 'key');
 RL.AS = AS;
 
 // Surfaces each role may use (first one is the default)
 const SURF = {
-  owner: ['web', 'crew_manager'], office_manager: ['web', 'crew_manager'], estimator: ['web', 'crew_manager'], designer: ['web'],
+  owner: ['web', 'crew_manager'], office_manager: ['web', 'crew_manager'], estimator: ['web', 'crew_manager'], designer: ['web', 'crew_manager'],
   ops_manager: ['web', 'crew_manager'], bookkeeper: ['web'], observer: ['web'], crew_lead: ['crew', 'web', 'kiosk'], technician: ['crew', 'web', 'kiosk'],
   subcontractor: ['sub'], client_residential: ['portal'], client_commercial: ['portal'], partner_admin: ['partner'], partner_member: ['partner'],
   platform_owner: ['console'], platform_support: ['console'], platform_curator: ['console'], platform_finance: ['console'], platform_engineer: ['console'],
@@ -56,14 +56,12 @@ const SURF = {
 };
 RL.SURF = SURF;
 const BUYERS = new Set(['owner']);
-const SCOPE_RANK = { MVP: 1, V1: 2, V2: 3, V3: 4 };
-const LENS = { mvp: 1, v1: 2, v2: 3, all: 9 };
-// Observer is a starter custom role (02 §5.7, V1); its template lives in roles.json custom_role_templates
+// Observer is a starter custom role (02 §5.7); its template lives in roles.json custom_role_templates
 const OBS = (P.roles.custom_role_templates || []).find(x => x.key === 'observer') || { nav: {}, grants: {}, field_classes: {} };
 const OBS_NAV = OBS.nav, OBS_CAPS = OBS.grants;
 
 // ---------- state ----------
-const DEF = { r: 'atlas.home', as: 'owner', t: 'greenleaf', plan: '', scope: 'all', season: 'peak', lang: 'en', x: '', lens: '1' };
+const DEF = { r: 'atlas.home', as: 'owner', t: 'greenleaf', plan: '', season: 'peak', lang: 'en', x: '', lens: '1' };
 RL.S = Object.assign({}, DEF);
 function readHash() {
   const q = new URLSearchParams(location.hash.replace(/^#/, ''));
@@ -158,11 +156,10 @@ function fieldClass(fc, roleKey) {
 RL.fieldClass = fieldClass;
 const isDash = v => !v || v === '-' || /^-( |$)/.test(v) || v.startsWith('- cfg');
 
-/* access(route, state) -> { ok, state: ok|limit|locked|hidden|denied|off|scope|surface, why: [..], unlock?, limit? } */
+/* access(route, state) -> { ok, state: ok|limit|locked|hidden|denied|off|surface, why: [..], unlock?, limit? } */
 function access(rt, s) {
   const o = ASK[s.as], role = o.role, why = [];
-  const lensBlocked = SCOPE_RANK[rt.scope] > LENS[s.scope];
-  const res = (state, extra) => Object.assign({ ok: state === 'ok' || state === 'limit', state, why, lens: lensBlocked }, extra || {});
+  const res = (state, extra) => Object.assign({ ok: state === 'ok' || state === 'limit', state, why }, extra || {});
   if (!SURF[role].includes(rt.surface)) {
     why.push(`${ROLES[role].name} does not use the ${SURFACES[rt.surface].name}.`);
     return res('surface');
@@ -196,7 +193,7 @@ function personFor(o, t) {
   const role = o.role;
   const cast = t.cast || {};
   if (cast[role]) return cast[role];
-  const plat = { platform_owner: 'You (the founder)', platform_support: 'Maya', platform_curator: 'Dr. Priya', platform_finance: 'Tom', platform_engineer: 'Sam', partner_admin: 'Karen Liu, CPA', partner_member: 'Devin Shah (staff accountant)', prospect: 'A prospect', homeowner: 'Ellen Park', observer: 'Pat Castillo (silent partner)' };
+  const plat = { platform_owner: 'You (the founder)', platform_support: 'Support agent', platform_curator: 'Plant curator agent', platform_finance: 'Finance agent', platform_engineer: 'Engineering agent', partner_admin: 'Karen Liu, CPA', partner_member: 'Devin Shah (staff accountant)', prospect: 'A prospect', homeowner: 'Ellen Park', observer: 'Pat Castillo (silent partner)' };
   if (plat[role]) return plat[role];
   const D = RL.data(t);
   if (role === 'client_residential') return { primary: D.res.primary, co_owner: D.res.co_owner, property_contact: D.res.resident }[o.scope] || D.res.primary;
@@ -229,7 +226,7 @@ function ctx() {
   c.fcGrant = fcKey => fieldClass(fcKey, o.role);
   c.seesFully = fcKey => { const v = fieldClass(fcKey, o.role); return !isDash(v) && /^RW?(\s|\(|$)/.test(v) && !/in window|billing|own orders/.test(v); };
   c.vis = (surface, nav) => navVis(surface, nav, o.role, o.scope);
-  c.inLens = tag => SCOPE_RANK[tag] <= LENS[s.scope];
+  c.inLens = () => true; // TEMP shim until screens drop tier gates
   c.tr = (en, es) => (s.lang === 'es' && es != null) ? es : en;
   c.access = id => access(ROUTES[id], s);
   c.today = s.season === 'winter' ? { label: 'Tue Jan 12, 2027', short: 'Jan 12', month: 'January', dow: 'Tuesday' } : { label: 'Tue May 11, 2027', short: 'May 11', month: 'May', dow: 'Tuesday' };
@@ -242,7 +239,7 @@ RL.routesFor = (surface) => P.surfaces.routes.filter(r => r.surface === surface)
 RL.navGroups = (surface) => { const seen = []; RL.routesFor(surface).forEach(r => { if (!seen.includes(r.nav)) seen.push(r.nav); }); return seen; };
 // Visible routes in a nav group for the current state (used by frames)
 RL.groupRoutes = (surface, nav, c) => RL.routesFor(surface).filter(r => r.nav === nav && !r.id.endsWith('.manager') && !(r.path.includes(':') && r.parent))
-  .map(r => ({ r, a: access(r, c.s) })).filter(({ r, a }) => (a.ok || a.state === 'locked') && c.inLens(r.scope));
+  .map(r => ({ r, a: access(r, c.s) })).filter(({ r, a }) => (a.ok || a.state === 'locked'));
 RL.screen = (id, fn) => { RL.screens[id] = fn; };
 RL.act = (name, fn) => { RL.acts[name] = fn; };
 RL.modal = (id, fn) => { RL.modals[id] = fn; };
@@ -264,7 +261,7 @@ function render(opts) {
     } else {
       const rt = c.route, a = access(rt, c.s);
       let body;
-      if (a.ok) body = (a.lens ? RL.h.note(`This screen is <b>${rt.scope}</b> scope, outside the current lens. Shown because you navigated to it directly.`) : '') + screenHtml(rt, c, a);
+      if (a.ok) body = screenHtml(rt, c, a);
       else body = RL.deniedHtml(rt, c, a);
       inner = (RL.frames[rt.surface] || RL.frames.generic)(c, body, a);
       lens.innerHTML = RL.lensHtml(c, a);

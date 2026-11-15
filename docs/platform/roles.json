@@ -186,8 +186,7 @@
       "mfa": "required",
       "login": "Passkey or password + MFA",
       "landing": "web.today",
-      "spec": "02 §5.7 (gallery, V1); 22 §4.3",
-      "scope": "V1"
+      "spec": "02 §5.7 (gallery); 22 §4.3"
     },
     {
       "key": "client_residential",
@@ -213,7 +212,7 @@
       ],
       "seat": "free, unlimited",
       "mfa": "passkey recommended",
-      "login": "Magic link + passkey; SSO for large PM firms [V2]",
+      "login": "Magic link + passkey; SSO for large PM firms",
       "landing": "portal.home",
       "spec": "02 §3.4.2-3.4.3; 06"
     },
@@ -305,7 +304,7 @@
       "key": "platform_owner",
       "kind": "platform",
       "name": "Platform Operator / Super Admin (the founder)",
-      "summary": "Final authority on tenants, pricing, Plant KB policy, AI spend and security exceptions. Sees everything; never touches customer data without consent.",
+      "summary": "The only human at Rootline. Final authority on tenants, pricing, Plant KB policy, AI spend and security exceptions; approves what the operator agents propose. Never touches customer data without consent.",
       "surfaces": [
         "console"
       ],
@@ -318,56 +317,56 @@
     {
       "key": "platform_support",
       "kind": "platform",
-      "name": "Platform Support",
-      "summary": "Onboarding, migrations, consented read-only View as user, goodwill credits within limits, dunning recovery.",
+      "name": "Platform Support (operator agent)",
+      "summary": "Onboarding, migrations, consented read-only View as user, goodwill credits within limits, dunning recovery. Held by Rootline's support agent (Claude) under the founder; privileged requests need the founder's approval (24 §1.2).",
       "surfaces": [
         "console"
       ],
-      "seat": "staff",
-      "mfa": "hardware key or passkey + step-up",
-      "login": "Platform SSO + WebAuthn security key",
+      "seat": "operator agent",
+      "mfa": "n/a (agent); the founder approves privileged requests",
+      "login": "Agent identity with scoped service credentials; every action audited",
       "landing": "console.home",
       "spec": "02 §3.2, §10.4; 19 §9"
     },
     {
       "key": "platform_curator",
       "kind": "platform",
-      "name": "Platform Curator (horticulturist)",
-      "summary": "Full write to the Plant KB and Regions; zero tenant business data.",
+      "name": "Platform Curator (operator agent)",
+      "summary": "Full write to the Plant KB and Regions; zero tenant business data. Held by Rootline's plant curator agent (Claude) under the founder; privileged requests need the founder's approval (24 §1.2).",
       "surfaces": [
         "console"
       ],
-      "seat": "staff",
-      "mfa": "hardware key or passkey + step-up",
-      "login": "Platform SSO + WebAuthn security key",
+      "seat": "operator agent",
+      "mfa": "n/a (agent); the founder approves privileged requests",
+      "login": "Agent identity with scoped service credentials; every action audited",
       "landing": "console.kb.queue",
       "spec": "02 §3.2, §10.4; 19 §9"
     },
     {
       "key": "platform_finance",
       "kind": "platform",
-      "name": "Platform Finance",
-      "summary": "Rootline's own SaaS billing, catalog drafts, refunds and credits, revenue recognition. No access to tenants' client payments by design.",
+      "name": "Platform Finance (operator agent)",
+      "summary": "Rootline's own SaaS billing, catalog drafts, refunds and credits, revenue recognition. No access to tenants' client payments by design. Held by Rootline's finance agent (Claude) under the founder; privileged requests need the founder's approval (24 §1.2).",
       "surfaces": [
         "console"
       ],
-      "seat": "staff",
-      "mfa": "hardware key or passkey + step-up",
-      "login": "Platform SSO + WebAuthn security key",
+      "seat": "operator agent",
+      "mfa": "n/a (agent); the founder approves privileged requests",
+      "login": "Agent identity with scoped service credentials; every action audited",
       "landing": "console.home",
       "spec": "02 §3.2, §10.4; 19 §9"
     },
     {
       "key": "platform_engineer",
       "kind": "platform",
-      "name": "Platform Engineer",
-      "summary": "Infrastructure, flags, queues, logs with PII redaction. Production data only through just-in-time, approved break-glass.",
+      "name": "Platform Engineer (operator agent)",
+      "summary": "Infrastructure, flags, queues, logs with PII redaction. Production data only through just-in-time, approved break-glass. Held by Rootline's engineering agent (Claude) under the founder; privileged requests need the founder's approval (24 §1.2).",
       "surfaces": [
         "console"
       ],
-      "seat": "staff",
-      "mfa": "hardware key or passkey + step-up",
-      "login": "Platform SSO + WebAuthn security key",
+      "seat": "operator agent",
+      "mfa": "n/a (agent); the founder approves privileged requests",
+      "login": "Agent identity with scoped service credentials; every action audited",
       "landing": "console.health",
       "spec": "02 §3.2, §10.4; 19 §9"
     },
@@ -383,8 +382,7 @@
       "mfa": "required",
       "login": "Partner SSO / passkey",
       "landing": "partner.clients",
-      "spec": "19 §6.1 #42; 22 §5.4; 02 §5.10",
-      "scope": "V1"
+      "spec": "19 §6.1 #42; 22 §5.4; 02 §5.10"
     },
     {
       "key": "partner_member",
@@ -398,8 +396,7 @@
       "mfa": "required",
       "login": "Partner SSO / passkey",
       "landing": "partner.clients",
-      "spec": "19 §6.1 #42; 02 §5.10",
-      "scope": "V1"
+      "spec": "19 §6.1 #42; 02 §5.10"
     },
     {
       "key": "prospect",
@@ -1238,7 +1235,7 @@
         "group": "Time and people",
         "rows": [
           {
-            "cap": "time_entry",
+            "cap": "time_entry.own",
             "note": "own punches",
             "grants": {
               "owner": "RW/o",
@@ -1253,7 +1250,7 @@
             }
           },
           {
-            "cap": "time_entry",
+            "cap": "time_entry.others",
             "note": "others",
             "grants": {
               "owner": "RWD/a",
@@ -1394,7 +1391,7 @@
           },
           {
             "cap": "billing_run / billing_run.post",
-            "note": "prepare and review) and  (issue the batch",
+            "note": "prepare and review) and (issue the batch",
             "grants": {
               "owner": "RWX/a",
               "office_manager": "RWX/a",
@@ -2341,7 +2338,6 @@
     "source": "02 §5.11",
     "rows": [
       {
-        "scope": "primary",
         "rights": {
           "View schedule and photos": "All Properties",
           "Request service": "Yes",
@@ -2355,7 +2351,6 @@
         }
       },
       {
-        "scope": "co_owner",
         "rights": {
           "View schedule and photos": "All",
           "Request service": "Yes",
@@ -2369,7 +2364,6 @@
         }
       },
       {
-        "scope": "billing",
         "rights": {
           "View schedule and photos": "No",
           "Request service": "No",
@@ -2383,7 +2377,6 @@
         }
       },
       {
-        "scope": "property_contact",
         "rights": {
           "View schedule and photos": "Assigned Properties",
           "Request service": "Yes",
@@ -2397,7 +2390,6 @@
         }
       },
       {
-        "scope": "approver",
         "rights": {
           "View schedule and photos": "Assigned Properties",
           "Request service": "Yes",
@@ -2411,7 +2403,6 @@
         }
       },
       {
-        "scope": "viewer",
         "rights": {
           "View schedule and photos": "Assigned Properties",
           "Request service": "No",
@@ -2821,7 +2812,6 @@
     {
       "key": "observer",
       "name": "Observer",
-      "scope": "V1",
       "seat": "observer (free, up to 3 per Company; 22 §4.3)",
       "source": "02 §5.7 starter custom roles: read-only investor, silent partner or family member with dashboards and field.margin.read, no PII, no client-list exports",
       "assumption": "The grants below are the blueprint reading of that sentence; 02 §10.1 has no observer column. Confirm before generating the authorization tables.",

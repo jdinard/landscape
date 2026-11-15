@@ -19,9 +19,22 @@
 - **Nothing is left open.** Every open decision takes the answer in section 1.6, every contradiction between documents takes the answer in section 1.5, and every open question in a module doc takes its recommended default. The build agent does not stop to ask.
 - **Some features wait for a condition, not a date.** Benchmarks need enough Companies per cell, agent autonomy is earned per action, and plant coverage follows curated data. These are built in v1 and switch on by themselves when the condition holds (1.4).
 
+## Table of contents
+
+- [0. How to use this document](#0-how-to-use-this-document)
+- [1. The decision record](#1-the-decision-record)
+- [2. Master feature catalog](#2-master-feature-catalog)
+- [3. Acceptance scenarios and launch readiness](#3-acceptance-scenarios-and-launch-readiness)
+- [4. Product dependencies and build order](#4-product-dependencies-and-build-order)
+- [5. Build vs buy vs partner](#5-build-vs-buy-vs-partner)
+- [6. Product risk register](#6-product-risk-register)
+- [7. Product success measures](#7-product-success-measures)
+- [8. Former open product decisions](#8-former-open-product-decisions)
+- [Sources and related documents](#sources-and-related-documents)
+
 ## 0. How to use this document
 
-**One release.** Older drafts tagged features,, and. Those tags are gone. A sentence that still says a feature comes "later", "after launch", "in a later wave" or "at V2" means the feature is in v1. A sentence that describes a basic version first and a fuller version later means v1 has the fuller version, with the basic behavior as its default setting where the spec offers one (for example inventory modes Off, Light and Standard are all available and Off is the default).
+**One release.** Older drafts tagged features with scope tiers. Those tags are gone. A sentence that still says a feature comes "later", "after launch", "in a later wave" or "at V2" means the feature is in v1. A sentence that describes a basic version first and a fuller version later means v1 has the fuller version, with the basic behavior as its default setting where the spec offers one (for example inventory modes Off, Light and Standard are all available and Off is the default).
 
 **Catalog IDs.** Every catalog row has an ID of the form `Cnn-mmm`, where `nn` is the module doc number and `mmm` is a sequence within that module (for example `C03-012`). Module docs keep their own requirement IDs (`EST-01`, `AIM-GEN-A`, `M-01`); the Source column links to them. Each feature is listed once, under the doc that owns it.
 
@@ -40,7 +53,7 @@ These decisions are binding on every document, on the blueprint data in [platfor
 ### 1.1 One release
 
 1. **v1 is the whole product.** Every feature in the catalog (section 2), every route in `platform/surfaces.json`, every agent in [17](17-ai-copilot-automation.md), every service-line module in [14](14-service-line-modules.md) and every innovation bet in [23](23-innovation-moonshots.md) is in v1.
-2. **No scope tiers.** The tags,, and, release trains, waves as phases, cut orders, exit criteria and stage gates are retired everywhere.
+2. **No scope tiers.** The scope-tier tags, release trains, waves as phases, cut orders, exit criteria and stage gates are retired everywhere.
 3. **Fuller version wins.** Where a spec staged a capability ("basic now, full later"), v1 builds the full capability. Staged behavior that is useful as a setting stays as a setting, with the simpler behavior as the default.
 4. **Packaging is not scope.** Plans, add-ons, limits and meters in [22](22-business-model-pricing-gtm.md) and `platform/plans.json` decide who pays for what, not what exists. Snow Lite stays free in every plan and the full Snow & Ice module stays an add-on; Tree Care stays an add-on; and so on.
 5. **Quality bars stay.** Removing tiers removes no quality requirement. Ledger invariants, offline-first sync, tenant isolation, accessibility, the AI golden sets and the launch-readiness checks in section 3 all apply to v1.
@@ -248,36 +261,36 @@ Plant photography needs a growing season: bloom and fall color can only be shot 
 
 ### 2.1 Conventions and counts
 
-| # | Module | Owner doc | Features | | | | |
-|---|---|---|---|---|---|---|---|
-| 2.2 | [Market intelligence](#22-01---market-intelligence) | [01](01-market-landscape.md) | 13 | 7 | 6 | 0 | 0 |
-| 2.3 | [Identity, roles and permissions](#23-02---identity-roles-and-permissions) | [02](02-personas-roles-permissions.md) | 40 | 23 | 14 | 3 | 0 |
-| 2.4 | [CRM, sales, estimating and proposals](#24-03---crm-sales-estimating-and-proposals) | [03](03-crm-sales-estimating-proposals.md) | 42 | 30 | 12 | 0 | 0 |
-| 2.5 | [Scheduling, dispatch and routing](#25-04---scheduling-dispatch-and-routing) | [04](04-scheduling-dispatch-routing.md) | 35 | 22 | 13 | 0 | 0 |
-| 2.6 | [Field crew mobile app](#26-05---field-crew-mobile-app) | [05](05-field-crew-mobile-app.md) | 27 | 22 | 4 | 1 | 0 |
-| 2.7 | [Customer portal](#27-06---customer-portal) | [06](06-customer-portal.md) | 39 | 25 | 12 | 2 | 0 |
-| 2.8 | [Invoicing, billing and service agreements](#28-07---invoicing-billing-and-service-agreements) | [07](07-invoicing-billing-contracts.md) | 43 | 27 | 15 | 1 | 0 |
-| 2.9 | [Payments (bring-your-own Stripe)](#29-08---payments-bring-your-own-stripe) | [08](08-payments-stripe.md) | 30 | 19 | 10 | 1 | 0 |
-| 2.10 | [Accounting ledger and integrations](#210-09---accounting-ledger-and-integrations) | [09](09-accounting-ledger-integrations.md) | 42 | 21 | 18 | 3 | 0 |
-| 2.11 | [Design Studio](#211-10---design-studio) | [10](10-design-studio.md) | 28 | 15 | 13 | 0 | 0 |
-| 2.12 | [AI design mockups](#212-11---ai-design-mockups) | [11](11-ai-design-mockups.md) | 23 | 12 | 9 | 1 | 1 |
-| 2.13 | [Plant Knowledge Base](#213-12---plant-knowledge-base) | [12](12-plant-knowledge-base.md) | 29 | 22 | 6 | 1 | 0 |
-| 2.14 | [Operations: materials, inventory, purchasing, equipment](#214-13---operations-materials-inventory-purchasing-equipment) | [13](13-operations-inventory-equipment.md) | 38 | 17 | 20 | 0 | 1 |
-| 2.15 | [Service-line modules](#215-14---service-line-modules) | [14](14-service-line-modules.md) | 41 | 20 | 18 | 3 | 0 |
-| 2.16 | [Team, HR, time and payroll](#216-15---team-hr-time-and-payroll) | [15](15-team-hr-payroll.md) | 29 | 15 | 14 | 0 | 0 |
-| 2.17 | [Marketing, growth and communications](#217-16---marketing-growth-and-communications) | [16](16-marketing-growth-communications.md) | 34 | 19 | 15 | 0 | 0 |
-| 2.18 | [AI Copilot, agents and automation](#218-17---ai-copilot-agents-and-automation) | [17](17-ai-copilot-automation.md) | 35 | 21 | 11 | 3 | 0 |
-| 2.19 | [Reporting and analytics](#219-18---reporting-and-analytics) | [18](18-reporting-analytics.md) | 28 | 13 | 13 | 2 | 0 |
-| 2.20 | [Platform admin portal (Operator Console)](#220-19---platform-admin-portal-operator-console) | [19](19-platform-admin-portal.md) | 31 | 22 | 9 | 0 | 0 |
-| 2.21 | [Architecture and security (platform capabilities)](#221-20---architecture-and-security-platform-capabilities) | [20](20-architecture-security.md) | 33 | 28 | 4 | 1 | 0 |
-| 2.22 | [UX, design system and localization](#222-21---ux-design-system-and-localization) | [21](21-ux-design-system-sitemaps.md) | 28 | 25 | 3 | 0 | 0 |
-| 2.23 | [Business model, pricing and packaging](#223-22---business-model-pricing-and-packaging) | [22](22-business-model-pricing-gtm.md) | 25 | 16 | 8 | 1 | 0 |
-| 2.24 | [Innovation bets (moonshots)](#224-23---innovation-bets-moonshots) | [23](23-innovation-moonshots.md) | 34 | 1 | 8 | 23 | 2 |
-| | **Total** | | **747** | **442** | **255** | **46** | **4** |
+The catalog lists 747 features, every one of them in v1. Many rows are small (a policy, a template, a setting) and about a sixth of them are platform capabilities in docs 19-21. Each feature appears once, under the doc that owns it.
 
-The MVP count is large because the MVP replaces a whole tool stack (1.1). Many rows are small (a policy, a template, a setting) and about a sixth of them are platform capabilities in docs 19-21. Section 3 groups the MVP rows into core-loop, completes-the-MVP and cut-first sets. 8 rows are still retagged from their module docs and marked `(doc: ...)`; the other reconciliations in 4.6 (for example 13's Standard inventory mode and PM, and 16's website, quoting, booking, referral and receptionist rows) are now carried by the module docs themselves.
+| # | Module | Owner doc | Features |
+|---|---|---|---|
+| 2.2 | [Market intelligence](#22-01---market-intelligence) | [01](01-market-landscape.md) | 13 |
+| 2.3 | [Identity, roles and permissions](#23-02---identity-roles-and-permissions) | [02](02-personas-roles-permissions.md) | 40 |
+| 2.4 | [CRM, sales, estimating and proposals](#24-03---crm-sales-estimating-and-proposals) | [03](03-crm-sales-estimating-proposals.md) | 42 |
+| 2.5 | [Scheduling, dispatch and routing](#25-04---scheduling-dispatch-and-routing) | [04](04-scheduling-dispatch-routing.md) | 35 |
+| 2.6 | [Field crew mobile app](#26-05---field-crew-mobile-app) | [05](05-field-crew-mobile-app.md) | 27 |
+| 2.7 | [Customer portal](#27-06---customer-portal) | [06](06-customer-portal.md) | 39 |
+| 2.8 | [Invoicing, billing and service agreements](#28-07---invoicing-billing-and-service-agreements) | [07](07-invoicing-billing-contracts.md) | 43 |
+| 2.9 | [Payments (bring-your-own Stripe)](#29-08---payments-bring-your-own-stripe) | [08](08-payments-stripe.md) | 30 |
+| 2.10 | [Accounting ledger and integrations](#210-09---accounting-ledger-and-integrations) | [09](09-accounting-ledger-integrations.md) | 42 |
+| 2.11 | [Design Studio](#211-10---design-studio) | [10](10-design-studio.md) | 28 |
+| 2.12 | [AI design mockups](#212-11---ai-design-mockups) | [11](11-ai-design-mockups.md) | 23 |
+| 2.13 | [Plant Knowledge Base](#213-12---plant-knowledge-base) | [12](12-plant-knowledge-base.md) | 29 |
+| 2.14 | [Operations: materials, inventory, purchasing, equipment](#214-13---operations-materials-inventory-purchasing-equipment) | [13](13-operations-inventory-equipment.md) | 38 |
+| 2.15 | [Service-line modules](#215-14---service-line-modules) | [14](14-service-line-modules.md) | 41 |
+| 2.16 | [Team, HR, time and payroll](#216-15---team-hr-time-and-payroll) | [15](15-team-hr-payroll.md) | 29 |
+| 2.17 | [Marketing, growth and communications](#217-16---marketing-growth-and-communications) | [16](16-marketing-growth-communications.md) | 34 |
+| 2.18 | [AI Copilot, agents and automation](#218-17---ai-copilot-agents-and-automation) | [17](17-ai-copilot-automation.md) | 35 |
+| 2.19 | [Reporting and analytics](#219-18---reporting-and-analytics) | [18](18-reporting-analytics.md) | 28 |
+| 2.20 | [Platform admin portal (Operator Console)](#220-19---platform-admin-portal-operator-console) | [19](19-platform-admin-portal.md) | 31 |
+| 2.21 | [Architecture and security (platform capabilities)](#221-20---architecture-and-security-platform-capabilities) | [20](20-architecture-security.md) | 33 |
+| 2.22 | [UX, design system and localization](#222-21---ux-design-system-and-localization) | [21](21-ux-design-system-sitemaps.md) | 28 |
+| 2.23 | [Business model, pricing and packaging](#223-22---business-model-pricing-and-packaging) | [22](22-business-model-pricing-gtm.md) | 25 |
+| 2.24 | [Innovation bets (moonshots)](#224-23---innovation-bets-moonshots) | [23](23-innovation-moonshots.md) | 34 |
+| | **Total** | | **747** |
 
-Columns: **ID** (catalog ID), **Feature**, **Description** (one line; bracketed tags name later slices), **Tag** (first slice; see section 0), **Persona** (primary role key), **Source** (module doc section that specifies it).
+Columns: **ID** (catalog ID, `Cnn-mmm`; see section 0), **Feature** (short name), **Description** (one line on what v1 does), **Persona** (the primary role key, the person who gets the most value) and **Source** (the module doc section that specifies it, with its own requirement IDs).
 
 ### 2.2 01 - Market intelligence
 
@@ -291,7 +304,7 @@ Rootline's own go-to-market tooling: competitor evidence, switch kits and win/lo
 | C01-004 | Switch-source capture | Signup asks which tools the Company uses today; selects importer, switch kit and battlecard | `owner` | [01 §12.2](01-market-landscape.md#122-feature-specification) |
 | C01-005 | Win/loss records | Outcome, competitors, reason codes and interview notes for every closed GTM opportunity | `platform_owner` | [01 §12.2](01-market-landscape.md#122-feature-specification) |
 | C01-006 | Switch kits: Jobber and LMN | Known export formats, field mappings and AI-assisted column mapping for the two most common source systems | `platform_engineer` | [01 §12.2](01-market-landscape.md#122-feature-specification) |
-| C01-007 | Switch kits: SingleOps, Service Autopilot, Real Green, Aspire, Yardbook, Copilot CRM | Same kit structure for the next six incumbents, ordered by win/loss demand | `platform_engineer` | [01 §12.2](01-market-landscape.md#122-feature-specification) |
+| C01-007 | Switch kits: SingleOps, Service Autopilot, Real Green, Aspire, Yardbook, Copilot CRM | Same kit structure for six more incumbents | `platform_engineer` | [01 §12.2](01-market-landscape.md#122-feature-specification) |
 | C01-008 | Market sizing workbook | Census CBP and StatCan counts by employee band recompute the bottom-up model and beachhead scores | `platform_finance` | [01 §12.2](01-market-landscape.md#122-feature-specification) |
 | C01-009 | Pricing observations | Per-plan competitor prices with observed-at dates; a change over 5% opens a battlecard review | `platform_owner` | [01 §12.2](01-market-landscape.md#122-feature-specification) |
 | C01-010 | Competitor change monitor | Watches public pricing pages and changelogs; stores diffs with an AI summary in a triage queue | `platform_engineer` | [01 §12.2](01-market-landscape.md#122-feature-specification) |
@@ -325,15 +338,15 @@ Owner doc: [02-personas-roles-permissions.md](02-personas-roles-permissions.md).
 | C02-018 | Commercial and HOA approval policies | n-of-m quorum, sequential approvers, PO required, votes tied to Proposal version, board term expiry | `client_commercial` | [02 §5.11](02-personas-roles-permissions.md#511-client-contact-permissions-and-approval-policies-mvp-contact-roles-v1-approval-policies) |
 | C02-019 | Subcontractor assignment-scoped access | Subs see only assigned Visits, scope and documents; no prices or other Clients | `subcontractor` | [02 §5.12](02-personas-roles-permissions.md#512-subcontractor-access-and-data-visibility-mvp-basic-v1-sub-portal) |
 | C02-020 | Consented support access | Owner-granted, time-boxed view-as and act-as with a banner and a tenant-visible access log | `platform_support` | [02 §5.13](02-personas-roles-permissions.md#513-platform-staff-permissions-support-impersonation-and-break-glass-mvp) |
-| C02-021 | Break-glass production access | Two-person approval, tenant notice and full audit for emergency production access | `platform_engineer` | [02 §5.13](02-personas-roles-permissions.md#513-platform-staff-permissions-support-impersonation-and-break-glass-mvp) |
+| C02-021 | Break-glass production access | Emergency production access: an operator agent's request needs the founder's approval; the founder's own use needs step-up authentication and a written reason; tenant notice and full audit | `platform_engineer` | [02 §5.13](02-personas-roles-permissions.md#513-platform-staff-permissions-support-impersonation-and-break-glass-mvp) |
 | C02-022 | MFA and passkeys for staff | TOTP and WebAuthn passkeys; MFA mandatory for owners and financial roles | `owner` | [02 §5.14](02-personas-roles-permissions.md#514-authentication-per-persona-mvp-unless-tagged) |
 | C02-023 | Crew phone sign-in | Phone OTP (SMS or WhatsApp) on first login, then app PIN or biometrics | `technician` | [02 §5.14](02-personas-roles-permissions.md#514-authentication-per-persona-mvp-unless-tagged) |
 | C02-024 | Enterprise SSO (SAML/OIDC) | SSO for Enterprise Companies through an identity broker | `owner` | [02 §5.14](02-personas-roles-permissions.md#514-authentication-per-persona-mvp-unless-tagged) |
-| C02-025 | SCIM provisioning | Automated user provisioning and deprovisioning from the Company's IdP (22 lists V1; owner doc 02 sets V2) | `owner` | [02 §5.14](02-personas-roles-permissions.md#514-authentication-per-persona-mvp-unless-tagged) |
+| C02-025 | SCIM provisioning | Automated user provisioning and deprovisioning from the Company's IdP | `owner` | [02 §5.14](02-personas-roles-permissions.md#514-authentication-per-persona-mvp-unless-tagged) |
 | C02-026 | Kiosk PIN clock-in | PIN punch on enrolled shared tablets, offline-capable, optional photo | `technician` | [02 §5.15](02-personas-roles-permissions.md#515-shared-devices-kiosk-mode-and-device-trust-mvp-crew-device-v1-yard-kiosk-and-mdm) |
 | C02-027 | Device registry, revoke and remote wipe | Enrolled crew devices with trust state, revocation and wipe of local data | `ops_manager` | [02 §5.15](02-personas-roles-permissions.md#515-shared-devices-kiosk-mode-and-device-trust-mvp-crew-device-v1-yard-kiosk-and-mdm) |
 | C02-028 | Session policies with permission version stamps | Per-surface session lifetimes; token version stamps end revoked access in about 1 second online | `platform_engineer` | [02 §5.16](02-personas-roles-permissions.md#516-session-policies-mvp-defaults-v1-tenant-configurable) |
-| C02-029 | Hash-chained audit log | Append-only, tenant-readable log of staff, AI-agent and user actions | `owner` | [02 §5.17](02-personas-roles-permissions.md#517-audit-logging-mvp-capture-and-basic-ui-v1-advanced-search-v2-siem-streaming) |
+| C02-029 | Hash-chained audit log | Append-only, tenant-readable log of operator, AI-agent and user actions | `owner` | [02 §5.17](02-personas-roles-permissions.md#517-audit-logging-mvp-capture-and-basic-ui-v1-advanced-search-v2-siem-streaming) |
 | C02-030 | Audit saved alerts and SIEM streaming | Saved audit searches with alerts; streaming to the Company's SIEM | `owner` | [02 §5.17](02-personas-roles-permissions.md#517-audit-logging-mvp-capture-and-basic-ui-v1-advanced-search-v2-siem-streaming) |
 | C02-031 | Seasonal bulk onboarding by SMS in Spanish | Invite a spring crew in bulk; each worker activates by SMS in their language | `office_manager` | [02 §5.18.1](02-personas-roles-permissions.md#5181-bulk-seasonal-onboarding-mvp) |
 | C02-032 | Hibernation at $0 seat cost | End-of-season hibernate keeps history and credentials without a billable seat | `owner` | [02 §5.18.2](02-personas-roles-permissions.md#5182-hibernation-end-of-season-mvp) |
@@ -356,7 +369,7 @@ Owner doc: [03-crm-sales-estimating-proposals.md](03-crm-sales-estimating-propos
 | C03-002 | Core capture channels | Email, phone, referrals and manual entry flow into the Lead Inbox alongside 16's web forms | `office_manager` | [03 §LEAD-02](03-crm-sales-estimating-proposals.md#lead-02-capture-channels-mvp-core-channels-v1v2-marketplaces) |
 | C03-003 | Deduplication and identity resolution | Phone, email, parcel and name scoring with reversible merges | `office_manager` | [03 §LEAD-03](03-crm-sales-estimating-proposals.md#lead-03-deduplication-and-identity-resolution-mvp-rules-v1-ml-assist) |
 | C03-004 | Lead scoring | Explainable fit and intent scores: rules, ML | `estimator` | [03 §LEAD-04](03-crm-sales-estimating-proposals.md#lead-04-lead-scoring-v1-rules-v2-ml) |
-| C03-005 | Lead routing and assignment | Round-robin and territory routing, rules engine later | `office_manager` | [03 §LEAD-05](03-crm-sales-estimating-proposals.md#lead-05-lead-routing-and-assignment-mvp-round-robin-and-territory-v1-rules) |
+| C03-005 | Lead routing and assignment | Round-robin, territory and rules-engine routing | `office_manager` | [03 §LEAD-05](03-crm-sales-estimating-proposals.md#lead-05-lead-routing-and-assignment-mvp-round-robin-and-territory-v1-rules) |
 | C03-006 | Clients, Properties and Contacts | Core records with property-level history, multiple contacts and billing relationships | `office_manager` | [03 §CRM-01](03-crm-sales-estimating-proposals.md#crm-01-clients-properties-contacts-mvp) |
 | C03-007 | Commercial hierarchy | Portfolios, management companies and HOAs above Properties | `ops_manager` | [03 §CRM-02](03-crm-sales-estimating-proposals.md#crm-02-commercial-hierarchy-v1) |
 | C03-008 | Activity timeline, tasks, custom fields and tags | Unified timeline per record plus tasks, reminders and tenant-defined fields | `estimator` | [03 §CRM-03](03-crm-sales-estimating-proposals.md#crm-03-activity-timeline-mvp) |
@@ -377,7 +390,7 @@ Owner doc: [03-crm-sales-estimating-proposals.md](03-crm-sales-estimating-propos
 | C03-023 | Recurring maintenance pricing | Per-visit, seasonal installments and banded price tables for maintenance | `estimator` | [03 §EST-12](03-crm-sales-estimating-proposals.md#est-12-recurring-maintenance-pricing-mvp) |
 | C03-024 | Bulk seasonal enhancement campaigns | Generate hundreds of priced enhancement proposals (for example spring mulch) in one run | `estimator` | [03 §EST-13](03-crm-sales-estimating-proposals.md#est-13-seasonal-enhancement-estimates-and-campaigns-mvp-single-v1-bulk-campaigns) |
 | C03-025 | Live takeoff sync | Protected two-way sync between Design and Estimate after the first push | `designer` | [03 §EST-17](03-crm-sales-estimating-proposals.md#est-17-takeoff-from-design-studio-mvp-basic-v1-live-sync) |
-| C03-026 | AI-assisted estimate drafts: aerial-measured | Aerial-measured drafts: the agent runs the aerial measurement pipeline so quantities come from segmented aerial geometry in a Design draft. MVP drafts from notes, voice memos and photos run through the A6 Estimating Agent (C17-013); AI proposes scope and quantities, never prices | `estimator` | [03 §EST-18](03-crm-sales-estimating-proposals.md#est-18-ai-estimating-v1-assisted-drafts-v2-photo-first-v3-bounded-auto-quote) |
+| C03-026 | AI-assisted estimate drafts: aerial-measured | Aerial-measured drafts: the agent runs the aerial measurement pipeline so quantities come from segmented aerial geometry in a Design draft. Drafts from notes, voice memos and photos run through the A6 Estimating Agent (C17-013); AI proposes scope and quantities, never prices | `estimator` | [03 §EST-18](03-crm-sales-estimating-proposals.md#est-18-ai-estimating-v1-assisted-drafts-v2-photo-first-v3-bounded-auto-quote) |
 | C03-027 | Proposal builder and templates | Block-based proposals with company branding and reusable templates | `estimator` | [03 §PROP-01](03-crm-sales-estimating-proposals.md#prop-01-proposal-builder-and-templates-mvp) |
 | C03-028 | Good/better/best tiers and add-ons | Tiers with per-tier mockups and deposits; add-on dependencies | `estimator` | [03 §PROP-03](03-crm-sales-estimating-proposals.md#prop-03-goodbetterbest-tiers-and-add-ons-mvp) |
 | C03-029 | Visual proposals | Static mockups and plant cards; interactive plan | `designer` | [03 §PROP-04](03-crm-sales-estimating-proposals.md#prop-04-visual-proposals-mvp-static-v1-interactive) |
@@ -388,8 +401,8 @@ Owner doc: [03-crm-sales-estimating-proposals.md](03-crm-sales-estimating-propos
 | C03-034 | Expiration, versions and revive | Immutable versions, expiry and revive with cost re-validation | `estimator` | [03 §PROP-11](03-crm-sales-estimating-proposals.md#prop-11-expiration-revisions-and-versioning-mvp) |
 | C03-035 | Follow-up cadences | Cadences to every signer with TCPA and 10DLC guardrails; smart sequences | `estimator` | [03 §PROP-12](03-crm-sales-estimating-proposals.md#prop-12-follow-up-automations-mvp-cadence-v1-smart-sequences) |
 | C03-036 | One-click conversion to Jobs | Signed proposal becomes a Work Order, phased Project or Service Agreement with budgets and an 811 checklist | `ops_manager` | [03 §4.8](03-crm-sales-estimating-proposals.md#48-conversion-to-jobs-mvp) |
-| C03-037 | Change orders (basic) | Office and field change orders with signature and price delta; verbal-emergency flow | `crew_lead` | [03 §4.9](03-crm-sales-estimating-proposals.md#49-change-orders-mvp-basic-v1-full) |
-| C03-038 | Renewal engine with escalators | Fixed escalators at MVP; CPI, cost-plus and margin-target escalators and the renewal review grid | `ops_manager` | [03 §4.10](03-crm-sales-estimating-proposals.md#410-agreement-renewals-and-price-escalators-mvp-basic-v1-full) |
+| C03-037 | Change orders | Office and field change orders with signature and price delta; verbal-emergency flow | `crew_lead` | [03 §4.9](03-crm-sales-estimating-proposals.md#49-change-orders-mvp-basic-v1-full) |
+| C03-038 | Renewal engine with escalators | Fixed, CPI, cost-plus and margin-target escalators and the renewal review grid | `ops_manager` | [03 §4.10](03-crm-sales-estimating-proposals.md#410-agreement-renewals-and-price-escalators-mvp-basic-v1-full) |
 | C03-039 | Commercial RFP intake and unit-price bids | AI extraction of RFP scope, multi-site unit-price bids and bid packets | `estimator` | [03 §4.11](03-crm-sales-estimating-proposals.md#411-commercial-bids-and-rfps-v1) |
 | C03-040 | Sales commission plans | Plans, events, clawbacks and payroll export | `owner` | [03 §4.12](03-crm-sales-estimating-proposals.md#412-sales-commissions-hooks-v1) |
 | C03-041 | Estimator mobile mode and kitchen-table close | Offline presentation, e-sign and deposit capture at the client's table | `estimator` | [03 §4.13](03-crm-sales-estimating-proposals.md#413-sales-productivity-mvp-core-v1-extras) |
@@ -407,12 +420,12 @@ Owner doc: [04-scheduling-dispatch-routing.md](04-scheduling-dispatch-routing.md
 | C04-004 | RRULE recurrence engine | Weekly route-day, A/B bi-weekly, frequency profiles and count-limited presets | `ops_manager` | [04 §4.2.1](04-scheduling-dispatch-routing.md#421-recurrence-patterns-mvp-unless-tagged) |
 | C04-005 | Seasonal service calendar per Region | Cleanups, mulch, aeration and winterization windows that drive visit generation | `ops_manager` | [04 §4.2.3](04-scheduling-dispatch-routing.md#423-seasonal-service-calendar-mvp) |
 | C04-006 | Program round hand-off | Lawn and PHC rounds scheduled inside their windows with license guards | `ops_manager` | [04 §4.2.5](04-scheduling-dispatch-routing.md#425-program-rounds-hand-off-mvp) |
-| C04-007 | Growth-adaptive mowing frequency | Rules and AI model adjust mowing frequency to weather and turf growth | `ops_manager` | [04 §4.2.6](04-scheduling-dispatch-routing.md#426-growth-adaptive-mowing-frequency-v1-rules-v2-ai-model) |
+| C04-007 | Growth-adaptive mowing frequency | Rules and an AI model adjust mowing frequency to weather and turf growth | `ops_manager` | [04 §4.2.6](04-scheduling-dispatch-routing.md#426-growth-adaptive-mowing-frequency-v1-rules-v2-ai-model) |
 | C04-008 | Holiday and blackout policies | slide_week, compress and observed-date rules applied to recurring work | `ops_manager` | [04 §4.2.7](04-scheduling-dispatch-routing.md#427-holidays-blackouts-and-closures-mvp) |
-| C04-009 | Capacity planner (basic) | Sold vs available crew-hours by pool and week; full planner | `ops_manager` | [04 §4.3.1](04-scheduling-dispatch-routing.md#431-capacity-model-mvp-basic-v1-full) |
+| C04-009 | Capacity planner | Sold vs available crew-hours by pool and week, with the full planner | `ops_manager` | [04 §4.3.1](04-scheduling-dispatch-routing.md#431-capacity-model-mvp-basic-v1-full) |
 | C04-010 | Backlog with urgency score | Unscheduled work ranked by urgency with auto-slot suggestions | `ops_manager` | [04 §4.3.3](04-scheduling-dispatch-routing.md#433-backlog-view-mvp) |
 | C04-011 | Skill and license matching | Skills and licenses checked on the service date, including future expiry | `ops_manager` | [04 §4.4.1](04-scheduling-dispatch-routing.md#441-skills-catalog-mvp) |
-| C04-012 | Equipment and trailer reservations | Equipment, trailer and gate-width reservations with conflict checks; full model | `ops_manager` | [04 §4.5.1](04-scheduling-dispatch-routing.md#451-resource-model-mvp-basic-v1-full) |
+| C04-012 | Equipment and trailer reservations | Equipment, trailer and gate-width reservations with conflict checks across the full resource model | `ops_manager` | [04 §4.5.1](04-scheduling-dispatch-routing.md#451-resource-model-mvp-basic-v1-full) |
 | C04-013 | Dispatch board | Day Gantt, Week, Map and Split views with unassigned tray and tiered drop validation | `ops_manager` | [04 §4.6.1](04-scheduling-dispatch-routing.md#461-views-mvp-unless-tagged) |
 | C04-014 | Draft and publish cycle | Draft schedule, 15:00 auto-publish and late-change pushes to crews | `ops_manager` | [04 §4.6.7](04-scheduling-dispatch-routing.md#467-draft-and-published-schedule-mvp) |
 | C04-015 | Zones, master routes and best-day slotting | Route days by zone and best-day suggestions for new clients | `ops_manager` | [04 §4.7.2](04-scheduling-dispatch-routing.md#472-master-routes-mvp) |
@@ -424,12 +437,12 @@ Owner doc: [04-scheduling-dispatch-routing.md](04-scheduling-dispatch-routing.md
 | C04-021 | Route density metrics | Marginal drive cost per stop and density per zone | `owner` | [04 §4.8.9](04-scheduling-dispatch-routing.md#489-route-density-metrics-mvp) |
 | C04-022 | Weather Service with derived indices | Rain risk, spray window, heat, freeze and growing degree days per Property | `ops_manager` | [04 §4.9.1](04-scheduling-dispatch-routing.md#491-weather-service-mvp) |
 | C04-023 | Rain-day playbooks | slide_day, push_later_in_week, split_day, skip and swap rules per service line | `ops_manager` | [04 §4.9.3](04-scheduling-dispatch-routing.md#493-rain-delay-playbooks-mvp-manual-v1-playbooks) |
-| C04-024 | Freeze, heat, wind and AQI alerts | Alerts at MVP; scheduling automations | `ops_manager` | [04 §4.9.4](04-scheduling-dispatch-routing.md#494-freeze-heat-wind-and-air-quality-alerts-mvp-alerts-v1-automations) |
+| C04-024 | Freeze, heat, wind and AQI alerts | Alerts and scheduling automations | `ops_manager` | [04 §4.9.4](04-scheduling-dispatch-routing.md#494-freeze-heat-wind-and-air-quality-alerts-mvp-alerts-v1-automations) |
 | C04-025 | Live map and arrival reconciliation | Crew positions, geofence arrival and departure reconciled to Visits | `ops_manager` | [04 §4.10.2](04-scheduling-dispatch-routing.md#4102-live-map-mvp) |
 | C04-026 | Honest ETA windows and client notices | ETA windows widen with sequence distance; on-my-way and running-late notices | `client_residential` | [04 §4.10.4](04-scheduling-dispatch-routing.md#4104-eta-computation-mvp) |
 | C04-027 | Service evidence score | Scores each Visit's proof (GPS, photos, checklist) for disputes and billing | `ops_manager` | [04 §4.10.6](04-scheduling-dispatch-routing.md#4106-service-evidence-score-v1) |
 | C04-028 | Mid-day breakdown recovery | Repair mode re-plans the rest of the day after a breakdown or sick call | `ops_manager` | [04 §4.10.8](04-scheduling-dispatch-routing.md#4108-mid-day-re-optimization-v1) |
-| C04-029 | Multi-day project scheduling | FS/SS/FF dependencies and critical path; basic multi-day Jobs at MVP | `ops_manager` | [04 §4.11.2](04-scheduling-dispatch-routing.md#4112-scheduling-a-project-v1) |
+| C04-029 | Multi-day project scheduling | Multi-day Jobs with FS/SS/FF dependencies and critical path | `ops_manager` | [04 §4.11.2](04-scheduling-dispatch-routing.md#4112-scheduling-a-project-v1) |
 | C04-030 | Subcontractor offers | Offer/accept scheduling for subs with COI gating | `subcontractor` | [04 §4.12](04-scheduling-dispatch-routing.md#412-subcontractor-scheduling-v1) |
 | C04-031 | Client skip, reschedule and Availability API | Portal skip, reschedule and pause with holds, caps and protected capacity; add-on self-scheduling rules | `client_residential` | [04 §4.13](04-scheduling-dispatch-routing.md#413-client-self-scheduling-windows-mvp-basic-v1-full) |
 | C04-032 | Natural-language rescheduling | Copilot builds a ScheduleDiff from a plain-language request | `ops_manager` | [04 §4.14.1](04-scheduling-dispatch-routing.md#4141-copilot-scheduling-commands-v1) |
@@ -451,7 +464,7 @@ Owner doc: [05-field-crew-mobile-app.md](05-field-crew-mobile-app.md). 27 featur
 | C05-006 | Property map with zones and hazards | Zones, hazards, dog alerts and notes; irrigation, plant and lighting layers | `technician` | [05 §4.3](05-field-crew-mobile-app.md#43-job-and-visit-details) |
 | C05-007 | Event-sourced crew time | Job, drive, shop and break segments with crew-level punch and detach/attach | `crew_lead` | [05 §4.5](05-field-crew-mobile-app.md#45-crew-time-tracking) |
 | C05-008 | Geofence prompts | On-device polygon evaluation with prompts and optional auto-arrive | `technician` | [05 §4.5](05-field-crew-mobile-app.md#45-crew-time-tracking) |
-| C05-009 | California meal/rest attestations | Pre-violation alerts, no meal rounding, signed attestations and premium-pay flags (V1: the Great Lakes launch region has no California Regions) | `technician` | [05 §4.5](05-field-crew-mobile-app.md#45-crew-time-tracking) |
+| C05-009 | California meal/rest attestations | Pre-violation alerts, no meal rounding, signed attestations and premium-pay flags (California pack, R24-18) | `technician` | [05 §4.5](05-field-crew-mobile-app.md#45-crew-time-tracking) |
 | C05-010 | Materials logging with barcode scan | Usage against the Job with barcode or QR scan; plant install logging and truck stock | `crew_lead` | [05 §4.6](05-field-crew-mobile-app.md#46-materials-and-plant-usage-logging) |
 | C05-011 | Pesticide application records | EPA/PCP number, label rate limits, map-derived area, weather auto-fill and wind gate | `technician` | [05 §4.7](05-field-crew-mobile-app.md#47-chemical-and-pesticide-application-records) |
 | C05-012 | Signatures with evidence package | Client and crew signatures, including field change orders, sealed with context | `crew_lead` | [05 §4.8](05-field-crew-mobile-app.md#48-signatures) |
@@ -462,14 +475,14 @@ Owner doc: [05-field-crew-mobile-app.md](05-field-crew-mobile-app.md). 27 featur
 | C05-017 | Scorecards and team leaderboards | Badges and team leaderboards with worker-protective guardrails | `technician` | [05 §4.15](05-field-crew-mobile-app.md#415-gamification-and-scorecards) |
 | C05-018 | Field Design Mode | Map measure and mockup photo capture on site; AR/LiDAR measure; 3D scan | `estimator` | [05 §4.16](05-field-crew-mobile-app.md#416-field-design-mode) |
 | C05-019 | Crew lead extras | Approve time, reassign tasks, split crew and end-of-day report; AI-drafted report | `crew_lead` | [05 §4.17](05-field-crew-mobile-app.md#417-crew-lead-extras) |
-| C05-020 | Service-line field adapters | Mowing and lawn programs plus the Snow Lite storm visit log (C14-039) at MVP; irrigation, full snow, tree and install daily logs | `technician` | [05 §4.18](05-field-crew-mobile-app.md#418-service-line-field-adapters) |
+| C05-020 | Service-line field adapters | Mowing, lawn programs, the Snow Lite storm visit log (C14-039), irrigation, full snow, tree and install daily logs | `technician` | [05 §4.18](05-field-crew-mobile-app.md#418-service-line-field-adapters) |
 | C05-021 | Outdoor Mode (glove and sun UX) | 56-64 dp targets, 7:1 contrast, one-handed flows, Spanish-first onboarding | `technician` | [05 §4.19](05-field-crew-mobile-app.md#419-field-ux-gloves-sunlight-one-handed-spanish-first-accessibility) |
 | C05-022 | Low-end Android budgets | Performance, battery and data budgets tested on low-end Android | `technician` | [05 §4.20](05-field-crew-mobile-app.md#420-device-performance-low-end-android-battery-and-data-budgets) |
 | C05-023 | BYOD containment and MDM | BYOD containment and stipend; MDM managed config and kiosk mode | `ops_manager` | [05 §4.22](05-field-crew-mobile-app.md#422-security-mdm-and-byod) |
 | C05-024 | Location privacy guarantees | Nothing collected off the clock or during unpaid meals; employees see their own data | `technician` | [05 §4.23](05-field-crew-mobile-app.md#423-location-privacy) |
 | C05-025 | Practice mode and staged releases | Sandbox practice mode for new crews and staged app releases | `technician` | [05 §4.24](05-field-crew-mobile-app.md#424-onboarding-practice-mode-releases-and-support) |
 | C05-026 | Photo ghosting and time-lapse journals | Overlay guides so before/after shots line up across months | `technician` | [05 §13](05-field-crew-mobile-app.md#13-beyond-the-brief-extra-ideas) |
-| C05-027 | Today I earned pay estimate | Live pay estimate for the day; earned-wage-access partner later | `technician` | [05 §13](05-field-crew-mobile-app.md#13-beyond-the-brief-extra-ideas) |
+| C05-027 | Today I earned pay estimate | Live pay estimate for the day; earned-wage access through a partner where one is connected | `technician` | [05 §13](05-field-crew-mobile-app.md#13-beyond-the-brief-extra-ideas) |
 
 ### 2.7 06 - Customer portal
 
@@ -478,7 +491,7 @@ Owner doc: [06-customer-portal.md](06-customer-portal.md). 39 features.
 | ID | Feature | Description | Persona | Source |
 |---|---|---|---|---|
 | C06-001 | Brand kit with contrast auto-correction | Tenant colors and logo, adjusted automatically to stay WCAG AA | `owner` | [06 §4.1.1](06-customer-portal.md#411-brand-kit-mvp) |
-| C06-002 | Portal domains | Default subdomain and custom domain with automatic TLS on paid tiers | `owner` | [06 §4.1.3](06-customer-portal.md#413-domains-mvp-subdomain-and-custom-domain-on-grow-and-above-v1-hardening) |
+| C06-002 | Portal domains | Default subdomain and custom domain with automatic TLS on paid plans | `owner` | [06 §4.1.3](06-customer-portal.md#413-domains-mvp-subdomain-and-custom-domain-on-grow-and-above-v1-hardening) |
 | C06-003 | Branded email and SMS | Verified sender domain and the Company's own 10DLC number | `owner` | [06 §4.1.4](06-customer-portal.md#414-branded-email-mvp) |
 | C06-004 | Scoped action links | Single-purpose links that email scanners cannot consume; no password needed | `client_residential` | [06 §4.2.1](06-customer-portal.md#421-action-links-mvp) |
 | C06-005 | Magic link and SMS code sign-in | Passwordless sign-in with step-up for payment methods, autopay, contacts and exports | `client_residential` | [06 §4.2.2](06-customer-portal.md#422-magic-link-sign-in-mvp) |
@@ -534,7 +547,7 @@ Owner doc: [07-invoicing-billing-contracts.md](07-invoicing-billing-contracts.md
 | C07-009 | Retainage | Retainage with step-down, separate aging and release invoices | `bookkeeper` | [07 §4.2.7](07-invoicing-billing-contracts.md#427-retainage-v1) |
 | C07-010 | Time-and-materials billing | Rate cards, signed field T&M tickets and not-to-exceed caps | `office_manager` | [07 §4.2.8](07-invoicing-billing-contracts.md#428-time-and-materials-tm-mvp) |
 | C07-011 | AIA-style pay applications | G702/G703-style pay apps with certified-vs-applied tracking and lien waivers | `bookkeeper` | [07 §4.2.9](07-invoicing-billing-contracts.md#429-aia-g702g703-style-pay-applications-for-commercial-v1) |
-| C07-012 | Snow billing: per push and per application | Basic per-push and per-application invoicing generated from Snow Lite storm visit logs (C14-039) or manually entered events | `office_manager` | [07 §4.2.10](07-invoicing-billing-contracts.md#4210-event-based-snow-and-ice-billing-mvp-basic--v1-full) |
+| C07-012 | Snow billing: per push and per application | Per-push and per-application invoicing generated from Snow Lite storm visit logs (C14-039) or manually entered events | `office_manager` | [07 §4.2.10](07-invoicing-billing-contracts.md#4210-event-based-snow-and-ice-billing-mvp-basic--v1-full) |
 | C07-013 | Snow billing: storm events, caps and floors | Storm-event billing with seasonal caps, floors and hybrid contracts (ships with snow_ice) | `office_manager` | [07 §4.2.10](07-invoicing-billing-contracts.md#4210-event-based-snow-and-ice-billing-mvp-basic--v1-full) |
 | C07-014 | Service Agreement lifecycle | Terms, scope, states and versioned amendments for recurring agreements | `ops_manager` | [07 §4.3.1](07-invoicing-billing-contracts.md#431-terms-and-scope) |
 | C07-015 | Auto-renewal with notice-rule enforcement | Auto-renew checked against a state rule table for notice timing and content | `ops_manager` | [07 §4.3.4](07-invoicing-billing-contracts.md#434-auto-renewal-and-renewal-campaigns-mvp) |
@@ -552,7 +565,7 @@ Owner doc: [07-invoicing-billing-contracts.md](07-invoicing-billing-contracts.md
 | C07-027 | E-invoicing export | UBL export; Peppol, X12 and facilities-management portals | `bookkeeper` | [07 §4.4.12](07-invoicing-billing-contracts.md#4412-e-invoicing-readiness-v1-structured-export--v2-networks) |
 | C07-028 | Per-line sales tax engine | Tax category per line, real-property treatment per Job, contractor model per jurisdiction; manual rates and Stripe Tax adapter | `bookkeeper` | [07 §4.5.1](07-invoicing-billing-contracts.md#451-tax-architecture-mvp) |
 | C07-029 | Avalara adapter | Second tax provider for multi-state commercial tenants | `bookkeeper` | [07 §4.5.1](07-invoicing-billing-contracts.md#451-tax-architecture-mvp) |
-| C07-030 | Canadian GST/HST, QST and PST | Canadian indirect tax and small-supplier monitor, needed when the Ontario Wave 2 Regions open | `bookkeeper` | [07 §4.5.3](07-invoicing-billing-contracts.md#453-canada-gsthst-qst-and-pst-mvp) |
+| C07-030 | Canadian GST/HST, QST and PST | Canadian indirect tax and small-supplier monitor for Canadian Companies | `bookkeeper` | [07 §4.5.3](07-invoicing-billing-contracts.md#453-canada-gsthst-qst-and-pst-mvp) |
 | C07-031 | Exemption certificate vault | Store certificates per Client (HOAs not exempt by default); validation | `bookkeeper` | [07 §4.5.4](07-invoicing-billing-contracts.md#454-exemptions-and-certificates-mvp-vault--v1-validation) |
 | C07-032 | Credit memos, refunds, voids and write-offs | Adjustments with approvals and small-balance auto write-off | `bookkeeper` | [07 §4.6](07-invoicing-billing-contracts.md#46-adjustments-credit-memos-refunds-voids-write-offs-mvp) |
 | C07-033 | Customer wallet | Credits, unapplied cash, deposits and prepaid balances per Client; gift credits | `bookkeeper` | [07 §4.7](07-invoicing-billing-contracts.md#47-customer-balances-credits-prepayments-unapplied-cash-gift-credits-mvp) |
@@ -594,7 +607,7 @@ Owner doc: [08-payments-stripe.md](08-payments-stripe.md). 30 features.
 | C08-019 | Payout proof and bank-feed auto-match | Each payout is proved against its balance transactions and matched to the bank line | `bookkeeper` | [08 §4.17.5](08-payments-stripe.md#4175-payout-schedule-instant-payouts-and-negative-balances-mvp) |
 | C08-020 | USD/CAD multi-currency | CAD charges and realized FX for Canadian and cross-border Companies | `bookkeeper` | [08 §4.18](08-payments-stripe.md#418-multi-currency-usd-and-cad-v1) |
 | C08-021 | Dispute evidence auto-assembly | Signed proposals, GPS visit logs and photos assembled before the deadline | `bookkeeper` | [08 §4.19](08-payments-stripe.md#419-disputes-with-automatic-evidence-assembly-mvp) |
-| C08-022 | Tap to Pay and card readers | Tap to Pay on iPhone (US) first, then Android, Canada and readers | `crew_lead` | [08 §4.20.1](08-payments-stripe.md#4201-tap-to-pay-and-card-readers-v1) |
+| C08-022 | Tap to Pay and card readers | Tap to Pay on iPhone and Android, plus card readers, in the US and Canada where Stripe supports them (R24-3) | `crew_lead` | [08 §4.20.1](08-payments-stripe.md#4201-tap-to-pay-and-card-readers-v1) |
 | C08-023 | Cash and check recording | Cash-in-transit controls and deposit batches | `office_manager` | [08 §4.20.2](08-payments-stripe.md#4202-cash-and-check-recording-mvp) |
 | C08-024 | Check OCR | Photo capture of checks with OCR to post payments | `office_manager` | [08 §4.20.3](08-payments-stripe.md#4203-check-capture-with-ocr-v1) |
 | C08-025 | Remote deposit capture and lockbox | RDC and lockbox ingestion through a partner | `bookkeeper` | [08 §4.20.4](08-payments-stripe.md#4204-remote-deposit-capture-and-lockbox-v2) |
@@ -624,7 +637,7 @@ Owner doc: [09-accounting-ledger-integrations.md](09-accounting-ledger-integrati
 | C09-012 | Inventory valuation subledger | GRNI and PPV with control-account proofs | `bookkeeper` | [09 §4.5.4](09-accounting-ledger-integrations.md#454-inventory-subledger-mvp) |
 | C09-013 | Fixed assets and depreciation | Book, MACRS, state and CCA books plus engine-hour depreciation | `bookkeeper` | [09 §4.5.5](09-accounting-ledger-integrations.md#455-fixed-assets-and-depreciation-v1) |
 | C09-014 | Loans and lines of credit | Seasonal skip-payment schedules and covenant monitor | `bookkeeper` | [09 §4.5.6](09-accounting-ledger-integrations.md#456-loans-and-financing-v1) |
-| C09-015 | Payroll journal import | Payroll journals with applied-labor clearing and variance (files, APIs) | `bookkeeper` | [09 §4.5.7](09-accounting-ledger-integrations.md#457-payroll-journal-import-and-labor-allocation-mvp-file-import-v1-apis) |
+| C09-015 | Payroll journal import | Payroll journals with applied-labor clearing and variance (files and APIs) | `bookkeeper` | [09 §4.5.7](09-accounting-ledger-integrations.md#457-payroll-journal-import-and-labor-allocation-mvp-file-import-v1-apis) |
 | C09-016 | Plaid bank and card feeds | Bank feeds plus CSV, OFX/QFX and CAMT.053 import | `bookkeeper` | [09 §4.6.1](09-accounting-ledger-integrations.md#461-bank-and-card-connections-mvp) |
 | C09-017 | Matching rules and AI categorization | Rules and ask-the-cardholder; AI categorization | `bookkeeper` | [09 §4.6.3](09-accounting-ledger-integrations.md#463-categorization-pipeline-matching-rules-and-ai-mvp-rules-v1-ai) |
 | C09-018 | Receipt capture and auto-match | Photo or email receipts matched to card lines | `technician` | [09 §4.6.4](09-accounting-ledger-integrations.md#464-receipt-capture-and-matching-mvp) |
@@ -638,15 +651,15 @@ Owner doc: [09-accounting-ledger-integrations.md](09-accounting-ledger-integrati
 | C09-026 | Budgets and budget vs actual | Budgets by account, division and month with versions | `owner` | [09 §4.9.1](09-accounting-ledger-integrations.md#491-budget-model-v1) |
 | C09-027 | Overhead recovery tracker | Live recovery percent with seasonal pacing against the Company Budget | `owner` | [09 §4.9.2](09-accounting-ledger-integrations.md#492-overhead-recovery-tracker-v1) |
 | C09-028 | Financial statements and tax liability | P&L, balance sheet, aging, trial balance, GL detail and sales tax liability | `bookkeeper` | [09 §4.10](09-accounting-ledger-integrations.md#410-financial-reports) |
-| C09-029 | Period close with readiness score | 24-check close: basic, full checklist | `bookkeeper` | [09 §4.11](09-accounting-ledger-integrations.md#411-period-close) |
+| C09-029 | Period close with readiness score | Full 24-check close checklist with a readiness score | `bookkeeper` | [09 §4.11](09-accounting-ledger-integrations.md#411-period-close) |
 | C09-030 | Accountant Hub | Multi-client CPA dashboard with client questions and work papers | `bookkeeper` | [09 §4.12](09-accounting-ledger-integrations.md#412-accountant-hub-and-the-external-cpa) |
 | C09-031 | Audit trail and explain-this-number | Hash-chain verification and drill-down from any figure to source events | `bookkeeper` | [09 §4.13](09-accounting-ledger-integrations.md#413-audit-trail-and-evidence) |
-| C09-032 | Year-end close | Retained earnings roll and tax exports; until it exists, Companies keep the QuickBooks mirror through year-end | `bookkeeper` | [09 §4.14](09-accounting-ledger-integrations.md#414-year-end) |
-| C09-033 | Multi-entity books and consolidation | Intercompany and consolidation inside one Company; cross-tenant | `owner` | [09 §4.15](09-accounting-ledger-integrations.md#415-multi-entity-books-and-consolidation) |
+| C09-032 | Year-end close | Retained earnings roll and tax exports | `bookkeeper` | [09 §4.14](09-accounting-ledger-integrations.md#414-year-end) |
+| C09-033 | Multi-entity books and consolidation | Intercompany and consolidation inside one Company and across tenants | `owner` | [09 §4.15](09-accounting-ledger-integrations.md#415-multi-entity-books-and-consolidation) |
 | C09-034 | Books-of-record modes | Native, native plus QuickBooks/Xero mirror, or external sync, one book of record per entity | `bookkeeper` | [09 §4.17.1](09-accounting-ledger-integrations.md#4171-books-of-record-modes-mvp) |
 | C09-035 | QuickBooks Online connector | Mapping UI, per-record quarantine, CDC and webhooks; Properties as sub-customers | `bookkeeper` | [09 §4.17.2](09-accounting-ledger-integrations.md#4172-quickbooks-online-mvp) |
 | C09-036 | QuickBooks Desktop connector | Web Connector sync for Desktop holdouts | `bookkeeper` | [09 §4.17.3](09-accounting-ledger-integrations.md#4173-quickbooks-desktop-via-web-connector-v1) |
-| C09-037 | Xero connector | Xero mirror and external-sync modes (22 lists MVP; owner doc 09 sets V1) | `bookkeeper` | [09 §4.17.4](09-accounting-ledger-integrations.md#4174-xero-v1) |
+| C09-037 | Xero connector | Xero mirror and external-sync modes, alongside QuickBooks Online (R24-5) | `bookkeeper` | [09 §4.17.4](09-accounting-ledger-integrations.md#4174-xero-v1) |
 | C09-038 | Sage Intacct connector | Connector for larger firms with Intacct | `bookkeeper` | [09 §4.17.5](09-accounting-ledger-integrations.md#4175-sage-intacct-v2) |
 | C09-039 | Tax-prep exports | Trial balance with tax-line and GIFI mapping | `bookkeeper` | [09 §4.17.8](09-accounting-ledger-integrations.md#4178-tax-prep-exports-v1) |
 | C09-040 | QuickBooks migration with proof-based opening balances | Opening balances that must zero Opening Balance Equity, with an e-signed certificate | `bookkeeper` | [09 §4.18](09-accounting-ledger-integrations.md#418-migration-from-quickbooks-and-opening-balances) |
@@ -673,14 +686,14 @@ Owner doc: [10-design-studio.md](10-design-studio.md). 28 features.
 | C10-012 | Context-aware plant picker | Plants filtered by Region, zone and bed sun class, sized to mature spread | `designer` | [10 §4.10](10-design-studio.md#410-plant-placement-from-the-plant-knowledge-base) |
 | C10-013 | Fill-bed and plant schedule | 12/18/24 in on-center fill with an automatic schedule and legend | `designer` | [10 §4.10](10-design-studio.md#410-plant-placement-from-the-plant-knowledge-base) |
 | C10-014 | Massing, drift placement and procedural symbols | Natural drifts and procedural plant symbols from KB traits | `designer` | [10 §4.10](10-design-studio.md#410-plant-placement-from-the-plant-knowledge-base) |
-| C10-015 | Live validation engine | Zone, sun, deer, hydrozone, utilities and invasive rules with override-with-reason; full 20 rules | `designer` | [10 §4.11](10-design-studio.md#411-live-validation-engine) |
+| C10-015 | Live validation engine | The full set of 20 rules, including zone, sun, deer, hydrozone, utilities and invasive rules, with override-with-reason | `designer` | [10 §4.11](10-design-studio.md#411-live-validation-engine) |
 | C10-016 | Sun-hours heatmap and shadow study | Sun simulation for bed sun classes and client explanation | `designer` | [10 §4.12](10-design-studio.md#412-sun-and-shade-study) |
 | C10-017 | 3D view with growth slider and seasons | Plant archetypes, LOD, install-to-maturity slider and season toggle | `designer` | [10 §4.13](10-design-studio.md#413-3d-view-growth-slider-and-seasons) |
 | C10-018 | Options and versions | Options A/B/C mapped to proposal tiers; versions; visual compare and phasing | `designer` | [10 §4.14](10-design-studio.md#414-options-versions-and-phasing) |
 | C10-019 | Takeoff rules engine | Quantities priced live against the Price Book | `designer` | [10 §4.15.1](10-design-studio.md#4151-takeoff-rules-mvp) |
 | C10-020 | Live price, cost and margin bar | Hover cost, selection subtotals and margin vs target while drawing | `designer` | [10 §4.15.2](10-design-studio.md#4152-live-price-panel-mvp) |
 | C10-021 | Push to Estimate | Protected two-way link between Design and Estimate (live sync in 03) | `designer` | [10 §4.15.3](10-design-studio.md#4153-push-to-estimate-and-stay-linked-mvp) |
-| C10-022 | Real-time co-editing and client markup | Yjs CRDT multiplayer and portal client markup; comments are | `designer` | [10 §4.16](10-design-studio.md#416-collaboration-review-and-client-markup) |
+| C10-022 | Real-time co-editing and client markup | Yjs CRDT multiplayer, comments and portal client markup | `designer` | [10 §4.16](10-design-studio.md#416-collaboration-review-and-client-markup) |
 | C10-023 | Presentation story deck | Guided presentation of the design for clients | `designer` | [10 §4.17](10-design-studio.md#417-presentation-mode) |
 | C10-024 | PDF plan sets and DXF | Title-blocked PDF plan sets; DXF; DWG | `designer` | [10 §4.18](10-design-studio.md#418-exports-and-plan-sets) |
 | C10-025 | Style kits resolving to Region palettes | Reusable design styles that pick regionally valid plants | `designer` | [10 §4.19](10-design-studio.md#419-templates-and-style-kits) |
@@ -712,7 +725,7 @@ Owner doc: [11-ai-design-mockups.md](11-ai-design-mockups.md). 23 features.
 | C11-016 | Fidelity score | 0-100 score with A/B/C grade gating proposals | `designer` | [11 §AIM-FID-05](11-ai-design-mockups.md#aim-fid-05-fidelity-score-v1-mvp-shows-hallucination-flags-only) |
 | C11-017 | Artist-rendering disclosure and provenance | Mandatory badge and disclaimer, C2PA and invisible watermark | `client_residential` | [11 §AIM-FID-07](11-ai-design-mockups.md#aim-fid-07-artist-rendering-disclosure-mvp) |
 | C11-018 | Bidirectional sync and proposal locking | Staleness tracking, region re-render and change orders when plan and mockup diverge | `designer` | [11 §AIM-SYNC-04](11-ai-design-mockups.md#aim-sync-04-estimate-sync-and-proposal-locking-v1) |
-| C11-019 | Visualize-your-yard website widget | White-label widget converting renders into CRM leads, behind a verify-first gate for design partners | `client_residential` | [11 §AIM-AUD-01](11-ai-design-mockups.md#aim-aud-01-homeowner-self-serve-lead-magnet-dream-yard-visualizer-mvp-website-widget-v1-portal-hosted-page-and-rootline-home) |
+| C11-019 | Visualize-your-yard website widget | White-label widget on Company sites converting renders into CRM leads; on by default for every Company with AI mockups (OD-33) | `client_residential` | [11 §AIM-AUD-01](11-ai-design-mockups.md#aim-aud-01-homeowner-self-serve-lead-magnet-dream-yard-visualizer-mvp-website-widget-v1-portal-hosted-page-and-rootline-home) |
 | C11-020 | Commercial and HOA board packs | Board-ready packs and multi-approver review of mockups | `client_commercial` | [11 §AIM-AUD-03](11-ai-design-mockups.md#aim-aud-03-commercial-and-hoa-v1) |
 | C11-021 | Image eval suite and operator controls | Scale, plant identity, preference and preservation evals gate image-model swaps; operator presets and palettes | `platform_engineer` | [11 §4.9](11-ai-design-mockups.md#49-operator-and-tenant-controls-mvp-core-v1-advanced) |
 | C11-022 | Yard-sign QR visualizer | Install yard signs open a neighborhood visualizer that creates leads | `owner` | [11 §13](11-ai-design-mockups.md#13-beyond-the-brief-extra-ideas) |
@@ -733,16 +746,16 @@ Owner doc: [12-plant-knowledge-base.md](12-plant-knowledge-base.md). 29 features
 | C12-007 | Regulatory listings by jurisdiction | Prohibited and invasive lists with cultivar exemptions and hotfix releases, enforced as hard errors | `platform_curator` | [12 §4.3](12-plant-knowledge-base.md#43-region-model-and-geospatial-lookup-kb-rgn) |
 | C12-008 | Plant Region Profiles | 1-5 ratings with conditions, cultivar picks, do_not_use flags and evidence, inherited by sub-Regions | `platform_curator` | [12 §4.4](12-plant-knowledge-base.md#44-plant-region-profiles-kb-prp) |
 | C12-009 | Bloom timing shift per Region | Regional bloom calendars for design, marketing and scheduling | `platform_curator` | [12 §4.4](12-plant-knowledge-base.md#44-plant-region-profiles-kb-prp) |
-| C12-010 | Change-request curation with second review | Every edit is a change request; critical traits need a second reviewer | `platform_curator` | [12 §4.5](12-plant-knowledge-base.md#45-curation-workflow-at-scale-kb-cur) |
+| C12-010 | Change-request curation with founder review | Every edit is a change request; critical-trait changes by the plant curator agent need the founder's approval | `platform_curator` | [12 §4.5](12-plant-knowledge-base.md#45-curation-workflow-at-scale-kb-cur) |
 | C12-011 | Bulk CSV and Google Sheets import | Imports with diff preview before release | `platform_curator` | [12 §4.5](12-plant-knowledge-base.md#45-curation-workflow-at-scale-kb-cur) |
 | C12-012 | AI enrichment with verified citations | Seed-time enrichment; continuous enrichment queue | `platform_curator` | [12 §4.5](12-plant-knowledge-base.md#45-curation-workflow-at-scale-kb-cur) |
 | C12-013 | Daily versioned releases and quality dashboard | Snapshots, changelog, rollback and Gold/Silver/Bronze/Stub tiers | `platform_curator` | [12 §4.5](12-plant-knowledge-base.md#45-curation-workflow-at-scale-kb-cur) |
-| C12-014 | Regional rating sessions | Blind rating then reconcile with guest experts; full workflow | `platform_curator` | [12 §4.5](12-plant-knowledge-base.md#45-curation-workflow-at-scale-kb-cur) |
+| C12-014 | Regional rating sessions | Blind rating, then reconciliation with guest experts, in the full session workflow | `platform_curator` | [12 §4.5](12-plant-knowledge-base.md#45-curation-workflow-at-scale-kb-cur) |
 | C12-015 | Source and license registry | Use flags checked at read time so unlicensed content never reaches proposals | `platform_curator` | [12 §4.6](12-plant-knowledge-base.md#46-data-sources-and-licensing-kb-src) |
 | C12-016 | Photo pipeline with license gate | Privacy scrub, taxon check, derivatives and 24-hour takedown | `platform_curator` | [12 §4.7](12-plant-knowledge-base.md#47-photo-and-media-pipeline-kb-med) |
 | C12-017 | Faceted and natural-language plant search | Region context by default; pgvector search with editable Interpreted-as chips | `designer` | [12 §4.8](12-plant-knowledge-base.md#48-search-and-discovery-kb-srch) |
 | C12-018 | Plant ID by photo | Regional prior and abstention when unsure | `technician` | [12 §4.8](12-plant-knowledge-base.md#48-search-and-discovery-kb-srch) |
-| C12-019 | Substitution engine | Basic substitutes; availability-aware substitutes | `designer` | [12 §4.8](12-plant-knowledge-base.md#48-search-and-discovery-kb-srch) |
+| C12-019 | Substitution engine | Trait-matched and availability-aware substitutes | `designer` | [12 §4.8](12-plant-knowledge-base.md#48-search-and-discovery-kb-srch) |
 | C12-020 | Plant Palettes | Curated, smart and hybrid palettes with health checks | `designer` | [12 §4.9](12-plant-knowledge-base.md#49-plant-palettes-and-collections-kb-pal) |
 | C12-021 | Client and HOA approved-list palettes | Palettes restricted to a client's approved plant list | `designer` | [12 §4.9](12-plant-knowledge-base.md#49-plant-palettes-and-collections-kb-pal) |
 | C12-022 | Private Company plants | Tenant plants under RLS with no legal loopholes and promotion to the global KB | `designer` | [12 §4.10](12-plant-knowledge-base.md#410-tenant-layer-kb-ten) |
@@ -750,7 +763,7 @@ Owner doc: [12-plant-knowledge-base.md](12-plant-knowledge-base.md). 29 features
 | C12-024 | Nursery availability parsing | AI parser (agent A11) maps vendor sheets to canonical plants and sizes with regional cost bands | `estimator` | [12 §4.11](12-plant-knowledge-base.md#411-nursery-and-supplier-availability-and-price-feeds-kb-nur) |
 | C12-025 | Offline crew-app plant subset | About 1,500 plants cached on crew devices | `technician` | [12 §4.12](12-plant-knowledge-base.md#412-consumers-of-the-kb-apis-and-public-plant-pages-kb-api) |
 | C12-026 | Public SEO plant pages | Per plant and Region pages with a thin-content guard | `platform_curator` | [12 §4.12](12-plant-knowledge-base.md#412-consumers-of-the-kb-apis-and-public-plant-pages-kb-api) |
-| C12-027 | Seed plan: 3,000 plants and Wave 1 Regions | Seed to Excellent coverage in the six Wave 1 Great Lakes Regions | `platform_curator` | [12 §4.13](12-plant-knowledge-base.md#413-seed-strategy-the-first-3000-plants-and-the-first-regions-kb-seed) |
+| C12-027 | Seed plan: 3,000 plants and the Great Lakes Regions | Seed to Excellent coverage in the six Great Lakes Regions (OD-01) | `platform_curator` | [12 §4.13](12-plant-knowledge-base.md#413-seed-strategy-the-first-3000-plants-and-the-first-regions-kb-seed) |
 | C12-028 | Plant Performance Index | Annual index from real install outcomes | `platform_curator` | [12 §13](12-plant-knowledge-base.md#13-beyond-the-brief-extra-ideas) |
 | C12-029 | Climate-forward ratings | Will it still thrive in 2050? projections per Region | `designer` | [12 §13](12-plant-knowledge-base.md#13-beyond-the-brief-extra-ideas) |
 
@@ -762,8 +775,8 @@ Owner doc: [13-operations-inventory-equipment.md](13-operations-inventory-equipm
 |---|---|---|---|---|
 | C13-001 | Item master with landscape units | Item types, UOM with density and coverage conversions (yards to tons, coverage at depth) | `ops_manager` | [13 §4.1.1](13-operations-inventory-equipment.md#411-item-types-mvp) |
 | C13-002 | Barcodes, labels and variants | Barcode labels and item variants for yard and truck stock | `ops_manager` | [13 §4.1.5](13-operations-inventory-equipment.md#415-barcodes-and-labels-v1) |
-| C13-003 | Inventory modes Off and Light | Off (expense to job) and Light (memo quantities) for every tier | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp-off-and-light-v1-standard-and-advanced) |
-| C13-004 | Inventory mode Standard | Perpetual inventory with GL posting, moved after the ledger is proven in production (13's own fallback) | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp-off-and-light-v1-standard-and-advanced) |
+| C13-003 | Inventory modes Off and Light | Off (expense to job) and Light (memo quantities) in every plan | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp-off-and-light-v1-standard-and-advanced) |
+| C13-004 | Inventory mode Standard | Perpetual inventory with GL posting; Off, Light and Standard are all available, default per OD-43 | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp-off-and-light-v1-standard-and-advanced) |
 | C13-005 | Inventory mode Advanced | Bins, lots, FIFO, serials and in-transit stock | `ops_manager` | [13 §4.1.6](13-operations-inventory-equipment.md#416-inventory-modes-mvp-off-and-light-v1-standard-and-advanced) |
 | C13-006 | Inventory locations | Yard, bulk bunkers, bins, trucks, job sites and holding yard | `ops_manager` | [13 §4.2.1](13-operations-inventory-equipment.md#421-location-hierarchy-mvp) |
 | C13-007 | Reservations and availability | Reserve stock to Jobs; memo reservations in Light mode | `ops_manager` | [13 §4.3.3](13-operations-inventory-equipment.md#433-reservations-and-availability-mvp) |
@@ -801,7 +814,7 @@ Owner doc: [13-operations-inventory-equipment.md](13-operations-inventory-equipm
 
 ### 2.15 14 - Service-line modules
 
-Owner doc: [14-service-line-modules.md](14-service-line-modules.md). 41 features. C14-018 to C14-023 are the full Snow & Ice module; C14-039 to C14-041 are Snow Lite, the slice Great Lakes Companies use in their first winter on Rootline.
+Owner doc: [14-service-line-modules.md](14-service-line-modules.md). 41 features. C14-018 to C14-023 are the full Snow & Ice module; C14-039 to C14-041 are Snow Lite, free in every plan; the full module is the `snow_ice` add-on (R24-1).
 
 | ID | Feature | Description | Persona | Source |
 |---|---|---|---|---|
@@ -834,7 +847,7 @@ Owner doc: [14-service-line-modules.md](14-service-line-modules.md). 41 features
 | C14-027 | Install project Gantt | Gantt view with dependencies for installs | `ops_manager` | [14 §4.5.2](14-service-line-modules.md#452-scheduling-and-gantt-mvp-list--calendar-v1-gantt) |
 | C14-028 | 811 dig ticket hard gate | Digging work blocked until the ticket clears; private-line as-builts shown | `crew_lead` | [14 §4.5.6](14-service-line-modules.md#456-811-dig-safe-ticket-tracking-mvp) |
 | C14-029 | Punch lists and closeout | Punch lists and closeout; warranty claims with irrigation evidence | `crew_lead` | [14 §4.5.7](14-service-line-modules.md#457-punch-lists-closeout-warranties-and-plant-replacement-guarantees-mvp-punch-list-v1-warranty-claims) |
-| C14-030 | Commercial SOW per zone and scored audits | Zone-level specs and scored quality audits (commercial expansion segment) | `ops_manager` | [14 §4.6.1](14-service-line-modules.md#461-scope-of-work-specs-per-zone-mvp) |
+| C14-030 | Commercial SOW per zone and scored audits | Zone-level specs and scored quality audits for commercial grounds (S4) | `ops_manager` | [14 §4.6.1](14-service-line-modules.md#461-scope-of-work-specs-per-zone-mvp) |
 | C14-031 | Enhancement pipeline | Capture; AI-illustrated, PO-ready pipeline | `ops_manager` | [14 §4.6.3](14-service-line-modules.md#463-enhancement-pipeline-mvp-capture-v1-full-pipeline) |
 | C14-032 | Monthly property reports | AI-summarized monthly reports for property managers | `client_commercial` | [14 §4.6.4](14-service-line-modules.md#464-monthly-property-reports-v1) |
 | C14-033 | Landscape lighting service plans | Fixture inventory, voltage records and night-window service plans | `technician` | [14 §4.7.1](14-service-line-modules.md#471-lighting-system-inventory-v1) |
@@ -843,9 +856,9 @@ Owner doc: [14-service-line-modules.md](14-service-line-modules.md). 41 features
 | C14-036 | Seasonal campaigns | Aeration, cleanup and mulch campaigns priced from measured areas with capacity-aware booking | `owner` | [14 §4.10.1](14-service-line-modules.md#4101-campaign-object-mvp) |
 | C14-037 | Cross-module orchestration rules | Rules such as irrigation maps protecting heads during aeration | `ops_manager` | [14 §4.11](14-service-line-modules.md#411-cross-module-orchestration-rules-mvp-engine-rules-phased-as-tagged) |
 | C14-038 | Property Health Score | One score across all service lines with one-click improvement proposals | `owner` | [14 §13](14-service-line-modules.md#13-beyond-the-brief-extra-ideas) |
-| C14-039 | Snow Lite storm visit log | Per-site storm visits logged offline in the crew app with push and application counts, timestamped GPS photos and notes, on the MVP visit and photo pipeline; included in every plan (full snow service log) | `crew_lead` | [14 §4.3.0](14-service-line-modules.md#430-snow-lite-mvp) |
-| C14-040 | Snow Lite site list | Basic list of snow sites in priority order that drives storm visits on the dispatch board (site maps and Storm Command Center) | `ops_manager` | [14 §4.3.0](14-service-line-modules.md#430-snow-lite-mvp) |
-| C14-041 | Snow Lite proof-of-service PDF | Per-site PDF of storm visits with times, crew, services, GPS-stamped photos and notes for a date range; no hash sealing (sealed proof packets) | `owner` | [14 §4.3.0](14-service-line-modules.md#430-snow-lite-mvp) |
+| C14-039 | Snow Lite storm visit log | Per-site storm visits logged offline in the crew app with push and application counts, timestamped GPS photos and notes, on the standard visit and photo pipeline; included in every plan (the full Snow & Ice module adds the full snow service log) | `crew_lead` | [14 §4.3.0](14-service-line-modules.md#430-snow-lite-mvp) |
+| C14-040 | Snow Lite site list | Basic list of snow sites in priority order that drives storm visits on the dispatch board (site maps and the Storm Command Center come with the full Snow & Ice module) | `ops_manager` | [14 §4.3.0](14-service-line-modules.md#430-snow-lite-mvp) |
+| C14-041 | Snow Lite proof-of-service PDF | Per-site PDF of storm visits with times, crew, services, GPS-stamped photos and notes for a date range; no hash sealing (hash-sealed proof packets come with the full Snow & Ice module) | `owner` | [14 §4.3.0](14-service-line-modules.md#430-snow-lite-mvp) |
 
 ### 2.16 15 - Team, HR, time and payroll
 
@@ -865,15 +878,15 @@ Owner doc: [15-team-hr-payroll.md](15-team-hr-payroll.md). 29 features.
 | C15-010 | Availability and time-off requests | Requests with coverage checks; native PTO accrual with sick-leave templates | `technician` | [15 §4.7](15-team-hr-payroll.md#47-availability-time-off-and-pto-accrual) |
 | C15-011 | Rain-day call-off and reporting-time pay | Call-off notices that compute show-up pay where required | `ops_manager` | [15 §4.7](15-team-hr-payroll.md#47-availability-time-off-and-pto-accrual) |
 | C15-012 | Timesheet derivation and approvals | Timesheets from time segments with exception detection and multi-level approval | `crew_lead` | [15 §4.8](15-team-hr-payroll.md#48-time-and-attendance-timesheets-and-approvals) |
-| C15-013 | Jurisdiction policy packs: Federal and beachhead states | Versioned pay rules with a fixture test harness for the launch states | `bookkeeper` | [15 §4.9](15-team-hr-payroll.md#49-pay-rules-engine-and-jurisdiction-policy-packs) |
-| C15-014 | Additional jurisdiction packs | CA, WA, OR, CO, NY and other states and provinces as customers arrive | `bookkeeper` | [15 §4.9](15-team-hr-payroll.md#49-pay-rules-engine-and-jurisdiction-policy-packs) |
+| C15-013 | Jurisdiction policy packs: Federal, Great Lakes states, California and Ontario | Versioned pay rules with a fixture test harness for Federal, Ohio, Michigan, Illinois, Indiana, Wisconsin, California and Ontario (R24-18) | `bookkeeper` | [15 §4.9](15-team-hr-payroll.md#49-pay-rules-engine-and-jurisdiction-policy-packs) |
+| C15-014 | Additional jurisdiction packs | WA, OR, CO, NY and further states and provinces as rule-pack data, maintained by the plant curator agent and approved by the founder (OD-60) | `bookkeeper` | [15 §4.9](15-team-hr-payroll.md#49-pay-rules-engine-and-jurisdiction-policy-packs) |
 | C15-015 | Regular-rate overtime with bonuses | Bonus inclusion in the regular rate; retro bonus true-up | `bookkeeper` | [15 §4.9](15-team-hr-payroll.md#49-pay-rules-engine-and-jurisdiction-policy-packs) |
 | C15-016 | Piece-rate and production bonuses | CA 226.2 piece-rate rest pay and gain-share bonuses with quality gates | `owner` | [15 §4.10](15-team-hr-payroll.md#410-compensation-types) |
 | C15-017 | Prevailing wage and WH-347 certified payroll | Classification per time segment and weekly certified payroll | `bookkeeper` | [15 §4.11](15-team-hr-payroll.md#411-prevailing-wage-and-certified-payroll) |
 | C15-018 | Labor burden profiles | Burdened rates per productive hour feeding estimating | `owner` | [15 §4.12](15-team-hr-payroll.md#412-labor-burden-and-costing) |
 | C15-019 | Seasonal burden curve and comp class allocation | Workers' comp class-code allocation and seasonal burden | `bookkeeper` | [15 §4.12](15-team-hr-payroll.md#412-labor-burden-and-costing) |
 | C15-020 | Pay period close and payroll export | Idempotent export to Gusto and QBO Payroll plus a CSV builder; ADP and Paychex APIs | `bookkeeper` | [15 §4.13](15-team-hr-payroll.md#413-payroll-integrations-and-pay-period-close) |
-| C15-021 | Embedded payroll | Check or Gusto Embedded pilot, general release; Rootline never holds wage funds | `owner` | [15 §4.14](15-team-hr-payroll.md#414-embedded-payroll-option) |
+| C15-021 | Embedded payroll | Through Check, with Gusto Embedded as the fallback (OD-53); Rootline never holds wage funds | `owner` | [15 §4.14](15-team-hr-payroll.md#414-embedded-payroll-option) |
 | C15-022 | OSHA recordkeeping | Recordability wizard, 300/301/300A with ITA export and severe-injury clock | `owner` | [15 §4.15](15-team-hr-payroll.md#415-safety-management) |
 | C15-023 | Heat illness prevention | Plan builder, jurisdiction triggers and in-app shade and high-heat checks (CA, WA, OR, MD, NV) | `owner` | [15 §4.15](15-team-hr-payroll.md#415-safety-management) |
 | C15-024 | Reviews, career ladder and kudos | Reviews, pay bands and recognition | `crew_lead` | [15 §4.16](15-team-hr-payroll.md#416-performance-recognition-and-gamification) |
@@ -898,23 +911,23 @@ Owner doc: [16-marketing-growth-communications.md](16-marketing-growth-communica
 | C16-007 | Instant firm-price quoting | Confidence-gated firm prices with route-density pricing | `client_residential` | [16 §4.3.3](16-marketing-growth-communications.md#433-pricing-rules-v1) |
 | C16-008 | Online booking onto real route days | E-sign and card on file on the tenant's Stripe during booking | `client_residential` | [16 §4.3.5](16-marketing-growth-communications.md#435-booking-flow-and-capacity-v1) |
 | C16-009 | Lead source taxonomy and attribution | First and last touch; multi-touch and offline conversion upload | `owner` | [16 §4.5.1](16-marketing-growth-communications.md#451-source-taxonomy-mvp) |
-| C16-010 | Marketing ROI to job-costed margin | GL-tagged spend against job-costed margin; manual, automatic | `owner` | [16 §4.5.3](16-marketing-growth-communications.md#453-spend-capture-and-roi-mvp-manual-v1-automatic) |
+| C16-010 | Marketing ROI to job-costed margin | GL-tagged spend against job-costed margin, manual or automatic | `owner` | [16 §4.5.3](16-marketing-growth-communications.md#453-spend-capture-and-roi-mvp-manual-v1-automatic) |
 | C16-011 | Marketplace lead ingest | Email-parser ingest with dedupe; native Google LSA and Angi APIs; Thumbtack when partner terms allow | `office_manager` | [16 §4.6](16-marketing-growth-communications.md#46-lead-marketplace-ingest-google-lsa-angi-thumbtack-and-others) |
 | C16-012 | Segment builder | Segments with reachability preview; natural-language segments | `office_manager` | [16 §4.7](16-marketing-growth-communications.md#47-segments-and-audiences-mvp) |
-| C16-013 | Email and SMS campaigns | One-off campaigns with personalized per-property price blocks (22 lists V1; kept MVP for spring enhancement sales) | `office_manager` | [16 §4.8.1](16-marketing-growth-communications.md#481-email-campaigns-mvp) |
+| C16-013 | Email and SMS campaigns | One-off campaigns with personalized per-property price blocks | `office_manager` | [16 §4.8.1](16-marketing-growth-communications.md#481-email-campaigns-mvp) |
 | C16-014 | Direct mail postcards | Postcards through a print API | `office_manager` | [16 §4.8.3](16-marketing-growth-communications.md#483-direct-mail-v1) |
-| C16-015 | Region-aware seasonal campaign library | Basic library; full library | `office_manager` | [16 §4.8.4](16-marketing-growth-communications.md#484-seasonal-campaign-library-mvp-basic-v1-full) |
+| C16-015 | Region-aware seasonal campaign library | Full seasonal campaign library per Region | `office_manager` | [16 §4.8.4](16-marketing-growth-communications.md#484-seasonal-campaign-library-mvp-basic-v1-full) |
 | C16-016 | Journeys | Prebuilt journeys; journey builder | `office_manager` | [16 §4.9](16-marketing-growth-communications.md#49-journeys-drip-automations-mvp-prebuilt-v1-builder) |
 | C16-017 | Newsletters | Seasonal newsletters with KB content | `office_manager` | [16 §4.10](16-marketing-growth-communications.md#410-newsletters-v1) |
 | C16-018 | Win-back and next-best-offer engine | Churn-risk-driven win-back and upsell offers | `owner` | [16 §4.11](16-marketing-growth-communications.md#411-win-back-and-upsell-engine-v1) |
 | C16-019 | Google review requests | No gating or incentives, with AI reply drafts | `office_manager` | [16 §4.12.1](16-marketing-growth-communications.md#4121-review-requests-mvp) |
 | C16-020 | NPS with closed-loop follow-up | NPS; survey builder | `owner` | [16 §4.13](16-marketing-growth-communications.md#413-nps-and-surveys-mvp-nps-v1-survey-builder) |
-| C16-021 | Referral program with rewards | Fraud checks, credit memos and tax-threshold tracking (22 packages referrals at V1) | `client_residential` | [16 §4.14](16-marketing-growth-communications.md#414-referral-program-with-rewards-v1) |
+| C16-021 | Referral program with rewards | Fraud checks, credit memos and tax-threshold tracking | `client_residential` | [16 §4.14](16-marketing-growth-communications.md#414-referral-program-with-rewards-v1) |
 | C16-022 | Route-aware neighborhood marketing | QR door hangers on the crew route map, EDDM postcards and holdout-measured lift | `owner` | [16 §4.15.2](16-marketing-growth-communications.md#4152-qr-door-hangers-v1) |
 | C16-023 | Social auto-posting of before/afters | Approval queue before posting | `office_manager` | [16 §4.16](16-marketing-growth-communications.md#416-social-auto-posting-of-beforeafters-v1) |
 | C16-024 | Unified inbox | SMS, email, chat, calls and portal; Facebook/Instagram DMs and LSA messages | `office_manager` | [16 §4.17.1](16-marketing-growth-communications.md#4171-channels-mvp-core-channels-v1-social-and-marketplace-threads) |
 | C16-025 | Inbox assignment, SLAs and AI replies | Assignment rules, SLAs, suggested replies and translation | `office_manager` | [16 §4.17.2](16-marketing-growth-communications.md#4172-conversation-model-and-behaviors-mvp) |
-| C16-026 | AI receptionist | After-hours lead capture, then AI-first and overflow modes with address quoting in Spanish | `office_manager` | [16 §4.18.1](16-marketing-growth-communications.md#4181-answering-modes-v1) |
+| C16-026 | AI receptionist | After-hours, AI-first and overflow answering modes with address quoting in Spanish | `office_manager` | [16 §4.18.1](16-marketing-growth-communications.md#4181-answering-modes-v1) |
 | C16-027 | Call tracking and missed-call text-back | Static numbers and DNI pool with missed-call text-back | `office_manager` | [16 §4.19](16-marketing-growth-communications.md#419-phone-system-and-call-tracking-mvp-basic-v1-full) |
 | C16-028 | Per-tenant 10DLC registration | Managed brand/campaign registration with an auto-generated SMS terms page | `owner` | [16 §4.20](16-marketing-growth-communications.md#420-10dlc-brand-and-campaign-registration-per-tenant-mvp) |
 | C16-029 | Consent ledger and opt-out handling | Evidence-backed consent, natural-language opt-out detection and strictest-rule quiet hours (rail R-06) | `office_manager` | [16 §4.21.1](16-marketing-growth-communications.md#4211-consent-ledger-mvp) |
@@ -955,7 +968,7 @@ Owner doc: [17-ai-copilot-automation.md](17-ai-copilot-automation.md). 35 featur
 | C17-023 | Natural-language automation authoring | Describe an automation in words and review the generated flow | `office_manager` | [17 §4.6.8](17-ai-copilot-automation.md#468-natural-language-authoring-mvp) |
 | C17-024 | Competitor automation migration | Rebuild Service Autopilot and Jobber automations as recipes | `office_manager` | [17 §4.6.9](17-ai-copilot-automation.md#469-migration-of-competitor-automations-v1) |
 | C17-025 | Predictive models | Churn risk, demand and capacity forecast and crew productivity (pricing advisor in 23) | `owner` | [17 §4.7.1](17-ai-copilot-automation.md#471-churn-risk-v1) |
-| C17-026 | Crew voice assistant | Push-to-talk EN/ES commands with offline capture and driving lock (voice notes ship at MVP in 05); on-device commands | `technician` | [17 §4.8](17-ai-copilot-automation.md#48-voice-interface-for-crews-mvp-core-v1-expanded-v2-on-device) |
+| C17-026 | Crew voice assistant | Push-to-talk EN/ES commands with offline capture and driving lock (voice notes are in 05); on-device commands | `technician` | [17 §4.8](17-ai-copilot-automation.md#48-voice-interface-for-crews-mvp-core-v1-expanded-v2-on-device) |
 | C17-027 | Remote MCP server | OAuth 2.1 with out-of-band confirmation for T2/T3 actions | `owner` | [17 §4.10.2](17-ai-copilot-automation.md#4102-mcp-server-v1) |
 | C17-028 | Bring-your-own-model and agent marketplace | Enterprise BYO model and a recipe/agent marketplace | `owner` | [17 §4.10.3](17-ai-copilot-automation.md#4103-bring-your-own-model-v2) |
 | C17-029 | Prompt-injection defense | Quarantined extraction, taint tracking, output validation and hidden-text detection | `platform_engineer` | [17 §4.11.2](17-ai-copilot-automation.md#4112-prompt-injection-defenses-for-inbound-email-sms-and-documents-mvp) |
@@ -982,16 +995,16 @@ Owner doc: [18-reporting-analytics.md](18-reporting-analytics.md). 28 features.
 | C18-008 | My Stats for crews | Bilingual mobile stats for crew leads and technicians | `crew_lead` | [18 §4.2.4](18-reporting-analytics.md#424-crew-lead-and-technician-my-stats-v1) |
 | C18-009 | Bookkeeper Close Cockpit | Close dashboard with automatic checks | `bookkeeper` | [18 §4.2.5](18-reporting-analytics.md#425-bookkeeper-close-cockpit-v1) |
 | C18-010 | Job Cost Detail with margin waterfall | Estimate vs actual by phase and cost type | `ops_manager` | [18 §4.4.2](18-reporting-analytics.md#442-job-costing-report-detailed-behavior-mvp) |
-| C18-011 | Standard report library | About 40 landscape reports: 20 core, the rest | `owner` | [18 §4.4.1](18-reporting-analytics.md#441-catalog) |
+| C18-011 | Standard report library | About 40 landscape reports, 20 of them core | `owner` | [18 §4.4.1](18-reporting-analytics.md#441-catalog) |
 | C18-012 | Production-rate feedback loop | Empirical Bayes rate suggestions from actuals into estimating | `estimator` | [18 §4.4.4](18-reporting-analytics.md#444-production-rate-feedback-loop-into-the-estimating-engine-v1) |
 | C18-013 | Custom report builder | Reports over semantic explores | `owner` | [18 §4.5](18-reporting-analytics.md#45-custom-report-builder-v1) |
 | C18-014 | Scheduled delivery and exports | Scheduled email delivery and CSV/XLSX/PDF with a definitions sheet; burst delivery | `owner` | [18 §4.6](18-reporting-analytics.md#46-saved-reports-scheduling-subscriptions-and-exports) |
 | C18-015 | Goals with seasonal phasing | Targets phased to the season and crew gain-share scorecards | `owner` | [18 §4.7](18-reporting-analytics.md#47-goals-and-targets-v1) |
 | C18-016 | Alerts and anomaly detection | Built-in alert pack and STL anomaly detection | `owner` | [18 §4.8](18-reporting-analytics.md#48-alerts-and-anomaly-detection-v1) |
-| C18-017 | 13-week cash and capacity forecasts | Explainable cash and capacity forecasts (resolves 22's V2 listing) | `owner` | [18 §4.9.1](18-reporting-analytics.md#491-13-week-cash-flow-forecast-v1) |
+| C18-017 | 13-week cash and capacity forecasts | Explainable cash and capacity forecasts | `owner` | [18 §4.9.1](18-reporting-analytics.md#491-13-week-cash-flow-forecast-v1) |
 | C18-018 | Scenario planner and seasonal ML forecast | Scenario planning and ML seasonal revenue forecast | `owner` | [18 §4.9.4](18-reporting-analytics.md#494-scenario-planner-v2) |
 | C18-019 | Natural-language analytics | Certified answers from the KPI Dictionary with every number verified; exploratory mode and why analysis | `owner` | [18 §4.10](18-reporting-analytics.md#410-natural-language-analytics-via-copilot-mvp-certified-answers-v1-exploratory-mode-and-why-analysis) |
-| C18-020 | Opt-in peer benchmarking | Fixed cohort lattice with k of at least 10: beta, full | `owner` | [18 §4.11](18-reporting-analytics.md#411-industry-benchmarking-the-moat-v1-beta-v2-full) |
+| C18-020 | Opt-in peer benchmarking | Fixed cohort lattice with k of at least 10; a cell publishes once it has enough Companies (1.4) | `owner` | [18 §4.11](18-reporting-analytics.md#411-industry-benchmarking-the-moat-v1-beta-v2-full) |
 | C18-021 | State of the Landscape Business report and Pulse indices | Public report with DP noise and antitrust gating | `platform_owner` | [18 §4.11.7](18-reporting-analytics.md#4117-external-products-state-of-the-landscape-industry-report-and-pulse-indices-v2) |
 | C18-022 | Analytics data platform | Postgres analytics schemas; CDC into ClickHouse, dbt and Cube | `platform_engineer` | [18 §4.12.1](18-reporting-analytics.md#4121-overview-mvp-semantic-layer-over-postgres-analytics-schemas-v1-cdc-into-clickhouse-lakehouse-and-metrics-store) |
 | C18-023 | Metrics API, SQL API and data shares | Metrics and semantic SQL APIs; Snowflake/BigQuery/Delta shares | `owner` | [18 §4.13](18-reporting-analytics.md#413-bi-connectors-data-shares-and-the-metrics-api) |
@@ -1009,9 +1022,9 @@ Owner doc: [19-platform-admin-portal.md](19-platform-admin-portal.md). 31 featur
 |---|---|---|---|---|
 | C19-001 | Tenant directory and Tenant 360 | Saved views, bulk actions and a redacted-by-default tenant profile with timeline and integrations | `platform_support` | [19 §4.2](19-platform-admin-portal.md#42-tenant-management) |
 | C19-002 | Tenant lifecycle state machine | trial through deleted, with never-block rules for client payments | `platform_owner` | [19 §4.2](19-platform-admin-portal.md#42-tenant-management) |
-| C19-003 | Seasonality-aware health score | Basic health; Region- and season-adjusted score | `platform_owner` | [19 §4.2](19-platform-admin-portal.md#42-tenant-management) |
-| C19-004 | Migration Center: CSV, Jobber, LMN, QuickBooks Online | Self-serve imports with staged validation, dry-run diff, AR reconciliation and 72-hour rollback (LMN pulled to MVP per 01) | `platform_support` | [19 §4.3](19-platform-admin-portal.md#43-onboarding-and-migration-tooling) |
-| C19-005 | Migration Center: Service Autopilot, Yardbook, SingleOps, QBD, Xero | Next importers ordered by win/loss demand | `platform_support` | [19 §4.3](19-platform-admin-portal.md#43-onboarding-and-migration-tooling) |
+| C19-003 | Seasonality-aware health score | Health score adjusted for Region and season | `platform_owner` | [19 §4.2](19-platform-admin-portal.md#42-tenant-management) |
+| C19-004 | Migration Center: CSV, Jobber, LMN, QuickBooks Online | Self-serve imports with staged validation, dry-run diff, AR reconciliation and a 7-day rollback (R24-22) | `platform_support` | [19 §4.3](19-platform-admin-portal.md#43-onboarding-and-migration-tooling) |
+| C19-005 | Migration Center: Service Autopilot, Yardbook, SingleOps, QBD, Xero | More importers with the same staged validation and rollback | `platform_support` | [19 §4.3](19-platform-admin-portal.md#43-onboarding-and-migration-tooling) |
 | C19-006 | White-glove migration queue | SLA-tracked concierge queue with Winter Switch cutover planning | `platform_support` | [19 §4.3](19-platform-admin-portal.md#43-onboarding-and-migration-tooling) |
 | C19-007 | Product catalog and price versioning | Plans and prices versioned and synced to Rootline's own Stripe Billing | `platform_finance` | [19 §4.4](19-platform-admin-portal.md#44-saas-billing-on-the-platforms-own-stripe-account) |
 | C19-008 | AI credit ledger mirrored to Stripe meters | Versioned rate card with hold, settle and release | `platform_finance` | [19 §4.4](19-platform-admin-portal.md#44-saas-billing-on-the-platforms-own-stripe-account) |
@@ -1033,30 +1046,30 @@ Owner doc: [19-platform-admin-portal.md](19-platform-admin-portal.md). 31 featur
 | C19-024 | Platform analytics | MRR, churn, cohorts, activation funnel and feature adoption; NPS and unit economics | `platform_owner` | [19 §4.14](19-platform-admin-portal.md#414-platform-analytics) |
 | C19-025 | System health and incidents | Integration error console, status page and incident management | `platform_engineer` | [19 §4.15](19-platform-admin-portal.md#415-system-health) |
 | C19-026 | Partner program and Partner Portal | CPA, association, distributor, creator and franchise tracks with attribution and commissions | `platform_owner` | [19 §4.16](19-platform-admin-portal.md#416-partners-resellers-and-affiliates) |
-| C19-027 | Staff RBAC and access reviews | Staff roles, access reviews and hash-chained audit; just-in-time elevation | `platform_owner` | [19 §4.17](19-platform-admin-portal.md#417-internal-staff-rbac-and-audit) |
+| C19-027 | Staff RBAC and access reviews | Platform roles held by the founder and operator agents, access reviews and hash-chained audit; just-in-time elevation | `platform_owner` | [19 §4.17](19-platform-admin-portal.md#417-internal-staff-rbac-and-audit) |
 | C19-028 | Admin API and config-as-code | Internal API, service tokens, config-as-code for plans, flags and prompts | `platform_engineer` | [19 §4.18](19-platform-admin-portal.md#418-admin-api) |
-| C19-029 | Operator Copilot and Morning Brief | AI brief and console assistant for staff | `platform_owner` | [19 §4.19](19-platform-admin-portal.md#419-operator-copilot) |
+| C19-029 | Operator Copilot and Morning Brief | AI brief and console assistant for the founder and operator agents | `platform_owner` | [19 §4.19](19-platform-admin-portal.md#419-operator-copilot) |
 | C19-030 | Tenant Trust Center | Shareable trust page for commercial clients and HOA boards | `owner` | [19 §13](19-platform-admin-portal.md#13-beyond-the-brief-extra-ideas) |
 | C19-031 | Dead-man's switch for the solo founder | Continuity procedures if the founder is unavailable | `platform_owner` | [19 §13](19-platform-admin-portal.md#13-beyond-the-brief-extra-ideas) |
 
 ### 2.21 20 - Architecture and security (platform capabilities)
 
-Platform capabilities every module depends on. Most are invisible to customers but sit at the root of the dependency graph (4.4). Owner doc: [20-architecture-security.md](20-architecture-security.md). 33 features.
+Platform capabilities every module depends on. Most are invisible to customers but sit at the root of the dependency graph (4.1). Owner doc: [20-architecture-security.md](20-architecture-security.md). 33 features.
 
 | ID | Feature | Description | Persona | Source |
 |---|---|---|---|---|
 | C20-001 | Modular monolith with module boundaries | TypeScript modular monolith with process roles and boundary rules enforced in CI | `platform_engineer` | [20 §4.3](20-architecture-security.md#43-bounded-contexts-and-modules-mvp) |
 | C20-002 | Shared-schema multi-tenancy with forced RLS | tenant_id on every row, fail-closed tenant context and composite tenant FKs | `platform_engineer` | [20 §4.4.2](20-architecture-security.md#442-shared-schema--row-level-security-default-tier-mvp) |
 | C20-003 | Tenant isolation test suite | Automated isolation tests plus production cross-tenant canaries | `platform_engineer` | [20 §4.4.3](20-architecture-security.md#443-tenant-isolation-testing-mvp) |
-| C20-004 | Noisy-neighbor controls | Per-tenant quotas and a heat score; full controls | `platform_engineer` | [20 §4.4.4](20-architecture-security.md#444-noisy-neighbor-controls-mvp--v1) |
+| C20-004 | Noisy-neighbor controls | Per-tenant quotas, a heat score and the full set of controls | `platform_engineer` | [20 §4.4.4](20-architecture-security.md#444-noisy-neighbor-controls-mvp--v1) |
 | C20-005 | Cells and dedicated-database tier | Cell routing with tenant move tooling; dedicated database for Enterprise | `platform_engineer` | [20 §4.4.5](20-architecture-security.md#445-cells-and-the-dedicated-database-option-v1--v2) |
 | C20-006 | Canadian data residency | ca-central-1 regional stack with DR in ca-west-1 | `platform_engineer` | [20 §4.4.6](20-architecture-security.md#446-canadian-data-residency-v1) |
 | C20-007 | Cedar-based RBAC/ABAC | Policy engine with 10 enforcement points and row-scope predicates | `platform_engineer` | [20 §4.6](20-architecture-security.md#46-authorization-rbac--abac-and-enforcement-points-mvp) |
-| C20-008 | Public REST API | Core objects and full surface with AI endpoints: OpenAPI 3.1, TypeIDs, dated versions, idempotency keys, published rate limits | `platform_engineer` | [20 §4.7.2](20-architecture-security.md#472-conventions-mvp) |
+| C20-008 | Public REST API | Full surface, from core objects to AI endpoints: OpenAPI 3.1, TypeIDs, dated versions, idempotency keys, published rate limits | `platform_engineer` | [20 §4.7.2](20-architecture-security.md#472-conventions-mvp) |
 | C20-009 | Standard Webhooks outbound delivery | Signed, replayable webhooks with SSRF-safe egress | `platform_engineer` | [20 §4.7.4](20-architecture-security.md#474-webhooks-outbound-mvp) |
 | C20-010 | OAuth 2.1 app marketplace and sandbox tenants | Third-party apps and free sandbox tenants | `platform_engineer` | [20 §4.7.1](20-architecture-security.md#471-surfaces) |
 | C20-011 | Connector SDK and token vault | external_ref mapping, OAuth token vault and idempotent sync for every connector | `platform_engineer` | [20 §4.8](20-architecture-security.md#48-integration-framework-mvp--v1) |
-| C20-012 | Transactional outbox and domain events | Outbox to SNS/SQS with a domain events catalog; MSK later | `platform_engineer` | [20 §4.9.1](20-architecture-security.md#491-transactional-outbox) |
+| C20-012 | Transactional outbox and domain events | Outbox to SNS/SQS with a domain events catalog (OD-63) | `platform_engineer` | [20 §4.9.1](20-architecture-security.md#491-transactional-outbox) |
 | C20-013 | Temporal durable workflows | Encrypted payloads for deposits, season billing, mockups, sync, onboarding and DSAR | `platform_engineer` | [20 §4.10](20-architecture-security.md#410-durable-workflows-temporal-mvp) |
 | C20-014 | Bucket-based offline sync protocol | Sync buckets, HLC ordering and per-entity conflict policies | `platform_engineer` | [20 §4.11](20-architecture-security.md#411-offline-sync-for-the-crew-app-mvp) |
 | C20-015 | Media pipeline | EXIF/GPS proof-of-service, derivatives and media.processed hooks (rails R-03, R-12) | `platform_engineer` | [20 §4.12](20-architecture-security.md#412-media-pipeline-mvp) |
@@ -1070,10 +1083,10 @@ Platform capabilities every module depends on. Most are invisible to customers b
 | C20-023 | AWS multi-account infrastructure | Terraform, ECS Fargate, Aurora PostgreSQL; EKS GPU pools | `platform_engineer` | [20 §4.21](20-architecture-security.md#421-infrastructure-on-aws-mvp) |
 | C20-024 | OpenTelemetry, SLOs and synthetic canaries | Traces, SLOs per module and synthetic checks | `platform_engineer` | [20 §4.23](20-architecture-security.md#423-observability-mvp) |
 | C20-025 | PCI SAQ-A by design | Isolated payment pages and script monitoring keep card data out of Rootline | `platform_engineer` | [20 §4.24.5](20-architecture-security.md#4245-pci-dss-scope-saq-a-by-design) |
-| C20-026 | SOC 2 with Processing Integrity | Type I readiness at MVP release, Type II observation window after | `platform_owner` | [20 §4.24.8](20-architecture-security.md#4248-soc-2-control-mapping-excerpt) |
+| C20-026 | SOC 2 with Processing Integrity | Type I readiness, then the Type II observation window | `platform_owner` | [20 §4.24.8](20-architecture-security.md#4248-soc-2-control-mapping-excerpt) |
 | C20-027 | PII classification tags | Schema tags drive redaction, export, retention and DSAR | `platform_engineer` | [20 §4.25.2](20-architecture-security.md#4252-data-classification) |
 | C20-028 | Backup and DR tiers | PITR, per-tenant restore and tested DR; cross-region tiers | `platform_engineer` | [20 §4.26](20-architecture-security.md#426-backup-and-disaster-recovery-mvp--v1) |
-| C20-029 | Capacity math and performance budgets | Seasonal peak capacity model revalidated before each scope tier | `platform_engineer` | [20 §4.27](20-architecture-security.md#427-scalability-targets-and-capacity-math-mvp-planning-model-revalidated-before-each-phase) |
+| C20-029 | Capacity math and performance budgets | Seasonal peak capacity model revalidated before each seasonal peak | `platform_engineer` | [20 §4.27](20-architecture-security.md#427-scalability-targets-and-capacity-math-mvp-planning-model-revalidated-before-each-phase) |
 | C20-030 | Testing strategy | Property-based ledger tests, offline chaos tests and isolation suites | `platform_engineer` | [20 §4.29](20-architecture-security.md#429-testing-strategy-mvp) |
 | C20-031 | CI/CD with canary migrations | Cell-by-cell canary migrations and EAS mobile updates | `platform_engineer` | [20 §4.30](20-architecture-security.md#430-cicd-and-release-engineering-mvp) |
 | C20-032 | Leave anytime full-fidelity export | Complete tenant export guarantee | `owner` | [20 §13](20-architecture-security.md#13-beyond-the-brief-extra-ideas) |
@@ -1106,7 +1119,7 @@ Owner doc: [21-ux-design-system-sitemaps.md](21-ux-design-system-sitemaps.md). 2
 | C21-019 | Localization: en-US, en-CA, es-US | Three independent language settings (user, company, client) and a bilingual glossary; fr-CA | `technician` | [21 §13.1](21-ux-design-system-sitemaps.md#131-locales-and-rollout) |
 | C21-020 | Units with per-measure overrides | Imperial and metric per measure, with landscape units | `office_manager` | [21 §13.5](21-ux-design-system-sitemaps.md#135-units-of-measure-mvp) |
 | C21-021 | Onboarding wizard | Import clients, connect Stripe, chart-of-accounts template, price book, team and a first win | `owner` | [21 §14.2](21-ux-design-system-sitemaps.md#142-steps-mvp-unless-noted) |
-| C21-022 | White-glove assisted onboarding UX | Shared onboarding plan between the Company and the specialist | `owner` | [21 §14.5](21-ux-design-system-sitemaps.md#145-white-glove-and-assisted-onboarding-v1) |
+| C21-022 | White-glove assisted onboarding UX | Shared onboarding plan between the Company and the support agent | `owner` | [21 §14.5](21-ux-design-system-sitemaps.md#145-white-glove-and-assisted-onboarding-v1) |
 | C21-023 | Region-localized sample-data sandbox | Greenleaf Grounds Co. sample tenant localized to the Company's Region | `owner` | [21 §15.3](21-ux-design-system-sitemaps.md#153-sample-data-and-the-sandbox-mvp) |
 | C21-024 | Notification priorities and routing | P1-P4 priorities, escalation and preference center | `office_manager` | [21 §16.2](21-ux-design-system-sitemaps.md#162-priority-levels-and-routing-mvp) |
 | C21-025 | Microcopy and voice guide | Voice and tone, error formula and word list | `platform_engineer` | [21 §17.3](21-ux-design-system-sitemaps.md#173-style-rules-mvp) |
@@ -1126,7 +1139,7 @@ Packaging and commercial mechanics that engineering must build (entitlements, me
 | C22-004 | Permission-derived seat classes | Free bookkeeper, subcontractor, client and observer seats | `owner` | [22 §4.3](22-business-model-pricing-gtm.md#43-seat-model-and-counting-rules) |
 | C22-005 | Entitlement engine | Flags, limits and meters with never_block enforcement | `platform_engineer` | [22 §4.2.2](22-business-model-pricing-gtm.md#422-catalog-codes-canonical-used-by-the-entitlement-engine-and-the-admin-console) |
 | C22-006 | Published AI credit price list | 300/2,000/6,000 included credits; packs of 1,000 ($25), 5,000 ($100) and 20,000 ($340) | `owner` | [22 §4.4.1](22-business-model-pricing-gtm.md#441-ai-credit-price-list-published-proposed) |
-| C22-007 | SMS allotments and packs | Included segments per tier with packs and owner caps | `owner` | [22 §4.4](22-business-model-pricing-gtm.md#messaging-and-telephony-fee-policy-mvp) |
+| C22-007 | SMS allotments and packs | Included segments per plan with packs and owner caps | `owner` | [22 §4.4](22-business-model-pricing-gtm.md#messaging-and-telephony-fee-policy-mvp) |
 | C22-008 | Snow & Ice add-on billed Nov-Mar | Seasonal add-on that bills only in season | `owner` | [22 §4.5](22-business-model-pricing-gtm.md#45-add-on-catalog) |
 | C22-009 | Design Studio seats and 3D add-on | Designer seats; 3D add-on | `owner` | [22 §4.5](22-business-model-pricing-gtm.md#45-add-on-catalog) |
 | C22-010 | Ledger Plus and Ledger Advanced | Plus for AP, feeds and rec; Advanced for WIP, multi-entity and consolidation | `owner` | [22 §4.5](22-business-model-pricing-gtm.md#45-add-on-catalog) |
@@ -1137,22 +1150,22 @@ Packaging and commercial mechanics that engineering must build (entitlements, me
 | C22-015 | Pay-as-you-grow plan | Starter at $39 plus a 0.5% application fee capped at $10 | `owner` | [22 §5.1.2](22-business-model-pricing-gtm.md#512-decision-proposed) |
 | C22-016 | Winter trial with earned extension | 30-day trial extended by completing setup milestones (demo data in 21) | `owner` | [22 §4.6](22-business-model-pricing-gtm.md#46-trials-sandboxes-and-onboarding-offers) |
 | C22-017 | Free migration concierge and Spring-Ready Guarantee | Concierge with AI mapping; guarantee for Companies that switch by Feb 15 | `owner` | [22 §6.8](22-business-model-pricing-gtm.md#68-onboarding-and-customer-success) |
-| C22-018 | Founding Customer program | Founding 100 with price lock and roadmap seat | `owner` | [22 §6.9](22-business-model-pricing-gtm.md#69-retention-and-expansion-levers) |
+| C22-018 | Founding Customer program | 25% off the base plan and the Price Lock Promise for the first 100 paying Companies, with a direct line to the founder (R26-12) | `owner` | [22 §6.9](22-business-model-pricing-gtm.md#69-retention-and-expansion-levers) |
 | C22-019 | Rootline Home homeowner app | Free homeowner AI design app feeding Companies | `client_residential` | [22 §5.3.1](22-business-model-pricing-gtm.md#531-product-tiers-for-homeowners) |
 | C22-020 | Rootline Match lead marketplace | Exclusive design-ready leads to at most 3 Companies, client-of-record first | `owner` | [22 §5.3.2](22-business-model-pricing-gtm.md#532-lead-qualification-and-routing-rules) |
 | C22-021 | Rootline Plant API and data licensing | Partner API on curated KB fields; bulk data licensing | `platform_owner` | [22 §5.2.1](22-business-model-pricing-gtm.md#521-rootline-plant-api-v2) |
 | C22-022 | Stack savings and break-even calculator | Pricing-page calculator for tool-stack savings and payments break-even | `owner` | [22 §9](22-business-model-pricing-gtm.md#9-screens-and-wireframes-incl-pricing-page-mock) |
 | C22-023 | Cancel and save flow | Winter Mode and Archive offers before cancel | `owner` | [22 §8](22-business-model-pricing-gtm.md#8-key-user-flows) |
-| C22-024 | Plan and price catalog editor with two-person publish | Price changes need a second approver | `platform_finance` | [22 §12](22-business-model-pricing-gtm.md#12-permissions) |
+| C22-024 | Plan and price catalog editor with founder-approved publish | Price changes an agent proposes publish only with the founder's approval; the founder's own changes need step-up authentication and a written reason | `platform_finance` | [22 §12](22-business-model-pricing-gtm.md#12-permissions) |
 | C22-025 | Design Solo plan | Plan for independent designers with a freelance marketplace | `designer` | [22 §16](22-business-model-pricing-gtm.md#16-beyond-the-brief-extra-ideas) |
 
 ### 2.24 23 - Innovation bets (moonshots)
 
-Bets and the rails that keep them possible. Bets move through the stage gates in 23 section 4.3; tags here are the earliest slice. Owner doc: [23-innovation-moonshots.md](23-innovation-moonshots.md). 34 features.
+Bets and the rails that keep them possible, all in v1. Bets that need third-party hardware or data switch on when the Company connects it (1.4). Owner doc: [23-innovation-moonshots.md](23-innovation-moonshots.md). 34 features.
 
 | ID | Feature | Description | Persona | Source |
 |---|---|---|---|---|
-| C23-001 | Moonshot rails R-01 to R-14 | Stable object IDs, plant instances, photo metadata, consent ledger, Action Layer parity, geospatial store, Region on everything; the rest | `platform_engineer` | [23 §4.2](23-innovation-moonshots.md#42-rails-what-mvp-and-v1-must-build-so-the-moonshots-stay-possible) |
+| C23-001 | Moonshot rails R-01 to R-14 | Stable object IDs, plant instances, photo metadata, consent ledger, Action Layer parity, geospatial store, Region on everything and the remaining rails | `platform_engineer` | [23 §4.2](23-innovation-moonshots.md#42-rails-what-mvp-and-v1-must-build-so-the-moonshots-stay-possible) |
 | C23-002 | Persistent property digital twin | Change detection over the joined property graph; photo stations rail | `owner` | [23 §M-01](23-innovation-moonshots.md#m-01-persistent-property-digital-twin) |
 | C23-003 | Drone capture and photogrammetry | Upload and process drone imagery into the site model | `designer` | [23 §M-02](23-innovation-moonshots.md#m-02-drone-capture-and-photogrammetry) |
 | C23-004 | AR See it in your yard | Homeowner AR with growth slider | `client_residential` | [23 §M-03](23-innovation-moonshots.md#m-03-ar-see-it-in-your-yard-for-homeowners) |
@@ -1165,9 +1178,9 @@ Bets and the rails that keep them possible. Bets move through the stage gates in
 | C23-011 | Turf-rebate program library | Rebate library, design compliance and case tracking | `designer` | [23 §M-10](23-innovation-moonshots.md#m-10-municipal-turf-replacement-rebate-automation) |
 | C23-012 | Climate-adaptive planting | Zone history; Climate Fit 2040/2060 | `designer` | [23 §M-11](23-innovation-moonshots.md#m-11-climate-adaptive-planting) |
 | C23-013 | Landscape Passport | QR as-built plate; Property Record transfer to the buyer at home sale | `client_residential` | [23 §M-12](23-innovation-moonshots.md#m-12-landscape-passport-carfax-for-landscapes) |
-| C23-014 | Homeowner network with client-of-record protection | Rootline Home free; network scale | `client_residential` | [23 §M-13](23-innovation-moonshots.md#m-13-homeowner-app-and-marketplace) |
+| C23-014 | Homeowner network with client-of-record protection | Rootline Home, free for homeowners, at network scale | `client_residential` | [23 §M-13](23-innovation-moonshots.md#m-13-homeowner-app-and-marketplace) |
 | C23-015 | Rootline Plant Exchange | Private sheet ingestion; live availability and holds; aggregated purchasing | `estimator` | [23 §M-14](23-innovation-moonshots.md#m-14-nursery-supply-network-with-live-availability-and-aggregated-purchasing) |
-| C23-016 | Rootline Overflow work-package marketplace | Private networks first, legal review before open marketplace | `owner` | [23 §M-15](23-innovation-moonshots.md#m-15-labor-and-subcontractor-marketplace-between-tenants) |
+| C23-016 | Rootline Overflow work-package marketplace | Private networks and an open marketplace, with legal review of the marketplace terms | `owner` | [23 §M-15](23-innovation-moonshots.md#m-15-labor-and-subcontractor-marketplace-between-tenants) |
 | C23-017 | Neighborhood density engine | Parcel scoring on the route map and neighbor rates | `owner` | [23 §M-30](23-innovation-moonshots.md#m-30-neighborhood-density-engine-street-sweep) |
 | C23-018 | Spring Ramp working capital | Ledger-verified package to licensed lenders; Rootline never holds funds | `owner` | [23 §M-16](23-innovation-moonshots.md#m-16-working-capital-from-ledger-data-spring-ramp) |
 | C23-019 | Equipment financing and certified pre-owned | Partner financing and CPO listings | `owner` | [23 §M-17](23-innovation-moonshots.md#m-17-equipment-financing-and-certified-pre-owned-marketplace) |
@@ -1185,144 +1198,70 @@ Bets and the rails that keep them possible. Bets move through the stage gates in
 | C23-031 | Plant Performance Science Network | Outcome capture rail; Evidence Scores | `platform_curator` | [23 §M-29](23-innovation-moonshots.md#m-29-plant-performance-science-network-living-lab) |
 | C23-032 | Rootline Grounds | Edition for in-house grounds teams and public agencies | `owner` | [23 §M-32](23-innovation-moonshots.md#m-32-rootline-grounds-in-house-grounds-teams-and-public-agencies) |
 | C23-033 | Rootline Global | UK, Australia and New Zealand | `platform_owner` | [23 §M-33](23-innovation-moonshots.md#m-33-rootline-global-uk-australia-new-zealand-first) |
-| C23-034 | Innovation lab console | Stage gates, kill criteria and cohort flags for bets | `platform_owner` | [23 §4.3](23-innovation-moonshots.md#43-stage-gates-and-kill-criteria) |
+| C23-034 | Innovation lab console | KPIs, kill criteria and cohort flags for bets | `platform_owner` | [23 §4.3](23-innovation-moonshots.md#43-stage-gates-and-kill-criteria) |
 
 ---
 
-## 3. MVP scope definition
+## 3. Acceptance scenarios and launch readiness
 
-### 3.1 The MVP in one paragraph and six scenarios
+### 3.1 Six acceptance scenarios
 
-The MVP is the smallest Rootline that lets Greenleaf Grounds Co. (a 22-person design-build-maintain Company in Central Ohio, a Wave 1 Great Lakes Region) cancel Jobber or LMN and its design tool before spring, keep QuickBooks only as a mirror if its CPA wants that, and run the whole season in Rootline in English and Spanish. It is 442 catalog rows, but they serve six end-to-end scenarios. These scenarios are the acceptance tests for the MVP; each must pass in production for at least 15 of the 20 design partners before the MVP is sold generally.
+Rootline v1 lets a design-build-maintain Company such as Greenleaf Grounds Co. (the sample tenant: Columbus, Ohio, 120 clients) cancel Jobber or LMN and its design tool, keep QuickBooks only as a mirror if its CPA wants one, and run its whole year in Rootline in English and Spanish. Six end-to-end scenarios are the acceptance tests for v1. Each runs as an automated test against the Greenleaf sandbox in CI and as a synthetic run in production, and it passes only when it completes without a workaround.
 
 | # | Scenario (acceptance test) | Modules exercised |
 |---|---|---|
-| E1 | **Design-build sale.** Lead arrives -> estimator does an offline site assessment -> designer draws the backyard to scale with region-correct plants -> takeoff prices live -> good/better/best Proposal with AI mockups -> client signs on a phone and pays a 30% deposit on Greenleaf's own Stripe -> phased Project created with an 811 gate | 03, 06, 08, 10, 11, 12, 14 |
+| E1 | **Design-build sale.** Lead arrives -> estimator does an offline site assessment in the app's sales mode -> designer draws the backyard to scale with region-correct plants -> takeoff prices live -> good/better/best Proposal with AI mockups -> client signs on a phone and pays a 30% deposit on Greenleaf's own Stripe -> phased Project created with an 811 gate | 03, 05, 06, 08, 10, 11, 12, 14 |
 | E2 | **Maintenance season.** Agreement sold with level billing -> weekly route day assigned -> visits generated for the season -> crew completes visits offline with photos -> per-visit or level invoices -> autopay -> Stripe payout proven and matched to the bank line | 04, 05, 07, 08, 09 |
-| E3 | **Lawn program round.** A 5-round fertilizer program schedules each round inside its window -> technician records the application with label limits, weather and wind gate -> sign photo -> record available in the portal and in the state export format for the beachhead states | 04, 05, 06, 14 |
+| E3 | **Lawn program round.** A 5-round fertilizer program schedules each round inside its window -> technician records the application with label limits, weather and wind gate -> sign photo -> record available in the portal and in the state export format for each supported state | 04, 05, 06, 14 |
 | E4 | **Install job costing.** Takeoff becomes a buy list -> PO to the nursery -> receipt into the job -> vendor bill matched 2 ways -> labor from crew time -> job cost by phase vs estimate | 05, 09, 13, 15 |
 | E5 | **Month-end close.** Bank and card feeds categorized -> reconciliation -> deferred revenue and deposits roll forward -> AR and Stripe clearing control accounts prove -> P&L and balance sheet -> QuickBooks mirror reconciles | 07, 08, 09, 18 |
-| E6 | **The switch.** Owner imports from Jobber or LMN (and QuickBooks Online) -> AR ties out to the cent -> agreements and recurring schedules come over -> crews onboard by SMS in Spanish -> live in under 21 days (median) | 01, 02, 09, 19, 21, 22 |
+| E6 | **The switch.** Owner imports from Jobber or LMN (and QuickBooks Online) -> AR ties out to the cent -> agreements and recurring schedules come over -> crews onboard by SMS in Spanish -> the Company goes live, with a 7-day rollback window (R24-22) | 01, 02, 09, 19, 21, 22 |
 
-### 3.2 In and out of MVP, by module
+### 3.2 Launch-readiness checks
 
-Each module's MVP rows split into two sets. **Core loop** items are what a design partner needs to run real work in Rootline at all; the rest of the MVP builds on them, and field pilots exercise them first. **Completes the MVP** items make Rootline sellable to the beachhead buyer without workarounds. "Out" items are V1 or later (the catalog tag says which). "Cut first" items are the first to move to V1 if MVP scope must shrink (3.3).
+Rootline is ready for paying Companies when every check below passes. These are product checks: the build agent runs them, records the evidence and fixes the product when one fails. None of them waits for a number of customers, an interview or a pilot, and none is met by removing features.
 
-| Module | In MVP: core loop | In MVP: completes the MVP | Out of MVP | Cut first if scope must shrink |
-|---|---|---|---|---|
-| 01 Market intelligence | Switch-source capture; Jobber and LMN switch kits | Competitor registry, evidence ledger, win/loss records, market sizing workbook | Battlecards, comparison pages, change monitor, Fee X-ray, other switch kits | Capability matrix UI (keep it in a spreadsheet) |
-| 02 Identity and RBAC | Global identity, `resource.action` taxonomy, nine role templates, server-side field masking, crew phone sign-in, device registry, audit log, consented support access, break-glass | Custom roles (clone and edit), approval limits, kiosk PIN, hibernate and rehire, accountant delegated access, client contact roles | Branches, dual control, SSO, view-as simulator, JIT elevation, SCIM | Custom-role impact diff (ship clone-and-edit only) |
-| 03 CRM, estimating, proposals | Clients/Properties/Contacts, Lead Inbox, pipelines, Company Budget, overhead methods, production rates, Price Book, kits, margin engine, Quick Quote, proposal builder with tiers, e-sign, deposits, conversion to Jobs | Dedupe, offline assessments, turf auto-measure, follow-up cadences, fixed-escalator renewals, basic change orders, proposal analytics | Lead scoring, forecast, bulk enhancement campaigns, RFP bids, commissions, AI estimate drafts | Proposal analytics detail; nested kits |
-| 04 Scheduling and routing | Visit state machine, recurrence, dispatch board with draft/publish, single-crew sequence and insertion, live map, Weather Service | Capacity planner (basic), backlog, skills matching, holidays, best-day slotting, ETA notices, client skip/reschedule/pause (Availability API), freeze/heat alerts, density metrics | Multi-crew VRP, rain-day playbooks, scenarios, project dependencies, sub offers, add-on self-scheduling, Copilot rescheduling | Equipment reservations (notes only); density metrics |
-| 05 Crew app | Offline app, Today and route, run sheet with photos, crew time with crew punch, geofence prompts, pesticide records, signatures, voice notes, Outdoor Mode, Spanish | Spot it, materials logging, crew-lead extras, Field Design Mode capture, practice mode, location privacy view, Snow Lite storm visit log | Tap to Pay, scorecards, CA attestations (no California launch Region), full snow adapter and snow event mode, AR/LiDAR, MDM | Crew chat (crews keep using SMS); barcode scanning |
-| 06 Customer portal | Action links, magic link and SMS code, proposal viewer, sign-and-pay, invoices, payment and autopay, visit summaries | Brand kit, custom domains, plan viewer, AI slider, project tracker, on-the-way page, requests, skip/reschedule and vacation holds, messaging, plant care guides, warranty registry, preference center, Property Record view | Commercial portfolio and approvals, renewals in portal, live truck map, add-on self-scheduling, client passkeys, FR-CA | Property Record view; plant care guides |
-| 07 Invoicing and agreements | Billing Engine, per-visit and batched invoices, deposits, milestones, agreement lifecycle, manual and Stripe Tax rates, credit memos, AR aging, dunning, ledger postings | Level billing with true-up, prepaid seasons, T&M, auto-renewal rules, skipped-visit credits, service holds, POs, statements, late fees, exemption vault, invoice approval, per-push and per-application snow invoices from Snow Lite logs | Retainage, AIA pay apps, progress billing, Canadian tax, multi-currency, AI collections, payment plans | Late fees; multi-step invoice approval |
-| 08 Payments | Connect (OAuth and Account Links), cards and wallets, ACH, portal payment, webhook pipeline, balance-transaction postings, refunds, Rootline's own Billing account | Autopay with mandates, pay links, retries, dispute evidence, cash and checks, payout proof, account health and degraded mode | Tap to Pay, surcharging, financing, tips, PAD, CAD, restricted-key mode | Dispute auto-assembly (manual evidence pack) |
-| 09 Ledger and integrations | Ledger engine and invariants, chart templates, posting-rule registry, AR tie-out, deferred revenue, Stripe clearing, QBO connector in mirror mode, statements | Plaid feeds, reconciliation, receipts, AP bills, job costing, period close (basic), explain-this-number, QuickBooks migration with opening balances | WIP, fixed assets, 1099, multi-entity, Xero, QBD, budgets, cash forecast, year-end close | AI categorization (rules only); receipt auto-match |
-| 10 Design Studio | Site model, underlay calibration, measurement, beds and edging, basic hardscape, plant picker, fill-bed and schedule, takeoff rules, live price, push to Estimate, options and versions, stable object IDs | Validation engine (core rules), PDF plan sets, comments, layers and dimensions polish | 3D, irrigation, lighting, sun study, co-editing, DXF, iPad sketch, AI layout | Title-block variants; advanced paver patterns |
-| 11 AI mockups | Guided capture, protected-mask segmentation, photo restyle with presets, region-locked palettes, disclosure and C2PA | Calibration card, dimension form, scale calibration, render packs for the top 300 plants, image eval suite, website widget behind the verify-first gate | Layout generation, conversational assistant, photoreal plan-to-photo, seasonal and growth renders, fidelity score | Website widget (keep in-app restyle); label overlays |
-| 12 Plant KB | Records and traits, Region layers and Site Context, legal lists, Plant Region Profiles for the six Wave 1 Great Lakes Regions, curation workflow, releases, search, palettes, private plants, Price Book link | 3,000 plants at Silver or better, photo pipeline, license registry, offline crew subset, basic substitutions, rating sessions | Plant ID by photo, nursery availability, SEO pages, Plant API, FR-CA names | Natural-language search (faceted only); rating-session UI (use sheets) |
-| 13 Operations | Item master and UOM, inventory Off and Light, buy lists, POs, receiving, subcontractor COI gate, asset registry | Vendor price lists, 2-way bill match, equipment rate calculator, meters, DVIR, load-out sheets, SDS library, locations, reservations | Standard and Advanced inventory, workbench, 3-way match, Nursery Connect, PM and work orders, telematics, fuel, tools, holding yard, warranties | Load-out sheets; reservations |
-| 14 Service lines | Framework (catalog, manifests, toggles), core maintenance, install projects (phases, 811 gate, change orders), seasonal campaigns | Lawn/PHC programs with label library, application compliance and sign gate; irrigation inventory, seasonal irrigation services, repair tickets; punch lists; enhancement capture; setup wizards; Snow Lite (storm visit log, snow site list, per-site PDF proof of service) | Full Snow & Ice module, backflow, smart irrigation, lighting, holiday lighting, mosquito, commercial grounds, tree care | Cross-module rules beyond the first three |
-| 15 Team, HR, payroll | Employee records, timesheets from time segments, approvals, payroll export (Gusto, QBO Payroll, CSV), labor burden profiles | Credential enforcement, time off, rain-day call-off, Federal plus launch-state pay packs (Ohio, Michigan, Illinois, Indiana, Wisconsin), regular-rate OT, OSHA log, offboarding, announcements, self-service | Applicant tracking, H-2B workspace, LMS, PTO accrual, piece rate, prevailing wage, embedded payroll, other state packs | OSHA wizard (keep the log and export); self-service polish |
-| 16 Growth and comms | Lifecycle messages, template registry, per-tenant 10DLC, consent ledger, unified inbox (SMS, email, portal) | Forms and widgets, email-parser marketplace ingest, review requests, NPS, segments and basic campaigns, prebuilt journeys, call tracking with missed-call text-back, first/last-touch attribution | Website builder, instant quote and online booking, AI receptionist, neighborhood marketing, direct mail, full referrals, social posting | NPS; campaigns (keep segments plus export) |
-| 17 AI and automation | Tool Registry, AI Gateway integration, Copilot panel and Cmd-K, number grounding, action tiers, AI audit, injection defenses, eval harness, credit metering | Approval Inbox, Daily Owner Briefing, Inbox Triage, Lead Follow-up, Field-Note agent, Estimating agent (from notes), Automation Builder with recipes and NL authoring, Company Brain, generative UI | Scheduling, bookkeeping, AP and RFP agents; MCP server; predictive models; crew voice assistant | NL automation authoring; Company Brain editor UI |
-| 18 Reporting | KPI Dictionary (core metrics), Job Cost Detail, Owner Command Center (basic) | Ops, sales and office dashboards; revenue views; 20 core reports; scheduled delivery and exports; certified NL answers via Copilot; data health | Report builder, forecasts, benchmarking, exploratory NL analytics, ClickHouse platform | SSP allocation (keep revenue views); data health panel |
-| 19 Operator console | Tenant directory and 360, lifecycle, support console and consent, feature flags, KB console, AI ops (basic), 10DLC center, Connected Account Health, system health | Migration Center and white-glove queue, SaaS billing with credit ledger and tax, DSAR and retention, platform analytics, fraud screening, help center | Session replay, runbooks, partner portal, Operator Copilot, beta programs, automated change freezes | Platform analytics UI (use warehouse queries); template distribution |
-| 20 Architecture | Monolith and module rules, RLS tenancy, Cedar, outbox, Temporal, sync protocol, media pipeline, AI Gateway, notifications, routing service, ledger invariants, Stripe webhooks, AWS, observability, CI/CD, test suites | SOC 2 Type I readiness, PCI SAQ-A, tested DR, April-peak load test, public API core and webhooks | Cells, Canadian residency, SSO/SCIM, OAuth marketplace, MCP, MSK, OpenSearch | Public API write endpoints (read-only at MVP) |
-| 21 UX and design system | Token pipeline, component library, web shell, crew sitemap, Outdoor Mode, EN/ES, Today home | Onboarding wizard, sample sandbox, notification design, WCAG audit, marketing site, microcopy | Dark mode, field-night, FR-CA, presence, published ACR | Icon set breadth (base set plus 30 landscape glyphs) |
-| 22 Pricing and packaging | Entitlement engine, seat counting (design partners on Founding terms) | Tiers, AI credits, SMS packs, Price Lock, trials, Founding program, catalog editor, cancel and save, savings calculator | Enterprise, Winter Mode, Archive plan, pay-as-you-grow, Rootline Home and Match, Design Solo | Savings calculator (static page) |
-| 23 Moonshots | Rails R-01, R-02, R-03, R-06, R-08, R-09, R-11, R-12, R-14 | (same) | All bets; rails R-04, R-05, R-07, R-10, R-13 at V1 | None: rails are not cut |
-
-### 3.3 Cut order if MVP scope must shrink
-
-If the MVP cannot meet the quality bar in 3.4 with its full scope, scope is cut in this order, one step at a time, until it can. Nothing in P3 (money correctness) or P4 (offline) is ever cut, and the six scenarios in 3.1 must still pass after every cut.
-
-1. Every "cut first" item in 3.2 (about 35 items).
-2. Features partners can live without for one spring: basic proposal analytics (03), Field Design Mode capture (05; designers measure in the Studio), plant warranty registry (06; warranties tracked on the Job), equipment meters and rate calculator (13; estimators enter equipment rates manually, dependency D17), call tracking (16; missed-call text-back stays).
-3. Lawn/PHC state export formats beyond the beachhead states (14); custom domains (06; subdomain only); exemption certificate vault (07; certificates stored as Client documents).
-4. Purchasing beyond buy lists and simple POs (13): receiving and 2-way match move to V1, and vendor bills are entered directly in AP (09).
-5. Last resort: AI agents other than Lead Follow-up and Field-Note move to V1, and Copilot ships as read-only Q&A (17).
-
-### 3.4 MVP exit criteria (release readiness)
-
-The MVP is released for general sale only when every row is met. The platform owner signs off.
-
-| Area | Criterion | Target | Evidence |
+| Area | Check | Target | Evidence |
 |---|---|---|---|
-| Scenarios | E1-E6 pass in production | 15 of 20 design partners, each scenario | Scenario log in the design-partner tracker |
-| Commercial readiness | Design partners live through a full month-end close | ≥ 15 of 20 | Close checklists ([09 section 4.11](09-accounting-ledger-integrations.md#411-period-close)) |
-| Commercial readiness | Median migration time | ≤ 21 days | Migration Center timestamps ([19](19-platform-admin-portal.md#43-onboarding-and-migration-tooling)) |
-| Commercial readiness | Partners who would pay list price (day-60 interview) | ≥ 8 | Interview notes |
-| Data integrity | Open P1 data-integrity bugs | 0 | Bug tracker |
+| Scenarios | E1-E6 (3.1) pass end to end in the sandbox and as production synthetics | All six, without a workaround | CI and synthetic-run logs |
 | Ledger | Ledger invariant violations; control accounts proved; Stripe payouts matched to balance transactions | 0; 100%; 100% | Nightly proofs ([09](09-accounting-ledger-integrations.md#413-audit-trail-and-evidence), [08](08-payments-stripe.md#417-reconciliation-into-the-ledger-mvp)) |
-| Estimating parity | Estimates recomputed against LMN-style budget math | 50 of 50 match to the cent | Golden set from design partners ([03](03-crm-sales-estimating-proposals.md#est-09-pricing-math-margin-markup-and-the-truth-mvp)) |
-| Field quality | Crew app crash-free sessions | ≥ 99.5% | Mobile telemetry |
-| Offline | Sync data loss in chaos tests and with design partners | 0 records | Offline chaos suite ([20](20-architecture-security.md#429-testing-strategy-mvp)) |
-| Field performance | Battery use per shift on the reference low-end Android | ≤ 10% | Field test ([05](05-field-crew-mobile-app.md#420-device-performance-low-end-android-battery-and-data-budgets)) |
+| Data integrity | Open P1 data-integrity bugs | 0 | Bug tracker |
+| Estimating parity | Estimates recomputed against LMN-style budget math | 50 of 50 match to the cent | Estimating golden set ([03](03-crm-sales-estimating-proposals.md#est-09-pricing-math-margin-markup-and-the-truth-mvp)) |
+| Migration | Each switch kit (R24-15) imports its fixture export with AR tied out to the cent, agreements and recurring schedules intact, and a working 7-day rollback | Every kit | Migration Center rehearsal logs ([19](19-platform-admin-portal.md#43-onboarding-and-migration-tooling)) |
+| Offline | Sync data loss in the offline chaos suite | 0 records | Offline chaos suite ([20](20-architecture-security.md#429-testing-strategy-mvp)) |
+| Field quality | Crew app crash-free sessions in device-farm and soak tests | ≥ 99.5% | Mobile telemetry |
+| Field performance | Battery use per scripted shift on the reference low-end Android | ≤ 10% | Field test ([05](05-field-crew-mobile-app.md#420-device-performance-low-end-android-battery-and-data-budgets)) |
 | Web performance | Budgets in [20 section 4.28](20-architecture-security.md#428-performance-budgets-mvp) (for example dispatch board with 400 Visits and 25 crews renders in < 1.5 s) | All met at p75/p95 | Synthetic tests |
-| Scale | Load test at 3x the projected April Monday peak for launch tenants | Pass with SLOs | Load-test report |
+| Scale | Load test at 3x the projected April Monday peak | Pass with SLOs | Load-test report |
+| Migration capacity | Migration Center, switch kits and AI mapping at 2x steady-state concurrency, sized for the January-April switching peak | Pass with SLOs | Migration Center load test ([19](19-platform-admin-portal.md#43-onboarding-and-migration-tooling)) |
 | Tenant isolation | Isolation suite and production cross-tenant canaries | 100% pass, 0 leaks | CI and canary logs ([20](20-architecture-security.md#443-tenant-isolation-testing-mvp)) |
 | Security | External penetration test | No open high or critical findings | Pen-test report |
-| Compliance | PCI DSS SAQ-A; SOC 2 Type I report (or signed readiness with Type II window started); ESIGN/UETA flows and pesticide record formats reviewed by counsel for launch states | Done | Attestations and counsel memos |
-| Messaging | 10DLC registrations for design partners approved | 100%; median ≤ 10 business days (target) | 10DLC center ([19](19-platform-admin-portal.md#410-communications-operations)) |
-| Plant KB | All six Wave 1 Great Lakes Regions at Excellent; region-compliance eval | ≥ 3,000 plants Silver+; eval ≥ 99% | KB quality gates ([12](12-plant-knowledge-base.md#413-seed-strategy-the-first-3000-plants-and-the-first-regions-kb-seed)) |
-| AI | Mockup golden-set evals (scale, plant identity, house preservation) pass; AI COGS per Grow tenant within plan | Gates in [11](11-ai-design-mockups.md#49-operator-and-tenant-controls-mvp-core-v1-advanced); ≤ 4% of revenue (estimate) | Eval dashboard; AI cost per tenant ([19](19-platform-admin-portal.md#49-ai-operations)) |
-| Operations | On-call, SLOs, status page, runbooks, bilingual support hours, backup restore drill | All in place; restore drill < 4 h | Ops review |
-| Migration capacity | Migration Center, switch kits and AI mapping handle the January-April switching peak at 2x steady-state concurrency | Pass with SLOs | Migration Center load test ([19](19-platform-admin-portal.md#43-onboarding-and-migration-tooling)) |
+| Compliance | PCI DSS SAQ-A; SOC 2 Type I readiness with evidence capture running; ESIGN/UETA audit certificates and pesticide record formats match their rule tables | Done | Attestations; evidence capture in 19 |
+| Messaging | Rootline's 10DLC ISV registration and the per-Company brand and campaign registration flow approved end to end | Approved; median approval ≤ 10 business days (target) | 10DLC center ([19](19-platform-admin-portal.md#410-communications-operations)) |
+| Plant KB | The six Great Lakes Regions (OD-01) at Excellent; region-compliance eval | ≥ 3,000 plants Silver+; eval ≥ 99% | KB quality gates ([12](12-plant-knowledge-base.md#413-seed-strategy-the-first-3000-plants-and-the-first-regions-kb-seed)) |
+| AI | Mockup golden-set evals (scale, plant identity, house preservation); Copilot and agent golden sets; AI cost per Grow tenant on the reference workload | Gates in [11](11-ai-design-mockups.md#49-operator-and-tenant-controls-mvp-core-v1-advanced) and [17](17-ai-copilot-automation.md#4114-evaluation-harness-mvp) pass; ≤ 4% of revenue (estimate) | Eval dashboard; AI cost per tenant ([19](19-platform-admin-portal.md#49-ai-operations)) |
+| Operations | SLOs and alerting, status page, runbooks, the support agent answering in English and Spanish, backup restore drill | All in place; restore drill < 4 h | Operations review by the engineering agent |
 
-### 3.5 What the MVP explicitly is not
+### 3.3 What Rootline is not
 
-- Not a commercial-first product: commercial portfolios, approval chains with budgets, AIA pay applications, retainage and multi-crew VRP are V1 (for S4).
-- Not a full snow product: **Snow Lite** covers storm visit logs with timestamped GPS photos and notes, a priority-ordered snow site list, per-push and per-application invoices generated from those logs, and a per-site PDF proof of service, in every plan at no charge. The Storm Command Center, eight pricing models with caps and floors, subcontractor plowers, salt inventory and hash-sealed proof packets come with the full Snow & Ice module.
-- Not Canadian: CAD, PAD, GST/HST/QST and Canadian data residency are V1, with the Ontario Wave 2 Regions that extend the Great Lakes region across the border. French-Canadian UI follows in V1/V2.
-- Not a payroll processor: payroll is export plus journal import; embedded payroll is a V1 pilot.
-- Not autonomous: agents propose; humans approve. L3 autonomy applies only to two templates (payment reminder on day 3, visit-completion message).
-- Not a marketplace: Rootline Home, Match, Plant Exchange and the labor marketplace wait for V1-V2 pilots and their own stage gates.
+These are product boundaries that hold in v1, not deferrals.
+
+- **No money held.** Client payments are direct charges on each Company's own Stripe account. Rootline never holds client funds or wage funds; lending, insurance, bill pay and payroll money movement go through licensed partners.
+- **No autonomy by default.** Agents propose and people approve. L3 applies from the start only to the day-3 payment reminder and visit-completion messages; every other action earns autonomy per agent and action on measured accuracy (R25-C8). AI never sets a price and never takes a T4 action such as charging a card, changing bank details or running payroll.
+- **No outbound AI calls.** The AI receptionist answers inbound calls; Rootline never places outbound AI voice calls (OD-47).
+- **No keyed cards and no face biometrics.** Pay links replace keyed card entry (OD-20); punch photos are optional and non-biometric (OD-54).
+- **No invented plants.** AI mockups use only Region-valid KB plants and are always labeled as artist renderings.
+- **No training on customer data.** No model is trained on tenant data unless the Company opts in to pooled learning (C17-032).
 
 ---
 
-## 4. Beyond the MVP: scope tiers and product dependencies
+## 4. Product dependencies and build order
 
-### 4.1 Scope tiers, not release trains
+These are product dependencies: what must exist before what. They set the order in which v1 is built, not what v1 contains. The cross-document reconciliations that the previous version kept in this section are settled in [section 1.5](#15-contradictions-resolved).
 
-Rootline ships continuously behind feature flags ([19 section 4.5](19-platform-admin-portal.md#45-entitlements-and-feature-flags)). A tag says which scope wave a feature belongs to; it is not a delivery date. Three rules decide the tier:
+### 4.1 Product dependencies
 
-1. **Sellability decides the MVP.** A feature is MVP only if a beachhead (S2) or follow-on (S3) owner would fail a sellability test in 1.1 without it (P1).
-2. **Segments, Regions and depth decide V1.** V1 is the scope that opens the expansion segments (S4 commercial, S5 snow and specialty), the Wave 2 Regions including Ontario, and the depth MVP customers ask for once they run a full season in Rootline.
-3. **Scale and networks decide V2 and V3.** V2 needs many Companies on the platform (multi-company rollups, franchise, public benchmarks, partner marketplaces) or a second US cluster (Wave 3). V3 is the moonshots in [23](23-innovation-moonshots.md), which advance only through its stage gates.
-
-Within a tier, the order follows the product dependencies in 4.4 and the seasonal constraints in 1.4. Items not named in 4.2 or 4.3 belong to their catalog tag and are built when their dependencies are met.
-
-### 4.2 What V1 adds
-
-| Theme | Headline V1 scope (owner docs) | Why it is V1, not MVP |
-|---|---|---|
-| Commercial (S4) | Multi-crew VRP, rain-day playbooks, scenarios, project dependencies and sub offers (04); commercial portfolio, enhancement approvals with budgets, quorum and sequential approvals, renewals in the portal (06, 02); retainage, AIA pay applications, progress and consolidated billing, client AP approval (07); commercial SOW per zone and scored audits, commercial grounds (14); branches, divisions and multi-role assignments (02) | S4 is an expansion segment (1.1); the beachhead runs on single-crew sequencing and residential billing |
-| Full Snow & Ice | Storm Command Center, eight pricing models with caps and floors, subcontractor plowers, salt inventory, hash-sealed proof packets and storm billing (14, 07), sold as the Snow & Ice add-on on top of Snow Lite, which stays in every plan (22) | Snow Lite covers the beachhead's winter (OD-05); the full module needs the Storm Event Engine (D12) |
-| Wave 2 Regions and Canada | Ontario Golden Horseshoe and nearby US metros at Excellent (12); CAD, PAD, GST/HST/QST/PST, CASL and the Canadian residency stack (07, 08, 16, 20); additional jurisdiction packs, including California (15) | Wave 1 is US-only (1.3); Canadian tenants need residency first (D23) |
-| Money depth | WIP, fixed assets, budgets, commitments and the Accountant Hub; year-end close and 1099; QuickBooks Desktop and Xero (09); Tap to Pay on iPhone (US), check OCR and payment plans (08, 07); inventory Standard mode with its subledger, PM schedules and work orders (13, 09) | Standard inventory and PM need the ledger proven in production first (4.6 #6, #7); MVP customers keep a QuickBooks mirror through year-end (1.4) |
-| Design and AI depth | 3D, irrigation and lighting design, co-editing and DXF (10); AI layout generation, conversational assistant and photoreal plan-to-photo (11); scheduling, bookkeeping, AP and RFP agents, crew voice assistant, remote MCP server and OAuth marketplace (17, 20); plant ID by photo and nursery availability parsing (12) | AI layout needs the Wave 1 KB seed (D8); agents need the Action Layer and trust earned at L0-L2 (P6) |
-| Growth and packaging | Website builder, instant quote and online booking, AI receptionist, referral program, journey builder (16); Enterprise tier with SSO and sandbox, Winter Mode, Archive plan, pay-as-you-grow, Spring-Ready Guarantee, Rootline Home and Match pilot (22, 02, 20) | 22 sells these as V1 add-ons and tiers (4.6 #8, #9, #11, #12) |
-| People, reporting and platform | H-2B workspace and credential OCR, applicant tracking and LMS, embedded payroll pilot (15); ClickHouse platform, report builder, alerts, 13-week cash and capacity forecasts, exploratory NL analytics, benchmarking beta (18); cells with tenant move tooling (20); partner program (19); client passkeys (06) | Benchmarks need at least 10 Companies per cell (D19); the rest is depth the MVP works without |
-
-### 4.3 What V2 and V3 add
-
-Every and catalog row is named below.
-
-| Theme | Headline scope (catalog IDs) |
-|---|---|
-| Organizations and enterprise | Franchise data-sharing agreements and franchise mode (C02-015, C23-021); SCIM and just-in-time elevation (C02-025, C02-013); customer-managed encryption keys (C20-033) and the dedicated-database option (C20-005, later slice); bring-your-own model and agent marketplace, app marketplace (C17-028, C23-025) |
-| Service lines and the property | Tree care and crane lift plans (C14-024, C14-025); Property Health Score (C14-038); HOA board meeting workflows (C06-035); client plant swaps within approved alternates (C06-016); install QA against the approved mockup (C11-023); persistent property digital twin, drone capture, AR in the yard and RTK stakeout (C23-002 to C23-005); Landscape Passport transfer (C23-013); wildfire-ready landscapes and stormwater credits (C23-029, C23-030) |
-| Money and finance partners | Split billing across payers (C07-043); remote deposit capture and lockbox (C08-025); embedded bill pay (C09-010); tax-basis and cash-basis views (C09-025); Sage Intacct (C09-038); Spring Ramp working capital, equipment financing and embedded insurance through licensed partners (C23-018 to C23-020); Autopilot L3 for invoicing and bank reconciliation (C23-024) |
-| AI, data and planning | Snow Event agent (C17-020); what-if business simulator and scenario planner (C17-035, C18-018); State of the Landscape report and Pulse indices (C18-021); Rootline Plant API (C22-021); climate-forward ratings and climate-adaptive planting (C12-029, C23-012); Plant Doctor diagnosis (C23-009); Plant Performance Science Network (C23-031); Design Films (C23-022) |
-| Networks and equipment | Homeowner network at scale (C23-014); Plant Exchange live availability (C23-015); Overflow work-package marketplace (C23-016); robotic mower orchestration, fleet electrification planner and closed-loop irrigation assist (C23-006 to C23-008); in-app truck-aware navigation (C05-004) |
-| Regions | Wave 3: a second US cluster, chosen on traction in the launch region (1.3) |
-| Moonshots | Gaussian-splat walkthroughs (C11-012); Rootline Buying Network (C13-038); Rootline Grounds for in-house grounds teams and public agencies (C23-032); Rootline Global for the UK, Australia and New Zealand (C23-033); and the slices of bets, for example parametric snow insurance, generative video and irrigation autopilot |
-
-### 4.4 Product dependencies
-
-These are product dependencies: what must exist before what. "Hard" means the later item cannot work without the earlier one; "soft" means it can ship with a documented workaround.
+"Hard" means the later item cannot work without the earlier one; "soft" means the later item can be built first with a documented workaround and wired up when the earlier one lands.
 
 | # | Must come first | Before | Type | Why |
 |---|---|---|---|---|
@@ -1330,10 +1269,10 @@ These are product dependencies: what must exist before what. "Hard" means the la
 | D2 | Ledger engine and posting-rule registry ([09](09-accounting-ledger-integrations.md#414-posting-rules-as-data-mvp-registry-v1-simulation-ui)) | Billing postings (07), payment postings (08), job costing, inventory Standard mode | Hard | Every money event posts through it; 07 and 08 reference 09's rules |
 | D3 | Ledger with opening balances ([09](09-accounting-ledger-integrations.md#418-migration-from-quickbooks-and-opening-balances)) | QuickBooks migration and QBO mirror mode | Hard | Migration proves opening balances in the native ledger before mirroring |
 | D4 | BYO Stripe connect and webhook pipeline ([08](08-payments-stripe.md#422-webhooks-architecture-for-connected-accounts-mvp)) | Deposits, portal payment, autopay, dispute evidence, Tap to Pay | Hard | All payments are direct charges on the Company's account |
-| D5 | Offline sync protocol ([20](20-architecture-security.md#411-offline-sync-for-the-crew-app-mvp)) | Crew app features, pesticide records, signatures, crew time | Hard | Offline is the default state (P4) |
+| D5 | Offline sync protocol ([20](20-architecture-security.md#411-offline-sync-for-the-crew-app-mvp)) | Crew app features, pesticide records, signatures, crew time | Hard | Offline is the default state for crews |
 | D6 | Visit state machine and recurrence ([04](04-scheduling-dispatch-routing.md#413-visit-state-machine-canonical-mvp)) | Crew app run sheet, agreement billing, portal visit history | Hard | Shared states and reason codes |
 | D7 | Region model and Site Context ([12](12-plant-knowledge-base.md#43-region-model-and-geospatial-lookup-kb-rgn)) | Plant Region Profiles, Design Studio validation, AI palettes, seasonal service calendar | Hard | Every regional rule resolves through it |
-| D8 | KB seed with Plant Region Profiles in the Wave 1 Great Lakes Regions ([12](12-plant-knowledge-base.md#413-seed-strategy-the-first-3000-plants-and-the-first-regions-kb-seed)) | Region-locked AI mockups, AI layout generation, Rootline Home | Hard | AI may only use plants rated 3+ at Silver+ |
+| D8 | KB seed with Plant Region Profiles in the six Great Lakes Regions ([12](12-plant-knowledge-base.md#413-seed-strategy-the-first-3000-plants-and-the-first-regions-kb-seed)) | Region-locked AI mockups, AI layout generation, Rootline Home | Hard | AI may only use plants rated 3+ at Silver+ |
 | D9 | Design Studio takeoff and stable object IDs ([10](10-design-studio.md#4151-takeoff-rules-mvp)) | Push to Estimate, buy lists (13), plant warranty registry (06), as-built | Hard | Quantities and plant instances come from the design |
 | D10 | Price Book and production rates ([03](03-crm-sales-estimating-proposals.md#pb-01-price-book-mvp)) | Live price in the Studio, Quick Quote, instant online quotes | Hard | Prices come only from the Price Book |
 | D11 | Weather Service ([04](04-scheduling-dispatch-routing.md#491-weather-service-mvp)) | Pesticide wind gate, rain-day playbooks, storm events, growth-adaptive mowing | Hard | Derived indices feed all of them |
@@ -1342,19 +1281,19 @@ These are product dependencies: what must exist before what. "Hard" means the la
 | D14 | KPI Dictionary ([18](18-reporting-analytics.md#411-semantic-layer-and-certified-metrics-mvp)) | Dashboards, Copilot metric answers, NL analytics, benchmarks | Hard | Every number has one definition |
 | D15 | Per-tenant 10DLC and consent ledger ([16](16-marketing-growth-communications.md#420-10dlc-brand-and-campaign-registration-per-tenant-mvp)) | Any SMS to clients (lifecycle, campaigns, agents) | Hard | Carriers block unregistered traffic |
 | D16 | Time segments ([05](05-field-crew-mobile-app.md#45-crew-time-tracking)) | Timesheets, payroll export, job-cost labor, H-2B guarantee, certified payroll | Hard | One time model feeds them all |
-| D17 | Equipment rate calculator ([13](13-operations-inventory-equipment.md#4147-equipment-cost-per-hour-mvp-calculator-v1-actuals)) | Equipment costing in estimates (03) | Soft | Estimators can enter rates manually until it ships |
-| D18 | Entitlement engine ([22](22-business-model-pricing-gtm.md#422-catalog-codes-canonical-used-by-the-entitlement-engine-and-the-admin-console)) | Tier packaging, credits, add-ons, Winter Mode | Hard | Every gate reads it |
-| D19 | ≥ 10 Companies per benchmark cell ([18](18-reporting-analytics.md#411-industry-benchmarking-the-moat-v1-beta-v2-full)) | Benchmarking beta | Hard | Privacy rule k ≥ 10; needs enough Companies per cell |
+| D17 | Equipment rate calculator ([13](13-operations-inventory-equipment.md#4147-equipment-cost-per-hour-mvp-calculator-v1-actuals)) | Equipment costing in estimates (03) | Soft | Estimating can be built first with manually entered rates |
+| D18 | Entitlement engine ([22](22-business-model-pricing-gtm.md#422-catalog-codes-canonical-used-by-the-entitlement-engine-and-the-admin-console)) | Plan packaging, credits, add-ons, Winter Mode | Hard | Every gate reads it |
+| D19 | ≥ 10 Companies per benchmark cell ([18](18-reporting-analytics.md#411-industry-benchmarking-the-moat-v1-beta-v2-full)) | Publishing a benchmark cell | Hard | Privacy rule k ≥ 10; a run-time condition, not a build step (1.4) |
 | D20 | Organization layer (rail R-07) | Franchise mode, multi-company rollups, Rootline Grounds | Hard | Data-sharing agreements live there |
 | D21 | Device registry and telemetry store (rail R-05) | Smart irrigation, robot orchestration, telematics | Hard | Generic device abstraction |
 | D22 | Photo stations and outcome capture (R-04, R-13) | Digital twin, Plant Performance Network, insured warranties | Soft | Bets need history; the earlier the rails, the more data |
-| D23 | Canadian residency stack ([20](20-architecture-security.md#446-canadian-data-residency-v1)) | Ontario Wave 2 Regions, Canadian AI inference policy | Hard | Residency must exist before Canadian tenants' data |
-| D24 | A full season of retention data from paying Companies | Pricing changes, pay-as-you-grow, Match pricing | Soft | Change prices only with evidence ([22](22-business-model-pricing-gtm.md#610-pricing-validation-plan)) |
-| D25 | Visit state machine (D6), offline photo pipeline (D5) and basic per-push billing ([07](07-invoicing-billing-contracts.md#4210-event-based-snow-and-ice-billing-mvp-basic--v1-full)) | Snow Lite storm visit log, snow site list and PDF proof of service | Hard | Snow Lite is a thin layer on MVP pipelines; it needs no Storm Event Engine, hash sealing or weather triggers |
+| D23 | Canadian residency stack ([20](20-architecture-security.md#446-canadian-data-residency-v1)) | Canadian Companies' data, Canadian AI inference policy | Hard | Residency must exist before a Canadian Company's data does |
+| D24 | Usage and retention data from paying Companies | The founder's changes to prices and credit rates | Soft | Prices change only with evidence; nothing in the build waits for it ([22](22-business-model-pricing-gtm.md#610-pricing-validation-plan)) |
+| D25 | Visit state machine (D6), offline photo pipeline (D5) and per-push billing ([07](07-invoicing-billing-contracts.md#4210-event-based-snow-and-ice-billing-mvp-basic--v1-full)) | Snow Lite storm visit log, snow site list and PDF proof of service | Hard | Snow Lite is a thin layer on the core visit and photo pipelines; it needs no Storm Event Engine, hash sealing or weather triggers |
 
-### 4.5 Critical path to the MVP
+### 4.2 Build order
 
-The critical path to the MVP runs through D1 -> D2 -> D4 -> D3 (money) and D1 -> D5 -> D6 (field). The Plant KB (D7 -> D8) runs in parallel but has a seasonal constraint: bloom and fall-color photography needs a growing season (1.4). Every path ends at the exit criteria in 3.4.
+The build follows the dependencies in one sequence: tenancy, RLS and Cedar (D1) first; then the money spine (D1 -> D2 -> D4 -> D3) and the field spine (D1 -> D5 -> D6); then selling and design on the Plant KB (D7 -> D8 -> D9) and the Price Book (D10); then the customer portal; then everything else, each piece as soon as its dependencies hold. Plant KB content runs alongside the code: the plant curator agent builds the six Great Lakes Regions, and because bloom and fall-color photography needs a growing season (1.8), licensed photos fill in until a plant has its own (OD-67). Every path ends at the launch-readiness checks in 3.2. [25 section 5](25-platform-blueprint-build-handoff.md#5-build-order-by-dependency) places every route in this order.
 
 ```mermaid
 flowchart LR
@@ -1372,52 +1311,17 @@ flowchart LR
     K --> A["Region-locked AI mockups"]
     X --> PR["Proposal, e-sign and deposit"]
     A --> PR
-    B --> G{"MVP exit criteria (3.4)"}
+    B --> G{"Launch-readiness checks (3.2)"}
     M --> G
     C --> G
     PR --> G
 ```
 
-### 4.6 Cross-doc tag reconciliations
-
-Where module docs disagreed with each other, or where this document moves scope to keep the MVP focused on the beachhead (P1), the resolution below is binding. Rows marked "retag" carry `(doc:...)` in the catalog until the module doc adopts the new tag (13 now carries #6 and #7, and 16 carries #8, #9, #11 and #12). Resolutions use the plain scope tiers; a module doc that still cites a numbered V1 train for one of these rows means.
-
-| # | Topic | Conflict | Resolution (binding) |
-|---|---|---|---|
-| 1 | Snow and ice module | Earlier drafts of 14 listed snow features at MVP; 14 (current), 04, 05, 06, 19 and 22 say V1 | **Full module V1; Snow Lite at MVP.** Because the launch region is the Great Lakes (OD-01), the MVP ships Snow Lite in every plan at no charge: storm visit logs with timestamped GPS photos and notes on the MVP visit and photo pipeline, a priority-ordered snow site list, per-push and per-application invoices from those logs (C07-012) and a per-site PDF proof of service, with no hash sealing and no Storm Command Center (OD-05; [14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp), [14 section 4.0.1](14-service-line-modules.md#401-module-catalog-mvp)) |
-| 2 | Tree care | Earlier drafts said V1 | **V2** |
-| 3 | Tap to Pay | 05 feature list said MVP for iPhone US; 08 says V1 | **V1.** MVP field collection is check, cash, pay link and card on file |
-| 4 | Plaid bank feeds | 09, 08, 13 say MVP; 20's connector catalog says V1 | **MVP.** Native books are not credible without feeds |
-| 5 | Xero connector | 22 lists "QuickBooks Online / Xero sync" at MVP; 09 (owner) says V1 | **V1.** QBO at MVP |
-| 6 | Inventory Standard mode | 13 says MVP with a fallback; 22 says inventory V1 | **Retag to V1**, using 13's own fallback. Off and Light at MVP; buy lists, POs, receiving and 2-way match stay MVP |
-| 7 | Equipment PM and work orders | 13 says MVP; 22 says equipment maintenance V1 | **Retag to V1.** Registry, meters, DVIR and the rate calculator stay MVP |
-| 8 | Website builder | 16 says MVP; 22 says V1 add-on | **Retag to V1** |
-| 9 | Instant quote and online booking | 16 says MVP; 22 says V1 | **Retag to V1.** Turf auto-measure stays MVP for internal estimating |
-| 10 | Campaigns | 16 says MVP; 22 says V1 | **MVP basic** (segments, one-off email/SMS with price blocks, prebuilt journeys); journey builder, newsletters and direct mail V1. 22's matrix should say "basic at MVP" |
-| 11 | Reviews and referrals | 16: reviews MVP, referrals MVP basic; 22: V1 | Review requests and NPS **MVP**; referral program **V1** |
-| 12 | AI receptionist | 16 says after-hours capture at MVP; 22 says V1 add-on | **Retag to V1.** MVP has call tracking and missed-call text-back |
-| 13 | Change orders and renewals | 03, 07, 14 say MVP basic; 22 says V1 | **MVP basic** (fixed escalators, office and field change orders); full versions V1. 22's matrix should say "basic at MVP" |
-| 14 | Homeowner visualizer | 11: widget MVP; 06 and 21: portal-hosted and embed V1; 22: Rootline Home V1 | Website widget **MVP behind a verify-first gate for design partners**; portal-hosted visualizer V1; Rootline Home V1 |
-| 15 | LMN importer | 01 says MVP; 19 says V1 | **MVP.** LMN is the most common S2 source system after Jobber |
-| 16 | SCIM | 02 (owner) says V2; 20 and 22 say V1 | **V2**; SAML/OIDC SSO at V1 |
-| 17 | HOA approvals | 02: quorum approvals V1; 06: HOA board voting V2 | Quorum and sequential approvals **V1**; board meeting workflows (ballots, packets, resident intake) **V2** |
-| 18 | California rules | 05 and 15: CA meal/rest and CA packs at MVP | **Retag to V1**: the Great Lakes launch region has no California Regions. MVP packs are Federal plus the launch states (Ohio, Michigan, Illinois, Indiana, Wisconsin) |
-| 19 | Canada | 07: GST/HST at MVP; 08 and 09: CAD, PAD, FX at V1 | **V1, with the Ontario Wave 2 Regions**, which extend the Great Lakes launch region across the border |
-| 20 | Client skip, reschedule and self-scheduling | 04: Availability API MVP basic; 06: skip/reschedule/holds MVP, add-on self-scheduling V1 | **MVP** for skip, reschedule and pause; add-on self-scheduling **V1** |
-| 21 | Client passkeys | 02 suggests MVP; 06 says V1 | **V1** (custom-domain relying-party IDs need care) |
-| 22 | Import rollback window | 19: 72 hours; 21: 7 days | **7 days or until the first financial posting against imported records, whichever comes first** |
-| 23 | Tenant lifecycle timing | 19 and 22 vs 20 section 4.4.7 | **19/22 timings win** (past_due 0-13 days, restricted 14-29, suspended 30-59, churned at 60); 20 to update |
-| 24 | Gift credits | 07: gift credits V1; 16: gift certificates V1; 08: Gift a Service V2 | **V1**, after the gift-card law matrix ([16 open question 17](16-marketing-growth-communications.md#14-open-questions)) |
-| 25 | Staff passkeys | 02 feature list said V1; 20 and 02 open question 11 say WebAuthn at MVP for staff | **MVP** for staff and platform users |
-| 26 | Crew voice assistant | 17: MVP core | **Retag to V1**; MVP voice = voice notes (05) plus the Field-Note agent (17) |
-| 27 | Forecasts and scheduled reports | 18 vs older 22 | Already reconciled in 22: scheduled delivery **MVP**, report builder V1, cash and capacity forecasts **V1**, scenario planner V2 |
-| 28 | Account codes and event names | 08 vs 09 codes; 07/08/20 event prefixes | **09's chart is canonical**; producer event names are canonical in 20's registry |
-
 ---
 
 ## 5. Build vs buy vs partner
 
-Rule of thumb (P10): build what is the moat or what touches money correctness; buy commodity infrastructure; partner where a regulated license or a network is required. Vendor names are candidates; verify terms before signing. The Tier column is the scope tier that first needs the capability; "Revisit if" names the product or market condition that reopens the decision.
+Rule of thumb: build what is the moat or what touches money correctness; buy commodity infrastructure; partner where a regulated license or a network is required. Vendor names are candidates: the build agent verifies terms before Rootline signs, and the founder signs. "Revisit if" names the product or market condition that reopens a decision; the build agent records any change in an ADR.
 
 | Capability | Decision | Choice (candidates) | Why | Revisit if |
 |---|---|---|---|---|
@@ -1425,223 +1329,114 @@ Rule of thumb (P10): build what is the moat or what touches money correctness; b
 | Rootline's own subscriptions | **Buy** | Stripe Billing on Rootline's separate platform account | Standard SaaS billing; credits mirrored to meters | Never, unless Accounts v2 customer configs fit better ([08 open question 8](08-payments-stripe.md#14-open-questions)) |
 | General ledger, posting rules, job cost, WIP | **Build** | In-house ([09](09-accounting-ledger-integrations.md#41-ledger-engine)) | Core differentiator; competitors depend on QuickBooks | - |
 | QuickBooks Online, Xero sync | **Build** | In-house connectors on the connector SDK | Sync quality is a sales point | Intuit or Xero API metering changes cost materially |
-| QuickBooks Desktop | **Buy or build** | Third-party Desktop API service if reliable; else Web Connector in-house | Small share of pilots; unknown | After 10 Desktop-blocked deals |
-| Bank feeds | **Buy** | Plaid; Canadian aggregator evaluated for V1 | Commodity, regulated access | Canadian coverage gaps |
-| Sales tax calculation | **Partner** | Manual rates plus Stripe Tax calculation; Avalara adapter | Rules change constantly | Multi-state commercial tenants |
-| 1099 e-file | **Partner** | Certified filing partner | Compliance burden | Volume above 50k forms a year |
-| Payroll processing | **Partner** | Export at MVP (Gusto, QBO Payroll, CSV); embedded payroll (Check or Gusto Embedded) pilot V1 | Money movement licenses; Rootline never holds wage funds | Partner economics at 1,000+ payroll tenants |
+| QuickBooks Desktop | **Build** | Web Connector integration in-house (OD-30) | A small share of Companies still run Desktop; the Web Connector needs no third party | A reliable third-party Desktop API service appears |
+| Bank feeds | **Buy** | Plaid, plus a Canadian aggregator for Canadian Companies | Commodity, regulated access | Canadian coverage gaps |
+| Sales tax calculation | **Partner** | Manual rates plus Stripe Tax calculation; Avalara adapter (OD-31) | Rules change constantly | Multi-state commercial tenants |
+| 1099 e-file | **Partner** | Certified filing partner (OD-30) | Compliance burden | Volume above 50k forms a year |
+| Payroll processing | **Partner** | Export (Gusto, QBO Payroll, ADP, Paychex, CSV) and embedded payroll through Check, with Gusto Embedded as the fallback (OD-53) | Money movement licenses; Rootline never holds wage funds | Partner economics at 1,000+ payroll tenants |
 | E-signature | **Build** | Native ESIGN/UETA with audit certificate ([03](03-crm-sales-estimating-proposals.md#prop-05-e-signature-esign--ueta-mvp)) | Per-envelope fees and UX control | Quebec or government clients require a qualified provider |
-| Offline sync engine | **Hybrid** | Self-hosted sync service for the read path (PowerSync-class) plus in-house outbox for writes; the sync spike decides ([20](20-architecture-security.md#4116-build-vs-buy)) | Highest-risk component; avoid writing replication from scratch | Spike fails RLS compatibility or per-entity conflict hooks |
+| Offline sync engine | **Hybrid** | Self-hosted sync service for the read path (PowerSync-class) plus in-house outbox for writes (OD-58; [20](20-architecture-security.md#4116-build-vs-buy)) | Highest-risk component; avoid writing replication from scratch | The sync service fails RLS compatibility or per-entity conflict hooks in the build agent's tests |
 | Route optimization | **Build on open source** | OR-Tools service ([04](04-scheduling-dispatch-routing.md#4810-solver-architecture-and-performance-targets-mvp)) | Landscape constraints (stability, dump runs, A/B weeks) | Managed APIs become cheaper at small tenant sizes ([04 open question 1](04-scheduling-dispatch-routing.md#14-open-questions)) |
 | Travel-time matrices, geocoding, basemaps | **Buy** | Google Routes or Mapbox | Commodity | Price per element at scale |
-| Weather | **Buy** | Commercial provider with soil temperature and certified reports, plus NWS and ECCC | Pesticide and snow evidence need defensible data | Snow dispute requirements |
+| Weather | **Buy** | Commercial provider with soil temperature, certified reports and AQI, plus NWS and ECCC (OD-61) | Pesticide and snow evidence need defensible data | Snow dispute requirements |
 | Parcel data | **Buy** | Regrid-class national parcel data | Commodity; verify Canadian coverage | Per-lookup cost at scale |
-| High-resolution aerial imagery | **Partner** | Imagery provider whose terms allow tracing and storing derived geometry and showing it to clients | Measurement rights are the risk, not pixels | Terms do not cover portal display |
-| Measurement stopgap | **Do not partner** | Build turf auto-measure; manual tracing for beds until V1 | Most measurement vendors are tied to competitors ([10 open question 14](10-design-studio.md#14-open-questions)) | - |
+| High-resolution aerial imagery | **Partner** | Imagery provider whose terms allow tracing and storing derived geometry and showing it to clients (OD-68) | Measurement rights are the risk, not pixels | Terms do not cover portal display |
+| Measurement | **Do not partner** | Build turf auto-measure and aerial-measured bed geometry in-house (03 EST-18) | Most measurement vendors are tied to competitors ([10 open question 14](10-design-studio.md#14-open-questions)) | - |
 | LLM reasoning | **Buy** | Claude family through the AI Gateway (Anthropic API or Amazon Bedrock), routed by task tier ([20](20-architecture-security.md#413-ai-gateway-mvp)) | Quality and tool use; gateway keeps routing swappable | Canadian inference residency needs ([20 open question 15](20-architecture-security.md#14-open-questions)) |
-| Image generation and editing | **Buy, then self-host** | Vendor image APIs chosen on the golden set at MVP; self-hosted open models on GPU lanes when volume justifies | About $0.04 per hosted image vs about $0.005 self-hosted at scale (estimates in [20 section 4.27](20-architecture-security.md#427-scalability-targets-and-capacity-math-mvp-planning-model-revalidated-before-each-phase)) | Monthly image spend above about $20k |
+| Image generation and editing | **Buy, then self-host** | Vendor image APIs chosen on the golden set (OD-45); self-hosted open models on GPU lanes when volume justifies | About $0.04 per hosted image vs about $0.005 self-hosted at scale (estimates in [20 section 4.27](20-architecture-security.md#427-scalability-targets-and-capacity-math-mvp-planning-model-revalidated-before-each-phase)) | Monthly image spend above about $20k |
 | Segmentation and depth | **Self-host open models** | SAM-family segmentation, metric depth models | Cheap, controllable, protected masks | - |
 | Plant data | **Build and license** | Curated KB; licensed sources; never scraped ([12](12-plant-knowledge-base.md#46-data-sources-and-licensing-kb-src)) | The moat | - |
 | Plant photos and render packs | **License and commission** | Open-license imports, commissioned photography, grower partnerships | Licensing checked at read time | - |
-| SMS, voice, 10DLC | **Buy** | Twilio with one subaccount per tenant; second carrier later ([16 open question 3](16-marketing-growth-communications.md#14-open-questions)) | Carrier registration as a managed service | Cost or deliverability issues |
+| SMS, voice, 10DLC | **Buy** | Twilio with one subaccount per tenant, plus a second carrier for redundancy ([16 open question 3](16-marketing-growth-communications.md#14-open-questions)) | Carrier registration as a managed service | Cost or deliverability issues |
 | Email delivery | **Buy** | SES- or Postmark-class with verified tenant domains | Commodity | - |
 | AI receptionist | **Build on buy** | Realtime voice model plus the telephony provider, tools from the Action Layer | Must quote from route and Price Book data | - |
 | Workflow engine | **Buy** | Temporal Cloud | Durable workflows for billing, mockups, sync | Cost at scale (self-host option) |
 | Policy engine | **Adopt open source** | Cedar | Fine-grained RBAC/ABAC | Benchmark fails at 1k decisions/s per task |
-| Search | **Build on Postgres** | Postgres full-text search plus pgvector; OpenSearch later | Fewer moving parts | Search latency budgets missed |
-| Analytics platform | **Buy managed / open source** | Postgres analytics schemas at MVP; ClickHouse, dbt, Cube at V1 | Semantic layer must enforce tenant security | ClickHouse go/no-go trigger ([18 open question 14](18-reporting-analytics.md#14-open-questions)) |
-| Feature flags | **Buy** | OpenFeature-compatible managed provider with tenant targeting | Sticky tenant rollouts and kill switches | Cost per seat |
-| Helpdesk and chat | **Buy** | Intercom, Plain or Zendesk (bilingual) | Commodity | - |
-| Translation management | **Buy** | Lokalise, Phrase or Crowdin with glossary support | EN/ES at MVP, fr-CA later | - |
-| Observability | **Buy** | Grafana Cloud or Datadog | Commodity; cost at span volume | Bill exceeds about 4% of cloud cost |
+| Search | **Build on Postgres** | Postgres full-text search plus pgvector | Fewer moving parts | Search latency budgets missed (then OpenSearch) |
+| Analytics platform | **Buy managed / open source** | Postgres analytics schemas with CDC into ClickHouse, dbt and Cube (C18-022) | Semantic layer must enforce tenant security | ClickHouse sizing for large tenants ([18 open question 14](18-reporting-analytics.md#14-open-questions)) |
+| Feature flags | **Buy** | OpenFeature-compatible managed provider with tenant targeting | Dark launches, per-Company deferral of crew-facing changes in peak season, and kill switches | Cost per seat |
+| Helpdesk and chat | **Buy** | Intercom, Plain or Zendesk (bilingual), worked by the support agent | Commodity | - |
+| Translation management | **Buy** | Lokalise, Phrase or Crowdin with glossary support | EN, ES and fr-CA | - |
+| Observability | **Buy** | Grafana Cloud or Datadog; the build agent chooses (OD-63) | Commodity; cost at span volume | Bill exceeds about 4% of cloud cost |
 | Enterprise SSO broker | **Buy** | Managed SAML/OIDC broker | Only Enterprise needs it | Residency constraints |
-| DWG import | **License** | Commercial DWG SDK at V2; DXF built in-house at V1 | GPL libraries are incompatible with our license model | Commercial bid-set demand |
+| DWG import | **License** | Commercial DWG SDK for DWG; DXF built in-house (OD-42) | GPL libraries are incompatible with our license model | SDK license terms change |
 | 3D plant assets | **License and generate** | Licensed library plus procedural archetypes from KB traits | Top 300 hero models | - |
 | Telematics and fuel cards | **Integrate** | Samsara, Geotab, Verizon Connect; WEX, Corpay | Customers already own them | - |
-| Smart irrigation controllers | **Integrate** | Hydrawise and Rachio, then Rain Bird IQ4 and Weathermatic | Partner APIs | Partner program terms |
-| Consumer financing | **Partner** | Wisetack-class lenders, US first | Regulated lending | Canadian partner availability |
+| Smart irrigation controllers | **Integrate** | Hydrawise, Rachio, Rain Bird IQ4 and Weathermatic | Partner APIs | Partner program terms |
+| Consumer financing | **Partner** | Wisetack-class lenders in the US; a Canadian partner where available | Regulated lending | Canadian partner availability |
 | 811 one-call and backflow portals | **Integrate where possible** | APIs where offered; assisted manual filing otherwise | State-by-state availability | Each new state |
 | Print and mail | **Buy** | Print-and-mail API | Commodity | - |
-| Legal rule tables (late fees, renewals, lien waivers, quiet hours) | **License plus counsel** | Compliance-data vendor feed plus annual counsel sign-off | Liability; maintained data | Vendor coverage gaps |
-| Fintech (working capital, insurance) | **Partner marketplace** | Licensed lenders and insurance agencies, offers ranked by cost ([23](23-innovation-moonshots.md#411-theme-g-embedded-fintech-partner-funded-rootline-never-holds-funds)) | Rootline never holds funds | Licensing ambitions at V3 |
+| Legal rule tables (late fees, renewals, lien waivers, quiet hours) | **License** | Compliance-data vendor feed, maintained as rule packs by the plant curator agent; the founder approves each pack (OD-60) and runs counsel checks (1.7) | Liability; maintained data | Vendor coverage gaps |
+| Fintech (working capital, insurance) | **Partner marketplace** | Licensed lenders and insurance agencies, offers ranked by cost ([23](23-innovation-moonshots.md#411-theme-g-embedded-fintech-partner-funded-rootline-never-holds-funds)) | Rootline never holds funds | Partner terms or coverage fail |
 
 ---
 
 ## 6. Product risk register
 
-Product, technical, AI, payments, compliance, data-licensing and market risks. Likelihood (L) and impact (I) are H, M or L. Owners are role keys or named functions. Each risk has an early warning signal the owner watches.
+Product, technical, AI, payments, compliance, data-licensing and market risks. Likelihood (L) and impact (I) are H, M or L. The founder owns every risk; the agent in the last column watches its early warning signal and escalates to the founder.
 
-| # | Category | Risk | L | I | Mitigation | Early warning | Owner |
+| # | Category | Risk | L | I | Mitigation | Early warning | Watched by |
 |---|---|---|---|---|---|---|---|
-| R1 | Product | MVP breadth spreads quality thin: the sellability tests need many modules, and one shallow module fails T1-T4 for the beachhead buyer | H | H | Core-loop and completes-the-MVP split (3.2), cut order (3.3), scenarios E1-E6 as the acceptance bar, founder-approved scope changes only (OD-71) | Scenario failures or open P1 bugs concentrated in one module during design-partner use | `platform_owner` |
-| R2 | Product | Migrations lose balances, agreements or recurring schedules, burning first impressions | M | H | Proof-based opening balances, AR tie-out to the cent, 7-day rollback, white-glove queue, Spring-Ready deadline | Median migration > 21 days or any AR variance with design partners | `platform_support` lead |
-| R3 | Product | Design Studio too slow or too complex for designers used to CAD or paper | M | H | Performance budgets, monthly designer usability rounds, renderer spike | Designer task time > 2x target in research | Design and Plants lead |
-| R4 | Product | Crews reject the app (gloves, sun, Spanish, low-end Android, battery) | M | H | Outdoor Mode, field pilots in peak season (shadow mode), Spanish-first content design, battery budget tests | Crash-free < 99%; battery > 10% per shift | Operations and Field lead |
-| R5 | Product | Estimating math does not match LMN-style budgets, so estimators distrust it | M | H | Golden set of 50 partner estimates, LMN budget import, explainable cost sidebar | Any golden-set mismatch | Sales and CRM lead |
-| R6 | Technical | Offline sync conflicts or data loss | M | H | Proven sync engine for the read path, per-entity conflict rules, append-only field records, chaos tests | Any lost record in field pilots | Platform lead |
-| R7 | Technical | Ledger posting errors or invariant violations | M | H | Database-enforced invariants, property-based tests, nightly control-account proofs, posting-rule simulation | Proof failure on any tenant | Money lead |
-| R8 | Technical | Cross-tenant data leak through an RLS or masking bug | L | H | Forced RLS, composite tenant keys, isolation suite in CI, production canaries, field masking at serializers | Canary alert | Security lead |
-| R9 | Technical | Seasonal peak overload (April Mondays, storm nights, 13:00-15:00 optimize rush) | M | M | Capacity math, load tests at 3x, peak-load shaping in the optimizer, autoscaling from first-mow forecasts | p95 latency breaches in March | Platform lead |
-| R10 | Technical | External API changes or metering (Intuit partner program, Stripe Accounts v2, Google LSA) | M | M | Connector SDK with quarantine, cost governor, vendor relationships, change monitor | Vendor notices; sync error rate | Money lead |
-| R11 | AI cost | Image and voice costs exceed credit revenue, eroding gross margin | M | M | Published credit prices, per-tenant AI cost dashboard, routing to cheaper models, caching, self-hosting at volume; AI at 2-4% of revenue ([22 section 7.8](22-business-model-pricing-gtm.md#78-sensitivity-analysis-base-case-y5-approximate)) | AI COGS > 4% of revenue for a tier | AI lead, `platform_finance` |
-| R12 | AI quality | Mockups show wrong or invented plants, causing disputes after install | M | H | Closed-world region-locked palettes, render packs, label overlays, artist-rendering disclosure, fidelity gates | Curator flags per 100 renders above threshold | Design and Plants lead |
-| R13 | AI safety | Prompt injection or a wrong agent action (for example a bank-detail change) | M | H | Quarantined extraction, taint tracking, T4 bans on bank changes, Approval Inbox, shadow mode | Red-team findings; approval reject rate | AI lead |
-| R14 | AI vendor | Model price or availability changes | M | M | AI Gateway routing with fallbacks and eval-gated swaps | Vendor deprecation notices | AI lead |
-| R15 | Payments | Stripe platform approval, Accounts v2 behavior or Connect terms differ from plan | M | H | Early Stripe engagement, v1 controller-properties fallback, provider abstraction | Stripe platform review stalls or written answers differ from plan | Money lead |
-| R16 | Payments | PCI scope creep (keyed cards, MOTO) | L | M | No MOTO at MVP; pay links while on the phone; QSA review | Feature requests for keyed entry | Security lead |
-| R17 | Compliance | 10DLC rejections or carrier blocks stop client SMS at launch | M | H | Registration at signup, rejection assistant, email and portal fallbacks, early ISV registration | Median approval > 10 business days | Growth lead |
-| R18 | Compliance | Legal rule tables wrong (late fees, renewals, deposits, surcharges, quiet hours) | M | H | Licensed compliance data plus counsel sign-off, "verify locally" labeling, versioned rule packs | Customer or counsel reports | Regulatory content researcher |
-| R19 | Compliance | Wage-and-hour or pesticide-record errors create liability for Companies | M | H | Fixture-tested pay packs only for supported states, counsel review per state, immutable records, aids-not-advice copy | Support tickets on pay or chem records | Operations and Field lead |
-| R20 | Privacy | Location, biometric or Quebec Law 25 exposure | L | H | No biometrics, no off-clock location, retention defaults, Canadian residency before Canadian tenants | Counsel review findings | Security lead |
-| R21 | Data licensing | Plant data or photos used without rights | M | H | Source and license registry checked at read time, 24-hour takedown, no scraping, counsel review of facts-vs-expression | Takedown requests | Lead horticulturist |
-| R22 | Data licensing | Imagery or parcel terms forbid tracing, storing or showing geometry to clients | M | M | Choose providers on terms first, store provenance per measurement | Legal review before contract | Design and Plants lead |
-| R23 | Data licensing | Benchmarks or pricing advice raise antitrust concerns | L | H | Counsel-reviewed methodology, k ≥ 10, lags, no price benchmarks until cleared | Counsel opinion | `platform_owner` |
-| R24 | GTM | KB not Excellent in all six Wave 1 Great Lakes Regions where sales start; snow-belt partners need more than Snow Lite in their first winter | M | H | Launch region decided (OD-01), so the seed and curators focus on Wave 1 only; Great Lakes-based curators; Snow Lite at MVP with the full Snow & Ice module in V1 | Any Wave 1 Region below Excellent at the KB release candidate; partners keeping a second snow tool | `platform_owner` |
-| R25 | GTM | Incumbents respond (Jobber adds design or AI; ServiceTitan/Aspire bundling; price cuts) | M | M | Speed on the closed loop, ledger and BYO Stripe as hard-to-copy moats, Price Lock Promise | Competitor releases (change monitor) | `platform_owner` |
-| R26 | GTM | CAC higher than plan in the launch region | M | M | ICP scorecard, CPA and association partners, Founding 100, referral credits | Grow CAC payback > 12 months | `platform_owner` |
-| R27 | GTM | Rootline Home and Match seen as channel conflict by Companies | M | M | Opt-in tenants only, client-of-record first, co-branding, pilot gate | Tenant opt-out rate | Growth lead |
-| R28 | Product | The January-April switching peak overwhelms migrations, so Companies miss their spring go-live | M | H | Self-serve imports with AI mapping and switch kits, migration slots booked in advance, 7-day rollback, Spring-Ready deadline | Migration slot backlog > 2 weeks | `platform_support` lead |
+| R1 | Product | v1 breadth spreads quality thin: the acceptance scenarios cross many modules, and one shallow module breaks the closed loop for the buyer | H | H | Scenarios E1-E6 as automated acceptance tests (3.1), the launch-readiness checks (3.2), build order by dependency (4.2) and the definition of done in [25 section 6](25-platform-blueprint-build-handoff.md#6-definition-of-done-and-guardrails) for every screen and capability | Scenario failures or open P1 bugs concentrated in one module | Build agent |
+| R2 | Product | Migrations lose balances, agreements or recurring schedules, burning first impressions | M | H | Proof-based opening balances, AR tie-out to the cent, 7-day rollback, white-glove queue, Spring-Ready deadline | Median migration > 21 days or any AR variance after an import | Support agent |
+| R3 | Product | Design Studio too slow or too complex for designers used to CAD or paper | M | H | Performance budgets, the Pencil latency check on the web canvas (OD-41), designer task-time analytics | Designer task time > 2x target in product analytics | Build agent |
+| R4 | Product | Crews reject the app (gloves, sun, Spanish, low-end Android, battery) | M | H | Outdoor Mode, shadow mode for switching Companies (OD-72), Spanish-first content design, battery budget tests | Crash-free < 99%; battery > 10% per shift | Engineering agent |
+| R5 | Product | Estimating math does not match LMN-style budgets, so estimators distrust it | M | H | Golden set of 50 estimates, LMN budget import, explainable cost sidebar | Any golden-set mismatch | Build agent |
+| R6 | Technical | Offline sync conflicts or data loss | M | H | Proven sync service for the read path (OD-58), per-entity conflict rules, append-only field records, chaos tests | Any lost record in chaos tests or production telemetry | Engineering agent |
+| R7 | Technical | Ledger posting errors or invariant violations | M | H | Database-enforced invariants, property-based tests, nightly control-account proofs, posting-rule simulation | Proof failure on any tenant | Finance agent |
+| R8 | Technical | Cross-tenant data leak through an RLS or masking bug | L | H | Forced RLS, composite tenant keys, isolation suite in CI, production canaries, field masking at serializers | Canary alert | Engineering agent |
+| R9 | Technical | Seasonal peak overload (April Mondays, storm nights, 13:00-15:00 optimize rush) | M | M | Capacity math, load tests at 3x, peak-load shaping in the optimizer, autoscaling from first-mow forecasts | p95 latency breaches in March | Engineering agent |
+| R10 | Technical | External API changes or metering (Intuit partner program, Stripe Accounts v2, Google LSA) | M | M | Connector SDK with quarantine, cost governor, vendor relationships, change monitor | Vendor notices; sync error rate | Engineering agent |
+| R11 | AI cost | Image and voice costs exceed credit revenue, eroding gross margin | M | M | Published credit prices, per-tenant AI cost dashboard, routing to cheaper models, caching, self-hosting at volume; AI at 2-4% of revenue ([22 section 7.8](22-business-model-pricing-gtm.md#78-sensitivity-analysis-base-case-y5-approximate)) | AI COGS > 4% of revenue for a plan | Finance agent |
+| R12 | AI quality | Mockups show wrong or invented plants, causing disputes after install | M | H | Closed-world region-locked palettes, render packs, label overlays, artist-rendering disclosure, fidelity gates | Curator flags per 100 renders above threshold | Plant curator agent |
+| R13 | AI safety | Prompt injection or a wrong agent action (for example a bank-detail change) | M | H | Quarantined extraction, taint tracking, T4 bans on bank changes, Approval Inbox, shadow mode | Red-team findings; approval reject rate | Engineering agent |
+| R14 | AI vendor | Model price or availability changes | M | M | AI Gateway routing with fallbacks and eval-gated swaps | Vendor deprecation notices | Engineering agent |
+| R15 | Payments | Stripe platform approval, Accounts v2 behavior or Connect terms differ from plan | M | H | Stripe platform review started with the payments build, v1 controller-properties fallback (OD-17), provider abstraction | Stripe platform review stalls or written answers differ from plan | `platform_owner` |
+| R16 | Payments | PCI scope creep (keyed cards, MOTO) | L | M | No MOTO (OD-20); pay links while on the phone; QSA review | Feature requests for keyed entry | Engineering agent |
+| R17 | Compliance | 10DLC rejections or carrier blocks stop client SMS | M | H | Registration at signup, rejection assistant, email and portal fallbacks, ISV registration before the first Company signs up | Median approval > 10 business days | Support agent |
+| R18 | Compliance | Legal rule tables wrong (late fees, renewals, deposits, surcharges, quiet hours) | M | H | Licensed compliance data maintained by the plant curator agent, founder approval of each pack (OD-60), "verify locally" labeling, versioned rule packs, conservative defaults until the founder's counsel checks (1.7) | Customer or counsel reports | Plant curator agent |
+| R19 | Compliance | Wage-and-hour or pesticide-record errors create liability for Companies | M | H | Fixture-tested pay packs only for supported jurisdictions (R24-18), conservative defaults and the founder's counsel checks (1.7), immutable records, aids-not-advice copy | Support tickets on pay or chem records | Support agent |
+| R20 | Privacy | Location, biometric or Quebec Law 25 exposure | L | H | No biometrics, no off-clock location, retention defaults, the Canadian residency stack for every Canadian Company (OD-62) | Counsel review findings | Engineering agent |
+| R21 | Data licensing | Plant data or photos used without rights | M | H | Source and license registry checked at read time, 24-hour takedown, no scraping, the facts-versus-expression policy (OD-67) | Takedown requests | Plant curator agent |
+| R22 | Data licensing | Imagery or parcel terms forbid tracing, storing or showing geometry to clients | M | M | Choose providers on terms first (OD-68), store provenance per measurement | Legal review before contract | `platform_owner` |
+| R23 | Data licensing | Benchmarks or pricing advice raise antitrust concerns | L | H | Counsel-reviewed methodology, k ≥ 10, lags, price benchmarks off until cleared (OD-69) | Counsel opinion | `platform_owner` |
+| R24 | GTM | Plant KB not Excellent in the six Great Lakes Regions where marketing starts, or snow-belt Companies need more than Snow Lite | M | H | Launch region decided (OD-01), so the seed and the plant curator agent focus on those six Regions; Snow Lite in every plan and the full Snow & Ice add-on (R24-1) | Any of the six Regions below Excellent at the KB release candidate; Companies keeping a second snow tool | Plant curator agent |
+| R25 | GTM | Incumbents respond (Jobber adds design or AI; ServiceTitan/Aspire bundling; price cuts) | M | M | Speed on the closed loop, ledger and BYO Stripe as hard-to-copy moats, Price Lock Promise | Competitor releases (change monitor) | Marketing agent |
+| R26 | GTM | CAC higher than plan in the launch region | M | M | ICP scorecard, CPA and association partners, the Founding Customer offer (R26-12), referral credits | Grow CAC payback > 12 months | Marketing agent |
+| R27 | GTM | Rootline Home and Match seen as channel conflict by Companies | M | M | Opt-in Companies only, client-of-record first, co-branding (OD-06) | Tenant opt-out rate | Marketing agent |
+| R28 | Product | The January-April switching peak overwhelms migrations, so Companies miss their spring go-live | M | H | Self-serve imports with AI mapping and switch kits, migration slots booked in advance, 7-day rollback, Spring-Ready deadline | Migration slot backlog > 2 weeks | Support agent |
 
 ---
 
-## 7. Product success measures by scope tier
+## 7. Product success measures
 
-Each tier has a few product outcomes that show it does its job. Targets are proposals; the KPI definitions come from [18 section 4.3](18-reporting-analytics.md#43-kpi-dictionary-canonical-definitions) and [22 section 15](22-business-model-pricing-gtm.md#15-metrics-and-kpis). The MVP measures overlap with the exit criteria in 3.4 on purpose: the MVP is done when its outcomes are true in production, not when its features exist.
+One set of product outcomes for v1. Targets are proposals; the KPI definitions come from [18 section 4.3](18-reporting-analytics.md#43-kpi-dictionary-canonical-definitions) and [22 section 15](22-business-model-pricing-gtm.md#15-metrics-and-kpis). Some measures repeat the launch-readiness checks in 3.2 on purpose: v1 is done when its outcomes are true in production, not when its features exist.
 
 | Product outcome | Measure | Target |
 |---|---|---|
-| A design-build firm runs lead to ledger end to end: design-build sale, maintenance season, lawn program round, install job costing, month-end close and the switch | Acceptance scenarios E1-E6 (3.1) passing in production without a workaround | Each scenario for at least 15 of 20 design partners |
+| A design-build firm runs lead to ledger end to end: design-build sale, maintenance season, lawn program round, install job costing, month-end close and the switch | Acceptance scenarios E1-E6 (3.1) in production without a workaround | All six pass as production synthetics; no Company needs a workaround |
 | The switch is safe | Median migration time; AR variance after migration | ≤ 21 days; $0 |
 | The numbers are right to the cent | Ledger invariant violations; control accounts proved; Stripe payouts matched; estimating golden set | 0; 100%; 100%; 50 of 50 |
 | The crew app works in the field | Crash-free sessions; sync data loss; battery per shift on the reference low-end Android | ≥ 99.5%; 0 records; ≤ 10% |
-| The wedge is used | Install proposals that include a Design or Mockup | ≥ 30% among design partners |
+| The wedge is used | Install proposals that include a Design or Mockup | ≥ 30% |
 | Evaluation works without a salesperson | Time to first value for a trial (demo tenant) ([21 section 14](21-ux-design-system-sitemaps.md#14-onboarding-and-the-setup-wizard)) | < 24 h |
-| The MVP sells and keeps customers in the launch region | Trial to paid; 12-month logo retention forecast (Grow) | ≥ 12% overall and ≥ 25% for ICP ≥ 70; ≥ 80% |
-| AI pays for itself | AI COGS as a share of revenue, per tier | ≤ 4% (estimate) |
-| Commercial (S4) and snow-belt Companies run their whole year in Rootline | Commercial portfolios with AIA or progress billing live without a second tool; snow add-on attach in snow-belt Regions | Pilot Companies need no second tool; ≥ 25% of eligible Companies (proposal) |
+| Rootline sells and keeps customers in the launch region | Trial to paid; 12-month logo retention forecast (Grow) | ≥ 12% overall and ≥ 25% for ICP ≥ 70; ≥ 80% |
+| AI pays for itself | AI COGS as a share of revenue, per plan | ≤ 4% (estimate) |
+| Commercial (S4) and snow-belt Companies run their whole year in Rootline | Commercial portfolios with AIA or progress billing live without a second tool; snow add-on attach in snow-belt Regions | No second tool; ≥ 25% of eligible Companies (proposal) |
 | Rootline is the book of record | Tenants on native books (Mode A or B) | ≥ 50% |
-| Wave 2 Regions and Canada are ready before they are sold | Wave 2 Regions at Excellent; Canadian tenants on the residency stack | 100%; 100% |
+| Canadian Companies are served in Canada | Canadian Companies on the residency stack | 100% |
 | The platform is dependable at seasonal peaks | Monthly availability; crash-free sessions | 99.9%; ≥ 99.5% |
 | Benchmarks are private and meaningful | Companies per published benchmark cell | ≥ 10 (k ≥ 10) |
-| Multi-company owners and franchises run on one platform | Rollups and data shares in use without exports | Pilot organizations need no spreadsheets |
+| Multi-company owners and franchises run on one platform | Rollups and data shares in use without exports | No spreadsheets needed |
 | Customers stay and grow | Net revenue retention, first full cohort | ≥ 105% |
-| The second US cluster is ready before it is sold | Wave 3 Regions at Excellent | 100% |
-| The moonshot portfolio learns fast | Bets in Pilot with their KPIs met; kill rules applied ([23 section 4.3](23-innovation-moonshots.md#43-stage-gates-and-kill-criteria)) | At least 2 bets in Pilot with KPIs met |
+| Plant coverage leads marketing | Regions where the marketing agent runs campaigns, at Excellent | 100% |
+| The innovation bets earn their place | Bets reporting their KPIs in the innovation lab console (C23-034, [23 section 4.3](23-innovation-moonshots.md#43-stage-gates-and-kill-criteria)) | Every bet |
 
 ---
 
-## 8. Open product decisions
+## 8. Former open product decisions
 
-Each module doc ends with open questions; this section consolidates the ones that change product scope, dependencies or risk, and gives a recommended default so work can proceed. OD-01 (launch region) and OD-05 (Snow Lite) are decided. Questions not listed here stay with their module owner.
-
-<a id="91-strategy-and-go-to-market"></a>
-
-### 8.1 Strategy and go-to-market
-
-| # | Decision | Raised in | Recommended default | Owner |
-|---|---|---|---|---|
-| OD-01 | Launch region (was: which two beachhead clusters?) | [01](01-market-landscape.md#16-open-questions), [12](12-plant-knowledge-base.md#14-open-questions), [22](22-business-model-pricing-gtm.md#17-open-questions) | **Decided by the founder: the Great Lakes**, one US launch cluster instead of two. **Wave 1 (KB macro-region "Great Lakes and Ohio Valley"): Central Ohio (Columbus), Northeast Ohio (Cleveland-Akron, Lake Erie Shore snow belt), Southeast Michigan and Toledo, West Michigan (Grand Rapids-Holland-Kalamazoo, lake-effect snow belt), Chicagoland and Northwest Indiana, Southeast Wisconsin (Milwaukee-Madison). Design partners, field pilots and the first Plant KB curation all focus on Wave 1 Regions (1.3). **Wave 2: Southern Ontario Golden Horseshoe with Canadian support (CAD, PAD, Canadian tax, residency), extending the region across the border, plus Cincinnati-Dayton, Indianapolis, Western New York and Erie/Pittsburgh. **Wave 3: a second US cluster, chosen later based on traction in the launch region with [22 section 6.2](22-business-model-pricing-gtm.md#62-beachhead-selection)'s framework | `platform_owner` |
-| OD-02 | Free plan for solo operators? | [01](01-market-landscape.md#16-open-questions), [22](22-business-model-pricing-gtm.md#17-open-questions) | No free plan. Starter, the winter trial, Design Solo and Fundador cover the low end | `platform_owner` |
-| OD-03 | Publish named comparison pages at launch? | [01](01-market-landscape.md#16-open-questions) | Not until the verification research pass clears the claims; publish switch guides instead | `platform_owner` |
-| OD-04 | Next switch kits after Jobber and LMN | [01](01-market-landscape.md#16-open-questions) | SingleOps, then Service Autopilot, then Real Green, ordered by win/loss | Sales and CRM lead |
-| OD-05 | Snow in the MVP? | [01](01-market-landscape.md#16-open-questions), [14](14-service-line-modules.md#14-open-questions) | **Decided by the founder: Snow Lite at MVP**, because Great Lakes launch Companies commonly run snow and ice in winter. Storm visit logs per site with timestamped GPS photos and notes (reusing the MVP visit and photo pipeline), a basic snow site list in priority order, per-push and per-application invoices generated from those logs (C07-012) and a per-site PDF proof-of-service export; no hash sealing and no Storm Command Center. Included in every plan at no charge. The full Snow & Ice module (Storm Command Center, eight pricing models, caps and floors, subcontractor plowers, salt inventory, hash-sealed proof packets) and the Snow & Ice add-on stay V1 ([14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp)) | `platform_owner` |
-| OD-06 | Rootline Home and Match channel conflict | [11](11-ai-design-mockups.md#14-open-questions), [23](23-innovation-moonshots.md#14-open-questions) | Opt-in tenants only, client-of-record first, co-branded "Powered by Rootline", pilot in V1 | Growth lead |
-| OD-07 | Fund a verification research pass | [01](01-market-landscape.md#16-open-questions), research reports R1-R4 | Yes: primary-source checks and hands-on trials of competitor products; clear the checklists before any investor deck | `platform_owner` |
-| OD-08 | Contract buyouts for switchers | [22](22-business-model-pricing-gtm.md#17-open-questions) | Standard 3 months of overlap credit; full buyout only for Pro and Enterprise on annual prepay | `platform_owner` |
-
-### 8.2 Pricing and packaging
-
-| # | Decision | Raised in | Recommended default | Owner |
-|---|---|---|---|---|
-| OD-09 | Pay-as-you-grow application-fee plan | [08](08-payments-stripe.md#14-open-questions), [22](22-business-model-pricing-gtm.md#17-open-questions) | V1, behind the holdout test; zero markup stays the default | `platform_finance` |
-| OD-10 | Credit unit name and AI action prices | [11](11-ai-design-mockups.md#14-open-questions), [17](17-ai-copilot-automation.md#14-open-questions), [22](22-business-model-pricing-gtm.md#17-open-questions) | "AI credits"; publish 22's list; run a usage study with design partners before credit prices lock | `platform_finance` |
-| OD-11 | Portal in every plan | [06](06-customer-portal.md#14-open-questions) | Yes: core portal (proposals, pay, history, requests) in all plans; commercial approvals and badge removal on higher tiers | `platform_owner` |
-| OD-12 | Messaging fees | [16](16-marketing-growth-communications.md#14-open-questions), [22](22-business-model-pricing-gtm.md#17-open-questions) | Included segment allowance per tier plus packs; absorb one-time 10DLC fees on annual Grow and Pro | `platform_finance` |
-| OD-13 | Optimizer runs by tier | [04](04-scheduling-dispatch-routing.md#14-open-questions) | Sequencing on all tiers; multi-crew VRP on Grow+; fair-use quota on heavy runs | Routing lead |
-| OD-14 | Benchmark access for Starter | [18](18-reporting-analytics.md#14-open-questions) | Starter may contribute and sees a teaser; full benchmarks Grow+ | `platform_owner` |
-| OD-15 | Studio during Winter Mode | [10](10-design-studio.md#14-open-questions) | Studio editing stays on for paid designer seats during Winter Mode | `platform_owner` |
-| OD-16 | No-snow winter policy | [22](22-business-model-pricing-gtm.md#17-open-questions) | No automatic refund; goodwill credit toward next season if zero events recorded | `platform_finance` |
-
-### 8.3 Payments and accounting
-
-| # | Decision | Raised in | Recommended default | Owner |
-|---|---|---|---|---|
-| OD-17 | Stripe Accounts v2 at MVP | [08](08-payments-stripe.md#14-open-questions), [20](20-architecture-security.md#14-open-questions) | Use v2 full-dashboard merchant configuration if Stripe confirms OAuth parity; otherwise v1 controller properties with a migration path | Money lead |
-| OD-18 | Tap to Pay scope tier | [05](05-field-crew-mobile-app.md#14-open-questions), [08](08-payments-stripe.md#14-open-questions) | V1, iPhone US first (4.6 #3) | Money lead |
-| OD-19 | Surcharging | [08](08-payments-stripe.md#14-open-questions) | V1, behind compliance gating; ACH incentives first | Money lead |
-| OD-20 | MOTO (keyed cards) | [08](08-payments-stripe.md#14-open-questions) | Not at MVP; pay links during calls; QSA opinion before any keyed entry | Security lead |
-| OD-21 | One Stripe account per legal entity? | [08](08-payments-stripe.md#14-open-questions) | Yes, one connected account per legal entity | Money lead |
-| OD-22 | Service-hold thresholds | [07](07-invoicing-billing-contracts.md#14-open-questions) | Two stages: payment-hold signal at 30 days past due; suspension at 45 days after a 7-day notice | Money lead |
-| OD-23 | ACH deposit acceptance threshold | [04](04-scheduling-dispatch-routing.md#14-open-questions), [06](06-customer-portal.md#14-open-questions) | Accept on ACH initiation up to $5,000; above that, schedule only after the payment clears | Money lead |
-| OD-24 | Default book of record for new tenants | [07](07-invoicing-billing-contracts.md#14-open-questions), [19](19-platform-admin-portal.md#14-open-questions), [20](20-architecture-security.md#14-open-questions) | The ledger always runs. Design partners and new tenants with a CPA default to Mode B (native plus QuickBooks mirror) through their first year-end; Mode A opt-in | Money lead |
-| OD-25 | Rootline's own books on the Rootline ledger | [19](19-platform-admin-portal.md#14-open-questions) | Run in parallel with an external system for the first audit year; switch after a clean year-end | `platform_finance` |
-| OD-26 | Revenue recognition default for agreements | [07](07-invoicing-billing-contracts.md#14-open-questions), [18](18-reporting-analytics.md#14-open-questions) | As performed (earned value) for accrual books; straight-line option for small cash-basis Companies; confirm with the CPA advisory board | Money lead |
-| OD-27 | Unbilled accrual (P8) default | [07](07-invoicing-billing-contracts.md#14-open-questions) | Off by default; on for accrual-basis monthly batch billers | Money lead |
-| OD-28 | Shared vs per-entity chart of accounts | [09](09-accounting-ledger-integrations.md#14-open-questions) | Shared chart with entity restrictions | Money lead |
-| OD-29 | Cash-basis view timing | [09](09-accounting-ledger-integrations.md#14-open-questions) | V2 unless more than half of pilots report cash-basis to their CPA | Money lead |
-| OD-30 | 1099 e-file and QuickBooks Desktop | [09](09-accounting-ledger-integrations.md#14-open-questions) | Partner for 1099 e-file; buy a Desktop API service if reliable, otherwise build on Web Connector | Money lead |
-| OD-31 | Stripe Tax on connected accounts | [07](07-invoicing-billing-contracts.md#14-open-questions) | Confirm with Stripe; fall back to the calculation API with Company liability and manual rates | Money lead |
-| OD-32 | Account codes and event names | [08](08-payments-stripe.md#14-open-questions), [09](09-accounting-ledger-integrations.md#14-open-questions), [04](04-scheduling-dispatch-routing.md#14-open-questions), [07](07-invoicing-billing-contracts.md#14-open-questions) | 09's chart is canonical; restate 08 in the next editorial pass; producer event names canonical in 20's registry | Engineering lead |
-
-### 8.4 Product scope and UX
-
-| # | Decision | Raised in | Recommended default | Owner |
-|---|---|---|---|---|
-| OD-33 | Homeowner widget timing | [11](11-ai-design-mockups.md#14-open-questions) | MVP behind the verify-first gate for design partners; default-on after golden-set quality passes | Design and Plants lead |
-| OD-34 | Budget wizard required before proposals? | [03](03-crm-sales-estimating-proposals.md#14-open-questions) | No: default budget plus a persistent banner; block only discounts below the floor | Sales and CRM lead |
-| OD-35 | Default overhead method | [03](03-crm-sales-estimating-proposals.md#14-open-questions) | FLH for maintenance, MORS for construction, both shown | Sales and CRM lead |
-| OD-36 | Bounded auto-quote | [03](03-crm-sales-estimating-proposals.md#14-open-questions) | Keep at V3; instant online quotes go out only with confidence gating and first-visit verification | Sales and CRM lead |
-| OD-37 | CRM sync (Salesforce, HubSpot) | [03](03-crm-sales-estimating-proposals.md#14-open-questions) | V2 unless 3 or more mid-market deals are blocked | Product |
-| OD-38 | One native app or two | [21](21-ux-design-system-sitemaps.md#28-open-questions) | One app with crew and manager modes | Head of design |
-| OD-39 | Swipe vs hold for irreversible crew actions | [21](21-ux-design-system-sitemaps.md#28-open-questions) | Press-and-hold default, decided by glove tests in the first prototype round | Head of design |
-| OD-40 | Dark mode | [21](21-ux-design-system-sitemaps.md#28-open-questions) | V1 for web; field-sun at MVP, field-night at V1 | Head of design |
-| OD-41 | Renderer and iPad path | [10](10-design-studio.md#14-open-questions) | A renderer spike decides; web first on iPad, native canvas only if Pencil latency fails | Design and Plants lead |
-| OD-42 | DWG strategy | [10](10-design-studio.md#14-open-questions) | DXF at V1; licensed DWG SDK at V2 | Design and Plants lead |
-| OD-43 | Default inventory mode and negative stock | [13](13-operations-inventory-equipment.md#14-open-questions) | Light below 15 employees, ask above; negative stock warns | Operations and Field lead |
-| OD-44 | Historical import depth | [18](18-reporting-analytics.md#14-open-questions) | Two seasons of invoices and Visits where available | `platform_support` lead |
-| OD-71 | MVP scope governance | This doc (3.2, 3.3) | Section 3 is the MVP. An addition needs founder approval and an equal cut taken from the cut order in 3.3; nothing in P3 or P4 is ever cut | `platform_owner` |
-| OD-72 | Field validation before general sale | This doc (3.4), [05](05-field-crew-mobile-app.md#14-open-questions) | Yes: the crew app and dispatch board run with a few friendly Wave 1 Companies in shadow mode during peak season, with crews keeping their old system in parallel, before the MVP is sold generally; the field rows in 3.4 are the bar | Operations and Field lead |
-
-### 8.5 AI
-
-| # | Decision | Raised in | Recommended default | Owner |
-|---|---|---|---|---|
-| OD-45 | Default image route | [11](11-ai-design-mockups.md#14-open-questions) | Benchmark vendor editing models against self-hosted pipelines on the golden set; pick by plant identity and house preservation | AI lead |
-| OD-46 | Default autonomy at MVP | [17](17-ai-copilot-automation.md#14-open-questions) | L3 only for the day-3 payment reminder and visit-completion messages; everything else L0-L2 | AI lead |
-| OD-47 | Outbound AI voice calls | [07](07-invoicing-billing-contracts.md#14-open-questions), [17](17-ai-copilot-automation.md#14-open-questions) | Never to residential clients; commercial only after a V2 legal review | `platform_owner` |
-| OD-48 | Canadian AI inference | [17](17-ai-copilot-automation.md#14-open-questions), [20](20-architecture-security.md#14-open-questions) | Off by default for Quebec tenants; disclosed cross-border processing elsewhere in Canada until Canadian inference is available per task | AI lead |
-| OD-49 | Ad hoc SQL over the analytics replica | [17](17-ai-copilot-automation.md#14-open-questions) | V1 read-only, with the metrics catalog as the first choice and number verification | AI lead |
-| OD-50 | Contact Arbiter caps | [17](17-ai-copilot-automation.md#14-open-questions) | Residential 2 automated messages per day, commercial 4; snow per-push updates exempt | Growth lead |
-| OD-51 | Fidelity score visibility | [11](11-ai-design-mockups.md#14-open-questions) | Badge and disclaimer for homeowners; grade visible to staff | Design and Plants lead |
-
-### 8.6 Field, HR and compliance
-
-| # | Decision | Raised in | Recommended default | Owner |
-|---|---|---|---|---|
-| OD-52 | MVP jurisdiction packs | [15](15-team-hr-payroll.md#14-open-questions) | Federal plus the Great Lakes launch states (Ohio, Michigan, Illinois, Indiana, Wisconsin); California and others at V1 | Operations and Field lead |
-| OD-53 | Embedded payroll partner | [15](15-team-hr-payroll.md#14-open-questions), [22](22-business-model-pricing-gtm.md#17-open-questions) | Evaluate Check and Gusto Embedded; choose before the V1 pilot | Money lead |
-| OD-54 | Biometrics | [02](02-personas-roles-permissions.md#15-open-questions), [05](05-field-crew-mobile-app.md#14-open-questions) | No face verification; optional non-biometric punch photo at V1 | Security lead |
-| OD-55 | Geofence auto-arrive | [05](05-field-crew-mobile-app.md#14-open-questions) | Prompt-only by default everywhere; auto mode opt-in outside California | Operations and Field lead |
-| OD-56 | Minimum worker age | [02](02-personas-roles-permissions.md#15-open-questions), [15](15-team-hr-payroll.md#14-open-questions) | 16+ by default; 14-15 blocked until the minor-worker rules ship at V1 | Operations and Field lead |
-| OD-57 | Location breadcrumb retention | [05](05-field-crew-mobile-app.md#14-open-questions), [14](14-service-line-modules.md#14-open-questions) | 90 days, shorter where law requires; proof packets kept separately | Security lead |
-| OD-58 | Sync engine build vs buy | [05](05-field-crew-mobile-app.md#14-open-questions), [20](20-architecture-security.md#14-open-questions) | Self-hosted sync service for reads plus in-house outbox for writes | Platform lead |
-| OD-59 | Device offline lease | [20](20-architecture-security.md#14-open-questions) | 14 days, tenant-configurable between 7 and 30 | Platform lead |
-| OD-60 | Rule-pack maintenance | [14](14-service-line-modules.md#14-open-questions), [15](15-team-hr-payroll.md#14-open-questions), [07](07-invoicing-billing-contracts.md#14-open-questions), [20](20-architecture-security.md#14-open-questions) | `platform_curator` and the regulatory content researcher maintain packs from a licensed compliance feed; outside counsel signs off yearly; included in plans (no Compliance+ add-on at MVP) | `platform_owner` |
-| OD-61 | Weather provider | [04](04-scheduling-dispatch-routing.md#14-open-questions), [05](05-field-crew-mobile-app.md#14-open-questions), [15](15-team-hr-payroll.md#14-open-questions) | Commercial provider with soil temperature, certified reports and AQI, plus NWS and ECCC | Operations and Field lead |
-
-### 8.7 Architecture, data and legal
-
-| # | Decision | Raised in | Recommended default | Owner |
-|---|---|---|---|---|
-| OD-62 | Canadian data residency scope | [02](02-personas-roles-permissions.md#15-open-questions), [09](09-accounting-ledger-integrations.md#14-open-questions), [19](19-platform-admin-portal.md#14-open-questions), [20](20-architecture-security.md#14-open-questions) | Regional stack for all Canadian tenants, in place before the Ontario Wave 2 Regions open, included in price | Platform lead |
-| OD-63 | Event bus and observability vendors | [20](20-architecture-security.md#14-open-questions) | SNS/SQS through V1, then decide on MSK from measured load; choose the observability vendor before the first production tenant | Platform lead |
-| OD-64 | Public GraphQL | [20](20-architecture-security.md#14-open-questions) | REST only through V2 | Engineering lead |
-| OD-65 | Default portal domain and brand name | [06](06-customer-portal.md#14-open-questions), [21](21-ux-design-system-sitemaps.md#28-open-questions) | Clear the "Rootline" trademark before public launch; neutral default portal domain for white-label purity | `platform_owner` |
-| OD-66 | Breach notification commitment | [19](19-platform-admin-portal.md#14-open-questions) | Contractual 72 hours, internal target 48 hours | Security lead |
-| OD-67 | Plant data and photo licenses | [12](12-plant-knowledge-base.md#14-open-questions) | Counsel-approved facts-versus-expression policy; license extension and garden sources where needed; commission photography during the growing season | Lead horticulturist |
-| OD-68 | Imagery and parcel terms | [10](10-design-studio.md#14-open-questions), [16](16-marketing-growth-communications.md#14-open-questions) | Choose providers whose terms allow tracing, storage and client display; meter parcel lookups inside tier allowances | Design and Plants lead |
-| OD-69 | Benchmarks and pricing advice antitrust | [18](18-reporting-analytics.md#14-open-questions), [22](22-business-model-pricing-gtm.md#17-open-questions), [23](23-innovation-moonshots.md#14-open-questions) | Counsel review before benchmarking ships; no price benchmarks until cleared; k ≥ 10 and lags | `platform_owner` |
-| OD-70 | Quebec and French | [21](21-ux-design-system-sitemaps.md#28-open-questions), [22](22-business-model-pricing-gtm.md#17-open-questions), [12](12-plant-knowledge-base.md#14-open-questions) | Ontario first (English); fr-CA common names at V1; Quebec market only after a counsel review of French-language obligations | `platform_owner` |
+Every former open product decision (OD-01 to OD-72) is closed in [section 1.6](#16-every-open-decision-closed), and every known contradiction between documents is settled in [section 1.5](#15-contradictions-resolved). Every open question in a module doc takes the default written in that doc; where a doc gives none, the build agent chooses the simplest option consistent with the specs and records it in an ADR ([section 1.3](#13-defaults-are-decisions)). Nothing in this document is left open.
 
 ---
 

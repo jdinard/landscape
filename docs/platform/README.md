@@ -6,23 +6,22 @@ The JSON files are the source of truth for the blueprint. Matrices that already 
 
 | File | What it holds | Parsed from |
 |---|---|---|
-| `roles.json` | 27 roles: 9 tenant role templates plus the Observer starter role, client roles and 6 contact scopes, 5 platform staff roles, 2 partner roles, prospect and homeowner. The tenant permission matrix (94 capabilities), field-class defaults, the platform staff matrix, client contact rights, navigation visibility for the web app, console and portal, and the Observer custom role template (a blueprint reading of 02 §5.7, to confirm). | 02 §3.1, §5.7, §5.11, §10.1, §10.2, §10.4; 21 §5.4, §5.5, §5.9 |
-| `personas.json` | 28 named personas: the composites from 02 §3 mapped to sample tenants, plus blueprint personas (marked `source: blueprint`) for markets the specs name but do not personify. Each has goals, frustrations, success, a quote, what they see first and what they never see. | 02 §3; 22 §6.1 |
-| `plans.json` | 6 plans with prices and inclusions; 63 capabilities with availability per plan (`Y`, `L` with the limit, `A` with the add-on code, `-`) and scope tag; 20 add-ons; 9 usage meters; the AI credit rate card; seat types; trial and onboarding offers; homeowner tiers; partner tracks; the entitlement UX rules. | 22 §4.2-§4.6, §5.3.1, §5.4.1 |
+| `roles.json` | 27 roles: 9 tenant role templates plus the Observer starter role, client roles and 6 contact scopes, 5 platform roles (the founder, and four permission sets held by Rootline's operator agents), 2 partner roles, prospect and homeowner. The tenant permission matrix (94 capabilities), field-class defaults, the platform role matrix, client contact rights, navigation visibility for the web app, console and portal, and the Observer custom role template (02 §5.7; 24 §1.5, R25-C5). | 02 §3.1, §5.7, §5.11, §10.1, §10.2, §10.4; 21 §5.4, §5.5, §5.9 |
+| `personas.json` | 28 named personas: the composites from 02 §3 mapped to sample tenants, the founder and the four operator agents that run Rootline (24 §1.2), plus blueprint personas (marked `source: blueprint`) for markets the specs name but do not personify. Each has goals, frustrations, success, a quote, what they see first and what they never see. | 02 §3; 22 §6.1 |
+| `plans.json` | 6 plans with prices and inclusions; 63 capabilities with availability per plan (`Y`, `L` with the limit, `A` with the add-on code, `-`); 20 add-ons; 9 usage meters; the AI credit rate card; seat types; trial and onboarding offers; homeowner tiers; partner tracks; the entitlement UX rules. | 22 §4.2-§4.6, §5.3.1, §5.4.1 |
 | `segments.json` | Target markets S1-S7 with size, revenue, service mix, current stack, plan fit, sales motion, sample tenant, modules on, pains, draft messaging, proof points to verify, objections, channels and what the segment sees first. Plus the ICP scorecard and the positioning statement. | 22 §6.1-§6.5 (messaging is draft copy to test) |
-| `tenants.json` | The service-line module catalog (13 modules from 14 §4.0.1) and its rules, plus 8 sample tenants, one or more per segment, with plan, add-ons, modules, Region, size, brand, cast (role to person) and hero clients. Reyes and Summit come from 02; Greenleaf is the sample dataset (21 §15.3, 22 §4.6) and the cast of the other walkthroughs; the rest are illustrative. | 02 §3; 14 §4.0.1; 21; 22 |
-| `surfaces.json` | 10 surfaces with hosts and sign-in, and 154 routes. Each route has its surface, navigation group, path, scope tag, purpose, the plan feature that gates it, the module that must be on, the permission it needs and the spec that owns it. | 21 §5.1-§5.7; 19 §6.1 |
+| `tenants.json` | The service-line module catalog (13 modules from 14 §4.0.1) and its rules, plus 8 sample tenants, one or more per segment, with plan, add-ons, modules, Region, size, brand, cast (role to person) and hero clients. Reyes and Summit come from 02; Greenleaf Grounds Co. (Columbus, Ohio, 120 clients) is the sample dataset (21 §15.3, 22 §4.6; 24 §1.5, R25-C9) and the cast of the other walkthroughs; the rest are illustrative. | 02 §3; 14 §4.0.1; 21; 22 |
+| `surfaces.json` | 10 surfaces with hosts and sign-in, and 155 routes. Each route has its surface, navigation group, path, purpose, the plan feature that gates it, the module that must be on, the permission it needs and the spec that owns it. | 21 §5.1-§5.7; 19 §6.1 |
 
 ## Gating order
 
-A screen is shown when all of these pass, in this order (the same order the explorer's `RL.access` uses):
+Every route is in v1 (24 §1.1). A screen is shown when all of these pass, in this order (the same order the explorer's `RL.access` uses):
 
 1. **Surface**: the role uses this surface (a crew lead uses the crew app; a property manager uses the portal).
 2. **Role**: the route's `roles` list for non-web surfaces, or navigation visibility for the web app, console and portal.
 3. **Permission**: the route's `perm` capability has a grant other than `-` for the role (02 §10.1). Inside a screen, field classes decide which values are masked (02 §10.2).
 4. **Module**: the tenant has the service-line module on (`lawn_phc`, `install_projects`, `snow_ice` and the rest of 14 §4.0.1; `snow_ice` on means Snow Lite), and Books is on unless QuickBooks or Xero is the system of record. Off means hidden, not greyed out (21 §5.2).
 5. **Plan**: the route's `feature` is `Y` or `L` on the plan, or bought as an add-on. Otherwise the owner sees a locked entry with the upgrade path and everyone else sees nothing (`plans.json` `entitlement_ux`).
-6. **Scope lens**: MVP, V1, V2 or V3, from 24.
 
 ## Using the data
 
@@ -36,6 +35,6 @@ For implementation, generate code from these files rather than copying values: t
 
 ## Conventions
 
-- Scope tags follow 24: `MVP`, `V1`, `V2`, `V3`. No delivery dates.
+- There are no scope tags: everything is in the one release (24 §1.1). No delivery dates.
 - Names, companies and quotes are illustrative. Hosts on `.example` are placeholders.
 - Where the specs are silent, the value is marked as a blueprint assumption (for example the Design Solo plan's capability list).

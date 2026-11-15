@@ -542,7 +542,7 @@ RL.screen('crew.snow', (c) => {
     return h.card({ title: `${icon('snow')} ${T('No storm active', 'Sin tormenta activa')}`, body: `<div class="small t2">${T('Storm mode starts when the office creates storm visits for your snow sites. They show up in Today in priority order.', 'El modo tormenta empieza cuando la oficina crea visitas de tormenta. Aparecen en Hoy por prioridad.')}</div>` })
       + h.card({ title: T('Snow sites for your crew', 'Sitios de nieve de tu cuadrilla'), flush: true, body: h.list(sites.map(s => ({ icon: 'pin', title: `P${s.pri} · ${esc(s.client)}`, sub: esc(s.address), right: h.pill(s.com ? T('Lot + walks', 'Lote + aceras') : T('Drive + walks', 'Entrada + aceras'), '') }))) })
       + h.card({ title: T('Last season', 'Temporada pasada'), flush: true, body: h.list(past.map(p => ({ icon: 'snow', title: `${p[0]} · ${p[1]}`, sub: `${p[2]} ${T('sites logged with photos', 'sitios registrados con fotos')}`, right: h.pill(T('Logged', 'Registrado'), 'ok') }))) })
-      + '<!--side-->' + side('Snow Lite (14 §4.3.0)', '<div class="small">Included on every plan at no charge. Storm visit logs with timestamped GPS photos, a priority-ordered site list, per-push and per-application invoices and a per-site proof-of-service PDF.</div>' + (c.has('snow_ice') ? h.note('This Company also has the Snow and Ice add-on: triggers, depth and proof packets arrive with the full module (V1).') : ''));
+      + '<!--side-->' + side('Snow Lite (14 §4.3.0)', '<div class="small">Included on every plan at no charge. Storm visit logs with timestamped GPS photos, a priority-ordered site list, per-push and per-application invoices and a per-site proof-of-service PDF.</div>' + (c.has('snow_ice') ? h.note('This Company also has the Snow and Ice add-on: triggers, depth and sealed proof packets come with the full module.') : ''));
   }
   const s = sites.find(x => x.id === c.x) || sites.find(x => x.status === 'In progress') || sites[0];
   const arrived = s.status !== 'Scheduled' && s.status !== 'En route' || RL.ui['snow.in.' + s.id];
@@ -565,7 +565,7 @@ RL.act('snow-photo', (el, ev, c) => { const k = 'snow.ph.' + el.dataset.val; RL.
 RL.act('snow-depart', (el, ev, c) => { RL.ui['snow.out.' + el.dataset.val] = 'true'; RL.toast(c.tr('Site logged. Next site is on your route.', 'Sitio registrado. El siguiente sitio está en tu ruta.')); });
 
 // =====================================================================
-// MANAGER MODE (V1, 21 §5.3)
+// MANAGER MODE (21 §5.3)
 // =====================================================================
 RL.screen('crew.manager', (c) => {
   const D = c.D, T = c.tr, k = D.kpi, tab = h.tab('mgr.tab', 'today');
@@ -613,7 +613,7 @@ RL.screen('crew.manager', (c) => {
     { icon: 'route', tone: canDispatch ? 'ok' : '', title: 'Quick reassign', sub: canDispatch ? 'Yes (visit.dispatch = ' + esc(c.can('visit.dispatch')) + ')' : 'Not in this role' },
     { icon: 'camera', tone: 'ok', title: 'Site assessment capture', sub: 'site_assessment = ' + esc(c.can('site_assessment')) },
     { icon: 'dollar', tone: c.sees('margin') ? 'ok' : '', title: 'Margin KPI', sub: c.sees('margin') ? 'Visible' : 'Masked for this role (02 §10.2)' },
-  ]) + h.note('Manager mode replaces the crew tab bar for owner, ops manager, estimator and office manager on a phone (21 §5.3).'));
+  ]) + h.note('Manager mode replaces the crew tab bar for the owner, operations manager and office manager on a phone (21 §5.3). Estimators and designers use sales mode.'));
   return out;
 });
 RL.act('mgr-assign', (el, ev, c) => { RL.ui['mgr.did.' + el.dataset.val] = 'true'; RL.toast(c.tr('Visit assigned. The crew sees it at the next sync.', 'Visita asignada. La cuadrilla la ve en la próxima sincronización.')); });
@@ -622,7 +622,78 @@ RL.act('mgr-draft', (el, ev, c) => { RL.toast(c.tr('Draft estimate created (8 cr
 RL.act('mgr-cap', (el, ev, c) => { RL.ui['mgr.cap'] = '3'; RL.toast(c.tr('Assessment saved to the client record.', 'Evaluación guardada en el cliente.')); });
 
 // =====================================================================
-// SHOP KIOSK (V1, 02 §7.4)
+// SALES MODE (24 §1.5 R25-C3; 03 SALES-01; 05 §4.0, §4.16)
+// =====================================================================
+const QQ = [
+  { id: 'mow', en: 'Weekly mowing', es: 'Corte semanal', unit: ['per visit', 'por visita'], price: (a) => Math.max(42, Math.round(a / 1000 * 5.6)), ins: ['Turf area', 'Terrain', 'Gates and obstacles'] },
+  { id: 'mulch', en: 'Mulch top-dress, 2 in', es: 'Mantillo, 2 in', unit: ['one time', 'una vez'], price: (a, b) => Math.round(b / 162 * 68 + 95), ins: ['Bed area', 'Depth', 'Edging'] },
+  { id: 'clean', en: 'Spring cleanup', es: 'Limpieza de primavera', unit: ['one time', 'una vez'], price: (a, b) => Math.round(a / 1000 * 21 + b / 100 * 9 + 120), ins: ['Turf area', 'Bed area', 'Leaf load'] },
+  { id: 'aer', en: 'Core aeration', es: 'Aireación', unit: ['one time', 'una vez'], price: (a) => Math.max(85, Math.round(a / 1000 * 11)), ins: ['Turf area', 'Terrain'] },
+];
+const PALETTE = [['Serviceberry', 'Amelanchier laevis', 'Native tree'], ['Little bluestem', 'Schizachyrium scoparium', 'Native grass'], ['Threadleaf bluestar', 'Amsonia hubrichtii', 'Perennial'], ['Prairie dropseed', 'Sporobolus heterolepis', 'Native grass'], ['Aromatic sumac', 'Rhus aromatica', 'Native shrub']];
+RL.screen('crew.sales', (c) => {
+  const D = c.D, T = c.tr, designer = c.role === 'designer';
+  const canQuote = /W/.test(c.can('estimate')), canDesign = /W/.test(c.can('design')), canAssess = /W/.test(c.can('site_assessment'));
+  const pool = D.clients.filter(x => x.type === 'residential' && !x.hero);
+  const leads = (D.leads || []).slice(0, 3);
+  const kinds = designer ? [['Design consult', 'Consulta de diseño'], ['Measure and photos', 'Medidas y fotos'], ['Plan review', 'Revisión del plano']] : [['Site assessment', 'Evaluación del sitio'], ['Quick Quote', 'Quick Quote'], ['Proposal walk-through', 'Revisión de propuesta']];
+  const appts = [0, 1, 2].map(i => { const cl = pool[(i * 3) % Math.max(pool.length, 1)] || D.clients[i] || D.clients[0]; const l = leads[i]; return { id: 'ap' + i, who: l ? l.name : cl.name, what: l ? l.service : T('Site visit', 'Visita'), addr: cl.address, at: [540, 690, 840][i], kind: T(kinds[i][0], kinds[i][1]) }; });
+  const ap = appts.find(a => a.id === U('sales.ap', 'ap0')) || appts[0];
+  const tabs = [['today', T('Today', 'Hoy')], ['assess', T('Assess', 'Evaluar')]].concat(canQuote ? [['quote', 'Quick Quote']] : []).concat([['design', T('Field design', 'Diseño en campo')]]);
+  let tab = h.tab('sales.tab', 'today'); if (!tabs.some(([k]) => k === tab)) tab = 'today';
+  const turf = 8350, beds = Number(U('sales.beds', '640'));
+  let out = wrap(h.tabs('sales.tab', tabs, 'today'));
+  out += pban(`${icon('wifi-off', 's')} ${T("Offline ready: today's appointments, the price book and the Region palette are on this phone.", 'Listo sin señal: las citas de hoy, la lista de precios y la paleta de la región están en este teléfono.')}`, 'info');
+  if (tab === 'today') {
+    out += h.card({ title: T('My day', 'Mi día'), flush: true, body: h.list(appts.map(a => ({ icon: 'calendar', title: `${t12(a.at)} · ${esc(a.who)}`, sub: `${esc(a.kind)} · ${esc(a.addr)}`, right: h.btn(T('Open', 'Abrir'), { sm: true, kind: a.id === ap.id ? 'primary' : '', act: 'sales-open', val: a.id }) }))) });
+    out += h.card({ title: T('Hot proposals', 'Propuestas activas'), flush: true, body: h.list([
+      { icon: 'eye', tone: 'ok', title: T(`${esc(first(appts[2].who))} viewed the proposal twice today`, `${esc(first(appts[2].who))} vio la propuesta dos veces hoy`), sub: T('Better option, 3 tiers sent yesterday', 'Opción Mejor, 3 niveles enviados ayer') },
+      { icon: 'clock', tone: 'warn', title: T('2 proposals expire this week', '2 propuestas vencen esta semana'), sub: T('A follow-up is drafted for each; nothing sends without you', 'Hay un seguimiento listo para cada una; nada se envía sin ti') },
+    ]) });
+  } else if (tab === 'assess') {
+    const step = Number(U('sales.step', '1'));
+    out += h.card({ title: T('Site assessment', 'Evaluación del sitio'), sub: `${esc(ap.who)} · ${esc(ap.addr)}`, body: h.steps([T('Photos', 'Fotos'), T('Measure', 'Medir'), T('Notes', 'Notas'), T('Save', 'Guardar')], step)
+      + `<div class="cols cols-3" style="gap:5px">${h.photo('before', { badge: T('Front', 'Frente') })}${h.photo('bed', { badge: T('Beds', 'Camas') })}${h.photo('lawn', { badge: T('Back', 'Atrás') })}</div>`
+      + meta(T('Turf (AI satellite measure)', 'Césped (medido por satélite)'), `${turf.toLocaleString()} ft²`) + meta(T('Beds', 'Camas'), `${beds.toLocaleString()} ft²`) + meta(T('Lot', 'Lote'), '0.31 ac') + meta(T('Slope', 'Pendiente'), T('4% toward the house', '4% hacia la casa')) + meta(T('Region', 'Región'), esc(c.t.region))
+      + h.textarea(U('sales.note', 'Wants a paver patio off the back door, about 16 x 20 ft. Slope drains toward the house. Dog in the yard on Tuesdays.'), { ui: 'sales.note', label: 'Notes' }) });
+    out += canAssess ? sticky(bb(T('Save assessment', 'Guardar evaluación'), { act: 'sales-save', icon: 'check' })) : `<div class="tiny t3">${T('Assessments are read-only for your role.', 'Las evaluaciones son de solo lectura para tu rol.')}</div>`;
+  } else if (tab === 'quote') {
+    const q = QQ.find(x => x.id === U('sales.qq', 'mow')) || QQ[0];
+    const slope = U('sales.slope', 'flat') === 'slope';
+    const base = q.price(turf, beds), price = Math.round(base * (slope ? 1.15 : 1));
+    out += `<div class="flex" role="tablist">${QQ.map(x => h.btn(T(x.en, x.es), { sm: true, kind: x.id === q.id ? 'primary' : '', ui: 'sales.qq', val: x.id })).join('')}</div>`;
+    out += h.card({ title: `Quick Quote · ${esc(T(q.en, q.es))}`, sub: `${esc(ap.who)} · ${T('at most 5 inputs', 'máximo 5 datos')}`, body:
+      meta(T(q.ins[0], q.ins[0]), q.ins[0].startsWith('Bed') ? `${beds.toLocaleString()} ft²` : `${turf.toLocaleString()} ft² ${h.pill(T('satellite', 'satélite'), 'info')}`)
+      + `<div class="flex between tiny"><span class="t3">${T('Terrain', 'Terreno')}</span>${h.select([['flat', T('Flat', 'Plano')], ['slope', T('Slopes (+15%)', 'Pendientes (+15%)')]], slope ? 'slope' : 'flat', { ui: 'sales.slope', label: 'Terrain' })}</div>`
+      + `<div class="cd" style="padding:12px;display:grid;gap:4px;justify-items:start"><span class="tiny t3">${T('Price', 'Precio')} · ${esc(T(q.unit[0], q.unit[1]))}</span><b style="font-size:1.6rem" class="num">${h.mask(c, 'price', money(price))}</b><span class="tiny">${T('Margin', 'Margen')} ${h.mask(c, 'margin', slope ? '43%' : '41%')} · ${T('from your budget, production rates and kits', 'de tu presupuesto, rendimientos y kits')}</span></div>`
+      + h.note(T('Same engine as the web estimate: a normal estimate version with mode quick (03 EST-11). Open the full estimate on the web app without retyping anything.', 'El mismo motor que el estimado web: una versión normal con modo rápido (03 EST-11).')) });
+    out += sticky(bb(T('Send Good/Better/Best proposal', 'Enviar propuesta de 3 niveles'), { act: 'sales-send', icon: 'send' }) + bb(T('Sign here and take deposit', 'Firmar aquí y cobrar depósito'), { ghost: true, act: 'sales-deposit', icon: 'card' }));
+  } else {
+    const m = U('sales.fm', 'map');
+    out += `<div class="flex" role="tablist">${[['map', T('Map measure', 'Medir en mapa')], ['gps', T('GPS walk', 'Caminata GPS')], ['ar', 'AR / LiDAR']].map(([k, l]) => h.btn(l, { sm: true, kind: k === m ? 'primary' : '', ui: 'sales.fm', val: k })).join('')}</div>`;
+    out += h.card({ title: T('Field Design Mode', 'Modo de diseño en campo'), sub: `${esc(ap.who)} · ${m === 'ar' ? T('accuracy about 2 cm', 'precisión aprox. 2 cm') : m === 'gps' ? T('accuracy about 1 m', 'precisión aprox. 1 m') : T('from parcel imagery', 'de imágenes de la parcela')}`, body:
+      `<svg viewBox="0 0 300 150" style="width:100%;height:auto;background:var(--surface-3);border-radius:10px" role="img" aria-label="Sketch of the back yard with a patio and a curved bed"><rect x="20" y="10" width="120" height="40" fill="none" stroke="var(--text-3)" stroke-dasharray="4 3"/><text x="28" y="34" font-size="10" fill="var(--text-2)">House</text><rect x="60" y="56" width="80" height="60" fill="color-mix(in srgb,var(--primary) 18%,transparent)" stroke="var(--primary)"/><text x="68" y="90" font-size="10" fill="var(--text)">Patio 16 x 20 ft</text><path d="M160 30 C 230 20, 290 60, 270 120 L 200 128 C 220 90, 190 60, 160 58 Z" fill="color-mix(in srgb,var(--moss-500, #6b8f4e) 25%,transparent)" stroke="var(--moss-700, #3f5f2c)"/><text x="205" y="80" font-size="10" fill="var(--text)">Bed A 212 ft²</text></svg>`
+      + meta(T('Patio area', 'Área del patio'), '320 ft²') + meta(T('Bed A', 'Cama A'), '212 ft²') + meta(T('Fall', 'Caída'), T('4% toward the house: drain needed', '4% hacia la casa: requiere drenaje')) });
+    out += h.card({ title: T('Plant picks from the Region palette', 'Plantas de la paleta de la región'), sub: esc(c.t.region), flush: true, body: h.list(PALETTE.slice(0, 4).map(([n, sci, k]) => ({ icon: 'sprout', title: esc(n), sub: `<i>${esc(sci)}</i> · ${esc(k)}`, right: h.pill(T('Fits zone', 'Apta para la zona'), 'ok') }))) });
+    out += h.note(T('AI previews need a connection; measurements, sketches and photos work offline and sync as a draft to the Design Studio (05 §4.16).', 'Las vistas de IA necesitan señal; medidas, bocetos y fotos funcionan sin señal y se sincronizan como borrador al Design Studio.'));
+    out += canDesign ? sticky(bb(T('Sync to the Design Studio', 'Sincronizar con el Design Studio'), { act: 'sales-sync', icon: 'refresh' })) : '';
+  }
+  out += '<!--side-->' + side(`Sales mode for ${esc(c.roleObj.name)}`, h.list([
+    { icon: 'camera', tone: canAssess ? 'ok' : '', title: 'Site assessments', sub: 'site_assessment = ' + esc(c.can('site_assessment')) },
+    { icon: 'bolt', tone: canQuote ? 'ok' : '', title: 'Quick Quote', sub: canQuote ? 'estimate = ' + esc(c.can('estimate')) : 'Not in this role: the estimator prices the design' },
+    { icon: 'ruler', tone: canDesign ? 'ok' : '', title: 'Field Design Mode', sub: 'design = ' + esc(c.can('design')) },
+    { icon: 'dollar', tone: c.sees('price') ? 'ok' : '', title: 'Prices', sub: c.sees('price') ? 'Visible' : 'Masked for this role (02 §10.2)' },
+  ]) + h.note('One native app, three modes: crew, manager and sales (24 §1.5, R25-C3). Sales mode gives estimators and designers their own tab bar; no crew clock unless they are also on a crew (05 §4.0).'));
+  return out;
+});
+RL.act('sales-open', (el) => { RL.ui['sales.ap'] = el.dataset.val; RL.ui['sales.tab'] = 'assess'; RL.ui['sales.step'] = '1'; });
+RL.act('sales-save', (el, ev, c) => { RL.ui['sales.step'] = '4'; RL.toast(c.tr('Assessment saved to the opportunity. It syncs when the phone is back online.', 'Evaluación guardada en la oportunidad. Se sincroniza al volver la señal.')); });
+RL.act('sales-send', (el, ev, c) => { RL.toast(c.tr('Proposal sent with three options. You will see when the client opens it.', 'Propuesta enviada con tres opciones. Verás cuando el cliente la abra.')); return false; });
+RL.act('sales-deposit', (el, ev, c) => { RL.toast(c.tr('Signed on the phone. Deposit taken by Tap to Pay; the job is created.', 'Firmado en el teléfono. Depósito cobrado con Tap to Pay; el trabajo está creado.')); return false; });
+RL.act('sales-sync', (el, ev, c) => { RL.toast(c.tr('Synced to the Design Studio as a draft with 3 measurements and 4 plant picks.', 'Sincronizado con el Design Studio como borrador.')); return false; });
+
+// =====================================================================
+// SHOP KIOSK (02 §7.4)
 // =====================================================================
 RL.screen('crew.kiosk', (c) => {
   const D = c.D, T = c.tr, W = c.winter;

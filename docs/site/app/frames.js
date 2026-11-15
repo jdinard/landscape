@@ -9,7 +9,7 @@ const PRIMARY = ['Today', 'Inbox', 'Clients', 'Sales', 'Design', 'Schedule', 'Jo
 const MORE = ['Operations', 'Team', 'Marketing', 'Reports', 'Automations', 'Settings'];
 const SURF_LAND = { web: 'web.today', crew: 'crew.today', crew_manager: 'crew.manager', kiosk: 'crew.kiosk', sub: 'sub.orders', portal: 'portal.home', console: 'console.home', partner: 'partner.clients', www: 'www.home', home: 'home.start' };
 RL.SURF_LAND = SURF_LAND;
-const SURF_LABEL = { web: 'Web app', crew: 'Crew app', crew_manager: 'Manager mode (V1)', kiosk: 'Shop kiosk (V1)', sub: 'Sub lite', portal: 'Portal', console: 'Console', partner: 'Partner hub', www: 'rootline.com', home: 'Rootline Home' };
+const SURF_LABEL = { web: 'Web app', crew: 'Crew app', crew_manager: 'Manager and sales modes', kiosk: 'Shop kiosk', sub: 'Sub lite', portal: 'Portal', console: 'Console', partner: 'Partner hub', www: 'rootline.com', home: 'Rootline Home' };
 
 // ---------- explorer bar ----------
 RL.renderBar = (c) => {
@@ -18,17 +18,16 @@ RL.renderBar = (c) => {
   const groups = {}; RL.AS.forEach(o => { (groups[o.group] = groups[o.group] || []).push(o); });
   const asSel = Object.entries(groups).map(([g, list]) => `<optgroup label="${esc(g)}">${list.map(o => `<option value="${o.key}"${o.key === s.as ? ' selected' : ''}>${esc(o.label)}</option>`).join('')}</optgroup>`).join('');
   const tSel = RL.P.tenants.tenants.map(t => `<option value="${t.id}"${t.id === s.t ? ' selected' : ''}>${esc(t.segment + ' · ' + t.name)}</option>`).join('');
-  const pSel = `<option value=""${!s.plan ? ' selected' : ''}>${esc(I.PLANS[c.t.plan].name)} (tenant's plan)</option>` + RL.P.plans.plans.filter(p => p.code !== 'archive').map(p => `<option value="${p.code}"${p.code === s.plan ? ' selected' : ''}>${esc(p.name)}${p.public ? '' : ' (sales-led)'}${p.scope !== 'MVP' ? ' · ' + p.scope : ''}</option>`).join('');
+  const pSel = `<option value=""${!s.plan ? ' selected' : ''}>${esc(I.PLANS[c.t.plan].name)} (tenant's plan)</option>` + RL.P.plans.plans.filter(p => p.code !== 'archive').map(p => `<option value="${p.code}"${p.code === s.plan ? ' selected' : ''}>${esc(p.name)}${p.public ? '' : ' (sales-led)'}</option>`).join('');
   const seg = (key, opts) => `<span class="seg" role="group">${opts.map(([v, l]) => `<button type="button" data-set="${key}=${v}" aria-pressed="${s[key] === v}">${l}</button>`).join('')}</span>`;
   const surfs = RL.SURF[c.role];
-  const surfBtns = surfs.length > 1 ? `<label>Surface<span class="seg" role="group">${surfs.map(sf => `<button type="button" data-set="r=${SURF_LAND[sf]}" aria-pressed="${c.surface === sf}">${SURF_LABEL[sf]}</button>`).join('')}</span></label>` : '';
+  const surfBtns = surfs.length > 1 ? `<label>Surface<span class="seg" role="group">${surfs.map(sf => `<button type="button" data-set="r=${sf === 'crew_manager' && ['estimator', 'designer'].includes(c.role) ? 'crew.sales' : SURF_LAND[sf]}" aria-pressed="${c.surface === sf}">${SURF_LABEL[sf]}</button>`).join('')}</span></label>` : '';
   const atlas = [['atlas.home', 'Explorer'], ['atlas.personas', 'Personas'], ['atlas.roles', 'Roles and access'], ['atlas.plans', 'Packages'], ['atlas.segments', 'Markets'], ['atlas.compare', 'Who sees what'], ['atlas.routes', 'Every screen']];
   el.innerHTML = `<div class="xb-in">
     <label for="xb-t">Market (tenant)<select id="xb-t" data-xb="t">${tSel}</select></label>
     <label for="xb-plan">Package<select id="xb-plan" data-xb="plan">${pSel}</select></label>
     <label for="xb-as">View as<select id="xb-as" data-xb="as">${asSel}</select></label>
     ${surfBtns}
-    <label>Scope lens${seg('scope', [['mvp', 'MVP'], ['v1', '+V1'], ['v2', '+V2'], ['all', 'All']])}</label>
     <label>Season${seg('season', [['peak', 'May'], ['winter', 'January']])}</label>
     <label>Language${seg('lang', [['en', 'EN'], ['es', 'ES']])}</label>
     <span class="sp"></span>
@@ -54,7 +53,7 @@ RL.act('xb-theme', () => {
 const browser = (url, inner, o) => `<div class="fr"${o && o.max ? ` style="max-width:${o.max}px;margin:0 auto"` : ''}><div class="fr-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url">${esc(url)}</span>${o && o.right ? o.right : ''}</div>${inner}</div>`;
 RL.browser = browser;
 function navItemState(surface, nav, c) {
-  const rs = RL.routesFor(surface).filter(r => r.nav === nav && c.inLens(r.scope));
+  const rs = RL.routesFor(surface).filter(r => r.nav === nav);
   if (!rs.length) return null;
   const acc = rs.map(r => RL.access(r, c.s));
   if (acc.some(a => a.ok)) {
@@ -75,7 +74,7 @@ function subnav(surface, c) {
   const list = RL.groupRoutes(surface, c.route.nav, c);
   if (list.length < 2) return '';
   const curId = c.route.parent && !list.find(x => x.r.id === c.route.id) ? c.route.parent : c.route.id;
-  return `<div class="mx-subnav" role="tablist">${list.map(({ r, a }) => `<button type="button" data-go="${r.id}"${r.id === curId ? ' aria-current="page"' : ''}${a.state === 'locked' ? ' class="locked"' : ''}>${a.state === 'locked' ? icon('lock', 's') : ''}${esc(r.label)}${r.scope !== 'MVP' ? ' ' + h.tag(r.scope) : ''}</button>`).join('')}</div>`;
+  return `<div class="mx-subnav" role="tablist">${list.map(({ r, a }) => `<button type="button" data-go="${r.id}"${r.id === curId ? ' aria-current="page"' : ''}${a.state === 'locked' ? ' class="locked"' : ''}>${a.state === 'locked' ? icon('lock', 's') : ''}${esc(r.label)}</button>`).join('')}</div>`;
 }
 const logoBox = (t) => `<span class="logo" style="background:${esc(t.brand.color)}">${esc(t.brand.logo)}</span>`;
 
@@ -136,10 +135,13 @@ RL.frames.crew = (c, body) => {
   return `<div class="ph-wrap">${phone(c, { head, body: ph, tabs: tb, label: 'Rootline Crew app' })}${side ? `<div class="ph-side">${side}</div>` : ''}</div>`;
 };
 RL.frames.crew_manager = (c, body) => {
-  const head = `<div class="ph-head">${h.avatar(String(c.who))}<div class="grow"><b>${esc(c.who)}</b><span>${esc(c.t.name)} · ${c.tr('Manager mode', 'Modo gerente')}</span></div>${h.tag('V1')}</div>`;
-  const tb = `<nav class="ph-tabs" aria-label="Manager mode">${[['today', 'Today'], ['calendar', 'Schedule'], ['users', 'Clients'], ['camera', 'Capture'], ['grid', 'More']].map(([ic, l], i) => `<button type="button" data-act="mgr-tab"${i === 0 ? ' aria-current="page"' : ''}>${icon(ic)}${l}</button>`).join('')}</nav>`;
+  const sales = c.route.id === 'crew.sales', mode = sales ? c.tr('Sales mode', 'Modo ventas') : c.tr('Manager mode', 'Modo gerente');
+  const head = `<div class="ph-head">${h.avatar(String(c.who))}<div class="grow"><b>${esc(c.who)}</b><span>${esc(c.t.name)} · ${mode}</span></div></div>`;
+  const tb = sales
+    ? `<nav class="ph-tabs" aria-label="Sales mode">${[['today', 'calendar', c.tr('Today', 'Hoy')], ['assess', 'camera', c.tr('Assess', 'Evaluar')], ['quote', 'bolt', 'Quote'], ['design', 'ruler', c.tr('Design', 'Diseño')]].map(([k, ic, l]) => `<button type="button" data-ui="sales.tab" data-val="${k}"${(RL.ui['sales.tab'] || 'today') === k ? ' aria-current="page"' : ''}>${icon(ic)}${l}</button>`).join('')}</nav>`
+    : `<nav class="ph-tabs" aria-label="Manager mode">${[['today', 'Today'], ['calendar', 'Schedule'], ['users', 'Clients'], ['camera', 'Capture'], ['grid', 'More']].map(([ic, l], i) => `<button type="button" data-act="mgr-tab"${i === 0 ? ' aria-current="page"' : ''}>${icon(ic)}${l}</button>`).join('')}</nav>`;
   const [ph, side] = splitSide(body);
-  return `<div class="ph-wrap">${phone(c, { head, body: ph, tabs: tb, label: 'Manager mode' })}${side ? `<div class="ph-side">${side}</div>` : ''}</div>`;
+  return `<div class="ph-wrap">${phone(c, { head, body: ph, tabs: tb, label: sales ? 'Sales mode' : 'Manager mode' })}${side ? `<div class="ph-side">${side}</div>` : ''}</div>`;
 };
 RL.frames.kiosk = (c, body) => browser('Rootline Crew · kiosk mode · ' + c.t.branches[0] + ' yard', `<div class="site-body">${body}</div>`, { max: 980 });
 RL.frames.sub = (c, body) => {
@@ -155,7 +157,7 @@ RL.portalBrand = (c) => {
 };
 RL.frames.portal = (c, body) => {
   const b = RL.portalBrand(c);
-  const items = RL.routesFor('portal').filter(r => !r.parent && r.id !== 'portal.account').map(r => ({ r, a: RL.access(r, c.s) })).filter(({ r, a }) => a.ok && c.inLens(r.scope));
+  const items = RL.routesFor('portal').filter(r => !r.parent && r.id !== 'portal.account').map(r => ({ r, a: RL.access(r, c.s) })).filter(({ a }) => a.ok);
   const cur = c.route.parent || c.route.id;
   const nav = `<nav aria-label="Portal">${items.map(({ r }) => `<button type="button" data-go="${r.id}"${r.id === cur ? ' aria-current="page"' : ''}>${esc(c.tr(r.label, PORTAL_ES[r.id] || r.label))}</button>`).join('')}<button type="button" data-go="portal.account"${cur === 'portal.account' ? ' aria-current="page"' : ''}>${icon('user', 's')}</button></nav>`;
   const top = `<div class="site-top"><span class="logo" style="background:${b.color}">${esc(b.logo)}</span><b>${esc(b.name)}</b>${b.white ? '' : `<span class="pill">${icon('leaf', 's')}on Rootline</span>`}${nav}</div>`;
@@ -173,11 +175,11 @@ RL.frames.portal = (c, body) => {
 const PORTAL_ES = { 'portal.home': 'Inicio', 'portal.proposals': 'Propuestas y diseños', 'portal.schedule': 'Calendario', 'portal.billing': 'Facturas y pagos', 'portal.requests': 'Solicitudes', 'portal.history': 'Historial', 'portal.property': 'Mi jardín', 'portal.messages': 'Mensajes', 'portal.portfolio': 'Cartera', 'portal.approvals': 'Aprobaciones', 'portal.documents': 'Documentos', 'portal.reports': 'Informes' };
 RL.frames.partner = (c, body) => {
   const items = RL.routesFor('partner').map(r => ({ r, a: RL.access(r, c.s) })).filter(({ a }) => a.ok);
-  const top = `<div class="site-top"><span class="logo" style="background:var(--moss-700)">${icon('leaf')}</span><b>Rootline Partners</b><span class="pill">Accountant Hub ${h.tag('V1')}</span><nav aria-label="Partner portal">${items.map(({ r }) => `<button type="button" data-go="${r.id}"${r.id === c.route.id ? ' aria-current="page"' : ''}>${esc(r.label)}</button>`).join('')}</nav></div>`;
+  const top = `<div class="site-top"><span class="logo" style="background:var(--moss-700)">${icon('leaf')}</span><b>Rootline Partners</b><span class="pill">Accountant Hub</span><nav aria-label="Partner portal">${items.map(({ r }) => `<button type="button" data-go="${r.id}"${r.id === c.route.id ? ' aria-current="page"' : ''}>${esc(r.label)}</button>`).join('')}</nav></div>`;
   return browser('https://partners.rootline.app' + c.route.path, `${top}<div class="site-body">${body}</div>`);
 };
 RL.frames.www = (c, body) => {
-  const items = [['www.product', 'Product'], ['www.solutions', 'Solutions'], ['www.pricing', 'Pricing'], ['www.switch', 'Switch'], ['www.plants', 'Plant Finder'], ['www.resources', 'Resources'], ['www.trust', 'Trust']].filter(([id]) => c.inLens(I.ROUTES[id].scope));
+  const items = [['www.product', 'Product'], ['www.solutions', 'Solutions'], ['www.pricing', 'Pricing'], ['www.switch', 'Switch'], ['www.plants', 'Plant Finder'], ['www.resources', 'Resources'], ['www.trust', 'Trust']];
   const top = `<div class="site-top"><span class="logo" style="background:var(--moss-600)">${icon('leaf')}</span><b style="font-family:var(--font-display);font-size:1.1rem">Rootline</b><nav aria-label="Marketing site">${items.map(([id, l]) => `<button type="button" data-go="${id}"${c.route.id === id ? ' aria-current="page"' : ''}>${l}</button>`).join('')}<button type="button" data-go="www.start" class="btn primary sm" style="color:var(--on-primary)">Start free trial</button></nav></div>`;
   const foot = `<div class="site-foot"><span>Rootline · published prices · zero payment markup on your own Stripe</span><span><a href="#" data-go="www.trust">Trust</a> · <a href="#" data-go="www.partners">Partners</a> · <a href="#" data-go="home.start">Design my yard</a></span></div>`;
   return browser('https://rootline.com' + c.route.path.replace(':segment', (c.seg.id || '').toLowerCase()).replace(':vendor', RL.ui['www.vendor'] || 'jobber'), `${top}<div class="site-body">${body}</div>${foot}`);
@@ -190,7 +192,7 @@ RL.frames.home = (c, body) => {
   }
   const top = `<div class="site-top"><span class="logo" style="background:var(--iris-600)">${icon('sprout')}</span><b style="font-family:var(--font-display)">Rootline Home</b><span class="pill ai">${icon('spark', 's')}AI yard design</span><nav aria-label="Rootline Home"><button type="button" data-go="www.plants">Plant Finder</button><button type="button" data-go="home.start">Start over</button></nav></div>`;
   const [main, side] = splitSide(body);
-  return browser('https://rootline.com' + c.route.path, `${top}${side ? `<div class="site-body has-side"><div class="site-main">${main}</div><aside class="site-side" aria-label="What the Company sees">${side}</aside></div>` : `<div class="site-body">${main}</div>`}<div class="site-foot"><span>Concepts are AI-generated and labeled as such; plants come from the curated ${esc(c.t.region)} palette.</span><span>Rootline Home ${h.tag('V1')}</span></div>`);
+  return browser('https://rootline.com' + c.route.path, `${top}${side ? `<div class="site-body has-side"><div class="site-main">${main}</div><aside class="site-side" aria-label="What the Company sees">${side}</aside></div>` : `<div class="site-body">${main}</div>`}<div class="site-foot"><span>Concepts are AI-generated and labeled as such; plants come from the curated ${esc(c.t.region)} palette.</span><span>Rootline Home</span></div>`);
 };
 RL.frames.generic = (c, body) => `<div class="site-body">${body}</div>`;
 
@@ -210,8 +212,8 @@ RL.deniedHtml = (rt, c, a) => {
 RL.act('request-access', (el, ev, c) => { RL.toast(`Access request sent to ${c.owner} (mock).`); return false; });
 
 // ---------- lens ----------
-const dotFor = st => ({ ok: 'dot-ok', limit: 'dot-ok', locked: 'dot-lock', hidden: 'dot-hide', off: 'dot-hide', denied: 'dot-deny', surface: 'dot-hide', scope: 'dot-scope' }[st] || 'dot-hide');
-const stLabel = { ok: 'visible', limit: 'visible, with plan limit', locked: 'locked: upgrade prompt', hidden: 'hidden: not in plan', off: 'hidden: module off', denied: 'hidden: role or permission', surface: 'other surface', scope: 'beyond scope lens' };
+const dotFor = st => ({ ok: 'dot-ok', limit: 'dot-ok', locked: 'dot-lock', hidden: 'dot-hide', off: 'dot-hide', denied: 'dot-deny', surface: 'dot-hide' }[st] || 'dot-hide');
+const stLabel = { ok: 'visible', limit: 'visible, with plan limit', locked: 'locked: upgrade prompt', hidden: 'hidden: not in plan', off: 'hidden: module off', denied: 'hidden: role or permission', surface: 'other surface' };
 RL.lensHtml = (c, a) => {
   const r = c.route, ro = c.roleObj, pl = c.plan, t = c.t;
   const persona = RL.P.personas.personas.find(p => p.role === c.role && p.tenant === t.id && (!p.contact_scope || p.contact_scope === c.scope)) || RL.P.personas.personas.find(p => p.role === c.role && !p.tenant);
@@ -225,7 +227,7 @@ RL.lensHtml = (c, a) => {
     <div class="lr"><span>Plan</span><span>${esc(pl.name)} ${pl.annual ? '· $' + pl.annual + '/mo annual' : pl.monthly ? '· $' + pl.monthly + '/mo' : ''}</span></div>
     <div class="lr"><span>Included</span><span class="right">${pl.office_seats != null ? pl.office_seats + ' office, ' : ''}${pl.field_seats != null ? pl.field_seats + ' active field seats, ' : ''}${pl.ai_credits ? h.num(pl.ai_credits) + ' AI credits' : esc(pl.ai_note || '')}</span></div>
     <div class="lr"><span>Add-ons</span><span>${t.addons.length ? t.addons.map(x => esc(I.ADDONS[x].name)).join(', ') : 'none'}</span></div><div class="lr"><span>Modules</span><span class="right">${t.modules.map(esc).join(', ')}${t.books === 'qbo_system' ? ', Books off' : ''}</span></div></div>`;
-  out += `<h2>This screen</h2><div class="lc"><div class="flex"><b>${esc(r.label)}</b>${h.tag(r.scope)}</div><div class="mono tiny t2">${esc(r.path.startsWith('{') ? r.path : (r.surface === 'portal' ? RL.portalBrand(c).host : r.surface === 'web' || r.surface === 'sub' ? 'app.rootline.com/' + c.t.id : I.SURFACES[r.surface].host.split(/[ ;]/)[0].replace(/\/\.\.\.$/, '')) + r.path)}</div><div class="why">${esc(r.purpose)}</div>
+  out += `<h2>This screen</h2><div class="lc"><div class="flex"><b>${esc(r.label)}</b></div><div class="mono tiny t2">${esc(r.path.startsWith('{') || r.path.includes('://') ? r.path : (r.surface === 'portal' ? RL.portalBrand(c).host : r.surface === 'web' || r.surface === 'sub' ? 'app.rootline.com/' + c.t.id : I.SURFACES[r.surface].host.split(/[ ;]/)[0].replace(/\/\.\.\.$/, '')) + r.path)}</div><div class="why">${esc(r.purpose)}</div>
     <div class="gl"><i class="${dotFor(a.state)}"></i><span><b>${esc(stLabel[a.state] || a.state)}</b></span></div>
     ${navV != null ? `<div class="lr"><span>Nav visibility</span><span class="mono">${esc(navV)}</span></div>` : ''}
     ${grantV != null ? `<div class="lr"><span>Permission</span><span class="mono">${esc(r.perm)} = ${esc(grantV)}</span></div>` : ''}
@@ -238,8 +240,8 @@ RL.lensHtml = (c, a) => {
     out += `<h2>Navigation for this role</h2><div class="lc">${groups.map(n => {
       const rs = RL.routesFor(r.surface).filter(x => x.nav === n);
       const acc = rs.map(x => ({ x, a: RL.access(x, c.s) }));
-      const inL = acc.filter(({ x }) => c.inLens(x.scope));
-      let st = inL.length === 0 ? 'scope' : inL.some(({ a }) => a.ok) ? 'ok' : inL.some(({ a }) => a.state === 'locked') ? 'locked' : (inL[0].a.state);
+      const inL = acc;
+      const st = inL.some(({ a }) => a.ok) ? 'ok' : inL.some(({ a }) => a.state === 'locked') ? 'locked' : (inL[0].a.state);
       const lim = inL.find(({ a }) => a.state === 'limit');
       return `<div class="gl"><i class="${dotFor(st)}"></i><span>${esc(n)} <span class="t3">${esc(stLabel[st] || st)}${lim ? ' · ' + esc(lim.a.limit || '') : ''}</span></span></div>`;
     }).join('')}</div>`;
@@ -251,10 +253,10 @@ RL.lensHtml = (c, a) => {
   if (peers.length > 1) {
     out += `<h2>Same screen, other roles</h2><div class="lc">${peers.map(o => { const st = RL.access(r, Object.assign({}, c.s, { as: o.key })); return `<button type="button" class="gl" style="border:0;background:none;text-align:left;cursor:pointer;padding:1px 0" data-set="as=${o.key}&r=${r.id}"><i class="${dotFor(st.state)}"></i><span>${esc(o.label)} <span class="t3">${esc(stLabel[st.state] || st.state)}</span></span></button>`; }).join('')}</div>`;
   }
-  out += `<h2>Legend</h2><div class="lc"><div class="gl"><i class="dot-ok"></i><span>Visible</span><i class="dot-lock"></i><span>Locked: upgrade prompt (buyers only)</span><i class="dot-hide"></i><span>Hidden: plan, module or surface</span><i class="dot-deny"></i><span>Hidden: role or permission</span><i class="dot-scope"></i><span>Beyond the scope lens</span></div></div>`;
+  out += `<h2>Legend</h2><div class="lc"><div class="gl"><i class="dot-ok"></i><span>Visible</span><i class="dot-lock"></i><span>Locked: upgrade prompt (buyers only)</span><i class="dot-hide"></i><span>Hidden: plan, module or surface</span><i class="dot-deny"></i><span>Hidden: role or permission</span></div></div>`;
   return out;
 };
-RL.lensAtlas = (c) => `<h2>How to read the explorer</h2><div class="lc why"><div><p>Pick a <b>market</b> (a sample tenant in a target segment), a <b>package</b> (plan) and who to <b>view as</b>. Every screen is gated exactly as the specs say: navigation by role (21 §5), permissions (02 §10), plan entitlements (22 §4) and enabled modules.</p><p class="mt8">The <b>scope lens</b> hides anything beyond MVP, V1 or V2, so a build agent can see the MVP on its own.</p></div></div>
+RL.lensAtlas = (c) => `<h2>How to read the explorer</h2><div class="lc why"><div><p>Pick a <b>market</b> (a sample tenant in a target segment), a <b>package</b> (plan) and who to <b>view as</b>. Every screen is gated exactly as the specs say: navigation by role (21 §5), permissions (02 §10), plan entitlements (22 §4) and enabled modules.</p><p class="mt8">Every screen here is in the one release the build agent ships (24 §1.1).</p></div></div>
   <h2>Data</h2><div class="lc why"><p>Source of truth: <span class="mono">docs/platform/*.json</span>, bundled by <span class="mono">docs/platform/build.py</span> into <span class="mono">assets/platform-data.js</span>.</p></div>`;
 
 // Copilot modal available from the web top bar

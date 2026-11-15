@@ -5,13 +5,12 @@
 **At a glance**
 
 - **What it is:** the operating core of Rootline. It turns sold work ([Proposals](03-crm-sales-estimating-proposals.md), [Service Agreements](07-invoicing-billing-contracts.md)) into Jobs and Visits, places Visits on Crew Days and Routes, protects them against weather, holidays and breakdowns, tracks crews live and tells clients when the crew will arrive.
-- **Decision 1 - the optimizer proposes, the dispatcher decides.** Every optimizer, weather-playbook and Copilot change is a reviewable ScheduleDiff with KPI deltas and the client notices it will send. Nothing is auto-applied at MVP; opt-in auto-apply per rule type is.
+- **Decision 1 - the optimizer proposes, the dispatcher decides.** Every optimizer, weather-playbook and Copilot change is a reviewable ScheduleDiff with KPI deltas and the client notices it will send. Nothing is auto-applied unless the Company opts into auto-apply for a rule type (for example rain-day moves for per-visit mowing).
 - **Decision 2 - one canonical Visit state machine** (4.1.3): `unscheduled -> scheduled -> dispatched -> en_route -> on_site -> in_progress (paused) -> completed / partially_completed / skipped / canceled / missed`. The crew app ([05](05-field-crew-mobile-app.md)), portal ([06](06-customer-portal.md)) and agreement billing ([07](07-invoicing-billing-contracts.md)) all use these keys and reason codes, and terminal field states win over office states after offline sync.
 - **Decision 3 - recurrence is RFC 5545 RRULE plus landscape extensions** (season bounds, route-day anchor, A/B weeks, holiday policies), materialized on a rolling horizon (default 8 weeks) with one generator for both forecast and schedule. Program rounds come from [14](14-service-line-modules.md) and are scheduled inside their application windows.
 - **Decision 4 - an in-house OR-Tools solver on road-network travel matrices** (Google Routes or Mapbox) with a route-stability penalty, so weekly clients keep their day, crew and order.
 - **Decision 5 - money gates read events only.** Deposits are direct charges on the Company's own connected Stripe account ([08](08-payments-stripe.md)); scheduling consumes `payments.*` outcome events and never touches card data.
--:** dispatch board with draft/publish, recurrence engine, holidays and blackouts, basic capacity planner and backlog, skills and equipment validation, single-crew sequencing and insertion, best-day slotting, Weather Service with manual rain-day bulk moves, live map, arrival reconciliation, ETA and on-my-way data, client skip/reschedule/pause, and the Availability API behind portal booking.
-- and later:** multi-crew VRP (Grow plan and up per [22](22-business-model-pricing-gtm.md)), rain-day playbooks, what-if scenarios, multi-day project scheduling with dependencies, subcontractor offers, mid-day re-optimization, Copilot and agent scheduling; resource leveling and the growth-adaptive AI model.
+- **In v1:** the dispatch board with draft/publish, the recurrence engine, holidays and blackouts, the full season capacity planner and backlog, skills and equipment validation, single-crew sequencing and insertion on every plan, multi-crew optimization on Grow and above (OD-13, [22](22-business-model-pricing-gtm.md)), best-day slotting, the Weather Service with manual rain-day moves and rain-day playbooks, what-if scenarios, live map, arrival reconciliation, ETA and on-my-way data, multi-day project scheduling with dependencies and resource leveling, subcontractor offers, mid-day re-optimization, client skip, reschedule and pause plus add-on self-scheduling through the Availability API (R24-20), growth-adaptive mowing with its AI model, and Copilot and agent scheduling.
 - **Differentiators:** a season capacity planner (sold vs available crew-hours by week), one-action weather playbooks that also notify clients, honest ETA windows that widen with distance in the sequence, and route stability as an explicit objective.
 - **Key cross-links:** field execution, geofences, punches and location privacy in [05](05-field-crew-mobile-app.md); what clients see in [06](06-customer-portal.md); occurrence billing in [07](07-invoicing-billing-contracts.md); round templates and the Storm Event Engine in [14](14-service-line-modules.md); pay rules in [15](15-team-hr-payroll.md); message templates and consent in [16](16-marketing-growth-communications.md); event bus and sync in [20](20-architecture-security.md).
 
@@ -19,7 +18,7 @@
 
 **Ownership boundaries.** This document owns: the Job/Visit scheduling model and the canonical Visit state machine, recurrence and visit generation, holidays and blackouts, capacity planning and backlog, crew/skill/equipment matching for scheduling, the dispatch board, territories, the route optimizer, the weather service and weather playbooks, live tracking and ETA, multi-day project scheduling, subcontractor scheduling, client self-scheduling slot supply, and the scheduling side of Copilot. It does **not** own: on-device geofence mechanics, time punches and location privacy ([05](05-field-crew-mobile-app.md)), message templates and consent ([16](16-marketing-growth-communications.md)), program/round templates, the Storm Event Engine and pesticide compliance ([14](14-service-line-modules.md)), billing ([07](07-invoicing-billing-contracts.md)), or equipment maintenance and deliveries ([13](13-operations-inventory-equipment.md)). Where those modules meet scheduling, this document summarizes the contract and links.
 
-> **Evidence basis.** Competitor and complaint evidence comes from the research reports in this repo ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and from citations gathered by sibling module docs, re-cited here at their original URLs (for example ServiceTitan's Atlas agent and Aspire's weather-triggered snow dispatch via [R2](research/R2-landscape-specific-platforms.md); Cal/OSHA heat thresholds, electronic-monitoring notice laws and youth hazardous-equipment rules via [15](15-team-hr-payroll.md) and [05](05-field-crew-mobile-app.md); smart irrigation controller APIs and fertilizer blackout rule packs via [14](14-service-line-modules.md); payment, deposit and service-hold event contracts via [07](07-invoicing-billing-contracts.md) and [08](08-payments-stripe.md)). Facts drawn from general industry and vendor knowledge without a citation are marked **[B, verify]**. Vendor limits (API element caps, geofence counts) and prices change often: treat every such number as "as of Nov 2026, verify" before engineering commits to it.
+> **Evidence basis.** Competitor and complaint evidence comes from the research reports in this repo ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and from citations gathered by sibling module docs, re-cited here at their original URLs (for example ServiceTitan's Atlas agent and Aspire's weather-triggered snow dispatch via [R2](research/R2-landscape-specific-platforms.md); Cal/OSHA heat thresholds, electronic-monitoring notice laws and youth hazardous-equipment rules via [15](15-team-hr-payroll.md) and [05](05-field-crew-mobile-app.md); smart irrigation controller APIs and fertilizer blackout rule packs via [14](14-service-line-modules.md); payment, deposit and service-hold event contracts via [07](07-invoicing-billing-contracts.md) and [08](08-payments-stripe.md)). Facts drawn from general industry and vendor knowledge without a citation are marked **[B, verify]**. Vendor limits (API element caps, geofence counts) and prices change often: treat every such number as "as of Nov 2026, verify" before the build depends on it.
 >
 > Verification note: items marked "verify" or "[B, verify]" are from secondary sources or general knowledge and need first-hand confirmation before build.
 
@@ -40,7 +39,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief: extra ideas](#13-beyond-the-brief-extra-ideas)
-14. [Open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-open-questions)
 15. [Sources](#sources)
 
 ---
@@ -49,27 +48,27 @@
 
 ### 1.1 Goals
 
-| # | Goal | Measurable target | Priority |
-|---|---|---|---|
-| G1 | **Sold work becomes scheduled work without re-typing.** Accepted proposals and activated agreements generate Visits with durations, skills, equipment and time windows already attached. | 100% of recurring agreement lines produce Visits automatically; median time from "proposal accepted" to "first visit on a route" < 2 minutes of human effort | |
-| G2 | **A season is planned, not improvised.** Owners see sold crew-hours vs available crew-hours by week for the whole season before April 1. | Capacity view covers 52 weeks forward; forecast error of weekly sold hours vs actual hours worked within +/-10% by week 6 of the season (estimate target) | basic, full |
-| G3 | **Real routes on real roads.** Road-network drive times with time-of-day traffic, multi-crew assignment, skills, equipment, time windows, breaks, dump and supply stops. | Drive time reduced 10-20% vs the Company's pre-Rootline routes on the first optimized week (estimate based on typical VRP gains; measured per tenant at onboarding) | single crew, multi-crew |
-| G4 | **Weather is a playbook, not a fire drill.** One action handles a rain day across all crews with client notifications. | Rain-day replan for a 6-crew Company (about 120 visits) proposed in < 60 s and applied with notifications in < 5 minutes of dispatcher time | (manual bulk move) |
-| G5 | **Clients always know when.** Day-ahead notices, on-my-way texts with live ETA, honest delay notices. | ETA accuracy: 80% of arrivals within +/-15 minutes of the last ETA sent (target) | |
-| G6 | **Dispatchers work at the speed of thought.** Dense board, keyboard-first, optimistic UI, every drag validated. | Drag-to-confirm < 100 ms optimistic, < 300 ms p95 server confirmation (budget from [20](20-architecture-security.md)); median clicks to schedule a visit <= 3 ([21](21-ux-design-system-sitemaps.md)) | |
-| G7 | **Stable routes.** Weekly maintenance clients see the same crew on the same day in roughly the same order. | >= 90% of recurring stops keep their route day and crew week over week when no inputs changed | |
-| G8 | **Projects and maintenance share one schedule.** Multi-day installs with phases and dependencies sit on the same board as mowing routes, competing for the same people and equipment. | 0 double-booked crews or equipment units on published schedules (hard validation) | |
-| G9 | **AI that moves visits, with consent.** Natural-language rescheduling and agentic replans produce a ScheduleDiff that a human approves. | >= 70% of AI-proposed weather diffs accepted without edits by month 3 of use (target) | |
-| G10 | **Works for a 1-truck operator and a 40-crew branch network.** | Single-crew Company can run the season with no optimizer settings touched; multi-branch Companies get branch-scoped boards and depots | / |
+| # | Goal | Measurable target |
+|---|---|---|
+| G1 | **Sold work becomes scheduled work without re-typing.** Accepted proposals and activated agreements generate Visits with durations, skills, equipment and time windows already attached. | 100% of recurring agreement lines produce Visits automatically; median time from "proposal accepted" to "first visit on a route" < 2 minutes of human effort |
+| G2 | **A season is planned, not improvised.** Owners see sold crew-hours vs available crew-hours by week for the whole season before April 1. | Capacity view covers 52 weeks forward; forecast error of weekly sold hours vs actual hours worked within +/-10% by week 6 of the season (estimate target) |
+| G3 | **Real routes on real roads.** Road-network drive times with time-of-day traffic, multi-crew assignment, skills, equipment, time windows, breaks, dump and supply stops. | Drive time reduced 10-20% vs the Company's pre-Rootline routes on the first optimized week (estimate based on typical VRP gains; measured per tenant at onboarding) |
+| G4 | **Weather is a playbook, not a fire drill.** One action handles a rain day across all crews with client notifications. | Rain-day replan for a 6-crew Company (about 120 visits) proposed in < 60 s and applied with notifications in < 5 minutes of dispatcher time |
+| G5 | **Clients always know when.** Day-ahead notices, on-my-way texts with live ETA, honest delay notices. | ETA accuracy: 80% of arrivals within +/-15 minutes of the last ETA sent (target) |
+| G6 | **Dispatchers work at the speed of thought.** Dense board, keyboard-first, optimistic UI, every drag validated. | Drag-to-confirm < 100 ms optimistic, < 300 ms p95 server confirmation (budget from [20](20-architecture-security.md)); median clicks to schedule a visit <= 3 ([21](21-ux-design-system-sitemaps.md)) |
+| G7 | **Stable routes.** Weekly maintenance clients see the same crew on the same day in roughly the same order. | >= 90% of recurring stops keep their route day and crew week over week when no inputs changed |
+| G8 | **Projects and maintenance share one schedule.** Multi-day installs with phases and dependencies sit on the same board as mowing routes, competing for the same people and equipment. | 0 double-booked crews or equipment units on published schedules (hard validation) |
+| G9 | **AI that moves visits, with consent.** Natural-language rescheduling and agentic replans produce a ScheduleDiff that a human approves. | >= 70% of AI-proposed weather diffs accepted without edits by month 3 of use (target) |
+| G10 | **Works for a 1-truck operator and a 40-crew branch network.** | Single-crew Company can run the season with no optimizer settings touched; multi-branch Companies get branch-scoped boards and depots |
 
 ### 1.2 Non-goals
 
-- **Not a turn-by-turn navigation app.** Rootline hands off to Google Maps, Apple Maps or Waze from the crew app. Embedded truck-and-trailer navigation is a evaluation in [05](05-field-crew-mobile-app.md).
+- **Not a turn-by-turn navigation app.** Rootline hands off to Google Maps, Apple Maps or Waze from the crew app; the optional embedded truck-and-trailer navigation is specified in [05](05-field-crew-mobile-app.md) 4.2.3.
 - **Not a telematics hardware vendor.** Vehicle GPS units, engine-hour sensors and dashcams come from partners (Samsara, Motive, Geotab, Verizon Connect class; verify integration availability). Rootline ingests their data.
 - **Not a general workforce-management (WFM) shift scheduler** for hourly retail-style staffing. Crews are scheduled through crew-days and routes; individual shift bidding and labor-law rest rules are owned by [15](15-team-hr-payroll.md).
 - **Not a snow-specific storm engine.** Storm event lifecycle, triggers and proof-of-service packets are in [14](14-service-line-modules.md). This module supplies weather data, routing and live tracking to it.
-- **Not a full CPM/EVM construction scheduler** (Primavera-class). Project scheduling supports phases, tasks, finish-to-start and start-to-start dependencies with lags, and a critical path. Resource leveling across dozens of concurrent projects is.
-- **No fully autonomous dispatch at MVP.** Every optimizer or AI change is proposed as a diff. Auto-apply is opt-in per rule type in (for example "auto-apply rain-day moves for mowing only").
+- **Not a full CPM/EVM construction scheduler** (Primavera-class). Project scheduling supports phases, tasks, finish-to-start, start-to-start and finish-to-finish dependencies with lags, a critical path and resource-leveling proposals (4.11.3), but not earned-value management or enterprise portfolio scheduling.
+- **No fully autonomous dispatch.** Every optimizer or AI change is proposed as a diff. Auto-apply is opt-in per rule type (for example "auto-apply rain-day moves for mowing only"), and agent actions follow the autonomy levels in [17](17-ai-copilot-automation.md) (R25-C8).
 
 ### 1.3 Design principles
 
@@ -108,19 +107,19 @@
 
 | Capability | Jobber | Aspire | LMN | Service Autopilot | Real Green | ServiceTitan | Rootline |
 |---|---|---|---|---|---|---|---|
-| Recurring visits with seasonal bounds | Y | Y | Y | Y | Y (rounds) | P (memberships) | |
-| Application-window rounds | N | P | ? | P | Y | N | with [14](14-service-line-modules.md) |
-| Growth-adaptive mowing frequency | N | N | N | N | N | N | rules, AI |
-| Holiday "slide week" automation | ? | ? | ? | ? | ? | N | |
-| Capacity: sold vs available hours by week | N | P | P | N | N | P | basic, full |
-| Single-day route ordering (road network) | P (straight-line reported) | ? | ? | Y [B] | Y [B] | ? | |
-| Multi-crew VRP with skills, equipment, time windows | N | P | N | N | ? | P | |
-| What-if scenarios with locks | N | N | N | N | N | N | |
-| Weather-driven bulk reschedule with client notices | N | P (snow) | N | ? | ? | N | manual, playbooks |
-| Live GPS, geofence arrival, ETA texts | Y | Y | ? | P | ? | Y | |
-| Late-running alerts and mid-day re-optimization | N | N | N | N | N | P | |
-| Multi-day projects with dependencies on the same board | N | P | P | N | N | P | |
-| Natural-language rescheduling | N | N | N | N | N | P (Atlas schedules and dispatches jobs; no evidence of diff review or route-aware moves) | |
+| Recurring visits with seasonal bounds | Y | Y | Y | Y | Y (rounds) | P (memberships) | Y |
+| Application-window rounds | N | P | ? | P | Y | N | Y (with [14](14-service-line-modules.md)) |
+| Growth-adaptive mowing frequency | N | N | N | N | N | N | Y (rules and AI model) |
+| Holiday "slide week" automation | ? | ? | ? | ? | ? | N | Y |
+| Capacity: sold vs available hours by week | N | P | P | N | N | P | Y |
+| Single-day route ordering (road network) | P (straight-line reported) | ? | ? | Y [B] | Y [B] | ? | Y |
+| Multi-crew VRP with skills, equipment, time windows | N | P | N | N | ? | P | Y (Grow and above) |
+| What-if scenarios with locks | N | N | N | N | N | N | Y |
+| Weather-driven bulk reschedule with client notices | N | P (snow) | N | ? | ? | N | Y (manual moves and playbooks) |
+| Live GPS, geofence arrival, ETA texts | Y | Y | ? | P | ? | Y | Y |
+| Late-running alerts and mid-day re-optimization | N | N | N | N | N | P | Y |
+| Multi-day projects with dependencies on the same board | N | P | P | N | N | P | Y |
+| Natural-language rescheduling | N | N | N | N | N | P (Atlas schedules and dispatches jobs; no evidence of diff review or route-aware moves) | Y |
 
 ### 2.2 What users complain about
 
@@ -129,7 +128,7 @@
 | **Routes ignore real roads** | A Jobber user routing 30 to 40 clients a day says the optimizer uses straight-line distance and has asked since their first week ([Jobber Community](https://community.getjobber.com/discussions/job-details-scheduling/how-does-jobber-calculate-routes-and-can-it-use-real-driving-directions-instead-/8663/replies/9863)) | Road-network matrices with time-of-day buckets (4.8.3) |
 | **Optimizer only works if you strip times off visits** | Jobber support advises scheduling visits "anytime" on a day so the daily optimizer can order them ([Jobber Community](https://community.getjobber.com/discussions/job-details-scheduling/recurring-schedule-routing/10548/replies/11184)) | Time windows are first-class constraints; "anytime" is just the widest window (4.1.4) |
 | **Master route vs daily route confusion** | Two separate optimization modes ([job routing thread](https://community.getjobber.com/discussions/job-details-scheduling/job-routing/5443)) | One model: a **Master Route** (season template per zone-day) and **Daily Routes** that inherit from it, with drift indicators (4.7) |
-| **Slow scheduling screens** | Service Autopilot reviewers cite slow database response when scheduling ([Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/)); [21](21-ux-design-system-sitemaps.md) calls this out as a top complaint | Local-first board state, optimistic moves, performance budgets as release gates (4.6.9) |
+| **Slow scheduling screens** | Service Autopilot reviewers cite slow database response when scheduling ([Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/)); [21](21-ux-design-system-sitemaps.md) calls this out as a top complaint | Local-first board state, optimistic moves, performance budgets enforced as automated checks on every build (4.6.9) |
 | **Configuration burden** | "Once configured" carries a lot of weight in Service Autopilot reviews ([MowBoss](https://mowbosshq.pages.dev/guides/service-autopilot-review)) | Opinionated defaults per service line and region; the Copilot proposes rules in plain language ([17](17-ai-copilot-automation.md)) |
 | **Steep learning curve, too many steps** | Aspire "learning curve, and some common tasks require too many steps" ([GetApp UK](https://www.getapp.co.uk/reviews/9108/aspire)) | <= 3 clicks to schedule; "Move to..." and click-to-place; progressive disclosure of optimizer settings |
 | **Geofencing that fails where crews work** | Android's own guide: network-location based, 100-150 m minimum radius advised, alerts 2-6 minutes late, may not fire without data ([Android geofencing](https://developer.android.com/develop/sensors-and-location/location/geofencing)); Jobber's geofenced location timers ([PR Newswire](https://prnewswire.com/news-releases/timesheets-just-got-easier-with-jobbers-new-location-timers-feature-301965963.html)) need Android "Allow all the time" location and unrestricted battery, per Jobber help content summarized in [05](05-field-crew-mobile-app.md) | Dual-path arrival detection on device ([05](05-field-crew-mobile-app.md)); server-side reconciliation of geofence, breadcrumbs and crew taps (4.10) |
@@ -164,10 +163,10 @@
 | Subcontractor | `subcontractor` | Offers to accept/decline, own calendar of assigned visits, on-my-way | Irrigation sub accepting 6 winterizations for Friday |
 | Residential client | `client_residential` | Portal: next visit, ETA, skip/reschedule requests, booking windows | "Is the crew coming today? I need to let the dog in." |
 | Commercial client | `client_commercial` | Portal: multi-property schedule, service calendar, approvals for schedule changes on fixed-date sites | HOA pool opening Saturday; office park needs mowing before 7 a.m. |
-| Platform staff | `platform_support`, `platform_engineer` | Read-only diagnostics of optimization runs and routes (consented) | 6-9 a.m. Eastern "my crew can't see today's route" tickets ([02](02-personas-roles-permissions.md)) |
-| Platform curator | `platform_curator` | Regional Season Calendar templates (4.2.3), growth-potential coefficients (4.2.6), plant-aware pruning windows (section 13, idea 2, sourced from the [Plant Knowledge Base](12-plant-knowledge-base.md)), default weather-playbook thresholds per Region | January template refresh before tenants plan the season; mid-season corrections after an unusual spring |
-| Platform finance | `platform_finance` | Per-tenant matrix-API, weather-cell and solver cost dashboards ([19](19-platform-admin-portal.md)); heavy-run quotas by plan tier ([22](22-business-model-pricing-gtm.md)) | Monthly gross-margin review; a tenant whose territory re-solves cost 10x the median |
-| Platform Operator | `platform_owner` | Global holiday tables, weather-provider and solver-version rollouts, default optimizer presets | Solver upgrade go/no-go against the nightly benchmark suite (4.8.10) |
+| Platform operator agents (support and engineering agents) | `platform_support`, `platform_engineer` | Read-only diagnostics of optimization runs and routes (consented) | 6-9 a.m. Eastern "my crew can't see today's route" tickets ([02](02-personas-roles-permissions.md)) |
+| Platform curator (the plant curator agent) | `platform_curator` | Regional Season Calendar templates (4.2.3), growth-potential coefficients (4.2.6), plant-aware pruning windows (section 13, idea 2, sourced from the [Plant Knowledge Base](12-plant-knowledge-base.md)), default weather-playbook thresholds per Region | January template refresh before tenants plan the season; mid-season corrections after an unusual spring |
+| Platform finance (the finance agent) | `platform_finance` | Per-tenant matrix-API, weather-cell and solver cost dashboards ([19](19-platform-admin-portal.md)); heavy-run quotas by plan ([22](22-business-model-pricing-gtm.md)) | Monthly gross-margin review; a tenant whose territory re-solves cost 10x the median |
+| Platform owner (the founder) | `platform_owner` | Global holiday tables, weather-provider and solver-version rollouts, default optimizer presets | Solver upgrade go/no-go against the nightly benchmark suite (4.8.10), on the engineering agent's proposal |
 
 **Jobs-to-be-done**
 
@@ -185,7 +184,7 @@
 
 ## 4. Feature specification
 
-Features are grouped by capability. Each carries a priority tag. "Company setting" means a tenant-level configuration in Settings > Scheduling; "branch setting" means it can be overridden per branch.
+Features are grouped by capability; every feature below is part of the product. "Company setting" means a tenant-level configuration in Settings > Scheduling; "branch setting" means it can be overridden per branch.
 
 ### 4.1 Scheduling object model and lifecycle
 

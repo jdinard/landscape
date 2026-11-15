@@ -10,7 +10,7 @@
       "points": 20
     },
     {
-      "attribute": "Located in a launch Region (the six Wave 1 Great Lakes Regions at MVP; Wave 2 Regions once they open, 6.2)",
+      "attribute": "Located in the Great Lakes Regions (22 section 4.6) or elsewhere in the US or Canada; Quebec marketing after the French check (24 section 1.5, R26-10)",
       "points": 15
     },
     {
@@ -53,8 +53,7 @@
       "fit": "Low ARPA, high churn",
       "plan": "Starter",
       "motion": "Self-serve only",
-      "gtm_focus": "Secondary, self-serve [MVP]",
-      "scope": "MVP",
+      "gtm_focus": "Secondary, self-serve",
       "sample_tenant": "brookside",
       "default_plans": [
         "starter"
@@ -125,8 +124,7 @@
       "fit": "Highest: every differentiator matters",
       "plan": "Grow / Pro",
       "motion": "Trial + inside sales",
-      "gtm_focus": "Primary [MVP]",
-      "scope": "MVP",
+      "gtm_focus": "Primary",
       "sample_tenant": "greenleaf",
       "default_plans": [
         "grow",
@@ -163,11 +161,11 @@
         "Built-in double-entry ledger; QuickBooks optional (09)",
         "Zero payment markup on your own Stripe (08)"
       ],
-      "offer": "Free trial on Grow; migration concierge free on annual; Founding Customer 25% off for the first 100 Great Lakes Companies; Spring-Ready Guarantee [V1]",
+      "offer": "Free trial on Grow; migration concierge free on annual; Founding Customer 25% off for the first 100 Great Lakes Companies; Spring-Ready Guarantee",
       "objections": [
         [
           "Switching risk in spring",
-          "Migration concierge with the Spring-Ready Guarantee: sign by Feb 15, live by Mar 31 or the first 3 months are free [V1]."
+          "Migration concierge with the Spring-Ready Guarantee: sign by Feb 15, live by Mar 31 or the first 3 months are free."
         ],
         [
           "My crews won't use it",
@@ -209,8 +207,7 @@
       "fit": "Medium-high (routing, programs, chemical logs, portal)",
       "plan": "Grow",
       "motion": "Trial + inside sales",
-      "gtm_focus": "Primary follow-on [MVP]",
-      "scope": "MVP",
+      "gtm_focus": "Primary follow-on",
       "sample_tenant": "maplehollow",
       "default_plans": [
         "grow"
@@ -278,8 +275,7 @@
       "fit": "High value, longer cycle, needs job costing and commercial portal",
       "plan": "Pro / Enterprise",
       "motion": "Sales-led",
-      "gtm_focus": "Expansion [V1]",
-      "scope": "V1",
+      "gtm_focus": "Expansion",
       "sample_tenant": "summit",
       "default_plans": [
         "pro",
@@ -309,11 +305,11 @@
         "Fair and transparent"
       ],
       "proof_points_to_verify": [
-        "Commercial portal with approval policies and PO enforcement (06) [V1]",
-        "Snow & Ice with sealed proof packets (14) [V1]",
+        "Commercial portal with approval policies and PO enforcement (06)",
+        "Snow & Ice with sealed proof packets (14)",
         "Branch-level P&L and labor efficiency (18)"
       ],
-      "offer": "Sales-led evaluation with a sandbox [V1]; Premium Success option",
+      "offer": "Sales-led evaluation with a sandbox; Premium Success option",
       "objections": [
         [
           "Implementation takes months",
@@ -349,8 +345,7 @@
       "fit": "Medium (needs modules)",
       "plan": "Grow / Pro + modules",
       "motion": "Trial + inside sales",
-      "gtm_focus": "Expansion [V1]-[V2]",
-      "scope": "V1",
+      "gtm_focus": "Expansion-",
       "sample_tenant": "beacon",
       "default_plans": [
         "grow",
@@ -378,7 +373,7 @@
       ],
       "proof_points_to_verify": [
         "Irrigation inventory and seasonal services (14)",
-        "Night mood renders for lighting [V1] (11)"
+        "Night mood renders for lighting (11)"
       ],
       "offer": "Free trial on Grow; module trials for Tree Care or Snow & Ice once per Company",
       "objections": [
@@ -413,8 +408,7 @@
       "fit": "Medium (Design Studio, proposals, plant KB)",
       "plan": "Design Solo plan (section 16)",
       "motion": "Self-serve",
-      "gtm_focus": "Wedge [V1]",
-      "scope": "V1",
+      "gtm_focus": "Wedge",
       "sample_tenant": "fernwood",
       "default_plans": [
         "design_solo"
@@ -440,7 +434,7 @@
         "Region-aware Plant KB palettes (12)",
         "AI mockups constrained to the palette (11)"
       ],
-      "offer": "Design Solo at about $49/mo [V1]",
+      "offer": "Design Solo at about $49/mo",
       "objections": [
         [
           "I only need design",
@@ -475,8 +469,7 @@
       "fit": "High value, high demands",
       "plan": "Enterprise",
       "motion": "Field + partner",
-      "gtm_focus": "Expansion [V2]",
-      "scope": "V2",
+      "gtm_focus": "Expansion",
       "sample_tenant": "kestrel",
       "default_plans": [
         "enterprise"
@@ -502,14 +495,14 @@
         "Run the whole business in one place"
       ],
       "proof_points_to_verify": [
-        "Franchise rollup console and royalty reporting [V2] (22 §5.4)",
-        "SSO [V1], SCIM [V2]"
+        "Franchise rollup console and royalty reporting (22 §5.4)",
+        "SSO, SCIM"
       ],
       "offer": "Enterprise contract; per-location pricing at volume",
       "objections": [
         [
           "We need dedicated infrastructure",
-          "Dedicated database option [V2] on Enterprise."
+          "Dedicated database option on Enterprise."
         ]
       ],
       "channels": [

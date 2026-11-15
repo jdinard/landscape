@@ -1,28 +1,27 @@
 # 15 - Team, HR, Time and Payroll
 
-> Labor is the biggest cost line in a landscape company and the hardest thing to manage. Benchmark studies put burdened direct labor at about 43% of net revenue for mid-size firms ([Lawn & Landscape, Wilson 360 2024 benchmark](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)). Headcount doubles or triples between February and May, much of the workforce prefers Spanish, and many companies depend on the H-2B visa program. Crews also run equipment that needs a license (pesticide applicator, CDL, backflow tester, ISA arborist). The Team module gives Rootline one people system for the whole lifecycle: recruit in Spanish from a phone, onboard with e-signatures, track H-2B milestones, enforce certifications in the schedule, train with bilingual micro-videos, approve timesheets, apply the right overtime and break rules for each state, compute piece-rate, production and commission pay, build certified payroll, export clean pay data to Gusto, ADP, Paychex or QuickBooks Payroll (embedded payroll comes later), keep the OSHA logs and workers' comp claim clocks, run heat and wildfire smoke plans, tag federally qualified overtime and tips for W-2 reporting, recognize good work and offboard cleanly. Because every hour is tied to a Visit, a Job and a cost code, the same data that pays people also costs jobs, prices estimates and forecasts hiring. No landscape-specific competitor runs this whole loop in one product.
+> Labor is the biggest cost line in a landscape company and the hardest thing to manage. Benchmark studies put burdened direct labor at about 43% of net revenue for mid-size firms ([Lawn & Landscape, Wilson 360 2024 benchmark](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)). Headcount doubles or triples between February and May, much of the workforce prefers Spanish, and many companies depend on the H-2B visa program. Crews also run equipment that needs a license (pesticide applicator, CDL, backflow tester, ISA arborist). The Team module gives Rootline one people system for the whole lifecycle: recruit in Spanish from a phone, onboard with e-signatures, track H-2B milestones, enforce certifications in the schedule, train with bilingual micro-videos, approve timesheets, apply the right overtime and break rules for each state, compute piece-rate, production and commission pay, build certified payroll, export clean pay data to Gusto, ADP, Paychex or QuickBooks Payroll (or run payroll inside Rootline through an embedded payroll partner), keep the OSHA logs and workers' comp claim clocks, run heat and wildfire smoke plans, tag federally qualified overtime and tips for W-2 reporting, recognize good work and offboard cleanly. Because every hour is tied to a Visit, a Job and a cost code, the same data that pays people also costs jobs, prices estimates and forecasts hiring. No landscape-specific competitor runs this whole loop in one product.
 
 **At a glance**
 
 - **What it is:** one people system for a seasonal, bilingual, credential-heavy workforce: people records, Spanish-first hiring, onboarding, H-2B program support, credentials enforced in the schedule, training, time approval, jurisdiction pay rules, piece-rate, production and commission pay, certified payroll, payroll exports, safety and OSHA logs, recognition and offboarding.
 - **Decision 1: the crew app owns punches; this module owns approval, pay and exports.** Time is an append-only stream of punch events from [05](05-field-crew-mobile-app.md) (`shop`, `drive`, `job`, `meal_break`, `rest_break`, `training` segments). Timesheets are derived server-side, approved by the crew lead daily and by `ops_manager` or `office_manager` weekly, then locked.
-- **Decision 2: export first, embedded later.** MVP pushes clean pay data to Gusto, QuickBooks Online Payroll, ADP RUN and Paychex (API or file) plus a generic CSV. Embedded payroll through a licensed partner is a pilot and a option for every Company, and Rootline never holds wage funds.
-- **Decision 3: versioned jurisdiction policy packs.** Federal plus the Great Lakes launch states (Ohio, Michigan, Illinois, Indiana and Wisconsin) at MVP; California, Washington, Oregon, Colorado, New York and the remaining US states, DC and four provinces at ([24](24-product-scope-decisions-catalog.md) OD-52). Packs compute overtime, meal periods and premiums, days of rest and regular-rate true-ups, and every rule is a starting configuration for counsel review.
+- **Decision 2: export or embedded, the Company chooses.** Rootline pushes clean pay data to Gusto, QuickBooks Online Payroll, ADP RUN and Paychex (API or file) plus a generic CSV. Embedded payroll runs through Check, with Gusto Embedded as the fallback if Check declines the platform ([24](24-product-scope-decisions-catalog.md) OD-53). It is an add-on any Company can turn on once the partner approves it, and Rootline never holds wage funds.
+- **Decision 3: versioned jurisdiction policy packs.** Rootline ships packs for Federal, the five Great Lakes states (Ohio, Michigan, Illinois, Indiana and Wisconsin), California and Ontario ([24](24-product-scope-decisions-catalog.md) OD-52, R24-18). Every other US state, DC, province and city ordinance is rule-pack data on the same engine: the plant curator agent maintains packs from licensed sources and the founder approves each one before it publishes (OD-60). Packs compute overtime, meal periods and premiums, days of rest and regular-rate true-ups. Every rule ships with conservative values, and the founder has counsel check a rule before its default is loosened (24 section 1.7).
 - **Decision 4: one hour, three uses.** Every approved segment carries a Visit, Job and cost code, so payroll, job costing (posting rules `labor.LB1`-`LB3` and `payroll.PR1`-`PR5`, owned by [09](09-accounting-ledger-integrations.md)) and estimating labor rates ([03](03-crm-sales-estimating-proposals.md)) read the same data.
 - **Decision 5: credentials are enforced, not just stored.** Pesticide, CDL, backflow and arborist credentials gate scheduling ([04](04-scheduling-dispatch-routing.md)), chemical records ([05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md)) and restricted-use issue ([13](13-operations-inventory-equipment.md)), with an override-with-reason or a hard block per requirement.
-- **MVP:** people records and seasonal hibernation, credentials and scheduling enforcement, availability and time off, timesheet derivation, exceptions and approvals, MVP policy packs, burden profiles and burdened labor rates, pay period close, payroll exports and journal import (file), tips and FLSA qualified-overtime tagging, incident cases and OSHA 300/301/300A, heat illness prevention on the federal baseline, announcements and offboarding.
-- **Later:** California, Washington, Oregon, Colorado and New York policy packs (with California meal and rest premiums, heat and wildfire smoke rules), recruiting and Spanish-first mobile apply, H-2B workspace, LMS, piece-rate and production bonuses, prevailing wage and certified payroll, embedded payroll pilot, pay explainer, safety hub, performance and retention analytics. background checks, earned wage access, flight-risk check-ins, embedded payroll for every Company.
+- **In v1:** people records and seasonal hibernation, recruiting with Spanish-first mobile apply and background checks, onboarding with e-signature, the H-2B workspace, credentials and scheduling enforcement, training and the LMS, availability, time off and PTO accrual, timesheet derivation, exceptions and approvals, the policy packs above (with California meal and rest premiums, heat and wildfire smoke rules), piece-rate, production and commission pay, prevailing wage and certified payroll, burden profiles and burdened labor rates, pay period close, payroll exports and journal import, tips and FLSA qualified-overtime tagging, embedded payroll and earned wage access, the pay explainer, the safety hub with OSHA 300/301/300A, performance, recognition, retention analytics and check-in suggestions, announcements and offboarding. Workers start at age 14, with the minor-worker rules enforced for ages 14 to 17 (24 OD-56).
 - **Packaging ([22](22-business-model-pricing-gtm.md) 4.2.1):** team, timesheets, certifications and training on every plan (limited on Starter); payroll export on every plan; embedded payroll is an add-on.
 - **Differentiators:** time tied to Visits and cost codes, landscape pay rules generic payroll cannot compute (California meal premiums, piece-rate rest pay, bonus overtime true-ups), H-2B milestones and guarantees in the product, and credential enforcement at dispatch.
 - **Key cross-links:** [02](02-personas-roles-permissions.md) (roles, `timesheet.edit_max_hours`), [06](06-customer-portal.md) (ratings, tips), [08](08-payments-stripe.md) (tip allocation), [17](17-ai-copilot-automation.md) (A17 Timesheet Anomaly Agent), [18](18-reporting-analytics.md) (labor KPIs), [20](20-architecture-security.md) (`people` module).
 
-**Document status:** Design proposal v1.0 (2026-11-07). Owner: People and Time domain team (`people` module in [Architecture](20-architecture-security.md)).
+**Document status:** Specification for the one release, v1 (2026-11-15). Owner: `platform_owner` (the founder). The build agent builds it as the `people` module in [Architecture](20-architecture-security.md).
 
-**Related docs:** [Personas and permissions](02-personas-roles-permissions.md) · [Estimating and commissions](03-crm-sales-estimating-proposals.md) · [Scheduling and dispatch](04-scheduling-dispatch-routing.md) · [Crew app (punches, attestations, safety capture)](05-field-crew-mobile-app.md) · [Customer portal (ratings, tips)](06-customer-portal.md) · [Invoicing (T&M, certified jobs)](07-invoicing-billing-contracts.md) · [Payments (tips)](08-payments-stripe.md) · [Ledger and job costing](09-accounting-ledger-integrations.md) · [Operations, equipment custody](13-operations-inventory-equipment.md) · [Service lines (chem, tree, snow)](14-service-line-modules.md) · [Marketing and inbox](16-marketing-growth-communications.md) · [AI copilot and agents](17-ai-copilot-automation.md) · [Reporting and KPIs](18-reporting-analytics.md) · [Platform admin](19-platform-admin-portal.md) · [Architecture and security](20-architecture-security.md) · [UX and sitemaps](21-ux-design-system-sitemaps.md) · [Pricing](22-business-model-pricing-gtm.md) · [Moonshots](23-innovation-moonshots.md) · [Product scope](24-product-scope-decisions-catalog.md)
+**Related docs:** [Personas and permissions](02-personas-roles-permissions.md) · [Estimating and commissions](03-crm-sales-estimating-proposals.md) · [Scheduling and dispatch](04-scheduling-dispatch-routing.md) · [Crew app (punches, attestations, safety capture)](05-field-crew-mobile-app.md) · [Customer portal (ratings, tips)](06-customer-portal.md) · [Invoicing (T&M, certified jobs)](07-invoicing-billing-contracts.md) · [Payments (tips)](08-payments-stripe.md) · [Ledger and job costing](09-accounting-ledger-integrations.md) · [Operations, equipment custody](13-operations-inventory-equipment.md) · [Service lines (chem, tree, snow)](14-service-line-modules.md) · [Marketing and inbox](16-marketing-growth-communications.md) · [AI copilot and agents](17-ai-copilot-automation.md) · [Reporting and KPIs](18-reporting-analytics.md) · [Platform admin](19-platform-admin-portal.md) · [Architecture and security](20-architecture-security.md) · [UX and sitemaps](21-ux-design-system-sitemaps.md) · [Pricing](22-business-model-pricing-gtm.md) · [Innovation bets](23-innovation-moonshots.md) · [Product scope](24-product-scope-decisions-catalog.md)
 
-> **Legal posture (applies to the whole document).** Rootline is software, not a law firm, a PEO, an immigration agent or a payroll tax filer (until the embedded payroll option, and even then the licensed partner files). Every jurisdiction rule here is a starting configuration for legal review. Rules whose current text still needs first-hand confirmation are marked "verify". Rule packs ship versioned and reviewed by employment counsel before each season ([section 4.9](#49-pay-rules-engine-and-jurisdiction-policy-packs)), and the product says "this is not legal advice" wherever it shows a compliance hint.
+> **Legal posture (applies to the whole document).** Rootline is software, not a law firm, a PEO, an immigration agent or a payroll tax filer (with embedded payroll, the licensed partner files). Every jurisdiction rule here is a conservative starting configuration. Rules whose current text still needs first-hand confirmation are marked "verify". Rule packs ship versioned: the plant curator agent maintains them from licensed sources, the founder approves each pack before it publishes, and the founder has employment counsel check wage and meal-break rules before any default is loosened ([section 4.9](#49-pay-rules-engine-and-jurisdiction-policy-packs); 24 OD-60 and section 1.7). The product says "this is not legal advice" wherever it shows a compliance hint.
 
-> **Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build; competitor capabilities marked [B] are analyst belief to confirm in a hands-on teardown. Facts come from research cited elsewhere in this proposal ([05](05-field-crew-mobile-app.md), [02](02-personas-roles-permissions.md), [18](18-reporting-analytics.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)), primary regulations cited by section number, and general domain knowledge; the research backlog in [section 14](#14-open-questions) must close the open items before this spec turns into tickets.
+> **Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation; competitor capabilities marked [B] are analyst belief to confirm in a hands-on teardown. Facts come from research cited elsewhere in these specs ([05](05-field-crew-mobile-app.md), [02](02-personas-roles-permissions.md), [18](18-reporting-analytics.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)), primary regulations cited by section number, and general domain knowledge. The plant curator agent confirms each regulatory "verify" item against a primary source when it builds the rule pack that uses it, and the marketing agent confirms competitor facts before any public use (24 OD-07). Neither check blocks the build ([section 14](#14-open-questions), item 15).
 
 ---
 
@@ -41,7 +40,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief](#13-beyond-the-brief-extra-ideas)
-14. [Open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-open-questions)
 15. [Sources](#sources)
 
 ---
@@ -56,19 +55,19 @@
 4. **Payroll-ready by Monday 10 a.m.** Weekly timesheets are approved, exceptions resolved and pay data pushed to the payroll provider without a spreadsheet. Target: the office manager spends 15 minutes or less per pay period for a 30-person company. That is a goal to validate, not a measured result.
 5. **Labor cost truth for every job.** Every hour carries a burdened cost (wages + taxes + workers' comp by class code + benefits + PTO). Job costing ([09](09-accounting-ledger-integrations.md)) and estimates ([03](03-crm-sales-estimating-proposals.md)) use the same burden numbers, and actual payroll journals true them up.
 6. **Qualified crews only.** A visit that needs a licensed applicator, a CDL driver or a certified backflow tester cannot be dispatched to a crew without one, unless an authorized manager overrides it with a reason that gets logged.
-7. **Bilingual by default.** Spanish is a first-class language in the crew app, applicant flow, onboarding documents, training, announcements and pay explanations at launch. French-Canadian comes next ([21](21-ux-design-system-sitemaps.md)).
+7. **Bilingual by default.** Spanish is a first-class language in the crew app, applicant flow, onboarding documents, training, announcements and pay explanations. French-Canadian (fr-CA) covers Quebec Companies and crews ([21](21-ux-design-system-sitemaps.md)).
 8. **Retention as a product feature.** Visible pay, earned recognition, a career ladder and an early-warning view of flight risk help the owner keep good people. In this industry, losing a trained crew lead in June costs more than any software.
-9. **Payroll-provider agnostic.** Rootline works with what the Company already uses (Gusto, ADP, Paychex, QuickBooks Payroll and, in Canada, Wagepoint, ADP Canada and others) through APIs or files. Later it offers an embedded payroll option for Companies that want everything in one place.
+9. **Payroll-provider agnostic.** Rootline works with what the Company already uses (Gusto, ADP, Paychex, QuickBooks Payroll and, in Canada, Wagepoint, ADP Canada and others) through APIs or files. It also offers embedded payroll (Check, with Gusto Embedded as the fallback) for Companies that want everything in one place.
 10. **Safety is managed.** Incident reports become OSHA-recordability decisions, logs, 300A summaries and corrective actions. Heat plans run automatically from the forecast.
 
 ### 1.2 Non-goals
 
 - **Not a PEO or employer of record.** Rootline never becomes a co-employer.
-- **No payroll tax filing or wage money movement at MVP.** Payroll providers compute net pay, withhold taxes, file and pay. With embedded payroll ([V2](#414-embedded-payroll-option)), the licensed partner moves money and files taxes. Rootline never holds wage funds, which matches the "never hold client funds" principle in [08](08-payments-stripe.md). Rootline also never pays wages, tips, bonuses or reimbursements from the Company's connected Stripe account. Stripe Connect handles client payments only, and every dollar owed to an employee moves through the payroll provider so taxes, withholding and wage statements stay correct.
+- **Rootline itself never files payroll taxes or moves wage money.** Payroll providers compute net pay, withhold taxes, file and pay. With embedded payroll ([section 4.14](#414-embedded-payroll-option)), the licensed partner moves money and files taxes. Rootline never holds wage funds, which matches the "never hold client funds" principle in [08](08-payments-stripe.md). Rootline also never pays wages, tips, bonuses or reimbursements from the Company's connected Stripe account. Stripe Connect handles client payments only, and every dollar owed to an employee moves through the payroll provider so taxes, withholding and wage statements stay correct.
 - **Not an immigration law firm or H-2B agent.** The H-2B workspace tracks milestones, documents, housing and transport and keeps the records the program requires. Filings are prepared by the Company's agent or attorney. Rootline does not give legal advice or tell anyone how to answer a government form.
-- **Not the I-9 / W-4 / TD1 system of record at MVP.** Those forms are completed in the payroll provider's onboarding (the hand-off is defined in [02](02-personas-roles-permissions.md)). Rootline stores the completion status only.
+- **Not the I-9 / W-4 / TD1 system of record.** Those forms are completed in the payroll provider's onboarding, or in the embedded partner's components (the hand-off is defined in [02](02-personas-roles-permissions.md)). Rootline stores the completion status only.
 - **No automated hiring decisions.** AI may draft, translate, summarize and schedule. It never ranks, scores, rejects or advances applicants ([17, agent A25](17-ai-copilot-automation.md)).
-- **No biometric templates.** Photo-at-punch is a plain photo for human review. Rootline does no face matching, which avoids biometric privacy statutes such as Illinois BIPA (verify scope with counsel).
+- **No biometric templates.** Photo-at-punch is an optional, non-biometric photo for human review. Rootline does no face matching or face verification (24 OD-54), which avoids biometric privacy statutes such as Illinois BIPA (verify scope with counsel).
 - **Not a general-purpose LMS marketplace.** The training library is built for landscape, safety and the Company's own SOPs. SCORM import is for Companies that bring their own content.
 - **No minute-level productivity surveillance.** GPS and time data serve pay, safety and job costing. No "idle score" exists ([05 section 4.23](05-field-crew-mobile-app.md), [18](18-reporting-analytics.md)).
 
@@ -86,7 +85,7 @@
 | Pesticide records, tree work, snow operations | [14 Service lines](14-service-line-modules.md) | Owns the credentials those records require |
 | Recruiting campaigns on the Company website | [16 Marketing](16-marketing-growth-communications.md) | Owns job posts, careers page widget and applicant pipeline. The website builder renders them |
 | People KPIs (turnover, TRIR, certification compliance) | [18 Reporting](18-reporting-analytics.md) | Supplies the data and adds HR-specific operational dashboards |
-| Platform-curated content (training library, credential catalog, rule packs) | [19 Platform admin](19-platform-admin-portal.md) | Defines the content model. Platform staff curate it |
+| Platform-curated content (training library, credential catalog, rule packs) | [19 Platform admin](19-platform-admin-portal.md) | Defines the content model. The plant curator agent (`platform_curator`) curates it and the founder approves releases |
 
 ---
 
@@ -97,7 +96,7 @@
 | Fact | Evidence | Design implication |
 |---|---|---|
 | Labor is the largest cost. Burdened direct labor is about 43% of net revenue for firms with $3M-$54M revenue in one benchmark study, while other sources quote 25-30% for unburdened labor | [Lawn & Landscape on Wilson 360](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark), [Aspire blog](https://www.youraspire.com/blog/landscaping-labor-percentage-of-revenue) (definitions differ, see [18](18-reporting-analytics.md)) | Burden must be explicit, configurable and reconciled to actual payroll ([4.12](#412-labor-burden-and-costing)) |
-| About 44.5% of US landscaping and groundskeeping workers were Hispanic in 2024 | [Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers) (cited in [21](21-ux-design-system-sitemaps.md)) | Spanish-first applicant flow, documents, training and pay explanations at MVP |
+| About 44.5% of US landscaping and groundskeeping workers were Hispanic in 2024 | [Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers) (cited in [21](21-ux-design-system-sitemaps.md)) | Spanish-first applicant flow, documents, training and pay explanations |
 | Headcount is seasonal. Winter headcount in reference Companies is roughly a third to two-fifths of peak (illustrative), and crews ramp to full strength by April | [02 section 5.18](02-personas-roles-permissions.md), [DOL H-2B program](https://www.dol.gov/agencies/whd/immigration/h2b) | Hibernate and rehire, bulk onboarding, seasonal burden curves, H-2B workspace |
 | H-2B visas are capped by statute at 66,000 per fiscal year, split between the two halves of the year. Landscaping is commonly reported as the largest H-2B occupation, and supplemental visas have been released in recent years | [USCIS H-2B cap count](https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-2b-non-agricultural-workers/cap-count-for-h-2b-nonimmigrants) (verify current fiscal year figures and supplemental allocations) | Milestone tracker, document checklist, corresponding-employment wage checks, housing and transport ([4.4](#44-h-2b-and-seasonal-worker-program-support)) |
 | California daily overtime, meal/rest premiums and PAGA exposure make timekeeping a legal risk | [California Employment Law Report: electronic timekeeping](https://www.californiaemploymentlawreport.com/2021/10/essential-elements-of-electronic-timekeeping-systems-for-california-employers/), [Donohue v. AMN summary](https://www.californiaemploymentlawreport.com/2021/04/california-supreme-court-provides-guidance-on-meal-breaks-donohue-v-amn-services/), [Ogletree California Break Book](https://ogletree.com/app/uploads/solutions/templates/California-Break-Book.pdf), [2026 wage-hour pitfalls](https://www.californiaemploymentlawreport.com/2026/05/scheduling-smarter-five-california-wage-and-hour-pitfalls-employers-should-address-in-2026/) | Versioned jurisdiction rule packs, minute-precision meal punches, attestations, premium pay automation |
@@ -134,7 +133,7 @@ Legend: [S] sourced in this repo's research; [B] analyst belief to confirm in a 
 | C2 | Seat models that make field workers expensive, so owners share logins (which destroys audit trails) | LMN legacy Crew Member seat could not punch in [S]. Shared PIN abuse called out in [02](02-personas-roles-permissions.md) | Seasonal hibernation with no seat charge, kiosk/PIN mode for laborers ([22](22-business-model-pricing-gtm.md)) |
 | C3 | Payroll prep is a Monday spreadsheet marathon: missed clock-outs, double entry into the payroll tool, bonus math by hand | Office manager persona goal "Clean timesheets by Monday 10 am" ([02](02-personas-roles-permissions.md)) [B for prevalence] | Exception-first approval board, rule engine, one-click export with validation, bonus engine |
 | C4 | Certifications live in a spreadsheet or a binder in the truck. An expired applicator license is discovered by the state inspector | [B] (common forum theme; teardown to confirm) | Credential registry, OCR of license cards, expiry alerts, scheduling enforcement |
-| C5 | Spanish-speaking applicants drop out of English-only, résumé-required applications | [B] (industry interviews to confirm) | Mobile apply in Spanish via SMS link or QR code, no résumé, voice answers |
+| C5 | Spanish-speaking applicants drop out of English-only, résumé-required applications | [B] (to confirm from support conversations and win/loss notes) | Mobile apply in Spanish via SMS link or QR code, no résumé, voice answers |
 | C6 | H-2B season is a binder of PDFs, a shared calendar and constant calls to the agent | [B] | H-2B workspace with milestone tracker, document checklist, housing and transport boards, agent portal access |
 | C7 | Bonus and commission programs are distrusted because crews cannot see how they are calculated | [B]; scorecard guardrails in [05 section 4.15](05-field-crew-mobile-app.md) | Plain-language bonus rules visible to the crew, "Today I earned", pay explainer |
 | C8 | Safety paperwork exists only after an incident, so insurance and OSHA documentation is thin | [B] | Tailgate attendance, JHAs, heat logs and incident reports flow into a safety record that exports for insurers and OSHA |
@@ -147,10 +146,10 @@ All rows are summaries for product design, not legal advice. Verify current text
 |---|---|---|
 | Federal overtime (FLSA) | 1.5x the regular rate for hours over 40 in a workweek. The regular rate includes nondiscretionary bonuses, production pay and shift differentials (29 CFR Part 778) | Rule engine computes regular rate per workweek including bonuses, and recomputes OT when a bonus is earned later ([4.10](#410-compensation-types)) |
 | Hours worked | Travel between job sites during the day is compensable; ordinary home-to-work commute generally is not ([DOL Fact Sheet 22](https://www.dol.gov/agencies/whd/fact-sheets/22-flsa-hours-worked)) | Segment pay treatment per policy pack ([05 section 4.5.1](05-field-crew-mobile-app.md)) |
-| Great Lakes launch states | Ohio, Michigan, Illinois, Indiana and Wisconsin use weekly overtime over 40 hours with no daily overtime and no adult meal or rest premiums. Ohio, Michigan and Illinois set minimum wages above the federal floor, with scheduled or indexed increases; Indiana and Wisconsin follow the federal minimum. Illinois adds the One Day Rest in Seven Act (a 20-minute meal period starting no later than the 5th hour for shifts of 7.5 hours or more, and 24 consecutive hours of rest each workweek), the Paid Leave for All Workers Act, Chicago and Cook County paid leave ordinances and reimbursement of necessary business expenses. Wisconsin treats a meal period under 30 minutes as paid time. Michigan's Earned Sick Time Act took effect in February 2025. Minors have state break and hour rules in all five states (all verify) | MVP policy packs, meal-period and day-of-rest checks, paid leave templates, work-location evaluation across the Illinois-Indiana and Ohio-Michigan state lines ([RULE-01](#49-pay-rules-engine-and-jurisdiction-policy-packs)) |
+| Great Lakes states (the launch region) | Ohio, Michigan, Illinois, Indiana and Wisconsin use weekly overtime over 40 hours with no daily overtime and no adult meal or rest premiums. Ohio, Michigan and Illinois set minimum wages above the federal floor, with scheduled or indexed increases; Indiana and Wisconsin follow the federal minimum. Illinois adds the One Day Rest in Seven Act (a 20-minute meal period starting no later than the 5th hour for shifts of 7.5 hours or more, and 24 consecutive hours of rest each workweek), the Paid Leave for All Workers Act, Chicago and Cook County paid leave ordinances and reimbursement of necessary business expenses. Wisconsin treats a meal period under 30 minutes as paid time. Michigan's Earned Sick Time Act took effect in February 2025. Minors have state break and hour rules in all five states (all verify) | Great Lakes policy packs, meal-period and day-of-rest checks, paid leave templates, work-location evaluation across the Illinois-Indiana and Ohio-Michigan state lines ([RULE-01](#49-pay-rules-engine-and-jurisdiction-policy-packs)) |
 | California | Daily OT over 8 hours (1.5x) and over 12 hours (2x). Seventh consecutive workday: first 8 hours at 1.5x and over 8 at 2x. Meal before the end of the 5th hour, second before the end of the 10th. Rest 10 minutes per 4 hours or major fraction. Premium of one additional hour at the regular rate of compensation per day for each type ([DLSE OT FAQ](https://www.dir.ca.gov/dlse/faq_overtime.htm), [DLSE meal FAQ](https://www.dir.ca.gov/dlse/faq_mealperiods.htm), [DLSE rest FAQ](https://www.dir.ca.gov/dlse/faq_restperiods.htm)) | CA policy pack (the most demanding reference case), premium pay items, attestation evidence |
 | California piece rate | Labor Code 226.2: piece-rate workers must be paid separately for rest and recovery periods (at the average hourly rate) and for other nonproductive time (at least minimum wage), with specific pay-stub lines ([Lab. Code 226.2](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=LAB&sectionNum=226.2)) | Piece-rate engine splits productive, rest and nonproductive time from punch segments |
-| Other daily-OT jurisdictions | Alaska, Nevada (for workers below a wage threshold) and Colorado (over 12 hours) have daily OT rules. British Columbia has daily OT at 8 and 12 hours, Alberta uses 8/day or 44/week, Ontario 44/week, Quebec 40/week (all verify; Ontario has special rules for landscape gardeners, verify scope) | Rule packs per state and province; Canadian packs |
+| Other daily-OT jurisdictions | Alaska, Nevada (for workers below a wage threshold) and Colorado (over 12 hours) have daily OT rules. British Columbia has daily OT at 8 and 12 hours, Alberta uses 8/day or 44/week, Ontario 44/week, Quebec 40/week (all verify; Ontario has special rules for landscape gardeners, verify scope) | Ontario pack, including its landscape gardener rules; other states and provinces as rule-pack data on the same engine ([24](24-product-scope-decisions-catalog.md) R24-18) |
 | Paid sick leave | Many states and cities mandate accrual (for example California's 40 hours / 5 days minimum since 2024, Washington 1 hour per 40 worked; verify each) | PTO engine with statutory policy templates and reinstatement on rehire ([4.7](#47-availability-time-off-and-pto-accrual)) |
 | Prevailing wage | Davis-Bacon and related acts plus state prevailing wage laws. Weekly certified payroll (federal form WH-347 or equivalent; California eCPR) ([DOL WH-347](https://www.dol.gov/agencies/whd/forms/wh347)) | Classification per segment, fringe handling, certified payroll generation ([4.11](#411-prevailing-wage-and-certified-payroll)) |
 | H-2B | 20 CFR 655 Subpart A: offered wage at least the prevailing wage, three-fourths hours guarantee, corresponding employment, reimbursement of inbound travel and visa costs, earnings statements, 3-year record retention ([eCFR 20 CFR 655 Subpart A](https://www.ecfr.gov/current/title-20/chapter-V/part-655/subpart-A), [DOL WHD H-2B](https://www.dol.gov/agencies/whd/immigration/h2b)) | H-2B workspace, three-fourths guarantee tracker, wage parity checks |
@@ -172,7 +171,7 @@ All rows are summaries for product design, not legal advice. Verify current text
 2. **Seasonality is first-class.** Hibernate, rehire, H-2B dates, seasonal burden curves (wage-base caps make FUTA and SUTA front-loaded in spring), seasonal PTO rules and "coming back next season?" signals. Horizontal HR software treats a 60% winter layoff as an edge case.
 3. **Spanish is not a translation afterthought.** The applicant flow, onboarding packet, SOP videos, quizzes, pay explanations and announcements are authored bilingually and reviewed by humans.
 4. **Pay rules are a product, not a services engagement.** Regular-rate OT with production bonuses, California piece-rate rest pay, prevailing-wage classifications by segment and premium pay from attestations are hard to compute correctly. Rootline ships them as tested, versioned rule packs.
-5. **Payroll-provider neutrality, then embedded payroll.** Companies keep their provider at first. Later they can switch on embedded payroll for one fewer login, without losing data.
+5. **Payroll-provider neutrality and embedded payroll.** Companies keep their provider, or switch on embedded payroll for one fewer login, without losing data.
 
 > **Competitive edge:** ServiceTitan has the deepest technician pay engine in trades but is built for HVAC commissions. Aspire has strong crew time but no hiring, training or H-2B tooling. Connecteam has HR breadth with no job costing. Gusto runs payroll well but has no visits. Rootline is the only design where a single `time_segment` row feeds payroll, job cost, the prevailing-wage report, the OSHA hours denominator, the workers' comp class-code allocation and the H-2B three-fourths guarantee at the same time.
 
@@ -194,14 +193,14 @@ All rows are summaries for product design, not legal advice. Verify current text
 | Designer (`designer`) | Mostly a self-service user (own time, PTO, training) | | Same ESS |
 | Subcontractor (`subcontractor`) | "Upload my COI and licenses once; get onto the job." | Duplicate paperwork | Credential upload for the subcontractor's organization (COI, licenses); no payroll |
 | Applicant (no role; external, no login) | "Apply in Spanish from my phone in 3 minutes and hear back fast." | Long English forms, résumé required, silence | SMS/QR apply, voice answers, status texts |
-| Platform Operator (`platform_owner`) | "Every tenant gets correct, current rule packs and good training content; payroll partners are healthy." | | Rule-pack release management, content library, partner health ([19](19-platform-admin-portal.md)) |
-| Platform staff (`platform_curator`, `platform_engineer`, `platform_support`, `platform_finance`) | Curate the training library and credential catalog (curator); maintain rule packs and payroll connectors (engineer); help tenants without seeing pay or PII unless granted (support); reconcile embedded payroll revenue share (finance) | | Admin tooling in [19](19-platform-admin-portal.md) |
+| The founder (`platform_owner`) | "Every tenant gets correct, current rule packs and good training content; payroll partners are healthy." | | Approval of each rule-pack and training-library release, partner health ([19](19-platform-admin-portal.md)) |
+| Operator agents (`platform_curator`, `platform_engineer`, `platform_support`, `platform_finance`) | The plant curator agent curates the training library and credential catalog and maintains rule-pack content (24 OD-60); the engineering agent maintains the rules engine, fixtures and payroll connectors; the support agent helps tenants without seeing pay or PII unless granted; the finance agent reconciles embedded payroll revenue share | | Admin tooling in [19](19-platform-admin-portal.md) |
 
 ### 3.2 A season in the life (narrative used to test the design)
 
 **Company:** "Green Valley Landscapes", Sacramento, CA. 42 employees at peak, 15 in winter. 12 H-2B workers. Maintenance, enhancements, installs and a lawn-care division. Payroll is on Gusto.
 
-This narrative, and the wireframes in [section 6](#6-screens-and-wireframes) that reuse it, deliberately use a California Company because it exercises the most rules at once: daily overtime, meal premiums, heat and wildfire smoke. The California pack is. A Great Lakes Company on an MVP pack follows the same flow with weekly overtime, its state's meal and paid leave rules and the federal heat baseline.
+This narrative, and the wireframes in [section 6](#6-screens-and-wireframes) that reuse it, deliberately use a California Company because it exercises the most rules at once: daily overtime, meal premiums, heat and wildfire smoke. The California pack ships alongside the Great Lakes packs. A Great Lakes Company on its state's pack follows the same flow with weekly overtime, its state's meal and paid leave rules and the federal heat baseline.
 
 - **Early January.** The owner, Dana, opens the **Season Plan**. Rootline's forecast (from contracted maintenance hours plus the sales pipeline, [18](18-reporting-analytics.md)) shows peak labor demand of 1,760 crew-hours per week in May against 600 hours of winter staff capacity. The plan suggests: rehire 10 returning workers (12 answered "coming back" in the hibernation app, and history says about 85% follow through), hire 5 new, and bring back 12 H-2B workers, for 42 at peak. The **H-2B tracker** shows the Company's agent filed the labor certification and is waiting on DOL. The next milestone is the USCIS petition.
 - **Late February.** The office manager, Rosa, clicks **Post job** and picks "Landscape Laborer - Maintenance". The AI drafts the post in English and Spanish with the pay range California requires. The post publishes to the careers page, Indeed and Facebook and generates a QR flyer for the truck windows. Within a week, 63 people apply from phones. 41 apply in Spanish, and 12 leave voice answers.
@@ -217,7 +216,7 @@ This narrative, and the wireframes in [section 6](#6-screens-and-wireframes) tha
 
 ## 4. Feature specification
 
-Feature IDs use module prefixes (`HR-`, `ATS-`, `ONB-`, `H2B-`, `CRED-`, `LMS-`, `PTO-`, `TIME-`, `RULE-`, `COMP-`, `PW-`, `BURD-`, `PAY-`, `EMB-`, `SAFE-`, `PERF-`, `ANN-`, `ESS-`, `RET-`, `OFF-`, `I18N-`, `DOC-`) so the feature catalog ([24](24-product-scope-decisions-catalog.md)) can reference them. Every feature carries a priority tag.
+Feature IDs use module prefixes (`HR-`, `ATS-`, `ONB-`, `H2B-`, `CRED-`, `LMS-`, `PTO-`, `TIME-`, `RULE-`, `COMP-`, `PW-`, `BURD-`, `PAY-`, `EMB-`, `SAFE-`, `PERF-`, `ANN-`, `ESS-`, `RET-`, `OFF-`, `I18N-`, `DOC-`) so the feature catalog ([24](24-product-scope-decisions-catalog.md)) can reference them. Every feature here is in v1.
 
 ### 4.1 People records and organization structure
 
@@ -226,7 +225,7 @@ Feature IDs use module prefixes (`HR-`, `ATS-`, `ONB-`, `H2B-`, `CRED-`, `LMS-`,
 | Group | Fields | Rules |
 |---|---|---|
 | Identity | legal first/last name, preferred name, pronouns (optional), photo, employee number (auto, editable, unique per Company) | Preferred name shows in the crew app and on crew rosters. Legal name shows on payroll, certified payroll and OSHA logs |
-| Contact | mobile (E.164, unique per Company among active employees), email (optional), preferred language (`en`, `es`, later `fr-CA`), preferred channel (SMS, WhatsApp, push, email) | Mobile is the primary identifier for field staff. Language drives every message, document and training assignment |
+| Contact | mobile (E.164, unique per Company among active employees), email (optional), preferred language (`en`, `es`, `fr-CA`), preferred channel (SMS, WhatsApp, push, email) | Mobile is the primary identifier for field staff. Language drives every message, document and training assignment |
 | Employment | status (`onboarding`, `active`, `on_leave`, `hibernated`, `terminated`, `withdrawn`, `archived`), hire date, original hire date, seniority date, worker type (`w2_employee`, `t4_employee`, `contractor_1099`), FLSA status (`non_exempt`, `exempt`), employment class (`full_time`, `part_time`, `seasonal`, `temporary`, `h2b`), branch, division, home crew, manager, job title (from position catalog), labor class (for burden and estimates) | Status transitions follow [7.3](#73-employee-and-employment-state-machine). Exempt status requires a salary at or above the jurisdiction threshold (validator warns; verify current federal and state thresholds) |
 | Work authorization meta | payroll-provider onboarding status, I-9 completion status (yes/no/date from provider), E-Verify case status (from provider, if any), H-2B flag with visa validity dates and petition reference | Rootline stores status only, not I-9 documents. H-2B fields visible to `owner`, `office_manager` only |
 | Sensitive (Restricted class, [20](20-architecture-security.md)) | date of birth, SSN/SIN (only if a file-based payroll export needs it; prefer the provider's employee ID), home address, driver's license number and state, bank details (never stored when a payroll provider is connected) | Field-level encryption. Step-up auth on every read session ([02](02-personas-roles-permissions.md)). DOB is stored to enforce youth rules, but the UI shows only "Under 18: yes/no" to non-HR roles |
@@ -234,7 +233,7 @@ Feature IDs use module prefixes (`HR-`, `ATS-`, `ONB-`, `H2B-`, `CRED-`, `LMS-`,
 | Sizing | shirt, pants, boot, glove, rain gear, hat | Feeds uniform and PPE issuance in [13](13-operations-inventory-equipment.md) |
 | Skills | skills with levels (mowing, zero-turn, skid steer, paver install, irrigation troubleshooting, plant ID, Spanish/English fluency), languages spoken | Skills feed scheduling constraints ([04](04-scheduling-dispatch-routing.md)) and the career ladder ([PERF-05](#416-performance-recognition-and-gamification)) |
 
-Validation: duplicate detection on mobile number, or legal name plus DOB, offers to **rehire** the existing record instead of creating a new one. Name changes keep history. Terminated employees cannot be assigned to Visits.
+Validation: duplicate detection on mobile number, or legal name plus DOB, offers to **rehire** the existing record instead of creating a new one. Name changes keep history. Terminated employees cannot be assigned to Visits. The minimum worker age is 14: a hire or start date before the person's 14th birthday is blocked, and workers aged 14 to 17 get the minor-worker rules (hours, school-hour limits, task and equipment restrictions) enforced in timesheets, dispatch and the crew app (24 OD-56; [PTO-01](#47-availability-time-off-and-pto-accrual), [CRED-04](#45-certifications-licenses-and-qualification-enforcement)).
 
 **HR-02 Employment stints and rehire history.** Each hire creates an `employment` row (start, end, reason, eligible-for-rehire, pay rate at end, employment class). Seniority rules (for PTO tiers, raises, ladder eligibility) are configurable: "cumulative seasons", "continuous since last hire" or "original hire date if rehired within N months" (default 12). California requires previously accrued, unused paid sick leave to be reinstated when an employee is rehired within one year (verify). The PTO engine reads this.
 
@@ -295,7 +294,7 @@ Rules: no date of birth, SSN, photo of person, immigration status or criminal hi
 
 ### 4.3 Onboarding
 
-**ONB-01 Onboarding checklist templates (basic checklist per [02](02-personas-roles-permissions.md)).** Per position and employment class. Default seasonal laborer template:
+**ONB-01 Onboarding checklist templates (built on the checklist model in [02](02-personas-roles-permissions.md)).** Per position and employment class. Default seasonal laborer template:
 
 | # | Task | Owner | Due | Blocking for first shift? |
 |---|---|---|---|---|
@@ -317,7 +316,7 @@ Rules: checklist progress is visible to the employee in the self-service app. Ov
 
 **ONB-02 E-signature.** Built-in signature (draw or type, with timestamp, IP or device ID, geolocation if permitted, and a document hash) meeting ESIGN and UETA expectations. Signed PDFs are stored immutably in the personnel file. Bilingual documents carry both language versions or a "language of signature" record. When a translation exists, the PDF states which version controls (default: English controls, configurable; verify with counsel per jurisdiction).
 
-**ONB-03 Payroll-provider onboarding hand-off.** For Gusto, ADP, Paychex and QuickBooks Payroll, Rootline creates the employee in the provider (where the API allows) or presents the provider's self-onboarding link. It then polls or receives webhooks to mark tax forms, direct deposit and I-9 Section 1 complete. For providers without APIs, the checklist item is manual. Rootline never collects W-4 data itself in MVP, which keeps tax data in the system that files it.
+**ONB-03 Payroll-provider onboarding hand-off.** For Gusto, ADP, Paychex and QuickBooks Payroll, Rootline creates the employee in the provider (where the API allows) or presents the provider's self-onboarding link. It then polls or receives webhooks to mark tax forms, direct deposit and I-9 Section 1 complete. For providers without APIs, the checklist item is manual. Rootline never collects W-4 data itself; with embedded payroll, the partner's components collect it (EMB-01). Either way tax data stays in the system that files it.
 
 **ONB-04 Handbook builder.** A template handbook (EN/ES) with sections common to landscape companies: attendance and call-in, rain days and weather pay policy, vehicle and equipment use, cell phone use while driving, PPE, drug and alcohol, harassment, timekeeping (no off-the-clock work, how to fix missed punches), meal and rest breaks, heat illness, chemical safety, uniforms, tool loss, social media, client property and photo rules, tips. State supplements are flagged for counsel review. Version control: a new version triggers re-acknowledgment for affected employees. The AI can explain a policy in plain Spanish in the self-service app, quoting the section ([10](#10-ai-opportunities-in-this-module)).
 
@@ -399,7 +398,7 @@ H-2B rules also change with federal rulemaking. DHS's H-2 modernization rule (ef
 
 ### 4.5 Certifications, licenses and qualification enforcement
 
-**CRED-01 Credential catalog.** Platform-curated catalog (`platform_curator` maintains it, [19](19-platform-admin-portal.md)) with Company-defined additions. Each `credential_type` has an issuing authority, jurisdiction, categories, validity rules, renewal requirements (CEUs), document requirements and verification method. Launch catalog (US and Canada; all details verify per jurisdiction):
+**CRED-01 Credential catalog.** Platform-curated catalog (the plant curator agent, `platform_curator`, maintains it, [19](19-platform-admin-portal.md)) with Company-defined additions. Each `credential_type` has an issuing authority, jurisdiction, categories, validity rules, renewal requirements (CEUs), document requirements and verification method. Catalog (US and Canada; all details verify per jurisdiction):
 
 | Credential | Typical rules to model | Gates |
 |---|---|---|
@@ -454,7 +453,7 @@ Checks run on assignment, on route publish, at punch-in (the crew app re-checks 
 ### 4.6 Training and LMS
 
 **LMS-01 Content library (tailgate talks in [05](05-field-crew-mobile-app.md)).** Three tiers:
-1. **Platform library** (curated by `platform_curator` with safety and horticulture SMEs, EN/ES at launch): equipment safety (mower slopes, zero-turn rollover, trimmer, blower, hedge trimmer, chainsaw, chipper, skid steer basics, trailer hitching and load securement), heat illness, cold stress, lightning, lifting, PPE, chemical handling and label reading, spill response, silica dust when cutting pavers, traffic safety in roadside work, bees and wasps, poison ivy, customer property etiquette (gates, pets, photos), plant ID basics (by region, linked to the Plant KB in [12](12-plant-knowledge-base.md)), pruning basics, mulching standards (2-3 inches, no volcano mulching), mowing standards (one-third rule, stripe patterns), irrigation start-up and winterization procedures, snow plowing safety.
+1. **Platform library** (curated by the plant curator agent, `platform_curator`, from licensed safety and horticulture sources and approved by the founder before release; EN and ES, with fr-CA versions for Quebec Companies): equipment safety (mower slopes, zero-turn rollover, trimmer, blower, hedge trimmer, chainsaw, chipper, skid steer basics, trailer hitching and load securement), heat illness, cold stress, lightning, lifting, PPE, chemical handling and label reading, spill response, silica dust when cutting pavers, traffic safety in roadside work, bees and wasps, poison ivy, customer property etiquette (gates, pets, photos), plant ID basics (by region, linked to the Plant KB in [12](12-plant-knowledge-base.md)), pruning basics, mulching standards (2-3 inches, no volcano mulching), mowing standards (one-third rule, stripe patterns), irrigation start-up and winterization procedures, snow plowing safety.
 2. **Company SOPs:** the Company records its own videos ("How we edge beds at Green Valley") on a phone. Rootline transcribes, subtitles in both languages, cuts to under 3 minutes with AI-suggested chapters and lets the author add a quiz.
 3. **Partner content**: manufacturer equipment training, association courses (NALP, state associations), SCORM 1.2/xAPI import.
 
@@ -478,7 +477,7 @@ Checks run on assignment, on route publish, at punch-in (the crew app re-checks 
 - California workplace violence prevention training (annual, SB 553) and the plan acknowledgment (SAFE-01).
 - Heat illness and wildfire smoke training before exposure (SAFE-05, SAFE-14), Hazard Communication before chemical work, and equipment-specific training before authorization (LMS-05).
 
-Courses are delivered in the worker's language. The platform library ships English and Spanish versions, and a Company can attach a free state-provided course instead where one exists (California's Civil Rights Department has published free online courses; verify). Training time is paid working time (LMS-04). Certificates go to the personnel file, and the compliance view lists who is outside their legal window, by deadline. Because supervisors include crew leads in most Companies, promoting someone to `crew_lead` automatically assigns the supervisor course.
+Courses are delivered in the worker's language. The platform library ships English and Spanish versions (fr-CA for Quebec Companies), and a Company can attach a free state-provided course instead where one exists (California's Civil Rights Department has published free online courses; verify). Training time is paid working time (LMS-04). Certificates go to the personnel file, and the compliance view lists who is outside their legal window, by deadline. Because supervisors include crew leads in most Companies, promoting someone to `crew_lead` automatically assigns the supervisor course.
 
 > **Competitive edge:** Connecteam and similar crew apps ship generic course builders [B], and the landscape suites in [R2](research/R2-landscape-specific-platforms.md) ship none [B]. Rootline's lessons are tied to the places where risk turns into cost: an equipment authorization gates the zero-turn assignment in dispatch, a renewal lesson counts toward the pesticide CE requirement, a trailer-backing incident auto-assigns the refresher, and the California 30-day or 100-hour deadline for seasonal hires is computed from real hours. Training stops being a binder in the truck and starts preventing the next claim.
 
@@ -504,7 +503,7 @@ Courses are delivered in the worker's language. The platform library ships Engli
 | Tenure tiers | 0-1 seasons: 40 h; 2-4 seasons: 60 h; 5+: 80 h |
 | Holidays | Company holiday calendar (paid / unpaid, eligibility after N days, holiday pay rules if worked) |
 
-**Statutory templates** (platform-maintained, versioned with rule packs): for the launch states, Illinois Paid Leave for All Workers Act, Michigan Earned Sick Time Act and the Chicago and Cook County ordinances; then California paid sick leave, Washington paid sick leave, Oregon sick time, New York paid sick leave, Colorado HFWA, New Jersey earned sick leave, Minnesota ESST, and city ordinances such as NYC and Seattle. Canadian provincial vacation pay (4% or 6% of wages paid per period or accrued) and personal emergency leave are also covered. All are verify-before-release. These laws move every year: Alaska and Nebraska voters adopted paid sick leave in November 2024, and Missouri repealed its voter-approved sick leave law in 2025 (verify). That churn is why templates are versioned with effective dates and released through the policy pack console instead of being hard-coded. Each template locks fields that the law requires and lets the Company be more generous.
+**Statutory templates** (platform-maintained, versioned with rule packs): for the Great Lakes states, Illinois Paid Leave for All Workers Act, Michigan Earned Sick Time Act and the Chicago and Cook County ordinances; California paid sick leave; and Ontario vacation pay (4% or 6% of wages, paid per period or accrued) and personal emergency leave. Washington paid sick leave, Oregon sick time, New York paid sick leave, Colorado HFWA, New Jersey earned sick leave, Minnesota ESST, city ordinances such as NYC and Seattle, and other provinces' vacation pay and leave rules are rule-pack data the plant curator agent adds on the same template model. All are verify-before-release. These laws move every year: Alaska and Nebraska voters adopted paid sick leave in November 2024, and Missouri repealed its voter-approved sick leave law in 2025 (verify). That churn is why templates are versioned with effective dates and released through the policy pack console instead of being hard-coded. Each template locks fields that the law requires and lets the Company be more generous.
 
 The ledger of PTO transactions (`accrual`, `usage`, `adjustment`, `payout`, `forfeit`, `reinstatement`) is append-only. The balance is a derived sum. Each pay period's accrual is computed from approved timesheets at period close.
 
@@ -554,7 +553,7 @@ Punch capture is owned by the crew app ([05 section 4.5](05-field-crew-mobile-ap
 
 ### 4.9 Pay rules engine and jurisdiction policy packs
 
-**RULE-01 Policy packs [MVP: Federal baseline + Ohio + Michigan + Illinois + Indiana + Wisconsin; V1: California, Washington, Oregon, Colorado, New York, all other US states + DC, Ontario, British Columbia, Alberta, Quebec; V2: city ordinances beyond sick leave].** A policy pack is a versioned, platform-maintained bundle (`platform_engineer` maintains the code, counsel-reviewed content is released through [19](19-platform-admin-portal.md)). It contains:
+**RULE-01 Policy packs.** Rootline ships packs for the Federal baseline, Ohio, Michigan, Illinois, Indiana, Wisconsin, California and Ontario ([24](24-product-scope-decisions-catalog.md) R24-18, OD-52). Washington, Oregon, Colorado, New York, every other US state, DC, British Columbia, Alberta, Quebec, the other provinces and city ordinances beyond sick leave are rule-pack data on the same engine, so adding one is curation work, not product work. A policy pack is a versioned, platform-maintained bundle: the engineering agent (`platform_engineer`) maintains the engine and the RULE-07 fixtures; the plant curator agent (`platform_curator`) maintains pack content from licensed sources; and the founder approves each pack version before it publishes through [19](19-platform-admin-portal.md) (24 OD-60). It contains:
 - Workweek and overtime rules (weekly thresholds, daily thresholds, 7th-day and day-of-rest rules, double time, alternative workweek schedules where adopted with proof of a valid election).
 - Meal and rest rules (windows, durations, waivers, premiums, on-duty meal agreements).
 - Reporting-time, split-shift and call-in pay.
@@ -567,7 +566,7 @@ Punch capture is owned by the crew app ([05 section 4.5](05-field-crew-mobile-ap
 - Pay-stub and notice requirements (used for validations and templates).
 - Heat rule thresholds ([SAFE-05](#415-safety-management)).
 
-Packs are evaluated by **work location of each segment** (a Northwest Indiana crew working a property in Illinois gets Illinois rules, plus Chicago or Cook County rules where they apply, for those hours; a Nevada crew working a Lake Tahoe property in California gets California rules once that pack ships at; verify multi-state rules with counsel). Each pack version has an effective date range, so recalculating an old week uses the pack in force that week. Companies can be **more generous** (e.g., OT after 8 hours in all states), never less, for locked statutory fields. A Company override of an unlocked field records who changed it and why.
+Packs are evaluated by **work location of each segment** (a Northwest Indiana crew working a property in Illinois gets Illinois rules, plus Chicago or Cook County rules where they apply, for those hours; a Nevada crew working a Lake Tahoe property in California gets California rules for those hours; verify multi-state rules with counsel). Each pack version has an effective date range, so recalculating an old week uses the pack in force that week. Companies can be **more generous** (e.g., OT after 8 hours in all states), never less, for locked statutory fields. A Company override of an unlocked field records who changed it and why.
 
 **RULE-02 Overtime calculation.** Per employee per workweek:
 1. Sum hours worked by day from approved segments (excluding unpaid meals).
@@ -584,13 +583,13 @@ Worked example (illustrative): a crew member paid $20.00/hour works 46 hours in 
 
 **RULE-03 Retroactive bonus OT true-up.** A nondiscretionary bonus earned over several weeks (monthly production bonus, end-of-season retention bonus promised in April) is allocated to the workweeks in which it was earned (evenly per week or proportionally to hours; Company choice where permitted). An additional OT premium is computed for each week with OT hours: `bonus_allocated_to_week / hours_in_week x 0.5 x OT_hours_in_week`. California flat-sum bonuses follow the formula in *Alvarado v. Dart Container* (bonus divided by non-overtime hours, times 1.5 for OT hours; verify). Output: a `bonus_ot_trueup` pay item with a week-by-week audit table attached to the export.
 
-**RULE-04 Meal and rest premiums.** At MVP, the Illinois and Wisconsin meal-period rules raise TIME-02 exceptions without a premium, because neither state uses premium pay (verify). Premium triggers come from timesheet evaluation (late, short or missed meals not validly waived) and from attestations ([05](05-field-crew-mobile-app.md)). At most one meal premium and one rest premium per workday (California; verify). Premium rate = regular rate of compensation for the workweek (*Ferra v. Loews Hollywood Hotel*, 2021; verify). Premiums are wages, so they appear on the export as distinct earnings codes and are excluded from regular-rate computation.
+**RULE-04 Meal and rest premiums.** The Illinois and Wisconsin meal-period rules raise TIME-02 exceptions without a premium, because neither state uses premium pay (verify). Premium triggers come from timesheet evaluation (late, short or missed meals not validly waived) and from attestations ([05](05-field-crew-mobile-app.md)). At most one meal premium and one rest premium per workday (California; verify). Premium rate = regular rate of compensation for the workweek (*Ferra v. Loews Hollywood Hotel*, 2021; verify). Premiums are wages, so they appear on the export as distinct earnings codes and are excluded from regular-rate computation.
 
 **RULE-05 Minimum wage floor checks.** For each workweek (and each day where state law evaluates per hour or per day, verify), check that pay for all hours meets the applicable minimum for each work location. That matters for piece-rate, production pay, deductions and H-2B reimbursements. A shortfall creates a `min_wage_makeup` pay item and alerts the office.
 
 **RULE-06 Max hours, rest between shifts and fatigue.** Company rules (e.g., no more than 14 hours in a day, 10 hours rest between shifts; for snow events "max 16 hours on, 8 off") plus legal limits (minors, CMV hours-of-service for CDL drivers in interstate commerce; verify applicability). Scheduling warnings when a planned route would breach them ([04](04-scheduling-dispatch-routing.md), [17](17-ai-copilot-automation.md) scheduling agent).
 
-**RULE-07 Rule pack test harness.** Every pack ships with at least 50 fixture timesheets per jurisdiction with expected outputs. The fixtures include split weeks across pack versions, multi-state weeks, 7th-day scenarios, piece-rate weeks, bonus true-ups, meal waivers and minors. A release cannot publish if any fixture fails. Diffs between versions are shown to `platform_owner` with plain-language release notes that tenants see ("Ohio minimum wage increase effective Jan 1 loaded").
+**RULE-07 Rule pack test harness.** Every pack ships with at least 50 fixture timesheets per jurisdiction with expected outputs. The fixtures include split weeks across pack versions, multi-state weeks, 7th-day scenarios, piece-rate weeks, bonus true-ups, meal waivers and minors. A pack version cannot publish if any fixture fails. Diffs between versions are shown to `platform_owner` (the founder) for approval, with plain-language release notes that tenants see ("Ohio minimum wage increase effective Jan 1 loaded").
 
 **RULE-08 Calculation pipeline and order of evaluation.** The order matters: regular rate cannot be computed before piece-rate splits, and minimum-wage floors cannot be checked before premiums. Every step writes its inputs and outputs to the pay item's audit trail, so the pay explainer (TIME-08) and an auditor see the same derivation.
 
@@ -613,11 +612,11 @@ flowchart TD
 
 Rules: a recomputation of a closed week replays the same pipeline with the pack versions in force that week and emits only the difference as adjustment pay items. Steps D, J and M are skipped when the pack or the employee has nothing to evaluate. Each step is a pure function of its inputs, which is what makes the RULE-07 fixtures possible.
 
-**RULE-09 Federal qualified overtime and tips tagging.** The 2025 federal deductions for qualified overtime and qualified tips ([2.4](#24-regulatory-map-what-the-module-must-support)) make the payroll provider report new amounts on each W-2. Generic payroll cannot tell which part of a California employee's overtime the FLSA actually required. In the MVP launch states overtime is weekly, so the tag mainly separates FLSA overtime from Company-policy overtime (for example daily OT after 8 hours offered as a benefit); with the California pack at it also excludes state-only daily and seventh-day overtime. Rootline can:
+**RULE-09 Federal qualified overtime and tips tagging.** The 2025 federal deductions for qualified overtime and qualified tips ([2.4](#24-regulatory-map-what-the-module-must-support)) make the payroll provider report new amounts on each W-2. Generic payroll cannot tell which part of a California employee's overtime the FLSA actually required. In the Great Lakes states overtime is weekly, so the tag mainly separates FLSA overtime from Company-policy overtime (for example daily OT after 8 hours offered as a benefit); under the California pack it also excludes state-only daily and seventh-day overtime. Rootline handles it this way:
 - For every workweek, the engine runs a **federal-only shadow calculation** on the same segments: hours over 40, the FLSA regular rate (including bonuses and piece earnings), and the required premium of 0.5 x regular rate x FLSA overtime hours, plus any bonus OT true-up (RULE-03) allocated to the week.
 - The FLSA-qualified amount is the lower of the premium actually paid and the shadow premium. State-only overtime is excluded: California daily OT in a week under 40 hours, the second half-time of double time, seventh-day premiums beyond FLSA, and overtime promised by Company policy.
 - Example: a California employee works four 9-hour days (36 hours). Four hours of daily OT are paid at 1.5x, but the federal tag is $0.00 because no hours exceed 40. In the TIME-08 week (46.5 hours), the tag is 0.5 x $21.60 x 6.5 = $70.20.
-- The tag travels as `pay_item.tax_reporting_tag = flsa_qualified_ot_premium`. It is exported as a separate earning code or a memo field, depending on what each provider accepts (open question 16), and it is summarized per employee per year for reconciliation in January.
+- The tag travels as `pay_item.tax_reporting_tag = flsa_qualified_ot_premium`. It is always exported: as a separate earning code where the provider accepts one, otherwise as a memo field (section 14, item 16). It is summarized per employee per year for reconciliation in January.
 - Tips (`TIP_CC`, `TIP_CASH`) carry the tipped-occupation code mapped from the employee's `position`. Treasury's proposed list of tipped occupations (September 2025) included a home landscaping and groundskeeping category (verify against the final regulations before relying on it). Mandatory service charges are revenue, not tips, so the portal and card tip prompts ([06](06-customer-portal.md), [08](08-payments-stripe.md)) always offer "No tip".
 - Rootline shows these amounts to employees as information, never as tax advice ([Beyond the brief](#13-beyond-the-brief-extra-ideas), idea 20).
 
@@ -706,7 +705,7 @@ Worked California example (illustrative; uses $16.90 as the minimum wage for ill
 
 **PW-05 Fringe benefit statements and apprentice tracking.** Apprentice registration numbers, ratios per classification, and fringe statements for audits.
 
-> **Competitive edge:** Public-works landscaping (parks, schools, highway medians, federal grounds) pays well but is avoided by small firms because certified payroll is painful. Rootline makes it a weekly button. This is a revenue unlocker that sales can pitch ("bid public work with confidence"), and we found no landscape FSM that documents it [B].
+> **Competitive edge:** Public-works landscaping (parks, schools, highway medians, federal grounds) pays well but is avoided by small firms because certified payroll is painful. Rootline makes it a weekly button. This is a revenue unlocker the marketing agent can lead with ("bid public work with confidence"), and we found no landscape FSM that documents it [B].
 
 ### 4.12 Labor burden and costing
 
@@ -768,31 +767,31 @@ Add H-2B program costs (fees, agent, transport, recruiting) amortized over a wor
 2. **Compute:** rule engine produces `pay_item` rows per employee: hours by earnings code and work location, plus rates and amounts where Rootline computes them (bonuses, premiums, piece-rate, reimbursements).
 3. **Validate:** unmapped employees, unmapped earnings codes, terminated employees with hours, missing work locations, H-2B minimum-wage week-1 check, minors' hours, prevailing-wage classifications, FLSA-qualified OT tags present (RULE-09), negative values, period overlaps, duplicate submissions.
 4. **Preview:** totals by earnings code, by employee and by division, with comparison to the last period and to the forecast ("Gross +18% vs last week, expected: season ramp").
-5. **Approve:** by `owner`, `office_manager` or `bookkeeper` (`payroll_export.run`). Optional two-person rule for gross above a threshold.
+5. **Approve:** by `owner`, `office_manager` or `bookkeeper` (`payroll_export.run`). Optional two-person rule inside the Company for gross above a threshold.
 6. **Push / export:** API push or file. Idempotency key per batch. Partial failures are listed per employee with retry.
 7. **Confirm:** provider confirmation (API status or manual "Submitted in provider").
 8. **Post:** payroll journal import (PAY-08) closes the loop.
 
 **PAY-03 Connectors.**
 
-| Provider | Method | Data pushed | Data pulled | Priority |
-|---|---|---|---|---|
-| Gusto | Partner API (OAuth). Payroll hours and earnings per employee per payroll; employee create for onboarding hand-off ([Gusto developer docs](https://docs.gusto.com)) | Hours by earning type, bonuses, reimbursements, work address per employee (verify support for multiple work locations per period) | Employees, job/pay rates, PTO balances (verify), payroll totals for journal | |
-| QuickBooks Online Payroll | QBO Accounting API **TimeActivity** entities (employee, customer/job, service item, hours, billable flag), which QBO Payroll can pull into paychecks; bonuses and other earnings entered in QBO Payroll or via file (verify) ([Intuit TimeActivity reference](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/timeactivity)) | Hours per employee per job per day | Employees, payroll JEs in QBO | |
-| QuickBooks Desktop Payroll | Web Connector time-tracking transactions ([09](09-accounting-ledger-integrations.md) connector) | Time data | Employees | |
-| ADP Workforce Now | ADP Marketplace partner API for pay data input (verify program and endpoints) ([ADP developer portal](https://developers.adp.com)) | Pay data batch | Workers, rates | |
-| ADP RUN | Time import file (provider template) | Hours and earnings | Manual | |
-| Paychex Flex | Paychex API (pay components / checks; verify) ([Paychex developer portal](https://developer.paychex.com)); file import fallback | Hours and earnings | Workers | file, API |
-| Paylocity, Paycom, Paycor, isolved | Provider file templates; API via partner programs later | Hours and earnings | Optional via unified API | file, API |
-| Unified employment API (for example Finch) | Read roster, pay rates, pay statements across many providers (verify write capabilities) ([Finch developer docs](https://developer.tryfinch.com)) | Limited | Roster, rates, pay statements | evaluate |
-| Canada: Wagepoint, ADP Canada, Payworks, Ceridian Dayforce, QBO Payroll Canada | File templates first | Hours, earnings, vacation pay | Manual | |
-| Generic CSV builder | Column mapper with saved templates | Anything | n/a | |
+| Provider | Method | Data pushed | Data pulled |
+|---|---|---|---|
+| Gusto | Partner API (OAuth). Payroll hours and earnings per employee per payroll; employee create for onboarding hand-off ([Gusto developer docs](https://docs.gusto.com)) | Hours by earning type, bonuses, reimbursements, work address per employee (verify support for multiple work locations per period) | Employees, job/pay rates, PTO balances (verify), payroll totals for journal |
+| QuickBooks Online Payroll | QBO Accounting API **TimeActivity** entities (employee, customer/job, service item, hours, billable flag), which QBO Payroll can pull into paychecks; bonuses and other earnings entered in QBO Payroll or via file (verify) ([Intuit TimeActivity reference](https://developer.intuit.com/app/developer/qbo/docs/api/accounting/all-entities/timeactivity)) | Hours per employee per job per day | Employees, payroll JEs in QBO |
+| QuickBooks Desktop Payroll | Web Connector time-tracking transactions ([09](09-accounting-ledger-integrations.md) connector) | Time data | Employees |
+| ADP Workforce Now | ADP Marketplace partner API for pay data input (verify program and endpoints) ([ADP developer portal](https://developers.adp.com)) | Pay data batch | Workers, rates |
+| ADP RUN | Time import file (provider template) | Hours and earnings | Manual |
+| Paychex Flex | Paychex API (pay components / checks; verify) ([Paychex developer portal](https://developer.paychex.com)); file import fallback | Hours and earnings | Workers |
+| Paylocity, Paycom, Paycor, isolved | Provider file templates; API through the provider's partner program where it offers one | Hours and earnings | Optional via unified API |
+| Unified employment API (for example Finch) | Read roster, pay rates, pay statements across many providers (verify write capabilities) ([Finch developer docs](https://developer.tryfinch.com)) | Limited | Roster, rates, pay statements |
+| Canada: Wagepoint, ADP Canada, Payworks, Ceridian Dayforce, QBO Payroll Canada | File templates; API where the provider offers one | Hours, earnings, vacation pay | Manual |
+| Generic CSV builder | Column mapper with saved templates | Anything | n/a |
 
 **PAY-04 Mapping.** Employee mapping (provider employee ID, auto-match by email, phone or name with confirmation). Earnings code mapping (Rootline code -> provider earning type). Department or division mapping (for providers that support labor allocation). Work location mapping. Unmapped items block export with a fix-it link.
 
 **PAY-05 Corrections and off-cycle.** After export, corrections create an adjustment batch for the next period. Final pay: termination triggers an off-cycle export option with jurisdiction timing guidance. For example, California requires final wages immediately at involuntary termination and within 72 hours for a quit without notice (verify). The UI shows the deadline countdown and a "not legal advice" note. Retro pay (late-approved raises) is computed per affected week, including regular-rate effects.
 
-**PAY-06 Multi-state and local work-location allocation.** Hours and earnings per work location (state, county, municipality) for each employee. This feeds providers that support per-location wages and produces a report for those that do not. Relevant for crews crossing state lines (e.g., Chicagoland and Northwest Indiana, Toledo and Southeast Michigan, Kansas City metro, the New York-New Jersey area, Lake Tahoe) and for local income taxes based on work location (e.g., Ohio municipalities, Pennsylvania local earned income tax; verify rules). Because the launch region includes both cases, segments already carry their work location at MVP (TIME-01) and the MVP export can include it; whether the full allocation report moves to MVP is open question 2.
+**PAY-06 Multi-state and local work-location allocation.** Hours and earnings per work location (state, county, municipality) for each employee. This feeds providers that support per-location wages and produces a report for those that do not. Relevant for crews crossing state lines (e.g., Chicagoland and Northwest Indiana, Toledo and Southeast Michigan, Kansas City metro, the New York-New Jersey area, Lake Tahoe) and for local income taxes based on work location (e.g., Ohio municipalities, Pennsylvania local earned income tax; verify rules). The launch region includes both cases, so segments carry their work location (TIME-01), every export can include it, and the full allocation report is part of the module.
 
 **PAY-07 Payroll data quality guardrails.** Never export an employee whose rate in Rootline differs from the provider's rate by more than $0.01 without confirmation (where the provider exposes rates). Block hours for a hibernated or terminated employee outside their final period. Flag any employee with more than 80 hours in a weekly period. Detect duplicate batches by content hash.
 
@@ -800,7 +799,7 @@ Add H-2B program costs (fees, agent, transport, recruiting) amortized over a wor
 1. **During the period (applied labor).** Each approved timesheet posts applied labor: job-coded hours x base rate to 5110 Field Wages on the Job, standard burden from the burden profile (BURD-02) to 5120 Field Labor Burden, with credits to 2310 Accrued Wages and 2390 Applied Labor Burden Clearing. Yard, rain and training time goes to 5180 Non-billable Field Time with a cost code. Job cost is live before payroll runs.
 2. **After the provider runs payroll (import).** Rootline imports the register or GL export (API where available, the provider's standard file otherwise): gross by earnings code, employee withholdings, employer taxes, deductions, net pay and employer benefit costs.
 3. **HR validations before posting.** Paid hours vs approved hours per employee (tolerance 0.25 hours), exported pay items vs paid amounts by earnings code (a `BONUS_PROD` or `MEAL_PREM` the provider dropped is caught here, not by an employee complaint), tips paid vs 2160 Tips Payable allocations ([08](08-payments-stripe.md)), H-2B reimbursements paid vs due (H2B-05), and qualified-overtime tags received vs sent (RULE-09).
-4. **Posting.** The payroll clears 2310 for applied field wages. The difference (overtime premium, bonuses, premiums, PTO paid in season) goes to 5190 Field Labor Variance or, at, is re-allocated to Jobs pro rata to hours so job cost carries real overtime. Employer taxes and burden bills clear 2390, and the month-end true-up posts the over- or under-applied amount to 5195 Labor Burden Variance. H-2B program costs amortize from 1420 Prepaid H-2B per hour worked.
+4. **Posting.** The payroll clears 2310 for applied field wages. The difference (overtime premium, bonuses, premiums, PTO paid in season) goes to 5190 Field Labor Variance by default or, when the Company turns on variance re-allocation, is re-allocated to Jobs pro rata to hours so job cost carries real overtime ([09](09-accounting-ledger-integrations.md)). Employer taxes and burden bills clear 2390, and the month-end true-up posts the over- or under-applied amount to 5195 Labor Burden Variance. H-2B program costs amortize from 1420 Prepaid H-2B per hour worked.
 5. **QuickBooks Payroll in external mode.** When QBO stays the book of record, Rootline does not post the journal. It reconciles applied labor to QBO payroll totals monthly and shows the difference without posting it ([09](09-accounting-ledger-integrations.md)).
 
 Manual journal entry stays available as a fallback for providers with no usable export.
@@ -811,7 +810,7 @@ Manual journal entry stays available as a fallback for providers with no usable 
 
 ### 4.14 Embedded payroll option
 
-**EMB-01 Embedded payroll (US).** For Companies that want one less system, Rootline offers payroll inside the app through a licensed embedded payroll partner. Candidates named in the brief are **Check** and **Gusto Embedded** ([Check](https://www.checkhq.com), [Gusto Embedded](https://embedded.gusto.com)). The partner computes taxes, moves money (debits the Company, pays employees and tax agencies), files payroll taxes and issues W-2s. Rootline provides the UI, time, pay rules, PTO and onboarding. **Rootline never holds wage funds** ([08](08-payments-stripe.md)).
+**EMB-01 Embedded payroll (US).** For Companies that want one less system, Rootline offers payroll inside the app through a licensed embedded payroll partner. The partner is **Check**, with **Gusto Embedded** as the fallback if Check declines the platform ([Check](https://www.checkhq.com), [Gusto Embedded](https://embedded.gusto.com); [24](24-product-scope-decisions-catalog.md) OD-53). Embedded payroll is an add-on available to every Company and turns on for a Company once the partner approves it (24 section 1.4). The partner computes taxes, moves money (debits the Company, pays employees and tax agencies), files payroll taxes and issues W-2s. Rootline provides the UI, time, pay rules, PTO and onboarding. **Rootline never holds wage funds** ([08](08-payments-stripe.md)).
 
 Scope:
 - Company onboarding (KYB) in the partner's hosted or embedded components: legal entity, EIN, state tax accounts, bank verification, signatory.
@@ -823,20 +822,20 @@ Scope:
 - Mid-year migration: prior YTD import from the old provider (quarter-start go-lives recommended).
 - Journal entries posted natively to the Ledger.
 
-**EMB-02 Partner selection criteria.** To be decided with diligence. Rootline will not publish a choice before contracts are signed.
+**EMB-02 Partner requirements.** The partner is decided (EMB-01). The founder checks these requirements in the partner agreement, and the engineering agent tests them in the integration; the same list applies if the fallback partner is used.
 
-| Criterion | Why it matters |
+| Requirement | Why it matters |
 |---|---|
 | State coverage, local taxes, and multi-state support | Crews cross state and municipal lines |
 | White-label depth (APIs vs hosted components) | Bilingual, on-brand experience |
 | Piece-rate, CA premium and custom earning code support | Landscape pay is not standard hourly |
 | Same-day or next-day direct deposit and funding timelines | Seasonal workers live paycheck to paycheck |
 | Support model (who answers the tax notice call) | Office managers need one number |
-| Canada roadmap | US + Canada launch markets ([22](22-business-model-pricing-gtm.md)) |
+| Canadian payroll coverage | Rootline serves the US and Canada ([22](22-business-model-pricing-gtm.md)) |
 | Economics (per employee per month, revenue share) | Add-on pricing in [22](22-business-model-pricing-gtm.md) |
 | Liability allocation for tax errors and penalties | Must sit with the licensed partner |
 
-**EMB-03 Embedded payroll in Canada.** Depends on partner availability (verify). File-based exports until then.
+**EMB-03 Embedded payroll in Canada.** Turns on where the partner supports Canadian payroll (verify). Canadian Companies otherwise use the file or API exports in PAY-03.
 
 **EMB-04 Earned wage access.** Through a partner, employees can access a portion of earned, approved wages before payday. Rootline supplies verified earned amounts from approved time (not unapproved punches). Fees are transparent and a no-fee option is preferred. Regulatory treatment of EWA varies by state (verify), so it is off by default.
 
@@ -869,7 +868,7 @@ The **first-aid list** (e.g., non-prescription medication at non-prescription st
 
 **SAFE-05 Heat illness prevention.** Builds on the field workflow in [05 section 4.12.5](05-field-crew-mobile-app.md):
 - **Plan builder:** a written Heat Illness Prevention Plan in English and Spanish with Company-specific sections (water sources and quantities on trucks, shade method such as pop-up canopies on trailers, high-heat procedures, emergency response with each property's address, closest hospital lookup, acclimatization method, training schedule). Exports as a signed PDF and is available offline in the crew app.
-- **Thresholds per jurisdiction pack** (verify all): federal baseline at MVP for the Great Lakes launch states, which have no state heat standard (verify), with Company-set heat-index triggers and OSHA's heat National Emphasis Program and NIOSH criteria as reference points; then at California outdoor 3395 (shade at 80 F; high-heat procedures at 95 F for listed industries including landscaping); Washington outdoor heat exposure rule (WAC 296-62-095, with action levels starting at 80 F (lower for non-breathable clothing) and mandatory cool-down rest at higher levels); Oregon (OAR 437-002-0156, triggers based on heat index); Maryland heat stress standard (heat index based); Nevada heat illness requirements. If a federal OSHA heat rule is finalized, the pack updates (rulemaking status as of Nov 2026: verify) ([OSHA heat rulemaking](https://www.osha.gov/heat-exposure/rulemaking)).
+- **Thresholds per jurisdiction pack** (verify all): the federal baseline for the Great Lakes states, which have no state heat standard (verify), with Company-set heat-index triggers and OSHA's heat National Emphasis Program and NIOSH criteria as reference points; California outdoor 3395 in the California pack (shade at 80 F; high-heat procedures at 95 F for listed industries including landscaping); and, as rule-pack data, the Washington outdoor heat exposure rule (WAC 296-62-095, with action levels starting at 80 F (lower for non-breathable clothing) and mandatory cool-down rest at higher levels); Oregon (OAR 437-002-0156, triggers based on heat index); Maryland heat stress standard (heat index based); Nevada heat illness requirements. If a federal OSHA heat rule is finalized, the pack updates (rulemaking status as of Nov 2026: verify) ([OSHA heat rulemaking](https://www.osha.gov/heat-exposure/rulemaking)).
 - **Acclimatization schedules:** new and returning workers get a ramp (a common reference is starting at no more than 20% of the usual exposure on day 1 and increasing by no more than 20% per day; verify the guidance referenced by each jurisdiction). Scheduling shows them on lighter tasks or shaded work where possible ([04](04-scheduling-dispatch-routing.md)).
 - **Heat-flex start times:** routes tagged as heat-flexible automatically shift earlier on forecast days above a threshold, with client notifications through [04](04-scheduling-dispatch-routing.md). Noise-ordinance windows per municipality are respected (e.g., no blowers before 8 a.m.).
 - **Indoor heat:** Cal/OSHA 8 CCR 3396 applies to indoor work areas at 82 F or more (verify). Yards with shops, mechanic bays, potting sheds or greenhouses get an indoor temperature log (manual entry or a Bluetooth sensor) and the indoor section of the plan.
@@ -882,7 +881,7 @@ The **first-aid list** (e.g., non-prescription medication at non-prescription st
 
 **SAFE-08 Chemical safety.** SDS library per product, PPE per label (from the product library in [14](14-service-line-modules.md)), mixing and loading logs, exposure incidents, and Hazard Communication training records. Applicator credential checks come from [CRED-05](#45-certifications-licenses-and-qualification-enforcement).
 
-**SAFE-09 Safety incentives that do not suppress reporting.** Rewards attach only to **leading indicators**: near-miss reports, hazard fixes, observations, tailgate participation and training completion. Rootline will not offer "zero injuries" or "no recordables" rewards as a template, because incentive programs that discourage injury reporting can violate OSHA's anti-retaliation provisions (verify current OSHA interpretation). Cross-doc note: the crew-app safety streak in [05 section 4.15](05-field-crew-mobile-app.md) includes "zero recordable incidents". This module recommends that rewards tied to that streak use only its leading-indicator components ([14 open question](#14-open-questions)).
+**SAFE-09 Safety incentives that do not suppress reporting.** Rewards attach only to **leading indicators**: near-miss reports, hazard fixes, observations, tailgate participation and training completion. Rootline will not offer "zero injuries" or "no recordables" rewards as a template, because incentive programs that discourage injury reporting can violate OSHA's anti-retaliation provisions (verify current OSHA interpretation). Cross-doc note: the crew-app safety streak in [05 section 4.15](05-field-crew-mobile-app.md) includes "zero recordable incidents". Rewards tied to that streak use only its leading-indicator components; "zero recordable incidents" can be shown but never rewarded ([section 14](#14-open-questions), item 5).
 
 **SAFE-10 Return-to-work and transitional duty.** Work restrictions (no lifting over 20 lb, no ladder use) captured from provider notes the employee chooses to share. Transitional duty task list (yard organization, nursery watering, plant inventory counts, training content recording). Dispatch respects restrictions. Restricted days are counted automatically for the OSHA log.
 
@@ -896,7 +895,7 @@ The **first-aid list** (e.g., non-prescription medication at non-prescription st
 - Record the medical provider network or panel-physician rules the Company's policy uses, so the crew lead knows which clinic to drive to. The address is part of the heat plan's emergency section (SAFE-05).
 - Track claim number, carrier, adjuster, status, work restrictions and return-to-work date (SAFE-10). Restrictions sync to dispatch as task limits.
 
-Claim data is Restricted (medical). The OSHA case (SAFE-03) and the claim are linked but decided separately: a compensable claim is not automatically OSHA-recordable, and a recordable case may never become a claim. Carrier portal and EDI first-report-of-injury integrations are. Claim lag (injury to carrier report) is a KPI ([12](#12-metrics-and-kpis)) because carriers ask for prompt reporting and late reports can breach the statutory deadlines above. Any cost effect of lag should be confirmed with the Company's carrier, not assumed.
+Claim data is Restricted (medical). The OSHA case (SAFE-03) and the claim are linked but decided separately: a compensable claim is not automatically OSHA-recordable, and a recordable case may never become a claim. First reports go electronically (EDI first report of injury through a partner network) where the carrier accepts them, otherwise through the carrier portal or the state PDF form. Claim lag (injury to carrier report) is a KPI ([12](#12-metrics-and-kpis)) because carriers ask for prompt reporting and late reports can breach the statutory deadlines above. Any cost effect of lag should be confirmed with the Company's carrier, not assumed.
 
 **SAFE-14 Wildfire smoke protection.** The air-quality feed (EPA AirNow or a commercial provider bundled with the weather API) is checked hourly for each branch and for the day's scheduled properties:
 - At the jurisdiction's trigger (California: current PM2.5 AQI of 151 or more; Oregon and Washington have lower action levels; verify), Rootline sends a bilingual alert to affected crews, prompts N95 issue from PPE inventory ([13](13-operations-inventory-equipment.md)) with a per-employee record, and suggests lower-exposure tasks or rescheduling ([04](04-scheduling-dispatch-routing.md)).
@@ -920,7 +919,7 @@ Claim data is Restricted (medical). The OSHA case (SAFE-03) and the claim are li
 
 **PERF-06 Recognition and kudos.** Peer-to-peer kudos tagged with Company values ("Safety first", "Above and beyond", "Team player"), manager shout-outs, client kudos from ratings and reviews ([06](06-customer-portal.md), [16](16-marketing-growth-communications.md)), birthdays and work anniversaries (opt-in), "Crew of the Month" with the photo posted on the kiosk and in announcements. Kudos feed the recognition analytics in RET-01.
 
-**PERF-07 Gamification [V1 basics per [05 section 4.15](05-field-crew-mobile-app.md); V2 seasons and rewards].** Badges and challenges defined in 05. V2 adds seasons (spring, summer and fall leagues between crews), a points wallet redeemable for rewards (Company swag store, gift cards via partner, extra paid hours off where lawful), and team goals ("All crews 100% heat checks in July = Company BBQ"). Guardrails from 05 are hard-coded: no ranking on speed alone, no reward for fewer breaks, safety never traded against productivity. Rewards with cash value go through payroll as taxable earnings where required (verify).
+**PERF-07 Gamification.** Badges and challenges are defined in [05 section 4.15](05-field-crew-mobile-app.md). This module adds seasons (spring, summer and fall leagues between crews), a points wallet redeemable for rewards (Company swag store, gift cards via partner, extra paid hours off where lawful), and team goals ("All crews 100% heat checks in July = Company BBQ"). Guardrails from 05 are hard-coded: no ranking on speed alone, no reward for fewer breaks, safety never traded against productivity. Rewards with cash value go through payroll as taxable earnings where required (verify).
 
 **PERF-08 Pulse surveys and eNPS.** Monthly 3-question pulse in English and Spanish by push/SMS ("How likely are you to recommend working here?", "Do you have what you need to do your job safely?", open comment by voice). Anonymous with a minimum group size of 5 for any breakdown. Results by branch, never by person.
 
@@ -940,22 +939,22 @@ Claim data is Restricted (medical). The OSHA case (SAFE-03) and the claim are li
 
 The self-service experience lives inside the crew app for field staff (a "Me / Yo" tab) and in the web app for office staff. It works offline for read-only views and queues requests.
 
-| ID | Feature | Priority |
-|---|---|---|
-| ESS-01 | **Home:** today's schedule and crew, clock status, hours this week, next payday, PTO balance, to-dos (sign handbook v4, training due, license expiring), announcements | |
-| ESS-02 | **My time:** daily and weekly hours by segment, approval status, weekly acknowledgment, dispute a day | |
-| ESS-03 | **My pay:** "Today I earned" estimate ([05](05-field-crew-mobile-app.md)), pay explainer per period (TIME-08), pay stubs (provider link at V1, native with embedded payroll), year-end forms | |
-| ESS-04 | **Time off and availability:** request, see status, see balances and accrual history | |
-| ESS-05 | **My documents and credentials:** signed documents, upload license photos (OCR in V1), expiry dates, CEU progress | upload; full |
-| ESS-06 | **Training:** assigned lessons, offline downloads, quizzes, certificates | |
-| ESS-07 | **Profile:** phone, address, emergency contacts, sizes, language; changes requiring payroll update are pushed to the provider or routed for approval | |
-| ESS-08 | **Ask HR (Copilot):** answers grounded in the Company handbook, policies and the employee's own data ("¿Cuántas horas de vacaciones tengo?", "¿Por qué me pagaron overtime el jueves?"), in Spanish by voice; escalates to a human with one tap; never answers immigration-status or legal questions beyond pointing to the policy and a human | |
-| ESS-09 | **Open shifts and swaps:** sign up for Saturday cleanups, snow roster volunteer, swap a day with manager approval and qualification checks | |
-| ESS-10 | **Referrals:** share link, track referred applicants and bonus status | |
-| ESS-11 | **Kudos and recognition:** give and receive, badges | |
-| ESS-12 | **Career:** ladder step, requirements, learning path | |
-| ESS-13 | **Hibernated "My records":** hours history, tax forms, "coming back?" response ([02](02-personas-roles-permissions.md)) | |
-| ESS-14 | **Accessibility:** read-aloud for every screen, voice input, icon-first navigation for low literacy, large text, high-contrast outdoor theme | |
+| ID | Feature |
+|---|---|
+| ESS-01 | **Home:** today's schedule and crew, clock status, hours this week, next payday, PTO balance, to-dos (sign handbook v4, training due, license expiring), announcements |
+| ESS-02 | **My time:** daily and weekly hours by segment, approval status, weekly acknowledgment, dispute a day |
+| ESS-03 | **My pay:** "Today I earned" estimate ([05](05-field-crew-mobile-app.md)), pay explainer per period (TIME-08), pay stubs (provider link, or native with embedded payroll), year-end forms |
+| ESS-04 | **Time off and availability:** request, see status, see balances and accrual history |
+| ESS-05 | **My documents and credentials:** signed documents, upload license photos with OCR, expiry dates, CEU progress |
+| ESS-06 | **Training:** assigned lessons, offline downloads, quizzes, certificates |
+| ESS-07 | **Profile:** phone, address, emergency contacts, sizes, language; changes requiring payroll update are pushed to the provider or routed for approval |
+| ESS-08 | **Ask HR (Copilot):** answers grounded in the Company handbook, policies and the employee's own data ("¿Cuántas horas de vacaciones tengo?", "¿Por qué me pagaron overtime el jueves?"), in Spanish by voice; escalates to a human with one tap; never answers immigration-status or legal questions beyond pointing to the policy and a human |
+| ESS-09 | **Open shifts and swaps:** sign up for Saturday cleanups, snow roster volunteer, swap a day with manager approval and qualification checks |
+| ESS-10 | **Referrals:** share link, track referred applicants and bonus status |
+| ESS-11 | **Kudos and recognition:** give and receive, badges |
+| ESS-12 | **Career:** ladder step, requirements, learning path |
+| ESS-13 | **Hibernated "My records":** hours history, tax forms, "coming back?" response ([02](02-personas-roles-permissions.md)); hibernated workers keep this lightweight login all winter with no seat charge |
+| ESS-14 | **Accessibility:** read-aloud for every screen, voice input, icon-first navigation for low literacy, large text, high-contrast outdoor theme |
 
 ### 4.19 Retention analytics and workforce planning
 
@@ -997,7 +996,7 @@ The self-service experience lives inside the crew app for field staff (a "Me / Y
 
 **OFF-03 Exit survey.** 5 questions plus voice comment in the employee's language, sent by SMS link on the last day. Optional anonymity.
 
-**OFF-04 Unemployment claim tracking.** Log state UI claim notices, response deadlines and documents (separation reason, attendance records). Manual entry first. Automated responder services integration.
+**OFF-04 Unemployment claim tracking.** Log state UI claim notices, response deadlines and documents (separation reason, attendance records). Manual entry, plus integration with automated unemployment-claim responder services.
 
 **OFF-05 Records retention and minimization.** Retention schedule per record type (configurable upward, never below legal minimums; all verify per jurisdiction):
 
@@ -1019,9 +1018,9 @@ After retention ends, PII is minimized (SSN/SIN purged, address and DOB removed,
 
 ### 4.21 Multilingual and accessibility
 
-**I18N-01 Languages [MVP: en-US, es-US for crew app, self-service, applicant flow, onboarding documents, training and announcements; V1: office web app Spanish per [21](21-ux-design-system-sitemaps.md); V1-V2: fr-CA].** Quebec employment documents and communications are subject to the Charter of the French Language as amended by Bill 96 (verify), so Quebec tenants are gated until fr-CA ships. Additional languages for crews (for example Portuguese or Haitian Creole in some metros) are possible as AI-translated, human-reviewed content packs when demand is proven.
+**I18N-01 Languages.** en-US and es-US for the crew app, self-service, applicant flow, onboarding documents, training and announcements; Spanish in the office web app per [21](21-ux-design-system-sitemaps.md); and fr-CA ([24](24-product-scope-decisions-catalog.md) OD-70). Quebec employment documents and communications are subject to the Charter of the French Language as amended by Bill 96 (verify), so Quebec Companies get French versions of employment documents and crew communications. Additional languages for crews (for example Portuguese or Haitian Creole in some metros) are added as AI-translated, human-reviewed content packs when Companies ask for them.
 
-**I18N-02 Translation workflow.** Translation memory per Company and platform glossary of landscape and HR terms (`platform_curator` maintains it; e.g., edging, string trimmer, pre-emergent, backflow, three-fourths guarantee). Machine translation is labeled until reviewed. Legal documents (offer letters, handbooks, policies, warnings) require human review before they can be sent and show which language version controls.
+**I18N-02 Translation workflow.** Translation memory per Company and platform glossary of landscape and HR terms (the plant curator agent, `platform_curator`, maintains it; e.g., edging, string trimmer, pre-emergent, backflow, three-fourths guarantee). Machine translation is labeled until reviewed. Legal documents (offer letters, handbooks, policies, warnings) require human review before they can be sent and show which language version controls.
 
 **I18N-03 Units, currency and formats.** Piece-rate units in imperial or metric (per cubic yard or per cubic meter of mulch), USD or CAD, local date and number formats, 12/24-hour time by locale.
 
@@ -1282,42 +1281,42 @@ Access revocation and the sequence are specified in [02 section 5.18.4](02-perso
 
 ### 6.1 Screen inventory
 
-| # | Screen | Surface | Primary roles | Priority |
-|---|---|---|---|---|
-| T1 | People list and directory | Web | owner, office_manager, ops_manager | |
-| T2 | Employee profile (tabs: Overview, Employment, Pay, Time, Credentials, Training, Documents, Safety, Performance, Equipment) | Web | owner, office_manager, ops_manager (limited) | (tabs phase in V1) |
-| T3 | Bulk rehire / hibernate wizard | Web | office_manager | |
-| T4 | Season Plan (workforce forecast) | Web | owner, ops_manager | |
-| T5 | Requisitions and job post builder | Web | owner, office_manager | |
-| T6 | Applicant pipeline board | Web, tablet | office_manager, ops_manager | |
-| T7 | Mobile apply flow | Public mobile web | Applicant | |
-| T8 | Interview kit and scorecard | Web, tablet | Interviewers | |
-| T9 | Onboarding tracker | Web | office_manager | (basic checklist) |
-| T10 | H-2B workspace (tracker, roster, housing, transport) | Web | owner, office_manager, agent collaborator | |
-| T11 | Credentials and qualification matrix | Web | office_manager, ops_manager | |
-| T12 | Training library, assignments and authoring | Web | office_manager, ops_manager, platform_curator | |
-| T13 | Timesheet approval board | Web | office_manager, ops_manager | |
-| T14 | Timesheet detail (map, segments, audit trail) | Web | office_manager, ops_manager, crew_lead (own crew) | |
-| T15 | Pay period close wizard | Web | owner, office_manager, bookkeeper | |
-| T16 | Payroll connections and mappings | Web | owner, bookkeeper | |
-| T17 | Pay rules and policy pack settings | Web | owner | |
-| T18 | Compensation plans (piece, bonus, lead pay) | Web | owner | |
-| T19 | Prevailing wage projects and certified payroll | Web | owner, office_manager, bookkeeper | |
-| T20 | Burden profiles and burden reconciliation | Web | owner, bookkeeper | profiles, reconciliation |
-| T21 | PTO policies and balances | Web | owner, office_manager | requests, engine |
-| T22 | Safety: incidents, OSHA logs, 300A, programs, heat plan | Web | owner, office_manager, ops_manager | |
-| T23 | Reviews, goals, career ladder | Web, app | owner, managers, employees | |
-| T24 | Announcements composer and acknowledgments | Web, app | owner, office_manager, ops_manager | |
-| T25 | People dashboard and retention | Web | owner | |
-| T26 | Offboarding checklist | Web | office_manager | |
-| T27 | Self-service: Home, My time, My pay, Time off, Docs, Training, Career, Ask HR | Crew app, web | All employees |/ per ESS table |
-| T28 | Kiosk: clock, sign-ins, announcements | Shop tablet | All field employees | |
-| T29 | Workers' comp claims, heat and smoke compliance report | Web | owner, office_manager, ops_manager (status only) | |
-| T30 | Mandated training compliance (who is outside their legal window) | Web | owner, office_manager, ops_manager | |
-| T31 | Pay explainer ([6.8](#68-wireframe-pay-explainer-spanish-crew-app)) | Crew app, web | All employees | |
-| P1 | Policy pack release console | Platform admin | platform_owner, platform_engineer | |
-| P2 | Training library and credential catalog curation | Platform admin | platform_curator | |
-| P3 | Payroll connector health | Platform admin | platform_engineer, platform_support | |
+| # | Screen | Surface | Primary roles |
+|---|---|---|---|
+| T1 | People list and directory | Web | owner, office_manager, ops_manager |
+| T2 | Employee profile (tabs: Overview, Employment, Pay, Time, Credentials, Training, Documents, Safety, Performance, Equipment) | Web | owner, office_manager, ops_manager (limited) |
+| T3 | Bulk rehire / hibernate wizard | Web | office_manager |
+| T4 | Season Plan (workforce forecast) | Web | owner, ops_manager |
+| T5 | Requisitions and job post builder | Web | owner, office_manager |
+| T6 | Applicant pipeline board | Web, tablet | office_manager, ops_manager |
+| T7 | Mobile apply flow | Public mobile web | Applicant |
+| T8 | Interview kit and scorecard | Web, tablet | Interviewers |
+| T9 | Onboarding tracker | Web | office_manager |
+| T10 | H-2B workspace (tracker, roster, housing, transport) | Web | owner, office_manager, agent collaborator |
+| T11 | Credentials and qualification matrix | Web | office_manager, ops_manager |
+| T12 | Training library, assignments and authoring | Web | office_manager, ops_manager, platform_curator |
+| T13 | Timesheet approval board | Web | office_manager, ops_manager |
+| T14 | Timesheet detail (map, segments, audit trail) | Web | office_manager, ops_manager, crew_lead (own crew) |
+| T15 | Pay period close wizard | Web | owner, office_manager, bookkeeper |
+| T16 | Payroll connections and mappings | Web | owner, bookkeeper |
+| T17 | Pay rules and policy pack settings | Web | owner |
+| T18 | Compensation plans (piece, bonus, lead pay) | Web | owner |
+| T19 | Prevailing wage projects and certified payroll | Web | owner, office_manager, bookkeeper |
+| T20 | Burden profiles and burden reconciliation | Web | owner, bookkeeper |
+| T21 | PTO policies and balances | Web | owner, office_manager |
+| T22 | Safety: incidents, OSHA logs, 300A, programs, heat plan | Web | owner, office_manager, ops_manager |
+| T23 | Reviews, goals, career ladder | Web, app | owner, managers, employees |
+| T24 | Announcements composer and acknowledgments | Web, app | owner, office_manager, ops_manager |
+| T25 | People dashboard and retention | Web | owner |
+| T26 | Offboarding checklist | Web | office_manager |
+| T27 | Self-service: Home, My time, My pay, Time off, Docs, Training, Career, Ask HR | Crew app, web | All employees |
+| T28 | Kiosk: clock, sign-ins, announcements | Shop tablet | All field employees |
+| T29 | Workers' comp claims, heat and smoke compliance report | Web | owner, office_manager, ops_manager (status only) |
+| T30 | Mandated training compliance (who is outside their legal window) | Web | owner, office_manager, ops_manager |
+| T31 | Pay explainer ([6.8](#68-wireframe-pay-explainer-spanish-crew-app)) | Crew app, web | All employees |
+| P1 | Policy pack release console | Platform admin | platform_owner (approves), platform_curator, platform_engineer |
+| P2 | Training library and credential catalog curation | Platform admin | platform_curator |
+| P3 | Payroll connector health | Platform admin | platform_engineer, platform_support |
 
 ### 6.2 Wireframe: Timesheet approval board
 
@@ -1881,25 +1880,27 @@ Rules:
 
 ### 8.1 External services
 
-| Service category | Candidates (verify terms, capabilities and pricing before contracting) | Use | Priority |
-|---|---|---|---|
-| Payroll providers | Gusto, QuickBooks Online Payroll, QuickBooks Desktop Payroll, ADP (Workforce Now, RUN), Paychex Flex, Paylocity, Paycom, Paycor, isolved; Canada: Wagepoint, ADP Canada, Payworks, Ceridian Dayforce | Hours and earnings export, employee onboarding hand-off, roster and rate sync, journal import |- per PAY-03 |
-| Embedded payroll partner | Check, Gusto Embedded | Payroll inside Rootline | pilot, for every Company |
-| Unified employment API | For example Finch | Roster, rates and pay statement reads across long-tail providers | evaluate |
-| Job boards | Indeed (feeds or partner program), Google for Jobs (structured data), Facebook (links), ZipRecruiter | Distribution and applicant source tracking |/ |
-| SMS and WhatsApp | Twilio (10DLC registration with a recruiting or HR campaign use case, WhatsApp Business API) | Applicant and employee messaging | employees, applicants |
-| Background checks and MVR | FCRA-compliant CRA partner (for example Checkr; selection open) | Post-offer checks, MVR, continuous monitoring | |
-| E-signature | Built in (ESIGN/UETA); optional DocuSign import | Offers, acknowledgments, warnings |/ |
-| OCR and document AI | AI Gateway document understanding ([17](17-ai-copilot-automation.md)) | License card extraction, receipt reading | |
-| Speech and translation | AI Gateway speech-to-text and translation | Voice answers, voice self-reviews, Ask HR | |
-| Weather | Same provider as [04](04-scheduling-dispatch-routing.md) and [05](05-field-crew-mobile-app.md) | Heat triggers, rain-day pay | |
-| Air quality | EPA AirNow API (free; verify rate limits and terms) or a commercial AQI feed bundled with the weather provider | Wildfire smoke triggers (SAFE-14) | |
-| Workers' comp carriers and TPAs | Carrier portals first; EDI first report of injury through a partner later (selection open) | Claim reporting (SAFE-13) | manual, EDI |
-| OSHA ITA | CSV export for upload (API use to be evaluated, verify) | 300A and case data submission | export |
-| FMCSA Clearinghouse | Manual workflow with links; no API integration planned | Query tracking | |
-| Learning content | SCORM 1.2 / xAPI import | Partner courses | |
-| Earned wage access | Partner (selection open) | Early wage access | |
-| Rewards | Gift card partner (selection open) | Recognition rewards | |
+| Service category | Candidates (verify terms, capabilities and pricing before contracting) | Use |
+|---|---|---|
+| Payroll providers | Gusto, QuickBooks Online Payroll, QuickBooks Desktop Payroll, ADP (Workforce Now, RUN), Paychex Flex, Paylocity, Paycom, Paycor, isolved; Canada: Wagepoint, ADP Canada, Payworks, Ceridian Dayforce | Hours and earnings export, employee onboarding hand-off, roster and rate sync, journal import |
+| Embedded payroll partner | Check, with Gusto Embedded as the fallback ([24](24-product-scope-decisions-catalog.md) OD-53) | Payroll inside Rootline |
+| Unified employment API | For example Finch (selection open) | Roster, rates and pay statement reads across long-tail providers |
+| Job boards | Indeed (feeds or partner program), Google for Jobs (structured data), Facebook (links), ZipRecruiter | Distribution and applicant source tracking |
+| SMS and WhatsApp | Twilio (10DLC registration with a recruiting or HR campaign use case, WhatsApp Business API) | Applicant and employee messaging |
+| Background checks and MVR | FCRA-compliant CRA partner (for example Checkr; selection open) | Post-offer checks, MVR, continuous monitoring |
+| E-signature | Built in (ESIGN/UETA); optional DocuSign import | Offers, acknowledgments, warnings |
+| OCR and document AI | AI Gateway document understanding ([17](17-ai-copilot-automation.md)) | License card extraction, receipt reading |
+| Speech and translation | AI Gateway speech-to-text and translation | Voice answers, voice self-reviews, Ask HR |
+| Weather | Same provider as [04](04-scheduling-dispatch-routing.md) and [05](05-field-crew-mobile-app.md) | Heat triggers, rain-day pay |
+| Air quality | The AQI feed of the commercial weather provider ([24](24-product-scope-decisions-catalog.md) OD-61), with the EPA AirNow API as fallback (free; verify rate limits and terms) | Wildfire smoke triggers (SAFE-14) |
+| Workers' comp carriers and TPAs | EDI first report of injury through a partner network where the carrier accepts it (selection open); carrier portals and state PDF forms otherwise | Claim reporting (SAFE-13) |
+| OSHA ITA | CSV export for upload (verify current ITA formats) | 300A and case data submission |
+| FMCSA Clearinghouse | Manual workflow with links; no API integration planned | Query tracking |
+| Learning content | SCORM 1.2 / xAPI import | Partner courses |
+| Earned wage access | Partner (selection open) | Early wage access |
+| Rewards | Gift card partner (selection open) | Recognition rewards |
+
+Where a row says "selection open", the build agent picks the vendor that meets the module's requirements and records the choice in the decision log ([24](24-product-scope-decisions-catalog.md) section 1.3).
 
 ### 8.2 API surface (summary)
 
@@ -2049,11 +2050,11 @@ Notes:
 |---|---|
 | H-2B agent or attorney (external collaborator, per-program invite) | R/W milestones and documents of the invited `h2b_program` only. R worker case fields the Company shares. No pay, no other employees, no timesheets. All access logged. Revocable instantly |
 | Applicant (no login) | Their own application status via magic link. Withdraw. Update contact info |
-| `platform_owner` | Approves policy pack and training library releases. No tenant pay or PII access by default. Break-glass access requires tenant consent and is logged ([19](19-platform-admin-portal.md)) |
-| `platform_engineer` | Maintains policy pack engine, payroll connectors and rule fixtures. Tenant data only through break-glass with consent |
-| `platform_curator` | Curates training library, credential catalog, glossary and position templates. No tenant data |
-| `platform_support` | Can view connector status, sync errors and configuration (no pay amounts, no PII) with tenant-granted support access. Can never view Restricted fields |
-| `platform_finance` | Embedded payroll revenue share and partner invoices. No tenant employee data |
+| `platform_owner` (the founder) | Approves each policy pack and training library release. No tenant pay or PII access by default. Break-glass access requires tenant consent, step-up authentication and a written reason, and is logged to the platform audit log ([19](19-platform-admin-portal.md)) |
+| `platform_engineer` (the engineering agent) | Maintains the policy pack engine, payroll connectors and rule fixtures. Tenant data only through break-glass with consent, which as an agent request needs the founder's approval |
+| `platform_curator` (the plant curator agent) | Curates the training library, credential catalog, glossary, position templates and policy pack content; submits each pack version for the founder's approval (24 OD-60). No tenant data |
+| `platform_support` (the support agent) | Can view connector status, sync errors and configuration (no pay amounts, no PII) with tenant-granted support access. Can never view Restricted fields |
+| `platform_finance` (the finance agent) | Embedded payroll revenue share and partner invoices. No tenant employee data |
 
 ---
 
@@ -2061,23 +2062,23 @@ Notes:
 
 All AI runs through the AI Gateway with tenant isolation and credit metering ([17](17-ai-copilot-automation.md)). Restricted fields are never sent to models. Employment decisions stay with humans. Where AI is used in screening, jurisdictions such as Ontario (from 2026) require disclosure in job postings, and New York City regulates automated employment decision tools (verify). Rootline's design avoids AEDT scope by not scoring or ranking. It still discloses AI-assisted drafting and translation in postings where required.
 
-| # | Capability | What it does | Guardrails | Priority |
-|---|---|---|---|---|
-| AI-1 | Job post drafting and translation | Drafts English and Spanish posts from position, pay band and Company profile; suggests inclusive wording | Human review required; posting validator runs after AI | |
-| AI-2 | Hiring assistant (agent A25 in [17](17-ai-copilot-automation.md)) | Summarizes applications, transcribes and translates voice answers, schedules interviews, drafts messages | **No ranking, scoring or rejection.** Summaries exclude protected characteristics. Audit log of every AI output shown to reviewers | (summaries and translation) |
-| AI-3 | Timesheet anomaly agent (A17 in [17](17-ai-copilot-automation.md)) | Flags missing clock-outs, long shifts, far-away punches, overlapping punches, break violations; proposes fixes with evidence | Supervisor approves every change; never edits approved time | |
-| AI-4 | Credential OCR | Reads license and certificate cards and fills fields | Employee confirms; manager verifies | |
-| AI-5 | Ask HR | Answers employee questions in Spanish or English, by voice, grounded in the handbook, policies, rule packs and the employee's own data, with citations | No legal advice; immigration questions routed to a human; refuses to discuss other employees | |
-| AI-6 | Pay explainer | Explains each pay line in plain Spanish ("¿Por qué tengo un ajuste de overtime de $1.95?" -> the production bonus raised the regular rate by $0.60, and each overtime hour pays half of that again) | Deterministic numbers from the rule engine; the LLM only narrates | |
-| AI-7 | SOP video to micro-lesson | Transcribes a phone video, generates subtitles in both languages, suggests chapters, cuts and drafts quiz questions | Human author approves; voice dubbing reviewed by bilingual human | |
-| AI-8 | Daily tailgate talk generator | Generates a 3-minute bilingual talk from tomorrow's weather, scheduled tasks and recent incidents ("High heat + 3 tree removals + last week's trailer near miss") | Drawn from the curated library; safety-reviewed templates | |
-| AI-9 | OSHA recordability suggestion | Suggests recordable or not with cited 29 CFR 1904 text and the first-aid list | Decision is human, rationale saved | |
-| AI-10 | Incident narrative cleanup | Turns voice notes (Spanish or English) into a neutral, structured incident narrative | Original audio and transcript retained; injury notes always routed as incidents ([17](17-ai-copilot-automation.md)) | |
-| AI-11 | Season Plan forecasting | Projects weekly labor demand and recommends hiring targets and dates | Explainable inputs; owner adjusts | |
-| AI-12 | Exit and pulse theme clustering | Clusters free-text reasons across languages | Minimum group size; no individual attribution in anonymous surveys | |
-| AI-13 | Check-in suggestions | Explainable signals for manager check-ins | No protected traits or proxies; no adverse action; disable switch | |
-| AI-14 | Policy and handbook drafting | Drafts policy sections from templates and Company answers | Marked "draft, review with counsel"; jurisdiction flags | |
-| AI-15 | Copilot queries | "Who can spray on Thursday?", "What's our OT this week by crew?", "Which H-2B milestones are late?", "Show labor burden variance for June" | Permission-scoped retrieval | |
+| # | Capability | What it does | Guardrails |
+|---|---|---|---|
+| AI-1 | Job post drafting and translation | Drafts English and Spanish posts from position, pay band and Company profile; suggests inclusive wording | Human review required; posting validator runs after AI |
+| AI-2 | Hiring assistant (agent A25 in [17](17-ai-copilot-automation.md)) | Summarizes applications, transcribes and translates voice answers, schedules interviews, drafts messages | **No ranking, scoring or rejection.** Summaries exclude protected characteristics. Audit log of every AI output shown to reviewers |
+| AI-3 | Timesheet anomaly agent (A17 in [17](17-ai-copilot-automation.md)) | Flags missing clock-outs, long shifts, far-away punches, overlapping punches, break violations; proposes fixes with evidence | Supervisor approves every change; never edits approved time |
+| AI-4 | Credential OCR | Reads license and certificate cards and fills fields | Employee confirms; manager verifies |
+| AI-5 | Ask HR | Answers employee questions in Spanish or English, by voice, grounded in the handbook, policies, rule packs and the employee's own data, with citations | No legal advice; immigration questions routed to a human; refuses to discuss other employees |
+| AI-6 | Pay explainer | Explains each pay line in plain Spanish ("¿Por qué tengo un ajuste de overtime de $1.95?" -> the production bonus raised the regular rate by $0.60, and each overtime hour pays half of that again) | Deterministic numbers from the rule engine; the LLM only narrates |
+| AI-7 | SOP video to micro-lesson | Transcribes a phone video, generates subtitles in both languages, suggests chapters, cuts and drafts quiz questions | Human author approves; voice dubbing reviewed by bilingual human |
+| AI-8 | Daily tailgate talk generator | Generates a 3-minute bilingual talk from tomorrow's weather, scheduled tasks and recent incidents ("High heat + 3 tree removals + last week's trailer near miss") | Drawn from the curated library; safety-reviewed templates |
+| AI-9 | OSHA recordability suggestion | Suggests recordable or not with cited 29 CFR 1904 text and the first-aid list | Decision is human, rationale saved |
+| AI-10 | Incident narrative cleanup | Turns voice notes (Spanish or English) into a neutral, structured incident narrative | Original audio and transcript retained; injury notes always routed as incidents ([17](17-ai-copilot-automation.md)) |
+| AI-11 | Season Plan forecasting | Projects weekly labor demand and recommends hiring targets and dates | Explainable inputs; owner adjusts |
+| AI-12 | Exit and pulse theme clustering | Clusters free-text reasons across languages | Minimum group size; no individual attribution in anonymous surveys |
+| AI-13 | Check-in suggestions | Explainable signals for manager check-ins | No protected traits or proxies; no adverse action; disable switch |
+| AI-14 | Policy and handbook drafting | Drafts policy sections from templates and Company answers | Marked "draft, review with counsel"; jurisdiction flags |
+| AI-15 | Copilot queries | "Who can spray on Thursday?", "What's our OT this week by crew?", "Which H-2B milestones are late?", "Show labor burden variance for June" | Permission-scoped retrieval |
 
 ---
 
@@ -2087,7 +2088,7 @@ All AI runs through the AI Gateway with tenant isolation and credit metering ([1
 
 | # | Scenario | Handling |
 |---|---|---|
-| E1 | A Northwest Indiana crew works an Indiana property Monday and a Chicago property Tuesday | Segments carry work location. Each day's hours are evaluated under that location's pack (Illinois rules and the Chicago minimum wage for Tuesday). The same applies to a Nevada crew on a California property once the California pack ships at. Weekly OT is computed per the governing rules (multi-state treatment flagged for counsel review; verify). Work-location allocation goes to the provider (PAY-06) |
+| E1 | A Northwest Indiana crew works an Indiana property Monday and a Chicago property Tuesday | Segments carry work location. Each day's hours are evaluated under that location's pack (Illinois rules and the Chicago minimum wage for Tuesday). The same applies to a Nevada crew on a California property under the California pack. Weekly OT is computed per the governing rules (multi-state treatment flagged for counsel review; verify). Work-location allocation goes to the provider (PAY-06) |
 | E2 | Two pay rates in one day (mowing $19, irrigation repair $23) | Segment-level rate resolution. OT uses the weighted-average regular rate (RULE-02) |
 | E3 | Offline punches from a dead-zone property sync after the period was exported | Segments rebuild, the locked timesheet gets a correction and the adjustment flows in the next batch. Employee and approver are notified. Never silently changed |
 | E4 | Daylight saving time: 25-hour night during a fall snow event, 23-hour spring day | Durations computed from UTC instants. Workday boundaries follow the Company's defined workday in local time. Fixtures cover both transitions |
@@ -2108,7 +2109,7 @@ All AI runs through the AI Gateway with tenant isolation and credit metering ([1
 | E19 | Rain day where crews reported to the yard then were sent home | Reporting-time pay evaluated by pack. Optional PTO election never forced |
 | E20 | Canadian public holiday pay | Province formulas (e.g., Ontario public holiday pay based on regular wages over a prior period; verify) in the provincial pack. Vacation pay per period or accrued per Company setting |
 | E21 | 53-pay-week years for weekly payroll | Salaried annual amounts are divided per the Company's method (per period amount fixed vs annual / periods). A warning appears in November of the prior year |
-| E22 | Union employees (rare, larger commercial firms) | Union classifications and fringe remittance reports are. Until then, custom earning codes and exports |
+| E22 | Union employees (rare, larger commercial firms) | Union classifications work like prevailing-wage classifications (PW-01 to PW-03), with fringe remittance reports per fund; custom earning codes and exports cover anything else |
 | E23 | Employees paid in cash off the books | Not supported. Rootline will not generate cash payrolls without tax treatment and shows a compliance warning if a Company tries to mark wages as "paid outside payroll" |
 | E24 | Seasonal worker is also a student with school-hour limits | Minor hour rules plus availability rules. Schedule warnings |
 | E25 | Kiosk PIN used by a coworker (buddy punching) | Optional photo-at-punch, geofence and device anomaly flags, PIN lockout ([02](02-personas-roles-permissions.md)). Never biometric matching |
@@ -2122,7 +2123,7 @@ All AI runs through the AI Gateway with tenant isolation and credit metering ([1
 
 | Area | Risk | Controls in Rootline |
 |---|---|---|
-| Wage and hour | Miscalculated OT, regular rate, premiums, piece-rate, minimum wage | Versioned packs with fixtures (RULE-07), counsel review, explainable pay items, immutable audit trail, attestations |
+| Wage and hour | Miscalculated OT, regular rate, premiums, piece-rate, minimum wage | Versioned packs with fixtures (RULE-07), founder approval of each pack, conservative defaults with counsel checks before any is loosened, explainable pay items, immutable audit trail, attestations |
 | Recordkeeping | Missing or altered time records | Append-only punches, correction records with reasons, retention locks, legal hold |
 | Employee privacy | PII exposure (SSN, DOB, immigration docs, medical) | Restricted class encryption, step-up auth, access logs, minimization at archive, no AI on Restricted data ([20](20-architecture-security.md)). Employee privacy notices (CCPA notice at collection for California employees, PIPEDA and Quebec Law 25 where applicable; verify) |
 | Electronic monitoring | GPS and time tracking without notice | Notice templates and acknowledgments at onboarding, tracking only while clocked in ([05](05-field-crew-mobile-app.md)), no idle scoring |
@@ -2143,21 +2144,21 @@ All AI runs through the AI Gateway with tenant isolation and credit metering ([1
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| Rule packs contain an error that underpays employees across many tenants | Medium | High (tenant liability, reputational) | Counsel review per release, 50+ fixtures per jurisdiction, staged rollout (10% of tenants for one pay period), diff alerts, ability to recompute and generate correction batches, E&O insurance ([19](19-platform-admin-portal.md)) |
+| Rule packs contain an error that underpays employees across many tenants | Medium | High (tenant liability, reputational) | Founder approval per pack version, counsel checks before any default is loosened (24 section 1.7), 50+ fixtures per jurisdiction, staged rollout (10% of tenants for one pay period), diff alerts, ability to recompute and generate correction batches, E&O insurance ([19](19-platform-admin-portal.md)) |
 | Payroll provider API changes or partner programs restrict access | Medium | Medium | File fallbacks for every provider, connector health monitoring, partnership agreements |
 | H-2B rules, caps or processing change mid-season | High | Medium | Milestone template versioning, agent collaboration, no hard-coded legal timing (defaults editable) |
 | Crews resist GPS and app time tracking | Medium | High | Transparent notices, "Today I earned" and pay explainer (benefit to worker), kiosk alternative, Spanish-first UX |
 | Scope creep into a full HRIS (benefits admin, performance calibration, compensation planning) | High | Medium | Non-goals enforced. Integrate with HRIS for benefits. Focus on field workforce |
-| Embedded payroll partner fails or exits | Low | High | Contractual data portability, provider-agnostic data model, export to file connectors in under 1 pay period |
+| Embedded payroll partner fails or exits | Low | High | Gusto Embedded as the named fallback partner (24 OD-53), contractual data portability, provider-agnostic data model, export to file connectors in under 1 pay period |
 | AI Ask HR gives wrong policy answer | Medium | Medium | Retrieval with citations, refusal outside sources, human escalation, answers logged and reviewable |
-| Seasonal support spikes (Feb-Apr hiring, onboarding, rule changes on Jan 1) | High | Medium | In-app guided setup, templates, staffed peak support ([19](19-platform-admin-portal.md)) |
+| Seasonal support spikes (Feb-Apr hiring, onboarding, rule changes on Jan 1) | High | Medium | In-app guided setup, templates, the support agent scaling with ticket volume, Ask HR and Copilot answering routine questions ([19](19-platform-admin-portal.md)) |
 | Data breach exposing employee PII | Low | Very high | Encryption, least privilege, SOC 2 controls, minimization, breach response plan ([20](20-architecture-security.md)) |
 
 ---
 
 ## 12. Metrics and KPIs
 
-People KPI definitions (turnover, 90-day retention, TRIR, certification compliance, training completion) are certified metrics owned by [18 section 4.3.9](18-reporting-analytics.md). This module adds operational and product metrics. Targets are hypotheses to validate with design partners, not measured results.
+People KPI definitions (turnover, 90-day retention, TRIR, certification compliance, training completion) are certified metrics owned by [18 section 4.3.9](18-reporting-analytics.md). This module adds operational and product metrics. Targets are hypotheses, checked against product analytics from early customers, not measured results.
 
 ### 12.1 Customer outcome metrics (shown to Companies)
 
@@ -2198,7 +2199,7 @@ People KPI definitions (turnover, 90-day retention, TRIR, certification complian
 | Rule-pack defect rate | Confirmed calculation defects per 10,000 timesheets |
 | Self-service weekly active | Field employees opening the "Me" tab weekly / active field employees |
 | Spanish usage share | Sessions in es-US / field sessions |
-| ATS attach | Companies posting at least one job per season / Companies in the hiring tier |
+| ATS attach | Companies posting at least one job per season / Companies whose plan includes recruiting |
 | Embedded payroll attach | Companies on embedded payroll / eligible Companies |
 | Time to first payroll export (new tenant) | Days from signup to first successful export |
 | W-2 reconciliation mismatches | Employees with a qualified-OT or tip mismatch vs provider data in January / employees paid (target: trending to zero) |
@@ -2229,36 +2230,38 @@ People KPI definitions (turnover, 90-day retention, TRIR, certification complian
 20. **"Mi resumen del año" for workers.** Each January, every worker gets a bilingual, read-aloud summary built from Rootline pay items: overtime premium tagged as FLSA-qualified, tips reported, reimbursements, hours by month and a link to the W-2 in the provider, plus a pointer to free tax-preparation help such as IRS VITA sites. It is labeled "information, not tax advice". It turns the new federal deductions (RULE-09) into a reason to trust the Company's time records, and it costs almost nothing to build once RULE-09 exists.
 21. **Bilingual teach-back safety checks.** After a safety lesson, the worker explains the key point back by voice in their language ("¿Qué hace si un compañero se marea con el calor?"). AI compares the answer with the lesson's key points and flags misses for the crew lead to review in person. It never grades or disciplines. OSHA expects training to be understood by the workers who receive it, not just attended (verify the exact standard language), and teach-back is evidence of comprehension that an insurer or inspector can see.
 22. **Spring readiness drip for hibernated workers.** Four weeks before the planned rehire date, hibernated workers get a short Spanish sequence by SMS: confirm the start date, update sizes and address, photograph renewed licenses, and preview the first-week schedule. Refresher lessons unlock on rehire (paid as training time, LMS-04) rather than over the winter, so no unpaid work happens while hibernated. Day 1 becomes a productive crew day instead of a paperwork day.
-23. **Crew exchange for winter work.** With worker consent, a landscaper with no winter work and a non-competing Rootline Company that peaks in winter (a snow contractor, a holiday-lighting installer, a tree-care firm in storm season) can offer each other's seasonal workers a winter stint. The worker keeps one skills passport (idea 2) and returns in spring. Each stint is a separate employment with its own payroll, and the design needs counsel review for joint-employment risk before it ships. It extends the winter bridge (idea 1) beyond a single Company's work and links to the talent network in [23](23-innovation-moonshots.md).
+23. **Crew exchange for winter work.** With worker consent, a landscaper with no winter work and a non-competing Rootline Company that peaks in winter (a snow contractor, a holiday-lighting installer, a tree-care firm in storm season) can offer each other's seasonal workers a winter stint. The worker keeps one skills passport (idea 2) and returns in spring. Each stint is a separate employment with its own payroll. The exchange ships switched off for every Company, and the founder has counsel check the joint-employment risk before that default changes (24 section 1.7). It extends the winter bridge (idea 1) beyond a single Company's work and links to the talent network in [23](23-innovation-moonshots.md).
 
 ---
 
-## 14. Open questions
+## 14. Decisions on former open questions
 
-1. **Embedded payroll partner:** Check vs Gusto Embedded (or both) for the V1 pilot. What are the white-label depth, state and local coverage, piece-rate and CA premium earning support, Canadian roadmap, economics and liability terms? Decision needed by the start of V1 planning.
-2. **MVP policy pack list:** Federal plus OH, MI, IL, IN and WI at MVP, with CA, WA, OR, CO and NY at, matches the Great Lakes launch region ([24](24-product-scope-decisions-catalog.md) OD-52). Open: do design partners in Chicagoland need any Chicago or Cook County ordinance beyond minimum wage and paid leave at MVP, should Ohio municipal and Illinois-Indiana work-location allocation (PAY-06) move to MVP, and should Pennsylvania, Kentucky, Minnesota, Ontario or BC move up for Companies that work across the launch states' borders?
-3. **Rule-pack legal review model:** Retained employment law firm with per-release sign-off, or a compliance-data vendor feed (minimum wages, sick leave laws) plus counsel review? What are the cost and liability allocation?
-4. **Workday definition defaults:** What default workday start minimizes surprises for snow crews (00:00 vs 06:00)?
-5. **Safety streak harmonization:** Should the crew-app "safety streak" ([05 section 4.15](05-field-crew-mobile-app.md)) drop "zero recordable incidents" as a component when tied to rewards (SAFE-09)?
-6. **H-2B collaborator access:** Do agents need API or bulk document access, or is the invited workspace enough? Which agencies would partner on a pilot?
-7. **Canadian temporary foreign workers:** Is the TFWP worth supporting at V2, given landscaping use in Ontario and BC (to verify)?
-8. **ATS distribution:** Which job-board programs (Indeed partner program terms, ZipRecruiter) are accessible for a startup, and at what cost per applicant?
-9. **Background checks:** Ship at V1 for CDL and driving roles only (MVR), with full criminal checks at V2?
-10. **Piece-rate demand:** How many design partners pay piece-rate or production pay today? Does it justify V1 or can it move to V2?
-11. **Certified payroll demand:** Is public-works certified payroll a V1 must for early commercial customers ([05 open question 11](05-field-crew-mobile-app.md))? Does SCA grounds maintenance on federal properties matter?
-12. **Employee app identity:** Should hibernated workers keep a lightweight login all winter for "My records" and referrals, and does that affect seat pricing ([22](22-business-model-pricing-gtm.md))?
-13. **Minimum age policy:** Do we allow Companies to employ 14-15-year-olds at all in Rootline workflows, or require 16+ with hard-coded restrictions ([02 open question 10](02-personas-roles-permissions.md))?
-14. **ACA tracking:** Is tracking Applicable Large Employer status and variable-hour employee measurement needed before V2 for 50+ FTE seasonal Companies?
-15. **Research backlog:** Before ticketing, run the competitor teardown on Jobber, Aspire, LMN, SingleOps, Service Autopilot, Real Green, ServiceTitan, Housecall Pro, Workstream and Homebase time, hiring and payroll features (items marked [B]). Also confirm: the current federal OSHA heat rule status; current H-2B supplemental visa allocations and the DOL and USCIS randomization procedures; OSHA electronic submission coverage for NAICS 561730; each pay transparency law in launch markets; this year's FUTA credit-reduction states; IRS reporting codes and guidance for qualified overtime and tips, and whether landscaping occupations are on Treasury's final tipped-occupation list; Oregon and Washington wildfire smoke action levels; workers' comp first-report deadlines in launch states; and Ontario's exemptions for landscape gardeners.
-16. **Qualified-overtime hand-off:** Several payroll providers may compute qualified overtime themselves from their own overtime codes. For each MVP provider, should Rootline send a memo field, a separate earning code or nothing (when the provider's own calculation is right because there is no state daily OT)? Who owns the number if they disagree?
-17. **Air-quality source:** Is the free EPA AirNow API enough for hourly checks across thousands of properties, or should the AQI feed come bundled with the weather provider used in [04](04-scheduling-dispatch-routing.md)?
-18. **Workers' comp EDI:** Should Rootline partner with a TPA or carrier network for electronic first reports at V2, or stay with carrier portals and PDF forms? Is there a revenue-share model with insurers (see Beyond the brief idea 14)?
+Each former open question, with its decision. Section 1 of [24](24-product-scope-decisions-catalog.md) wins where it applies.
+
+1. **Embedded payroll partner:** Check, with Gusto Embedded as the fallback if Check declines the platform (24 OD-53). It is an add-on for every Company and turns on once the partner approves the Company (EMB-01, EMB-02).
+2. **Policy pack list:** Federal, Ohio, Michigan, Illinois, Indiana, Wisconsin, California and Ontario ship as packs (24 R24-18, OD-52). The Illinois pack carries the Chicago and Cook County minimum wage and paid leave ordinances. Ohio municipal and multi-state work-location allocation (PAY-06) is part of the module. Pennsylvania, Kentucky, Minnesota, British Columbia and every other state or province are rule-pack data the plant curator agent adds, published after the founder approves (24 OD-60).
+3. **Rule-pack legal review model:** the plant curator agent maintains packs from licensed sources (compliance-data feeds for minimum wages and sick leave laws included); the founder approves each pack version; packs ship with conservative values, and the founder has employment counsel check a rule before its default is loosened (24 OD-60, section 1.7).
+4. **Workday definition default:** 00:00 local time, matching the workweek in PAY-01. A Company can set another fixed start, for example 06:00 for snow crews (E5).
+5. **Safety streak harmonization:** yes. Rewards use only leading-indicator components; "zero recordable incidents" can appear in the streak but is never rewarded (SAFE-09).
+6. **H-2B collaborator access:** the invited, per-program workspace is the access model, with bulk document upload and download inside it; agents get no API access. An agent joins when a Company invites them (9.2).
+7. **Canadian temporary foreign workers:** supported through the H2B-13 workspace pattern for Canada's TFWP (verify program rules).
+8. **ATS distribution:** every channel in ATS-03 is built: Indeed and ZipRecruiter through their job feeds or partner APIs where the founder accepts the program terms, Google for Jobs through structured data, Facebook links and copy helpers for the rest. Each Company pays its own board costs, which ATS-13 tracks per applicant and per hire.
+9. **Background checks:** full ATS-09: criminal checks, MVR and continuous MVR monitoring through one FCRA-compliant partner, ordered only after a conditional offer.
+10. **Piece-rate demand:** piece-rate and production pay are built (COMP-04, COMP-05); no demand threshold applies.
+11. **Certified payroll demand:** built, including WH-347, California eCPR, and Service Contract Act grounds maintenance on federal properties (PW-01 to PW-05).
+12. **Employee app identity:** hibernated workers keep a lightweight login all winter for "My records" and referrals (ESS-13). Field seats are billed only when active ([22](22-business-model-pricing-gtm.md)), so the login carries no seat charge.
+13. **Minimum age policy:** workers can be 14 and up, with the minor-worker rules in this module enforced for ages 14 to 17; hiring under 14 is blocked (24 OD-56, HR-01).
+14. **ACA tracking:** built (PAY-09): Applicable Large Employer status and variable-hour measurement for seasonal Companies with 50 or more FTEs.
+15. **Research backlog:** not a gate. The plant curator agent confirms each regulatory item (federal heat rule status, H-2B allocations and randomization procedures, OSHA ITA coverage for NAICS 561730, pay transparency laws, FUTA credit-reduction states, IRS codes for qualified overtime and tips and the final tipped-occupation list, Oregon and Washington smoke action levels, workers' comp first-report deadlines, Ontario's landscape gardener exemptions) against a primary source when it builds the pack that uses it. The marketing agent confirms the competitor items marked [B] before any public use (24 OD-07).
+16. **Qualified-overtime hand-off:** Rootline always sends the tag, as a separate earning code where the provider accepts one, otherwise as the `QOT_MEMO` memo field, even when no state daily overtime applies. The provider files the W-2, so its figure is the one filed; the January reconciliation report (PAY-09) lists every difference for the Company to resolve before filing.
+17. **Air-quality source:** the AQI feed of the commercial weather provider (24 OD-61), with the EPA AirNow API as the fallback.
+18. **Workers' comp EDI:** electronic first reports through a partner network where the carrier accepts them, with carrier portals and state PDF forms otherwise (SAFE-13). An insurer revenue share is not part of the product; the founder decides any partner economics (24 section 1.2).
 
 ---
 
 ## Sources
 
-Verification note: sources below are either (a) research captured elsewhere in this repository, (b) primary regulations and official program pages cited by section number, or (c) vendor developer portals named for integration planning. Statements marked "verify" or [B] are from secondary sources or general knowledge and need first-hand confirmation before build.
+Verification note: sources below are either (a) research captured elsewhere in this repository, (b) primary regulations and official program pages cited by section number, or (c) vendor developer portals named for integration planning. Statements marked "verify" or [B] are from secondary sources or general knowledge and need first-hand confirmation, which the agents do without blocking the build ([section 14](#14-open-questions), item 15).
 
 **Industry and labor market**
 - [Lawn & Landscape: Wilson 360 2024 landscape industry benchmark](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)

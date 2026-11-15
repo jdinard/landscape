@@ -5,105 +5,79 @@
       "key": "core_maintenance",
       "name": "General maintenance (mowing, pruning, cleanups)",
       "depends_on": "none, always on",
-      "plan_availability": "All plans (22)",
-      "scope": "MVP",
-      "scope_note": "MVP"
+      "plan_availability": "All plans (22)"
     },
     {
       "key": "lawn_phc",
       "name": "Lawn care and Plant Health Care programs",
       "depends_on": "Application Compliance Engine",
-      "plan_availability": "All plans; Starter gets basic chemical logs only, without registry automation or regulator exports (22: \"L (lawn/PHC basic)\")",
-      "scope": "MVP",
-      "scope_note": "MVP"
+      "plan_availability": "All plans; Starter gets basic chemical logs only, without registry automation or regulator exports (22: \"L (lawn/PHC basic)\")"
     },
     {
       "key": "irrigation",
       "name": "Irrigation systems, seasonal services, repairs",
       "depends_on": "Property Asset Registry",
-      "plan_availability": "All plans (22)",
-      "scope": "MVP",
-      "scope_note": "MVP"
+      "plan_availability": "All plans (22)"
     },
     {
       "key": "backflow",
       "name": "Backflow testing and municipal submission",
       "depends_on": "`irrigation`",
-      "plan_availability": "Grow, Pro, Enterprise (proposed)",
-      "scope": "V1",
-      "scope_note": "V1"
+      "plan_availability": "Grow, Pro, Enterprise (proposed)"
     },
     {
       "key": "smart_irrigation",
       "name": "Smart controller integrations, water budgets, leak alerts",
       "depends_on": "`irrigation`",
-      "plan_availability": "Pro and Enterprise; Grow limited to 25 linked controllers (proposed)",
-      "scope": "V1",
-      "scope_note": "V1"
+      "plan_availability": "Pro and Enterprise; Grow limited to 25 linked controllers (proposed)"
     },
     {
       "key": "snow_ice",
       "name": "Snow and ice management",
       "depends_on": "Snow Lite: Visit and photo pipeline only; full module: Storm Event Engine",
-      "plan_availability": "Snow Lite (4.3.0) on all plans at no charge, and it stays included after the add-on launches (22); full module as add-on `snow_ice` on Starter, Grow and Pro, billed Nov-Mar only, included in Enterprise (22 section 4.5)",
-      "scope": "MVP",
-      "scope_note": "MVP (Snow Lite); V1 (full module)"
+      "plan_availability": "Snow Lite (4.3.0) on all plans at no charge, alongside the add-on (22); full module as add-on `snow_ice` on Starter, Grow and Pro, billed Nov-Mar only, included in Enterprise (22 section 4.5; 24 R24-1)"
     },
     {
       "key": "tree_care",
       "name": "Tree inventory, ISA risk, prescriptions, permits, crane jobs",
       "depends_on": "Plant KB, Inspection Engine",
-      "plan_availability": "Add-on `tree_care` on Starter and Grow; included in Pro and Enterprise (22)",
-      "scope": "V2",
-      "scope_note": "V2"
+      "plan_availability": "Add-on `tree_care` on Starter and Grow; included in Pro and Enterprise (22; 24 R24-2)"
     },
     {
       "key": "install_projects",
       "name": "Installation and hardscape project management",
       "depends_on": "Project Engine, Warranty Engine",
-      "plan_availability": "All plans (22); Gantt view Pro and Enterprise (proposed); 811 gating on every plan because it is a safety control",
-      "scope": "MVP",
-      "scope_note": "MVP"
+      "plan_availability": "All plans (22); Gantt view Pro and Enterprise (proposed); 811 gating on every plan because it is a safety control"
     },
     {
       "key": "commercial_grounds",
       "name": "SOW specs, quality audits, enhancement pipeline, property reports",
       "depends_on": "Inspection Engine",
-      "plan_availability": "Grow limited to 5 commercial clients (matches the commercial portal limit in 22); unlimited on Pro and Enterprise (proposed)",
-      "scope": "MVP",
-      "scope_note": "MVP"
+      "plan_availability": "Grow limited to 5 commercial clients (matches the commercial portal limit in 22); unlimited on Pro and Enterprise (proposed)"
     },
     {
       "key": "landscape_lighting",
       "name": "Lighting system inventory and service plans",
       "depends_on": "Property Asset Registry",
-      "plan_availability": "All plans (22)",
-      "scope": "V1",
-      "scope_note": "V1"
+      "plan_availability": "All plans (22)"
     },
     {
       "key": "holiday_lighting",
       "name": "Holiday lighting install, takedown and storage",
       "depends_on": "Property Asset Registry, Inventory",
-      "plan_availability": "Grow, Pro, Enterprise (proposed; a paid add-on is an option if storage tracking drives support cost)",
-      "scope": "V1",
-      "scope_note": "V1"
+      "plan_availability": "Grow, Pro, Enterprise (proposed)"
     },
     {
       "key": "mosquito_pest",
       "name": "Mosquito, tick and perimeter pest programs",
       "depends_on": "Program Engine, Application Compliance Engine",
-      "plan_availability": "Grow, Pro, Enterprise (proposed)",
-      "scope": "V1",
-      "scope_note": "V1"
+      "plan_availability": "Grow, Pro, Enterprise (proposed)"
     },
     {
       "key": "seasonal_campaigns",
       "name": "Aeration/overseeding, cleanups, mulch season campaigns",
-      "depends_on": "Program Engine, Marketing (16)",
-      "plan_availability": "All plans (proposed)",
-      "scope": "MVP",
-      "scope_note": "MVP"
+      "depends_on": "Program Engine, Marketing ([16](16-marketing-growth-communications.md))",
+      "plan_availability": "All plans (proposed)"
     }
   ],
   "module_rules": [
@@ -175,7 +149,7 @@
       "people_peak": 28,
       "people_winter": 11,
       "crews": 6,
-      "clients": 412,
+      "clients": 120,
       "branches": [
         "Columbus"
       ],
@@ -525,7 +499,7 @@
       "segment": "S7",
       "plan": "enterprise",
       "city": "Indianapolis, IN (HQ)",
-      "region": "Great Lakes + Wave 2",
+      "region": "Great Lakes and Ohio Valley (multi-Region)",
       "people_peak": 640,
       "people_winter": 260,
       "crews": 96,
@@ -562,8 +536,7 @@
         "bookkeeper": "Franchise finance"
       },
       "hero_clients": [],
-      "illustrative": true,
-      "scope": "V2"
+      "illustrative": true
     }
   ]
 }

@@ -1,18 +1,17 @@
 # 06 - Customer Portal and Client Experience
 
-> The Customer Portal is the part of Rootline that a landscape Company's **Clients** actually touch: homeowners, HOA boards, property managers and their spouses, tenants and billing contacts. It is a white-label, passwordless, mobile-first web experience (PWA first, native later) where a Client can approve a tiered proposal and pay the deposit in under two minutes, explore their to-scale design in 2D/3D with AI before/after mockups, follow a paver-patio install like a pizza tracker, see every mow, fertilizer application and irrigation repair with crew photos, pay or autopay invoices through the **Company's own Stripe account**, request work with photos, get a personalized watering schedule for the 40 perennials just planted, file a plant-warranty claim, and refer a neighbor. Commercial Clients get a portfolio view across dozens of Properties, multi-contact roles, budget- and PO-aware approval chains for enhancements, inspection and monthly service reports, and consolidated billing. Underneath it all sits the **Property Record**: a lifetime, client-owned record of the yard (plants, irrigation map, hardscape specs, warranties, service history) that outlives any single job. Competitors treat the portal as a bill-pay page with a quote-approve button. Rootline treats it as the Company's storefront, sales closer and retention engine, and the place where the Design Studio, AI mockups and Plant Knowledge Base become visible to the person paying.
+> The Customer Portal is the part of Rootline that a landscape Company's **Clients** actually touch: homeowners, HOA boards, property managers and their spouses, tenants and billing contacts. It is a white-label, passwordless, mobile-first web experience (an installable PWA, with a thin native shell for push and wallet passes) where a Client can approve a tiered proposal and pay the deposit in under two minutes, explore their to-scale design in 2D/3D with AI before/after mockups, follow a paver-patio install like a pizza tracker, see every mow, fertilizer application and irrigation repair with crew photos, pay or autopay invoices through the **Company's own Stripe account**, request work with photos, get a personalized watering schedule for the 40 perennials just planted, file a plant-warranty claim, and refer a neighbor. Commercial Clients get a portfolio view across dozens of Properties, multi-contact roles, budget- and PO-aware approval chains for enhancements, inspection and monthly service reports, and consolidated billing. Underneath it all sits the **Property Record**: a lifetime, client-owned record of the yard (plants, irrigation map, hardscape specs, warranties, service history) that outlives any single job. Competitors treat the portal as a bill-pay page with a quote-approve button. Rootline treats it as the Company's storefront, sales closer and retention engine, and the place where the Design Studio, AI mockups and Plant Knowledge Base become visible to the person paying.
 
 **At a glance**
 
-- **What it is:** the white-label, passwordless, mobile-first web portal (PWA first, native later) where `client_residential` and `client_commercial` Contacts approve and sign Proposals, pay deposits and invoices, explore their Design, follow projects and Visits, request work, care for new plants and claim warranties. Commercial Clients get a multi-property portfolio with approval chains.
-- **Decision 1 - "the link is the login for the action; a session is for browsing."** Scoped action links, magic links and SMS codes at, passkeys at, with step-up proof only for risky actions (saved-method payments, autopay, contacts, Property Record transfer).
+- **What it is:** the white-label, passwordless, mobile-first web portal (an installable PWA, with a thin native shell for push and wallet passes) where `client_residential` and `client_commercial` Contacts approve and sign Proposals, pay deposits and invoices, explore their Design, follow projects and Visits, request work, care for new plants and claim warranties. Commercial Clients get a multi-property portfolio with approval chains.
+- **Decision 1 - "the link is the login for the action; a session is for browsing."** Scoped action links, magic links, SMS codes and passkeys (R24-21), with step-up proof only for risky actions (saved-method payments, autopay, contacts, Property Record transfer).
 - **Decision 2 - client money goes to the Company's own Stripe account.** Payments are direct charges on the Company's connected account per [08](08-payments-stripe.md); Rootline never holds client funds, and saved cards and ACH mandates stay with the Company if it leaves Rootline.
 - **Decision 3 - balances come from the built-in Ledger.** The portal reads the AR subledger of the double-entry Ledger in [09](09-accounting-ledger-integrations.md) (system of record; QuickBooks and Xero sync optional), so "paid" in the portal and "paid" in the books are the same number.
 - **Decision 4 - Contact scopes follow [02](02-personas-roles-permissions.md):** `primary`, `co_owner`, `approver`, `billing`, `property_contact` and `viewer`, each optionally narrowed to specific Properties.
 - **Decision 5 - curated transparency.** Visit dates, states and ETA windows come from [04](04-scheduling-dispatch-routing.md); crew photos and notes appear only when marked client-visible in the crew app ([05](05-field-crew-mobile-app.md)); application records show label-derived data under the rules in [14](14-service-line-modules.md); a crew's approximate position is shown only while en route to that Property.
 - **Packaging ([22](22-business-model-pricing-gtm.md)):** Starter gets a Rootline-branded portal; the white-label portal and custom domain start at Grow; the "Powered by Rootline" footer is removable on Pro; commercial approval workflows are limited on Grow (5 commercial Clients) and full on Pro and Enterprise.
--:** proposal viewer with tiers, add-ons, e-sign, deposits and change orders; 2D design viewer with AI mockups and plant cards; project phase tracker with daily photos; upcoming Visits, "on the way" ETA notices, completion summaries and application records; invoices, statements, saved methods and autopay with Reg E notices; requests with photos; client skip, reschedule and vacation holds; messaging; preference center and consent; English and Spanish.
-- and later:** passkeys, 3D and seasonal views, live truck map on the ETA page, AI request triage, self-scheduled add-ons, payment plans, financing and crew tips, warranty claims flow, commercial portfolio, approval chains, inspection and monthly reports, and the "Dream Yard Visualizer" lead magnet; HOA board voting, enterprise SSO and Property Record transfer.
+- **In v1:** the proposal viewer with tiers, add-ons, e-sign, multi-signer, deposits, financing, change orders and Service Agreement renewals; the design viewer with plant cards, AI mockups, seasonal, growth and night views, 3D, pinned comments and client plant swaps; the project tracker with daily photos, punch list and time-lapse; upcoming Visits, "on the way" ETA notices with an opt-in live truck map, completion summaries and application records; invoices, statements, documents and COIs; saved methods, autopay with Reg E notices, payment plans and crew tips; requests with photos and AI triage; skip, reschedule, vacation holds and self-scheduled add-ons (R24-20); messaging with translation; plant care guides, watering reminders, the warranty registry and the claims flow; offers, referrals and reviews; the preference center and consent records; the Property Record with export, sharing and transfer; the commercial portfolio with approval chains, budgets, POs, quorum and sequential approvals and HOA board meeting workflows (R24-17); inspection and monthly reports; the portal-hosted Dream Yard Visualizer (R24-14); passkeys (R24-21) and enterprise SSO; English, Spanish and Canadian French.
 - **Differentiators:** the Property Record (a lifetime, client-owned record of the yard), design and AI mockups visible to the person paying, commercial approvals with budgets and PO numbers, and Reg E-aware autopay on the Company's own Stripe account.
 - **Key cross-links:** Proposals in [03](03-crm-sales-estimating-proposals.md); schedule, ETA and the self-scheduling Availability API in [04](04-scheduling-dispatch-routing.md); invoicing and agreements in [07](07-invoicing-billing-contracts.md); payments in [08](08-payments-stripe.md); Ledger in [09](09-accounting-ledger-integrations.md); Design Studio, AI mockups and Plant KB in [10](10-design-studio.md), [11](11-ai-design-mockups.md) and [12](12-plant-knowledge-base.md); messages and consent in [16](16-marketing-growth-communications.md).
 
@@ -35,7 +34,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief: extra ideas](#13-beyond-the-brief-extra-ideas)
-14. [Open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-open-questions)
 15. [Sources](#sources)
 
 ---
@@ -44,26 +43,26 @@
 
 ### 1.1 Goals
 
-| # | Goal | What "done" looks like | Priority |
-|---|------|------------------------|----------|
-| G1 | **Zero-friction access** | No passwords, ever. Every email/SMS carries a deep link that opens the exact proposal, invoice or visit, already authorized for that action. Login when needed is a magic link, SMS code or passkey. | |
-| G2 | **Every money moment is self-serve** | Approve + sign + pay deposit in one flow; pay one or many invoices; save card/bank; autopay; payment plans; financing. All on the Company's own Stripe account. | core, plans/financing |
-| G3 | **The design sells itself** | Clients explore the to-scale plan, 3D view, AI mockups (before/after, seasons, growth) and a plant list with KB photos and care info, then pick a tier. | 2D + mockups, 3D/seasons |
-| G4 | **Radical transparency** | Next visit with crew ETA, live "on the way", project phase tracker, every visit logged with photos, notes and (where relevant) chemical application records. | history and "on the way" ETA, live truck map |
-| G5 | **Commercial-grade** | Portfolio dashboard across Properties, contact roles, approval chains with budgets and PO numbers, inspection reports, monthly service reports, consolidated billing. | (basic multi-property) |
-| G6 | **Property Record** | A lifetime, client-owned record of the yard that can be exported, shared and (later) transferred at home sale. | read view, export, transfer |
-| G7 | **Truly white-label** | Company logo, colors, custom domain, branded email sender domain and branded SMS. A Client should not need to know Rootline exists. | subdomain + brand, custom domain hardening |
-| G8 | **Accessible, bilingual, mobile-first** | WCAG 2.2 AA; English + Spanish at launch, French-Canadian later; imperial/metric; USD/CAD; usable one-handed on a 5-year-old Android over 4G. | |
-| G9 | **Pre-client lead magnet** | A prospect uploads yard photos plus real dimensions and receives AI mockups and a ballpark price, which converts into a Lead with all assets attached. | |
-| G10 | **Retention engine** | Seasonal offers, plant-care nudges, warranty trust, referrals and reviews raise renewal rates and revenue per Client. | |
+| # | Goal | What "done" looks like |
+|---|------|------------------------|
+| G1 | **Zero-friction access** | No passwords, ever. Every email/SMS carries a deep link that opens the exact proposal, invoice or visit, already authorized for that action. Login when needed is a magic link, SMS code or passkey. |
+| G2 | **Every money moment is self-serve** | Approve + sign + pay deposit in one flow; pay one or many invoices; save card/bank; autopay; payment plans; financing. All on the Company's own Stripe account. |
+| G3 | **The design sells itself** | Clients explore the to-scale plan, 3D view, AI mockups (before/after, seasons, growth) and a plant list with KB photos and care info, then pick a tier. |
+| G4 | **Radical transparency** | Next visit with crew ETA, live "on the way", project phase tracker, every visit logged with photos, notes and (where relevant) chemical application records. |
+| G5 | **Commercial-grade** | Portfolio dashboard across Properties, contact roles, approval chains with budgets and PO numbers, inspection reports, monthly service reports, consolidated billing. |
+| G6 | **Property Record** | A lifetime, client-owned record of the yard that can be exported, shared and transferred at home sale. |
+| G7 | **Truly white-label** | Company logo, colors, custom domain, branded email sender domain and branded SMS. A Client should not need to know Rootline exists. |
+| G8 | **Accessible, bilingual, mobile-first** | WCAG 2.2 AA; English, Spanish and Canadian French; imperial/metric; USD/CAD; usable one-handed on a 5-year-old Android over 4G. |
+| G9 | **Pre-client lead magnet** | A prospect uploads yard photos plus real dimensions and receives AI mockups and a ballpark price, which converts into a Lead with all assets attached. |
+| G10 | **Retention engine** | Seasonal offers, plant-care nudges, warranty trust, referrals and reviews raise renewal rates and revenue per Client. |
 
 ### 1.2 Non-goals
 
-- **Not a consumer marketplace.** The portal does not help homeowners find or compare landscapers. A cross-Company homeowner network is a moonshot covered in [23 - Innovation and Moonshots](23-innovation-moonshots.md).
+- **Not a consumer marketplace.** The portal does not help homeowners find or compare landscapers. The cross-Company homeowner network (Rootline Home and Rootline Match) is a separate surface specified in [23 - Innovation and Moonshots](23-innovation-moonshots.md).
 - **Not a card-data processor.** Rootline never sees a PAN or bank account number in clear. Card and bank entry happen only in Stripe Elements / Stripe Financial Connections on the Company's connected account (PCI DSS SAQ-A scope, see [08](08-payments-stripe.md)).
 - **Not the Company's website.** The marketing website builder, online booking widgets and campaigns live in [16](16-marketing-growth-communications.md). The portal embeds into the website and shares its brand kit.
-- **Not native apps at MVP.** A responsive, installable PWA first. Native iOS/Android wrappers come in only if push and wallet features demand it.
-- **Not a design editor for Clients.** Clients view, comment and choose among options the designer published. They do not edit the plan (a constrained "swap within approved alternates" feature is).
+- **Not a separate native app.** The portal is a responsive, installable PWA. The thin native shell in 4.18.4 wraps the same PWA for push and wallet passes and never forks the experience.
+- **Not a design editor for Clients.** Clients view, comment and choose among options the designer published. They do not edit the plan (the one exception is the constrained "swap within approved alternates" feature in 4.5.8).
 - **Not a full project-management tool for Clients.** The project tracker shows curated, client-facing milestones, never the internal task graph, labor budgets or margins.
 - **No internal cost data, ever.** Costs, margins, production rates, internal notes and crew pay are structurally excluded from portal APIs (separate read models, not just hidden fields).
 
@@ -71,9 +70,9 @@
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> Evidence basis: targeted web research (November 2026) across vendor help centers, review sites and community forums, plus market-structure and regulatory facts re-cited from [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [08](08-payments-stripe.md), [16](16-marketing-growth-communications.md) and [19](19-platform-admin-portal.md). A few vendor portals (Aspire, SynkedUP, Yardbook) are described at listing level only and flagged for follow-up in [Open questions](#14-open-questions). Vendor claims are vendor claims; prices and plan names are "as of November 2026, verify".
+> Evidence basis: targeted web research (November 2026) across vendor help centers, review sites and community forums, plus market-structure and regulatory facts re-cited from [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [08](08-payments-stripe.md), [16](16-marketing-growth-communications.md) and [19](19-platform-admin-portal.md). A few vendor portals (Aspire, SynkedUP, Yardbook) are described at listing level only (see [section 14](#14-open-questions)). Vendor claims are vendor claims; prices and plan names are "as of November 2026, verify".
 >
-> Verification note: items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build.
+> Verification note: items marked "verify" are from secondary sources or general knowledge. The build does not depend on them; the marketing agent checks each one against a primary source before it is used publicly (OD-07).
 
 ### 2.1 What competitors ship today
 
@@ -135,9 +134,9 @@ Role keys follow [02 - Personas, Roles and Permissions](02-personas-roles-permis
 
 | Persona | Role key | Example | Top jobs-to-be-done |
 |---------|----------|---------|---------------------|
-| Residential homeowner | `client_residential` | **Dana Whitfield**, Naperville IL (USDA zone 6a on the 2023 map), two kids, a dog, a 0.3-acre lot; bought the full-season lawn program plus a $16,650 front-yard renovation (paver walkway, patio, new beds, drip irrigation) | "Show me what my yard will look like and what it costs, let me pick the middle option and pay the deposit tonight on my phone." "Tell me when the crew is coming so I can let the dog in." "Remind me to water the new plants." |
+| Residential homeowner | `client_residential` | **Dana Whitfield**, Worthington OH, a Columbus suburb (USDA zone 6b on the 2023 map; verify), two kids, a dog, a 0.3-acre lot; bought the full-season lawn program plus a $16,650 front-yard renovation (paver walkway, patio, new beds, drip irrigation) | "Show me what my yard will look like and what it costs, let me pick the middle option and pay the deposit tonight on my phone." "Tell me when the crew is coming so I can let the dog in." "Remind me to water the new plants." |
 | Additional residential contact | `client_residential` with scoped access | **Sam Whitfield** (spouse, co-signer), **Priya** (tenant in the Whitfields' rental property, can request service and see visits, cannot see invoices) | "Let me approve too." "Let me report a broken sprinkler head without seeing the owner's bills." |
-| Commercial property manager | `client_commercial` | **Marcus Reyes**, portfolio manager at Sonoran Community Management (a community management firm) overseeing 14 HOAs in Phoenix, plus two office parks | "Show all 16 properties, what was done this month, what is pending my approval and what we have spent against budget." "Route enhancement proposals over $5,000 to the board." "Every invoice must carry the PO and property code or AP rejects it." |
+| Commercial property manager | `client_commercial` | **Marcus Reyes**, portfolio manager at Scioto Community Management (a community management firm) overseeing 14 HOAs in Central Ohio, plus two office parks | "Show all 16 properties, what was done this month, what is pending my approval and what we have spent against budget." "Route enhancement proposals over $5,000 to the board." "Every invoice must carry the PO and property code or AP rejects it." |
 | HOA board member | `client_commercial` with approver/viewer scope | **Linda Ortiz**, treasurer of a 220-home HOA | "Vote on the $18,400 entrance renovation from my phone; see the rendering first." "Download the year's statements for the annual meeting." |
 | Facilities manager | `client_commercial` | **Kevin Park**, facilities at a 40-acre corporate campus with a snow contract | "Prove the lots were plowed at 2-inch trigger and salted before 6 a.m. when someone slips." "Approve the irrigation repair ticket under $750 without paperwork." |
 | Billing contact / AP clerk | `client_commercial` or `client_residential` with billing scope | **Rosa**, AP specialist at the management firm | "Get one consolidated statement per month with PO and GL codes, and pay by ACH." |
@@ -158,11 +157,11 @@ Role keys follow [02 - Personas, Roles and Permissions](02-personas-roles-permis
 | Bookkeeper | `bookkeeper` | Statements, payment application, refund and credit visibility in the portal. |
 | Subcontractor | `subcontractor` | No portal access to clients; may upload photos to a job that a staff member can publish. |
 
-Platform-side roles (`platform_owner`, `platform_support`, `platform_curator`, `platform_finance`, `platform_engineer`) touch the portal only through the operator console in [19](19-platform-admin-portal.md): domain/TLS health, deliverability, abuse reports, the plant content that powers plant cards (curated by `platform_curator`), and consent-based support impersonation.
+Platform-side roles (`platform_owner`, held by the founder, and `platform_support`, `platform_curator`, `platform_finance` and `platform_engineer`, held by Rootline's operator agents per [24](24-product-scope-decisions-catalog.md) section 1.2) touch the portal only through the operator console in [19](19-platform-admin-portal.md): domain/TLS health, deliverability, abuse reports, the plant content that powers plant cards (curated by the plant curator agent as `platform_curator`), and consent-based support impersonation.
 
 ### 3.3 Contact scopes (portal-level permission bundles)
 
-A Client has one or more Contacts. Each Contact with portal access has exactly one **scope** per Client account, optionally narrowed to a subset of Properties. Scopes are presets of granular portal permissions (the full matrix is in [Section 9](#9-permissions)); Companies can create custom scopes in. Scope keys and defaults are the contact roles defined in [02, section 5.11](02-personas-roles-permissions.md); this doc only adds portal-specific detail.
+A Client has one or more Contacts. Each Contact with portal access has exactly one **scope** per Client account, optionally narrowed to a subset of Properties. Scopes are presets of granular portal permissions (the full matrix is in [Section 9](#9-permissions)); Companies can create custom scopes. Scope keys and defaults are the contact roles defined in [02, section 5.11](02-personas-roles-permissions.md); this doc only adds portal-specific detail.
 
 | Scope key | Typical holder | Summary |
 |-----------|----------------|---------|
@@ -190,12 +189,12 @@ A Client has one or more Contacts. Each Contact with portal access has exactly o
 
 ## 4. Feature specification
 
-Each feature lists behaviors and rules precise enough to build and test against. Scope tags: first sellable release, next scope wave, later wave, moonshot / long-term. Tags are scope tiers, not dates; [24](24-product-scope-decisions-catalog.md) is binding where docs differ.
+Each feature lists behaviors and rules precise enough to build and test against. [24](24-product-scope-decisions-catalog.md) section 1 is binding where docs differ.
 
 ### 4.1 White-label branding and domains
 
 #### 4.1.1 Brand kit
-- Shared with the website builder and document templates ([16](16-marketing-growth-communications.md)): primary logo (SVG or PNG, min 512 px wide), square mark (for favicon, PWA icon, SMS vCard), primary and accent colors, font pair from a curated list of 20 web-safe/Google font pairs (no arbitrary font uploads at MVP for licensing reasons), hero photo, email header image.
+- Shared with the website builder and document templates ([16](16-marketing-growth-communications.md)): primary logo (SVG or PNG, min 512 px wide), square mark (for favicon, PWA icon, SMS vCard), primary and accent colors, font pair from a curated list of 20 web-safe/Google font pairs (no arbitrary font uploads, for licensing reasons), hero photo, email header image.
 - **Accessible palette generator:** from the primary color, generate a 10-step tonal scale and automatically choose text-on-color variants that pass WCAG 2.2 AA contrast (4.5:1 for body text, 3:1 for large text and UI components). If the brand color fails as a button background with white text, the system darkens it for interactive elements and shows the owner a side-by-side preview with the reason. Owners can override only with an explicit "I accept reduced accessibility" acknowledgment that is logged; the override is ignored for users who enable the high-contrast preference.
 - Dark mode tokens generated automatically.
 - Live preview of portal home, proposal, invoice, email and SMS with the brand applied, on mobile and desktop frames.
@@ -206,22 +205,22 @@ Each feature lists behaviors and rules precise enough to build and test against.
 - Custom content pages (FAQ, service area map, "What to expect on install day", warranty policy), authored with the same block editor as the website builder.
 
 #### 4.1.3 Domains
-- **Default subdomain** on a Rootline-owned portal domain, e.g. `greenleafgrounds.rootline.app` (final domain decided in [20](20-architecture-security.md)). Slug rules: 3-40 chars, lowercase letters, digits, hyphens; reserved-word list (admin, api, www, support, billing, login, mail and brand names of large competitors); uniqueness enforced platform-wide; renames keep a 301 redirect for 12 months.
-- **Custom domain** (e.g. `portal.greenleafgrounds.com`) [MVP on Grow, Pro and Enterprise; Starter uses the Rootline-branded portal on the default subdomain, per [22](22-business-model-pricing-gtm.md)]: owner enters hostname, Rootline shows a CNAME target and a TXT ownership token; certificates issued and renewed automatically through a SaaS custom-hostname service (e.g. Cloudflare for SaaS custom hostnames). States: `pending_dns` -> `pending_validation` -> `active` -> `cert_renewal_failed` / `dns_broken`. Health check every 15 minutes; on failure, links in new emails fall back to the default subdomain and the owner gets an alert. Apex domains are not supported (CNAME required); `www` is discouraged because it belongs to the marketing site.
+- **Default subdomain** on a neutral Rootline-owned portal domain that carries no Rootline name, for white-label purity (OD-65; illustrated here as `portal.example`), e.g. `greenleafgrounds.portal.example` ([20](20-architecture-security.md)). Slug rules: 3-40 chars, lowercase letters, digits, hyphens; reserved-word list (admin, api, www, support, billing, login, mail and brand names of large competitors); uniqueness enforced platform-wide; renames keep a 301 redirect for 12 months.
+- **Custom domain** (e.g. `portal.greenleafgrounds.example`; on Grow, Pro and Enterprise, while Starter uses the Rootline-branded portal on the default subdomain, per [22](22-business-model-pricing-gtm.md)): owner enters hostname, Rootline shows a CNAME target and a TXT ownership token; certificates issued and renewed automatically through a SaaS custom-hostname service (e.g. Cloudflare for SaaS custom hostnames). States: `pending_dns` -> `pending_validation` -> `active` -> `cert_renewal_failed` / `dns_broken`. Health check every 15 minutes; on failure, links in new emails fall back to the default subdomain and the owner gets an alert. Apex domains are not supported (CNAME required); `www` is discouraged because it belongs to the marketing site.
 - All deep links in outbound messages use the Company's active portal hostname so the client never sees a Rootline URL.
-- hardening: multiple custom hostnames per Company (for example a separate `snow.greenleafgrounds.com` for a commercial snow brand), passkey related origins (4.2.4), certificate-expiry forecasting, and an automatic DNS diagnosis page that tells the owner in plain words which record is wrong.
+- **Domain hardening:** multiple custom hostnames per Company (for example a separate `snow.greenleafgrounds.example` for a commercial snow brand), passkey related origins (4.2.4), certificate-expiry forecasting, and an automatic DNS diagnosis page that tells the owner in plain words which record is wrong.
 
 #### 4.1.4 Branded email
-- Default sending address `"Greenleaf Grounds Co." <notifications@mail.rootline.app>` with Reply-To routed into the unified inbox.
-- **Verified sender domain**: owner adds DKIM and Return-Path records for `mail.greenleafgrounds.com`; once verified, mail is sent from `hello@greenleafgrounds.com` (or any address on that domain). DMARC alignment is checked and the owner is warned if their DMARC policy is `p=reject` and alignment fails.
+- Default sending address `"Greenleaf Grounds Co." <notifications@mail.portal.example>` (on the same neutral domain as the default subdomain) with Reply-To routed into the unified inbox.
+- **Verified sender domain**: owner adds DKIM and Return-Path records for `mail.greenleafgrounds.example`; once verified, mail is sent from `hello@greenleafgrounds.example` (or any address on that domain). DMARC alignment is checked and the owner is warned if their DMARC policy is `p=reject` and alignment fails.
 - Transactional and marketing streams are separated (different message streams/IPs) so a marketing complaint spike cannot hurt invoice deliverability.
 - **Mailbox-provider sender rules:** Gmail and Yahoo require SPF, DKIM and DMARC authentication for bulk senders, one-click unsubscribe (RFC 8058 `List-Unsubscribe-Post`) on marketing mail, and spam complaint rates below 0.3% ([Gmail/Yahoo requirements summary](https://bird.com/docs/knowledge-base/deliverability/gmail-yahoo-requirements), as cited in [19](19-platform-admin-portal.md); verify current thresholds). Rootline therefore (a) will not verify a sender domain without a published DMARC record (`p=none` is enough to start; the setup wizard generates it), (b) adds one-click unsubscribe headers on the marketing stream only, never on invoices or sign-in mail, and (c) applies the tenant complaint-rate circuit breaker defined in [16](16-marketing-growth-communications.md) (marketing sends pause at 0.2% over a rolling 7 days), which protects proposal and invoice delivery.
 - Every template is branded (logo, colors, footer with physical address for marketing mail as CAN-SPAM requires) and available in the Client's language.
 
 #### 4.1.5 Branded SMS
 - SMS is sent from a Company-specific number registered under the Company's own 10DLC brand and campaign (US) or appropriate Canadian sender, provisioned through [16](16-marketing-growth-communications.md). Messages start with the Company name ("Greenleaf Grounds: Your crew is on the way, ETA 9:40-10:10.").
-- Short links use the Company's portal hostname (`portal.greenleafgrounds.com/v/8KQ2`), not a generic shortener, which also improves carrier filtering outcomes.
-- Toll-free and short code options are out of scope for MVP.
+- Short links use the Company's portal hostname (`portal.greenleafgrounds.example/v/8KQ2`), not a generic shortener, which also improves carrier filtering outcomes.
+- Toll-free numbers follow [16](16-marketing-growth-communications.md) (including the interim toll-free path while 10DLC registration is pending); short codes are not offered.
 
 #### 4.1.6 "Powered by Rootline"
 - A small footer badge on Starter and Grow (it doubles as the referral loop for other landscapers, see [22](22-business-model-pricing-gtm.md)). Removable on Pro and Enterprise. Never shown inside emails or SMS.
@@ -263,7 +262,7 @@ Design principle: **the link is the login for the action; a session is for brows
 
 #### 4.2.4 Passkeys
 - After a Client's second full sign-in, offer "Sign in with Face ID / fingerprint next time" (WebAuthn passkey, discoverable credential, user verification required). Passkeys are scoped to the portal hostname (relying party ID), so a Company moving from the default subdomain to a custom domain must prompt clients to re-enroll; the system tracks credential RP IDs and shows a one-time re-enroll prompt.
-- **Avoiding re-enrollment with related origins**: WebAuthn Level 3 "Related Origin Requests" let a site use passkeys whose RP ID is a different domain, provided that domain publishes the allowed origins at `/.well-known/webauthn`. Rootline registers every portal passkey with the Company's default subdomain as RP ID (`greenleafgrounds.rootline.app`) and lists the active custom hostname(s) in that subdomain's well-known file, so a later move to `portal.greenleafgrounds.com` keeps existing passkeys working. Browsers without related-origin support fall back to the one-time re-enroll prompt above. Browser support is incomplete and changing (supported in recent Chromium and Safari releases as of 2025 per our background knowledge; verify before relying on it).
+- **Avoiding re-enrollment with related origins**: WebAuthn Level 3 "Related Origin Requests" let a site use passkeys whose RP ID is a different domain, provided that domain publishes the allowed origins at `/.well-known/webauthn`. Rootline registers every portal passkey with the Company's default subdomain as RP ID (`greenleafgrounds.portal.example`) and lists the active custom hostname(s) in that subdomain's well-known file, so a later move to `portal.greenleafgrounds.example` keeps existing passkeys working. Browsers without related-origin support fall back to the one-time re-enroll prompt above. Browser support is incomplete and changing (supported in recent Chromium and Safari releases as of 2025 per our background knowledge; verify before relying on it).
 - Passkeys satisfy step-up (4.2.5) without an extra code.
 - Multiple passkeys per Contact; management page lists them with device names and last-used dates.
 
@@ -297,7 +296,7 @@ This table is the single proof-ladder rule for the platform. [02](02-personas-ro
 - SAML 2.0 / OIDC with Microsoft Entra ID, Okta and Google Workspace for large management companies; just-in-time provisioning maps IdP groups to contact scopes per Property. Offered on the Company's top tier.
 
 #### 4.2.9 One person, many Companies
-- Identities are tenant-isolated by default: Dana's identity at Greenleaf Grounds Co. is unrelated to her identity at her pool company if both use Rootline. An opt-in "Rootline Wallet" would let a person link portal identities across Companies for one inbox and one Property Record view. It never reveals to one Company that the person uses another, and it is off by default for white-label reasons. See [Open questions](#14-open-questions).
+- Identities are tenant-isolated by default: Dana's identity at Greenleaf Grounds Co. is unrelated to her identity at her pool company if both use Rootline. An opt-in "Rootline Wallet" lets a person link portal identities across Companies for one inbox and one Property Record view. It never reveals to one Company that the person uses another, and it is off by default for white-label reasons.
 
 > **Competitive edge - Jobber, LMN, Spraye:** LMN asks the contractor to invite the client and the client to activate an account; Spraye requires a password; Jobber users report that clients seen once every few years forget Client Hub exists. Rootline's action links make the first interaction a one-tap task with no account setup, and the step-up model means a homeowner paying a $186 mowing invoice never meets a login screen, while changing autopay still requires fresh proof.
 
@@ -306,21 +305,21 @@ This table is the single proof-ladder rule for the platform. [02](02-personas-ro
 #### 4.3.1 Card stack
 The home screen is a ranked stack of cards for the selected Property (or for "All properties" in commercial accounts). Each card type has a ranking score; the top three are always visible above the fold on a 390 x 844 viewport.
 
-| Card | Shows | Score rule (higher first) | Priority |
-|------|-------|---------------------------|----------|
-| Action required: overdue balance | Total overdue, oldest invoice age, Pay button | 100 if any invoice > 0 days past due | |
-| Action required: proposal expiring | Proposal name, tier summary, expiry countdown | 95 if expires within 72 h; else 70 | |
-| Action required: change order, work blocked | CO number, price and day delta, photos, Review button | 99 while the crew is waiting | |
-| Action required: approval pending (commercial) | Count and value of items awaiting this Contact's decision | 90 | |
-| Today: crew on the way | Live ETA window, crew lead first name and photo; map with approximate truck position | 98 while en route | |
-| Next visit | Date, service ("Weekly mow and trim", "Round 3: fertilizer + broadleaf weed control"), arrival window, access-note shortcut | 80 if within 3 days; else 60 | |
-| Active project | Phase tracker with current phase and next milestone | 75 | |
-| Open balance (not overdue) | Amount, due date, autopay status | 65 | |
-| Plant care today | "Water the 12 new shrubs along the walkway: about 2 gallons each" | 85 during the establishment window on scheduled days | |
-| Weather notice | Rain delay, snow event in progress, freeze warning for new plantings | 88 when active | |
-| Latest service | Last visit summary with photo thumbnail and rating prompt | 50 | |
-| Seasonal offer | One Company-configured offer matched to this Property | 30 (never above action cards) | |
-| Messages | Unread count and latest snippet | 85 if unread staff message | |
+| Card | Shows | Score rule (higher first) |
+|------|-------|---------------------------|
+| Action required: overdue balance | Total overdue, oldest invoice age, Pay button | 100 if any invoice > 0 days past due |
+| Action required: proposal expiring | Proposal name, tier summary, expiry countdown | 95 if expires within 72 h; else 70 |
+| Action required: change order, work blocked | CO number, price and day delta, photos, Review button | 99 while the crew is waiting |
+| Action required: approval pending (commercial) | Count and value of items awaiting this Contact's decision | 90 |
+| Today: crew on the way | Live ETA window, crew lead first name and photo; map with approximate truck position when the Company has the live map on (4.7.3) | 98 while en route |
+| Next visit | Date, service ("Weekly mow and trim", "Round 3: fertilizer + broadleaf weed control"), arrival window, access-note shortcut | 80 if within 3 days; else 60 |
+| Active project | Phase tracker with current phase and next milestone | 75 |
+| Open balance (not overdue) | Amount, due date, autopay status | 65 |
+| Plant care today | "Water the 12 new shrubs along the walkway: about 2 gallons each" | 85 during the establishment window on scheduled days |
+| Weather notice | Rain delay, snow event in progress, freeze warning for new plantings | 88 when active |
+| Latest service | Last visit summary with photo thumbnail and rating prompt | 50 |
+| Seasonal offer | One Company-configured offer matched to this Property | 30 (never above action cards) |
+| Messages | Unread count and latest snippet | 85 if unread staff message |
 
 - Cards never show internal status words ("unassigned", "needs costing"); each internal state maps to a client-facing phrase in the Company's language.
 - Empty-state copy is warm and specific ("No visits scheduled yet. Your spring cleanup will be scheduled in late March.").
@@ -412,7 +411,7 @@ stateDiagram-v2
 
 #### 4.4.11 Service Agreement renewals
 - 30-60 days before an agreement term ends, the Client sees "Renew your 2028 Lawn and Shrub Program" with the new price, a clear year-over-year difference ("+3.5%: $58.40 to $60.45 per mow"), any changed scope, and one-tap renewal with signature and autopay continuation. Auto-renew clauses, if used, display the renewal date and cancellation path as required by applicable automatic-renewal laws (rules tracked in [07](07-invoicing-billing-contracts.md) and [14](14-service-line-modules.md)).
-- Portal rules for auto-renewing agreements (the strictest applicable rule wins; legal content maintained with counsel; verify each before launch):
+- Portal rules for auto-renewing agreements (the strictest applicable rule wins; the rule tables ship with conservative values, and the founder reviews them with counsel before any is loosened, per [24](24-product-scope-decisions-catalog.md) section 1.7; verify each):
   - **Separate consent:** auto-renewal terms get their own unticked checkbox at signing. The portal stores it as a `consent_record` of purpose `auto_renewal` with the exact disclosure text version.
   - **Renewal notice window:** a renewal notice goes out in the window the Client's jurisdiction requires, defaulting to 30-45 days before the cancel-by date. Commercial contracts are covered too. For example, New York General Obligations Law 5-903 makes auto-renewal clauses in contracts for service, maintenance or repair of real property unenforceable unless written notice is given 15-30 days before the cancellation deadline. Landscape maintenance contracts for New York HOAs and office parks fall squarely under it (cited from general knowledge; verify).
   - **Click to cancel:** wherever a Client enrolled online, they can cancel online in the portal in no more steps than enrolling took. California's automatic renewal law was amended to require this from July 1, 2025 (AB 2863; verify). The FTC's 2024 "click-to-cancel" amendments to the Negative Option Rule were vacated by the Eighth Circuit in July 2025 (verify current status). Rootline builds to the strict standard regardless, so a future federal rule needs no rework.
@@ -431,10 +430,10 @@ Designs are authored in the [Design Studio (10)](10-design-studio.md); mockups c
 - Accessibility: every plan has a structured text alternative (areas table with dimensions, plant schedule, hardscape materials) that screen readers and keyboard users can navigate; plant symbols are focusable in a logical order and announce "Hydrangea paniculata 'Limelight', 3 plants, #5 container, front entry bed".
 
 #### 4.5.2 Plant cards and plant list
-- Tap a plant symbol or a row in the plant list to open a **plant card**: KB hero photo plus seasonal photos (bloom, fall color, winter form), common and botanical names, cultivar, mature height and spread, growth rate, sun and water needs, bloom months, native status for the Property's Region, deer resistance, pollinator value, pet toxicity flag (from KB data with source), the Plant Region Profile rating ("Excellent performer in Northern Illinois"), and a short care summary.
+- Tap a plant symbol or a row in the plant list to open a **plant card**: KB hero photo plus seasonal photos (bloom, fall color, winter form), common and botanical names, cultivar, mature height and spread, growth rate, sun and water needs, bloom months, native status for the Property's Region, deer resistance, pollinator value, pet toxicity flag (from KB data with source), the Plant Region Profile rating ("Excellent performer in Central Ohio"), and a short care summary.
 - Plant list (schedule) grouped by type (trees, shrubs, perennials, grasses, groundcovers), with quantity, install size ("2 in caliper B&B", "#3 container", "flat of 18") and location.
 - The card shows only Company-approved fields; the Company can hide retail plant prices.
-- Photos are KB-licensed images curated by `platform_curator` ([12](12-plant-knowledge-base.md)); each has license and attribution metadata respected in the UI.
+- Photos are KB-licensed images curated by the plant curator agent (`platform_curator`, [12](12-plant-knowledge-base.md)); each has license and attribution metadata respected in the UI.
 
 #### 4.5.3 AI mockups and before/after slider
 - Gallery of published mockups per Design Option: a mockup is published to the portal when the estimator or designer attaches it to the proposal option (`mockup.attached_to_proposal` in [11](11-ai-design-mockups.md)); each is paired with the original property photo.
@@ -521,9 +520,9 @@ Designs are authored in the [Design Studio (10)](10-design-studio.md); mockups c
 
 #### 4.7.3 "On the way" and live ETA
 - When the crew lead taps "Start driving to next stop" (or geofence departure from the previous stop is detected), the Visit moves to `en_route` ([04](04-scheduling-dispatch-routing.md) 4.1.3) and the Client receives "Your Greenleaf Grounds crew is on the way, ETA 9:40-10:10" with a link.
-- The live page shows the ETA window (next stop +/- 15 minutes rounded to 5, per [04](04-scheduling-dispatch-routing.md) 4.10.4), crew lead's first name and photo (optional) and truck description; the link stays valid until arrival plus 30 minutes. From it adds a map with the truck's approximate position **only while en route to this Property** and only within the final 30 minutes; position is snapped and delayed by 60 seconds to protect crew privacy. Tracking stops on arrival.
+- The live page shows the ETA window (next stop +/- 15 minutes rounded to 5, per [04](04-scheduling-dispatch-routing.md) 4.10.4), crew lead's first name and photo (optional) and truck description; the link stays valid until arrival plus 30 minutes. When the Company turns on the live map (off by default), the page also shows the truck's approximate position **only while en route to this Property** and only within the final 30 minutes; position is snapped and delayed by 60 seconds to protect crew privacy. Tracking stops on arrival.
 - ETA source: routing ETA from [04](04-scheduling-dispatch-routing.md) (`eta.updated`), refreshed every 60 seconds. A "running late" notice follows the trigger owned by 04 4.10.5 (ETA more than 15 minutes past the communicated window).
-- Companies can disable live maps and keep ETA-only notifications.
+- With the live map off, Clients get ETA-only notifications and an ETA page without a map.
 
 #### 4.7.4 Visit completion summary
 - After a Visit is completed: date, services performed (checklist items marked done), crew notes written for the client, before/after photos, any issues found ("Noticed two broken spray heads in zone 3; quote sent"), and applications made.
@@ -571,7 +570,7 @@ Architecture, Stripe objects and money flows are specified in [08 - Payments (St
 
 #### 4.9.1 Pay one or many invoices
 - Select invoices (default all open), see total, choose method, pay. Partial payments allowed if the Company enables them (minimum amount configurable, e.g. $25); partial amounts apply oldest-first unless the Client picks invoices.
-- Methods: card and wallets (Apple Pay, Google Pay, Link) and US bank account (ACH Direct Debit) at; Canadian pre-authorized debit at. All via Stripe Payment Element on the Company's connected account; the Company chooses which methods to enable.
+- Methods: card and wallets (Apple Pay, Google Pay, Link), US bank account (ACH Direct Debit) and Canadian pre-authorized debit. All via Stripe Payment Element on the Company's connected account; the Company chooses which methods to enable.
 - Fee transparency: if the Company passes card fees through (surcharge or non-cash adjustment where permitted), the fee line appears before confirmation with a nudge to bank payment; rules by state/province in [08](08-payments-stripe.md).
 
 #### 4.9.2 Saved payment methods
@@ -682,8 +681,7 @@ Every number a Client sees in the portal must equal what the Company's books say
 
 #### 4.12.1 Personalized plant care guide
 - On Project completion, the system generates a care guide for the plants actually installed (from the as-built plant list, not the proposal), using KB care data for the Property's Region ([12](12-plant-knowledge-base.md)): watering during establishment, mulching, pruning windows ("Prune Limelight hydrangea in late winter; blooms form on new wood"), fertilizing, winter protection, common pests to watch.
-- Guide is a templated, Company-branded page and PDF assembled from KB care snippets.
-- Guide is personalized by AI within guardrails: grounded only in KB care fields and the Company's care policy, reviewed or auto-approved per Company setting, translated to the Client's language.
+- Guide is a templated, Company-branded page and PDF assembled from KB care snippets, then personalized by AI within guardrails: grounded only in KB care fields and the Company's care policy, reviewed or auto-approved per Company setting, translated to the Client's language. A Company can turn AI personalization off and send the templated guide.
 
 #### 4.12.2 Watering schedule and reminders
 - Establishment schedule generated per planting group based on plant type, install size, soil type (from Property Record), season and the Company's warranty watering policy. Example policy template (Company-editable, not universal guidance): trees and large shrubs - deep water every 2-3 days for the first 2 weeks, then twice weekly through week 8, then weekly until first frost; perennials - every 1-2 days for the first week, then every 3 days for weeks 2-4.
@@ -699,7 +697,7 @@ Every number a Client sees in the portal must equal what the Company's books say
 - Approved replacements create a zero-price Job (or partial-price per coverage) and a new registration with a fresh or remaining-term warranty per Company policy.
 
 #### 4.12.4 Seasonal care tips feed
-- Region- and plant-aware tips ("Your Little Bluestem looks best if you leave it standing through winter for structure and birds; cut back in March") curated by `platform_curator` and Company-editable, delivered monthly.
+- Region- and plant-aware tips ("Your Little Bluestem looks best if you leave it standing through winter for structure and birds; cut back in March") curated by the plant curator agent (`platform_curator`) and Company-editable, delivered monthly.
 
 #### 4.12.5 "What's wrong with my plant?"
 - Client photo diagnosis assistant grounded in KB pest/disease data, with confidence levels and a "Have a pro look" button that creates a request. Never recommends restricted-use pesticides or DIY chemical rates.
@@ -757,30 +755,30 @@ Every number a Client sees in the portal must equal what the Company's books say
 
 ### 4.15 The Property Record
 
-The Property Record is Rootline's answer to "the yard has no memory". It is a lifetime, structured record of a Property's landscape that the Client can see, export and eventually transfer.
+The Property Record is Rootline's answer to "the yard has no memory". It is a lifetime, structured record of a Property's landscape that the Client can see, export and transfer.
 
 #### 4.15.1 Contents
 
-| Section | Contents | Source modules | Priority |
-|---------|----------|----------------|----------|
-| Property profile | Address, parcel outline, lot size, lawn area, bed area, turf type, sun/shade map, soil type, soil test results (pH, P, K, organic matter), USDA hardiness zone and Rootline Region | [10](10-design-studio.md), [12](12-plant-knowledge-base.md), [14](14-service-line-modules.md) | profile, soil and sun |
-| Installed plants | Each plant: species/cultivar (KB link), location on plan, install date, install size, source nursery, warranty status, replacement history, care guide | [10](10-design-studio.md), [12](12-plant-knowledge-base.md), [13](13-operations-inventory-equipment.md) | |
-| Hardscape | Areas, materials (manufacturer, product, color, SKU), base depth and compaction notes, install date, warranty, sealing history | [10](10-design-studio.md), [14](14-service-line-modules.md) | |
-| Irrigation map | Controller (make/model, location), zones with type (spray, rotor, drip), head counts, valve locations, main line and lateral routes, backflow device with annual test dates and reports, rain sensor, water source | [14](14-service-line-modules.md) | |
-| Lighting | Fixtures (type, lamp, wattage), transformer (size, location, timer), zones and wire runs | [14](14-service-line-modules.md) | |
-| Drainage and utilities | Drains, downspout tie-ins, dry wells, located utilities (from 811 marks and as-builts, informational only) | [10](10-design-studio.md) | |
-| Trees | Tree inventory with DBH, condition, risk notes, pruning and treatment history (arborist work) | [14](14-service-line-modules.md) | |
-| Service history | All visits, applications, projects, photos | This doc, [04](04-scheduling-dispatch-routing.md) | |
-| Documents | Designs (PDF), warranties, permits, HOA approvals, as-builts | This doc | |
-| Client notes and photos | Client's own notes ("Grandma's peony, moved from the old house") and photos | Client | |
+| Section | Contents | Source modules |
+|---------|----------|----------------|
+| Property profile | Address, parcel outline, lot size, lawn area, bed area, turf type, sun/shade map, soil type, soil test results (pH, P, K, organic matter), USDA hardiness zone and Rootline Region | [10](10-design-studio.md), [12](12-plant-knowledge-base.md), [14](14-service-line-modules.md) |
+| Installed plants | Each plant: species/cultivar (KB link), location on plan, install date, install size, source nursery, warranty status, replacement history, care guide | [10](10-design-studio.md), [12](12-plant-knowledge-base.md), [13](13-operations-inventory-equipment.md) |
+| Hardscape | Areas, materials (manufacturer, product, color, SKU), base depth and compaction notes, install date, warranty, sealing history | [10](10-design-studio.md), [14](14-service-line-modules.md) |
+| Irrigation map | Controller (make/model, location), zones with type (spray, rotor, drip), head counts, valve locations, main line and lateral routes, backflow device with annual test dates and reports, rain sensor, water source | [14](14-service-line-modules.md) |
+| Lighting | Fixtures (type, lamp, wattage), transformer (size, location, timer), zones and wire runs | [14](14-service-line-modules.md) |
+| Drainage and utilities | Drains, downspout tie-ins, dry wells, located utilities (from 811 marks and as-builts, informational only) | [10](10-design-studio.md) |
+| Trees | Tree inventory with DBH, condition, risk notes, pruning and treatment history (arborist work) | [14](14-service-line-modules.md) |
+| Service history | All visits, applications, projects, photos | This doc, [04](04-scheduling-dispatch-routing.md) |
+| Documents | Designs (PDF), warranties, permits, HOA approvals, as-builts | This doc |
+| Client notes and photos | Client's own notes ("Grandma's peony, moved from the old house") and photos | Client |
 
 - **Never included:** prices paid by the Company, costs, margins, internal notes, crew pay, Company-internal ratings of the Client.
 - Data is presented on an interactive map/plan (the latest as-built Design Version with service events plotted) plus list views.
 
 #### 4.15.2 Ownership and portability
 - Policy: the **facts about the yard belong to the Client**; the Company is the steward. The Client can export at any time (step-up required): a branded PDF "Yard Book", a ZIP of photos and documents, and machine-readable files (JSON for structured data, GeoJSON for plan features in the Property's local coordinate reference, CSV for plant and service lists).
-- If the Client stops using the Company, read-only portal access to the Property Record continues for at least 24 months (exact period is a Company-tier setting with a platform minimum; see [Open questions](#14-open-questions)). The Company may not delete the Client's Property Record during that period except for legal erasure requests.
-- If the Company churns off Rootline, Clients receive an export link (Company-branded email sent by the platform) and read-only access for a platform-defined minimum (proposed 12 months), funded as part of the Company's offboarding terms ([19](19-platform-admin-portal.md), [22](22-business-model-pricing-gtm.md)).
+- If the Client stops using the Company, read-only portal access to the Property Record continues for at least 24 months (the platform minimum; a plan can set a longer period). The Company may not delete the Client's Property Record during that period except for legal erasure requests.
+- If the Company churns off Rootline, Clients receive an export link (Company-branded email sent by the platform) and read-only access for a platform minimum of 12 months, funded as part of the Company's offboarding terms ([19](19-platform-admin-portal.md), [22](22-business-model-pricing-gtm.md)).
 
 #### 4.15.3 Sharing and transfer
 - **Share read-only link** with an expiry (realtor, home inspector, insurance adjuster, new landscaper).
@@ -805,7 +803,7 @@ The Property Record is Rootline's answer to "the yard has no memory". It is a li
 - Departing personnel: when a management firm loses a community contract, the Company (or the firm's primary) moves the Property to another Client or revokes access in bulk; open approvals assigned to removed Contacts are reassigned.
 
 #### 4.16.3 Enhancement approval workflows with budgets and PO numbers
-- **Approval policy** per Client (optionally per Property): ordered rules evaluated by amount and category. Example for Sonoran Community Management:
+- **Approval policy** per Client (optionally per Property): ordered rules evaluated by amount and category. Example for Scioto Community Management:
 
 | Rule | Condition | Approvers | Mode |
 |------|-----------|-----------|------|
@@ -839,6 +837,7 @@ stateDiagram-v2
 
 #### 4.16.4 HOA board voting
 - Board votes with quorum and majority rules, deadline, optional comments, and a vote record exportable for minutes. Rootline records votes; it does not determine legal validity under the HOA's bylaws (the Client configures rules and is responsible for compliance).
+- **Board meeting workflows** (R24-17), built on the quorum approvals in [02](02-personas-roles-permissions.md): the community manager builds a meeting agenda from pending approvals and triaged resident requests (4.16.10), and publishes a **meeting packet** to the board (spend vs budget, completed enhancements with before/afters, inspection score trend, proposed enhancements with renderings). Votes taken at the meeting are entered as **ballots** (motion text, each director's vote or abstention, the recorder) next to any portal votes, and close the approval request the same way. The ballot record exports as a PDF for the minutes.
 
 #### 4.16.5 Site inspection reports
 - `ops_manager` or `crew_lead` performs a scored inspection in the crew/office app: categories (turf quality, bed weeding, shrub pruning, tree health, irrigation function, litter, hardscape condition, seasonal color), each 1-5 with photos and comments; issues flagged with recommended action and optional one-click proposal.
@@ -861,17 +860,17 @@ stateDiagram-v2
 - Client-side view: contract value + approved enhancements + forecast for scheduled seasonal work vs budget per Property, with month-by-month projection. Helpful for HOA reserve and operating budget meetings.
 
 #### 4.16.10 Resident intake for HOAs and multifamily
-- Optional resident-facing request page per community (e.g. `portal.greenleafgrounds.com/r/desert-ridge`), where residents submit issues; the community manager triages and forwards approved items to the Company. Residents never see financials and do not become Contacts unless invited.
+- Optional resident-facing request page per community (e.g. `portal.greenleafgrounds.example/r/darby-ridge`), where residents submit issues; the community manager triages and forwards approved items to the Company. Residents never see financials and do not become Contacts unless invited.
 
 #### 4.16.11 Vendor compliance packet
 - One place for the commercial client to fetch the Company's current COI, W-9, licenses (e.g. pesticide business license), safety program summary and signed contract.
 
 ### 4.17 Pre-client lead magnet ("Dream Yard Visualizer")
 
-Rendering and layout engines are specified in [11](11-ai-design-mockups.md); lead routing and campaigns in [16](16-marketing-growth-communications.md). The portal hosts the public experience on the Company's portal domain and website embeds.
+Rendering and layout engines are specified in [11](11-ai-design-mockups.md); lead routing and campaigns in [16](16-marketing-growth-communications.md). The portal hosts the public experience on the Company's portal domain and website embeds. It is one of the three homeowner visualizer surfaces (the website widget on Company sites, this portal-hosted page and Rootline Home, R24-14) and is on by default for every Company with AI mockups (OD-33).
 
 #### 4.17.1 Experience
-1. Prospect lands on `portal.greenleafgrounds.com/visualize` (or the embed on the Company's site).
+1. Prospect lands on `portal.greenleafgrounds.example/visualize` (or the embed on the Company's site).
 2. Enters address; the system confirms the service area (Company-defined polygons or ZIP list). Out-of-area addresses get a polite message and optional waitlist.
 3. Uploads 1-5 photos of the area to redesign (guidance overlay: "Stand at the street, landscape orientation, include the whole bed").
 4. Enters **real dimensions** (e.g. "Front bed: 42 ft along the house, 8 ft deep") or traces the bed on the satellite view; the AI pipeline uses dimensions to scale plant counts and spacing. The UI warns when dimensions and photo perspective disagree badly ("Your photo suggests a bed closer to 25 ft long; please confirm").
@@ -898,9 +897,9 @@ Rendering and layout engines are specified in [11](11-ai-design-mockups.md); lea
 - An accessibility statement page per Company portal with a contact path for barriers.
 
 #### 4.18.2 Languages
-- UI strings in English and Spanish at launch, French (Canada) in. Language auto-detected from browser, overridable per Contact, and remembered on the Contact so emails and SMS follow.
+- UI strings in English, Spanish and Canadian French (R24-19). Language auto-detected from browser, overridable per Contact, and remembered on the Contact so emails and SMS follow.
 - Company-authored content (proposal letters, scope descriptions, offer copy, care guides) can be authored in multiple languages; AI translation drafts with "machine translated" label until a staff member approves.
-- Quebec: for Clients with Quebec Properties, French versions of contracts and the portal are offered by default, consistent with the Charter of the French Language; this is a launch gate for Quebec-based Companies ([22](22-business-model-pricing-gtm.md)).
+- Quebec: for Clients with Quebec Properties, French versions of contracts and the portal are offered by default, consistent with the Charter of the French Language. Marketing to Quebec waits for the founder's French-language check (OD-70, [22](22-business-model-pricing-gtm.md)); the product serves Quebec Clients in French from the start.
 - Plant common names come from KB localized names; botanical names are never translated.
 
 #### 4.18.3 Units, currency, time
@@ -909,7 +908,7 @@ Rendering and layout engines are specified in [11](11-ai-design-mockups.md); lea
 #### 4.18.4 Mobile-first PWA
 - Designed at 360 px width first. Installable PWA with app icon from the brand kit. Web push notifications (on iOS this requires the user to add the portal to the Home Screen, iOS/iPadOS 16.4+), with SMS/email fallback.
 - Offline: last-viewed proposal, care guide, and Property Record summary cached for offline reading; actions queue only for comments and "I watered" check-ins.
-- Native apps if push adoption on iOS via PWA is too low.
+- **Native shell:** a thin iOS and Android shell ([21](21-ux-design-system-sitemaps.md)) wraps the same PWA for Clients who want reliable push and wallet passes without adding the portal to the Home Screen. Its store listing carries no Rootline name (OD-65); after sign-in it shows the Company's portal and brand. It adds no features the PWA lacks.
 
 #### 4.18.5 Performance budgets
 
@@ -924,7 +923,7 @@ Rendering and layout engines are specified in [11](11-ai-design-mockups.md); lea
 ### 4.19 Portal administration (Company side)
 
 #### 4.19.1 Portal settings
-- Module toggles: proposals, design viewer, project tracker, visits, live ETA, invoices, payments, autopay, requests, self-scheduling, messaging, plant care, warranties, offers, referrals, reviews, documents, Property Record.
+- Module toggles: proposals, design viewer, project tracker, visits, live ETA, live truck map (off by default), invoices, payments, autopay, requests, self-scheduling, messaging, plant care, warranties, offers, referrals, reviews, documents, Property Record, Dream Yard Visualizer (on by default for Companies with AI mockups, OD-33).
 - Visibility rules: show prices on visits, crew names/photos, arrival windows, labor hours on reports, line-item detail default, application details.
 - Invite policy, self-registration mode, session idle time for commercial users, step-up thresholds.
 - Payment policies (see [08](08-payments-stripe.md)): enabled methods, partial payments, minimums, surcharges, autopay options, deposit defaults.
@@ -945,7 +944,7 @@ Rendering and layout engines are specified in [11](11-ai-design-mockups.md); lea
 ### 5.1 Proposal to signed and deposit paid (residential, first portal contact)
 
 1. Estimator publishes a proposal with three tiers and two add-ons; the design viewer and two AI mockups are attached ([03](03-crm-sales-estimating-proposals.md), [11](11-ai-design-mockups.md)).
-2. Dana receives an email from `hello@greenleafgrounds.com` and an SMS from the Company's number with a link on `portal.greenleafgrounds.com`.
+2. Dana receives an email from `hello@greenleafgrounds.example` and an SMS from the Company's number with a link on `portal.greenleafgrounds.example`.
 3. She taps the link on her phone. GET renders a page; a POST exchanges the action token for an action session (no login screen).
 4. She scrolls the proposal, drags the before/after slider, taps a plant to read about it, toggles "Better", adds drip irrigation.
 5. The server recalculates totals and deposit; the sticky footer shows "Total $16,650, deposit today $4,995" (Better tier $14,800 plus drip $1,850, 30% deposit).
@@ -1014,7 +1013,7 @@ flowchart TD
 
 ### 5.3 Commercial enhancement approval with budget and PO
 
-1. `ops_manager` publishes an enhancement proposal "Replace 2,400 sq ft of dead turf at the north entrance with xeric planting, $11,850" for Desert Ridge HOA.
+1. `ops_manager` publishes an enhancement proposal "Replace 2,400 sq ft of dead turf at the north entrance with native pollinator planting, $11,850" for Darby Ridge HOA.
 2. The approval engine evaluates policy: amount > $5,000 -> board vote; budget check shows $9,000 remaining in enhancements -> over budget by $2,850 -> rule requires community manager endorsement before the board vote.
 3. Community manager Marcus endorses with a note and attaches the PO `SCM-204118`.
 4. Five board members receive approval requests with mockups; three vote yes within 4 days; quorum and majority reached.
@@ -1211,51 +1210,51 @@ sequenceDiagram
 
 ### 6.1 Screen inventory
 
-| ID | Screen | Primary personas | Priority |
-|----|--------|------------------|----------|
-| P-01 | Sign-in (email/phone, passkey) | All Contacts | |
-| P-02 | Action landing (scoped view from a link) | All Contacts | |
-| P-03 | Home dashboard (single Property) | `client_residential`, site contacts | |
-| P-04 | Portfolio dashboard | `client_commercial` | |
-| P-05 | Proposal viewer with tiers and add-ons | Homeowners, approvers | |
-| P-06 | Sign and pay deposit | Homeowners, approvers | |
-| P-07 | Design viewer: 2D plan, plant cards, layers | All proposal viewers | |
-| P-08 | Mockup gallery with before/after slider | All proposal viewers | |
-| P-09 | 3D view | All proposal viewers | |
-| P-10 | Project tracker | Project Clients | |
-| P-11 | Change order approval | Project Clients | |
-| P-12 | Visits: upcoming and history timeline | All Contacts | |
-| P-13 | Visit summary detail (photos, applications, rating) | All Contacts | |
-| P-14 | Live ETA ("on the way") | Residential Contacts | ETA page, truck map |
-| P-15 | Invoices and statements | `billing`, `primary` | |
-| P-16 | Pay (one or many invoices) | `billing`, `primary`, guests | |
-| P-17 | Payment methods and autopay | `billing`, `primary` | |
-| P-18 | Payment plans | `billing`, `primary` | |
-| P-19 | New request (with photos and map pin) | All Contacts except `viewer` | |
-| P-20 | Book an add-on (catalog and slot picker) | Residential, site contacts | |
-| P-21 | Messages (threads) | All Contacts | |
-| P-22 | Plant care guide and watering schedule | Project Clients | guide, schedule |
-| P-23 | Warranties and claim flow | Project Clients | list, claims |
-| P-24 | Property Record | `primary`, `co_owner` | view, export |
-| P-25 | Documents vault | Per scope | |
-| P-26 | Approvals inbox (commercial) | `approver`, `primary` | |
-| P-27 | Inspection and monthly reports | Commercial Contacts | |
-| P-28 | Snow event log | Commercial Contacts | |
-| P-29 | Budgets and POs | Commercial `primary`, `billing` | |
-| P-30 | Offers, referrals and reviews | Residential Contacts | |
-| P-31 | Account: contacts, preferences, sessions, passkeys | All Contacts | |
-| P-32 | Public pay-an-invoice | Guests | |
-| P-33 | Dream Yard Visualizer (public) | Prospects | |
-| C-01 | Company: portal settings and brand kit | `owner`, `office_manager` | |
-| C-02 | Company: client access management and view as client | `office_manager` | |
-| C-03 | Company: approval policies, budgets, POs per commercial Client | `ops_manager`, `office_manager` | |
+| ID | Screen | Primary personas |
+|----|--------|------------------|
+| P-01 | Sign-in (email/phone, passkey) | All Contacts |
+| P-02 | Action landing (scoped view from a link) | All Contacts |
+| P-03 | Home dashboard (single Property) | `client_residential`, site contacts |
+| P-04 | Portfolio dashboard | `client_commercial` |
+| P-05 | Proposal viewer with tiers and add-ons | Homeowners, approvers |
+| P-06 | Sign and pay deposit | Homeowners, approvers |
+| P-07 | Design viewer: 2D plan, plant cards, layers | All proposal viewers |
+| P-08 | Mockup gallery with before/after slider | All proposal viewers |
+| P-09 | 3D view | All proposal viewers |
+| P-10 | Project tracker | Project Clients |
+| P-11 | Change order approval | Project Clients |
+| P-12 | Visits: upcoming and history timeline | All Contacts |
+| P-13 | Visit summary detail (photos, applications, rating) | All Contacts |
+| P-14 | Live ETA ("on the way") | Residential Contacts |
+| P-15 | Invoices and statements | `billing`, `primary` |
+| P-16 | Pay (one or many invoices) | `billing`, `primary`, guests |
+| P-17 | Payment methods and autopay | `billing`, `primary` |
+| P-18 | Payment plans | `billing`, `primary` |
+| P-19 | New request (with photos and map pin) | All Contacts except `viewer` |
+| P-20 | Book an add-on (catalog and slot picker) | Residential, site contacts |
+| P-21 | Messages (threads) | All Contacts |
+| P-22 | Plant care guide and watering schedule | Project Clients |
+| P-23 | Warranties and claim flow | Project Clients |
+| P-24 | Property Record | `primary`, `co_owner` |
+| P-25 | Documents vault | Per scope |
+| P-26 | Approvals inbox (commercial) | `approver`, `primary` |
+| P-27 | Inspection and monthly reports | Commercial Contacts |
+| P-28 | Snow event log | Commercial Contacts |
+| P-29 | Budgets and POs | Commercial `primary`, `billing` |
+| P-30 | Offers, referrals and reviews | Residential Contacts |
+| P-31 | Account: contacts, preferences, sessions, passkeys | All Contacts |
+| P-32 | Public pay-an-invoice | Guests |
+| P-33 | Dream Yard Visualizer (public) | Prospects |
+| C-01 | Company: portal settings and brand kit | `owner`, `office_manager` |
+| C-02 | Company: client access management and view as client | `office_manager` |
+| C-03 | Company: approval policies, budgets, POs per commercial Client | `ops_manager`, `office_manager` |
 
 ### 6.2 Home dashboard (residential, mobile)
 
 ```text
 +--------------------------------------+
-| [E&S logo]  My Yard        (bell)(=) |
-| 1418 Maple Ct, Naperville      [v]   |
+| [GG logo]   My Yard        (bell)(=) |
+| 1418 Maple Ct, Worthington     [v]   |
 +--------------------------------------+
 | ! BALANCE DUE                         |
 |   $186.00  - Invoice 1043, 6 days    |
@@ -1376,7 +1375,7 @@ Sign step (sheet over the proposal):
 |          ::::: paver walk 4'-0" :::::         | Water: moderate            |
 |          ::::::::::::::::::::::::::::         | Blooms: Jul - Sep          |
 |          ::::: patio 320 sq ft ::::::         | Region rating: Excellent   |
-|                                               |  (Northern Illinois)       |
+|                                               |  (Central Ohio)            |
 |  [ + ] [ - ] [ Fit ]  Scale 1" = 8'           | Pet note: see KB source    |
 |  Measure | Comment pin                        | Care: prune late winter... |
 +-----------------------------------------------+ [ Full care guide ]        |
@@ -1422,7 +1421,7 @@ Sign step (sheet over the proposal):
 
 ```text
 +------------------------------------------------------------------------------------+
-| Greenleaf Grounds Co. - Property Center Sonoran Community Mgmt   Marcus R. (v)     |
+| Greenleaf Grounds Co. - Property Center Scioto Community Mgmt    Marcus R. (v)     |
 +------------------------------------------------------------------------------------+
 | Approvals waiting: 4 ($27,310)  | Open requests: 9 | Visits on schedule (30d): 97%  |
 | Enhancement budget used: 61%    | Snow events: n/a | Open balance: $48,220          |
@@ -1431,10 +1430,10 @@ Sign step (sheet over the proposal):
 +------------------------------------------------------------------------------------+
 | Property            | Last visit | Next visit | Requests | Approvals | Budget | Insp |
 |---------------------|------------|------------|----------|-----------|--------|------|
-| Desert Ridge HOA    | Jun 10     | Jun 17     | 2        | 1 $11,850 | 118% ! | 4.2  |
-| Mesa Verde Commons  | Jun 11     | Jun 18     | 0        | 0         | 44%    | 4.6  |
-| Saguaro Park Villas | Jun 9      | Jun 16     | 3        | 2 $9,410  | 72%    | 3.8  |
-| Camelback Office Pk | Jun 12     | Jun 13     | 1        | 1 $6,050  | 51%    | 4.4  |
+| Darby Ridge HOA     | Jun 10     | Jun 17     | 2        | 1 $11,850 | 118% ! | 4.2  |
+| Olentangy Commons   | Jun 11     | Jun 18     | 0        | 0         | 44%    | 4.6  |
+| Scioto Park Villas  | Jun 9      | Jun 16     | 3        | 2 $9,410  | 72%    | 3.8  |
+| Polaris Office Park | Jun 12     | Jun 13     | 1        | 1 $6,050  | 51%    | 4.4  |
 | ... 12 more                                                                        |
 +------------------------------------------------------------------------------------+
 | [ Map view ]  [ Download monthly reports (16) ]  [ Consolidated statement: May ]    |
@@ -1484,9 +1483,9 @@ Example values are illustrative; real product names, registration numbers and la
 
 ```text
 +--------------------------------------+
-| Approvals (3)        Desert Ridge HOA |
+| Approvals (3)         Darby Ridge HOA |
 +--------------------------------------+
-| North entrance xeric conversion       |
+| North entrance native planting        |
 | $11,850  -  Board vote                |
 | Needs 3 yes of 5, quorum 3            |
 | Deadline Jun 21 (4 days left)         |
@@ -1567,11 +1566,11 @@ Example values are illustrative; real product names, registration numbers and la
 
 ```text
 +--------------------------------------------------------------------------------+
-| My Yard Record - 1418 Maple Ct, Naperville IL    [ Export ] [ Share ] [ Print ] |
+| My Yard Record - 1418 Maple Ct, Worthington OH   [ Export ] [ Share ] [ Print ] |
 +--------------------------------------------+-----------------------------------+
 | Map: as-built v4                           | PROFILE                           |
 |  +-------------------------------------+   |  Lot 0.30 ac, lawn 9,200 sq ft    |
-|  | HOUSE  [bed A] o o o (H)(H)(H)      |   |  Beds 1,140 sq ft, zone 6a        |
+|  | HOUSE  [bed A] o o o (H)(H)(H)      |   |  Beds 1,140 sq ft, zone 6b        |
 |  |        :::: patio 320 sq ft ::::    |   |  Soil: silty clay loam, pH 7.4    |
 |  |  Z1 Z2 spray      Z3 Z4 drip        |   |   (soil test Apr 2027)            |
 |  |  * controller in garage             |   | PLANTS  38 installed              |
@@ -1592,7 +1591,7 @@ Example values are illustrative; real product names, registration numbers and la
 
 ```text
 +--------------------------------------+
-| [E&S logo]   Visualize your yard      |
+| [GG logo]    Visualize your yard      |
 +--------------------------------------+
 | Front bed: 42 ft x 8 ft (you entered) |
 | Style: Native / Pollinator            |
@@ -1821,26 +1820,26 @@ erDiagram
 
 ### 8.1 External services
 
-| Service | Use in the portal | Notes | Priority |
-|---------|-------------------|-------|----------|
-| **Stripe (Company's connected account)** | Payment Element, PaymentIntents (direct charges), SetupIntents, Customers, Financial Connections (ACH bank linking), mandates, card wallets, Canadian PAD, refunds/disputes status | Architecture and webhooks in [08](08-payments-stripe.md). The portal never uses Stripe's hosted customer portal because it would break white-label and data unity. | (PAD) |
-| **Email provider** (Postmark or SendGrid) | Transactional and marketing streams, sender domains (DKIM, Return-Path), inbound reply parsing into threads | Separate streams per category | |
-| **Twilio** | SMS/MMS via Company 10DLC numbers, verification codes, voice code fallback, inbound SMS to threads | Consent and keyword handling, see [16](16-marketing-growth-communications.md) | |
-| **Web Push** (VAPID) | PWA notifications | iOS requires Home Screen install | |
-| **Custom hostname / TLS service** (e.g. Cloudflare for SaaS) | Custom portal domains with automated certificates | Health checks and fallback | |
-| **Bot protection** (e.g. Cloudflare Turnstile) | Sign-in, public pay, visualizer | Privacy-preserving, accessible challenge | |
-| **Maps** (Mapbox or Google) | Property maps, live ETA map, request pins | Tile costs metered per Company | |
-| **Weather API** | Watering skips, rain delays, freeze alerts, snow logs | Shared with [04](04-scheduling-dispatch-routing.md) and [14](14-service-line-modules.md) | |
-| **AI Gateway** | Triage, translation, narratives, care guides, warranty pre-assessment, concierge, mockups | Metered as AI credits; provider-agnostic ([17](17-ai-copilot-automation.md)) | |
-| **Consumer financing partner** | Prequalification and loan offers | Via [08](08-payments-stripe.md) | |
-| **Review platforms** | Deep links to Google Business Profile (primary), Facebook and Houzz review pages | Links, not scraping; no Yelp solicitation; no incentives (4.13.4) | |
-| **Smart irrigation controllers** (e.g. Rachio, Hunter Hydrawise) | Read schedules/run times; suggest establishment schedules | OAuth per Client | |
-| **Identity providers** (Entra ID, Okta, Google) | Commercial SSO | SAML/OIDC | |
-| **E-invoicing networks** (e.g. Coupa, Ariba) | Large commercial invoice delivery | Partner-dependent | |
+| Service | Use in the portal | Notes |
+|---------|-------------------|-------|
+| **Stripe (Company's connected account)** | Payment Element, PaymentIntents (direct charges), SetupIntents, Customers, Financial Connections (ACH bank linking), mandates, card wallets, Canadian PAD, refunds/disputes status | Architecture and webhooks in [08](08-payments-stripe.md). The portal never uses Stripe's hosted customer portal because it would break white-label and data unity. |
+| **Email provider** (Postmark or SendGrid) | Transactional and marketing streams, sender domains (DKIM, Return-Path), inbound reply parsing into threads | Separate streams per category |
+| **Twilio** | SMS/MMS via Company 10DLC numbers, verification codes, voice code fallback, inbound SMS to threads | Consent and keyword handling, see [16](16-marketing-growth-communications.md) |
+| **Web Push** (VAPID) | PWA notifications | iOS requires Home Screen install |
+| **Custom hostname / TLS service** (e.g. Cloudflare for SaaS) | Custom portal domains with automated certificates | Health checks and fallback |
+| **Bot protection** (e.g. Cloudflare Turnstile) | Sign-in, public pay, visualizer | Privacy-preserving, accessible challenge |
+| **Maps** (Mapbox or Google) | Property maps, live ETA map, request pins | Tile costs metered per Company |
+| **Weather API** | Watering skips, rain delays, freeze alerts, snow logs | Shared with [04](04-scheduling-dispatch-routing.md) and [14](14-service-line-modules.md) |
+| **AI Gateway** | Triage, translation, narratives, care guides, warranty pre-assessment, concierge, mockups | Metered as AI credits; provider-agnostic ([17](17-ai-copilot-automation.md)) |
+| **Consumer financing partner** | Prequalification and loan offers | Via [08](08-payments-stripe.md) |
+| **Review platforms** | Deep links to Google Business Profile (primary), Facebook and Houzz review pages | Links, not scraping; no Yelp solicitation; no incentives (4.13.4) |
+| **Smart irrigation controllers** (e.g. Rachio, Hunter Hydrawise) | Read schedules/run times; suggest establishment schedules | OAuth per Client |
+| **Identity providers** (Entra ID, Okta, Google) | Commercial SSO | SAML/OIDC |
+| **E-invoicing networks** (e.g. Coupa, Ariba) | Large commercial invoice delivery | Partner-dependent |
 
 ### 8.2 Portal API surface
 
-- **Portal BFF** (backend-for-frontend) in the modular monolith, exposing a typed API (tRPC or GraphQL per [20](20-architecture-security.md)) consumed only by portal frontends. Every request resolves `tenant_id` from the hostname, then the session, then RLS context; a mismatch between hostname tenant and session tenant is a hard 403 and a security event.
+- **Portal BFF** (backend-for-frontend) in the modular monolith, exposing a typed internal API (tRPC or GraphQL per [20](20-architecture-security.md); the public Company API stays REST only, OD-64) consumed only by portal frontends. Every request resolves `tenant_id` from the hostname, then the session, then RLS context; a mismatch between hostname tenant and session tenant is a hard 403 and a security event.
 - **Public endpoints:** `POST /auth/challenge`, `POST /auth/verify`, `POST /auth/action/exchange`, `GET /pay/lookup`, `POST /visualize/*` (rate-limited).
 - **Embed SDK**: `rootline-portal.js` web component for "Client login", "Pay invoice", "Request service" and "Visualize your yard" with theme from the brand kit.
 - **Company API** (for Companies' own integrations, [20](20-architecture-security.md)): endpoints to create action links ("give me a pay link for invoice 1043"), list portal identities, and manage contact access.
@@ -1965,10 +1964,12 @@ Residential homeowners (`client_residential`) are typically `primary`; commercia
 | Capability | `platform_owner` | `platform_support` | `platform_curator` | `platform_finance` | `platform_engineer` |
 |------------|------------------|--------------------|--------------------|--------------------|---------------------|
 | See domain/TLS/deliverability health per tenant | Y | Y | - | - | Y |
-| View a tenant's portal as a client | Only with tenant-granted, time-boxed support consent; logged and visible to the tenant | Same | - | - | Break-glass only, logged |
+| View a tenant's portal as a client | Only with tenant-granted, time-boxed support consent; logged and visible to the tenant | Same | - | - | Break-glass only, with the founder's approval; logged |
 | Edit plant card content (KB) | Y | - | Y | - | - |
 | Adjust lead-magnet AI credit caps | Y | Y | - | Y | - |
-| Suspend a portal for abuse (phishing, spam) | Y | Y (with approval) | - | - | - |
+| Suspend a portal for abuse (phishing, spam) | Y | Y (with the founder's approval) | - | - | - |
+
+`platform_owner` is the founder; the other platform roles are held by Rootline's operator agents (the support agent, the plant curator agent, the finance agent and the engineering agent). An agent's request that needs approval goes to the founder, and the founder's own privileged actions (break-glass, suspension) need step-up authentication and a written reason and are written to the platform audit log ([24](24-product-scope-decisions-catalog.md) section 1.2).
 
 Authorization is enforced server-side in the BFF with a policy engine shared with [02](02-personas-roles-permissions.md); the UI hides what a scope cannot do but never relies on hiding.
 
@@ -1978,20 +1979,20 @@ Authorization is enforced server-side in the BFF with a policy engine shared wit
 
 All AI runs through the AI Gateway ([17](17-ai-copilot-automation.md)), is metered as AI credits on the Company's account, is grounded only in the requesting Client's data plus Company and KB content, and is labeled as AI-generated wherever its output is shown to a Client.
 
-| # | Opportunity | Description | Guardrails | Priority |
-|---|-------------|-------------|------------|----------|
-| AI-1 | **Portal concierge** | Client-facing assistant: "When is my next mow?", "Why is this invoice higher than last month?", "Is Limelight hydrangea safe for dogs?", "Can I add aeration?" Answers from the Client's own records, Company FAQ and KB; can start actions (open the pay sheet, draft a request) but never completes payments or signatures. | Retrieval restricted to tenant + Client scope; no price promises outside the price book; hands off to a human on complaints, cancellations, legal or safety topics; transcript visible to staff | |
-| AI-2 | **Proposal explainer** | "Explain this proposal simply" summary, tier difference explanations, Spanish/French translation, answers to common questions inline | Read-only; cites proposal sections; never alters price or scope | |
-| AI-3 | **Request triage and photo understanding** | Classify, extract, detect urgency (water leak, fallen tree on structure), match to price book, draft reply and quote | Company review unless an intent is whitelisted for auto-send | |
-| AI-4 | **Warranty pre-assessment** | Vision model plus questionnaire to estimate cause (drought, transplant shock, disease, animal, mechanical); attaches weather history and watering log | Advisory only; decision by `ops_manager`; never shown to the client as a denial reason | |
-| AI-5 | **Personalized care guides** | Rewrite KB care data into a plan for the Client's plants, Region, soil and season; weather-adaptive watering | Grounded only in KB fields and Company policy; no chemical rates | |
-| AI-6 | **Monthly report narratives** | Draft property-level summaries for commercial reports | Every number in the narrative must come from report data (validated by a post-check that extracts numbers and compares) | |
-| AI-7 | **Sentiment and churn signals** | Detect frustration in messages and ratings, missed approvals, payment slippage; alert account owner with suggested recovery | Internal only; no automated client-facing action | |
-| AI-8 | **Lead magnet mockups and layouts** | Dimension-aware mockups constrained to regional Plant Palettes ([11](11-ai-design-mockups.md)) | Watermarks, disclaimers, credit caps, safety filters | |
-| AI-9 | **Next best service** | Recommend relevant add-ons by Property features, history and season | Frequency caps; marketing consent for messages | |
-| AI-10 | **Plant problem diagnosis** | Photo diagnosis for clients with "have a pro look" escalation | No DIY pesticide advice; confidence shown | |
-| AI-11 | **Voice and SMS concierge** | Same as AI-1 over SMS ("Text MOW to reschedule") and voice | TCPA consent; identity verified via phone on file + code for account actions | |
-| AI-12 | **Accessibility assist** | Auto-generated alt text for crew photos and mockups ("Freshly edged bed with dark brown mulch along the front walk") | Reviewed sample audits; staff can edit | |
+| # | Opportunity | Description | Guardrails |
+|---|-------------|-------------|------------|
+| AI-1 | **Portal concierge** | Client-facing assistant: "When is my next mow?", "Why is this invoice higher than last month?", "Is Limelight hydrangea safe for dogs?", "Can I add aeration?" Answers from the Client's own records, Company FAQ and KB; can start actions (open the pay sheet, draft a request) but never completes payments or signatures. | Retrieval restricted to tenant + Client scope; no price promises outside the price book; hands off to a human on complaints, cancellations, legal or safety topics; transcript visible to staff |
+| AI-2 | **Proposal explainer** | "Explain this proposal simply" summary, tier difference explanations, Spanish/French translation, answers to common questions inline | Read-only; cites proposal sections; never alters price or scope |
+| AI-3 | **Request triage and photo understanding** | Classify, extract, detect urgency (water leak, fallen tree on structure), match to price book, draft reply and quote | Company review unless an intent is whitelisted for auto-send |
+| AI-4 | **Warranty pre-assessment** | Vision model plus questionnaire to estimate cause (drought, transplant shock, disease, animal, mechanical); attaches weather history and watering log | Advisory only; decision by `ops_manager`; never shown to the client as a denial reason |
+| AI-5 | **Personalized care guides** | Rewrite KB care data into a plan for the Client's plants, Region, soil and season; weather-adaptive watering | Grounded only in KB fields and Company policy; no chemical rates |
+| AI-6 | **Monthly report narratives** | Draft property-level summaries for commercial reports | Every number in the narrative must come from report data (validated by a post-check that extracts numbers and compares) |
+| AI-7 | **Sentiment and churn signals** | Detect frustration in messages and ratings, missed approvals, payment slippage; alert account owner with suggested recovery | Internal only; no automated client-facing action |
+| AI-8 | **Lead magnet mockups and layouts** | Dimension-aware mockups constrained to regional Plant Palettes ([11](11-ai-design-mockups.md)) | Watermarks, disclaimers, credit caps, safety filters |
+| AI-9 | **Next best service** | Recommend relevant add-ons by Property features, history and season | Frequency caps; marketing consent for messages |
+| AI-10 | **Plant problem diagnosis** | Photo diagnosis for clients with "have a pro look" escalation | No DIY pesticide advice; confidence shown |
+| AI-11 | **Voice and SMS concierge** | Same as AI-1 over SMS ("Text MOW to reschedule") and voice | TCPA consent; identity verified via phone on file + code for account actions |
+| AI-12 | **Accessibility assist** | Auto-generated alt text for crew photos and mockups ("Freshly edged bed with dark brown mulch along the front walk") | Reviewed sample audits; staff can edit |
 
 ---
 
@@ -2097,7 +2098,7 @@ Targets below are **internal design targets (estimates), not industry statistics
 | Autopay enrollment | % of recurring-service Clients on autopay | > 50% |
 | Action-link completion | % of action links whose target action (pay, sign, approve, reply) completes within 7 days without a full sign-in | > 60% for invoice links |
 | Step-up abandonment | % of step-up challenges started but not completed within 10 minutes | < 8% (higher means the proof ladder is too strict) |
-| Portal-to-ledger tie-out | Daily check that portal AR equals Ledger AR per Company | 100% match; any variance pages `platform_engineer` |
+| Portal-to-ledger tie-out | Daily check that portal AR equals Ledger AR per Company | 100% match; any variance pages the engineering agent (`platform_engineer`) |
 | External books freshness | % of portal balance reads served while the accounting sync is less than 15 minutes old (external books mode only) | > 99% |
 | Time to pay | Median days from invoice issued to paid, portal-paid invoices vs others | 30% lower for portal-paid |
 | Proposal approval time | Median hours from first view to signature | < 72 h residential |
@@ -2128,9 +2129,9 @@ Targets below are **internal design targets (estimates), not industry statistics
 5. **Pet and kid safe mode.** Contacts flag "dogs" or "young kids"; application visits trigger re-entry timers on the home screen, and the Company can prefer pet-friendly product programs for those Properties.
 6. **Crew thank-you wall.** Separate from tips (4.9.6): Clients can leave a short thank-you note or photo for the crew after any visit. Notes appear in the crew app, on a breakroom TV view and in crew scorecards ([15](15-team-hr-payroll.md)). It costs the Client nothing and helps retention in a labor-short industry.
 7. **Season Pass subscriptions.** Bundled annual plans (mowing + 6-step lawn + spring/fall cleanup + irrigation start-up and winterization) sold as a monthly subscription with autopay, prepay discount and one-tap renewal.
-8. **Calendar and smart-home hooks.** ICS feeds today; later, smart-home integrations (garage or gate opening on crew arrival with time-limited codes, if the homeowner opts in) and smart irrigation pause during mow days.
+8. **Calendar and smart-home hooks.** ICS feeds plus smart-home integrations (garage or gate opening on crew arrival with time-limited codes, if the homeowner opts in) and smart irrigation pause during mow days.
 9. **Plant QR tags and a "garden walk" mode.** Weatherproof tags link to plant pages; walk mode on the phone uses location to show what each plant is and how to care for it.
-10. **Gift a yard service.** Gift cards and "gift a spring cleanup" for adult children buying help for aging parents, a common real-world purchase pattern; the gift creates a pending Client and Property.
+10. **Gift a yard service.** Gift cards and "gift a spring cleanup" for adult children buying help for aging parents, a common real-world purchase pattern; the gift creates a pending Client and Property. Gift credits are sold only where the gift-card rule table allows (R24-24).
 11. **HOA board kit.** One-click packet for annual meetings: spend vs budget, completed enhancements with before/afters, inspection score trend, proposed next-year enhancements with renderings.
 12. **Proactive "we noticed" cards.** Crew-reported observations (grub damage starting, a leaning tree, a cracked paver) appear as cards with a photo and an optional quote, turning field eyes into helpful, non-pushy upsells.
 13. **Client-side design moodboards.** Before the consultation, clients save plants from the Company's regional palette and inspiration photos into a moodboard the designer receives in Design Studio.
@@ -2144,23 +2145,23 @@ Targets below are **internal design targets (estimates), not industry statistics
 
 ---
 
-## 14. Open questions
+## 14. Decisions on former open questions
 
-1. **Default portal domain.** What Rootline-owned domain hosts default subdomains (and should it avoid "Rootline" entirely for white-label purity, e.g. a neutral domain)? Decision needed with [20](20-architecture-security.md) and brand.
-2. **Cross-Company identity ("Rootline Wallet").** Do we ever link a person's identities across Companies? It helps homeowners and the moonshot homeowner network ([23](23-innovation-moonshots.md)) but conflicts with white-label expectations. Proposed: off by default, explicit opt-in, never visible to Companies.
-3. **Property Record retention after churn.** Proposed minimums: 24 months read-only access after a Client leaves a Company, 12 months after a Company leaves Rootline. Who pays storage, and is a paid "homeowner keep-forever" tier acceptable to Companies?
-4. **Portal included in all plans? (packaging settled in [22](22-business-model-pricing-gtm.md))** The core portal (proposals, pay, history, requests) is in every plan, Rootline-branded on Starter; the white-label portal and custom domain start at Grow; the badge is removable on Pro; commercial multi-property approvals are limited to 5 commercial Clients on Grow and unlimited on Pro and Enterprise. Still open: how visualizer usage draws on each plan's AI credits (300 / 2,000 / 6,000 per month on Starter / Grow / Pro) and whether Companies want a separate lead-magnet credit cap by default.
-5. **Live crew location.** ETA-only by default, or live map by default? Crew privacy and labor-relations considerations vary by Company; proposal is ETA-only default with live map opt-in.
-6. **Accept on ACH initiation threshold.** Is $5,000 the right default for treating a processing ACH deposit as acceptance?
-7. **Financing partner.** Which consumer financing provider(s) for US and Canada, and do we need a fallback for Companies whose Stripe configuration is not compatible?
-8. **Warranty transferability on home sale.** Should plant warranties transfer to the buyer by default? Company policy setting with a recommended default.
-9. **Client edits to the Property Record.** How do we reconcile client-added notes and photos with Company-maintained facts (e.g., client says they removed a shrub)? Proposed: client additions are a separate layer that Companies can accept into the record.
-10. **Competitive gaps.** Aspire's, SynkedUP's and Yardbook's client portal specifics are described at listing level only (verify); a hands-on teardown (demo accounts or customer interviews) is recommended before finalizing the competitive matrix in [01](01-market-landscape.md).
-11. **Native app timing.** What PWA push adoption on iOS triggers the move to native wrappers?
-12. **Proof-ladder thresholds.** Is $10,000 the right default above which signing needs a code? Should commercial approvals have a lower default ($5,000 proposed)? And is a fuzzy name match between the typed signature and the addressed Contact strong enough below the threshold? Validate with counsel and with step-up abandonment data (Section 12).
-13. **Contact-scope defaults versus doc 02 (resolved).** This doc follows [02](02-personas-roles-permissions.md) on contact scopes (`property_contact`; `co_owner` cannot manage contacts; payment-method management off by default for `co_owner`), and 02 now follows the proof ladder in 4.2.5 (no blanket step-up for paying; step-up only for saved-method payments, larger or mismatched signatures, and contact, autopay and payment-method changes). No open item remains; kept here so the numbering of later questions stays stable.
-14. **Passkey related origins.** If related-origin support is still incomplete in Firefox and some embedded browsers at launch, do we register custom-domain Companies' passkeys on the custom domain instead and accept re-enrollment on later domain changes?
-15. **External books mode and dunning.** How stale can the accounting sync get before automated overdue reminders pause for every Client of that Company (proposed: 60 minutes)?
+1. **Default portal domain.** Default subdomains live on a neutral Rootline-owned domain with no Rootline name in it, for white-label purity (OD-65, 4.1.3); custom domains are available on Grow and above.
+2. **Cross-Company identity ("Rootline Wallet").** Off by default, explicit opt-in by the person, never visible to Companies (4.2.9). Rootline Home ([23](23-innovation-moonshots.md)) uses the same opt-in link with per-Company verification.
+3. **Property Record retention after churn.** At least 24 months of read-only access after a Client leaves a Company and 12 months after a Company leaves Rootline (4.15.2). Storage is priced into plans with cold storage for old media (11.6, [22](22-business-model-pricing-gtm.md)); there is no paid homeowner "keep-forever" tier, and the Client keeps the export.
+4. **Portal included in all plans.** Yes (OD-11): proposals, pay, history and requests in every plan, Rootline-branded on Starter; white-label and custom domain from Grow; badge removable on Pro; commercial approvals limited on Grow and full on Pro and Enterprise, per [22](22-business-model-pricing-gtm.md). Visualizer runs draw on the plan's AI credits at the [22](22-business-model-pricing-gtm.md) rate card, and the lead-magnet cap in 4.17.3 is a Company setting with alerting.
+5. **Live crew location.** ETA-only by default; the live truck map is a Company opt-in (4.7.3).
+6. **Accept on ACH initiation threshold.** $5,000; above it, the deposit is accepted once the payment clears (OD-23, 4.4.7).
+7. **Financing partner.** Partners sit behind the `FinancingProvider` adapter in [08](08-payments-stripe.md) 4.12: one primary lender per Company per country plus at most one fallback, with BNPL through the Stripe Payment Element for Companies without a lender agreement. The build agent picks the first adapters from the candidates in 08 and records the choice.
+8. **Warranty transferability on home sale.** Plant warranties transfer to the buyer for their remaining term by default; a Company can turn transfer off in its warranty policy (5.9).
+9. **Client edits to the Property Record.** Client additions are a separate layer that Companies can accept into the record; Company-maintained facts change only when the Company accepts.
+10. **Competitive gaps.** The marketing agent checks Aspire, SynkedUP and Yardbook portal specifics against primary sources before any public comparison (OD-07, R26-3). The build does not wait on it.
+11. **Native app timing.** No trigger is needed: the portal is the PWA plus the thin native shell in 4.18.4.
+12. **Proof-ladder thresholds.** $10,000 for signing without a code, $5,000 for commercial approval step-up, and a fuzzy name match below the threshold, all Company-configurable (4.2.5). The step-up abandonment KPI (section 12) shows whether a default is too strict.
+13. **Contact-scope defaults versus doc 02.** Resolved: this doc follows [02](02-personas-roles-permissions.md) on contact scopes (`property_contact`; `co_owner` cannot manage contacts; payment-method management off by default for `co_owner`), and 02 follows the proof ladder in 4.2.5.
+14. **Passkey related origins.** Every portal passkey is registered on the Company's default subdomain with related origins (4.2.4); browsers without related-origin support get the one-time re-enroll prompt.
+15. **External books mode and dunning.** Automated overdue reminders pause for every Client of a Company whose accounting sync is more than 60 minutes stale, and resume after the next successful sync (4.9.9).
 
 ---
 
@@ -2205,7 +2206,7 @@ Sources already gathered and cited by other Rootline research and module docs, r
 - TCPA revocation - [Nixon Peabody: FCC partially delays new TCPA consent revocation rules](https://www.nixonpeabody.com/insights/alerts/2025/04/11/fcc-partially-delays-new-tcpa-consent-revocation-rules); [Crowell: FCC adopts amendments to TCPA rules](https://www.crowell.com/en/insights/client-alerts/fcc-officially-adopts-amendments-to-tcpa-rules); [Mac Murray and Shuster on the revoke-all delay](https://mslawgroup.com/delayed-again-fcc-pushes-back-tcpas-revoke-all-rule-to-january-31-2027/); [FCC 26-67](https://docs.fcc.gov/public/attachments/FCC-26-67A1.pdf)
 - Email deliverability - [Bird: Gmail and Yahoo sender requirements](https://bird.com/docs/knowledge-base/deliverability/gmail-yahoo-requirements)
 
-Canonical rules cited from general knowledge (verify current text before launch):
+Canonical rules cited from general knowledge (verify current text before quoting externally):
 
 - Regulation E stop-payment right - [12 CFR 1005.10(c) (eCFR)](https://www.ecfr.gov/current/title-12/chapter-X/part-1005/subpart-A/section-1005.10)
 - Regulation Z creditor definition - [12 CFR 1026.2(a)(17) (eCFR)](https://www.ecfr.gov/current/title-12/chapter-X/part-1026/subpart-A/section-1026.2)

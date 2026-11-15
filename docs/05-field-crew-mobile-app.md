@@ -1,24 +1,23 @@
 # 05 - Field and Crew Mobile App
 
-> The Rootline Crew app is the React Native (Expo), offline-first app that crews, crew leads and field estimators carry all day. It is where the plan from the office meets dirt, weather, dogs, locked gates and dead zones. It runs the crew's day: route, navigation handoff, property maps with zones and hazards, checklists, before/after photos, time (job vs drive vs shop, breaks, California meal/rest attestations), materials and plant usage, pesticide application records with auto-filled weather, signatures, Tap to Pay collections, upsell capture, voice notes translated between Spanish and English, safety (tailgate talks, JHA, DVIR, incidents, heat logs), equipment hours, crew chat and a crew-lead end-of-day report. Every hour, bag of mulch and photo recorded here flows straight into job costing ([09](09-accounting-ledger-integrations.md)), invoicing ([07](07-invoicing-billing-contracts.md)), payroll ([15](15-team-hr-payroll.md)) and the client portal ([06](06-customer-portal.md)). If the crew app is slow, confusing or loses data, every downstream number in the company is wrong. That is why this app gets the hardest engineering (a real sync engine) and the most careful UX (gloves, glare, Spanish-first, low-end Android).
+> The Rootline Crew app is the React Native (Expo), offline-first app that crews, crew leads, managers, estimators and designers carry all day. It is where the plan from the office meets dirt, weather, dogs, locked gates and dead zones. It runs the crew's day: route, navigation handoff, property maps with zones and hazards, checklists, before/after photos, time (job vs drive vs shop, breaks, California meal/rest attestations), materials and plant usage, pesticide application records with auto-filled weather, signatures, Tap to Pay collections, upsell capture, voice notes translated between Spanish and English, safety (tailgate talks, JHA, DVIR, incidents, heat logs), equipment hours, crew chat and a crew-lead end-of-day report. Every hour, bag of mulch and photo recorded here flows straight into job costing ([09](09-accounting-ledger-integrations.md)), invoicing ([07](07-invoicing-billing-contracts.md)), payroll ([15](15-team-hr-payroll.md)) and the client portal ([06](06-customer-portal.md)). If the crew app is slow, confusing or loses data, every downstream number in the company is wrong. That is why this app gets the hardest engineering (a real sync engine) and the most careful UX (gloves, glare, Spanish-first, low-end Android).
 
 **At a glance**
 
-- **What it is:** the React Native (Expo), offline-first app that `technician`, `crew_lead` and field estimators use all day. It executes the Visits and Routes planned in [04](04-scheduling-dispatch-routing.md) and produces the field truth (time, photos, materials, chemical records, signatures, field payments) behind job costing, invoicing, payroll and the client portal.
+- **What it is:** the React Native (Expo), offline-first app that `technician`, `crew_lead`, managers, estimators and designers use all day. It is one native app with three modes (OD-38): crew mode, manager mode and sales mode (4.0.1). It executes the Visits and Routes planned in [04](04-scheduling-dispatch-routing.md) and produces the field truth (time, photos, materials, chemical records, signatures, field payments) behind job costing, invoicing, payroll and the client portal.
 - **Decision 1 - offline is the normal state.** The UI reads only from local SQLite; every action is a local write plus a mutation in a priority lane, synced with the bucket protocol owned by [20](20-architecture-security.md) section 4.11 (ADR-008). Append-only records for punches, chemical records and signatures; state-machine merge for Visit status (`completed` beats an office `canceled` and opens a billing review); field-level last-writer-wins by HLC elsewhere. Nothing is silently discarded.
-- **Decision 2 - time is an append-only stream of punch events.** Segments are `shop`, `drive`, `job`, `meal_break`, `rest_break`, `training` and `equipment_repair`, with a one-tap crew-level punch and signed clock-out attestations (, with the California pack). Timesheet derivation, pay rules and weekly approval belong to [15](15-team-hr-payroll.md).
+- **Decision 2 - time is an append-only stream of punch events.** Segments are `shop`, `drive`, `job`, `meal_break`, `rest_break`, `training` and `equipment_repair`, with a one-tap crew-level punch and signed clock-out attestations (with the California pack). Timesheet derivation, pay rules and weekly approval belong to [15](15-team-hr-payroll.md).
 - **Decision 3 - Visit states are the canonical keys from [04](04-scheduling-dispatch-routing.md) 4.1.3.** The app runs the field subset (`dispatched` -> `en_route` -> `on_site` -> `in_progress` / `paused` -> `completed` / `partially_completed` / `skipped`) with the closed skip reason codes, and the server-computed verification status (4.4.5a) gates per-visit invoicing in [07](07-invoicing-billing-contracts.md).
 - **Decision 4 - field money lands in the Company's own Stripe account** as direct charges ([08](08-payments-stripe.md)); Rootline never holds client funds. Cash and checks follow the ledger posting rules in [09](09-accounting-ledger-integrations.md) (1065 Cash in Transit, then 1060 Undeposited Funds, then the bank).
 - **Decision 5 - "off the clock = invisible."** No location collection when clocked out or during unpaid meals; payroll-grade arrivals come from dual-path detection (OS geofences plus in-app GPS against the parcel polygon).
--:** Today and route view, navigation handoff, visit workflow with checklists and before/after photos, crew and individual time with meal and rest break segments and Federal plus Great Lakes launch-state break reminders, chemical application records with weather auto-fill, the Snow Lite storm visit log, signatures, check/cash recording, text-to-pay and card on file, Spot it upsell capture, voice notes with EN/ES translation, safety (tailgate talks, DVIR, incident reports), crew chat and announcements, the sync engine, Outdoor Mode and Spanish-first UX.
-- and later:** Tap to Pay and Bluetooth readers, shop kiosk, MDM, manager mode, satellite offline map packs, California meal/rest attestations and heat procedures plus other state and provincial break and heat packs (the Great Lakes launch states need none of them at MVP), multi-day install logs, JHA, lone-worker safety, "Pick up extra work"; in-app turn-by-turn and consented face verification.
+- **In v1:** crew, manager and sales modes; Today and route view with satellite offline map packs and "Pick up extra work"; navigation handoff plus in-app truck-aware turn-by-turn; the visit workflow with checklists and before/after photos; crew and individual time with meal and rest break segments, California meal/rest attestations and heat procedures, and the jurisdiction packs in [24](24-product-scope-decisions-catalog.md) R24-18; chemical application records with weather auto-fill; the Snow Lite storm visit log and full snow field capture; multi-day install logs; signatures; Tap to Pay and Bluetooth readers, check/cash recording, text-to-pay and card on file; Spot it upsell capture; voice notes with EN/ES translation and the crew voice assistant; safety (tailgate talks, JHA, DVIR, incident reports, heat logs, lone-worker check-ins); crew chat and announcements; shop kiosk and MDM; the sync engine; Outdoor Mode and Spanish-first UX; practice mode and shadow mode for switching Companies. There is no face verification (OD-54).
 - **Differentiators:** a full 10-hour day in a dead zone with zero lost records, UX for gloves, glare and a 3 GB Android, compliance produced as a side effect of the work (attestations, chemical records, heat logs), and tips split to the crew by clocked hours.
 - **Key cross-links:** schedule, Visit state machine and ETA in [04](04-scheduling-dispatch-routing.md); client-visible photos, notes and application records in [06](06-customer-portal.md); payments in [08](08-payments-stripe.md); posting rules in [09](09-accounting-ledger-integrations.md); program rounds and pesticide compliance in [14](14-service-line-modules.md); timesheets and pay in [15](15-team-hr-payroll.md); sync protocol and device security in [20](20-architecture-security.md); crew app sitemap in [21](21-ux-design-system-sitemaps.md).
 
 | Item | Value |
 |---|---|
 | Surface | iOS + Android crew app, phones and tablets (one codebase, Expo / React Native) |
-| Primary users | `technician`, `crew_lead`; secondary `ops_manager`, `estimator`, `designer`, `owner`, `subcontractor` |
+| Primary users | `technician` and `crew_lead` (crew mode); `owner`, `ops_manager` and `office_manager` (manager mode); `estimator` and `designer` (sales mode); `subcontractor` (restricted crew mode) |
 | Owns | Field execution UX, local data store, sync client, time capture, field records (photos, notes, chem, safety, signatures, field payments) |
 | Depends on | Visit/Route model ([04](04-scheduling-dispatch-routing.md)), Price Book and inventory ([13](13-operations-inventory-equipment.md)), payroll rules ([15](15-team-hr-payroll.md)), Stripe architecture ([08](08-payments-stripe.md)), sync server and data platform ([20](20-architecture-security.md)), design system ([21](21-ux-design-system-sitemaps.md)) |
 | Feeds | Job costing ([09](09-accounting-ledger-integrations.md)), invoicing ([07](07-invoicing-billing-contracts.md)), CRM leads ([03](03-crm-sales-estimating-proposals.md)), portal timeline ([06](06-customer-portal.md)), analytics ([18](18-reporting-analytics.md)) |
@@ -40,7 +39,7 @@
 ### 1.2 Non-goals
 
 - **Not the dispatch board.** Building and optimizing routes is [04](04-scheduling-dispatch-routing.md). The crew app consumes routes and can propose reorders; it does not run the optimizer.
-- **Not a full estimating tool.** Estimators can do site assessments and quick quotes in the field (via [03](03-crm-sales-estimating-proposals.md) screens embedded in the app), but full estimate building is web-first.
+- **Not a full estimating tool.** In sales mode, estimators run site assessments, Quick Quote and proposal preview in the field (the [03](03-crm-sales-estimating-proposals.md) SALES-01 screens embedded in the app), but full estimate building is web-first.
 - **Not a full CAD tool.** Field Design Mode captures measurements, sketches and photos; real design happens in the Design Studio ([10](10-design-studio.md)).
 - **Not payroll.** The app captures time and attestations; pay calculation and exports are [15](15-team-hr-payroll.md).
 - **Not the client portal.** Clients never log in to the crew app; their experience is [06](06-customer-portal.md).
@@ -112,7 +111,7 @@
 | Constraint | Design implication |
 |---|---|
 | Direct sun, polarized sunglasses | Outdoor Mode theme with 7:1 contrast, no thin fonts, no light-gray text; avoid relying on color alone |
-| Work gloves, wet or muddy hands | 56 dp minimum targets, 64 dp primary actions, generous spacing (8 dp min), swipe-to-confirm instead of small confirm dialogs, no long-press-only actions |
+| Work gloves, wet or muddy hands | 56 dp minimum targets, 64 dp primary actions, generous spacing (8 dp min), press-and-hold buttons with a visible fill instead of small confirm dialogs (OD-39), no hidden gestures |
 | One hand busy (holding a trimmer, a hose or a clipboard) | Primary actions in bottom 40% of the screen; bottom navigation; large floating "next step" button |
 | Loud equipment (mowers ~90+ dBA, estimate) | Haptics plus visual alerts; never rely on sound alone |
 | 4:00 a.m. snow pushes, dusk installs | Dark theme with the same contrast rules; auto-switch by sunrise/sunset at the device location |
@@ -125,24 +124,26 @@
 
 ### 3.3 A day in the life (narrative used to test the design)
 
-Maria is a crew lead for "Greenleaf Grounds Co." in Sacramento in July. At 6:45 a.m. her phone shows a pre-shift high-heat alert (forecast 101 F). She opens the app at the shop: the Today view lists 14 maintenance visits, the loadout list says "2 cu yd mulch, 6 flats of annuals, 1 bag 16-4-8". She taps **Crew Clock In** and selects her three crew members; each confirms on her tablet with a PIN. Shop time starts. She runs the 5-minute heat-illness tailgate talk in Spanish (attendance signed on screen), completes the DVIR for Truck 12 (one defect: left marker light out, auto-creates a fleet work order), and taps **Start route**. The app hands off to Google Maps; drive time starts automatically. At the first property a geofence prompt asks "Arrived at 1452 Oak St?" - one tap, job time starts for the whole crew. The visit card shows a red "DOG: Bruno, friendly, may be in back yard" banner and gate code (tap to reveal). Before photos, mow, edge, blow; the checklist has a required "after" photo of the front lawn. Javier spots a broken rotor head in zone 3, taps **Spot it**, takes a photo; the AI suggests "Rotor head replacement (Hunter PGP)". The client has a $150 fix-it-now authorization on file in the portal, so Maria approves the repair on the spot and logs one rotor from truck stock by scanning its barcode. At 11:00 the app reminds the crew that their 5th hour ends at 11:45; at 11:30 Maria starts a 30-minute meal break for the crew; tracking pauses. At 3:30 p.m. the app prompts water and shade checks per the high-heat procedure. At 5:10 p.m. she reviews the crew's timesheets (one correction: Luis left at 4:30 for a doctor appointment), each member attests to breaks at clock-out, and she submits the end-of-day report that the AI drafted: 13 of 14 visits complete and 1 partial (irrigation part on order), 1 upsell lead, 1 fix-it-now repair, 2 cu yd mulch used, Truck 12 marker light defect, 0 incidents.
+Maria is a crew lead for a maintenance Company in Sacramento in July (illustrative; California has the strictest break and heat rules the app handles). At 6:45 a.m. her phone shows a pre-shift high-heat alert (forecast 101 F). She opens the app at the shop: the Today view lists 14 maintenance visits, the loadout list says "2 cu yd mulch, 6 flats of annuals, 1 bag 16-4-8". She taps **Crew Clock In** and selects her three crew members; each confirms on her tablet with a PIN. Shop time starts. She runs the 5-minute heat-illness tailgate talk in Spanish (attendance signed on screen), completes the DVIR for Truck 12 (one defect: left marker light out, auto-creates a fleet work order), and taps **Start route**. The app hands off to Google Maps; drive time starts automatically. At the first property a geofence prompt asks "Arrived at 1452 Oak St?" - one tap, job time starts for the whole crew. The visit card shows a red "DOG: Bruno, friendly, may be in back yard" banner and gate code (tap to reveal). Before photos, mow, edge, blow; the checklist has a required "after" photo of the front lawn. Javier spots a broken rotor head in zone 3, taps **Spot it**, takes a photo; the AI suggests "Rotor head replacement (Hunter PGP)". The client has a $150 fix-it-now authorization on file in the portal, so Maria approves the repair on the spot and logs one rotor from truck stock by scanning its barcode. At 11:00 the app reminds the crew that their 5th hour ends at 11:45; at 11:30 Maria starts a 30-minute meal break for the crew; tracking pauses. At 3:30 p.m. the app prompts water and shade checks per the high-heat procedure. At 5:10 p.m. she reviews the crew's timesheets (one correction: Luis left at 4:30 for a doctor appointment), each member attests to breaks at clock-out, and she submits the end-of-day report that the AI drafted: 13 of 14 visits complete and 1 partial (irrigation part on order), 1 upsell lead, 1 fix-it-now repair, 2 cu yd mulch used, Truck 12 marker light defect, 0 incidents.
 
 ---
 
 ## 4. Feature specification
 
-Scope tags: first sellable release, next scope wave, later wave, moonshot / long-term. Tags are scope tiers, not dates; [24](24-product-scope-decisions-catalog.md) is binding where docs differ.
+[24](24-product-scope-decisions-catalog.md) section 1 is binding where docs differ.
 
 ### 4.0 App shell, device modes and navigation
 
 **4.0.1 Role-aware home and navigation.** The tab bar follows the crew app sitemap in [21](21-ux-design-system-sitemaps.md): five base destinations **Today, Map, Time, Messages, More**, with the route as home. Each role gets a variant of that bar. The tab names and order stay the same, so a technician promoted to crew lead does not have to relearn the app.
 
+The app has three modes (OD-38): **crew mode** for `technician`, `crew_lead` and `subcontractor`; **manager mode** for `owner`, `ops_manager` and `office_manager`; and **sales mode** for `estimator` and `designer`. The mode follows the user's role. A user who holds more than one (an owner who also runs a crew, an estimator assigned to a crew) switches modes from More.
+
 | Role | Tabs (left to right) | Role-specific behavior |
 |---|---|---|
 | `technician` | Today, Time, Messages, More | Map is hidden unless `crew_can_view_route_map` is on. Time opens "My clock". More holds My week, My timesheet, Safety talks and Settings |
 | `crew_lead` | Today, Map, Time, Messages, More | Time opens the **Crew clock** (4.5.3). The Safety hub (talks, JHA, DVIR, heat log, incident) is pinned at the top of More and is also surfaced as cards on Today's pre-shift panel |
-| `ops_manager` / `owner` | Same as crew lead at, plus an "All crews" switch on Today and Map. **Manager mode** per [21](21-ux-design-system-sitemaps.md): Today (approvals, alerts, KPIs), Schedule, Clients, Capture, More | Exceptions inbox (sync issues, time flags, chem warnings) sits at the top of Today |
-| `estimator` / `designer` | Manager mode. At, Today lists appointments and More holds **Capture** (site assessments, Field Design Mode, 4.16) | No crew clock unless the user is also assigned to a crew |
+| `ops_manager` / `owner` / `office_manager` | **Manager mode** per [21](21-ux-design-system-sitemaps.md): Today (approvals, alerts, KPIs), Schedule, Clients, Capture, More. Switching to crew mode gives the crew-lead tabs plus an "All crews" switch on Today and Map | Exceptions inbox (sync issues, time flags, chem warnings) sits at the top of Today |
+| `estimator` / `designer` | **Sales mode** ([03](03-crm-sales-estimating-proposals.md) SALES-01): Today (appointments, tasks, hot proposals), Map, Capture, Messages, More. Capture holds offline site assessments (4.16.4), Quick Quote with turf measurement ([03](03-crm-sales-estimating-proposals.md) EST-11) and Field Design Mode capture (4.16) | No crew clock unless the user is also assigned to a crew |
 | `subcontractor` | Today (assigned visits only), Messages, More | No Time tab (4.22.4) |
 
 Rules: a persistent **sync pill** (the `SyncStatusChip` component in [21](21-ux-design-system-sitemaps.md)) sits at the top of every screen, with the states and tokens defined in [21](21-ux-design-system-sitemaps.md) section 19.2: Moss check "Synced", Stone clock "12 to send", Marigold banner "Offline 3h 10m - 41 saved", Ember dot "1 needs you" for conflicts and Ember icon "1 failed" for errors. A persistent **clock pill** shows the current status ("On the clock - Job - 2:14") whenever the user is clocked in.
@@ -157,11 +158,11 @@ Rules: a persistent **sync pill** (the `SyncStatusChip` component in [21](21-ux-
 
 Rules: PINs are unique per user within a Company, never 4 identical digits or sequences (1234, 0000), lockout after 5 failed attempts for 5 minutes, reset by `crew_lead` (own crew), `ops_manager` or `office_manager`. PIN verification works offline against Argon2id hashes with a per-device pepper ([02](02-personas-roles-permissions.md)). Hashes are cached only for the crew members assigned to the device (crew mode) or the branch's active employees (kiosk), refreshed on sync, and removed on termination or reassignment.
 
-**Offline session limit.** Per [02](02-personas-roles-permissions.md), a device can work offline for up to **7 days** without reaching the server. From day 5 the app warns: "Connect to Wi-Fi or cellular before Friday to keep working". After 7 days, new work is locked until the user re-authenticates. The lock never deletes unsynced data. It stays queued and syncs once the user re-authenticates. Two things stay available while locked. The emergency screen (4.12.6) always works. PIN-verified time punches also keep working, so a crew is never blocked from clocking in. Those punches are append-only and flagged `stale_session` for the approver. This exception to the lock rule is confirmed in [02](02-personas-roles-permissions.md) section 5.16 (crew offline lock exceptions). The 7-day grace from [02](02-personas-roles-permissions.md) is the working limit; the 14-day device-key offline lease in [20](20-architecture-security.md) 4.11.1 is the cryptographic backstop behind it, and neither one ever deletes queued field work.
+**Offline session limit.** A device can work offline for the length of its **offline lease**: 14 days by default, Company-configurable between 7 and 30 days (OD-59). Every successful sync renews it. Two days before the lease runs out the app warns: "Connect to Wi-Fi or cellular before Friday to keep working". When it runs out, new work is locked until the user re-authenticates. The lock never deletes unsynced data. It stays queued and syncs once the user re-authenticates. Two things stay available while locked. The emergency screen (4.12.6) always works. PIN-verified time punches also keep working, so a crew is never blocked from clocking in. Those punches are append-only and flagged `stale_session` for the approver. This exception to the lock rule is confirmed in [02](02-personas-roles-permissions.md) section 5.16 (crew offline lock exceptions). The same lease governs the device key in [20](20-architecture-security.md) 4.11.1, so there is one offline limit, and it never deletes queued field work.
 
-**4.0.3 Outdoor Mode and themes.** Three themes: Standard, Outdoor (high contrast, bolder weights, larger type, no shadows used to convey state) and Night (dark, same contrast rules). Default for field roles is Outdoor. Auto Night between civil dusk and dawn at device location (optional). See section 4.19.
+**4.0.3 Outdoor Mode and themes.** Four themes (OD-40): Light, Dark, Outdoor (the field-sun theme: high contrast, bolder weights, larger type, no shadows used to convey state) and Night (the field-night theme: dark, same contrast rules). Default for field roles is Outdoor. Auto Night between civil dusk and dawn at device location (optional). See section 4.19.
 
-**4.0.4 Language.** Per-user language (English, Spanish at launch; French-Canadian). Spanish-first option: during onboarding the language picker is the first screen and shows "Español" first when the device locale is Spanish or the Company marked the employee as Spanish-preferred. User-generated text (client notes, scope, chat) is shown in the original with a one-tap toggle to the AI translation; if the Company enables "auto-translate", the translation is shown by default with an "Original" toggle.
+**4.0.4 Language.** Per-user language (English, Spanish and Canadian French). Spanish-first option: during onboarding the language picker is the first screen and shows "Español" first when the device locale is Spanish or the Company marked the employee as Spanish-preferred. User-generated text (client notes, scope, chat) is shown in the original with a one-tap toggle to the AI translation; if the Company enables "auto-translate", the translation is shown by default with an "Original" toggle.
 
 **4.0.5 Global "+" capture button.** A floating action button available on Today and Visit screens: Photo, Voice note, Spot it (issue/upsell), Material used, Incident, Message office. Each capture is attached to the current context (active visit, else current location and the crew's day).
 
@@ -185,7 +186,7 @@ Behaviors and rules:
 
 **4.1.5 Loadout list (aligned with the load-out sheet in [13](13-operations-inventory-equipment.md)).** For the day's route, computes materials, plants and equipment to load at the shop: sums Price Book materials on visits (e.g., "Mulch, dark brown: 4.5 cu yd across 3 visits"), plants for installs, chemicals needed by the lawn program round (lbs of product and gallons of mix), and special equipment (aerator, overseeder, power rake). Checkbox per line; unchecked lines at "Start route" prompt a warning. Pulls from inventory locations ([13](13-operations-inventory-equipment.md)).
 
-**4.1.6 Snow event mode.** When a snow event is active ([14](14-service-line-modules.md)), Today switches to an event-driven list sorted by site priority tier (hospitals, then commercial lots by open time, then residential), with trigger depth (e.g., 2-inch push trigger), last service time per site, and a big "Log push" / "Log salt" action (section 4.18). At MVP, Snow Lite storm visits appear in Today as ordinary Visits in the office's priority order, without the event-driven list (4.18).
+**4.1.6 Snow event mode.** When a snow event is active ([14](14-service-line-modules.md)), Today switches to an event-driven list sorted by site priority tier (hospitals, then commercial lots by open time, then residential), with trigger depth (e.g., 2-inch push trigger), last service time per site, and a big "Log push" / "Log salt" action (section 4.18). Companies on Snow Lite without the Snow & Ice add-on (R24-1) see storm visits in Today as ordinary Visits in the office's priority order, without the event-driven list (4.18).
 
 ### 4.2 Navigation handoff
 
@@ -198,7 +199,7 @@ Rules:
 
 **4.2.2 Drive-time capture.** "Start route" or "Navigate to next" begins a drive segment (section 4.5). Drive segments end on geofence entry + arrival confirmation or manual "Arrived".
 
-**4.2.3 In-app turn-by-turn.** Optional embedded navigation (Mapbox Navigation SDK or Google Navigation SDK, cost-dependent) with truck/trailer-aware routing; keeps the crew in-app for geofence and time handling. Evaluate license cost per active device before committing.
+**4.2.3 In-app turn-by-turn.** Embedded navigation (Mapbox Navigation SDK or Google Navigation SDK; the build agent picks by license cost per active device and records the choice) with truck/trailer-aware routing; keeps the crew in-app for geofence and time handling. It is a Company setting, off by default; deep links (4.2.1) stay the default.
 
 **4.2.4 ETA sharing.** When the crew starts driving to a visit, the client can receive an "On the way" message with crew lead first name, photo and live ETA if the Company enables it ([06](06-customer-portal.md), [16](16-marketing-growth-communications.md)). ETA updates are sent from the server based on location pings; the crew sees "Client notified - ETA 9:42".
 
@@ -208,14 +209,14 @@ Rules:
 
 **4.3.2 Property map with zones.** A to-scale map of the property using satellite imagery plus vector overlays from the property's measurement or Design ([10](10-design-studio.md)):
 
-| Layer | Examples | Priority |
-|---|---|---|
-| Service areas | Turf areas with sq ft ("Front lawn 3,240 sq ft"), beds, hardscape, slopes > 3:1 (mow with walk-behind only) | (from measurements), full polygons |
-| Irrigation | Controller location, zones with valve boxes, backflow preventer, main shutoff, head types per zone | |
-| Access and hazards | Gates (with code reference), dog run, invisible-fence line, septic lid, shallow utilities, pool ("no blowing toward pool"), wasp nest pin (expires in 14 days), steep slope | pins, polygons |
-| Plants | Installed plants with species from the Plant KB ([12](12-plant-knowledge-base.md)), install date, warranty end date | |
-| Lighting | Transformer, fixtures, timer location | |
-| Work zones for this visit | Highlight of where today's tasks apply (e.g., "Prune only the boxwoods along the walk") | |
+| Layer | Examples |
+|---|---|
+| Service areas | Turf areas with sq ft ("Front lawn 3,240 sq ft") as full polygons from the property's measurements, beds, hardscape, slopes > 3:1 (mow with walk-behind only) |
+| Irrigation | Controller location, zones with valve boxes, backflow preventer, main shutoff, head types per zone |
+| Access and hazards | Pins and polygons for gates (with code reference), dog run, invisible-fence line, septic lid, shallow utilities, pool ("no blowing toward pool"), wasp nest pin (expires in 14 days), steep slope |
+| Plants | Installed plants with species from the Plant KB ([12](12-plant-knowledge-base.md)), install date, warranty end date |
+| Lighting | Transformer, fixtures, timer location |
+| Work zones for this visit | Highlight of where today's tasks apply (e.g., "Prune only the boxwoods along the walk") |
 
 Behaviors: pinch-zoom, tap a zone to see notes/photos/tasks; "Add pin" to mark a new hazard or issue (crew lead and above; technicians can suggest, office approves if setting enabled). Pins and polygons are cached offline as GeoJSON with the visit.
 
@@ -251,7 +252,7 @@ Completion rules: required items must be answered before "Complete visit"; a cre
 
 **4.4.1 Standard flow:** En route -> Arrive -> (pre-entry checks) -> Start work -> Before photos -> Checklist/tasks -> Materials/chem logging -> After photos -> Notes -> Client sign-off (optional) -> Complete -> Depart. The UI is a single scrolling "visit run sheet" with a sticky bottom button that always shows the next logical action ("Take before photos (0/2)", "Complete checklist (5/8)", "Complete visit").
 
-**4.4.2 Arrival.** Triggers: geofence entry with dwell >= 60 s (configurable 30-300 s) shows a push/in-app prompt "Arrived at 1452 Oak St?"; manual "Arrived" button; or automatic arrival (Company setting "auto-arrive", off by default; when on, arrival is auto-recorded after dwell and the crew lead can undo for 10 minutes). Arrival time = the first in-geometry GNSS fix from the dual-path detector (4.5.4, flow 5.10) when the prompt is confirmed within 10 minutes; else the tap time (flagged "manual arrival"). Arrival outside the geofence is allowed but flagged ("Arrived 420 m from property").
+**4.4.2 Arrival.** Triggers: geofence entry with dwell >= 60 s (configurable 30-300 s) shows a push/in-app prompt "Arrived at 1452 Oak St?"; manual "Arrived" button; or automatic arrival (Company setting "auto-arrive", off by default everywhere and not available for properties in California, OD-55; when on, arrival is auto-recorded after dwell and the crew lead can undo for 10 minutes). Arrival time = the first in-geometry GNSS fix from the dual-path detector (4.5.4, flow 5.10) when the prompt is confirmed within 10 minutes; else the tap time (flagged "manual arrival"). Arrival outside the geofence is allowed but flagged ("Arrived 420 m from property").
 
 **4.4.3 Before/after photos.**
 - Camera opens in-app (photos stay in the app sandbox, not the personal camera roll, unless the Company allows); each photo records timestamp, GPS (if on the clock), heading, visit, zone (optional tag), and phase (before/during/after/issue).
@@ -306,7 +307,7 @@ Time is the largest cost in landscaping and the most disputed record. Rootline c
 
 Compliance note: under the FLSA, travel between job sites during the workday is generally compensable, and travel from a required shop report to the first site is generally compensable, while ordinary home-to-first-site commuting usually is not. Rootline defaults to paid drive time and lets payroll rules ([15](15-team-hr-payroll.md)) decide treatment per jurisdiction. This is not legal advice; Companies should verify with counsel.
 
-**4.5.2 Individual clock in/out.** Large "Clock in" button with optional selfie and location. Clock-in requires: assigned to a crew or selecting "Shop" / "Not assigned"; acceptance of the Company's location-tracking notice on first use (section 4.23). Clock-out runs the attestation flow (4.5.7) where required.
+**4.5.2 Individual clock in/out.** Large "Clock in" button with location and the optional punch photo (4.5.6). Clock-in requires: assigned to a crew or selecting "Shop" / "Not assigned"; acceptance of the Company's location-tracking notice on first use (section 4.23). Clock-out runs the attestation flow (4.5.7) where required.
 
 **4.5.3 Crew-level punch.** The crew lead taps **Crew Clock In**, sees today's crew roster (from [04](04-scheduling-dispatch-routing.md) crew assignment) with checkboxes, can add a floater, and confirms. One punch event per selected member is created with `punched_by = crew_lead`, `method = crew_punch`. Rules:
 - Each member gets a push "Maria clocked you in at 6:58 a.m." (or, on a shared device, a PIN confirmation if the Company requires member confirmation; default: confirmation required in CA, optional elsewhere).
@@ -314,13 +315,13 @@ Compliance note: under the FLSA, travel between job sites during the workday is 
 - A member can always clock themselves out from their own device or via PIN on the crew device; crew leads can clock members out with a reason ("Left early - appointment"), which the member must acknowledge at next login.
 - Members cannot be in two crews at once; moving a member to another crew mid-day closes their segment and opens one in the new crew.
 
-**4.5.4 Geofence prompts.** Geofences: Shop/yard (polygon), each property on today's route (parcel polygon from parcel data where available, else circle radius default 75 m, configurable 30-300 m), dump sites, nurseries and supply yards (Company-defined,). Events and prompts:
+**4.5.4 Geofence prompts.** Geofences: Shop/yard (polygon), each property on today's route (parcel polygon from parcel data where available, else circle radius default 75 m, configurable 30-300 m), dump sites, nurseries and supply yards (Company-defined). Events and prompts:
 
 | Event | Prompt / action | Default |
 |---|---|---|
 | Arrive at shop, not clocked in, scheduled shift in the next 60 min | "Clock in?" (only if the employee opted in; evaluated on device, see 4.23.1) | Prompt |
 | Leave shop while clocked in, in shop segment | Auto-switch to drive | Auto (undoable 10 min) |
-| Arrive at property on route | "Arrived?" (job segment for crew) | Prompt; auto optional |
+| Arrive at property on route | "Arrived?" (job segment for crew) | Prompt; auto-arrive opt-in outside California (4.4.2) |
 | Leave property while visit In progress | "Pause or complete?" | Prompt |
 | Arrive at dump / nursery | Switch to drive-other with stop tag ("Dump - green waste") | Auto tag |
 | Clocked in, no movement and no activity 45 min outside any geofence | "Still working? Pick an activity" | Prompt |
@@ -340,7 +341,7 @@ Rules:
 - Neighboring stops (a cul-de-sac with 3 clients on the route) are disambiguated by the route order, then by the nearest polygon. If two visits remain plausible, the prompt asks "Which property? 14 Pine / 16 Pine".
 - Detection telemetry (path A only, path B only, both, manual) is logged per arrival so precision and recall can be tracked per device model (section 12).
 
-**4.5.5 Breaks and meals.** "Start break" (rest) and "Start meal" (unpaid) for the crew or an individual. During an unpaid meal, location tracking is paused (section 4.23) and the clock pill counts down ("Meal 18:40 left"). Jurisdiction-aware reminders use the policy packs in [15](15-team-hr-payroll.md): Federal plus the Great Lakes launch states (Ohio, Michigan, Illinois, Indiana, Wisconsin) at; California, the reference pack below, and other states and provinces at (per [24](24-product-scope-decisions-catalog.md) section 4.6 #18):
+**4.5.5 Breaks and meals.** "Start break" (rest) and "Start meal" (unpaid) for the crew or an individual. During an unpaid meal, location tracking is paused (section 4.23) and the clock pill counts down ("Meal 18:40 left"). Jurisdiction-aware reminders use the policy packs in [15](15-team-hr-payroll.md). The packs are Federal, the five Great Lakes states (Ohio, Michigan, Illinois, Indiana, Wisconsin), California (the reference pack below) and Ontario ([24](24-product-scope-decisions-catalog.md) R24-18). Further states and provinces are rule-pack data that the plant curator agent maintains from licensed sources; the founder approves each pack before it publishes (OD-60).
 
 | Jurisdiction rule (California example, verify with counsel) | App behavior |
 |---|---|
@@ -351,7 +352,7 @@ Rules:
 | No rounding of meal punches | Meal punches are stored and paid to the minute; rounding rules never apply to meal segments |
 | Daily overtime > 8 h, double time > 12 h | Approaching-OT alert to crew lead at 7h30m and 11h30m; weekly 38h alert |
 
-Other jurisdiction packs use the same reminder engine with different parameters: the launch-state rows are, all others. The values below are the starting configuration for legal review, not legal advice (all verify):
+Other jurisdiction packs use the same reminder engine with different parameters. The Illinois, Ontario and no-mandate rows belong to the packs above; the Washington, Oregon, Colorado and British Columbia rows are the starting data for rule packs the plant curator agent maintains. The values below are the starting configuration for legal review, not legal advice (all verify):
 
 | Jurisdiction | Meal rule (summary) | Rest rule (summary) | Reminder configuration |
 |---|---|---|---|
@@ -361,9 +362,9 @@ Other jurisdiction packs use the same reminder engine with different parameters:
 | Ontario (ESA) | 30-min eating period so no more than 5 consecutive hours are worked without one | No statutory paid rest | Alert at 4h30m consecutive work |
 | British Columbia (ESA) | 30-min meal so no more than 5 consecutive hours are worked without one | No statutory paid rest | Same as Ontario |
 | Illinois (One Day Rest in Seven Act) | 20-min meal for 7.5 or more continuous hours, starting no later than the 5th hour; another 20-min meal for each further 4.5 continuous hours | No statutory paid rest | Meal reminder at 4h15m; alert at 4h45m |
-| States with no adult meal/rest mandate (many, including the launch states Ohio, Michigan, Indiana and Wisconsin) | Company policy only | Company policy only | Reminders off by default; Company can enable its own policy |
+| States with no adult meal/rest mandate (many, including the Great Lakes states Ohio, Michigan, Indiana and Wisconsin) | Company policy only | Company policy only | Reminders off by default; Company can enable its own policy |
 
-**4.5.6 Shared-tablet PIN mode.** On a crew device, a big numeric keypad screen ("¿Quién eres? / Who are you?") with crew members' faces/initials as quick-pick tiles, then PIN. Actions available without PIN: none except emergency info. Punch photo: an optional camera capture at punch to deter buddy punching, stored as a photo (no biometric template). Face matching is **not** performed by default; a consented face-verification option is disabled in jurisdictions with biometric privacy laws (Illinois BIPA, Texas, Washington; verify) unless the Company completes the required written-consent workflow.
+**4.5.6 Shared-tablet PIN mode.** On a crew device, a big numeric keypad screen ("¿Quién eres? / Who are you?") with crew members' faces/initials as quick-pick tiles, then PIN. Actions available without PIN: none except emergency info. Punch photo: an optional camera capture at punch to deter buddy punching (Company setting, off by default), stored as a plain photo with no biometric template. Rootline **never** performs face matching or face verification and keeps no face template (OD-54).
 
 **4.5.7 Clock-out attestations.** At clock-out (individual or crew-lead initiated with member confirmation), Rootline shows a short attestation in the member's language when the Company's policy requires it (default on for California):
 
@@ -418,7 +419,7 @@ Rules:
 **4.6.5 Dump and disposal tickets.** Log green-waste and debris disposal: site, weight or volume, fee, photo of ticket (OCR extracts weight, fee, date). Costs are allocated to the visit(s) that generated the debris or to overhead.
 
 **4.6.6 Field purchases, receipts and purchase requests.** Crews buy things on the road: 6 bags of quick-set concrete at a big-box store, a replacement Hunter PGV valve at the irrigation supply house, ice for the water cooler on a 101 F day. The crew app owns capture; [13](13-operations-inventory-equipment.md) owns the purchasing workflow and [09](09-accounting-ledger-integrations.md) owns AP and bank-feed matching.
-- **Add expense:** photo of the receipt, then rules-based OCR reads the header (merchant, date, total, tax and card last four; no LLM and no AI credits) and the lead confirms. From, AI extraction adds line items and harder layouts (AI2 in [09](09-accounting-ledger-integrations.md), metered per page on the [22](22-business-model-pricing-gtm.md) rate card). The job defaults to the current visit; overhead and "truck supplies" are also allowed. Payment source: company card (last 4 digits), fuel card, or personal (a reimbursement request that flows to payroll in [15](15-team-hr-payroll.md)). Works offline: the photo and draft queue in Lane 2.
+- **Add expense:** photo of the receipt, then rules-based OCR reads the header (merchant, date, total, tax and card last four; no LLM and no AI credits) and the lead confirms. AI extraction adds line items and handles harder layouts (AI2 in [09](09-accounting-ledger-integrations.md), metered per page on the [22](22-business-model-pricing-gtm.md) rate card). The job defaults to the current visit; overhead and "truck supplies" are also allowed. Payment source: company card (last 4 digits), fuel card, or personal (a reimbursement request that flows to payroll in [15](15-team-hr-payroll.md)). Works offline: the photo and draft queue in Lane 2.
 - **Rules:** receipts over a Company threshold (default $250) or without a job need `ops_manager` approval. Personal-card purchases need a photo of the receipt, with no exceptions. Duplicate detection runs on merchant, amount, date and last 4 digits. When the card transaction arrives via the bank feed, the ledger auto-matches it to the receipt, so the bookkeeper never chases paper.
 - **Purchase request:** "Need 2 x 1 in Hunter PGV valves for Morgan HOA, needed Thursday." The request is linked to the visit. The office converts it to a PO or will-call in [13](13-operations-inventory-equipment.md), and the requester gets a push when it is ready for pickup.
 
@@ -463,7 +464,7 @@ Validations and rules:
 
 **4.7.3 State and provincial reports.** Generated server-side ([14](14-service-line-modules.md) owns the report catalog): per-application record PDF for the client (some states require giving the customer a copy or leaving a notice), monthly/annual use summaries in state formats (e.g., California Pesticide Use Report submissions to County Agricultural Commissioners for licensed pest control businesses; verify current format), and an audit export (CSV/PDF) by date range, applicator, product or property.
 
-**4.7.4 SDS access and spill/exposure.** Safety Data Sheets for every chemical on the crew's truck (from the SDS library in [13](13-operations-inventory-equipment.md), English and Spanish where available) are cached offline at. OSHA's Hazard Communication Standard requires SDSs to be readily accessible to employees during each shift (29 CFR 1910.1200(g)(8); verify state-plan variations), and a dead zone is not an excuse. SDS is two taps from any chem record or visit card: product, then "SDS". The "Spill" quick action captures product, quantity, location, photo, cleanup steps from section 6 of the SDS and notifications to the safety contact. Exposure incidents link to incident reports (4.12.4).
+**4.7.4 SDS access and spill/exposure.** Safety Data Sheets for every chemical on the crew's truck (from the SDS library in [13](13-operations-inventory-equipment.md), English and Spanish where available) are cached offline. OSHA's Hazard Communication Standard requires SDSs to be readily accessible to employees during each shift (29 CFR 1910.1200(g)(8); verify state-plan variations), and a dead zone is not an excuse. SDS is two taps from any chem record or visit card: product, then "SDS". The "Spill" quick action captures product, quantity, location, photo, cleanup steps from section 6 of the SDS and notifications to the safety contact. Exposure incidents link to incident reports (4.12.4).
 
 > **Competitive edge:** Stand-alone pesticide loggers such as ChemLog capture weather at time of logging but sit outside the visit and the invoice. Lawn-care platforms like Real Green are strong on chem records but weak on design and installs. Rootline's record is pre-filled from the program round, the property map's measured turf area and live weather, so the applicator confirms rather than types, and the same record drives inventory, job cost, client notification and state reporting.
 
@@ -495,7 +496,7 @@ This prevents the classic field leak, where a homeowner scrolls back and sees "C
 
 Clients pay the **Company's own Stripe account**; Rootline never holds client funds ([08](08-payments-stripe.md)).
 
-Phasing (aligned with [08](08-payments-stripe.md) and [21](21-ux-design-system-sitemaps.md)): at, field collection means check/cash recording, a text-to-pay link and charging a card on file (4.9.3-4.9.4). Card-present collection (Tap to Pay and readers) is: iPhone and Android in the US first, then Canada once Interac acceptance is validated (`interac_present` is in [08](08-payments-stripe.md)). Open question 3 covers pulling iPhone Tap to Pay into MVP for design partners who run cash-on-completion cleanup routes. Target: under 45 seconds from "Collect payment" to receipt ([08](08-payments-stripe.md) goal G6).
+Field collection (aligned with [08](08-payments-stripe.md) and [21](21-ux-design-system-sitemaps.md)) covers Tap to Pay on iPhone and Android and Bluetooth readers (4.9.1-4.9.2), check and cash recording, a text-to-pay link and charging a card on file (4.9.3-4.9.4). Card-present collection works in the US and Canada wherever Stripe supports the device (R24-3), with Canadian debit through `interac_present` ([08](08-payments-stripe.md)) where Stripe supports it (verify). Tap to Pay turns on for a Company once Apple's and Stripe's terms are in place for it ([24](24-product-scope-decisions-catalog.md) section 1.4). Target: under 45 seconds from "Collect payment" to receipt ([08](08-payments-stripe.md) goal G6).
 
 **4.9.1 Tap to Pay on iPhone and Android.** The crew lead opens an invoice (or a visit's "Collect payment"), confirms amount, and taps "Tap to Pay". The client taps a contactless card or wallet on the phone. Implementation follows Stripe Terminal's React Native SDK, which wraps native iOS/Android SDKs and supports Tap to Pay; Tap to Pay requires a completed Terminal integration first ([Stripe docs](https://docs.stripe.com/terminal/payments/setup-integration?platform=android&terminal-sdk-platform=react-native), [Stripe support](https://support.stripe.com/questions/tap-to-pay-on-iphone-or-android-and-stripe-terminal), [Stripe Tap to Pay readers](https://docs.stripe.com/terminal/tap-to-pay-readers)).
 
@@ -503,14 +504,14 @@ Device and platform rules (as of Nov 2026, verify):
 - iPhone only (iPads lack NFC reading for Tap to Pay); Apple's Tap to Pay entitlement is required for development and a separate production entitlement before App Store release ([Swan guide](https://docs.swan.io/topics/merchants/in-person/cards/guide-setup)); a third-party guide lists iPhone XS or later on iOS 16+ ([Blackthorn](https://docs.blackthorn.io/docs/tap-to-pay)).
 - Android requires a working NFC chipset and an unrooted device with a locked bootloader; qualifying Android tablets are supported ([Blackthorn](https://docs.blackthorn.io/docs/tap-to-pay)).
 - Foreground location access is required by the Terminal SDK to process payments.
-- Country support differs per platform; US and Canada must be checked separately. Canadian debit (Interac) acceptance must be verified before launch in Canada.
+- Country support differs per platform; US and Canada must be checked separately. Canadian debit (Interac) acceptance on Tap to Pay must be confirmed per platform (verify).
 - Apple requires merchant onboarding/education screens and acceptance of Tap to Pay terms by an account admin; Rootline shows these during Company payment setup ([08](08-payments-stripe.md)).
 
 Flow rules (see sequence diagram 5.5):
 - Connection tokens and the Terminal Location are created **on the Company's connected account** (direct charges); PaymentIntents are created server-side on the connected account with `card_present`; `application_fee_amount` is zero by default and set only for Companies on the opt-in pay-as-you-grow plan ([22](22-business-model-pricing-gtm.md)).
 - Device must be online at authorization time unless Stripe's offline-capable mode is supported for the device/reader and enabled by the Company (verify current Tap to Pay offline support; Stripe's offline mode historically targeted certain hardware readers). Offline fallback: "Send payment link" queued for SMS/email on sync, or record a check/cash.
 - Amount limits: Company-configurable max field charge (default $5,000) and per-day cap per user; amounts above require `owner`/`office_manager` approval in-app (push approval).
-- Tips [V1, with [08](08-payments-stripe.md) 4.13]: optional client-facing tip screen, enabled per Company and service line (default on for residential maintenance and installs, off for commercial). Tips attach to the Visit, are split across the crew by clocked hours on that Visit by default (or equal split, or crew-lead decision within 24 hours), post to Tips Payable and flow to payroll ([15](15-team-hr-payroll.md)).
+- Tips (with [08](08-payments-stripe.md) 4.13): optional client-facing tip screen, enabled per Company and service line (default on for residential maintenance and installs, off for commercial). Tips attach to the Visit, are split across the crew by clocked hours on that Visit by default (or equal split, or crew-lead decision within 24 hours), post to Tips Payable and flow to payroll ([15](15-team-hr-payroll.md)).
 - Surcharges follow the Company's surcharge program in [08](08-payments-stripe.md). Tap to Pay does not always reveal the card's funding type (credit or debit) before authorization, and when it cannot be determined, no surcharge is applied (fail-safe). The crew app never lets a crew member add a fee by hand.
 - Receipts: SMS/email receipt from the Company's branding; the invoice is marked paid on the `payment_intent.succeeded` webhook from the connected account, not on the device result alone (device result shows "Approved - posting").
 - Refunds are never initiated from the crew app; office only.
@@ -559,11 +560,13 @@ Outputs by category and Company rules:
 
 **4.11.2 Transcription and translation.** Server-side via the AI Gateway ([17](17-ai-copilot-automation.md)): speech-to-text with language auto-detect (English/Spanish, code-switching tolerant), then LLM translation to the reader's language with a landscaping glossary (e.g., "orillar" -> "edge", "mantillo"/"mulch" -> "mulch", "desbrozadora" -> "string trimmer", "aspersor" -> "sprinkler head"; glossary is Company-extendable). Display shows original transcript, translation, and audio playback. On-device transcription for offline-first users on capable devices.
 
-**4.11.3 Structured extraction.** At, synced voice notes are processed office-side by the A4 Field-Note Agent ([17](17-ai-copilot-automation.md) 4.5.5), which summarizes them, extracts typed issues and drafts Opportunities for the office; the crew member sees no proposals in the app. At, the same extraction schema runs for the crew member and the LLM proposes actionable items as one-tap actions in the app: "Client asked to skip next week" -> propose visit skip request to office; "Need 2 more yards of mulch for the back beds" -> propose material request; "Rotor broken in zone 3" -> propose Spot it. Nothing is executed without a tap.
+**4.11.3 Structured extraction.** Synced voice notes are processed office-side by the A4 Field-Note Agent ([17](17-ai-copilot-automation.md) 4.5.5), which summarizes them, extracts typed issues and drafts Opportunities for the office. The same extraction schema also runs for the crew member, and the LLM proposes actionable items as one-tap actions in the app: "Client asked to skip next week" -> propose visit skip request to office; "Need 2 more yards of mulch for the back beds" -> propose material request; "Rotor broken in zone 3" -> propose Spot it. Nothing is executed without a tap.
 
 **4.11.4 Read-aloud.** Text-to-speech of client notes, scope and safety instructions in the user's language for low-literacy users and hands-busy situations.
 
 **4.11.5 Usage metering.** Voice transcription and translation consume AI credits ([17](17-ai-copilot-automation.md), [22](22-business-model-pricing-gtm.md)); a Company-level monthly cap with graceful degradation (transcription continues, translation of chat switches to on-demand).
+
+**4.11.6 Crew voice assistant.** Push-to-talk commands in English and Spanish ("Rootline, start meal break for the crew", "Mark mow front done", "Log two yards of mulch at Willow Creek"), with offline capture, a driving lock and on-device recognition of common commands, as specified in [17](17-ai-copilot-automation.md) section 4.8 (R24-26). Commands that write data run with the speaker's permissions and sync as intents through the normal queue (4.21). Chemical records and incident reports always open a form pre-filled from the voice command that needs a tap to submit.
 
 ### 4.12 Safety
 
@@ -584,7 +587,7 @@ Outputs by category and Company rules:
 - **Mandatory periodic cool-down.** The mandatory 10-minute cool-down every 2 hours at 95 F applies to agriculture in the California rule, not to landscaping. Rootline's 2-hour prompts for landscaping are a Company policy default and are labeled that way, so the app never claims a legal requirement it cannot cite.
 - **Heat waves and acclimatization.** Close observation applies to new employees during their first 14 days and to everyone during a heat wave. Rootline uses a working definition of 80 F or above and at least 10 F above the average high of the prior 5 days (verify). The heat wave is computed from the cached forecast and history for each route.
 
-Jurisdiction heat packs cover other rules: Washington's outdoor heat rule (WAC 296-62-095 series, with higher-heat cool-down breaks at 90 F and above in the 2023 update), Oregon's OAR 437-002-0156 (heat-index based) and Colorado and Nevada rules as they mature (all verify). Federal OSHA published a proposed Heat Injury and Illness Prevention rule in 2024 and held public hearings in 2025; the final rule status is uncertain as of Nov 2026 (verify). Packs are data, not code, so a new rule ships as a policy-pack release from the operator console ([19](19-platform-admin-portal.md)) without an app update.
+Jurisdiction heat packs cover other rules: Washington's outdoor heat rule (WAC 296-62-095 series, with higher-heat cool-down breaks at 90 F and above in the 2023 update), Oregon's OAR 437-002-0156 (heat-index based) and Colorado and Nevada rules as they mature (all verify). Federal OSHA published a proposed Heat Injury and Illness Prevention rule in 2024 and held public hearings in 2025; the final rule status is uncertain as of Nov 2026 (verify). Packs are data, not code, so a new rule ships as a policy-pack release from the operator console ([19](19-platform-admin-portal.md)) without an app update. The plant curator agent maintains heat and break packs from licensed sources, and the founder approves each release (OD-60).
 
 App features:
 - **Heat forecast trigger:** daily forecast and live heat index at each route location; when forecast >= 80 F the crew sees "Shade required" in the pre-shift card; at >= 95 F (or Company/jurisdiction threshold) the High Heat Procedure activates.
@@ -608,7 +611,7 @@ App features:
 
 **4.13.5 Telematics.** For Companies with fleet telematics (e.g., Samsara, Geotab, Verizon Connect, Linxup; verify partner APIs) Rootline imports vehicle location, ignition and engine hours, and uses vehicle-based geofence events to corroborate drive/job segments. Where telematics exists, phone GPS sampling can be reduced to save battery (4.20). OEM mower telematics (e.g., Husqvarna Fleet Services, verify).
 
-**4.13.6 Fuel log.** Gallons, price, odometer, receipt photo (OCR); fuel card import (WEX/Fleetcor-type cards,, specified in [13](13-operations-inventory-equipment.md) 4.14.9 and [09](09-accounting-ledger-integrations.md) BK-05; verify each program's data export).
+**4.13.6 Fuel log.** Gallons, price, odometer, receipt photo (OCR); fuel card import (WEX/Fleetcor-type cards, specified in [13](13-operations-inventory-equipment.md) 4.14.9 and [09](09-accounting-ledger-integrations.md) BK-05; verify each program's data export).
 
 ### 4.14 Crew chat, announcements and push notifications
 
@@ -695,39 +698,39 @@ Submit requires: all visits resolved (completed/partial/skipped), post-trip DVIR
 
 Service-line modules ([14](14-service-line-modules.md)) define data; the crew app provides specialized capture screens:
 
-| Service line | Field capture | Priority |
-|---|---|---|
-| Mowing and maintenance | Height of cut, mowing pattern/direction alternation (stripe direction tracked per visit), clippings bagged vs mulched, bed weeding time, seasonal tasks (spring cleanup, fall leaf cleanup with leaf volume in cu yd), skipped-for-dormancy reasons | |
-| Lawn and plant health care (5-step fertilizer and weed control programs, aeration and overseeding) | Program round (e.g., Round 2 of 5: pre-emergent + fertilizer), product and rate (4.7), soil temp, turf condition rating 1-5, weed/insect pressure, aeration cores pulled (pass count), seed rate (lb/1,000 sq ft), lawn markers posted photo | |
-| Irrigation | Controller and zone list from the property map; spring start-up checklist per zone (run time, heads adjusted/replaced, leaks), mid-season audit, fall winterization (blowout PSI and CFM, compressor hours, backflow drained), backflow test results (tester cert number, gauge cert, readings) where the Company is certified | |
-| Snow and ice: Snow Lite storm visit log | Site from the Company's snow site list (priority order), arrival/departure, services as counts (pushes, salt or ice-melt applications, walks cleared), photos with timestamp and GPS coordinates, notes; offline on the standard visit and photo pipeline. Counts feed per-push and per-application invoice lines and the per-site PDF proof of service ([14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp)) | |
-| Snow and ice (full module) | Event, site, arrival/departure, push count, plow vs shovel vs blower, salt/ice-melt applied (lbs or tons, product), pre-treat (gallons brine), depth on arrival (inches), photos with timestamp (slip-and-fall liability evidence), contract trigger met (e.g., 2-inch push trigger) | |
-| Tree care | ANSI Z133-aligned job briefing, drop zone, climber/aerial lift checks, DBH and species (Plant KB link), work performed (prune, removal, stump grind diameter), wood/chip disposal | |
-| Hardscape / install projects | Daily log (crew, hours, % complete per phase), deliveries received (scan pallets of pavers, tons of base), compaction checks, base depth photos with tape measure, inspections, punch list | |
-| Landscape lighting | Fixture checks, transformer voltage readings, bulb replacements, timer/photocell settings | |
+| Service line | Field capture |
+|---|---|
+| Mowing and maintenance | Height of cut, mowing pattern/direction alternation (stripe direction tracked per visit), clippings bagged vs mulched, bed weeding time, seasonal tasks (spring cleanup, fall leaf cleanup with leaf volume in cu yd), skipped-for-dormancy reasons |
+| Lawn and plant health care (5-step fertilizer and weed control programs, aeration and overseeding) | Program round (e.g., Round 2 of 5: pre-emergent + fertilizer), product and rate (4.7), soil temp, turf condition rating 1-5, weed/insect pressure, aeration cores pulled (pass count), seed rate (lb/1,000 sq ft), lawn markers posted photo |
+| Irrigation | Controller and zone list from the property map; spring start-up checklist per zone (run time, heads adjusted/replaced, leaks), mid-season audit, fall winterization (blowout PSI and CFM, compressor hours, backflow drained), backflow test results (tester cert number, gauge cert, readings) where the Company is certified |
+| Snow and ice: Snow Lite storm visit log | Site from the Company's snow site list (priority order), arrival/departure, services as counts (pushes, salt or ice-melt applications, walks cleared), photos with timestamp and GPS coordinates, notes; offline on the standard visit and photo pipeline. Counts feed per-push and per-application invoice lines and the per-site PDF proof of service ([14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp)) |
+| Snow and ice (full module) | Event, site, arrival/departure, push count, plow vs shovel vs blower, salt/ice-melt applied (lbs or tons, product), pre-treat (gallons brine), depth on arrival (inches), photos with timestamp (slip-and-fall liability evidence), contract trigger met (e.g., 2-inch push trigger) |
+| Tree care | ANSI Z133-aligned job briefing, drop zone, climber/aerial lift checks, DBH and species (Plant KB link), work performed (prune, removal, stump grind diameter), wood/chip disposal |
+| Hardscape / install projects | Daily log (crew, hours, % complete per phase), deliveries received (scan pallets of pavers, tons of base), compaction checks, base depth photos with tape measure, inspections, punch list |
+| Landscape lighting | Fixture checks, transformer voltage readings, bulb replacements, timer/photocell settings |
 
 ### 4.19 Field UX: gloves, sunlight, one-handed, Spanish-first, accessibility
 
 Design system details live in [21](21-ux-design-system-sitemaps.md); field-specific rules:
 
-| Rule | Spec | Priority |
-|---|---|---|
-| Touch targets | Minimum 56 x 56 dp; primary actions 64 dp high and full width; at least 8 dp between targets; destructive or irreversible actions use swipe-to-confirm (long horizontal swipe), not small "OK" dialogs | |
-| Glove mode | Toggle (default on for field roles): increases touch slop, debounces accidental double taps (300 ms), disables gestures that need precision (small pinch on lists), larger keypad | |
-| Contrast and type | Outdoor theme: text contrast >= 7:1 (WCAG AAA), body >= 17 pt, key numbers >= 22 pt bold, no gray-on-white secondary text; status uses icon + label + color | |
-| Thumb zone | Bottom sticky action bar; bottom tabs; key actions never in the top third on phones | |
-| Minimal typing | Picklists, steppers, voice; every free-text field has a mic button | |
-| Feedback | Haptic tick on every successful tap/save; big success states ("Visit complete" full-screen check for 800 ms) | |
-| Language | Per-user language; Spanish-first onboarding; all platform content (checklists, safety talks, attestations) shipped in EN/ES; user content translated by AI; units and dates localized | |
-| Low literacy | Icons paired with words; read-aloud; short sentences; video help for checklist items | |
-| Accessibility | VoiceOver/TalkBack labels, dynamic type up to 200% without truncating critical controls, color-blind-safe status palette | |
-| Rain | Ignore spurious multi-touch while a single primary action is in progress; confirm-on-release for primary buttons | |
-| Measurement units | Imperial or metric per Company with per-user override (crew in Canada may think in feet for lumber and metres for distances) | |
+| Rule | Spec |
+|---|---|
+| Touch targets | Minimum 56 x 56 dp; primary actions 64 dp high and full width; at least 8 dp between targets; destructive or irreversible actions use press-and-hold (800 ms with a visible fill, OD-39), not small "OK" dialogs |
+| Glove mode | Toggle (default on for field roles): increases touch slop, debounces accidental double taps (300 ms), disables gestures that need precision (small pinch on lists), larger keypad |
+| Contrast and type | Outdoor theme: text contrast >= 7:1 (WCAG AAA), body >= 17 pt, key numbers >= 22 pt bold, no gray-on-white secondary text; status uses icon + label + color |
+| Thumb zone | Bottom sticky action bar; bottom tabs; key actions never in the top third on phones |
+| Minimal typing | Picklists, steppers, voice; every free-text field has a mic button |
+| Feedback | Haptic tick on every successful tap/save; big success states ("Visit complete" full-screen check for 800 ms) |
+| Language | Per-user language; Spanish-first onboarding; all platform content (checklists, safety talks, attestations) shipped in EN/ES; user content translated by AI; units and dates localized |
+| Low literacy | Icons paired with words; read-aloud; short sentences; video help for checklist items |
+| Accessibility | VoiceOver/TalkBack labels, dynamic type up to 200% without truncating critical controls, color-blind-safe status palette |
+| Rain | Ignore spurious multi-touch while a single primary action is in progress; confirm-on-release for primary buttons |
+| Measurement units | Imperial or metric per Company with per-user override (crew in Canada may think in feet for lumber and metres for distances) |
 
 ### 4.20 Device performance: low-end Android, battery and data budgets
 
-**4.20.1 Supported devices (decision to revisit before MVP).**
-- iOS: the two current major iOS versions plus one prior; with Apple's switch to year-based numbering (iOS 18 followed by iOS 26), that means iOS 18 and newer as of late 2026 (verify against design-partner device mix; Tap to Pay subject to Apple requirements).
+**4.20.1 Supported devices.**
+- iOS: the two current major iOS versions plus one prior; with Apple's switch to year-based numbering (iOS 18 followed by iOS 26), that means iOS 18 and newer as of late 2026 (verify; the floor follows the crew device mix seen in product analytics; Tap to Pay subject to Apple requirements).
 - Android: Android 10 (API 29) and newer; reference low-end test device class: 3 GB RAM, 32 GB storage, 2019-2021 mid/low-end chipsets (e.g., budget Samsung Galaxy A-series and Moto G-series phones). Tap to Pay on Android requires NFC and Stripe's device requirements.
 - Tablets: iPad (crew devices; no Tap to Pay), Android tablets 8-10 inch.
 
@@ -762,7 +765,7 @@ Rules: show the user an explanation and current mode; warn when battery < 20% ("
 
 ### 4.21 Offline-first sync design
 
-This section specifies the client side of sync, what each device holds, and the per-entity conflict rules as the crew experiences them. The wire protocol, bucket model, change log and ADR-008 (own the write path, evaluate PowerSync for the read path) are owned by [20](20-architecture-security.md) section 4.11; this section uses its vocabulary: **mutations**, **buckets**, **checkpoints** and the **Needs attention** list. Where the two documents differ, [20](20-architecture-security.md) wins for protocol details and this document wins for UX and per-entity field behavior.
+This section specifies the client side of sync, what each device holds, and the per-entity conflict rules as the crew experiences them. The wire protocol, bucket model, change log and ADR-008 (a self-hosted sync service for the read path and Rootline's own outbox for writes, OD-58) are owned by [20](20-architecture-security.md) section 4.11; this section uses its vocabulary: **mutations**, **buckets**, **checkpoints** and the **Needs attention** list. Where the two documents differ, [20](20-architecture-security.md) wins for protocol details and this document wins for UX and per-entity field behavior.
 
 **4.21.1 Principles.**
 1. The local SQLite database is the app's source for reads; every write goes to the local DB and the `_mutation_queue` in one transaction. UI never waits on the network.
@@ -774,7 +777,7 @@ This section specifies the client side of sync, what each device holds, and the 
 
 **4.21.2 Local storage.**
 - SQLite (via the Expo/React Native SQLite driver) with WAL mode; database encrypted at rest with SQLCipher, keyed from iOS Keychain / Android Keystore and wrapped by the server-issued device key under the offline lease (decision in [20](20-architecture-security.md) 4.11.1).
-- A reactive query layer (an in-house thin layer or an evaluated library such as WatermelonDB or a managed sync engine such as PowerSync; build-vs-buy decision recorded in [20](20-architecture-security.md)).
+- A reactive query layer over the local database, fed by the self-hosted sync service for reads, with every write going through Rootline's own outbox (OD-58; ADR-008 in [20](20-architecture-security.md)).
 - Blob store: photos, audio, signatures and SDS PDFs stored as files in the app sandbox, referenced by content hash (SHA-256).
 - Tables mirror server entities for the held buckets plus the protocol tables from [20](20-architecture-security.md) (`_mutation_queue`, `_bucket_checkpoint`, `_conflict`) and app-local tables (`_blob_upload_queue`, `_local_settings`, `_telemetry_buffer`).
 
@@ -788,7 +791,7 @@ This section specifies the client side of sync, what each device holds, and the 
 | Route | `crew_day:{crew_id}` | Visits, route stops, job summaries, scope lines, checklists, assigned tasks, notes | D-1 to D+7 | Live |
 | Property (for routed visits) | `property:{property_id}` | Property details, access points, geofence polygon, map layers (GeoJSON), pets/hazards, standing instructions, access secrets (encrypted; technicians get today only, enforced by a device-side expiry as well as bucket rules), last 3 visits' notes with after-photo thumbnails, chemical history (12 months), installed plants, irrigation zones | Properties referenced by a held `crew_day` bucket (2-20 KB each + thumbnails) | Live |
 | Client (minimal) | Carried inside `property:{property_id}` | Client display name, service contact first name and masked phone, notification preferences, chem sensitivities, fix-it-now authorization limit, current invoice amount and past-due flag | For properties in window | Live |
-| Map tiles | Not a sync bucket (map SDK offline region) | Vector base map + satellite tiles for the route corridor (2 km buffer) and properties (zoom up to ~20) | Today + tomorrow; cap ~150 MB, counted against the 1 GB media cache (verify map SDK tile-count limits) | Wi-Fi preferred, nightly; basic vector for the route corridor, satellite packs (offline map packs; same split as [20](20-architecture-security.md) 4.11.1) |
+| Map tiles | Not a sync bucket (map SDK offline region) | Vector base map + satellite tiles for the route corridor (2 km buffer) and properties (zoom up to ~20) | Today + tomorrow; cap ~150 MB, counted against the 1 GB media cache (verify map SDK tile-count limits) | Wi-Fi preferred, nightly: the vector base map for the route corridor plus satellite offline map packs (same split as [20](20-architecture-security.md) 4.11.1) |
 | Weather | Derived, not a sync bucket | Hourly forecast for each route property for the window, plus 5-day history for heat-wave detection; current observations when online | Window | Hourly when online |
 
 Not cached: other crews' routes (except for `ops_manager`/`owner`, who get a summary scope), client financial history, other Clients, estimates/proposals (except for estimators' own appointments), payroll rates of other employees, full client contact details for technicians.
@@ -871,9 +874,9 @@ Not cached: other crews' routes (except for `ops_manager`/`owner`, who get a sum
 4. **Employees can see everything collected about them:** "My location data" shows today's breadcrumbs and geofence events and the retention period.
 5. **Purpose limitation:** location is used for time verification, visit arrival/departure, ETA to clients, safety, and job costing; it is not sold, not used for advertising, and not shared outside the Company except as client ETA (approximate, while en route to that client only).
 
-**4.23.2 Configurable.** Retention of raw breadcrumbs (default 90 days, range 30-365; aggregated segment data retained with timesheets); who can view breadcrumbs (default `owner`, `ops_manager`; crew leads see only their crew's current location); live map for office (on/off).
+**4.23.2 Configurable.** Retention of raw breadcrumbs: 90 days, shorter where a jurisdiction pack requires it (OD-57); a Company can shorten it to as little as 30 days. Aggregated segment data is retained with timesheets, and proof packets (visit verification, snow and chemical evidence) are kept separately under their own retention. Who can view breadcrumbs (default `owner`, `ops_manager`; crew leads see only their crew's current location); live map for office (on/off).
 
-**4.23.3 Notice and consent.** First clock-in shows the Company's electronic-monitoring notice (template provided, editable) and records acknowledgment. Jurisdiction packs: New York's electronic monitoring notice law (Civil Rights Law 52-c, effective 2022; verify), Connecticut and Delaware notice statutes (verify), California CPRA rights for employee personal information (verify), Ontario's written electronic monitoring policy requirement for employers with 25+ employees (verify), Quebec Law 25 requirements to inform individuals of location tracking functions and the means to activate them (verify), and PIPEDA principles in other provinces. Legal review required before launch ([20](20-architecture-security.md)).
+**4.23.3 Notice and consent.** First clock-in shows the Company's electronic-monitoring notice (template provided, editable) and records acknowledgment. Jurisdiction packs: New York's electronic monitoring notice law (Civil Rights Law 52-c, effective 2022; verify), Connecticut and Delaware notice statutes (verify), California CPRA rights for employee personal information (verify), Ontario's written electronic monitoring policy requirement for employers with 25+ employees (verify), Quebec Law 25 requirements to inform individuals of location tracking functions and the means to activate them (verify), and PIPEDA principles in other provinces. The templates ship with conservative wording, and Companies adapt them with their own counsel ([20](20-architecture-security.md)).
 
 **4.23.4 OS permission strategy.** Permissions are requested just in time, each after a full-screen explanation in the user's language. They are never all requested at first launch.
 
@@ -913,7 +916,15 @@ Target: invite to first successful clock-in in under 10 minutes, median, without
 - **Kill switches:** every major feature (geofence automation, Tap to Pay, AI translation, Field Design AR) has a remote flag delivered through `GET /mobile/v1/config` and controlled from the operator console ([19](19-platform-admin-portal.md)). A misbehaving feature is turned off for one tenant, one device model or everyone in minutes, without a store release.
 - Native releases go through the app stores on a regular cadence, with the minimum-version gate in 4.21.4.
 
-**4.24.4 In-app support and diagnostics.** "Report a problem" (from More, or by shaking the phone, which can be turned off for gloved users) captures a voice or text description and a **diagnostics bundle**. The bundle holds app and OS version, device model, permission states, battery-optimization state, storage free, queue counts by type and age, the last 50 sync errors and geofence telemetry. It contains no record contents, photos or location breadcrumbs. It goes to the Company admin and, if the Company allows, to `platform_support` ([19](19-platform-admin-portal.md)). With tenant consent, support can raise one device's log level for 24 hours. The crew lead sees a plain-language "Your phone is fine / Your phone needs attention" result with the top fix, for example "Battery saver is stopping Rootline. Tap to fix."
+**4.24.4 In-app support and diagnostics.** "Report a problem" (from More, or by shaking the phone, which can be turned off for gloved users) captures a voice or text description and a **diagnostics bundle**. The bundle holds app and OS version, device model, permission states, battery-optimization state, storage free, queue counts by type and age, the last 50 sync errors and geofence telemetry. It contains no record contents, photos or location breadcrumbs. It goes to the Company admin and, if the Company allows, to `platform_support`, the role held by Rootline's support agent ([19](19-platform-admin-portal.md)). With tenant consent, support can raise one device's log level for 24 hours. The crew lead sees a plain-language "Your phone is fine / Your phone needs attention" result with the top fix, for example "Battery saver is stopping Rootline. Tap to fix."
+
+**4.24.5 Shadow mode for switching Companies.** Any Company moving from another system can turn on shadow mode (OD-72), an `owner` setting. Crews run their day in Rootline while their old system stays the record for payroll, billing and client messages. While it is on:
+- Everything in the crew app works, and the office sees the same visits, time, photos and records as it would in normal use.
+- Client-facing output from field events is held: no on-the-way texts, visit summaries or receipts are sent, and per-visit invoices are created as drafts that never auto-send ([07](07-invoicing-billing-contracts.md)).
+- Payroll exports and field payment collection are off, so nothing is paid or billed twice.
+- A "Shadow mode" banner shows on every screen, and a daily shadow report sums the visits, hours and materials recorded in Rootline so the owner can compare them with the old system.
+
+Turning shadow mode off is one `owner` action. Normal behavior starts from that moment, and messages held during shadow mode are never sent afterwards. There is no time limit and no approval step.
 
 ---
 
@@ -1199,38 +1210,38 @@ flowchart TD
 
 ### 6.1 Screen inventory
 
-| # | Screen | Primary roles | Offline | Priority |
-|---|---|---|---|---|
-| S1 | Sign-in / device enrollment / language picker | All | Partial (PIN offline after enrollment) | |
-| S2 | Shared-device "Who are you?" PIN pad | Crew device users | Yes | |
-| S3 | Today (list) with pre-shift card | technician, crew_lead | Yes | |
-| S4 | Route map | crew_lead, ops_manager | Yes (cached tiles) | |
-| S5 | Visit run sheet (details + workflow) | technician, crew_lead | Yes | |
-| S6 | Property map with zones/pins | All field | Yes |/ |
-| S7 | Camera + markup | All field | Yes | |
-| S8 | Materials log + scanner | crew_lead | Yes | |
-| S9 | Chemical application wizard | Licensed applicators | Yes (forecast weather) | |
-| S10 | Signature capture | crew_lead, estimator | Yes | |
-| S11 | Collect payment (Tap to Pay, check, cash, link) | crew_lead | Card needs online | check/cash/link, card-present |
-| S12 | Spot it | All field | Yes | |
-| S13 | Clock (self) and break timer | All employees | Yes | |
-| S14 | Crew clock (crew-level punch, detach/attach) | crew_lead | Yes | |
-| S15 | Clock-out attestation | Employees in policy jurisdictions | Yes | |
-| S16 | Crew time review and approval | crew_lead | Yes | |
-| S17 | End-of-day report | crew_lead | Yes (AI draft on sync) | |
-| S18 | Safety hub: tailgate talk, JHA, DVIR, incident, heat log, emergency | crew_lead, all | Yes |/ |
-| S19 | Equipment hours and issues | crew_lead | Yes | |
-| S20 | Chat and announcements | All | Queue offline | |
-| S21 | Scorecard and badges | All | Yes (last synced) | |
-| S22 | Field Design Mode (measure, sketch, photo capture) | estimator, designer, owner | Map measure yes; AR yes; AI preview no |/ |
-| S23 | My timesheet and pay estimate | All employees | Yes | |
-| S24 | Settings: language, theme, glove mode, navigation app, privacy ("My location data") | All | Yes | |
-| S25 | Sync details and Needs attention (wireframe in [20](20-architecture-security.md) 6.3) | All | Yes | |
-| S26 | Add expense (receipt capture) and purchase request | crew_lead | Yes (OCR on sync) |/ |
-| S27 | Client hand-over view (sign, pay, review) | Client using a crew device | Yes (card pay needs online) | |
-| S28 | Practice mode | All employees | Yes (never syncs) | |
-| S29 | Report a problem / diagnostics | All | Queued offline | |
-| S30 | Onboarding tour and permission primers | All employees | Partial (OTP needs online) | |
+| # | Screen | Primary roles | Offline |
+|---|---|---|---|
+| S1 | Sign-in / device enrollment / language picker | All | Partial (PIN offline after enrollment) |
+| S2 | Shared-device "Who are you?" PIN pad | Crew device users | Yes |
+| S3 | Today (list) with pre-shift card | technician, crew_lead | Yes |
+| S4 | Route map | crew_lead, ops_manager | Yes (cached tiles) |
+| S5 | Visit run sheet (details + workflow) | technician, crew_lead | Yes |
+| S6 | Property map with zones/pins | All field | Yes |
+| S7 | Camera + markup | All field | Yes |
+| S8 | Materials log + scanner | crew_lead | Yes |
+| S9 | Chemical application wizard | Licensed applicators | Yes (forecast weather) |
+| S10 | Signature capture | crew_lead, estimator | Yes |
+| S11 | Collect payment (Tap to Pay, check, cash, link) | crew_lead | Card needs online |
+| S12 | Spot it | All field | Yes |
+| S13 | Clock (self) and break timer | All employees | Yes |
+| S14 | Crew clock (crew-level punch, detach/attach) | crew_lead | Yes |
+| S15 | Clock-out attestation | Employees in policy jurisdictions | Yes |
+| S16 | Crew time review and approval | crew_lead | Yes |
+| S17 | End-of-day report | crew_lead | Yes (AI draft on sync) |
+| S18 | Safety hub: tailgate talk, JHA, DVIR, incident, heat log, emergency | crew_lead, all | Yes |
+| S19 | Equipment hours and issues | crew_lead | Yes |
+| S20 | Chat and announcements | All | Queue offline |
+| S21 | Scorecard and badges | All | Yes (last synced) |
+| S22 | Field Design Mode (measure, sketch, photo capture) | estimator, designer, owner | Map measure yes; AR yes; AI preview no |
+| S23 | My timesheet and pay estimate | All employees | Yes |
+| S24 | Settings: language, theme, glove mode, navigation app, privacy ("My location data") | All | Yes |
+| S25 | Sync details and Needs attention (wireframe in [20](20-architecture-security.md) 6.3) | All | Yes |
+| S26 | Add expense (receipt capture) and purchase request | crew_lead | Yes (OCR on sync) |
+| S27 | Client hand-over view (sign, pay, review) | Client using a crew device | Yes (card pay needs online) |
+| S28 | Practice mode | All employees | Yes (never syncs) |
+| S29 | Report a problem / diagnostics | All | Queued offline |
+| S30 | Onboarding tour and permission primers | All employees | Partial (OTP needs online) |
 
 ### 6.2 Wireframe: Today (crew lead, Outdoor theme)
 
@@ -1318,7 +1329,7 @@ flowchart TD
 +-------------------------------------------------+
 | ! Meal must start by 11:45 for Maria, Javier    |
 +-------------------------------------------------+
-| [       >>> SWIPE TO CLOCK OUT SELECTED >>>   ] |
+| [   HOLD TO CLOCK OUT SELECTED (0.8 s)        ] |
 +-------------------------------------------------+
 ```
 
@@ -1687,7 +1698,7 @@ erDiagram
 | Google Maps / Apple Maps / Waze deep links | Navigation handoff | URL schemes; no API cost |
 | Parcel data (e.g., Regrid) | Geofence polygons, property boundaries | Server-side, cached as GeoJSON |
 | Weather (NWS/ECCC or commercial provider) | Chem auto-fill, heat triggers, rain banners | Server-side proxy with caching; provider choice in [20](20-architecture-security.md) |
-| AI Gateway (speech-to-text, Claude for translation/extraction/reports, vision for Spot-it and OCR) | Voice notes, translation, Spot-it classification, meter and receipt AI extraction, end-of-day drafts (MVP receipt header OCR is rules-based and runs outside the gateway, per [09](09-accounting-ledger-integrations.md) AI2) | Metered as AI credits; [17](17-ai-copilot-automation.md) |
+| AI Gateway (speech-to-text, Claude for translation/extraction/reports, vision for Spot-it and OCR) | Voice notes, translation, Spot-it classification, meter and receipt AI extraction, end-of-day drafts (receipt header OCR is rules-based and runs outside the gateway, per [09](09-accounting-ledger-integrations.md) AI2) | Metered as AI credits; [17](17-ai-copilot-automation.md) |
 | Push: APNs, FCM (via Expo push or direct) | Notifications, silent sync nudges | |
 | Twilio Proxy / masked calling | Call clients without exposing numbers | [16](16-marketing-growth-communications.md) |
 | Telematics (Samsara, Geotab, Verizon Connect, Linxup; verify APIs) | Vehicle location, engine hours | [13](13-operations-inventory-equipment.md) |
@@ -1794,7 +1805,7 @@ Capabilities below are the defaults; Companies can create custom roles from gran
 | Use practice mode | Y | Y | Y | Y | Y | Y | Y | - | Y |
 | Send diagnostics bundle to platform support | Y | Y | O | O | Y | O | O | - | O |
 
-Platform staff: `platform_support` can view a tenant's device and sync diagnostics (app version, last sync, pending mutation counts, error codes) without record contents, and can only view records with time-boxed, tenant-approved impersonation ([19](19-platform-admin-portal.md)). `platform_curator` maintains the safety talk library, chemical product catalog defaults and translation glossary. `platform_engineer` sees aggregated crash and sync telemetry. `platform_owner` controls feature flags and policy pack releases. `platform_finance` has no crew-app access.
+Platform roles (held by Rootline's operator agents, with `platform_owner` held by the founder; [24](24-product-scope-decisions-catalog.md) section 1.2): `platform_support` (the support agent) can view a tenant's device and sync diagnostics (app version, last sync, pending mutation counts, error codes) without record contents, and can only view records with time-boxed, tenant-approved impersonation ([19](19-platform-admin-portal.md)). `platform_curator` (the plant curator agent) maintains the safety talk library, chemical product catalog defaults, translation glossary and jurisdiction policy packs. `platform_engineer` (the engineering agent) sees aggregated crash and sync telemetry. `platform_owner` controls feature flags and approves policy pack releases. `platform_finance` (the finance agent) has no crew-app access.
 
 ---
 
@@ -1802,22 +1813,22 @@ Platform staff: `platform_support` can view a tenant's device and sync diagnosti
 
 All AI goes through the AI Gateway with credit metering, tenant isolation and human confirmation for anything that changes records ([17](17-ai-copilot-automation.md)).
 
-| Opportunity | Description | Priority |
-|---|---|---|
-| Voice note transcription and EN/ES translation | Code-switching speech, landscaping glossary, original + translation shown | |
-| Client note translation and summary | Standing instructions translated; "recent communications" summarized for crews |/ |
-| Spot-it classification and scope drafting | Vision + LLM classify the issue, match Price Book items, draft scope and price range | (classify), (pricing) |
-| End-of-day report drafting | Summarizes the day's records and voice notes into the report | |
-| Structured extraction from voice | Office-side issue extraction and draft Opportunities by the A4 Field-Note Agent ([17](17-ai-copilot-automation.md) 4.5.5) at; crew-side one-tap proposals ("Skip next week", "need more mulch" -> proposed actions) at |/ |
-| Photo QA before leaving site | Vision model checks after photos for debris on hard surfaces, missed edging, uneven stripes; prompts "Blow the driveway again?" Advisory only | |
-| Receipt, meter and ticket OCR | Field purchase receipts (4.6.6): rules-based header OCR at (no LLM, no AI credits; AI2 basic in [09](09-accounting-ledger-integrations.md)), AI line-item extraction at; hour meters, dump tickets and fuel receipts at |/ |
-| Plant, weed, pest and disease ID | Photo ID cross-referenced with the Plant KB and region ([12](12-plant-knowledge-base.md)); suggests program adjustments | (online), (on-device) |
-| Chem record assistant | Explains label rate ranges, REI, and state posting rules in the user's language; never overrides label limits | |
-| Safety talk generator | Generates a tailgate talk from today's conditions (heat 101 F, slopes, new hire) for crew-lead review, in EN/ES | |
-| Copilot in the field | "How many hours left on Willow Creek this month?", "Where's the backflow on this property?", "What did we put down on this lawn last round?" | |
-| Anomaly detection | Time anomalies (unusual drive time, repeated geofence mismatches), material overuse, chem rate outliers flagged to ops | |
-| Hands-free voice mode | "Rootline, start meal break for the crew", "Mark mow front done" | |
-| On-device AR mockup preview | Overlay proposed bed lines or plants in AR on site with Design data ([11](11-ai-design-mockups.md)) | |
+| Opportunity | Description |
+|---|---|
+| Voice note transcription and EN/ES translation | Code-switching speech, landscaping glossary, original + translation shown |
+| Client note translation and summary | Standing instructions translated; "recent communications" summarized for crews |
+| Spot-it classification and scope drafting | Vision + LLM classify the issue, match Price Book items, draft scope and price range (pricing feeds fix-it-now, 4.10.1) |
+| End-of-day report drafting | Summarizes the day's records and voice notes into the report |
+| Structured extraction from voice | Office-side issue extraction and draft Opportunities by the A4 Field-Note Agent ([17](17-ai-copilot-automation.md) 4.5.5), plus crew-side one-tap proposals ("Skip next week", "need more mulch" -> proposed actions) |
+| Photo QA before leaving site | Vision model checks after photos for debris on hard surfaces, missed edging, uneven stripes; prompts "Blow the driveway again?" Advisory only |
+| Receipt, meter and ticket OCR | Field purchase receipts (4.6.6): rules-based header OCR (no LLM, no AI credits; AI2 basic in [09](09-accounting-ledger-integrations.md)) and AI line-item extraction; hour meters, dump tickets and fuel receipts |
+| Plant, weed, pest and disease ID | Photo ID cross-referenced with the Plant KB and region ([12](12-plant-knowledge-base.md)), online and on-device; suggests program adjustments |
+| Chem record assistant | Explains label rate ranges, REI, and state posting rules in the user's language; never overrides label limits |
+| Safety talk generator | Generates a tailgate talk from today's conditions (heat 101 F, slopes, new hire) for crew-lead review, in EN/ES |
+| Copilot in the field | "How many hours left on Willow Creek this month?", "Where's the backflow on this property?", "What did we put down on this lawn last round?" |
+| Anomaly detection | Time anomalies (unusual drive time, repeated geofence mismatches), material overuse, chem rate outliers flagged to ops |
+| Crew voice assistant (hands-free) | Push-to-talk EN/ES commands such as "Rootline, start meal break for the crew" and "Mark mow front done" (4.11.6, [17](17-ai-copilot-automation.md) section 4.8) |
+| On-device AR mockup preview | Overlay proposed bed lines or plants in AR on site with Design data ([11](11-ai-design-mockups.md)) |
 
 Guardrails: AI never submits time, attestations, chem records or payments; AI-translated text is labeled; translation errors on safety content are mitigated by human-reviewed platform translations for all platform-shipped safety and compliance text (AI translation only for user-generated content).
 
@@ -1853,7 +1864,7 @@ Guardrails: AI never submits time, attestations, chem records or payments; AI-tr
 | Property in a dead zone where OS geofences never fire | Path B (in-app GPS, 4.5.4) detects arrival without data; telemetry marks the property "geofence-unreliable" so the dead-zone map (Beyond the brief, idea 14) can pre-cache more |
 | Phone rebooted mid-shift | Clock state restored from SQLite on launch (punch events are the source of truth); geofences re-registered on boot; local meal/REI timers rescheduled |
 | Crew crosses a time-zone boundary (e.g., Idaho-Oregon line, or Lloydminster on the Alberta-Saskatchewan border) | Visit times shown in the property's zone; punches stored in UTC with the device zone; the workday is defined by the Company's payroll zone ([15](15-team-hr-payroll.md)) |
-| Device offline for more than 7 days | New work locked per 4.0.2; punches and the emergency screen stay available; nothing is deleted |
+| Device offline past its offline lease (14 days by default) | New work locked per 4.0.2; punches and the emergency screen stay available; nothing is deleted |
 | OTA update published while crews are working | Not applied until clock-out with an empty queue (4.24.3) |
 | Client grabs the phone during a signature and scrolls | Client hand-over mode (4.8.2a) blocks navigation; exit needs the crew PIN |
 | Crew lead pays $38 cash at a supply yard from personal funds | Field expense with receipt photo, `payment_source = personal`, then a reimbursement line to payroll (4.6.6) |
@@ -1874,7 +1885,7 @@ Guardrails: AI never submits time, attestations, chem records or payments; AI-tr
 | OSHA injury records | OSHA 300/301 for recordable injuries | Incident report fields feed [15](15-team-hr-payroll.md) |
 | E-signatures | ESIGN/UETA (US); provincial e-commerce acts (Canada) | 4.8.3 evidence package |
 | Payments | PCI DSS SAQ-A scope; card data only in Stripe SDKs | No card data touches Rootline code or storage; [08](08-payments-stripe.md) |
-| Biometrics | Illinois BIPA and similar laws | No face templates by default; consent workflow if enabled |
+| Biometrics | Illinois BIPA and similar laws | No face templates and no face matching (OD-54); the optional punch photo is a plain photo |
 | Electronic monitoring and privacy | NY 52-c notice, CT/DE notice, CPRA, Ontario policy, Quebec Law 25, PIPEDA (verify) | 4.23 |
 | BYOD reimbursement | California Labor Code 2802 (verify) | Stipend configuration |
 | App store policies | Background location justification and prominent disclosure (Google Play), Apple location usage strings, Tap to Pay entitlement | Disclosure screens; tracking only on clock |
@@ -1891,9 +1902,9 @@ Guardrails: AI never submits time, attestations, chem records or payments; AI-tr
 | Sync engine complexity causes data loss or duplicates | Medium | Critical | Append-only design, idempotency, deterministic multi-device test harness, staged rollout with sync telemetry, "never discard" rule |
 | Background location unreliable (OEM battery killers on Android) | High | High | Geofence prompts are helpers, not the only path; manual actions always available; per-OEM onboarding guidance (disable battery optimization), telemetry on missed geofences |
 | Crews refuse location permissions | Medium | Medium | Clear "off the clock = invisible" promise, Spanish explanation, app works without location (manual punches flagged "no location") |
-| Tap to Pay availability/entitlement delays | Medium | Medium | Payment links and Bluetooth readers as fallback; apply for entitlement early |
+| Tap to Pay availability/entitlement delays | Medium | Medium | Payment links and Bluetooth readers as fallback; Tap to Pay turns on per Company once Apple's and Stripe's approval holds ([24](24-product-scope-decisions-catalog.md) section 1.4) |
 | AI translation errors on critical instructions | Medium | High | Human-reviewed platform content; "original" always one tap away; glossary; crew-lead confirmation for safety-critical notes |
-| Regulatory variance across 60+ jurisdictions | High | Medium | Policy packs maintained by platform staff with legal review; Federal and Great Lakes launch-state packs first, California at; clear "verify with counsel" in setup |
+| Regulatory variance across 60+ jurisdictions | High | Medium | Policy packs are data maintained by the plant curator agent from licensed sources, each approved by the founder before it publishes (OD-60); Federal, the five Great Lakes states, California and Ontario ship as packs (R24-18); clear "verify with counsel" in setup |
 | Low-end device performance | Medium | High | Performance budgets enforced in CI on reference devices; lazy-loaded modules |
 | Gamification backlash (surveillance feel) | Medium | Medium | Team-based defaults, opt-in individual boards, no speed-only metrics |
 | Map SDK and AI costs per device | Medium | Medium | Offline tile caps, AI credit metering, telematics-assisted low-power mode |
@@ -1965,30 +1976,30 @@ Guardrails: AI never submits time, attestations, chem records or payments; AI-tr
 
 ---
 
-## 14. Open questions
+## 14. Decisions on former open questions
 
-1. **Build vs buy the sync engine.** In-house op-log sync on SQLite vs a managed engine (e.g., PowerSync) vs a library (e.g., WatermelonDB). Decision criteria: Postgres RLS compatibility, per-entity conflict hooks, cost per device, offline blob handling. Owner: [20](20-architecture-security.md).
-2. **Minimum OS versions.** Android 10+ and iOS "latest two plus one" are proposed; field data on actual crew devices from design-partner Companies should confirm before MVP.
-3. **Tap to Pay at MVP scope.** This doc follows [08](08-payments-stripe.md): card-present is, and MVP field collection is check/cash, payment link and card on file. Should iPhone-in-US Tap to Pay be pulled into MVP for design partners with cash-on-completion cleanup routes? That depends on Apple's Tap to Pay entitlement approval and the Terminal integration scope. Interac (`interac_present`) for Canada stays per [08](08-payments-stripe.md).
-4. **Default for geofence automation.** Prompt-only (current default) vs auto-arrive; should auto mode be allowed in California where time accuracy is litigated?
-5. **Crew member confirmation of crew punches.** Required everywhere, California-only (current default), or Company choice?
-6. **Price visibility.** Should crews ever see prices by default for upsell selling, or only via the fix-it-now flow?
-7. **Punch photos.** Is a non-biometric punch photo worth the privacy friction, or should it be V2 opt-in only?
-8. **Embedded navigation.** Is in-app turn-by-turn worth the SDK cost compared with deep links plus geofences?
-9. **Breadcrumb retention default.** 90 days proposed; legal review per jurisdiction may push it shorter.
-10. **Subcontractor app experience.** Same app in restricted mode (current proposal) vs a lighter web link experience requiring no install.
-11. **Union and prevailing-wage work.** Do early customers with public contracts need certified payroll classifications captured per segment (trade classification) at MVP? ([15](15-team-hr-payroll.md))
-12. **Weather provider.** Free government sources (NWS, ECCC) vs a commercial provider for station density and wind accuracy that regulators will accept on chem records.
-13. **Locked-device punches.** Confirm with [02](02-personas-roles-permissions.md) that PIN-verified time punches stay allowed after the 7-day offline lock (4.0.2). The alternative blocks a crew from clocking in, which creates unrecorded work time, a wage-and-hour risk in itself.
-14. **Path B battery cost.** Does tightening GPS sampling to every 10 s within 500 m of each stop keep total app battery use under the 10%-per-shift budget on the reference low-end Android? This needs a field test across Samsung A-series, Moto G and one rugged device before the default is locked.
-15. **Practice mode in sales.** Should practice mode double as the public demo (downloadable without a tenant) for the marketing site ([16](16-marketing-growth-communications.md))? It is cheap to build, but it exposes the app to competitors.
-16. **Access-secret edits from the field.** [20](20-architecture-security.md) specifies LWW with history for gate codes. Is the added `field_reported` confirmation step (4.21.6) enough, or should Companies be able to make access secrets office-only?
+1. **Build vs buy the sync engine.** A self-hosted sync service for reads plus Rootline's own outbox for writes (OD-58; ADR-008 in [20](20-architecture-security.md)).
+2. **Minimum OS versions.** Android 10 (API 29) and newer; iOS current two major versions plus one prior (iOS 18 and newer as of late 2026). The floor follows the crew device mix seen in product analytics (4.20.1).
+3. **Tap to Pay.** Card-present collection is part of field collection: Tap to Pay on iPhone and Android in the US and Canada where Stripe supports it (R24-3, OD-18), with `interac_present` for Canada per [08](08-payments-stripe.md).
+4. **Default for geofence automation.** Prompt-only by default everywhere; auto-arrive is a Company opt-in outside California (OD-55).
+5. **Crew member confirmation of crew punches.** Required by default in California, optional by default elsewhere, and a Company setting everywhere (4.5.3).
+6. **Price visibility.** Hidden from field roles by default; crews see prices through the fix-it-now flow, and a Company can turn on `show_prices_in_field` for crews that sell in the field (4.3.6).
+7. **Punch photos.** An optional non-biometric punch photo, off by default; no face verification (OD-54).
+8. **Embedded navigation.** In-app truck-aware turn-by-turn is a Company setting, off by default; deep links stay the default (4.2.3).
+9. **Breadcrumb retention default.** 90 days, shorter where law requires; proof packets kept separately (OD-57).
+10. **Subcontractor app experience.** The same app in restricted mode (4.22.4), plus the single-order web links in [02](02-personas-roles-permissions.md) for subcontractors who do not install it.
+11. **Union and prevailing-wage work.** Time segments carry a trade classification on prevailing-wage Jobs, and certified payroll comes from [15](15-team-hr-payroll.md).
+12. **Weather provider.** A commercial provider with soil temperature, certified reports and AQI, plus NWS and ECCC (OD-61).
+13. **Locked-device punches.** PIN-verified time punches stay allowed after the offline lease runs out, flagged `stale_session` (4.0.2, [02](02-personas-roles-permissions.md) section 5.16).
+14. **Path B battery cost.** Sampling every 10 s within 500 m of each stop is the default. Battery use is measured per device model on the reference devices and in telemetry (4.20.3, section 12), and the sampling interval is a remote config value (4.24.3) that can be widened for a device model that runs over the 10% budget.
+15. **Practice mode in sales.** No. Practice mode stays inside a tenant; the public demo is the Greenleaf Grounds Co. sandbox ([22](22-business-model-pricing-gtm.md) section 4.6).
+16. **Access-secret edits from the field.** The `field_reported` confirmation step (4.21.6) stands, and a Company that wants access secrets office-only turns off crew-lead property edits.
 
 ---
 
 ## Sources
 
-Research for this module combined targeted web research with platform documentation. Verification note: items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build; every time-sensitive fact (plan names, device lists, regulatory status) should be re-checked before it is quoted externally.
+Research for this module combined targeted web research with platform documentation. Verification note: items marked "verify" are from secondary sources or general knowledge. The build does not depend on them; the marketing agent checks each one against a primary source before it is quoted externally (OD-07), and every time-sensitive fact (plan names, device lists, regulatory status) is re-checked at that point.
 
 **Competitors and user feedback**
 - Jobber App Store listing: https://apps.apple.com/us/app/jobber/id1014146758
