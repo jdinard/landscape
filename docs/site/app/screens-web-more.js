@@ -385,8 +385,9 @@ function roster(c) {
 function rehireRows(c) {
   const hib = roster(c).filter(p => p.status === 'Hibernated');
   const replies = ['Returning', 'Returning', 'Returning', 'Not returning', 'No reply', 'Returning'];
+  let leads = 0;
   return hib.map((p, i) => {
-    const check = p.role === 'crew_lead' && i % 3 === 0 ? 'Pest. license expired' : i % 6 === 1 ? 'Visa end date before start' : i % 6 === 4 ? 'No mobile number' : 'OK';
+    const check = p.role === 'crew_lead' && leads++ === 0 ? 'Pest. license expired' : i === 4 ? 'Visa end date before start' : i === 9 ? 'No mobile number' : 'OK';
     return { id: p.id, name: p.name, crew: p.crew, role: p.role, rate: p.rate, sug: p.rate + .75, reply: replies[i % replies.length], check, block: check !== 'OK' };
   });
 }
@@ -856,7 +857,7 @@ RL.screen('web.automations', (c, a) => {
     { k: 1, label: 'Rule', fmt: (v, r) => `<b>${esc(v)}</b> <span class="tiny t3 mono">${r[0]}</span><div class="tiny t3">${esc(r[3])}</div>` },
     { k: 2, label: 'Trigger', m: true },
     { k: 5, label: 'AI credits / mo', n: true, fmt: v => v ? `${h.ai('')} about ${num(v)}` : '<span class="t3">0</span>' },
-    { k: 0, label: 'Runs (30 d)', n: true, fmt: v => num((hs(v + c.t.id) % 400) + (c.winter ? 3 : 40)) },
+    { k: 0, label: 'Runs (30 d)', n: true, fmt: (v, r) => ruleOn(c, v, RULES.indexOf(r)) ? num((hs(v + c.t.id) % (c.winter ? 60 : 400)) + (c.winter ? 3 : 40)) : '<span class="t3">-</span>' },
   ], RULES, { dense: true });
   else if (tab === 'recipes') body = h.table([{ k: 0, label: '#', m: true }, { k: 1, label: 'Recipe' }, { k: 2, label: 'Trigger' }, { k: 3, label: 'Scope', fmt: v => h.tag(v) }, { k: 0, label: '', fmt: (v, r) => can && (r[3] === 'MVP' || c.inLens(r[3])) ? h.btn('Install', { sm: true, act: 'au-install', x: v }) : '' }], RECIPES, { dense: true }) + h.note('Recipes are curated by Rootline and stay editable after install (17 §4.6.6).');
   else body = h.table([{ k: 0, label: 'When' }, { k: 1, label: 'Rule' }, { k: 2, label: 'Record', m: true }, { k: 3, label: 'Result', fmt: v => statusPill(v) }, { k: 4, label: 'Credits', n: true }],
@@ -971,7 +972,7 @@ RL.screen('web.settings.users', (c, a) => {
       + `<div class="flex">${can ? tbtn('Save', `Saved. ${first}'s seat ${nextSeat === curSeat ? 'is unchanged' : 'changes to ' + nextSeat} from today; billing is prorated.`, { kind: 'primary' }) : ''}${tbtn('View as this role', 'Opened a read-only preview as ' + person.role + '.', { icon: 'eye' })}<span class="tiny t3">Impact: 1 user</span></div>`),
     sec('Guardrails', h.list([{ icon: 'shield', title: 'Anti-escalation', sub: 'You can assign only roles whose grants are less than or equal to your own; ops managers assign field roles in their branch.' }, { icon: 'lock', title: 'Owner-only permissions', sub: 'Stripe connection, bank accounts, roles, subscription, data export.' }, { icon: 'eye', title: 'Field roles never see prices, costs or margins', sub: 'Locked in every custom role cloned from a field role.' }]) + (can ? '' : h.note(ask(c))), { flush: true }),
   ]);
-  return h.page({ title: 'Users, roles and permissions', sub: `${users.length} users · ${S.office} office seats · ${custom.length} custom roles${a.state === 'limit' ? ' · ' + esc(a.limit) : ''}`, actions: (can ? h.btn('Invite user', { kind: 'primary', icon: 'plus', act: 'more-toast' }) : '') + roPill(c, 'role') })
+  return h.page({ title: 'Users, roles and permissions', sub: `${users.length} users · ${S.office} office seats · ${cap != null ? `${custom.length} of ${cap} custom roles on ${esc(c.plan.name)}` : custom.length + ' custom roles'}`, actions: (can ? h.btn('Invite user', { kind: 'primary', icon: 'plus', act: 'more-toast' }) : '') + roPill(c, 'role') })
     + h.tabs('su.tab', [['editor', 'Role editor'], ['roles', 'Roles', Object.keys(SEAT_OF).length + custom.length], ['users', 'Users', users.length]], 'editor') + body;
 });
 
@@ -1119,10 +1120,14 @@ function planDiff(c, to) {
   });
   return out.slice(0, 8);
 }
+const PCS = ['starter', 'grow', 'pro', 'enterprise'];
+const CMP = [['automations', 'Active automation rules', ['5', '50', 'Unlimited', '']], ['custom_roles', 'Custom roles', ['', '2', '', '']], ['equipment', 'Equipment assets', ['10', '25', '', '']], ['inventory', 'Inventory', ['Off mode', '1 yard', 'Multi-site', '']],
+  ['agents_v1', 'V1 AI agents', ['', '3', '', '']], ['report_builder', 'Report builder', []], ['benchmarks', 'Benchmarks', []], ['forecasts', '13-week forecasts', []], ['website', 'Website builder', ['', '', '1 site', '']], ['ai_receptionist', 'AI receptionist', ['', '', '200 min', '']], ['marketing_advanced', 'Journey builder', []], ['sso', 'SSO (SAML, OIDC)', []]];
 RL.screen('web.settings.subscription', (c) => {
   const t = c.t, pl = c.plan, S = seats(c), cr = credits(c), own = isOwner(c);
   const iv = interval(c), base = basePrice(c);
   const founding = ['S1', 'S2', 'S3'].includes(c.seg.id) && pl.public;
+  const net = founding ? Math.round(base * 75) / 100 : base;
   const seatCost = S.oOffice * S.ex.office + S.oField * S.ex.field + S.oDesigner * S.ex.designer;
   const addons = [['snow_ice', 'snow_ice'], ['ai_receptionist', 'ai_receptionist'], ['website', 'website'], ['marketing_advanced', 'marketing_advanced'], ['ledger_advanced', 'ledger_advanced'], ['design_3d', 'design_3d'], ['payroll', 'payroll']].map(([code, feat]) => {
     const ad = I.ADDONS[code], fs = c.feat(feat), on = t.addons.includes(code);
@@ -1134,8 +1139,8 @@ RL.screen('web.settings.subscription', (c) => {
   const voiceInc = { starter: 300, grow: 1000, pro: 3000 }[c.planCode] || 0;
   const stor = pl.storage_gb || 0;
   const packBuy = cr.pack && !c.winter ? 25 : 0;
-  const tax = Math.round((seatCost + addCost + packBuy + (iv === 'monthly' ? base : 0)) * .0575 * 100) / 100;
-  const due = (iv === 'monthly' ? base : 0) + seatCost + addCost + packBuy + tax;
+  const tax = Math.round((seatCost + addCost + packBuy + (iv === 'monthly' ? net : 0)) * .0575 * 100) / 100;
+  const due = (iv === 'monthly' ? net : 0) + seatCost + addCost + packBuy + tax;
   const nextDate = c.winter ? 'Feb 1' : 'Jun 1';
   const caps = [['Technicians', '20 per user'], ['Crew leads', '40 per user'], ['Estimators', '300 per user'], ['Designers', '800 per user'], ['Office', '500 per user'], ['Owner', 'No cap']];
   const wmFrom = RL.ui['wm.from'] || 'Dec 1', wmTo = RL.ui['wm.to'] || 'Mar 1';
@@ -1146,14 +1151,14 @@ RL.screen('web.settings.subscription', (c) => {
   const seatRows = [seatRow('Office users', S.inc.office, S.office, S.oOffice, S.ex.office), seatRow('Designer seats', S.inc.designer, S.designers, S.oDesigner, S.ex.designer), seatRow('Crew users (active this month)', S.inc.field, S.field, S.oField, S.ex.field, c.winter ? 'Winter: only active crew count' : ''), seatRow('Bookkeeper (free)', 1, S.bk, 0, 0), seatRow('Observers (free, up to 3)', 3, 1, 0, 0)];
   return h.page({ title: 'Plan, billing and AI credits', sub: `${esc(t.name)} · billed to ACH ••4410 · billing email billing@${esc(domainOf(c))}`, actions: own ? tbtn('Download all invoices', 'Invoices exported as PDF.', { icon: 'download' }) : '' })
     + ro
-    + `<div class="cd"><div class="cd-b"><div class="flex between"><div><div class="tiny t3" style="letter-spacing:.06em">PLAN</div><div style="font-size:1.25rem;font-weight:720">${esc(pl.name)} · ${iv === 'annual' ? 'Annual (USD)' : 'Monthly (USD)'}</div></div>${own ? h.btn('Change plan', { kind: 'primary', ui: 'sb.tab', val: 'plans' }) : ''}</div><div class="flex">${'<span class="small t2">' + money(base) + '/mo' + (iv === 'annual' ? ' billed annually' : '') + ' · renews ' + (iv === 'annual' ? 'Mar 1, 2028' : nextDate) + '</span>'}${founding ? h.pill('Founding Customer -25% on base', 'ok') : ''}${h.pill(iv === 'annual' ? 'Price Lock until Mar 1, 2028' : '60 days notice before any price change', 'info', 'shield')}</div><div class="tiny t3">Price Lock: annual customers keep their list price for 24 months; after that, increases are capped at 7% per year with 90 days notice (22 §4.7).</div></div></div>`
+    + `<div class="cd"><div class="cd-b"><div class="flex between"><div><div class="tiny t3" style="letter-spacing:.06em">PLAN</div><div style="font-size:1.25rem;font-weight:720">${esc(pl.name)} · ${iv === 'annual' ? 'Annual (USD)' : 'Monthly (USD)'}</div></div>${own ? h.btn('Change plan', { kind: 'primary', ui: 'sb.tab', val: 'plans' }) : ''}</div><div class="flex">${'<span class="small t2">' + (founding ? money(base * .75, { cents: true }) + '/mo after discount (list ' + money(base) + ')' : money(base) + '/mo') + (iv === 'annual' ? ' billed annually' : '') + ' · renews ' + (iv === 'annual' ? 'Mar 1, 2028' : nextDate) + '</span>'}${founding ? h.pill('Founding Customer -25% on base', 'ok') : ''}${h.pill(iv === 'annual' ? 'Price Lock until Mar 1, 2028' : '60 days notice before any price change', 'info', 'shield')}</div><div class="tiny t3">Price Lock: annual customers keep their list price for 24 months; after that, increases are capped at 7% per year with 90 days notice (22 §4.7).</div></div></div>`
     + h.tabs('sb.tab', [['usage', 'Seats and usage'], ['credits', 'AI credits'], ['addons', 'Add-ons', addons.length], ['invoices', 'Invoices'], ['winter', 'Winter Mode ' + h.tag('V1')], ['plans', 'Compare plans']], 'usage')
     + (() => {
       const tab = h.tab('sb.tab', 'usage');
       if (tab === 'usage') return h.cols('21', [
         sec('Seats', h.table([{ k: 'l', label: 'Seat' }, { k: 'inc', label: 'Included', n: true }, { k: 'used', label: 'In use', n: true }, { k: 'over', label: 'Billed extra', n: true, fmt: v => v ? `<b>${v}</b>` : '-' }, { k: 'cost', label: 'Next invoice', n: true, fmt: (v, r) => money(v, { cents: true }) + (r.note ? `<div class="tiny t3">${esc(r.note)}</div>` : '') }], seatRows, { dense: true, foot: ['Seats total', '', '', '', money(seatCost, { cents: true })] }) + h.note(`Extra seats on ${esc(pl.name)}: office ${money(S.ex.office)}, field ${money(S.ex.field)}, designer ${money(S.ex.designer)} per month. Field seats count active users only (22 §4.3).`), { flush: true }),
         sec('Usage this period', `<div class="stack8">${h.meter('AI credits', cr.used, cr.inc)}${cr.pack ? `<div class="tiny t3">+ ${num(cr.pack)} pack credits (expire in 12 months)</div>` : ''}${smsInc ? h.meter('SMS segments', smsUsed, smsInc) + `<div class="tiny t3">Hard cap ${num(smsInc * 3)} (3x included, owner-set)</div>` : ''}${voiceInc ? h.meter('Call minutes', Math.round(voiceInc * (c.winter ? .21 : .74)), voiceInc) : ''}${stor ? h.meter('Storage', Math.round(stor * .24), stor, { unit: 'GB' }) : ''}</div>`),
-      ]) + sec(`Upcoming invoice preview (${nextDate})`, h.kv([['Base plan', iv === 'annual' ? money(base) + '/mo <span class="t3">(prepaid annually)</span>' : money(base, { cents: true })], ['Extra seats', money(seatCost, { cents: true })], ['Add-ons', addCost ? money(addCost, { cents: true }) + ' (Snow and Ice, in season)' : '$0.00'], ['Usage', packBuy ? money(packBuy, { cents: true }) + ' (1,000-credit pack, bought ' + past(c)[2] + ')' : '$0.00'], ['Estimated tax', money(tax, { cents: true })], ['Due', `<b>${money(due, { cents: true })}</b>`]]) + h.note('Seats and usage are billed monthly in arrears. Never blocks getting paid: invoicing, portal payments and the ledger stay on in every billing state.'));
+      ]) + sec(`Upcoming invoice preview (${nextDate})`, h.kv([['Base plan', iv === 'annual' ? money(net, { cents: true }) + '/mo <span class="t3">(prepaid annually)</span>' : money(net, { cents: true }) + (founding ? ' <span class="t3">(Founding -25%)</span>' : '')], ['Extra seats', money(seatCost, { cents: true })], ['Add-ons', addCost ? money(addCost, { cents: true }) + ' (Snow and Ice, in season)' : '$0.00'], ['Usage', packBuy ? money(packBuy, { cents: true }) + ' (1,000-credit pack, bought ' + past(c)[2] + ')' : '$0.00'], ['Estimated tax', money(tax, { cents: true })], ['Due', `<b>${money(due, { cents: true })}</b>`]]) + h.note('Seats and usage are billed monthly in arrears. Never blocks getting paid: invoicing, portal payments and the ledger stay on in every billing state.'));
       if (tab === 'credits') return h.cols('2', [
         sec('Credit packs', `<div class="stack8">${[['1000', '1,000 credits', '$25'], ['5000', '5,000 credits', '$100'], ['20000', '20,000 credits', '$340']].map(([n, l, p]) => `<div class="flex between"><span><b>${l}</b> <span class="t3">${p}</span></span>${own ? h.btn('Buy', { sm: true, modal: 'more-pack', x: n }) : ''}</div>`).join('')}</div>` + h.note('Soft stop at 0 with a one-click pack purchase. Every AI action shows its cost before it runs (22 §4.4.1).')
           + `<div class="flex between"><span class="small"><b>Auto top-up</b> <span class="t3">Off by default</span></span>${own ? tg('', 'sb.topup', false) : h.pill(h.on('sb.topup', false) ? 'On' : 'Off', '')}</div>${h.on('sb.topup', false) ? h.field('Monthly ceiling', h.select(['$25', '$100', '$340'], '$100')) : ''}`),
@@ -1172,9 +1177,12 @@ RL.screen('web.settings.subscription', (c) => {
       }
       return h.cols('4', plans.map(p => {
         const cur = p.code === c.planCode, up = ord[p.code] > ord[c.planCode];
-        const price = p.annual ? `$${p.annual}<small>/mo annual</small>` : `<small>${esc(p.annual_note || 'Custom')}</small>`;
+        const price = p.public && p.annual ? `${money(p.annual)}<small>/mo annual</small>` : `<small>${esc(p.annual_note || 'Custom')}</small>`;
         return `<div class="plan-c${cur ? ' on' : ''}"><div class="flex between"><b>${esc(p.name)}</b>${p.scope !== 'MVP' ? h.tag(p.scope) : ''}</div><div class="pr">${price}</div><div class="tiny t2">${p.office_seats != null ? p.office_seats + ' office' : esc(p.office_note || '')} · ${p.field_seats != null ? p.field_seats + ' active field' : esc(p.field_note || 'Unlimited field')} · ${p.ai_credits ? num(p.ai_credits) + ' AI credits' : esc(p.ai_note || '')}</div><div class="tiny t3">${esc(p.for)}</div>${cur ? h.pill('Current plan', 'ok', 'check') : own ? (p.public ? h.btn(up ? 'Upgrade' : 'Downgrade', { sm: true, kind: up ? 'primary' : '', modal: 'more-plan', x: p.code }) : tbtn('Talk to sales', 'A specialist will reach out within one business day.', { sm: true })) : ''}</div>`;
-      })) + h.note('Upgrades are immediate and prorated. Downgrades take effect at the end of the period or term, after an entitlement check lists what goes read only (22 §4.7).');
+      })) + sec('What changes between plans', h.table([{ k: 'name', label: 'Capability', fmt: (v, r) => `${esc(v)} ${r.tag}` }].concat(PCS.map(pc => ({ k: pc, label: esc(I.PLANS[pc].name), fmt: v => `<span class="nw">${h.chip(v.s)}${v.note ? ` <span class="tiny t3">${esc(v.note)}</span>` : ''}</span>` }))),
+        CMP.filter(([k2]) => I.FEATS[k2]).map(([k2, name, notes]) => Object.assign({ name, tag: I.FEATS[k2].scope !== 'MVP' ? h.tag(I.FEATS[k2].scope) : '' }, ...PCS.map((pc, j) => ({ [pc]: { s: (I.FEATS[k2].plans[pc] || {}).s || '-', note: notes[j] || '' } })))), { dense: true })
+        + `<div class="tiny t3">Y included · L included with a limit · A paid add-on · - not on this plan</div>`)
+        + h.note('Upgrades are immediate and prorated. Downgrades take effect at the end of the period or term, after an entitlement check lists what goes read only (22 §4.7).');
     })();
 });
 RL.modal('more-pack', (c, el) => {
@@ -1188,7 +1196,7 @@ RL.modal('more-plan', (c, el) => {
   const lost = planDiff(c, to);
   const seatsNote = !up && p.field_seats != null && S.field > p.field_seats ? `<li>Included active field seats drop from ${c.plan.field_seats} to ${p.field_seats}; you have ${S.field} active (extra billed at ${money(p.extra_field)} each)</li>` : '';
   const officeNote = !up && p.office_seats != null && S.office > p.office_seats ? `<li>Included office seats drop to ${p.office_seats}; you have ${S.office} (extra ${money(p.extra_office)} each)</li>` : '';
-  return { title: (up ? 'Upgrade to ' : 'Downgrade to ') + esc(p.name), body: h.kv([['New price', '$' + (p.annual || p.monthly) + '/mo' + (p.annual ? ' annual' : '')], ['Takes effect', up ? 'Now, prorated' : 'End of the current term'], ['AI credits', num(p.ai_credits || 0) + ' per month']]) + (up ? h.note('New entitlements are available instantly. Add-ons this plan includes are removed with prorated credit.') : `<div class="small"><b>Entitlement check: what goes read only or off</b><ul class="small" style="margin:6px 0 0;padding-left:18px">${officeNote}${seatsNote}${lost.map(l => `<li>${esc(l)}</li>`).join('') || '<li>Nothing changes for features you use.</li>'}</ul></div>` + h.note('Data is never deleted on a downgrade; it stays read only.')), foot: h.btn('Cancel', { act: 'noop' }) + tbtn(up ? 'Upgrade now' : 'Schedule downgrade', up ? `Upgraded to ${p.name}.` : `Downgrade to ${p.name} scheduled for the end of the term.`, { kind: up ? 'primary' : 'danger' }) };
+  return { title: (up ? 'Upgrade to ' : 'Downgrade to ') + esc(p.name), body: h.kv([['New price', p.public ? money(p.annual || p.monthly) + '/mo' + (p.annual ? ' billed annually' : '') : esc(p.annual_note || 'Custom')], ['Takes effect', up ? 'Now, prorated' : 'End of the current term'], ['AI credits', num(p.ai_credits || 0) + ' per month']]) + (up ? h.note('New entitlements are available instantly. Add-ons this plan includes are removed with prorated credit.') : `<div class="small"><b>Entitlement check: what goes read only or off</b><ul class="small" style="margin:6px 0 0;padding-left:18px">${officeNote}${seatsNote}${lost.map(l => `<li>${esc(l)}</li>`).join('') || '<li>Nothing changes for features you use.</li>'}</ul></div>` + h.note('Data is never deleted on a downgrade; it stays read only.')), foot: h.btn('Cancel', { act: 'noop' }) + tbtn(up ? 'Upgrade now' : 'Schedule downgrade', up ? `Upgraded to ${p.name}.` : `Downgrade to ${p.name} scheduled for the end of the term.`, { kind: up ? 'primary' : 'danger' }) };
 });
 
 RL.screen('web.settings.security', (c) => {

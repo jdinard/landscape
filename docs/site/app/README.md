@@ -103,4 +103,4 @@ node docs/site/app/tools/check.js web.         # one area; or no prefix for ever
 node docs/site/app/tools/check.js crew. --shots=/tmp/shots
 ```
 
-The checker opens every matching route as every view-as option on that surface, on four tenants and two plans, clicks each interactive control once, and exits non-zero on page errors, console errors, empty screens or routes with no registered screen.
+The checker opens every matching route as every view-as option on that surface, on four tenants and two plans, clicks each interactive control once, and exits non-zero on page errors, console errors, empty screens, routes with no registered screen, or links (`data-go`, `data-set`, `data-modal`) to a route, role, tenant, plan or modal that does not exist.

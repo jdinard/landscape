@@ -166,7 +166,7 @@ RL.frames.portal = (c, body) => {
     const tabs = `<nav class="ph-tabs" aria-label="Portal">${items.slice(0, 5).map(({ r }) => `<button type="button" data-go="${r.id}"${r.id === cur ? ' aria-current="page"' : ''}>${icon({ 'portal.home': 'home', 'portal.proposals': 'pen', 'portal.schedule': 'calendar', 'portal.billing': 'card', 'portal.requests': 'plus', 'portal.history': 'clipboard', 'portal.portfolio': 'building', 'portal.approvals': 'approve' }[r.id] || 'grid')}${esc(c.tr(r.label, PORTAL_ES[r.id] || r.label).split(' ')[0])}</button>`).join('')}</nav>`;
     return `<div class="flex mb8" style="justify-content:center">${sw}</div><div class="ph-wrap">${phone(c, { head, body: main, tabs, label: 'Customer portal on a phone' })}${side ? `<div class="ph-side">${side}</div>` : ''}</div>`;
   }
-  return browser('https://' + b.host + c.route.path.replace(':id', c.x || ''), `${top}<div class="site-body">${main}${side ? `<div>${side}</div>` : ''}</div>${foot}`, { right: sw });
+  return browser('https://' + b.host + c.route.path.replace(':id', c.x || ''), `${top}${side ? `<div class="site-body has-side"><div class="site-main">${main}</div><aside class="site-side" aria-label="What the Company sees">${side}</aside></div>` : `<div class="site-body">${main}</div>`}${foot}`, { right: sw });
 };
 const PORTAL_ES = { 'portal.home': 'Inicio', 'portal.proposals': 'Propuestas y diseños', 'portal.schedule': 'Calendario', 'portal.billing': 'Facturas y pagos', 'portal.requests': 'Solicitudes', 'portal.history': 'Historial', 'portal.property': 'Mi jardín', 'portal.messages': 'Mensajes', 'portal.portfolio': 'Cartera', 'portal.approvals': 'Aprobaciones', 'portal.documents': 'Documentos', 'portal.reports': 'Informes' };
 RL.frames.partner = (c, body) => {
@@ -183,7 +183,7 @@ RL.frames.www = (c, body) => {
 RL.frames.home = (c, body) => {
   const top = `<div class="site-top"><span class="logo" style="background:var(--iris-600)">${icon('sprout')}</span><b style="font-family:var(--font-display)">Rootline Home</b><span class="pill ai">${icon('spark', 's')}AI yard design</span><nav aria-label="Rootline Home"><button type="button" data-go="www.plants">Plant Finder</button><button type="button" data-go="home.start">Start over</button></nav></div>`;
   const [main, side] = splitSide(body);
-  return browser('https://rootline.com' + c.route.path, `${top}<div class="site-body">${main}${side ? `<div>${side}</div>` : ''}</div><div class="site-foot"><span>Concepts are AI-generated and labeled as such; plants come from the curated ${esc(c.t.region)} palette.</span><span>Rootline Home ${h.tag('V1')}</span></div>`);
+  return browser('https://rootline.com' + c.route.path, `${top}${side ? `<div class="site-body has-side"><div class="site-main">${main}</div><aside class="site-side" aria-label="What the Company sees">${side}</aside></div>` : `<div class="site-body">${main}</div>`}<div class="site-foot"><span>Concepts are AI-generated and labeled as such; plants come from the curated ${esc(c.t.region)} palette.</span><span>Rootline Home ${h.tag('V1')}</span></div>`);
 };
 RL.frames.generic = (c, body) => `<div class="site-body">${body}</div>`;
 

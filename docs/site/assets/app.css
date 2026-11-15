@@ -126,6 +126,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .site-top nav button { border: 0; background: none; padding: 6px 9px; border-radius: 7px; font-size: .8rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
 .site-top nav button[aria-current="page"] { background: var(--surface-3); color: var(--text); }
 .site-body { padding: 18px; display: grid; gap: 14px; align-content: start; min-height: 640px; }
+.site-body.has-side { grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); align-items: start; }
+.site-body.has-side > .site-main { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.site-body.has-side > .site-side { display: grid; gap: 12px; align-content: start; border-left: 1px solid var(--border); padding-left: 16px; }
+@media (max-width: 900px) { .site-body.has-side { grid-template-columns: 1fr; } .site-body.has-side > .site-side { border-left: 0; padding-left: 0; border-top: 1px solid var(--border); padding-top: 14px; } }
 .site-foot { padding: 10px 16px; border-top: 1px solid var(--border); font-size: .72rem; color: var(--text-3); display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
 
 /* ---------- components ---------- */
@@ -230,7 +234,7 @@ svg.spark path { fill: none; stroke: var(--primary); stroke-width: 1.6; }
 .inp { border: 1px solid var(--border-strong); border-radius: 7px; padding: 6px 9px; background: var(--surface); font-size: .84rem; width: 100%; min-width: 0; }
 .inp.ro { background: var(--surface-2); color: var(--text-2); }
 textarea.inp { min-height: 64px; resize: vertical; }
-.tgl { display: inline-flex; gap: 8px; align-items: center; font-size: .8rem; cursor: pointer; }
+.tgl { display: inline-flex; gap: 8px; align-items: center; font-size: .8rem; cursor: pointer; background: none; border: 0; padding: 2px 0; color: inherit; font-family: inherit; text-align: left; }
 .tgl i { width: 32px; height: 18px; border-radius: 9px; background: var(--border-strong); position: relative; flex: none; }
 .tgl i::after { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: left .15s; }
 .tgl.on i { background: var(--primary); } .tgl.on i::after { left: 16px; }

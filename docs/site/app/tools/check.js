@@ -2,7 +2,8 @@
    Usage: node docs/site/app/tools/check.js [routePrefix ...] [--shots=DIR] [--tenants=a,b] [--quiet]
    For every route matching a prefix (default: all), opens it as every View-as option that uses that
    surface, on several tenants and plans, and reports page errors, console errors, empty screens and
-   routes with no registered screen. Needs Playwright (preinstalled in the cloud container). */
+   routes with no registered screen, plus links (data-go, data-set, data-modal) that point at a route,
+   role, tenant, plan or modal that does not exist. Needs Playwright (preinstalled in the cloud container). */
 const { chromium } = require('playwright');
 const path = require('path');
 const args = process.argv.slice(2);
@@ -34,6 +35,21 @@ const file = 'file://' + path.resolve(__dirname, '..', '..', 'app.html');
       opened++;
       const n = await p.evaluate(() => document.getElementById('xmain').innerText.trim().length);
       const err = await p.evaluate(() => !!document.querySelector('#xmain .deny .dh') && document.querySelector('#xmain .deny .dh').textContent === 'Screen error');
+      const bad = await p.evaluate(() => {
+        const out = [], R = RL.idx.ROUTES, A = RL.atlasPages, AS = new Set(RL.AS.map(o => o.key)), T = RL.idx.TENANTS, PL = RL.idx.PLANS;
+        const okRoute = id => !!(R[id] || A[id]);
+        document.querySelectorAll('#xmain [data-go]').forEach(el => { if (!okRoute(el.dataset.go)) out.push('data-go=' + el.dataset.go); });
+        document.querySelectorAll('#xmain [data-modal]').forEach(el => { if (!RL.modals[el.dataset.modal]) out.push('data-modal=' + el.dataset.modal); });
+        document.querySelectorAll('#xmain [data-set]').forEach(el => {
+          const q = new URLSearchParams(el.dataset.set);
+          if (q.get('r') && !okRoute(q.get('r'))) out.push('data-set r=' + q.get('r'));
+          if (q.get('as') && !AS.has(q.get('as'))) out.push('data-set as=' + q.get('as'));
+          if (q.get('t') && !T[q.get('t')]) out.push('data-set t=' + q.get('t'));
+          if (q.get('plan') && !PL[q.get('plan')]) out.push('data-set plan=' + q.get('plan'));
+        });
+        return [...new Set(out)];
+      });
+      if (bad.length) problems.push(`${r.id} as=${o.key} t=${t}: broken link ${bad.join(', ')}`);
       if (errs.length > before || n < 40 || err) problems.push(`${r.id} as=${o.key} t=${t}${plan ? ' plan=' + plan : ''}: ${err ? 'SCREEN ERROR ' : ''}${n < 40 ? 'empty ' : ''}${errs.slice(before).join(' | ')}`);
     }
     if (shots && r.surface !== 'atlas') {
