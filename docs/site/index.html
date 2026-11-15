@@ -245,7 +245,7 @@ table.data tfoot td, table.data tfoot th { font-weight: 700; border-bottom: 0; b
 /* 07 Competition */
 .legend-mk { display: flex; gap: 16px; flex-wrap: wrap; font-size: .8rem; color: var(--text-2); margin-bottom: 10px; align-items: center; }
 .legend-mk span { display: inline-flex; gap: 6px; align-items: center; }
-.matrix-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); box-shadow: var(--shadow-1); }
+.matrix-wrap { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); box-shadow: var(--shadow-1); }
 table.matrix { min-width: 1040px; }
 table.matrix th, table.matrix td { text-align: center; vertical-align: middle; }
 table.matrix th[scope="row"], table.matrix thead th:first-child { text-align: left; font-size: .82rem; font-weight: 600; color: var(--text); text-transform: none; letter-spacing: 0; min-width: 230px; }
@@ -459,11 +459,31 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
   .prp-body dl + dl { border-left: 0; border-top: 1px solid var(--border); }
   .grant dl { grid-template-columns: 1fr; }
 }
+
+/* AI design prototype calls to action */
+.chip-link { padding: 0; }
+.chip-link a { display: inline-flex; gap: 8px; align-items: center; padding: 6px 13px 6px 6px; color: var(--ai-text); text-decoration: none; border-radius: 999px; }
+.chip-link a:hover { background: var(--ai-bg); }
+.proto-cta { display: flex; gap: 12px; align-items: center; margin-top: 16px; padding: 12px 14px; max-width: 620px; border: 1px solid var(--ai-solid); background: var(--ai-bg); border-radius: var(--radius-m); color: var(--text); text-decoration: none; box-shadow: var(--shadow-1); }
+.proto-cta:hover { box-shadow: var(--shadow-2); }
+.proto-cta .pc-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--surface); color: var(--ai-text); flex: none; border: 1px solid var(--ai-solid); }
+.proto-cta .pc-t { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.proto-cta b { font-size: .98rem; }
+.proto-cta small { color: var(--text-2); font-size: .82rem; line-height: 1.45; }
+.proto-cta > .ic { color: var(--ai-text); flex: none; }
+.proto-banner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px 18px; align-items: center; padding: 14px 18px; margin: 0 0 22px; border: 1px solid var(--ai-solid); border-radius: var(--radius-l); background: var(--ai-bg); color: var(--text); text-decoration: none; }
+.proto-banner:hover { box-shadow: var(--shadow-2); }
+.proto-banner .pb-k { display: inline-flex; gap: 6px; align-items: center; font-family: var(--font-mono); font-size: .74rem; font-weight: 600; color: var(--ai-text); white-space: nowrap; }
+.proto-banner .pb-t { display: grid; gap: 3px; }
+.proto-banner .pb-t b { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; }
+.proto-banner .pb-t span { color: var(--text-2); font-size: .9rem; }
+.proto-banner .pb-go { display: inline-flex; gap: 6px; align-items: center; font-weight: 650; color: var(--on-primary); background: var(--primary); padding: 8px 14px; border-radius: var(--radius-s); white-space: nowrap; }
+@media (max-width: 760px) { .proto-banner { grid-template-columns: 1fr; } .proto-banner .pb-go { justify-self: start; } }
 </style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-nav"><div class="inner"><a class="wordmark" href="index.html">Rootline</a><nav aria-label="Proposal"><a href="index.html" aria-current="page">Vision</a><a href="screens-office.html">Office app</a><a href="screens-design.html">Design and AI</a><a href="screens-field-client-admin.html">Crew, client and admin</a></nav></div></header>
+<header class="site-nav"><div class="inner"><a class="wordmark" href="index.html">Rootline</a><nav aria-label="Proposal"><a href="index.html" aria-current="page">Vision</a><a href="prototype.html">AI design prototype</a><a href="screens-office.html">Office app</a><a href="screens-design.html">Design and AI</a><a href="screens-field-client-admin.html">Crew, client and admin</a></nav></div></header>
 
 <main id="main">
 
@@ -477,11 +497,13 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
         <p class="promise">Run the whole landscape business, <em>from the first sketch to the final ledger entry.</em></p>
         <p class="lede">Rootline is the operating system for landscape companies with 5 to 40 people that design, install and maintain landscapes. One record carries every job from a parcel and a phone photo to a to-scale design, a priced proposal, a crew route, a paid invoice and closed books.</p>
         <ul class="chips" aria-label="Proof points">
+          <li class="chip ai chip-link"><a href="prototype.html"><i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></i>Try the AI design prototype</a></li>
           <li class="chip ai"><i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></i>Design Studio + AI mockups</li>
           <li class="chip"><i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8.5 5.5-13.5 15-14-.4 9.5-5.5 14.5-14 14"/><path d="M5 19l8-8"/></svg></i>Region-aware Plant KB</li>
           <li class="chip"><i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H17a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M8 9h7M8 12.5h7M8 16h4"/></svg></i>Built-in double-entry books</li>
           <li class="chip"><i><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12.5" rx="2"/><path d="M3 10.5h18M7 15h4"/></svg></i>Bring-your-own Stripe</li>
         </ul>
+        <a class="proto-cta" href="prototype.html"><span class="pc-ic"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span><span class="pc-t"><b>Click through the agentic AI design flow</b><small>15 steps: a homeowner's photos and real dimensions become AI mockups, a to-scale plan, an estimate, a signed proposal and agent work, with people approving at every turn.</small></span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
       <dl class="hero-stats" aria-label="The proposal at a glance">
         <div><dt>0 of 17</dt><dd>competitors reviewed ship a built-in double-entry ledger</dd></div>
@@ -1051,6 +1073,8 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
       <p>Six experiences carry the pitch. Each links to hi-fi concept screens for Greenleaf Grounds Co., a 28-person design-build-maintain firm in Columbus, Ohio (USDA zone 6b), with residential and commercial clients.</p>
     </div>
 
+    <a class="proto-banner" href="prototype.html"><span class="pb-k"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>Clickable prototype</span><span class="pb-t"><b>Walk the whole AI design flow, screen by screen</b><span>Follow the Okafors' backyard from an address on Greenleaf's website to a paid deposit and the agents' follow-up work. Every step shows the agent trace, who approves, the AI credits used and the scope tag.</span></span><span class="pb-go">Open the AI design prototype <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+
     <!-- A: design loop -->
     <article class="sig" aria-labelledby="sig-a">
       <div class="sig-text">
@@ -1064,6 +1088,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
           <li><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span><b>Traceable and honest.</b> Each rendered plant maps to a plan item and a Price Book line. A new Design Version marks old mockups stale. Every image carries an "Artist rendering" badge and C2PA credentials.</span></li>
         </ul>
         <a class="go" href="screens-design.html">See the Design Studio, mockup pipeline and Plant KB screens <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="go" href="prototype.html">Click through the full AI design walkthrough <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </div>
       <div class="visual">
         <div class="panel">
@@ -1651,7 +1676,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <div class="docgrp"><h3>Platform</h3><ul><li>19-platform-admin-portal.md</li><li>20-architecture-security.md</li><li>21-ux-design-system-sitemaps.md</li></ul></div>
 <div class="docgrp"><h3>Business and future</h3><ul><li>22-business-model-pricing-gtm.md</li><li>23-innovation-moonshots.md</li><li>24-roadmap-feature-catalog.md</li></ul></div>
 <div class="docgrp"><h3>Research</h3><ul><li>research/R1-field-service-platforms.md</li><li>research/R2-landscape-specific-platforms.md</li><li>research/R3-design-ai-plant-data.md</li><li>research/R4-industry-payments-accounting.md</li></ul></div>
-<div class="docgrp"><h3>Concept site</h3><ul><li>site/index.html</li><li>site/screens-office.html</li><li>site/screens-design.html</li><li>site/screens-field-client-admin.html</li><li>site/assets/rootline.css</li></ul></div>
+<div class="docgrp"><h3>Concept site</h3><ul><li>site/index.html</li><li>site/screens-office.html</li><li>site/screens-design.html</li><li>site/screens-field-client-admin.html</li><li>site/prototype.html</li><li>site/assets/rootline.css</li></ul></div>
     </div>
   </div>
 </section>
