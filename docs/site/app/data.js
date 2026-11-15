@@ -87,7 +87,7 @@ function build(t) {
   D.people.forEach(p => { p.cert = p.role === 'crew_lead' ? (R() < .8 ? 'Applicator 3A, exp ' + pick(['Dec 2027', 'Mar 2028', 'Oct 2027']) : null) : null; p.phone = '(' + int(212, 989) + ') 555-01' + int(10, 99); });
 
   // ---- clients and properties ----
-  const nClients = Math.min(48, Math.max(8, Math.round(t.clients / 10)));
+  const nClients = Math.min(48, Math.max(24, Math.round(t.clients / 10)));
   const comShare = t.segment === 'S4' ? .8 : t.segment === 'S7' ? .3 : t.segment === 'S1' ? .1 : t.segment === 'S6' ? 0 : .08;
   D.clients = []; D.properties = [];
   const addClient = (o) => {
@@ -152,7 +152,8 @@ function build(t) {
     const n = cr.type === 'install' ? 1 : cr.type === 'lawn' ? 14 : cr.type === 'irrigation' ? 9 : 11;
     let tmin = 7 * 60 + 15;
     for (let k = 0; k < Math.min(n, 12); k++) {
-      const c = D.clients[(ci * 7 + k * 3) % D.clients.length];
+      const pool = ['maintenance', 'lawn'].includes(cr.type) ? D.clients.filter(x => x.type === 'residential') : D.clients;
+      const c = pool[(ci * 5 + k) % pool.length];
       const svc = cr.type === 'install' ? (D.jobs.find(j => j.type === 'Install') || D.jobs[0]).title : cr.type === 'lawn' ? pick(SERVICES.lawn_phc) : cr.type === 'irrigation' ? pick(SERVICES.irrigation) : pick(SERVICES.core_maintenance.slice(0, 2));
       const dur = cr.type === 'install' ? 480 : cr.type === 'lawn' ? 25 : cr.type === 'irrigation' ? 45 : int(25, 55);
       const NOW = 10 * 60 + 40, prevEnd = D.visits.length && D.visits[D.visits.length - 1].crewId === cr.id ? D.visits[D.visits.length - 1]._end : 0;

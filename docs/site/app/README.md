@@ -43,9 +43,12 @@ c.feat('automations')         // { s: 'Y'|'L'|'A'|'-', note, addon, unlock: [...
 h.lock(c, 'design_3d')        // inline upsell card (only meaningful for the owner)
 c.allowed('invoice.void')     // role holds any grant other than '-' for the capability
 c.can('estimate')             // raw grant string, e.g. 'RWD/o + R/b'
-c.sees('margin')              // field class visible to this role (02 §10.2)
-h.mask(c, 'cost', h.money(n)) // value, or ••• with a tooltip naming the rule
-c.mod('lawn_programs')        // tenant has the module enabled
+c.sees('margin')              // field class has any grant for this role (02 §10.2)
+c.seesFully('client_financial') // full visibility, not a partial grant like 'status chip' or 'R billing'
+c.fcGrant('access_secret')    // raw grant string, e.g. 'R in window'
+h.mask(c, 'cost', h.money(n)) // value, or ••• with a tooltip naming the rule (partial grants are masked too)
+c.mod('lawn_phc')             // tenant has the module on (keys from 14 §4.0.1; snow_ice on = Snow Lite)
+c.has('snow_ice')             // the full Snow & Ice add-on, as opposed to Snow Lite
 c.inLens('V1')                // the scope lens includes V1; tag later features with h.tag('V1')
 ```
 
@@ -72,7 +75,9 @@ RL.act('new-job', (el, ev, c) => { RL.toast('Job created (mock)'); return false;
 
 `c` (the context) has: `t` (tenant), `seg` (segment), `plan`, `planCode`, `role`, `roleObj`, `as` (view-as option), `scope` (client contact scope), `who` (person's display name), `owner` (owner's name), `route`, `surface`, `x` (record id), `D` (sample data), `season`/`winter`, `lang`/`es`, `tr(en, es)` (translate), `today` (`{ label, short, month, dow }`), plus the gating helpers above. The second argument `a` is the access result; `a.state === 'limit'` carries `a.limit`.
 
-`c.D` (from `RL.data`) has: `crews`, `people`, `clients`, `properties`, `leads`, `opps`, `estimates`, `proposals`, `jobs`, `visits` (today's stops, with x/y for maps), `agreements`, `invoices`, `payments`, `aging`, `designs`, `plants`, `kpi`, `accounts`, `journal`, `bank`, `timesheets`, `equipment`, `inventory`, `vendors`, `campaigns`, `reviews`, `agents`, `res` (the residential client cast) and `com` (the commercial client cast). Read `app/data.js` for field names.
+`c.D` (from `RL.data`) has: `crews`, `people`, `clients`, `properties`, `leads`, `opps`, `estimates`, `proposals`, `jobs`, `visits` (today's stops, with x/y for maps), `agreements`, `invoices`, `payments`, `aging`, `designs`, `plants`, `kpi`, `accounts`, `journal`, `bank`, `timesheets`, `equipment`, `inventory`, `vendors`, `campaigns`, `reviews`, `agents`, `res` (the residential client cast) and `com` (the commercial client cast). Read `app/data.js` for field names. The data agrees with itself: visit status follows the clock (10:40 am on the peak day), a job's crew, phase and hours match its type, invoice due dates follow payment terms, and equipment has a `kind`.
+
+Helpers worth knowing: `h.cols(kind, items)` stacks an array item in one column; `h.map({ route, colors, pins: [{ x, y, color }] })` takes crew colors; `h.kpis` skips empty items; `h.hash(str)` gives a stable number for deterministic variety.
 
 ## Interactions (no framework, all delegated)
 

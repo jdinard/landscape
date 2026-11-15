@@ -102,7 +102,7 @@ RL.frames.web = (c, body) => {
   const trial = c.s.plan === '' && c.t.id === 'greenleaf' ? '' : '';
   return `<div class="fr"><div class="mx">${rail}<div class="mx-body">${top}${fieldWeb}${trial}${subnav('web', c)}<div class="mx-content">${body}</div></div></div></div>`;
 };
-const CONSOLE_QUEUE = { platform_owner: ['approve', 'Approvals waiting on you 3', 'console.home'], platform_support: ['inbox', 'Your tickets 7', 'console.support'], platform_curator: ['leaf', 'KB review queue 24', 'console.kb.queue'], platform_finance: ['dollar', 'Dunning queue 5', 'console.billing'], platform_engineer: ['warn', 'Open alerts 1', 'console.health'] };
+const CONSOLE_QUEUE = { platform_owner: ['approve', 'Approvals waiting on you 7', 'console.home'], platform_support: ['inbox', 'Your tickets 7', 'console.support'], platform_curator: ['leaf', 'KB review queue 24', 'console.kb.queue'], platform_finance: ['dollar', 'Dunning queue 5', 'console.billing'], platform_engineer: ['warn', 'Open alerts 1', 'console.health'] };
 const consoleQueue = c => { const q = CONSOLE_QUEUE[c.role]; return q ? `<button type="button" class="mx-tb" data-go="${q[2]}">${icon(q[0], 's')}${q[1]}</button>` : ''; };
 RL.frames.console = (c, body) => {
   const groups = RL.navGroups('console');
@@ -225,7 +225,7 @@ RL.lensHtml = (c, a) => {
     <div class="lr"><span>Plan</span><span>${esc(pl.name)} ${pl.annual ? '· $' + pl.annual + '/mo annual' : pl.monthly ? '· $' + pl.monthly + '/mo' : ''}</span></div>
     <div class="lr"><span>Included</span><span class="right">${pl.office_seats != null ? pl.office_seats + ' office, ' : ''}${pl.field_seats != null ? pl.field_seats + ' active field seats, ' : ''}${pl.ai_credits ? h.num(pl.ai_credits) + ' AI credits' : esc(pl.ai_note || '')}</span></div>
     <div class="lr"><span>Add-ons</span><span>${t.addons.length ? t.addons.map(x => esc(I.ADDONS[x].name)).join(', ') : 'none'}</span></div><div class="lr"><span>Modules</span><span class="right">${t.modules.map(esc).join(', ')}${t.books === 'qbo_system' ? ', Books off' : ''}</span></div></div>`;
-  out += `<h2>This screen</h2><div class="lc"><div class="flex"><b>${esc(r.label)}</b>${h.tag(r.scope)}</div><div class="mono tiny t2">${esc(r.surface === 'portal' ? RL.portalBrand(c).host : r.surface === 'web' || r.surface === 'sub' ? 'app.rootline.com/' + c.t.id : I.SURFACES[r.surface].host.split(/[ ;]/)[0].replace(/\/\.\.\.$/, ''))}${esc(r.path)}</div><div class="why">${esc(r.purpose)}</div>
+  out += `<h2>This screen</h2><div class="lc"><div class="flex"><b>${esc(r.label)}</b>${h.tag(r.scope)}</div><div class="mono tiny t2">${esc(r.path.startsWith('{') ? r.path : (r.surface === 'portal' ? RL.portalBrand(c).host : r.surface === 'web' || r.surface === 'sub' ? 'app.rootline.com/' + c.t.id : I.SURFACES[r.surface].host.split(/[ ;]/)[0].replace(/\/\.\.\.$/, '')) + r.path)}</div><div class="why">${esc(r.purpose)}</div>
     <div class="gl"><i class="${dotFor(a.state)}"></i><span><b>${esc(stLabel[a.state] || a.state)}</b></span></div>
     ${navV != null ? `<div class="lr"><span>Nav visibility</span><span class="mono">${esc(navV)}</span></div>` : ''}
     ${grantV != null ? `<div class="lr"><span>Permission</span><span class="mono">${esc(r.perm)} = ${esc(grantV)}</span></div>` : ''}
