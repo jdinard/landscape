@@ -5,11 +5,11 @@
 **At a glance**
 
 - **What it is:** the revenue engine from first inquiry to signed, deposit-paid work: Lead inbox and CRM (Clients, Properties, Contacts), pipelines, site assessments and property intel, the Estimating Engine, the Price Book and kits, visual tiered Proposals with e-signature and deposits, conversion to Jobs, change orders, renewals, commercial bids and commissions.
-- **The flow:** Lead (`new` -> `contacted` -> `qualified` -> `converted`) -> Opportunity on a pipeline -> site assessment and property intel -> Estimate (internal costing, versioned) -> Proposal (customer-facing, tiered) -> `proposal.accepted` -> deposit on the Company's own Stripe -> `proposal.executed` -> Work Order, Project or Service Agreement ([4.8](#48-conversion-to-jobs-mvp), [5.4](#54-proposal-lifecycle)).
-- **Decision 1, budget-first pricing:** every estimate pins a Company Budget version, so every price carries burdened labor, overhead recovery (FLH, SORS or MORS, with a solver that balances MORS to the budget) and a target **net** margin on break-even: `price = break_even / (1 - target_net_margin)` ([EST-01](#est-01-company-budget-wizard-mvp), [EST-02](#est-02-overhead-recovery-methods-mvp-flh--sors--mors-v1-revenue-view-recovery-tracker), [EST-09](#est-09-pricing-math-margin-markup-and-the-truth-mvp)).
+- **The flow:** Lead (`new` -> `contacted` -> `qualified` -> `converted`) -> Opportunity on a pipeline -> site assessment and property intel -> Estimate (internal costing, versioned) -> Proposal (customer-facing, tiered) -> `proposal.accepted` -> deposit on the Company's own Stripe -> `proposal.executed` -> Work Order, Project or Service Agreement ([4.8](#48-conversion-to-jobs), [5.4](#54-proposal-lifecycle)).
+- **Decision 1, budget-first pricing:** every estimate pins a Company Budget version, so every price carries burdened labor, overhead recovery (FLH, SORS or MORS, with a solver that balances MORS to the budget) and a target **net** margin on break-even: `price = break_even / (1 - target_net_margin)` ([EST-01](#est-01-company-budget-wizard), [EST-02](#est-02-overhead-recovery-methods), [EST-09](#est-09-pricing-math-margin-markup-and-the-truth)).
 - **Decision 2, margin is never confused with markup:** the sidebar always shows break-even, gross margin, net margin and markup (a 30% markup is a 23.1% margin), and approval limits and margin floors come from [02](02-personas-roles-permissions.md) section 5.6.
-- **Decision 3, one engine, two speeds:** Quick Quote (about 2 minutes, at most 5 inputs) and the full cost builder are the same `estimate_version` priced by the same production rates, kits and budget; the public instant quote uses a pricing rule generated from the same cost model ([EST-11](#est-11-quick-quote-mode-mvp), [EST-12](#est-12-recurring-maintenance-pricing-mvp)).
-- **Decision 4, geometry is shared:** property measurements and Design Studio takeoffs feed kit inputs directly, so a polygon edit reprices the job ([INTEL-01](#intel-01-property-measurement-profile-mvp-manual--parcel--ai-turf-v1-other-ai-classes), [EST-17](#est-17-takeoff-from-design-studio-mvp-basic-v1-live-sync)).
+- **Decision 3, one engine, two speeds:** Quick Quote (about 2 minutes, at most 5 inputs) and the full cost builder are the same `estimate_version` priced by the same production rates, kits and budget; the public instant quote uses a pricing rule generated from the same cost model ([EST-11](#est-11-quick-quote-mode), [EST-12](#est-12-recurring-maintenance-pricing)).
+- **Decision 4, geometry is shared:** property measurements and Design Studio takeoffs feed kit inputs directly, so a polygon edit reprices the job ([INTEL-01](#intel-01-property-measurement-profile), [EST-17](#est-17-takeoff-from-design-studio)).
 - **Decision 5, money flows to the Company:** deposits are direct charges on the Company's own connected Stripe account and post Dr 1050 Stripe Clearing / Cr 2150 Customer Deposits under the posting rules owned by [09](09-accounting-ledger-integrations.md); AI never sets a price.
 - **In v1:** the unified Lead inbox with every channel (forms, online booking with instant quotes, phone and SMS, AI receptionist intake, email and marketplace parsing plus the native LSA and Angi APIs, crew upsells, referral links and rewards, the visualizer widget), CRM records with Salesforce and HubSpot sync, pipelines and kanban, offline assessments, Quick Quote and Field Design Mode capture in the native app's sales mode, parcel data and AI measurement of turf, beds and hardscape, the Company Budget wizard, production rates, kits, the Price Book, Good/Better/Best visual and living proposals with e-sign, HOA multi-signer approvals, deposits and financing, conversion to Jobs, full change orders and renewals, bulk enhancement campaigns, commercial bids and RFPs, commissions, smart follow-ups, and AI help that runs through the agents in [17](17-ai-copilot-automation.md): lead triage and first replies, structured voice-to-scope, assisted estimate drafts (from notes, voice memos, photos and aerial measurement), photo-first estimating, proposal writing, Copilot commands and bounded auto-quoting (off by default per Company).
 - **Differentiators:** Jobber's speed with LMN's math, proposals built from the same object graph as the design (each tier swaps its own mockup, plan and plant list), measurement native to the platform, and HOA quorum signing bound to a proposal version.
@@ -36,7 +36,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief: extra ideas](#13-beyond-the-brief-extra-ideas)
-14. [Decisions on former open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-decisions-on-former-open-questions)
 15. [Sources](#sources)
 
 ---
@@ -544,7 +544,7 @@ duration_days    = ceil(crew_hours / workday_hours)  (scheduling hint only)
 
 - Subcontract lines: vendor (from [13](13-operations-inventory-equipment.md)), scope description, quoted cost, attachment (sub's quote PDF), markup method, retainage % (commercial), insurance certificate validity check (warn if COI expires before planned start).
 - **Sub-bid requests**: send a scope package (relevant sections, drawings, photos) to one or more subs via a secure link; subs submit a price and attachments through a `subcontractor` scoped view; the estimator picks one, and the losing bids are kept.
-- Other costs: disposal (per load or per ton, with dump site selection), permits, utility locates (811 tickets are free but cost time; see the pre-construction checklist in [4.8](#48-conversion-to-jobs-mvp)), delivery fees, bonds (commercial), traffic control, porta-john rental.
+- Other costs: disposal (per load or per ton, with dump site selection), permits, utility locates (811 tickets are free but cost time; see the pre-construction checklist in [4.8](#48-conversion-to-jobs)), delivery fees, bonds (commercial), traffic control, porta-john rental.
 
 #### EST-09 Pricing math: margin, markup and the truth
 
@@ -793,7 +793,6 @@ Rules:
 - Manual overrides on linked lines are preserved, marked "manual", and not overwritten by sync.
 - Design Options (e.g., "Option A natural stone", "Option B pavers") map to estimate option groups, which map to proposal tiers.
 
-<a id="est-18-ai-estimating-v1-assisted-drafts-v2-photo-first-v3-bounded-auto-quote"></a>
 
 #### EST-18 AI estimating
 
@@ -934,7 +933,7 @@ Deposit rules (per template, overridable per proposal):
 
 #### PROP-09 Financing offers
 
-- Integration with a consumer home-improvement financing partner offering prequalification without a hard credit pull, and an "as low as {monthly_amount}/month" display (partner-supplied) on proposals above a threshold (e.g., $2,500). Wisetack is the partner horizontal competitors use (Jobber, Housecall Pro, ServiceTitan per [R1](research/R1-field-service-platforms.md)), but Housecall Pro's help center says Wisetack is not available through HCP in Canada ([HCP Help](https://help.housecallpro.com/en/articles/3836042-wisetack-consumer-financing-overview)), so Canadian Companies use a second partner through the same adapter, which is pluggable per country (decision 7 in [section 14](#14-open-questions)).
+- Integration with a consumer home-improvement financing partner offering prequalification without a hard credit pull, and an "as low as {monthly_amount}/month" display (partner-supplied) on proposals above a threshold (e.g., $2,500). Wisetack is the partner horizontal competitors use (Jobber, Housecall Pro, ServiceTitan per [R1](research/R1-field-service-platforms.md)), but Housecall Pro's help center says Wisetack is not available through HCP in Canada ([HCP Help](https://help.housecallpro.com/en/articles/3836042-wisetack-consumer-financing-overview)), so Canadian Companies use a second partner through the same adapter, which is pluggable per country (decision 7 in [section 14](#14-decisions-on-former-open-questions)).
 - **Placement rules:** the financing teaser appears only on the investment summary and signing step, never in the tier comparison (so it does not distort tier choice), and only when the Company's partner account is active and the proposal total is inside the partner's min/max loan amount.
 - **Advertising compliance:** in the US, advertised payment amounts such as "$129/month" are Regulation Z (Truth in Lending) trigger terms that require additional disclosures (APR, repayment terms). Rootline only renders partner-supplied, compliant copy and never computes its own monthly-payment marketing figures.
 - The financed amount is funded by the partner to the Company. The Ledger records a receivable from the financing partner, and the partner fee posts as a financing expense ([09](09-accounting-ledger-integrations.md)).
@@ -1200,7 +1199,7 @@ stateDiagram-v2
 
 Rules: `Executed` and `Converted` are terminal for edits; any change after execution is a Change Order. An ACH or PAD deposit of up to $5,000 executes the proposal when the debit is initiated (`processing`); a larger one keeps it in `AwaitingPayment` until the debit clears, and a debit in `processing` never lapses the signature (OD-23, `PROP-07`). If an initiated debit later fails, the Job is flagged "Deposit failed" and the office is alerted, but the signed contract stands ([08](08-payments-stripe.md)).
 
-- **Card or wallet failure in "required to sign" mode:** the signature record is kept but marked `conditional`, and the proposal is not binding. The client can retry payment on the same document hash for 72 hours (configurable 24-168 h) without re-signing; the estimator gets a push and the deposit-chaser cadence runs. After the window the signature lapses (audit entry plus the `proposal.signature_lapsed` event), the proposal returns to `Viewed`, and the `pending_deposit` shells from [4.8](#48-conversion-to-jobs-mvp) are voided.
+- **Card or wallet failure in "required to sign" mode:** the signature record is kept but marked `conditional`, and the proposal is not binding. The client can retry payment on the same document hash for 72 hours (configurable 24-168 h) without re-signing; the estimator gets a push and the deposit-chaser cadence runs. After the window the signature lapses (audit entry plus the `proposal.signature_lapsed` event), the proposal returns to `Viewed`, and the `pending_deposit` shells from [4.8](#48-conversion-to-jobs) are voided.
 - **Event emission:** `proposal.signed` fires once per signer; `proposal.accepted` fires on entering `AwaitingPayment` or `Executed`, whichever comes first; `proposal.executed` fires on entering `Executed`. See [8.2](#82-domain-events-emitted) for aliases used by other docs.
 - **Multi-signer proposals** can expire or be declined while `PartiallySigned`. A decline under "N of M" only ends the proposal when quorum becomes mathematically impossible (`PROP-06`).
 

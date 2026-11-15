@@ -46,7 +46,7 @@
 25. [Edge cases, compliance and risks](#25-edge-cases-compliance-and-risks)
 26. [Metrics and KPIs](#26-metrics-and-kpis)
 27. [Beyond the brief: extra ideas](#27-beyond-the-brief-extra-ideas)
-28. [Decisions on former open questions](#28-open-questions)
+28. [Decisions on former open questions](#28-decisions-on-former-open-questions)
 29. [Sources](#sources)
 
 Every surface, sitemap entry and component in this document is part of v1 ([24](24-product-scope-decisions-catalog.md) section 1).
@@ -105,12 +105,12 @@ Synthesized from the review sources above and the field-workforce UX literature;
 2. **"It's slow when I'm scheduling."** Perceived latency on dense boards ([Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/)). Answer: optimistic UI, local-first data on the dispatch board, performance budgets (INP < 200 ms) enforced in CI ([section 11](#11-responsive-and-platform-rules)).
 3. **"Too much on every screen / looks like 2008."** Density without hierarchy ([fieldservicesoftware.io](https://fieldservicesoftware.io/comparisons/service-autopilot-vs-jobber/)). Answer: density modes, progressive disclosure via side panels, calm neutral palette that reserves color for meaning ([section 4](#4-design-principles)).
 4. **"The mobile app can't do what desktop does."** ([mowbosshq](https://mowbosshq.pages.dev/tools/service-autopilot)). Answer: crew app is a first-class product with its own IA, offline-first, not a shrunken web app ([section 5.3](#53-crew-mobile-app-sitemap)).
-5. **"My guys can't use it with gloves on / in the sun."** Field UX research shows workers missing 44-pt targets while gloved and recommends 48-56 dp minimums for heavy gloves; bright blues and greens wash out in direct sun ([Glance](https://thisisglance.com/learning-centre/how-should-i-design-apps-for-construction-workers); [App Fabric](https://app-fabric.pages.dev/blog/2024-03-field-workforce-ux); [Apario](https://blog.apario.net/on-writing-software-for-people-who-work-outside)). Answer: 56 px minimum crew targets, 64 px primary actions, field-sun theme ([section 12.4](#124-field-specific-accessibility-the-glove-and-sun-standard-mvp)).
+5. **"My guys can't use it with gloves on / in the sun."** Field UX research shows workers missing 44-pt targets while gloved and recommends 48-56 dp minimums for heavy gloves; bright blues and greens wash out in direct sun ([Glance](https://thisisglance.com/learning-centre/how-should-i-design-apps-for-construction-workers); [App Fabric](https://app-fabric.pages.dev/blog/2024-03-field-workforce-ux); [Apario](https://blog.apario.net/on-writing-software-for-people-who-work-outside)). Answer: 56 px minimum crew targets, 64 px primary actions, field-sun theme ([section 12.4](#124-field-specific-accessibility-the-glove-and-sun-standard)).
 6. **"Half my crew reads Spanish better than English."** Roughly 44.5% of US landscaping and groundskeeping workers were Hispanic in 2024 per Data USA's analysis of federal survey data ([Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers)); a Notre Dame analysis notes that over 80% of Latino workers in landscape and lawn care services are foreign-born ([Notre Dame Latino Studies](https://latinostudies.nd.edu/assets/95362/original/ush/)). Language is a usability requirement, not a nice-to-have ([section 13](#13-internationalization-and-localization)).
-7. **"Common tasks take too many steps."** Aspire reviewers mention a "learning curve, and some common tasks require too many steps" and an "intensive ramp up period" ([GetApp UK](https://www.getapp.co.uk/reviews/9108/aspire); [Capterra Aspire reviews](https://www.capterra.com/p/161544/Aspire/reviews/?page=3)). Answer: step budgets per benchmark task ([section 24.3](#243-office-and-client-benchmark-tasks)), a state-aware primary action on every record ([6.4](#64-record-page-anatomy-mvp)), and "do" verbs in the command palette ([6.2](#62-global-search-and-command-palette-mvp)).
+7. **"Common tasks take too many steps."** Aspire reviewers mention a "learning curve, and some common tasks require too many steps" and an "intensive ramp up period" ([GetApp UK](https://www.getapp.co.uk/reviews/9108/aspire); [Capterra Aspire reviews](https://www.capterra.com/p/161544/Aspire/reviews/?page=3)). Answer: step budgets per benchmark task ([section 24.3](#243-office-and-client-benchmark-tasks)), a state-aware primary action on every record ([6.4](#64-record-page-anatomy)), and "do" verbs in the command palette ([6.2](#62-global-search-and-command-palette)).
 8. **"Measuring a big site takes days."** An LMN reviewer says measuring large sites "would take literal days" ([G2 LMN](https://www.g2.com/products/lmn)), and measurement is often a separate subscription ([R2](research/R2-landscape-specific-platforms.md)). Answer: tracing on aerial imagery in the Design Studio produces the takeoff directly. The Studio wireframe ([18.7](#187-design-studio)) shows the live takeoff panel with a "Push to estimate" button.
 9. **"The field seat can't do field work."** LMN's legacy Crew Member seat could not punch in or upload photos ([LMN user permissions](https://intercom.help/lmn/en/articles/17699017-lmn-user-permissions)). UX rule: a `technician` seat is never a crippled UI. Clock-in, photos, checklists, voice notes and issue reporting are always available to it; only money and margin data are withheld.
-10. **"The update broke my app."** Long-time LMN Time users reported problems after an app update ([App Store: LMN Time](https://apps.apple.com/us/app/id1012359605)). Answer: staged rollouts that halt when crash-free sessions drop, and a "What changed" sheet in the crew user's language after every major update ([05](05-field-crew-mobile-app.md), [24.6](#246-definition-of-done-for-any-ui-story-mvp)).
+10. **"The update broke my app."** Long-time LMN Time users reported problems after an app update ([App Store: LMN Time](https://apps.apple.com/us/app/id1012359605)). Answer: staged rollouts that halt when crash-free sessions drop, and a "What changed" sheet in the crew user's language after every major update ([05](05-field-crew-mobile-app.md), [24.6](#246-definition-of-done-for-any-ui-story)).
 
 ### 2.3 The gap we exploit
 
@@ -122,7 +122,7 @@ Synthesized from the review sources above and the field-workforce UX literature;
 | AI features are bolted on as a chat box. | **AI is ambient and object-aware:** Copilot lives in a side panel bound to the current record, and AI suggestions appear inline with a consistent visual signature (the Iris accent) and explicit apply/undo. |
 | Accounting UIs scare non-accountants; field UIs scare accountants. | **Two lenses on one ledger:** plain-language "money" views for owners, debit/credit precision for bookkeepers, switchable per user ([section 18.12](#1812-ledger-journal-entry)). |
 
-> **Competitive edge.** Jobber wins on approachability and loses on depth; Service Autopilot and Aspire win on depth and lose on approachability (ease-of-use scores of 3.8 and 4.1 on Capterra, as of 2026, verify). Rootline's design system is engineered to break that trade-off: density modes, progressive disclosure, a command palette for power users and a role-aware Today home for everyone else. In the field, Aspire is the one incumbent we found that documents offline ticket completion; LMN's crew apps draw "clunky" and crash complaints, and no incumbent was confirmed to ship a Spanish crew UI. Rootline's crew app is offline-first, Spanish from day one, and comes with a published glove-and-sun test protocol ([24.2](#242-field-test-protocols-mvp)) that buyers can run with their own crews. On AI, Jobber's Copilot is an advisor that works through its own entry point. Rootline's AI appears on the record being edited, as a draft the user previews, applies and can undo ([23.1](#231-ai-ux-conventions-apply-to-every-module-mvp)). In the research to date we found no landscape-vertical competitor advertising a keyboard-first command palette, a sunlight theme, or a plant-symbol system that runs from design through invoice (to be confirmed in the Discovery teardown).
+> **Competitive edge.** Jobber wins on approachability and loses on depth; Service Autopilot and Aspire win on depth and lose on approachability (ease-of-use scores of 3.8 and 4.1 on Capterra, as of 2026, verify). Rootline's design system is engineered to break that trade-off: density modes, progressive disclosure, a command palette for power users and a role-aware Today home for everyone else. In the field, Aspire is the one incumbent we found that documents offline ticket completion; LMN's crew apps draw "clunky" and crash complaints, and no incumbent was confirmed to ship a Spanish crew UI. Rootline's crew app is offline-first, Spanish from day one, and comes with a published glove-and-sun test protocol ([24.2](#242-field-test-protocols)) that buyers can run with their own crews. On AI, Jobber's Copilot is an advisor that works through its own entry point. Rootline's AI appears on the record being edited, as a draft the user previews, applies and can undo ([23.1](#231-ai-ux-conventions-apply-to-every-module)). In the research to date we found no landscape-vertical competitor advertising a keyboard-first command palette, a sunlight theme, or a plant-symbol system that runs from design through invoice (to be confirmed in the Discovery teardown).
 
 ---
 
@@ -243,7 +243,7 @@ flowchart LR
 
 Full sitemap with routes (`:id` are opaque IDs; human-readable numbers such as `J-1042` are shown in UI and resolvable in search):
 
-- **Today** `/today` - role-aware home (see [6.3](#63-the-today-home-mvp))
+- **Today** `/today` - role-aware home (see [6.3](#63-the-today-home))
 - **Inbox** `/inbox` - unified SMS, email, portal messages, web-form leads, AI receptionist call summaries; assignment, snooze, templates (spec in [16](16-marketing-growth-communications.md))
 - **Clients** `/clients`
   - Client list (saved views: Active residential, Commercial accounts, Past due, Agreement renewal due, No visit in 60 days)
@@ -424,7 +424,7 @@ flowchart LR
   ADMIN --> ANA["Analytics"]
   ADMIN --> SYS["System health"]
   ADMIN --> PART["Partners"]
-  ADMIN --> STAFF["Staff and audit"]
+  ADMIN --> STAFF["Agents and audit"]
   ADMIN --> SETS["Settings"]
   TEN --> T360["Tenant 360"]
   KB --> CUR["Curator workbench"]
@@ -450,7 +450,7 @@ flowchart LR
 - **Analytics** `/analytics`: churn, cohorts, activation funnel, feature adoption, NPS, unit economics, UX friction radar ([27](#27-beyond-the-brief-extra-ideas))
 - **System health** `/health`: services, queues, integrations, scheduled jobs, incidents and status page, the Integrity center (ledger, Stripe webhook and sync integrity; [20](20-architecture-security.md) 6.5), fleet and cell placement
 - **Partners** `/partners`: directory, commissions, payouts
-- **Staff and audit** `/staff`: operator agents and their roles, access reviews, approvals inbox (agent requests waiting for the founder), platform audit log, Admin API tokens
+- **Agents and audit** `/agents`: operator agents and their roles, access reviews, approvals inbox (agent requests waiting for the founder), platform audit log, Admin API tokens
 - **Settings** `/settings`: security, regions and data residency, Rootline-owned integration keys
 
 **Console navigation by platform role** (default; full matrix in [19](19-platform-admin-portal.md) section 9). "F" = full, "R" = read, "-" = hidden. `platform_owner` sees everything.
@@ -473,10 +473,10 @@ flowchart LR
 | Analytics | F | R | R (KB metrics) | F | R |
 | System health | F | R | - | - | F |
 | Partners | F | R | - | F | - |
-| Staff and audit | F | - | - | - | R (audit only) |
+| Agents and audit | F | - | - | - | R (audit only) |
 | Settings | F | - | - | - | R |
 
-The Home view is role-aware in the same way as the tenant Today ([6.3](#63-the-today-home-mvp)). The plant curator agent (`platform_curator`) lands on curation queue depth, publish velocity and plant-quality flags; the finance agent (`platform_finance`) lands on MRR movement, dunning and refunds awaiting approval.
+The Home view is role-aware in the same way as the tenant Today ([6.3](#63-the-today-home)). The plant curator agent (`platform_curator`) lands on curation queue depth, publish velocity and plant-quality flags; the finance agent (`platform_finance`) lands on MRR movement, dunning and refunds awaiting approval.
 
 ### 5.6 Public marketing site sitemap
 
@@ -550,7 +550,7 @@ Funnel pages and rules:
 ### 5.8 URL, ID and object conventions
 
 - Routes use plural nouns and opaque IDs: `/clients/cl_8f2k...`. Human-readable numbers (`C-0412` client, `P-1188` property, `E-2290` estimate, `PR-2290` proposal, `J-1042` job, `V-58813` visit, `INV-3307` invoice, `JE-10442` journal entry) are tenant-scoped sequences shown in UI, used in search and in client-facing documents.
-- Every record page is linkable and shareable inside the tenant. A link to a record the viewer cannot access shows a permission state ("You don't have access to this job. Ask Dana Henderson (owner) or request access.") with a "Request access" action, never a blank 404. The permission state never reveals the record's title, client name or amount: the object type and the human-readable number from the URL are all it shows. Links into another tenant, or to records that do not exist, show the same generic "Not found or not available" page, so a URL cannot be used to probe whether a record exists. This matches the no-leak rule in [6.2](#62-global-search-and-command-palette-mvp).
+- Every record page is linkable and shareable inside the tenant. A link to a record the viewer cannot access shows a permission state ("You don't have access to this job. Ask Dana Henderson (owner) or request access.") with a "Request access" action, never a blank 404. The permission state never reveals the record's title, client name or amount: the object type and the human-readable number from the URL are all it shows. Links into another tenant, or to records that do not exist, show the same generic "Not found or not available" page, so a URL cannot be used to probe whether a record exists. This matches the no-leak rule in [6.2](#62-global-search-and-command-palette).
 - Deep links work across surfaces: an office link `app.rootline.com/acme/visits/V-58813` opened on a phone with the crew app installed opens the Visit screen.
 - Filters and views are encoded in the URL (`?view=past-due&sort=-balance`) so views are shareable and bookmarkable.
 
@@ -1170,7 +1170,7 @@ Rules:
 - Both: biometric/passkey unlock, camera and location permission primers explaining why before the OS prompt ("We use your location only while you're clocked in, to show the office you arrived at 1420 Maple St."), background location only when the Company enables GPS tracking and the worker is clocked in (policy in [15](15-team-hr-payroll.md)).
 - **Translucent system chrome (iOS 26 and later).** Apple's current design language draws tab bars and toolbars as translucent glass over content (verify against the current Human Interface Guidelines). Translucency behind text is exactly what fails in direct sun. Rules: (1) content surfaces under text are always opaque; (2) in Outdoor mode the crew app's own bottom bar and action bar render opaque, with a 2 px Stone 600 top border; (3) the app honors the OS "Reduce Transparency" and "Increase Contrast" settings everywhere; (4) the sun test (24.2) runs on the newest iOS release each September before we adopt any new system material.
 - **Edge-to-edge (Android 15 and later).** Apps targeting recent Android SDKs draw edge-to-edge by default (verify the current target-SDK rules). The crew app pads the primary action bar with the navigation-bar inset, so the 64 px primary button never sits under the gesture handle, and tests both 3-button and gesture navigation.
-- **Notification permission.** Android 13+ requires a runtime notification permission, and iOS asks once. The app shows a primer screen first ("Get a buzz when the office changes your route"). If the worker declines, a persistent banner on Today explains what they will miss, and P1 messages fall back to SMS per [16.2](#162-priority-levels-and-routing-mvp).
+- **Notification permission.** Android 13+ requires a runtime notification permission, and iOS asks once. The app shows a primer screen first ("Get a buzz when the office changes your route"). If the worker declines, a persistent banner on Today explains what they will miss, and P1 messages fall back to SMS per [16.2](#162-priority-levels-and-routing).
 - **Platform text scaling.** Dynamic Type (iOS) and font scale (Android) up to 200% reflow the route list into a single column, with the stop number and client name on the first line and the service and time on the second. Primary buttons grow in height and never truncate their verb.
 
 ---
@@ -1248,7 +1248,7 @@ Platform guidance sets 44 x 44 pt (Apple) and 48 x 48 dp (Material) minimum touc
 2. **Company default language** (for new users and templates).
 3. **Client communication language** per Client/Contact (proposals, invoices, SMS, emails, portal default). A Spanish-speaking homeowner gets a Spanish proposal even if the office works in English.
 
-**Quebec jurisdiction rule**: when a Property is in Quebec, the proposal and e-sign flow shows the French version first. The client gets a clearly labeled "Read and sign in English" choice only after the French version was presented, and the choice is stored with the signature evidence. This follows our reading of the Charter's French-first rule for standard-form (adhesion) contracts. It ships as the conservative default, and the founder confirms it with counsel as part of the French-language check (OD-70, [24](24-product-scope-decisions-catalog.md) section 1.7; [28](#28-open-questions)). Payment pages, receipts and the portal shell for those clients default to `fr-CA`.
+**Quebec jurisdiction rule**: when a Property is in Quebec, the proposal and e-sign flow shows the French version first. The client gets a clearly labeled "Read and sign in English" choice only after the French version was presented, and the choice is stored with the signature evidence. This follows our reading of the Charter's French-first rule for standard-form (adhesion) contracts. It ships as the conservative default, and the founder confirms it with counsel as part of the French-language check (OD-70, [24](24-product-scope-decisions-catalog.md) section 1.7; [28](#28-decisions-on-former-open-questions)). Payment pages, receipts and the portal shell for those clients default to `fr-CA`.
 
 Templates (proposal, invoice, SMS, email) are maintained per language; when a translation is missing the editor shows a warning and offers an AI draft translation for human review. Client-facing AI translations are never sent without review unless the Company explicitly enables auto-send for low-risk messages (reminders, "on the way").
 

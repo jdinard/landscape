@@ -39,8 +39,8 @@ asOpt('client_commercial.property_contact', 'client_commercial', 'Clients', 'Fac
 asOpt('client_commercial.viewer', 'client_commercial', 'Clients', 'Consultant (viewer)', { scope: 'viewer' });
 asOpt('partner_admin', 'partner_admin', 'Partners', 'Accountant partner admin');
 asOpt('partner_member', 'partner_member', 'Partners', 'Accountant partner staff');
-[['platform_owner', 'Founder / Super Admin'], ['platform_support', 'Platform Support'], ['platform_curator', 'Plant Curator'], ['platform_finance', 'Platform Finance'], ['platform_engineer', 'Platform Engineer']]
-  .forEach(([k, l]) => asOpt(k, k, 'Rootline staff', l));
+[['platform_owner', 'Founder / Super Admin'], ['platform_support', 'Support agent'], ['platform_curator', 'Plant curator agent'], ['platform_finance', 'Finance agent'], ['platform_engineer', 'Engineering agent']]
+  .forEach(([k, l]) => asOpt(k, k, 'Rootline: founder and agents', l));
 asOpt('prospect', 'prospect', 'Public', 'Prospect on rootline.com');
 asOpt('homeowner', 'homeowner', 'Public', 'Homeowner (Rootline Home)');
 const ASK = by(AS, 'key');

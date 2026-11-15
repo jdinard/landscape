@@ -21,7 +21,7 @@
 
 > **Legal posture (applies to the whole document).** Rootline is software, not a law firm, a PEO, an immigration agent or a payroll tax filer (with embedded payroll, the licensed partner files). Every jurisdiction rule here is a conservative starting configuration. Rules whose current text still needs first-hand confirmation are marked "verify". Rule packs ship versioned: the plant curator agent maintains them from licensed sources, the founder approves each pack before it publishes, and the founder has employment counsel check wage and meal-break rules before any default is loosened ([section 4.9](#49-pay-rules-engine-and-jurisdiction-policy-packs); 24 OD-60 and section 1.7). The product says "this is not legal advice" wherever it shows a compliance hint.
 
-> **Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation; competitor capabilities marked [B] are analyst belief to confirm in a hands-on teardown. Facts come from research cited elsewhere in these specs ([05](05-field-crew-mobile-app.md), [02](02-personas-roles-permissions.md), [18](18-reporting-analytics.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)), primary regulations cited by section number, and general domain knowledge. The plant curator agent confirms each regulatory "verify" item against a primary source when it builds the rule pack that uses it, and the marketing agent confirms competitor facts before any public use (24 OD-07). Neither check blocks the build ([section 14](#14-open-questions), item 15).
+> **Verification note.** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation; competitor capabilities marked [B] are analyst belief to confirm in a hands-on teardown. Facts come from research cited elsewhere in these specs ([05](05-field-crew-mobile-app.md), [02](02-personas-roles-permissions.md), [18](18-reporting-analytics.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)), primary regulations cited by section number, and general domain knowledge. The plant curator agent confirms each regulatory "verify" item against a primary source when it builds the rule pack that uses it, and the marketing agent confirms competitor facts before any public use (24 OD-07). Neither check blocks the build ([section 14](#14-decisions-on-former-open-questions), item 15).
 
 ---
 
@@ -40,7 +40,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief](#13-beyond-the-brief-extra-ideas)
-14. [Decisions on former open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-decisions-on-former-open-questions)
 15. [Sources](#sources)
 
 ---
@@ -881,7 +881,7 @@ The **first-aid list** (e.g., non-prescription medication at non-prescription st
 
 **SAFE-08 Chemical safety.** SDS library per product, PPE per label (from the product library in [14](14-service-line-modules.md)), mixing and loading logs, exposure incidents, and Hazard Communication training records. Applicator credential checks come from [CRED-05](#45-certifications-licenses-and-qualification-enforcement).
 
-**SAFE-09 Safety incentives that do not suppress reporting.** Rewards attach only to **leading indicators**: near-miss reports, hazard fixes, observations, tailgate participation and training completion. Rootline will not offer "zero injuries" or "no recordables" rewards as a template, because incentive programs that discourage injury reporting can violate OSHA's anti-retaliation provisions (verify current OSHA interpretation). Cross-doc note: the crew-app safety streak in [05 section 4.15](05-field-crew-mobile-app.md) includes "zero recordable incidents". Rewards tied to that streak use only its leading-indicator components; "zero recordable incidents" can be shown but never rewarded ([section 14](#14-open-questions), item 5).
+**SAFE-09 Safety incentives that do not suppress reporting.** Rewards attach only to **leading indicators**: near-miss reports, hazard fixes, observations, tailgate participation and training completion. Rootline will not offer "zero injuries" or "no recordables" rewards as a template, because incentive programs that discourage injury reporting can violate OSHA's anti-retaliation provisions (verify current OSHA interpretation). Cross-doc note: the crew-app safety streak in [05 section 4.15](05-field-crew-mobile-app.md) includes "zero recordable incidents". Rewards tied to that streak use only its leading-indicator components; "zero recordable incidents" can be shown but never rewarded ([section 14](#14-decisions-on-former-open-questions), item 5).
 
 **SAFE-10 Return-to-work and transitional duty.** Work restrictions (no lifting over 20 lb, no ladder use) captured from provider notes the employee chooses to share. Transitional duty task list (yard organization, nursery watering, plant inventory counts, training content recording). Dispatch respects restrictions. Restricted days are counted automatically for the OSHA log.
 
@@ -1554,7 +1554,7 @@ All tables live in the `people` domain module ([20](20-architecture-security.md)
 
 ### 7.1 Entity catalog
 
-These tables live in the `people` module of the [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules-mvp) module map, which uses the names in this catalog: `employee`, `credential` (employee licenses, certifications and subcontractor credentials share one model), `pay_rate`, `time_segment` (derived from the punch events in [05](05-field-crew-mobile-app.md)), `timesheet` and `payroll_batch`. The earlier summary names `certification`, `time_entry` and `payroll_run_export` stay registered aliases in its schema registry.
+These tables live in the `people` module of the [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules) module map, which uses the names in this catalog: `employee`, `credential` (employee licenses, certifications and subcontractor credentials share one model), `pay_rate`, `time_segment` (derived from the punch events in [05](05-field-crew-mobile-app.md)), `timesheet` and `payroll_batch`. The earlier summary names `certification`, `time_entry` and `payroll_run_export` stay registered aliases in its schema registry.
 
 | Group | Entity | Purpose and key fields |
 |---|---|---|
@@ -2261,7 +2261,7 @@ Each former open question, with its decision. Section 1 of [24](24-product-scope
 
 ## Sources
 
-Verification note: sources below are either (a) research captured elsewhere in this repository, (b) primary regulations and official program pages cited by section number, or (c) vendor developer portals named for integration planning. Statements marked "verify" or [B] are from secondary sources or general knowledge and need first-hand confirmation, which the agents do without blocking the build ([section 14](#14-open-questions), item 15).
+Verification note: sources below are either (a) research captured elsewhere in this repository, (b) primary regulations and official program pages cited by section number, or (c) vendor developer portals named for integration planning. Statements marked "verify" or [B] are from secondary sources or general knowledge and need first-hand confirmation, which the agents do without blocking the build ([section 14](#14-decisions-on-former-open-questions), item 15).
 
 **Industry and labor market**
 - [Lawn & Landscape: Wilson 360 2024 landscape industry benchmark](https://www.lawnandlandscape.com/article/wilson-360-2024-landscape-industry-benchmark)

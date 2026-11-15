@@ -10,7 +10,7 @@
 - **Decision 3: inventory is progressive.** Four modes per branch: Off, Light, Standard and Advanced. A new Company starts in Light below 15 employees and chooses Light or Standard at 15 or more; Starter runs Off ([Product Scope](24-product-scope-decisions-catalog.md) OD-43, R24-6). Switching up needs an opening count; switching down archives detail and never loses history.
 - **Decision 4: equipment is a costed asset.** The published rate card (calculator, trailing-12-month actuals) is the only equipment rate Estimating can use, and usage posts to job cost with an over/under-recovery report.
 - **Decision 5: offline-first, scan-first field capture.** Every crew-app action is an idempotent event; DVIRs and signed lien waivers are immutable; load-out sheets are cached 48 hours ahead ([Crew app](05-field-crew-mobile-app.md), [Architecture](20-architecture-security.md)).
-- **In v1:** the whole module. Item master and UOM; Off, Light, Standard and Advanced inventory modes; buy lists, POs with budget-fit auto-approval, the purchasing workbench, RFQs, punchout, EDI and distributor APIs; receiving, 2-way and 3-way match with AI extraction; Nursery Connect and holding-yard care; subcontractor compliance, sub portal and lien waivers; the asset registry, meters, PM schedules and work orders, DVIR, telematics, fuel cards and the rate calculator with actuals; tools, kits and rentals; load-out sheets; the offline SDS library; warranties; predictive maintenance, the Buying Network and the yard twin (capability map in [4.19](#419-release-slicing-and-cut-lines)).
+- **In v1:** the whole module. Item master and UOM; Off, Light, Standard and Advanced inventory modes; buy lists, POs with budget-fit auto-approval, the purchasing workbench, RFQs, punchout, EDI and distributor APIs; receiving, 2-way and 3-way match with AI extraction; Nursery Connect and holding-yard care; subcontractor compliance, sub portal and lien waivers; the asset registry, meters, PM schedules and work orders, DVIR, telematics, fuel cards and the rate calculator with actuals; tools, kits and rentals; load-out sheets; the offline SDS library; warranties; predictive maintenance, the Buying Network and the yard twin (capability map in [4.19](#419-capability-map)).
 - **Packaging ([Pricing](22-business-model-pricing-gtm.md) section 4.2.1):** Starter runs in Off mode (Price Book materials, receipts to jobs) with up to 10 equipment assets; Grow gets Light and Standard inventory and purchasing for one yard and up to 25 equipment assets; Pro and Enterprise get multi-location inventory, Advanced mode and unlimited assets.
 - **Differentiators:** the design-to-dump-truck chain, plants as living inventory (holding-yard care, nursery guarantees and client plant warranties tied to the [Plant KB](12-plant-knowledge-base.md)), equipment cost per hour from real data, and subcontractor compliance that actually blocks.
 - **Key cross-links:** [Scheduling](04-scheduling-dispatch-routing.md) (resources, delivery gates, load-outs), [Service lines](14-service-line-modules.md) (chemicals, salt, plant warranties), [Team](15-team-hr-payroll.md) (certifications, mechanic time, tool charge-backs), [Reporting](18-reporting-analytics.md) (`equipment_cost_per_hour`, recovery KPIs), [Personas](02-personas-roles-permissions.md) (PO approval limits).
@@ -32,7 +32,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief: extra ideas](#13-beyond-the-brief-extra-ideas)
-14. [Decisions on former open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-decisions-on-former-open-questions)
 15. [Sources](#sources)
 
 Running example used throughout: **Cedar & Stone Landscapes** (Columbus, Ohio), 38 employees, 7 maintenance crews, 2 install crews, 1 irrigation tech, 1 shop mechanic; 14 trucks, 11 trailers, 22 commercial mowers, 2 compact track loaders, 1 mini excavator, about 140 handheld power tools and 60 battery packs; one main yard with 6 bulk bunkers and a 2,000 sq ft nursery holding area. Fictional, used for illustration.
@@ -58,7 +58,7 @@ Running example used throughout: **Cedar & Stone Landscapes** (Columbus, Ohio), 
 
 - **Not a full ERP or warehouse management system.** No wave picking, no slotting optimization, no RF-gun conveyor integration. A landscape yard is not a distribution center.
 - **Not nursery grower production software.** We track plants a landscape company holds briefly before install (days to weeks). We do not model propagation, liner potting-up or crop scheduling. Companies that also run a retail garden center get a light POS path (see [Beyond the brief](#13-beyond-the-brief-extra-ideas)), not a full nursery ERP.
-- **Not a telematics hardware vendor.** We integrate with Samsara, Verizon Connect, Geotab, OneStep GPS, Linxup and others rather than ship our own trackers; third-party BLE tags cover small tools (4.14.12). There is no Rootline-branded tracker (see [decision 5](#14-open-questions)).
+- **Not a telematics hardware vendor.** We integrate with Samsara, Verizon Connect, Geotab, OneStep GPS, Linxup and others rather than ship our own trackers; third-party BLE tags cover small tools (4.14.12). There is no Rootline-branded tracker (see [decision 5](#14-decisions-on-former-open-questions)).
 - **Not a fuel card issuer or AP payment processor.** We ingest fuel card data and we prepare AP payments, but money to vendors moves from the Company's own bank via the methods described in [Accounting](09-accounting-ledger-integrations.md). Client money never touches Rootline ([Payments](08-payments-stripe.md)); vendor money does not either.
 - **Not a dealer-grade CMMS.** We cover the 90% of maintenance a landscape shop does (PM, repairs, parts, warranty claims, DVIR). Deep reliability engineering (MTBF modeling per component, oil analysis labs) is out of scope, with an export path to dedicated tools like Fleetio for companies that want it.
 - **Not payroll.** Tool loss charge-backs and mechanic labor feed [Team, HR and Payroll](15-team-hr-payroll.md); payroll deductions are governed there because wage-deduction law varies by state and province.
@@ -282,7 +282,6 @@ Each Item can carry a **coverage rule** used by Estimating, the Design Studio ta
 - Rootline prints QR labels for bins, bunkers, tool tags, asset tags and plant holding batches on standard label stock (2 x 1 in thermal, Avery sheets) and via Zebra-compatible ZPL.
 - Bulk bunkers get a weather-proof QR sign; scanning it opens "issue from bunker" with the bucket-size quick picker (see 4.15.2).
 
-<a id="416-inventory-modes-mvp"></a>
 
 #### 4.1.6 Inventory modes
 
@@ -706,7 +705,6 @@ Fields common to all: asset number, name, make, model, year, serial/VIN, status 
 - Validation: readings must be monotonic per meter; a reading lower than the last requires a "meter replaced or reset" event with an offset; implausible jumps (more than 14 engine hours per calendar day, matching the crew-app prompt in [Crew app](05-field-crew-mobile-app.md) 4.13.2, or more than 800 miles per day; defaults) are flagged and excluded from PM triggers until confirmed.
 - Daily "hours estimate" for assets without telematics: if a mower is assigned to a crew with 7.5 clock hours on mowing visits, Rootline estimates engine hours using a utilization factor (default 70% for mowers, editable), clearly labelled "estimated" until a manual reading reconciles it.
 
-<a id="4143-preventive-maintenance-schedules-mvp"></a>
 
 #### 4.14.3 Preventive maintenance schedules
 
@@ -729,7 +727,6 @@ PM schedules and maintenance work orders (4.14.4) build on the asset registry, m
 - **PM board**: a weekly shop view of everything due, grouped by when the asset is off-route (Rootline knows the schedule, so it proposes servicing mowers on rain days or on the crew's lighter day).
 - **Rain-day shop planning**: when [Scheduling](04-scheduling-dispatch-routing.md) moves a route because of rain, the PM board suggests pulling that crew's due PMs into the gap.
 
-<a id="4144-maintenance-work-orders-and-repair-logs-mvp"></a>
 
 #### 4.14.4 Maintenance work orders and repair logs
 
@@ -1521,11 +1518,11 @@ The yard manager's morning screen in May: what to water, what is aging, what is 
 
 ## 7. Data model
 
-All tables carry `tenant_id` (row-level security per [Architecture](20-architecture-security.md)), `branch_id` where relevant, `created_at`, `created_by`, `updated_at`, and soft-delete `archived_at`. Money is stored as integer minor units with an ISO currency code; quantities as `numeric(18,4)` with an explicit UOM. Geo fields use PostGIS. Shared entities owned by other modules are referenced, not duplicated: `job`, `visit`, `property`, `client` ([Scheduling](04-scheduling-dispatch-routing.md)), `estimate_line` and `price_book_item` ([Estimating](03-crm-sales-estimating-proposals.md)), `takeoff_line` and `plant_instance` ([Design Studio](10-design-studio.md)), `plant` ([Plant KB](12-plant-knowledge-base.md)), `vendor_bill` and `journal_entry` ([Ledger](09-accounting-ledger-integrations.md)), `employee` and `credential` ([Team](15-team-hr-payroll.md); `certification` is a registered alias in [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules-mvp) section 4.3).
+All tables carry `tenant_id` (row-level security per [Architecture](20-architecture-security.md)), `branch_id` where relevant, `created_at`, `created_by`, `updated_at`, and soft-delete `archived_at`. Money is stored as integer minor units with an ISO currency code; quantities as `numeric(18,4)` with an explicit UOM. Geo fields use PostGIS. Shared entities owned by other modules are referenced, not duplicated: `job`, `visit`, `property`, `client` ([Scheduling](04-scheduling-dispatch-routing.md)), `estimate_line` and `price_book_item` ([Estimating](03-crm-sales-estimating-proposals.md)), `takeoff_line` and `plant_instance` ([Design Studio](10-design-studio.md)), `plant` ([Plant KB](12-plant-knowledge-base.md)), `vendor_bill` and `journal_entry` ([Ledger](09-accounting-ledger-integrations.md)), `employee` and `credential` ([Team](15-team-hr-payroll.md); `certification` is a registered alias in [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules) section 4.3).
 
 ### 7.1 Key entities
 
-These tables live in the `inventory` module of the [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules-mvp) module map, which uses the names in this section (`item`, `stock_balance` as the on-hand projection of `stock_movement`, `purchase_order`, `vendor`, `asset`, `tool_checkout`, `maintenance_work_order`). The earlier summary names `equipment`, `item_stock`, `maintenance_record` and `equipment_assignment` stay registered aliases in its schema registry.
+These tables live in the `inventory` module of the [Architecture](20-architecture-security.md#43-bounded-contexts-and-modules) module map, which uses the names in this section (`item`, `stock_balance` as the on-hand projection of `stock_movement`, `purchase_order`, `vendor`, `asset`, `tool_checkout`, `maintenance_work_order`). The earlier summary names `equipment`, `item_stock`, `maintenance_record` and `equipment_assignment` stay registered aliases in its schema registry.
 
 | Entity | Key fields | Notes |
 |---|---|---|

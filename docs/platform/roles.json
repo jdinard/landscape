@@ -1,5 +1,5 @@
 {
-  "_about": "Every role in Rootline: tenant role templates, client roles and contact scopes, platform staff, partners and public visitors. Matrices are parsed verbatim from the specs named in each block.",
+  "_about": "Every role in Rootline: tenant role templates, client roles and contact scopes, the founder and Rootline's operator agents, partners and public visitors. Matrices are parsed verbatim from the specs named in each block.",
   "_legend": {
     "grants": "R read; W create/update; D delete/void/archive; X special action. Scope after '/': a all, b branch, c crew (visibility window), o own/assigned. '-' none; 'cfg' off by default, Company can enable; '<=lim' subject to approval limits (02 §5.6).",
     "nav": "F full, R read-mostly, '-' hidden, C Company-configurable (default in brackets)."
@@ -308,7 +308,7 @@
       "surfaces": [
         "console"
       ],
-      "seat": "staff",
+      "seat": "founder",
       "mfa": "hardware key or passkey + step-up",
       "login": "Platform SSO + WebAuthn security key",
       "landing": "console.home",
@@ -2705,7 +2705,7 @@
           "platform_finance": "F",
           "platform_engineer": "-"
         },
-        "Staff and audit": {
+        "Agents and audit": {
           "platform_owner": "F",
           "platform_support": "-",
           "platform_curator": "-",

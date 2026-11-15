@@ -53,7 +53,7 @@ A['atlas.personas'] = (c) => {
     ${h.kv([['Who', esc(p.who)], ['Goals', esc(p.goals)], ['Frustrations', esc(p.frustrations)], ['Success', esc(p.success)], ['Sees first', esc(p.sees)], ['Never sees', esc(p.hidden)], ['Device', esc(p.devices || '-')], ['Tech, language', esc((p.tech || '-') + ' · ' + (p.language || '-'))]])}
     <div class="act">${viewBtn('View as ' + esc(p.name.split(/[ ,]/)[0]), personaSet(p), 'primary')}</div></article>`;
   return `<div class="at">${sec('Personas', 'Composite personas from 02 §3 (illustrative names, companies and quotes) plus blueprint personas for markets the specs name but do not personify. Each card says what the person sees first and what they never see; <b>View as</b> opens their real landing screen.',
-    tabs('at.pf', [['all', 'All', P.personas.personas.length], ['staff', 'Rootline staff'], ['company', 'Company staff'], ['field', 'Field and subs'], ['clients', 'Clients'], ['other', 'Partners and public'], ['blueprint', 'Blueprint additions']], 'all') + `<div class="at-pick" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">${list.map(card).join('')}</div>`)}
+    tabs('at.pf', [['all', 'All', P.personas.personas.length], ['staff', 'Rootline: founder and agents'], ['company', 'Company staff'], ['field', 'Field and subs'], ['clients', 'Clients'], ['other', 'Partners and public'], ['blueprint', 'Blueprint additions']], 'all') + `<div class="at-pick" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">${list.map(card).join('')}</div>`)}
     ${sec('Seat and sign-in by persona', 'From 02 §3.1 persona map and 22 §4.3 seat model.', h.table([{ k: 'name', label: 'Role', fmt: (v, r) => `<b>${esc(v)}</b><div class="mono tiny t3">${esc(r.key)}</div>` }, { k: 'surfaces', label: 'Surfaces', fmt: v => v.map(esc).join(', ') }, { k: 'seat', label: 'Seat' }, { k: 'login', label: 'Sign-in' }, { k: 'device', label: 'Device', fmt: v => esc(v || '-') }, { k: 'language', label: 'Language', fmt: v => esc(v || '-') }], P.roles.roles.filter(r => r.kind === 'tenant' || r.kind === 'client' || r.kind === 'platform'), { dense: true }))}</div>`;
 };
 
@@ -77,7 +77,7 @@ A['atlas.roles'] = (c) => {
   const sc = ['primary', 'co_owner', 'approver', 'billing', 'property_contact', 'viewer'];
   if (t === 'portal') body = `<p class="small t2">${esc(P.roles.nav_visibility.portal.note)} (21 §5.4)</p>` + navTbl(P.roles.nav_visibility.portal.items, sc) + `<h3 class="mt16">Contact rights (02 §5.11)</h3>` + h.table([{ k: 'scope', label: 'Contact role', m: true }, ...Object.keys(P.roles.client_contact_rights.rows[0].rights).map(k => ({ k, label: esc(k), fmt: (v, r) => esc(r.rights[k]) }))], P.roles.client_contact_rights.rows, { dense: true });
   return `<div class="at">${sec('Roles and access', 'Every role, the navigation it gets on each surface, and the permission matrix behind it, parsed verbatim from 02 and 21. The column for the role you are viewing as is highlighted.',
-    tabs('at.rt', [['catalogue', 'All roles', P.roles.roles.length], ['webnav', 'Web app navigation'], ['perms', 'Tenant permissions', P.roles.tenant_permission_matrix.groups.reduce((a, x) => a + x.rows.length, 0)], ['fields', 'Field classes'], ['console', 'Console and platform staff'], ['portal', 'Portal contact scopes']], 'catalogue') + body)}</div>`;
+    tabs('at.rt', [['catalogue', 'All roles', P.roles.roles.length], ['webnav', 'Web app navigation'], ['perms', 'Tenant permissions', P.roles.tenant_permission_matrix.groups.reduce((a, x) => a + x.rows.length, 0)], ['fields', 'Field classes'], ['console', 'Console: founder and agents'], ['portal', 'Portal contact scopes']], 'catalogue') + body)}</div>`;
 };
 
 // ---------- packages ----------
@@ -140,11 +140,11 @@ A['atlas.compare'] = (c) => {
     body = `<p class="small t2">Customer portal destinations by contact scope at ${esc(c.t.name)} on ${esc(c.plan.name)}.</p><div class="mtx-wrap"><table class="mtx"><thead><tr><th>Screen</th>${scopes.map(o => `<th>${esc(o.label)}</th>`).join('')}</tr></thead><tbody>${pr.map(r => `<tr><th>${esc(r.label)}</th>${scopes.map(o => `<td><button type="button" class="icon-btn" data-set="as=${o.key}&r=${r.id}">${sym(st(r, { as: o.key }))}</button></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
   if (t === 'console') {
-    const staff = RL.AS.filter(o => o.group === 'Rootline staff');
+    const staff = RL.AS.filter(o => o.group === 'Rootline: founder and agents');
     const cr = P.surfaces.routes.filter(r => r.surface === 'console');
     body = `<p class="small t2">Founder console by platform role (21 §5.5).</p><div class="mtx-wrap"><table class="mtx"><thead><tr><th>Screen</th>${staff.map(o => `<th>${esc(o.label)}</th>`).join('')}</tr></thead><tbody>${cr.map(r => `<tr><th>${esc(r.label)}</th>${staff.map(o => `<td><button type="button" class="icon-btn" data-set="as=${o.key}&r=${r.id}">${sym(st(r, { as: o.key }))}</button></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   }
-  return `<div class="at">${sec('Who sees what', 'Computed live from the same gating engine the screens use. Click any cell to open that screen as that person.', tabs('at.cmp', [['roles', 'Staff roles'], ['plans', 'Packages'], ['markets', 'Markets'], ['portal', 'Client contacts'], ['console', 'Rootline staff']], 'roles') + body)}</div>`;
+  return `<div class="at">${sec('Who sees what', 'Computed live from the same gating engine the screens use. Click any cell to open that screen as that person.', tabs('at.cmp', [['roles', 'Company roles'], ['plans', 'Packages'], ['markets', 'Markets'], ['portal', 'Client contacts'], ['console', 'Founder and agents']], 'roles') + body)}</div>`;
 };
 
 // ---------- every screen ----------

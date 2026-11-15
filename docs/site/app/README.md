@@ -1,6 +1,6 @@
 # Platform Explorer: how it works and how to add screens
 
-`docs/site/app.html` is a static, no-build mock of the whole Rootline platform. It opens from `file://`, has no server and no framework. Every screen is gated by **role**, **package** (plan), **market** (sample tenant) using the same data a real build would use.
+`docs/site/app.html` is a static, no-build mock of the whole Rootline platform. It opens from `file://`, has no server and no framework. Every screen is gated by **role**, **package** (plan) and **market** (sample tenant), using the same data a real build would use. Every screen is in the one release (24 §1.1).
 
 ## Files and load order
 
@@ -11,7 +11,7 @@
 | `app/ui.js` | `RL.h`: the HTML helper library. Every helper returns a string. |
 | `app/icons.js` | The SVG icon sprite. `RL.h.icon('name')`. |
 | `app/data.js` | `RL.data(tenant)`: deterministic sample data per tenant (clients, jobs, visits, invoices, designs, ledger and more). |
-| `app/frames.js` | Explorer bar, one frame per surface (web app, console, crew phone, sub lite, portal, partner hub, marketing site, Rootline Home), permission states and the "Why you see this" lens. |
+| `app/frames.js` | Explorer bar, one frame per surface (web app, console, crew phone, the manager and sales modes, sub lite, portal, partner hub, marketing site, Rootline Home), permission states and the "Why you see this" lens. |
 | `app/atlas.js` | Atlas pages: overview, personas, roles and access, packages, markets, who sees what, every screen. |
 | `app/screens-*.js` | Screens, one file per area. |
 | `app/tools/check.js` | Playwright checker (see Testing). |
@@ -88,7 +88,7 @@ Helpers worth knowing: `h.cols(kind, items)` stacks an array item in one column;
 | `data-modal="name"` | Open `RL.modal(name, c => ({ title, body, foot }))`. |
 | `data-set="as=owner&r=web.today"` | Change explorer state (used by the atlas). |
 
-Phone surfaces (crew, manager mode, sub lite, portal in phone mode, Rootline Home) put everything before `<!--side-->` inside the phone; anything after it renders in a side panel next to the phone (use it for "what the office sees" notes).
+Phone surfaces (crew, manager and sales modes, sub lite, portal in phone mode, Rootline Home) put everything before `<!--side-->` inside the phone; anything after it renders in a side panel next to the phone (use it for "what the office sees" notes).
 
 ## Rules every screen follows
 

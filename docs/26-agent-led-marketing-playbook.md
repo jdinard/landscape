@@ -29,7 +29,7 @@
 - [5. Seasonal calendar and lifecycle marketing](#5-seasonal-calendar-and-lifecycle-marketing)
 - [6. Measurement](#6-measurement)
 - [7. Asset inventory and production queue](#7-asset-inventory-and-production-queue)
-- [8. Decisions on former open questions, and risks](#8-open-questions-and-risks)
+- [8. Decisions on former open questions, and risks](#8-decisions-on-former-open-questions-and-risks)
 - [Sources and related documents](#sources-and-related-documents)
 
 ---

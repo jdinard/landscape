@@ -41,7 +41,7 @@
 14. [Edge cases, compliance and risks](#14-edge-cases-compliance-and-risks)
 15. [Metrics and KPIs](#15-metrics-and-kpis)
 16. [Beyond the brief: extra ideas](#16-beyond-the-brief-extra-ideas)
-17. [Decisions on former open questions](#17-open-questions)
+17. [Decisions on former open questions](#17-decisions-on-former-open-questions)
 18. [Sources](#sources)
 
 ---
@@ -1051,7 +1051,6 @@ Interpretation:
 - **Seasonal churn must be measured on a 12-month basis.** Monthly churn spikes in Nov-Dec, offset by Winter Mode and annual prepay. Year-over-year cohort retention is the metric that matters.
 - **NRR targets:** 105% or more per 12-month cohort, and about 115% for mature cohorts where designer seats, add-ons and tier upgrades have been adopted.
 
-<a id="77-revenue-scenarios-years-1-5-after-mvp-general-availability"></a>
 ### 7.7 What has to be true (drivers to validate)
 
 The business model rests on a small set of funnel and per-account drivers. Each has a conservative, base and aggressive value; the live model combines them with actual timing once there is data.

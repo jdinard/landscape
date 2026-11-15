@@ -34,7 +34,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief: extra ideas](#13-beyond-the-brief-extra-ideas)
-14. [Decisions on former open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-decisions-on-former-open-questions)
 15. [Sources](#sources)
 
 ---
@@ -70,7 +70,7 @@
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> Evidence basis: targeted web research (November 2026) across vendor help centers, review sites and community forums, plus market-structure and regulatory facts re-cited from [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [08](08-payments-stripe.md), [16](16-marketing-growth-communications.md) and [19](19-platform-admin-portal.md). A few vendor portals (Aspire, SynkedUP, Yardbook) are described at listing level only (see [section 14](#14-open-questions)). Vendor claims are vendor claims; prices and plan names are "as of November 2026, verify".
+> Evidence basis: targeted web research (November 2026) across vendor help centers, review sites and community forums, plus market-structure and regulatory facts re-cited from [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md), [08](08-payments-stripe.md), [16](16-marketing-growth-communications.md) and [19](19-platform-admin-portal.md). A few vendor portals (Aspire, SynkedUP, Yardbook) are described at listing level only (see [section 14](#14-decisions-on-former-open-questions)). Vendor claims are vendor claims; prices and plan names are "as of November 2026, verify".
 >
 > Verification note: items marked "verify" are from secondary sources or general knowledge. The build does not depend on them; the marketing agent checks each one against a primary source before it is used publicly (OD-07).
 
@@ -113,7 +113,7 @@
 | Design and plant knowledge are invisible to clients | **Plant cards** with KB photos and care data, personalized watering schedules, warranty registry. |
 | Yard history disappears when a contractor changes | **Property Record**: a client-owned lifetime record with export and transfer. |
 | White-label means "upload a logo" | Custom domain, sender domain, 10DLC-registered SMS brand, color system with automatic accessibility correction, custom pages. |
-| Portal balances drift from the books (sync to QuickBooks lags or breaks) | Portal balances read straight from the built-in double-entry Ledger's AR subledger ([09](09-accounting-ledger-integrations.md)); payments recorded in QuickBooks/Xero by Companies that keep external books sync back before the portal shows "paid" ([4.9.9](#499-portal-money-and-the-built-in-ledger-mvp)). |
+| Portal balances drift from the books (sync to QuickBooks lags or breaks) | Portal balances read straight from the built-in double-entry Ledger's AR subledger ([09](09-accounting-ledger-integrations.md)); payments recorded in QuickBooks/Xero by Companies that keep external books sync back before the portal shows "paid" ([4.9.9](#499-portal-money-and-the-built-in-ledger)). |
 | Design services stop at the drawing | The Dream Yard Visualizer and design viewer hand off to the same Company's pricing, install, warranty and maintenance, with no referral gap. |
 
 > **Competitive edge - Jobber, Housecall Pro:** Both offer polished, passwordless-leaning portals for general home services, but neither can show a homeowner a to-scale plan of their own yard, an AI before/after of the proposed beds, or a plant-by-plant care schedule. In landscaping the thing being sold is a picture of the future yard. Rootline puts that picture inside the approval flow, which is where the decision happens.

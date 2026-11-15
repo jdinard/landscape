@@ -7,9 +7,9 @@
 - **What it is:** the money-movement module. Each Company connects its **own** Stripe account; Rootline orchestrates portal pay, autopay, deposits, payment plans, field collection, refunds, disputes and payouts on that account and turns every Stripe balance transaction into ledger entries.
 - **Decision 1, connection model:** Stripe Connect with a Standard-style configuration (full Dashboard, Stripe-owned losses, Company-paid fees; Accounts v2 merchant configuration if it has OAuth parity, otherwise v1 controller properties with a migration path), one connected account per legal entity, onboarded by Connect OAuth for existing accounts or Account Links / embedded onboarding for new ones ([4.1](#41-connection-model-the-decision)). Express and Custom are rejected; a restricted-API-key "advanced mode" is a secondary path.
 - **Decision 2, charge type:** **direct charges** on the connected account; an optional application fee exists only on the opt-in pay-as-you-grow plan ([4.24](#424-platform-monetization-and-transparency)). The default is the Zero-Markup Pledge. Rootline never holds client funds.
-- **Decision 3, Rootline's own revenue:** a separate Rootline platform Stripe account runs Stripe Billing for Company subscriptions and AI credits ([4.25](#425-rootlines-own-saas-billing-account-mvp)); prices are owned by [22](22-business-model-pricing-gtm.md).
-- **Decision 4, ledger:** postings come from Stripe balance transactions, never fee formulas, through the canonical posting rules and account codes of [09](09-accounting-ledger-integrations.md) (1050 Stripe Clearing, 6150 Merchant Processing Fees, payout to 1010 Operating Checking) ([4.17](#417-reconciliation-into-the-ledger-mvp)).
-- **Decision 5, webhooks:** verify, persist, acknowledge, then process per object with re-fetch and monotonic state; endpoint paths match [20](20-architecture-security.md) ([4.22](#422-webhooks-architecture-for-connected-accounts-mvp)).
+- **Decision 3, Rootline's own revenue:** a separate Rootline platform Stripe account runs Stripe Billing for Company subscriptions and AI credits ([4.25](#425-rootlines-own-saas-billing-account)); prices are owned by [22](22-business-model-pricing-gtm.md).
+- **Decision 4, ledger:** postings come from Stripe balance transactions, never fee formulas, through the canonical posting rules and account codes of [09](09-accounting-ledger-integrations.md) (1050 Stripe Clearing, 6150 Merchant Processing Fees, payout to 1010 Operating Checking) ([4.17](#417-reconciliation-into-the-ledger)).
+- **Decision 5, webhooks:** verify, persist, acknowledge, then process per object with re-fetch and monotonic state; endpoint paths match [20](20-architecture-security.md) ([4.22](#422-webhooks-architecture-for-connected-accounts)).
 - **In v1:** OAuth, Account Links and embedded onboarding, restricted-key advanced mode, health monitoring; cards, wallets, Link, ACH, Canadian PAD, bank transfers and BNPL; portal pay, autopay, deposits, payment plans, pay links, retries and dunning, refunds; surcharging (off by default) and ACH incentives; consumer financing and crew tips; Tap to Pay on iPhone and Android, card readers and Interac in person; cash, check, check OCR, remote deposit capture and lockbox; USD/CAD cross-currency; ledger reconciliation and payout proof against Plaid bank feeds; dispute evidence assembly; webhooks; the provider abstraction with additional processor adapters; the opt-in pay-as-you-grow plan; Rootline SaaS billing. Keyed card entry (MOTO) is not offered: staff text a pay link during a call.
 - **Differentiators:** full portability (the Company keeps its account, saved cards and history), dispute evidence assembled from GPS-stamped visit proof, payout-to-bank-feed proof to the penny, compliance-gated surcharging, and payments that keep working even when the Company is behind on its Rootline bill.
 - **Key cross-links:** invoices, deposits policy and collections in [07](07-invoicing-billing-contracts.md); chart of accounts and posting rules in [09](09-accounting-ledger-integrations.md); permissions in [02](02-personas-roles-permissions.md); portal pay UX in [06](06-customer-portal.md); tenant lifecycle in [19](19-platform-admin-portal.md).
@@ -33,7 +33,7 @@
 11. [Edge cases, compliance and risks](#11-edge-cases-compliance-and-risks)
 12. [Metrics and KPIs](#12-metrics-and-kpis)
 13. [Beyond the brief](#13-beyond-the-brief-extra-ideas)
-14. [Decisions on former open questions](#14-open-questions)
+14. [Decisions on former open questions](#14-decisions-on-former-open-questions)
 15. [Sources](#sources)
 
 ---
@@ -57,7 +57,7 @@
 
 - **Rootline is not a payment facilitator, money transmitter or bank.** It never takes custody of client funds, never runs separate-charges-and-transfers flows for Company revenue, and never sits in the funds flow between a Client and a Company.
 - **No proprietary card processing or acquiring.** We do not negotiate interchange-plus pricing on behalf of Companies (a Company may negotiate custom pricing directly with Stripe because it owns the account).
-- **No in-house consumer lending.** Consumer financing is delivered through partners; Rootline-native payment plans are capped to avoid becoming a creditor under lending rules (see [4.8](#48-payment-plans-and-installments-v1)).
+- **No in-house consumer lending.** Consumer financing is delivered through partners; Rootline-native payment plans are capped to avoid becoming a creditor under lending rules (see [4.8](#48-payment-plans-and-installments)).
 - **No crypto, no stored-value wallets, no gift-card float.** Gift credits ([24](24-product-scope-decisions-catalog.md) R24-24) are the Company's own liability, paid on its own Stripe account (section 13, idea 7); Rootline holds nothing.
 - **No payroll disbursement.** Tips and wages flow to payroll providers via [15](15-team-hr-payroll.md); Rootline does not push money to employees.
 - **Not a second source of truth for invoices.** Stripe Invoicing and Stripe Subscriptions are **not** used on connected accounts; Rootline's invoices and schedules (see [07](07-invoicing-billing-contracts.md)) are the system of record, and Stripe is the payment rail.
@@ -99,7 +99,7 @@ From reviews and third-party analysis (qualitative themes, not statistics):
 3. **Payout friction and paid speed.** Vendors monetize speed: 1% for instant payouts at both Jobber and Housecall Pro, with discretionary eligibility ([Jobber](https://help.getjobber.com/en/articles/instant-payouts/), [Housecall Pro](https://www.housecallpro.com/features/payment-processing/)). First payouts can take up to 7 business days.
 4. **Missing basics.** Partial refunds missing in at least one vendor product (per the LMN Pay review), weak ACH, no PAD for Canadian Companies, no tips, and reconciliation that ends at "payment recorded" rather than a balanced ledger.
 5. **Payments that do not reconcile in the books.** Jobber's own QuickBooks Online FAQ documents that a sync error on one client blocks all of that client's payments and that payments cannot sync to QBO sub-customers ([Jobber QBO FAQ](https://help.getjobber.com/es/articles/quickbooks-integration-faqs/)); for a commercial landscaper billing an HOA management company with 12 sub-properties, that is the exact structure they need. Rootline's built-in ledger posts payments, fees and payouts natively, and its QBO export maps Properties to sub-customers ([09](09-accounting-ledger-integrations.md)).
-6. **Surcharging confusion.** Contractors ask on vendor forums how to add card fees to invoices (e.g., [Jobber community thread](https://community.getjobber.com/discussions/invoicing-getting-paid/advice-adding-the-credit-card-service-fee-to-invoices/1228/replies/8669)); state-by-state law is a patchwork (see [4.10](#410-surcharging-convenience-fees-and-ach-incentives-v1)), and most tools leave compliance entirely to the contractor.
+6. **Surcharging confusion.** Contractors ask on vendor forums how to add card fees to invoices (e.g., [Jobber community thread](https://community.getjobber.com/discussions/invoicing-getting-paid/advice-adding-the-credit-card-service-fee-to-invoices/1228/replies/8669)); state-by-state law is a patchwork (see [4.10](#410-surcharging-convenience-fees-and-ach-incentives)), and most tools leave compliance entirely to the contractor.
 
 ### 2.3 The gap Rootline exploits
 
@@ -233,11 +233,11 @@ Scores: 5 = best for Rootline's strategy; criteria are equally weighted (doublin
 - **Why:** this is the only option where (1) the Company owns liability, KYC, payouts and disputes, (2) the Company keeps everything if it leaves, (3) Rootline can still take a transparent application fee for Companies that opt into the pay-as-you-grow plan ([4.24](#424-platform-monetization-and-transparency)), and (4) Rootline carries the least regulatory and credit exposure. It is also exactly the promise competitors cannot make.
 - **Trade-off accepted:** onboarding is Stripe-branded and the Company sees Stripe's full Dashboard (more power, more complexity). We mitigate with embedded components and a "you never need to open Stripe" Rootline experience for day-to-day work.
 
-**Secondary path: Option D, "Advanced: restricted API key mode."** Offered only to Companies that refuse Connect (for example, an enterprise landscaper whose security team prohibits third-party OAuth grants, or a Company whose Stripe account is already connected to a platform policy that blocks additional connections). Gated by `owner` acknowledgment of the trade-offs: no application fees possible, Rootline must create and maintain a webhook endpoint on the account, key rotation is the Company's responsibility, and some features (embedded components, Connect-level monitoring) are unavailable. Keys are envelope-encrypted with KMS ([4.21](#421-key-and-secret-security-mvp)).
+**Secondary path: Option D, "Advanced: restricted API key mode."** Offered only to Companies that refuse Connect (for example, an enterprise landscaper whose security team prohibits third-party OAuth grants, or a Company whose Stripe account is already connected to a platform policy that blocks additional connections). Gated by `owner` acknowledgment of the trade-offs: no application fees possible, Rootline must create and maintain a webhook endpoint on the account, key rotation is the Company's responsibility, and some features (embedded components, Connect-level monitoring) are unavailable. Keys are envelope-encrypted with KMS ([4.21](#421-key-and-secret-security)).
 
 **Rejected:** Express and Custom. They put fraud and negative-balance liability on Rootline, make the Company's account non-portable, and contradict the brand promise. Custom also makes Rootline responsible for KYC.
 
-**Migration posture.** The connection layer is written against Rootline's provider abstraction ([4.23](#423-payments-provider-abstraction-mvp-foundation-additional-providers-v2)) and an internal `ConnectedAccount` model that records which API generation (v1 controller properties or v2 configurations) each account uses. New accounts move to v2 once Rootline's platform is enabled for it; existing v1 accounts are managed via v2 when Stripe's guidance says the dual-version period should end. No Company action is required for this migration.
+**Migration posture.** The connection layer is written against Rootline's provider abstraction ([4.23](#423-payments-provider-abstraction)) and an internal `ConnectedAccount` model that records which API generation (v1 controller properties or v2 configurations) each account uses. New accounts move to v2 once Rootline's platform is enabled for it; existing v1 accounts are managed via v2 when Stripe's guidance says the dual-version period should end. No Company action is required for this migration.
 
 > **Competitive edge.** Express/Custom-style embedded payments are why some incumbents can control payouts, take margin and make leaving painful. Rootline deliberately gives up that leverage. The bet: in a market where the most-cited complaint about one major tool is "no choice of processor," portability is a sales weapon worth more than basis points.
 
@@ -272,7 +272,7 @@ Scores: 5 = best for Rootline's strategy; criteria are equally weighted (doublin
 6. Rootline registers payment method domains for the Company's portal domains (needed for Apple Pay on direct charges) and creates a Terminal Location if field payments are enabled.
 7. Health status becomes `active` or `action_required`; owner lands on the Payments Health page ([6.2](#62-wireframe-settings--payments--stripe-connection-and-health)).
 
-Edge rules: if the Stripe account's country differs from the Company's Rootline country, show a warning and require explicit confirmation (e.g., a Vermont company that registered its Stripe account in Canada). If the account's default currency is not the Company's base currency, the ledger configures a foreign-currency clearing account ([4.18](#418-multi-currency-usd-and-cad-v1)).
+Edge rules: if the Stripe account's country differs from the Company's Rootline country, show a warning and require explicit confirmation (e.g., a Vermont company that registered its Stripe account in Canada). If the account's default currency is not the Company's base currency, the ledger configures a foreign-currency clearing account ([4.18](#418-multi-currency-usd-and-cad)).
 
 #### 4.2.4 Path 2: Create a new Stripe account (Account Links or embedded onboarding)
 
@@ -404,13 +404,13 @@ Online client payments use Stripe's **Payment Element** (an iframe-hosted, PCI-s
 
 **Behaviors and rules:**
 
-- PaymentIntent is created server-side when the client clicks "Pay", not on page load (avoids orphan PaymentIntents from link previews and bots). Amount = amount the client chose (full balance by default; partial allowed if Company enables, see [4.9](#49-partial-payments-overpayments-and-multi-invoice-payments-mvp)).
+- PaymentIntent is created server-side when the client clicks "Pay", not on page load (avoids orphan PaymentIntents from link previews and bots). Amount = amount the client chose (full balance by default; partial allowed if Company enables, see [4.9](#49-partial-payments-overpayments-and-multi-invoice-payments)).
 - Metadata on every PaymentIntent: `rootline_tenant_id`, `rootline_payment_attempt_id`, `rootline_invoice_ids` (comma-separated, max 10, longer lists in Rootline only), `rootline_client_id`, `rootline_env`. Description: "Invoice 10482 - Greenleaf Grounds Co.". Dynamic statement descriptor suffix: invoice number or service abbreviation (e.g., `MULCH 10482`).
 - `receipt_email` is not set; Rootline sends branded receipts (with photos and the Company's logo) to avoid duplicate Stripe receipts. Company can opt into Stripe receipts.
 - Idempotency key on create: `pi:create:{payment_attempt_id}`. Re-clicks reuse the open PaymentIntent for that invoice/amount/client within 24 hours.
-- **Surcharge or ACH-discount computation** happens after the client selects a method and before confirmation, using a ConfirmationToken (client creates it; server inspects `payment_method_preview` for type, card funding and country, recomputes the final amount, updates the PaymentIntent, then confirms). See [4.10](#410-surcharging-convenience-fees-and-ach-incentives-v1).
+- **Surcharge or ACH-discount computation** happens after the client selects a method and before confirmation, using a ConfirmationToken (client creates it; server inspects `payment_method_preview` for type, card funding and country, recomputes the final amount, updates the PaymentIntent, then confirms). See [4.10](#410-surcharging-convenience-fees-and-ach-incentives).
 - 3D Secure handled by Stripe (`requires_action`); Rootline shows the challenge inline.
-- On `payment_intent.succeeded` (cards: seconds; ACH: days), invoice status updates and the ledger posts ([4.17](#417-reconciliation-into-the-ledger-mvp)). For ACH, the invoice shows **"Payment pending (bank)"** with the expected clear date immediately on `processing`; dunning pauses while pending.
+- On `payment_intent.succeeded` (cards: seconds; ACH: days), invoice status updates and the ledger posts ([4.17](#417-reconciliation-into-the-ledger)). For ACH, the invoice shows **"Payment pending (bank)"** with the expected clear date immediately on `processing`; dunning pauses while pending.
 - "Save this payment method for future invoices" checkbox (`setup_future_usage=off_session`) with explicit consent text; ticking it offers autopay enrollment on the success page.
 - Accessibility: Payment Element supports keyboard and screen readers; Rootline's surrounding UI meets WCAG 2.2 AA ([21](21-ux-design-system-sitemaps.md)). Locales: `en`, `es`, `fr-CA`.
 
@@ -447,9 +447,9 @@ Online client payments use Stripe's **Payment Element** (an iframe-hosted, PCI-s
 **Rules:**
 
 - Plan types: **milestone** (tied to project phases from [14](14-service-line-modules.md)/[04](04-scheduling-dispatch-routing.md); charge when a phase is marked complete and client approves, or auto after N days) and **calendar** (fixed dates).
-- **Lending guardrail:** for consumers (`client_residential`), Rootline-native plans default to **no finance charge and at most 4 installments**, because consumer credit payable by written agreement in more than four installments generally brings Truth in Lending disclosure obligations even without interest (Regulation Z's creditor definition; verify with counsel per state). Longer or interest-bearing plans route to a financing partner ([4.12](#412-consumer-financing-v1)). Commercial plans are not subject to this cap but late fees follow [07](07-invoicing-billing-contracts.md) rules.
+- **Lending guardrail:** for consumers (`client_residential`), Rootline-native plans default to **no finance charge and at most 4 installments**, because consumer credit payable by written agreement in more than four installments generally brings Truth in Lending disclosure obligations even without interest (Regulation Z's creditor definition; verify with counsel per state). Longer or interest-bearing plans route to a financing partner ([4.12](#412-consumer-financing)). Commercial plans are not subject to this cap but late fees follow [07](07-invoicing-billing-contracts.md) rules.
 - Each installment is a Rootline invoice installment (one invoice, many scheduled payment requests), charged off-session if the client authorized it, or sent as a pay request otherwise.
-- Missed installment: enters dunning ([4.15](#415-failed-payments-retries-and-dunning-mvp)); Company can configure "stop work" on milestone plans (ops board shows a payment hold).
+- Missed installment: enters dunning ([4.15](#415-failed-payments-retries-and-dunning)); Company can configure "stop work" on milestone plans (ops board shows a payment hold).
 - Rootline uses its own durable scheduler (Temporal workflows) and off-session PaymentIntents, **not** Stripe Subscriptions or Subscription Schedules on the connected account, so that the invoice, tax, ledger and plan remain one source of truth.
 
 ### 4.9 Partial payments, overpayments and multi-invoice payments
@@ -488,7 +488,7 @@ Surcharging is legal in most US states but banned or capped in several, and netw
 5. **Sales tax on the surcharge:** taxability varies by jurisdiction; the tax engine in [07](07-invoicing-billing-contracts.md) receives the surcharge as a separate line with its own tax code.
 6. **Refunds:** surcharge refunded pro rata with any refund.
 7. **Field payments:** Tap to Pay shows the card funding type after tap only in some flows; if funding cannot be determined before authorization, Rootline does **not** surcharge (fail-safe).
-8. **Proposals and estimates:** when a Company surcharges, Proposals show the card surcharge policy in the payment terms the client signs, so a dispute over "a fee I never agreed to" meets signed evidence ([4.19](#419-disputes-with-automatic-evidence-assembly-mvp)).
+8. **Proposals and estimates:** when a Company surcharges, Proposals show the card surcharge policy in the payment terms the client signs, so a dispute over "a fee I never agreed to" meets signed evidence ([4.19](#419-disputes-with-automatic-evidence-assembly)).
 9. **Audit trail:** every surcharge decision stores the rule-set version, the inputs (funding, card country, Company and Property jurisdictions, rate) and the result. A quarterly compliance report per Company lists surcharged payments, rates and the trailing effective cost, so the Company can show its acquirer that it never exceeded its cost of acceptance.
 
 **Alternatives Rootline actively recommends:**
@@ -508,11 +508,11 @@ Surcharging is legal in most US states but banned or capped in several, and netw
 
 - Deposit policy per proposal type: percentage (default 30% for installs over $5,000), fixed amount (e.g., $500 to hold a spring cleanup slot), or "materials cost" (deposit equals estimated material and plant cost from the Estimate, so the Company is never out of pocket for 14 yards of mulch and 40 shrubs).
 - Signature and payment are separate atomic steps: signature is recorded first (legally the acceptance); the job becomes `sold_pending_deposit` until the deposit succeeds, then `sold`. Company chooses whether scheduling waits for the deposit (default yes for installs, no for maintenance agreements).
-- Deposit recorded as **Customer Deposits** (2150, liability) in the ledger, then applied to invoices by the deposit application method chosen in [07](07-invoicing-billing-contracts.md) 4.2.5 (first invoice, pro rata across progress invoices, final invoice, or manual) ([4.17](#417-reconciliation-into-the-ledger-mvp)).
+- Deposit recorded as **Customer Deposits** (2150, liability) in the ledger, then applied to invoices by the deposit application method chosen in [07](07-invoicing-billing-contracts.md) 4.2.5 (first invoice, pro rata across progress invoices, final invoice, or manual) ([4.17](#417-reconciliation-into-the-ledger)).
 - ACH deposits: job is `sold` on `processing` if Company opts in ("trust ACH pending"); otherwise on `succeeded`.
-- Deposit refund rules link to cancellation terms in the signed Proposal (posting rule P35 in [07](07-invoicing-billing-contracts.md)); refunds above the non-refundable portion follow the refund approval routing in [4.16](#416-refunds-and-credit-memos-mvp) (`owner`, or `office_manager` within the refund limit).
+- Deposit refund rules link to cancellation terms in the signed Proposal (posting rule P35 in [07](07-invoicing-billing-contracts.md)); refunds above the non-refundable portion follow the refund approval routing in [4.16](#416-refunds-and-credit-memos) (`owner`, or `office_manager` within the refund limit).
 - Deposit link expiry: 14 days; reminders at day 2 and day 7.
-- Financing: if the proposal total exceeds the financing threshold, the deposit step shows "Or finance this project" ([4.12](#412-consumer-financing-v1)).
+- Financing: if the proposal total exceeds the financing threshold, the deposit step shows "Or finance this project" ([4.12](#412-consumer-financing)).
 
 ### 4.12 Consumer financing
 
@@ -796,7 +796,7 @@ Zero-markup Companies never see a 6152 line. The application fee comes from the 
 | 6155 Dispute Fees | 15.00 | |
 | 1050 Stripe Clearing - USD | | 204.00 |
 
-The mandate is marked revoked, autopay for that method is disabled, and an office task opens with the client's signed authorization attached ([4.15](#415-failed-payments-retries-and-dunning-mvp)).
+The mandate is marked revoked, autopay for that method is disabled, and an office task opens with the client's signed authorization attached ([4.15](#415-failed-payments-retries-and-dunning)).
 
 #### 4.17.4 Continuous integrity checks
 
@@ -815,7 +815,7 @@ The Company owns its payouts. Rootline reads, explains and reconciles them, and 
 - **Instant payouts.** Where Stripe offers Instant Payouts to the Company's account, the Company triggers them in its own Dashboard at Stripe's price (verify current pricing and eligibility). Rootline adds no markup (see [4.24](#424-platform-monetization-and-transparency) option F). The instant-payout fee is a standalone `fee` balance transaction posted to 6150, and the payout matches a same-day bank credit.
 - **Negative balances.** When refunds, disputes and returns exceed incoming funds (common in December for a mowing-only Company refunding unused season prepayments), Stripe may debit the Company's bank account to cover the shortfall (behavior per the account's settings and Stripe's terms; verify). Rootline posts that debit as Dr 1050 Clearing / Cr 1010 Operating Checking whatever balance-transaction category it arrives under, matches it against the bank-feed withdrawal, and warns the owner 3 days ahead when scheduled refunds will push the balance negative.
 - **First payout.** New Stripe accounts typically wait several days for their first payout (Stripe sets this per account and country; verify). The onboarding checklist tells the owner this before the spring rush, not after.
-- **Payout holds.** Payouts paused by Stripe (verification, risk review, failed bank account) raise the `restricted` or `action_required` health state from [4.3](#43-account-health-monitoring-mvp) with the reason translated into plain English.
+- **Payout holds.** Payouts paused by Stripe (verification, risk review, failed bank account) raise the `restricted` or `action_required` health state from [4.3](#43-account-health-monitoring) with the reason translated into plain English.
 
 ### 4.18 Multi-currency: USD and CAD
 
@@ -863,7 +863,7 @@ The Company owns its payouts. Rootline reads, explains and reconciles them, and 
 3. Photos are compressed and the packet is fit to Stripe's evidence size/page limits (verify current limits); oversize content is summarized with thumbnails.
 4. A human (`owner`, or `office_manager` with `payments.disputes.respond`) reviews, edits and clicks **Submit**. Submission is final (Stripe accepts one submission), so the UI requires confirmation.
 5. Optional **auto-submit** (default off): if no human acts by 48 hours before `due_by`, submit the packet as drafted.
-6. Ledger postings per [4.17](#417-reconciliation-into-the-ledger-mvp) Example 7; dispute outcome updates invoice state.
+6. Ledger postings per [4.17](#417-reconciliation-into-the-ledger) Example 7; dispute outcome updates invoice state.
 7. **Accept dispute** option (when evidence is weak or amount is small): closes the case, posts loss, optional client-relationship flag.
 8. ACH/PAD unauthorized returns are not contestable through card-network evidence; they route to collections with the same packet available for direct client contact or small-claims filing.
 9. **Coexistence with Stripe's own dispute tools.** Because the Company owns a full-Dashboard account, it may also respond in the Stripe Dashboard or turn on Stripe's automated dispute features where offered (for example, Stripe's AI-assisted Smart Disputes; verify availability and pricing for the account). Before submitting, Rootline re-fetches the dispute and checks `evidence_details.submission_count` and `has_evidence`; if evidence already exists from another source, Rootline never overwrites it and shows "Evidence already submitted in Stripe on Jun 3". In settings the owner picks one responder per reason code (Rootline, Stripe automation, or manual in Stripe), so two systems never race the same deadline.
@@ -944,7 +944,7 @@ The Company owns its payouts. Rootline reads, explains and reconciles them, and 
 
 | Control | Rule |
 |---------|------|
-| No free-form amounts | A PaymentIntent can only be created against a valid pay-link token or an authenticated portal session, for an amount bound to open balances (partial-payment minimums from [4.9](#49-partial-payments-overpayments-and-multi-invoice-payments-mvp) apply). There is no "enter any amount" page. Marketing deposits use fixed amounts. |
+| No free-form amounts | A PaymentIntent can only be created against a valid pay-link token or an authenticated portal session, for an amount bound to open balances (partial-payment minimums from [4.9](#49-partial-payments-overpayments-and-multi-invoice-payments) apply). There is no "enter any amount" page. Marketing deposits use fixed amounts. |
 | Velocity limits per link | More than 5 failed confirmations or more than 3 distinct card fingerprints on one pay link within 1 hour locks the link for 1 hour and alerts `office_manager`; 3 locks in 24 hours requires the office to reissue the link. |
 | Velocity limits per IP and tenant | Per-IP and per-tenant failure-rate ceilings at the edge (WAF); a tenant-wide spike (e.g., 20+ declines in 10 minutes across links) switches all of that tenant's public pay pages to "verify by one-time code" mode for 24 hours. |
 | Bot challenge | Invisible bot challenge on the generic invoice lookup and after the first decline on any link; invoice lookup requires invoice number plus ZIP/postal code and is rate-limited per IP. |
@@ -962,7 +962,7 @@ The Company owns its payouts. Rootline reads, explains and reconciles them, and 
 | `/webhooks/stripe/platform` | Events on Rootline's Connect platform account (e.g., application fees, platform-level account events) | Low volume. |
 | `/webhooks/stripe/v2` | Accounts v2 thin events via an event destination | Thin payloads, always fetched. |
 | `/webhooks/stripe/direct/{endpoint_token}` | Events from advanced-mode (restricted-key) accounts; Rootline creates this endpoint in the Company's own account at connect time | URL token identifies the tenant; the per-tenant signing secret (KMS-encrypted) proves the sender. Path names match [20](20-architecture-security.md). |
-| `/webhooks/stripe/saas` | Rootline's **separate** SaaS billing Stripe account | Entirely separate service role and secrets, handled only by the platform billing module ([4.25](#425-rootlines-own-saas-billing-account-mvp), [19](19-platform-admin-portal.md)). |
+| `/webhooks/stripe/saas` | Rootline's **separate** SaaS billing Stripe account | Entirely separate service role and secrets, handled only by the platform billing module ([4.25](#425-rootlines-own-saas-billing-account), [19](19-platform-admin-portal.md)). |
 
 **Pipeline rules:**
 
@@ -1081,7 +1081,7 @@ Rootline bills Companies for their Rootline subscription through a **separate St
 - Smart retries and dunning on the Billing account; lifecycle events feed tenant state in the admin console ([19](19-platform-admin-portal.md)).
 - **Principle: never hold a Company's client payments hostage for Rootline's bill.** Tenant lifecycle states and timings are owned by [19](19-platform-admin-portal.md) (PA-012) and [22](22-business-model-pricing-gtm.md): `past_due` (days 0-13) restricts nothing, `restricted` (days 14-29) blocks only growth features, `suspended` (days 30-59) makes office users read-only except invoicing, payments and AR, and day 60 unpaid becomes `churned`. Through `past_due`, `restricted`, `suspended` and seasonal `winter_mode`, the Customer Portal's pay links, statement pay and scheduled autopay keep working ("payments-only mode") so the Company's clients are not harmed and the Company can still collect the cash it needs to pay us. Autopay pre-notifications and receipts still send because they are part of the payment, not marketing.
 - **At churn** the Company's Stripe account is untouched. Rootline (a) emails the owner a full export (open invoices, autopay roster with Stripe Customer and PaymentMethod IDs, mandates with consent evidence, payment history), (b) when churn came through non-payment, keeps the Customer Portal in payments-only mode until at least day 90 after the first failed Rootline payment ([19](19-platform-admin-portal.md) PA-012), then (or straight away after a voluntary cancellation) replaces pay pages with the Company's offline payment instructions for 90 more days, and (c) deauthorizes its Connect access only after that window or when the owner asks, whichever is first. The Company can keep charging its saved methods from its own Stripe Dashboard or a new platform, which is the Payments Portability Pledge in practice ([13](#13-beyond-the-brief-extra-ideas)).
-- Accounts v2's `customer` configuration could let one Account object represent a Company as both connected merchant and Rootline customer; Rootline does not use it and keeps its own billing on the separate account (see [14](#14-open-questions), decision 8).
+- Accounts v2's `customer` configuration could let one Account object represent a Company as both connected merchant and Rootline customer; Rootline does not use it and keeps its own billing on the separate account (see [14](#14-decisions-on-former-open-questions), decision 8).
 
 ### 4.26 Company payment settings
 

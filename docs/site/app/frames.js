@@ -4,7 +4,7 @@
 const RL = window.RL, h = RL.h, { esc, icon } = h;
 const I = RL.idx;
 const NAV_ICON = { Today: 'today', Inbox: 'inbox', Clients: 'users', Sales: 'tag', Design: 'pen', Schedule: 'calendar', Jobs: 'clipboard', Money: 'dollar', Books: 'bank', Operations: 'box', Team: 'user', Marketing: 'mega', Reports: 'chart', Automations: 'bolt', Settings: 'cog',
-  Home: 'home', 'Tenants / Tenant 360': 'building', Migrations: 'refresh', Billing: 'receipt', 'Entitlements and flags': 'flag', Support: 'help', 'Plant KB': 'leaf', Content: 'book', 'AI Ops': 'spark', Comms: 'chat', 'Payments oversight': 'card', 'Risk and trust': 'shield', Compliance: 'archive', Analytics: 'chart', 'System health': 'server', Partners: 'users', 'Staff and audit': 'key' };
+  Home: 'home', 'Tenants / Tenant 360': 'building', Migrations: 'refresh', Billing: 'receipt', 'Entitlements and flags': 'flag', Support: 'help', 'Plant KB': 'leaf', Content: 'book', 'AI Ops': 'spark', Comms: 'chat', 'Payments oversight': 'card', 'Risk and trust': 'shield', Compliance: 'archive', Analytics: 'chart', 'System health': 'server', Partners: 'users', 'Agents and audit': 'key' };
 const PRIMARY = ['Today', 'Inbox', 'Clients', 'Sales', 'Design', 'Schedule', 'Jobs', 'Money', 'Books'];
 const MORE = ['Operations', 'Team', 'Marketing', 'Reports', 'Automations', 'Settings'];
 const SURF_LAND = { web: 'web.today', crew: 'crew.today', crew_manager: 'crew.manager', kiosk: 'crew.kiosk', sub: 'sub.orders', portal: 'portal.home', console: 'console.home', partner: 'partner.clients', www: 'www.home', home: 'home.start' };

@@ -1565,9 +1565,9 @@
     {
       "id": "console.staff",
       "surface": "console",
-      "nav": "Staff and audit",
-      "label": "Staff, approvals and audit",
-      "path": "/staff",
+      "nav": "Agents and audit",
+      "label": "Agents, approvals and audit",
+      "path": "/agents",
       "purpose": "Staff and roles, access reviews, two-person approvals inbox, platform audit log.",
       "spec": "19 §4.17"
     },

@@ -43,7 +43,7 @@
 - [13. Metrics and KPIs](#13-metrics-and-kpis)
 - [14. Edge cases, compliance and risks](#14-edge-cases-compliance-and-risks)
 - [15. Beyond the brief](#15-beyond-the-brief-extra-ideas)
-- [16. Decisions on former open questions](#16-open-questions)
+- [16. Decisions on former open questions](#16-decisions-on-former-open-questions)
 - [Appendices A-E](#appendices)
 - [Sources](#sources)
 

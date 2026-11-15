@@ -12,7 +12,7 @@
 - **Decision - AI:** one AI Gateway for every model call (Claude family for reasoning, image models chosen per task), with task routing, per-tenant budgets, 100% metering in AI credits and no training on customer data.
 - **What it delivers:** the monolith and satellites in `prod-us` (Ohio primary, Oregon DR) and `prod-ca` (Montreal primary, Calgary DR) for every Canadian Company (OD-62); the full public REST API with OpenAPI 3.1, signed webhooks, daily quotas, OAuth apps and the MCP server (REST only, no public GraphQL, OD-64); Postgres FTS + pgvector and OpenSearch search; dedicated database cells and tenant moves; passkeys for Company staff, platform users and clients (R24-21) and Enterprise SSO with SCIM (R24-16); 99.95% core API availability; SOC 2 Type II.
 - **Differentiators:** zero cross-tenant exposure by design, an open API and event catalog with flat, published rate limits, offline depth that covers the whole visit (time, photos, chemical logs), and a vendor-continuity escrow export.
-- **Cross-links:** roles in [02](02-personas-roles-permissions.md); tenant lifecycle names in [19](19-platform-admin-portal.md) (enforced here in [4.4.7](#447-tenant-lifecycle-and-access-enforcement-mvp)); payments contracts in [08](08-payments-stripe.md); posting rules in [09](09-accounting-ledger-integrations.md); AI credits in [17](17-ai-copilot-automation.md) and [22](22-business-model-pricing-gtm.md); the canonical ERD in [section 7.2](#72-canonical-cross-domain-erd); decisions in [Appendix A](#appendix-a-architecture-decision-records-adrs).
+- **Cross-links:** roles in [02](02-personas-roles-permissions.md); tenant lifecycle names in [19](19-platform-admin-portal.md) (enforced here in [4.4.7](#447-tenant-lifecycle-and-access-enforcement)); payments contracts in [08](08-payments-stripe.md); posting rules in [09](09-accounting-ledger-integrations.md); AI credits in [17](17-ai-copilot-automation.md) and [22](22-business-model-pricing-gtm.md); the canonical ERD in [section 7.2](#72-canonical-cross-domain-erd); decisions in [Appendix A](#appendix-a-architecture-decision-records-adrs).
 
 **Related docs:** [Personas and permissions](02-personas-roles-permissions.md) · [Scheduling and routing](04-scheduling-dispatch-routing.md) · [Crew mobile app](05-field-crew-mobile-app.md) · [Customer portal](06-customer-portal.md) · [Payments (BYO Stripe)](08-payments-stripe.md) · [Ledger and integrations](09-accounting-ledger-integrations.md) · [Design Studio](10-design-studio.md) · [AI mockups](11-ai-design-mockups.md) · [Plant KB](12-plant-knowledge-base.md) · [AI copilot and automation](17-ai-copilot-automation.md) · [Reporting and data platform](18-reporting-analytics.md) · [Platform admin (Operator Console)](19-platform-admin-portal.md) · [UX and sitemaps](21-ux-design-system-sitemaps.md) · [Business model](22-business-model-pricing-gtm.md) · [Product scope](24-product-scope-decisions-catalog.md)
 
@@ -300,7 +300,6 @@ flowchart TB
 | Media processor | Node (sharp/libvips) + Python (vision) | S3 event queue depth | Thumbnails delayed; originals safe in S3 |
 | Search indexer | Node consumer | Event lag | Search stale, falls back to Postgres FTS |
 
-<a id="43-bounded-contexts-and-modules-mvp"></a>
 ### 4.3 Bounded contexts and modules
 
 Modules map to product domains and to Postgres schemas. A module **owns** its tables: only its code writes them. Other modules call its **public module API** (typed TypeScript functions, or RPC once extracted) or subscribe to its **events**. Cross-schema joins are allowed only in read models owned by the reporting module, never in write paths.
@@ -351,7 +350,6 @@ Modules map to product domains and to Postgres schemas. A module **owns** its ta
 - A **global tenant directory** (a small, replicated table with no client PII) maps `tenant_id -> region, cell, status, primary_domain`. It also maps a **hashed login email** to a list of `(tenant_id, region)` for tenant discovery at login. It holds no other PII.
 - Users can belong to many tenants (a bookkeeper serving 12 landscape Companies, or a subcontractor working for three). Membership is per tenant. Sessions carry an **active tenant**, and switching tenants re-issues the session context.
 
-<a id="442-shared-schema--row-level-security-default-tier-mvp"></a>
 #### 4.4.2 Shared schema + row-level security (default tier)
 
 Every tenant-scoped table has `tenant_id uuid NOT NULL`. Every one of those tables has RLS **enabled and forced**. The application connects as `rootline_app`, a role with `NOBYPASSRLS` that owns no tables. Migrations run as `rootline_migrator`, which owns the tables. This follows the established pitfalls list: table owners bypass RLS unless `FORCE` is set, views need `security_invoker` (PG 15+), and the app role must not have `BYPASSRLS` ([edana.ch](https://edana.ch/en/2026/06/25/ensuring-multi-tenant-data-isolation-with-postgresql-row-level-security-rls/), [ClickHouse engineering guide](https://clickhouse.com/fr/resources/engineering/multi-tenant-saas-postgres-architecture), [PostgreSQL docs](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)).
@@ -386,7 +384,6 @@ CREATE INDEX visit_tenant_date_idx ON ops.visit (tenant_id, service_date, crew_i
 
 **Pooling:** in-process pools (node-postgres) per task, sized to `max_connections` budgets per cell, plus PgBouncer in transaction mode for the worker fleet. RDS Proxy is not used (section 14, Q4): transaction-local `set_config` must behave exactly as it does under PgBouncer transaction mode, which is the proven path.
 
-<a id="443-tenant-isolation-testing-mvp"></a>
 #### 4.4.3 Tenant isolation testing
 
 | Layer | Test | Runs | Fails the build when |
@@ -399,7 +396,6 @@ CREATE INDEX visit_tenant_date_idx ON ops.visit (tenant_id, service_date, crew_i
 | Production canary | Two synthetic canary tenants per cell continuously attempt cross-reads via the public API and sync API | Every 5 min in prod | Page the engineering agent and the founder (SEV1) |
 | Pen test | Third-party test with tenant-isolation focus | Annually + before the first production Company | Findings triaged under the SLA in 4.24 |
 
-<a id="444-noisy-neighbor-controls-mvp--v1"></a>
 #### 4.4.4 Noisy-neighbor controls
 
 A 60-crew commercial maintenance company importing 40,000 properties must not slow down a 2-truck lawn company's Monday morning.
@@ -417,7 +413,6 @@ A 60-crew commercial maintenance company importing 40,000 properties must not sl
 | Tenant heat score | Composite of CPU-ms, rows read and IOPS attributed by `app.tenant_id` (pg_stat_statements + sampled tracing) | Alert at > 5% of cell capacity |
 | Cell rebalancing | Move hot tenants to a less-loaded or dedicated cell | Manual tool, assisted |
 
-<a id="445-cells-and-the-dedicated-database-option-v1--v2"></a>
 #### 4.4.5 Cells and the dedicated-database option
 
 - **Cell = an Aurora cluster (writer + 1-2 readers) + dedicated worker pools + Redis + a `cell_id` routing key.** The stateless `api` tier is regional and routes by tenant lookup (cached) to the cell's database. Planning model at 10,000 Companies (estimate): 4 US cells of about 2,500 tenants each, plus 1-2 CA cells. Capping cell size limits the blast radius of a bad migration, a runaway query or a database failover to about 25% of US tenants.
@@ -425,7 +420,6 @@ A 60-crew commercial maintenance company importing 40,000 properties must not sl
 - **Tenant move** tooling: (1) freeze writes for the tenant (maintenance banner, crew devices keep queuing offline); (2) copy all rows `WHERE tenant_id = X` in dependency order via logical export, or logical replication with a row filter (PG 15+ publications support `WHERE` clauses); (3) verify row counts and checksums per table; (4) flip the directory entry; (5) unfreeze. Target freeze window ≤ 10 min for a 500k-row tenant (estimate).
 - Migrations run **cell by cell** (canary cell first), so a schema change never hits all tenants at once.
 
-<a id="446-canadian-data-residency-v1"></a>
 #### 4.4.6 Canadian data residency
 
 - A separate regional stack `prod-ca` in **AWS Canada (Central), ca-central-1**, with DR to **Canada West (Calgary), ca-west-1**. Every Canadian Company runs on this stack ([24](24-product-scope-decisions-catalog.md) OD-62). Where a service is not available in ca-west-1 (verify Aurora Global Database, ElastiCache, OpenSearch and a Canadian Temporal Cloud region), its DR uses snapshots copied within Canada (section 14, Q3). The regional stack includes its own Aurora cells, S3 buckets, KMS keys, Temporal namespace, Redis, OpenSearch and log storage.
@@ -436,7 +430,6 @@ A 60-crew commercial maintenance company importing 40,000 properties must not sl
 
 > **Competitive edge.** Most landscape-specific incumbents run a single US-hosted stack *[unverified; see R2]*. A Canadian Company bidding on a municipal grounds-maintenance contract, or a Quebec firm under Law 25, can choose Rootline and answer "where is our data stored?" with "in Canada, with DR in Canada". The cell architecture that provides residency also provides the dedicated-database tier that large commercial maintenance firms ask for.
 
-<a id="447-tenant-lifecycle-and-access-enforcement-mvp"></a>
 #### 4.4.7 Tenant lifecycle and access enforcement
 
 **Ownership split.** The *platform* lifecycle states, their names and the operator tooling are owned by [Platform admin](19-platform-admin-portal.md) (section on tenant lifecycle). Dunning timings and Winter Mode packaging are owned by [Business model](22-business-model-pricing-gtm.md). This section owns **access enforcement**: what each state technically allows at each enforcement point (E2 middleware, sync, portal, API). The `tenancy` module reads timings from the **versioned billing policy**, drafted by the finance agent (`platform_finance`) and approved by the founder, never from constants in code (ADR-019). The timings follow [19](19-platform-admin-portal.md) and [22](22-business-model-pricing-gtm.md) ([24](24-product-scope-decisions-catalog.md) R24-23). That way a policy change to the dunning ladder ships without a deploy and stays auditable.
@@ -519,7 +512,6 @@ Details of personas and journeys live in [Personas and permissions](02-personas-
 - Session listing and remote sign-out for users. Owners can revoke any member's sessions and devices. Revoking a field device also triggers a remote wipe of its local SQLite database on next contact.
 - New-device and new-location login alerts by email for `owner` and `bookkeeper`.
 
-<a id="46-authorization-rbac--abac-and-enforcement-points-mvp"></a>
 ### 4.6 Authorization: RBAC + ABAC and enforcement points
 
 **Model.** Permissions are strings `resource.action`, using the canonical key catalog and dot notation of [02](02-personas-roles-permissions.md) (for example `invoice.issue`, `estimate.view_cost`, `client.view_contact`, `visit.complete`, `ledger.post_manual`, `period.reopen`, `payment.refund`, `api_key.create`). A **Role** is a named bundle of permissions with an optional **scope** per permission: `own`, `assigned`, `crew`, `branch` or `all`. Built-in roles map to the role keys in [02](02-personas-roles-permissions.md). Custom roles are composed from the same catalog. Attribute-based conditions refine access:
@@ -569,7 +561,6 @@ when {
 | **Service RPC** | Route optimizer, GPU workers, media vision | gRPC via the Connect protocol with Protobuf schemas in a schema registry (buf) | `.proto` files with breaking-change detection in CI |
 | **MCP server** | Tenants' AI assistants (Claude and others) | Model Context Protocol over the public API with OAuth scopes | Generated from OpenAPI with curated tool descriptions |
 
-<a id="472-conventions-mvp"></a>
 #### 4.7.2 Conventions
 
 - **IDs:** public IDs are **TypeIDs**: a type prefix plus the base32-encoded UUIDv7, for example `job_01jcxk3v8sfq9b2d4m6n7p8r9t`. They are self-describing in logs and support tickets, and they sort by time ([TypeID spec](https://github.com/jetify-com/typeid)). Internally the column is a native `uuid`.
@@ -589,7 +580,6 @@ when {
 - **API keys**: created by members with `api_key.create` (step-up required), scoped to a permission subset and optionally an IP allowlist and an expiry. Shown once. Stored as HMAC-SHA256 with a server-side pepper (keys have 192 bits of entropy, so a slow hash adds nothing). Last-used timestamp and IP are shown. Leaked-key scanning via GitHub secret-scanning partner registration of the `rl_live_` prefix.
 - **OAuth 2.1 apps**: authorization code + PKCE, granular scopes (`clients:read`, `invoices:write`, `visits:read`, `ledger:read`). Scopes use colon notation `resource:read|write` and are deliberately coarser than the dot-notation permission keys of 4.6: a token's effective rights are the intersection of its scopes and the approving user's permissions. A consent screen shows the scopes in plain language. Refresh tokens rotate with reuse detection (reuse revokes the whole grant). A marketplace review is required to list publicly. Unlisted apps work for the tenant that created them.
 
-<a id="474-webhooks-outbound-mvp"></a>
 #### 4.7.4 Webhooks (outbound)
 
 - Delivery follows the **Standard Webhooks** conventions: `webhook-id`, `webhook-timestamp` and `webhook-signature` headers, with an HMAC-SHA256 signature over `id.timestamp.body` ([Standard Webhooks](https://www.standardwebhooks.com/)). Secrets rotate with a 24 h dual-signing overlap.
@@ -617,7 +607,6 @@ Responses carry `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset` h
 
 > **Competitive edge.** Jobber meters its GraphQL API by a computed query cost per app/account, so an integrator cannot easily predict when a nested query will be throttled ([Jobber rate limits](https://developer.getjobber.com/docs/using_jobbers_api/api_rate_limits)). ServiceTitan requires per-tenant client credentials plus an app key issued through an approval flow ([ServiceTitan FAQ](https://developer.servicetitan.io/docs/faqs-apis-app-keys-client-keys)). Rootline offers flat request limits, bulk endpoints, replayable webhooks, a free sandbox tenant and an MCP server. That is the most integrator-friendly surface in the category, and it turns the long tail of local IT consultants and agencies into a distribution channel.
 
-<a id="48-integration-framework-mvp--v1"></a>
 ### 4.8 Integration framework
 
 All third-party connectors (QuickBooks Online, QuickBooks Desktop via Web Connector, Xero, Plaid, payroll providers, Google/Microsoft calendars, supplier catalogs, Regrid, weather) are built on one **Connector SDK**, so retries, auth, mapping, observability and error UX are uniform.
@@ -758,7 +747,6 @@ CREATE TABLE platform.outbox_event (
 
 **Naming and aliases.** The module docs own their event names and payloads; this catalog registers one canonical name per event in the `packages/events` schema registry. Where sibling docs use a different spelling, the registry records it as an **alias** that resolves to the same schema and the same event id, so a consumer subscribed to either name receives one delivery. The alias tables live with the owning module ([03](03-crm-sales-estimating-proposals.md) section 8.2, [07](07-invoicing-billing-contracts.md) section 8.3, [13](13-operations-inventory-equipment.md) section 8.2, [14](14-service-line-modules.md) section 8.2, [15](15-team-hr-payroll.md) section 8.3). Module-namespaced spellings (`payments.payment.succeeded`, `invoicing.invoice.issued`, `proposals.proposal.accepted`) are aliases of the short names above. The `ops.*` events of [13](13-operations-inventory-equipment.md) (`ops.po.*`, `ops.receipt.posted`, `ops.pm.*`, `ops.asset.*` and so on) belong to the **`inventory` module** and publish on its topic; the `ops.` prefix is that doc's namespace for operations-inventory events, not the scheduling `ops` module (schema) in 4.3.
 
-<a id="410-durable-workflows-temporal-mvp"></a>
 ### 4.10 Durable workflows (Temporal)
 
 **Why Temporal:** landscaping is full of long-running, multi-step, human-in-the-loop processes. A proposal waits days for a deposit. A season-long agreement bills monthly for 8 months. A snow event spans 36 hours of pushes. A QuickBooks sync runs forever. Cron jobs plus status columns make these brittle. Temporal gives durable timers, retries, signals and visibility ([Temporal docs](https://docs.temporal.io/)).
@@ -786,7 +774,6 @@ CREATE TABLE platform.outbox_event (
 | `DsarWorkflow` | DSAR case opened | Identify the subject across clients, contacts, messages and media → legal-hold check → export package → controller (Company) approval → delete or pseudonymize → certificate of completion | SLA timers (Section 4.25.4) |
 | `WarrantyFollowUpWorkflow` | Install job completed with plants | Schedule plant-warranty check visits (for example, 30 days and 11 months) → client photo request via portal → open replacement tasks if failures are reported | 1-year timers |
 
-<a id="411-offline-sync-for-the-crew-app-mvp"></a>
 ### 4.11 Offline sync for the crew app
 
 The crew app experience is specified in [Crew mobile app](05-field-crew-mobile-app.md). This section is the protocol.
@@ -852,7 +839,6 @@ ADR-008 chooses a **bucket-based protocol**, modeled on proven designs, split as
 - Chaos tests: app killed mid-push, phone reboot mid-upload, clock set back 2 hours, low-storage device, protocol version skew.
 - Device matrix: low-end Android (2 GB RAM), iPhone SE-class, rugged Android handhelds.
 
-<a id="412-media-pipeline-mvp"></a>
 ### 4.12 Media pipeline
 
 Landscaping runs on photos: before/after, property condition, damage claims, site assessments, design backdrops, plant health, snow proof-of-service.
@@ -883,7 +869,6 @@ flowchart LR
 | Video | Short clips (≤ 60 s) transcoded to HLS for portal playback |
 | 3D/LiDAR scans | Phone LiDAR scans (USDZ/PLY) stored and converted for the [Design Studio](10-design-studio.md) |
 
-<a id="413-ai-gateway-mvp"></a>
 ### 4.13 AI Gateway
 
 The **AI Gateway** is the only component allowed to call model providers. Product modules call it with a *task*, not a model. Strategy and product use cases are in [AI copilot and automation](17-ai-copilot-automation.md) and [AI mockups](11-ai-design-mockups.md).
@@ -918,7 +903,6 @@ flowchart LR
 | Evals | Golden datasets per task (for example, 300 real anonymized estimator notes paired with expected line items). Nightly regression runs and online quality signals (thumbs, edit distance of AI drafts vs final) |
 | Observability | OpenTelemetry spans per call with token counts, latency and cost. Per-tenant AI COGS dashboard in [19](19-platform-admin-portal.md) |
 
-<a id="414-gpu-job-orchestration-mvp--v1"></a>
 ### 4.14 GPU job orchestration
 
 | Lane | Workloads | SLO (estimate) | Placement |
@@ -953,7 +937,6 @@ stateDiagram-v2
 - **Build vs buy (ADR-013):** both placements exist. Hosted image APIs and serverless GPUs carry the work while volume is low (no idle cost). The scheduler moves steady-state `standard`/`batch` lanes onto owned EKS GPU node pools when sustained utilization would exceed about 40% (capacity math in 4.27 suggests this happens around a few thousand GPU-hours per month).
 - **Determinism and provenance:** store model id, version, seed, ControlNet inputs and prompt template version with every output, so any mockup can be reproduced. Generated images carry provenance metadata (C2PA-style content credentials).
 
-<a id="415-search-mvp--v1"></a>
 ### 4.15 Search
 
 | Need | Engine | Notes |
@@ -963,7 +946,6 @@ stateDiagram-v2
 | Semantic search ("shade-tolerant evergreen screen under 8 ft for Zone 6b clay") | **pgvector** embeddings (HNSW) on plant records and tenant knowledge | Hybrid ranking: BM25 + vector + region performance rating |
 | Cross-entity search at scale, activity search, inbox search | OpenSearch per region, index-per-cell, tenant filter mandatory in the query builder (E7) | Indexed from events (SNS/SQS consumers). Search lag p95 < 5 s |
 
-<a id="416-notifications-service-mvp"></a>
 ### 4.16 Notifications service
 
 A `comms` module capability used by every other module. Product behavior is in [Marketing and communications](16-marketing-growth-communications.md).
@@ -979,7 +961,6 @@ A `comms` module capability used by every other module. Product behavior is in [
 | Dedupe and digests | Idempotent `notification_key` per event and recipient. Digest mode for staff (for example, an "18 visits completed today" summary instead of 18 pushes) |
 | Rate limiting | Per-tenant SMS throughput matched to the 10DLC campaign throughput tier. Queue with fairness |
 
-<a id="417-route-optimization-and-geo-services-mvp"></a>
 ### 4.17 Route optimization and geo services
 
 Product behavior is in [Scheduling, dispatch and routing](04-scheduling-dispatch-routing.md).
@@ -990,7 +971,6 @@ Product behavior is in [Scheduling, dispatch and routing](04-scheduling-dispatch
 - **Geo stack:** PostGIS for property polygons (from Regrid parcels, refined by the user), service areas, geofences and distance queries. Design geometry is stored in a property-local planar frame in meters with a stored transform to WGS84 (see [Design Studio](10-design-studio.md)). Elevation from USGS 3DEP for grade/slope hints (cached per property).
 - **GPS breadcrumbs:** collected only while the user is clocked in, adaptive frequency (every 30 s or 50 m of movement, whichever comes first; 2 min when stationary). Ingested into a separate partitioned **telemetry** Postgres cluster (daily partitions, BRIN on time). Raw points are retained 90 days by default and then reduced to visit-level arrival/departure events. Last-known position is kept in Redis for the live map.
 
-<a id="418-ledger-service-invariants-mvp"></a>
 ### 4.18 Ledger service invariants
 
 The built-in general ledger is specified functionally in [Accounting, ledger and integrations](09-accounting-ledger-integrations.md). These are the **non-negotiable technical invariants**, each enforced at the database level wherever possible, not only in application code.
@@ -1014,7 +994,6 @@ Property-based tests (fast-check) generate random sequences of invoices, partial
 
 > **Competitive edge.** Field-service platforms typically treat accounting as an export problem: push invoices and payments into QuickBooks or Xero, and the books live elsewhere *[unverified for each named competitor; see R4]*. Rootline's ledger enforces balance, immutability, period locks and exactly-once posting *inside the database*, and it reconciles Stripe payouts automatically. A bookkeeper closing April for a 6-crew maintenance company starts from tied-out subledgers instead of a sync-error queue. That is why Processing Integrity is in the SOC 2 scope.
 
-<a id="419-payments-webhook-processing-byo-stripe-mvp"></a>
 ### 4.19 Payments webhook processing (BYO Stripe)
 
 Architecture and product flows are in [Payments (Stripe)](08-payments-stripe.md). Key facts this design relies on: with **direct charges** on Standard-style connected accounts, the connected account (the Company) is responsible for Stripe fees, refunds and chargebacks. The platform makes requests on the account's behalf using the `Stripe-Account` header, and can add an optional `application_fee_amount` ([Stripe: direct charges](https://stripe.com/en-gb-at/docs/connect/direct-charges)). Application fees on direct charges may be created asynchronously, so we listen for `application_fee.created` ([Stripe: app fees](https://docs.stripe.com/connect/saas/tasks/app-fees)). Stripe now describes connected accounts through **controller properties**, and the newer **Accounts v2** API uses configurations (`merchant`, `customer`, `recipient`). Rootline's internal `payment_account` records which API generation each account uses, as specified in [08](08-payments-stripe.md) ([Stripe: controller properties](https://docs.stripe.com/connect/migrate-to-controller-properties), [Stripe: Accounts v2](https://docs.stripe.com/connect/accounts-v2)).
@@ -1056,7 +1035,6 @@ Architecture and product flows are in [Payments (Stripe)](08-payments-stripe.md)
 - Tenant-facing analytics always go through a semantic layer that injects `tenant_id` filters. There is no direct SQL access to the shared lake for tenants. Enterprise tenants can get a **per-tenant data share** (Iceberg snapshot export or a read-only warehouse share).
 - Benchmarking ([18](18-reporting-analytics.md)) uses only aggregated, k-anonymized metrics (k ≥ 10 Companies per cohort), with tenant opt-out.
 
-<a id="421-infrastructure-on-aws-mvp"></a>
 ### 4.21 Infrastructure on AWS
 
 #### 4.21.1 Account and region layout
@@ -1118,7 +1096,6 @@ Service control policies deny resource creation outside approved regions per acc
 
 **No production data in lower environments.** Support debugging of tenant-specific issues happens in production under consent-gated, audited access (4.24.6).
 
-<a id="423-observability-mvp"></a>
 ### 4.23 Observability
 
 - **OpenTelemetry everywhere:** Node and Python SDKs for traces, metrics and logs, and the RN app for spans of sync and critical flows ([OpenTelemetry](https://opentelemetry.io/docs/)). W3C trace context propagates through HTTP, the event bus (as CloudEvents extensions) and Temporal (interceptors), so one trace follows "crew completes visit → sync push → event → invoice drafted → email sent".
@@ -1304,7 +1281,6 @@ Retention is executed by a nightly `RetentionWorkflow` per tenant per data class
 - AI features exclude Restricted data. Copilot answers about clients show source citations so users can verify.
 - Analytics events use pseudonymous IDs. Session replay tools, if any, are disabled on payment pages and mask all inputs.
 
-<a id="426-backup-and-disaster-recovery-mvp--v1"></a>
 ### 4.26 Backup and disaster recovery
 
 | Tier | Data / service | RPO | RTO | Mechanism |
@@ -1321,7 +1297,6 @@ Retention is executed by a nightly `RetentionWorkflow` per tenant per data class
 - **Per-tenant point-in-time recovery**: restore a single tenant's data as of time T into a side database, then selectively re-import objects (for example, "my office manager bulk-deleted 300 clients yesterday at 4:12 pm"). Most "disasters" are tenant-scoped human errors, and this tool handles them without restoring a whole cluster.
 - **Dependency outages:** Stripe outage → invoices remain payable later, and the portal shows a "payments temporarily unavailable" notice. Twilio outage → retry queue plus email fallback. AI provider outage → fallback models, then graceful disable. Map tiles outage → cached tiles and address list view.
 
-<a id="427-scalability-targets-and-capacity-math-mvp-planning-model-revalidated-before-each-phase"></a>
 ### 4.27 Scalability targets and capacity math (planning model)
 
 All numbers are **planning estimates** for a 10,000-Company scenario, to be revalidated with real usage. They show which components need attention, not commitments.
@@ -1355,7 +1330,6 @@ All numbers are **planning estimates** for a 10,000-Company scenario, to be reva
 
 **Scaling levers in order of use:** (1) query and index tuning plus read replicas; (2) vertical Aurora scaling; (3) more cells (horizontal by tenant); (4) moving telemetry, audit and search off the OLTP path (already designed in); (5) extracting a hot module (`kb`, `comms`) into its own service and database.
 
-<a id="428-performance-budgets-mvp"></a>
 ### 4.28 Performance budgets
 
 | Surface | Metric | Budget |
@@ -1382,7 +1356,6 @@ All numbers are **planning estimates** for a 10,000-Company scenario, to be reva
 
 Budgets are enforced in CI where possible (bundle size checks, Lighthouse CI on key routes, k6 thresholds in the perf environment) and tracked with RUM in production.
 
-<a id="429-testing-strategy-mvp"></a>
 ### 4.29 Testing strategy
 
 | Layer | Scope | Tools (indicative) | Gate |
@@ -1405,7 +1378,6 @@ Budgets are enforced in CI where possible (bundle size checks, Lighthouse CI on 
 
 **Synthetic data generator**: produces realistic landscape Companies (seasonal mowing routes, a 5-step fertilizer program, spring/fall cleanups, irrigation start-ups in April and winterizations in October, snow contracts, paver installs with deposits and retainage), used in every environment, demos and the API sandbox.
 
-<a id="430-cicd-and-release-engineering-mvp"></a>
 ### 4.30 CI/CD and release engineering
 
 - **Monorepo** (pnpm workspaces + Turborepo/Nx): `apps/web`, `apps/portal`, `apps/console` (the Operator Console), `apps/marketing`, `apps/crew` (Expo), `services/core`, `services/ai-gateway`, `services/optimizer` (Python), `services/gpu-workers` (Python), `packages/contracts`, `packages/events`, `packages/ui`, `packages/connector-sdk`, `infra/terraform`.
@@ -1416,7 +1388,6 @@ Budgets are enforced in CI where possible (bundle size checks, Lighthouse CI on 
 - **Release cadence:** web/API continuously (target ≥ 10 production deploys/day). Customer-visible feature releases announced in a monthly changelog. **Change freeze windows** during the first week of April (spring start-up) and on declared snow-event days, except fixes.
 - **DORA targets:** deploy frequency multiple times/day, lead time < 1 day, change failure rate < 10%, time to restore < 1 h.
 
-<a id="431-team-topology-mvp--v2"></a>
 ### 4.31 Module ownership boundaries
 
 Rootline has no teams: the build agent builds every module, and the engineering agent operates all of them. The modules are still grouped by bounded context, borrowing the Team Topologies shapes (stream-aligned groups own a business flow end to end across web, mobile, API and data; the platform group provides paved roads; complicated-subsystem groups hold solvers and ML; enabling groups cover security and AI). Each group is a unit of build order, review scope, SLOs, cost dashboards and on-call scope.
