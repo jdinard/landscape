@@ -50,7 +50,7 @@ All decisions live in [24 section 1](24-product-scope-decisions-catalog.md#1-the
 
 ### 1.4 Visual concepts and walkthroughs
 
-All pages live in [site/](site/) as static HTML that runs in any browser, and are published together as a private claude.ai page.
+All pages live in [site/](site/) as static HTML that runs in any browser, with no build step.
 
 | Page | What it shows |
 |---|---|
