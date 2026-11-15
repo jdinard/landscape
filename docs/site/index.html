@@ -301,13 +301,13 @@ table.matrix tfoot th[scope="row"] { font-family: var(--font-body); }
 .econ { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
 
 /* 09 Product scope */
-.phases { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-.phase { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 14px 15px; border-top: 4px solid var(--primary); }
-.phase-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 4px; }
-.phase-h b { font-family: var(--font-display); font-size: 1.15rem; }
-.phase-h span { font-family: var(--font-mono); font-size: .72rem; color: var(--text-3); }
-.phase .when { font-size: .8rem; color: var(--text-2); font-weight: 600; }
-.phase ul { margin: 8px 0 0; padding-left: 17px; font-size: .82rem; color: var(--text-2); display: grid; gap: 3px; }
+.scope-areas { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.scope-area { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 14px 15px; border-top: 4px solid var(--primary); }
+.scope-area-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+.scope-area-h b { font-family: var(--font-display); font-size: 1.15rem; }
+.scope-area-h span { font-family: var(--font-mono); font-size: .72rem; color: var(--text-3); }
+.scope-area .when { font-size: .8rem; color: var(--text-2); font-weight: 600; }
+.scope-area ul { margin: 8px 0 0; padding-left: 17px; font-size: .82rem; color: var(--text-2); display: grid; gap: 3px; }
 .days { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 14px; border: 1px solid var(--border); border-radius: var(--radius-m); overflow: hidden; background: var(--surface); }
 .days > div { padding: 14px 16px; border-right: 1px solid var(--border); }
 .days > div:last-child { border-right: 0; }
@@ -1483,31 +1483,32 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <section class="section" id="scope" aria-labelledby="scope-h">
   <div class="wrap">
     <div class="sec-head">
-      <div><span class="num">09 · PRODUCT SCOPE</span><h2 id="scope-h">A sellable MVP first, then waves of scope</h2></div>
-      <p>Scope is set by what the product must do, not by a calendar. 24-product-scope-decisions-catalog.md, Product Scope and Master Feature Catalog, tags all 747 features into four tiers: [MVP] the first sellable release, [V1] the next scope wave, [V2] a later wave and [V3] moonshots and long-term bets. The MVP sells in the Great Lakes launch region, six Wave 1 Regions from Columbus to Milwaukee, and includes Snow Lite because Great Lakes crews plow in winter. Money and offline sync are in the MVP core, not deferred.</p>
+      <div><span class="num">09 · PRODUCT SCOPE</span><h2 id="scope-h">Everything ships in one release</h2></div>
+      <p>There are no scope tiers, cut lines or waves. Rootline ships as one release, v1, with all 747 features in 24-product-scope-decisions-catalog.md, Product Scope, Decisions and Master Feature Catalog. Claude builds it from these specs through 25-platform-blueprint-build-handoff.md, Claude's marketing agent markets it under 26-agent-led-marketing-playbook.md, and the founder runs Rootline with Claude's operator agents. Money and offline sync sit at the core, and Snow Lite is in every plan because Great Lakes crews plow in winter.</p>
     </div>
-    <ul class="phases">
-      <li class="phase"><div class="phase-h"><b>MVP</b><span>442 features</span></div><p class="when">The first sellable release</p>
-        <ul><li>Design Studio 2D, region-aware picker, live takeoff</li><li>AI photo mockups with region-locked plants</li><li>Plant KB: about 3,000 curated plants for the six Wave 1 Regions</li><li>Budget-based estimating; tiered proposals with e-sign and deposits</li><li>Dispatch board, recurrence, route sequencing</li><li>Offline EN/ES crew app with pesticide records</li><li>Snow Lite: storm visit logs, per-push invoices, PDF proof of service</li><li>Billing Engine with level pay; BYO Stripe with ACH and autopay</li><li>Double-entry GL, Plaid, job costing, QBO connector</li><li>Copilot, Approval Inbox, first agents; migration from Jobber, LMN, QBO</li><li>Starter, Grow and Pro with published AI credits and zero markup</li></ul></li>
-      <li class="phase v1"><div class="phase-h"><b>V1</b><span>255 features</span></div><p class="when">The next scope wave</p>
-        <ul><li>Multi-crew optimization and rain-day playbooks</li><li>Commercial portal, approval chains, retainage, AIA, WIP</li><li>AI layout generation, 3D, design assistant</li><li>Full Snow &amp; Ice: Storm Command Center and sealed proof packets</li><li>Enterprise, SSO, QuickBooks Desktop and Xero</li><li>Wave 2 Regions, Ontario included; Canada: CAD, PAD, GST/HST, data residency</li><li>Website, booking, AI receptionist; Rootline Home and Match pilot; MCP server</li></ul></li>
-      <li class="phase v2"><div class="phase-h"><b>V2</b><span>46 features</span></div><p class="when">A later wave</p>
-        <ul><li>Tree care; HOA board workflows</li><li>SCIM; franchise and multi-brand mode</li><li>Landscape Passport; Plant Exchange</li><li>Drone capture, AR for homeowners, climate-adaptive planting, Plant Doctor</li><li>Plant API; Autopilot back office</li><li>Wave 3: a second US cluster, chosen on traction</li></ul></li>
-      <li class="phase v3"><div class="phase-h"><b>V3</b><span>4 features + bets</span></div><p class="when">Moonshots and long-term bets</p>
-        <ul><li>Gaussian-splat 3D walkthroughs</li><li>Rootline Buying Network</li><li>Rootline Grounds for in-house teams; Rootline Global (UK, Australia, NZ)</li><li>Moonshot bets from 23-innovation-moonshots.md, each with kill criteria</li></ul></li>
+    <ul class="scope-areas">
+      <li class="scope-area"><div class="scope-area-h"><b>Design and sell</b></div><p class="when">From the first photo to a signed proposal</p>
+        <ul><li>Design Studio in 2D and 3D, with irrigation, lighting and live takeoff</li><li>AI photo mockups, plan-to-photo and AI layouts, with region-locked plants</li><li>Plant KB: about 3,000 curated plants for the six launch Regions, photo plant ID and nursery availability</li><li>Budget-based estimating with aerial auto-measure; Good/Better/Best proposals with e-sign and deposits</li><li>Website, online booking, instant quotes and the AI receptionist</li><li>The homeowner visualizer, Rootline Home and Rootline Match for opt-in Companies</li></ul></li>
+      <li class="scope-area"><div class="scope-area-h"><b>Run the work</b></div><p class="when">Crews, routes, seasons and service lines</p>
+        <ul><li>Dispatch board, recurrence, route sequencing, multi-crew optimization and rain-day playbooks</li><li>One native app with crew, manager and sales modes: offline, English and Spanish, pesticide records, Tap to Pay</li><li>Snow Lite in every plan; full Snow &amp; Ice and Tree Care as add-ons</li><li>Commercial portal with approval chains and HOA board workflows</li><li>Inventory modes, purchasing and equipment maintenance</li><li>Spanish-first recruiting, the H-2B workspace and embedded payroll</li></ul></li>
+      <li class="scope-area"><div class="scope-area-h"><b>Money</b></div><p class="when">Billing, payments and the books</p>
+        <ul><li>Billing Engine with level pay, retainage, AIA pay apps and WIP</li><li>Bring-your-own Stripe with ACH, autopay and the opt-in Pay-as-you-grow plan</li><li>Double-entry ledger, Plaid feeds and job costing</li><li>QuickBooks Online, QuickBooks Desktop and Xero mirrors</li><li>Canada: CAD, PAD, GST/HST/QST/PST and Canadian data residency</li></ul></li>
+      <li class="scope-area"><div class="scope-area-h"><b>AI, platform and bets</b></div><p class="when">Agents, plans and what comes next for the data graph</p>
+        <ul><li>Copilot, Approval Inbox and agents on the L0-L4 autonomy ladder; the MCP server</li><li>Starter, Grow, Pro and Enterprise with published AI credits and zero markup; SSO and SCIM</li><li>Switch kits for Jobber, LMN, SingleOps, Service Autopilot, Real Green, QuickBooks and CSV</li><li>Innovation bets from 23-innovation-moonshots.md, including the Landscape Passport, Plant Doctor and Autopilot</li></ul></li>
     </ul>
-    <h3 class="sub" style="margin-top:28px">Launch Regions by scope tier</h3>
-    <p class="src">Rootline sells only where the Plant KB is rated Excellent. Waves from 12-plant-knowledge-base.md and 22-business-model-pricing-gtm.md; 2023 USDA zones are approximate, verify per Region.</p>
+    <p class="src" style="margin-top:12px">Some v1 features wait for a condition, not a date: benchmarks need enough contributing Companies, agent autonomy is earned per action, a Region's plant coverage turns on when its profiles reach Excellent, and partner or hardware features turn on when the partner approves or the Company connects the device.</p>
+    <h3 class="sub" style="margin-top:28px">Where Rootline starts</h3>
+    <p class="src">The Plant KB seed and marketing start in the Great Lakes (24-product-scope-decisions-catalog.md OD-01). 2023 USDA zones are approximate; verify per Region.</p>
     <div class="days">
-      <div><span class="d">WAVE 1 · MVP</span><h4>The Great Lakes launch region</h4><ul><li>Central Ohio: Columbus, zones ~6a-6b</li><li>Northeast Ohio: Cleveland, Akron, ~5b-6b</li><li>Southeast Michigan and Toledo, ~6a-6b</li><li>West Michigan: Grand Rapids, Holland, Kalamazoo, ~5b-6b</li><li>Chicagoland and Northwest Indiana, ~5b-6b</li><li>Southeast Wisconsin: Milwaukee, Madison, ~5a-6a</li></ul></div>
-      <div><span class="d">WAVE 2 · V1</span><h4>Across the border and next door</h4><ul><li>Southern Ontario Golden Horseshoe, with Canadian billing, payments and data residency</li><li>Cincinnati-Dayton and Indianapolis</li><li>Western New York (Buffalo-Rochester)</li><li>Erie/Pittsburgh</li></ul></div>
-      <div><span class="d">WAVE 3 · V2</span><h4>A second US cluster, chosen on traction</h4><ul><li>Scored with the Region framework in 22-business-model-pricing-gtm.md</li><li>Candidates: Front Range Colorado, Mid-Atlantic Piedmont, North Texas, Pacific Northwest</li><li>Brings the xeric, succulent and fire-wise plant depth held back from the MVP seed</li></ul></div>
+      <div><span class="d">GREAT LAKES</span><h4>The launch Regions</h4><ul><li>Central Ohio: Columbus, zones ~6a-6b</li><li>Northeast Ohio: Cleveland, Akron, ~5b-6b</li><li>Southeast Michigan and Toledo, ~6a-6b</li><li>West Michigan: Grand Rapids, Holland, Kalamazoo, ~5b-6b</li><li>Chicagoland and Northwest Indiana, ~5b-6b</li><li>Southeast Wisconsin: Milwaukee, Madison, ~5a-6a</li></ul></div>
+      <div><span class="d">CANADA</span><h4>Open to Canadian Companies from launch</h4><ul><li>Canadian billing, payments and sales taxes</li><li>Data residency on a regional Canadian stack</li><li>fr-CA interface and plant names; an Ontario jurisdiction pack</li><li>Quebec marketing after the founder's French-language check</li></ul></div>
+      <div><span class="d">MORE REGIONS</span><h4>Curation work, not product work</h4><ul><li>The product works in every US state and Canadian province</li><li>The plant curator agent builds each new Region's profiles, scored with the Region framework in 22-business-model-pricing-gtm.md</li><li>Candidates include the Golden Horseshoe, Cincinnati-Dayton, Indianapolis, Western New York, Front Range Colorado and the Pacific Northwest, with xeric, succulent and fire-wise plant depth</li></ul></div>
     </div>
-    <h3 class="sub" style="margin-top:28px">Open product decisions</h3>
-    <p class="src">Recommended defaults from the open decisions in 24-product-scope-decisions-catalog.md. Each module doc keeps its own open questions.</p>
+    <h3 class="sub" style="margin-top:28px">Product decisions, closed</h3>
+    <p class="src">Answers from the decision record in 24-product-scope-decisions-catalog.md section 1.6. Each module doc's former open questions take its recommended default.</p>
     <div class="days">
-      <div><span class="d">PRICING AND PACKAGING</span><h4>Who gets what</h4><ul><li>No free plan: Starter and the winter trial cover the low end</li><li>Core portal in every plan; commercial approvals on higher tiers</li><li>Route sequencing on every tier; multi-crew optimization from Grow</li></ul></div>
-      <div><span class="d">PRODUCT AND UX</span><h4>How it behaves</h4><ul><li>One native app with crew and manager modes</li><li>Budget wizard optional; only discounts below the margin floor are blocked</li><li>Press-and-hold for irreversible crew actions, settled by glove tests</li></ul></div>
+      <div><span class="d">PRICING AND PACKAGING</span><h4>Who gets what</h4><ul><li>No free plan: Starter, the trial, Design Solo and Fundador cover the low end</li><li>Core portal in every plan; commercial approvals on higher plans</li><li>Route sequencing on every plan; multi-crew optimization from Grow</li></ul></div>
+      <div><span class="d">PRODUCT AND UX</span><h4>How it behaves</h4><ul><li>One native app with crew, manager and sales modes</li><li>Budget wizard optional; only discounts below the margin floor are blocked</li><li>Press-and-hold for irreversible crew actions</li></ul></div>
       <div><span class="d">AI AND TRUST</span><h4>How far AI goes</h4><ul><li>Default autonomy: L3 only for payment reminders and visit-completion messages</li><li>Image route chosen on plant identity and house preservation</li><li>Fidelity grade visible to staff; badge and disclaimer for homeowners</li></ul></div>
     </div>
   </div>
@@ -1518,19 +1519,19 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
   <div class="wrap">
     <div class="sec-head">
       <div><span class="num">10 · MOONSHOTS</span><h2 id="moon-h">What one data graph makes possible</h2></div>
-      <p>Thirty-three bets build on the geometry of every property, the plants in it, every visit, photo and chemical record, and real books. Fourteen cheap rails ship in MVP and V1 so they stay possible, and every bet passes stage gates with kill criteria. Ten highlights from 23-innovation-moonshots.md, each with its headline demo.</p>
+      <p>Thirty-three bets build on the geometry of every property, the plants in it, every visit, photo and chemical record, and real books. All of them are in v1, built on fourteen shared rails such as stable object IDs and plant instances. Bets that need third-party hardware or data, such as mower telematics, drones and sensors, switch on when a Company connects the device or data source. Ten highlights from 23-innovation-moonshots.md, each with its headline demo.</p>
     </div>
     <ul class="moons">
-<li class="moon"><span class="mid">M-01</span><h3>Property digital twin</h3><p>A persistent model of every property that detects change from ordinary visit photos.</p><blockquote>Three red pins on a 22-acre office park: two declining arborvitae, a zone at 40% less flow, thinning mulch. One click opens the repair ticket.</blockquote><div class="mt">First slice <span class="tag v1">V1</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v2">V2</span></div></li>
-<li class="moon"><span class="mid">M-03</span><h3>AR "See it in your yard"</h3><p>Homeowners walk the proposed design on their own lawn and grow it to Year 5.</p><blockquote>The new patio appears at her feet; she drags the slider to Year 5, switches to night mode and taps "Approve option B".</blockquote><div class="mt">First slice <span class="tag v2">V2</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v2">V2</span></div></li>
-<li class="moon"><span class="mid">M-04</span><h3>AR crew layout guidance</h3><p>The designer's curves and plant spots, staked out in the field with RTK.</p><blockquote>A crew lead paints a new bed line in four minutes; the as-built matches the plan within 10 cm.</blockquote><div class="mt">First slice <span class="tag v2">V2</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v3">V3</span></div></li>
-<li class="moon"><span class="mid">M-05</span><h3>Robotic mower fleets</h3><p>Robots join the dispatch board as crew members, costed per acre.</p><blockquote>A stuck robot at 5:40 a.m. becomes a 10-minute task on the crew route already passing the site.</blockquote><div class="mt">First slice <span class="tag v2">V2</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v3">V3</span></div></li>
-<li class="moon"><span class="mid">M-07</span><h3>Rootline Hydro</h3><p>Closed-loop irrigation from soil probes, flow meters and ET budgets.</p><blockquote>A zone is suspended at 5:12 a.m. after a 160% flow spike, and a repair is booked within the pre-authorized amount.</blockquote><div class="mt">First slice <span class="tag v1">V1</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v3">V3</span></div></li>
-<li class="moon"><span class="mid">M-08</span><h3>Plant Doctor</h3><p>Photo diagnosis that knows the plant, Region and season, with licensed IPM sign-off.</p><blockquote>Boxwood mite ranked first, confirmed with a close-up, and a labeled treatment drafted for the PHC lead.</blockquote><div class="mt">First slice <span class="tag v1">V1</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v2">V2</span></div></li>
-<li class="moon"><span class="mid">M-11</span><h3>Climate-adaptive planting</h3><p>Plant Region Profiles projected to 2040 and 2060 climates.</p><blockquote>"Thrives now and in 2060": sugar maple drops to edge in Columbus; swamp white oak stays green.</blockquote><div class="mt">First slice <span class="tag v2">V2</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v2">V2</span></div></li>
-<li class="moon"><span class="mid">M-12</span><h3>Landscape Passport</h3><p>A "Carfax for landscapes" that transfers with the home.</p><blockquote>A buyer claims 9 years of records at closing: irrigation map, paver lots, warranties and treatments.</blockquote><div class="mt">First slice <span class="tag v1">V1</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v2">V2</span></div></li>
-<li class="moon"><span class="mid">M-16</span><h3>Working capital from the ledger</h3><p>Partner-funded offers priced on signed contracts and reconciled books.</p><blockquote>Pre-qualified for $90,000 in January, drawn in March and repaid June-November. Rootline never holds funds.</blockquote><div class="mt">First slice <span class="tag v2">V2</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v3">V3</span></div></li>
-<li class="moon"><span class="mid">M-23</span><h3>Autopilot</h3><p>The self-driving back office, on the same L0-L4 autonomy ladder.</p><blockquote>Monday 7 a.m.: 186 invoices sent, 312 bank lines matched, 22 rain-day visits moved. Six items need you.</blockquote><div class="mt">First slice <span class="tag v1">V1</span> <span aria-hidden="true">&rarr;</span> headline <span class="tag v2">V2</span></div></li>
+<li class="moon"><span class="mid">M-01</span><h3>Property digital twin</h3><p>A persistent model of every property that detects change from ordinary visit photos.</p><blockquote>Three red pins on a 22-acre office park: two declining arborvitae, a zone at 40% less flow, thinning mulch. One click opens the repair ticket.</blockquote></li>
+<li class="moon"><span class="mid">M-03</span><h3>AR "See it in your yard"</h3><p>Homeowners walk the proposed design on their own lawn and grow it to Year 5.</p><blockquote>The new patio appears at her feet; she drags the slider to Year 5, switches to night mode and taps "Approve option B".</blockquote></li>
+<li class="moon"><span class="mid">M-04</span><h3>AR crew layout guidance</h3><p>The designer's curves and plant spots, staked out in the field with RTK.</p><blockquote>A crew lead paints a new bed line in four minutes; the as-built matches the plan within 10 cm.</blockquote></li>
+<li class="moon"><span class="mid">M-05</span><h3>Robotic mower fleets</h3><p>Robots join the dispatch board as crew members, costed per acre.</p><blockquote>A stuck robot at 5:40 a.m. becomes a 10-minute task on the crew route already passing the site.</blockquote></li>
+<li class="moon"><span class="mid">M-07</span><h3>Rootline Hydro</h3><p>Closed-loop irrigation from soil probes, flow meters and ET budgets.</p><blockquote>A zone is suspended at 5:12 a.m. after a 160% flow spike, and a repair is booked within the pre-authorized amount.</blockquote></li>
+<li class="moon"><span class="mid">M-08</span><h3>Plant Doctor</h3><p>Photo diagnosis that knows the plant, Region and season, with licensed IPM sign-off.</p><blockquote>Boxwood mite ranked first, confirmed with a close-up, and a labeled treatment drafted for the PHC lead.</blockquote></li>
+<li class="moon"><span class="mid">M-11</span><h3>Climate-adaptive planting</h3><p>Plant Region Profiles projected to 2040 and 2060 climates.</p><blockquote>"Thrives now and in 2060": sugar maple drops to edge in Columbus; swamp white oak stays green.</blockquote></li>
+<li class="moon"><span class="mid">M-12</span><h3>Landscape Passport</h3><p>A "Carfax for landscapes" that transfers with the home.</p><blockquote>A buyer claims 9 years of records at closing: irrigation map, paver lots, warranties and treatments.</blockquote></li>
+<li class="moon"><span class="mid">M-16</span><h3>Working capital from the ledger</h3><p>Partner-funded offers priced on signed contracts and reconciled books.</p><blockquote>Pre-qualified for $90,000 in January, drawn in March and repaid June-November. Rootline never holds funds.</blockquote></li>
+<li class="moon"><span class="mid">M-23</span><h3>Autopilot</h3><p>The self-driving back office, on the same L0-L4 autonomy ladder.</p><blockquote>Monday 7 a.m.: 186 invoices sent, 312 bank lines matched, 22 rain-day visits moved. Six items need you.</blockquote></li>
     </ul>
   </div>
 </section>
@@ -1545,25 +1546,25 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
     <div class="arch-frame scroll-x">
 <svg viewBox="0 0 1200 584" role="img" aria-labelledby="ar-t ar-d">
 <title id="ar-t">Architecture at a glance</title>
-<desc id="ar-d">Six surfaces (Company web app, Rootline Crew app, Customer Portal, Platform Admin console, marketing site and homeowner funnel, public API and MCP server) call a TypeScript modular monolith on AWS with process roles api, sync, realtime, webhook-ingest and worker, twelve domain modules and an identity and policy layer. Satellite services: AI Gateway, route optimizer, GPU image workers, media pipeline, and Temporal workflows with outbox events. Data stores: Aurora PostgreSQL with PostGIS and pgvector and row-level security, Redis, S3, an SNS and SQS event bus, Temporal Cloud, a data lake, and KMS. Integrations: each Company's own Stripe account, Rootline's platform Stripe account, Plaid, QuickBooks and Xero, Twilio, maps and parcels, weather and imagery, and model providers.</desc>
+<desc id="ar-d">Six surfaces (Company web app, the Rootline native app with crew, manager and sales modes, Customer Portal, Platform Admin console, marketing site and homeowner funnel, public API and MCP server) call a TypeScript modular monolith on AWS with process roles api, sync, realtime, webhook-ingest and worker, twelve domain modules and an identity and policy layer. Satellite services: AI Gateway, route optimizer, GPU image workers, media pipeline, and Temporal workflows with outbox events. Data stores: Aurora PostgreSQL with PostGIS and pgvector and row-level security, Redis, S3, an SNS and SQS event bus, Temporal Cloud, a data lake, and KMS. Integrations: each Company's own Stripe account, Rootline's platform Stripe account, Plaid, QuickBooks and Xero, Twilio, maps and parcels, weather and imagery, and model providers.</desc>
 <defs><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="f-text3"/></marker></defs>
 <text x="20" y="24" class="t-eye">SURFACES</text>
 <text x="290" y="24" class="t-eye">PLATFORM SERVICES</text>
 <text x="690" y="24" class="t-eye">DATA STORES</text>
 <text x="950" y="24" class="t-eye">INTEGRATIONS</text>
 <rect x="276" y="38" width="628" height="510" rx="14" class="aws"/>
-<text x="290" y="568" class="t-11 tx2"><tspan class="t-b">AWS</tspan> · prod-us: Ohio primary, Oregon DR · prod-ca (Canada Central, DR Canada West) in V1</text>
+<text x="290" y="568" class="t-11 tx2"><tspan class="t-b">AWS</tspan> · prod-us: Ohio primary, Oregon DR · prod-ca (Canada Central, DR Canada West)</text>
 <rect x="20" y="48" width="222" height="66" rx="9" class="ab"/><text x="32" y="69" class="t-13 tx t-b">Company web app</text><text x="32" y="86" class="t-11 tx2">Next.js · sell, design, dispatch,</text><text x="32" y="101" class="t-11 tx3">bill and close the books</text>
 <path d="M242,81 H262" class="bus"/>
-<rect x="20" y="128" width="222" height="66" rx="9" class="ab"/><text x="32" y="149" class="t-13 tx t-b">Rootline Crew app</text><text x="32" y="166" class="t-11 tx2">React Native (Expo) · SQLite</text><text x="32" y="181" class="t-11 tx3">offline-first · English and Spanish</text>
+<rect x="20" y="128" width="222" height="66" rx="9" class="ab"/><text x="32" y="149" class="t-13 tx t-b">Rootline native app</text><text x="32" y="166" class="t-11 tx2">crew, manager and sales modes</text><text x="32" y="181" class="t-11 tx3">Expo · SQLite · offline · EN/ES</text>
 <path d="M242,161 H262" class="bus"/>
 <rect x="20" y="208" width="222" height="66" rx="9" class="ab"/><text x="32" y="229" class="t-13 tx t-b">Customer Portal</text><text x="32" y="246" class="t-11 tx2">White-label PWA</text><text x="32" y="261" class="t-11 tx3">custom domains · passwordless</text>
 <path d="M242,241 H262" class="bus"/>
-<rect x="20" y="288" width="222" height="66" rx="9" class="ab"/><text x="32" y="309" class="t-13 tx t-b">Platform Admin console</text><text x="32" y="326" class="t-11 tx2">Operator, support, curators,</text><text x="32" y="341" class="t-11 tx3">finance, engineering</text>
+<rect x="20" y="288" width="222" height="66" rx="9" class="ab"/><text x="32" y="309" class="t-13 tx t-b">Platform Admin console</text><text x="32" y="326" class="t-11 tx2">Founder and operator agents:</text><text x="32" y="341" class="t-11 tx3">support, curator, finance, eng.</text>
 <path d="M242,321 H262" class="bus"/>
-<rect x="20" y="368" width="222" height="66" rx="9" class="ab"/><text x="32" y="389" class="t-13 tx t-b">Marketing site and funnel</text><text x="32" y="406" class="t-11 tx2">Tenant websites · visualizer</text><text x="32" y="421" class="t-11 tx3">widget · Rootline Home [V1]</text>
+<rect x="20" y="368" width="222" height="66" rx="9" class="ab"/><text x="32" y="389" class="t-13 tx t-b">Marketing site and funnel</text><text x="32" y="406" class="t-11 tx2">Tenant websites · visualizer</text><text x="32" y="421" class="t-11 tx3">widget · Rootline Home</text>
 <path d="M242,401 H262" class="bus"/>
-<rect x="20" y="448" width="222" height="66" rx="9" class="ab"/><text x="32" y="469" class="t-13 tx t-b">Public API and MCP</text><text x="32" y="486" class="t-11 tx2">REST /v1 · OpenAPI 3.1</text><text x="32" y="501" class="t-11 tx3">signed webhooks · MCP [V1]</text>
+<rect x="20" y="448" width="222" height="66" rx="9" class="ab"/><text x="32" y="469" class="t-13 tx t-b">Public API and MCP</text><text x="32" y="486" class="t-11 tx2">REST /v1 · OpenAPI 3.1</text><text x="32" y="501" class="t-11 tx3">signed webhooks · MCP server</text>
 <path d="M242,481 H262" class="bus"/>
 <path d="M262,81 V481" class="bus"/>
 <path d="M262,184 H286" class="bus" marker-end="url(#aa)"/>
@@ -1599,17 +1600,17 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <path d="M650,437 H670" class="bus"/>
 <path d="M650,507 H670" class="bus"/>
 <path d="M690,62 a100,12 0 0 1 200,0 V160 a100,12 0 0 1 -200,0 Z" class="db"/><path d="M690,62 a100,12 0 0 0 200,0" class="db-rim"/>
-<text x="704" y="98" class="t-13 tx t-b">Aurora PostgreSQL</text><text x="704" y="116" class="t-11 tx2">PostGIS · pgvector</text><text x="704" y="132" class="t-11 tx2">tenant_id + forced RLS</text><text x="704" y="148" class="t-11 tx3">cells of ~2,500 tenants [V1]</text>
+<text x="704" y="98" class="t-13 tx t-b">Aurora PostgreSQL</text><text x="704" y="116" class="t-11 tx2">PostGIS · pgvector</text><text x="704" y="132" class="t-11 tx2">tenant_id + forced RLS</text><text x="704" y="148" class="t-11 tx3">cells of ~2,500 tenants</text>
 <path d="M670,110 H686" class="bus" marker-end="url(#aa)"/>
 <rect x="690" y="186" width="200" height="48" rx="9" class="ab"/><text x="702" y="207" class="t-13 tx t-b">ElastiCache Valkey/Redis</text><text x="702" y="224" class="t-11 tx2">cache · rate limits</text>
 <path d="M670,210 H686" class="bus" marker-end="url(#aa)"/>
 <rect x="690" y="244" width="200" height="48" rx="9" class="ab"/><text x="702" y="265" class="t-13 tx t-b">S3 media and documents</text><text x="702" y="282" class="t-11 tx2">tenant-prefixed keys</text>
 <path d="M670,268 H686" class="bus" marker-end="url(#aa)"/>
-<rect x="690" y="302" width="200" height="48" rx="9" class="ab"/><text x="702" y="323" class="t-13 tx t-b">Event bus: SNS + SQS</text><text x="702" y="340" class="t-11 tx2">Amazon MSK in V1</text>
+<rect x="690" y="302" width="200" height="48" rx="9" class="ab"/><text x="702" y="323" class="t-13 tx t-b">Event bus: SNS + SQS</text><text x="702" y="340" class="t-11 tx2">outbox fan-out · queues</text>
 <path d="M670,326 H686" class="bus" marker-end="url(#aa)"/>
 <rect x="690" y="360" width="200" height="48" rx="9" class="ab"/><text x="702" y="381" class="t-13 tx t-b">Temporal Cloud</text><text x="702" y="398" class="t-11 tx2">namespace per region</text>
 <path d="M670,384 H686" class="bus" marker-end="url(#aa)"/>
-<rect x="690" y="418" width="200" height="48" rx="9" class="ab"/><text x="702" y="439" class="t-13 tx t-b">Data lake: S3 Iceberg</text><text x="702" y="456" class="t-11 tx2">ClickHouse analytics [V1]</text>
+<rect x="690" y="418" width="200" height="48" rx="9" class="ab"/><text x="702" y="439" class="t-13 tx t-b">Data lake: S3 Iceberg</text><text x="702" y="456" class="t-11 tx2">ClickHouse analytics</text>
 <path d="M670,442 H686" class="bus" marker-end="url(#aa)"/>
 <rect x="690" y="476" width="200" height="48" rx="9" class="ab"/><text x="702" y="497" class="t-13 tx t-b">KMS + Secrets Manager</text><text x="702" y="514" class="t-11 tx2">envelope encryption</text>
 <path d="M670,500 H686" class="bus" marker-end="url(#aa)"/>
@@ -1621,13 +1622,13 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <path d="M925,137 H946" class="bus" marker-end="url(#aa)"/>
 <rect x="950" y="174" width="230" height="52" rx="9" class="ab"/><text x="962" y="195" class="t-13 tx t-b">Plaid</text><text x="962" y="212" class="t-11 tx2">bank feeds · reconciliation</text>
 <path d="M925,200 H946" class="bus" marker-end="url(#aa)"/>
-<rect x="950" y="237" width="230" height="52" rx="9" class="ab"/><text x="962" y="258" class="t-13 tx t-b">QuickBooks · Xero</text><text x="962" y="275" class="t-11 tx2">optional sync · QBO at MVP</text>
+<rect x="950" y="237" width="230" height="52" rx="9" class="ab"/><text x="962" y="258" class="t-13 tx t-b">QuickBooks · Xero</text><text x="962" y="275" class="t-11 tx2">optional mirror · QBO, QBD</text>
 <path d="M925,263 H946" class="bus" marker-end="url(#aa)"/>
 <rect x="950" y="300" width="230" height="52" rx="9" class="ab"/><text x="962" y="321" class="t-13 tx t-b">Twilio</text><text x="962" y="338" class="t-11 tx2">SMS and voice · per-tenant 10DLC</text>
 <path d="M925,326 H946" class="bus" marker-end="url(#aa)"/>
 <rect x="950" y="363" width="230" height="52" rx="9" class="ab"/><text x="962" y="384" class="t-13 tx t-b">Maps and parcels</text><text x="962" y="401" class="t-11 tx2">Mapbox, Google · Regrid · 3DEP</text>
 <path d="M925,389 H946" class="bus" marker-end="url(#aa)"/>
-<rect x="950" y="426" width="230" height="52" rx="9" class="ab"/><text x="962" y="447" class="t-13 tx t-b">Weather and imagery</text><text x="962" y="464" class="t-11 tx2">forecasts · NAIP · Nearmap [V1]</text>
+<rect x="950" y="426" width="230" height="52" rx="9" class="ab"/><text x="962" y="447" class="t-13 tx t-b">Weather and imagery</text><text x="962" y="464" class="t-11 tx2">forecasts · NAIP · Nearmap</text>
 <path d="M925,452 H946" class="bus" marker-end="url(#aa)"/>
 <rect x="950" y="489" width="230" height="52" rx="9" class="ab ai"/><text x="962" y="510" class="t-13 tx t-b">Model providers</text><text x="962" y="527" class="t-11 tx2">Claude family · image models</text>
 <path d="M925,515 H946" class="bus" marker-end="url(#aa)"/>
@@ -1637,7 +1638,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
       <div class="card"><h3>Tenancy</h3><p>Shared schema with <code class="smono-i">tenant_id</code> on every table, forced row-level security, Cedar policies as defense in depth, and cross-tenant canaries in production.</p></div>
       <div class="card"><h3>Events and workflows</h3><p>A transactional outbox feeds SNS and SQS. Temporal runs deposits, season-long agreement billing, snow events, mockup generation and Stripe event processing.</p></div>
       <div class="card"><h3>Offline sync</h3><p>SQLite on the device and a bucket-based pull and push protocol Rootline owns. Field mutations are never refused for billing reasons.</p></div>
-      <div class="card"><h3>Trust and security</h3><p>PCI SAQ-A by design, SOC 2 Type I scoped into the MVP and Type II into V1, a hash-chained audit log, and no training on customer data.</p></div>
+      <div class="card"><h3>Trust and security</h3><p>PCI SAQ-A by design, SOC 2 controls from the first Company, a hash-chained audit log, and no training on customer data.</p></div>
     </div>
   </div>
 </section>
@@ -1647,7 +1648,7 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
   <div class="wrap">
     <div class="sec-head">
       <div><span class="num">12 · THE DOCUMENTS</span><h2 id="docs-h">Read the full proposal</h2></div>
-      <p>The proposal is 24 module docs, 4 research reports, a build handoff and a marketing playbook in the docs folder of the repository, plus machine-readable platform data and this concept site. Start with README.md; when docs disagree, the owner doc for the topic wins and 24-product-scope-decisions-catalog.md, Product Scope and Master Feature Catalog, decides priority tags.</p>
+      <p>Rootline ships as one release, v1. Claude builds it from these specs through 25-platform-blueprint-build-handoff.md, the build handoff; Claude markets it under 26-agent-led-marketing-playbook.md; and the founder runs Rootline with Claude's operator agents for support, plant curation, finance, engineering and marketing. The proposal is the numbered docs 01 to 26 and 4 research reports in the docs folder of the repository, plus machine-readable platform data and this concept site, whose Platform Explorer has 155 screens. Start with README.md. 24-product-scope-decisions-catalog.md, Product Scope, Decisions and Master Feature Catalog, is the decision record: where any doc disagrees with it, 24 wins.</p>
     </div>
     <div class="docs-grid">
 <div class="docgrp"><h3>Front door</h3><ul><li>README.md</li></ul></div>
@@ -1657,10 +1658,10 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 <div class="docgrp"><h3>Money</h3><ul><li>07-invoicing-billing-contracts.md</li><li>08-payments-stripe.md</li><li>09-accounting-ledger-integrations.md</li></ul></div>
 <div class="docgrp"><h3>Grow, AI and insight</h3><ul><li>16-marketing-growth-communications.md</li><li>17-ai-copilot-automation.md</li><li>18-reporting-analytics.md</li></ul></div>
 <div class="docgrp"><h3>Platform</h3><ul><li>19-platform-admin-portal.md</li><li>20-architecture-security.md</li><li>21-ux-design-system-sitemaps.md</li></ul></div>
-<div class="docgrp"><h3>Business and future</h3><ul><li>22-business-model-pricing-gtm.md</li><li>23-innovation-moonshots.md</li><li>24-product-scope-decisions-catalog.md</li></ul></div>
-<div class="docgrp"><h3>Build and market it</h3><ul><li>25-platform-blueprint-build-handoff.md</li><li>26-agent-led-marketing-playbook.md</li><li>platform/*.json (roles, personas, plans, segments, tenants, surfaces)</li><li>platform/build.py</li></ul></div>
+<div class="docgrp"><h3>Business and future</h3><ul><li>22-business-model-pricing-gtm.md</li><li>23-innovation-moonshots.md</li><li>24-product-scope-decisions-catalog.md<span class="dt">Product Scope, Decisions and Master Feature Catalog: the binding decision record</span></li></ul></div>
+<div class="docgrp"><h3>Build and market it</h3><ul><li>25-platform-blueprint-build-handoff.md<span class="dt">The build handoff Claude builds v1 from</span></li><li>26-agent-led-marketing-playbook.md<span class="dt">How Claude markets Rootline</span></li><li>platform/*.json (roles, personas, plans, segments, tenants, surfaces)</li><li>platform/build.py</li></ul></div>
 <div class="docgrp"><h3>Research</h3><ul><li>research/R1-field-service-platforms.md</li><li>research/R2-landscape-specific-platforms.md</li><li>research/R3-design-ai-plant-data.md</li><li>research/R4-industry-payments-accounting.md</li></ul></div>
-<div class="docgrp"><h3>Concept site</h3><ul><li>site/index.html</li><li>site/app.html (Platform Explorer) and site/app/</li><li>site/screens-office.html</li><li>site/screens-design.html</li><li>site/screens-field-client-admin.html</li><li>site/prototype.html</li><li>site/recurring.html</li><li>site/assets/rootline.css</li></ul></div>
+<div class="docgrp"><h3>Concept site</h3><ul><li>site/index.html</li><li>site/app.html (Platform Explorer, 155 screens) and site/app/</li><li>site/screens-office.html</li><li>site/screens-design.html</li><li>site/screens-field-client-admin.html</li><li>site/prototype.html</li><li>site/recurring.html</li><li>site/assets/rootline.css</li></ul></div>
     </div>
   </div>
 </section>
@@ -1676,15 +1677,6 @@ footer.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-
 
 <script>
 (function () {
-  /* Module atlas: highlight features by phase */
-  var grid = document.getElementById('atlas-grid');
-  var fbtns = document.querySelectorAll('[data-filter]');
-  fbtns.forEach(function (b) {
-    b.addEventListener('click', function () {
-      fbtns.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      grid.setAttribute('data-show', b.getAttribute('data-filter'));
-    });
-  });
   /* Pricing: annual vs monthly */
   document.querySelectorAll('input[name="billing"]').forEach(function (r) {
     r.addEventListener('change', function () {

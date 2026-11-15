@@ -803,7 +803,7 @@ The engine is a Python service using **Google OR-Tools' vehicle routing solver**
 | Start at crew lead's home (take-home trucks) | Hard per crew setting | Per-vehicle start node |
 | Shift start/end, max shift length | Hard end at shift + max OT (default 2 h); soft beyond shift | Time dimension with vehicle-specific ranges; soft upper bound cost on end cumul |
 | Service duration (crew-size adjusted, 4.1.4) | Hard | Transit callback = travel + service time at the from-node |
-| Client time window (`between`, `fixed_time`) | `fixed_time` hard; `between` soft by default (Company setting can make hard) | Cumul range or soft bounds with lateness penalty |
+| Client time window (`between`, `fixed_time`) | `fixed_time` hard; `between` soft for residential and hard for commercial by default (Company setting per client type) | Cumul range or soft bounds with lateness penalty |
 | Access window (gate staffed hours, HOA quiet hours, school hours, municipal noise ordinance earliest start) | Hard | Cumul range |
 | Lunch/meal break | Hard (where law requires, e.g., meal start before end of the 5th hour of work in California per [15](15-team-hr-payroll.md)); otherwise soft window 11:00-13:00, 30 min | Vehicle break intervals on the time dimension |
 | Skills and licenses | Hard | Allowed-vehicles per node |
@@ -1565,18 +1565,18 @@ sequenceDiagram
 | S7 | Scenario compare (what-if) | Web | ops_manager, owner | 6.6 |
 | S8 | Territories and zones editor; Master Route editor | Web | ops_manager, owner | 4.7 (territory solver on Grow and above) |
 | S9 | Service Schedule editor (recurrence presets, frequency profiles, growth-adaptive) | Web | office_manager, ops_manager | 6.8 |
-| S10 | Season calendar settings (per Region and branch) | Web | owner, ops_manager | |
-| S11 | Holiday and blackout calendars | Web | owner, office_manager | |
-| S12 | Weather playbooks editor | Web | owner, ops_manager | |
-| S13 | Crews and Crew Day roster editor | Web | ops_manager | |
-| S14 | Resource reservations view | Web | ops_manager | |
-| S15 | Project Gantt (single and multi-project) | Web | ops_manager, designer, owner | |
-| S16 | Subcontractor offers inbox (sub side) and sub lanes (office side) | Crew app (sub mode), web | subcontractor, ops_manager | |
+| S10 | Season calendar settings (per Region and branch) | Web | owner, ops_manager | 4.2.3 |
+| S11 | Holiday and blackout calendars | Web | owner, office_manager | 4.2.7 |
+| S12 | Weather playbooks editor | Web | owner, ops_manager | 4.9.3 |
+| S13 | Crews and Crew Day roster editor | Web | ops_manager | 4.4.2 |
+| S14 | Resource reservations view | Web | ops_manager | 4.5 |
+| S15 | Project Gantt (single and multi-project) | Web | ops_manager, designer, owner | 4.11 |
+| S16 | Subcontractor offers inbox (sub side) and sub lanes (office side) | Crew app (sub mode), web | subcontractor, ops_manager | 4.12 |
 | S17 | Crew app: Today route, route changes banner, rain stop, recover requests | Mobile | crew_lead, technician | [05](05-field-crew-mobile-app.md) |
 | S18 | Portal: next visit, ETA, reschedule, skip and pause, add-on booking windows | Portal | client_residential, client_commercial | [06](06-customer-portal.md) |
-| S19 | Route sheet (print/PDF) | Web | office_manager, crew_lead | |
-| S20 | Optimization run inspector | Web (tenant) and Platform Admin | ops_manager, platform_engineer | |
-| S21 | Scheduling settings | Web | owner | |
+| S19 | Route sheet (print/PDF) | Web | office_manager, crew_lead | 4.6.10 |
+| S20 | Optimization run inspector | Web (tenant) and Platform Admin | ops_manager, platform_engineer | 4.8.10 |
+| S21 | Scheduling settings | Web | owner | 4.15 |
 
 ### 6.2 Dispatch board: Week view with unassigned tray (S2)
 
@@ -2725,25 +2725,25 @@ Definitions are shared with [18](18-reporting-analytics.md). Targets are Rootlin
 
 ---
 
-## 14. Open questions
+## 14. Decisions on former open questions
 
-1. **Matrix provider economics.** Google Routes vs Mapbox per region, and at what tenant size managed route-optimization APIs become cheaper than our own solver plus matrices. Needs a cost model with current vendor pricing (verify).
-2. **Default for client time windows.** Should `between` windows be hard or soft by default? Soft gives better routes; hard gives better client promises. Proposal: soft for residential, hard for commercial.
-3. **Auto-apply for weather playbooks.** Is `auto` mode for residential mowing safe enough to offer in, and what notice language protects Companies?
-4. **Growth-adaptive and fixed-price contracts.** Should `max_growth_skips` default to 0 for level-pay agreements to avoid under-delivery perceptions?
-5. **First telematics partner.** Samsara, Motive, Geotab or Verizon Connect first, based on landscape customer overlap (needs customer survey).
-6. **On-device re-sequencing.** Should the crew app solve small TSPs offline (for crew leads in dead zones), or only accept server sequences?
-7. **Subcontractor location data.** Is opt-in subcontractor live location worth the misclassification risk flagged in [05](05-field-crew-mobile-app.md)?
-8. **Optimizer runs in pricing tiers.** How many heavy runs per day per tier, and does `week_plan`/`territory` belong to a higher tier ([22](22-business-model-pricing-gtm.md))?
-9. **Canadian weather and French notices.** Timeline for French-Canadian scheduling notices and ECCC data parity for Quebec tenants.
-10. **Storm routing ownership.** Confirm the boundary with [14](14-service-line-modules.md): 14 owns event state and billing evidence; this module owns routing and live tracking. Who owns subcontractor storm call-outs?
-11. **Saturday default.** Should new Companies have Saturday enabled as an overflow day by default for rain and holiday slides?
-12. **Holiday data stewardship.** Platform-curated holiday tables need an annual review owner and a change notification to tenants.
-13. **Commercial weather provider.** Which provider gives the best mix of nowcast quality, soil temperature, US-Canada coverage, certified reports for snow disputes and redistribution rights (portal display of observations), at what cost per active cell?
-14. **Pending ACH deposits.** Is `deposit_pending_counts_for = scheduling` the right default, or should installs over a threshold (say $10,000) require a cleared deposit before any date is promised? Needs owner interviews and the ACH return rates the Companies actually see in [08](08-payments-stripe.md).
-15. **Reporting-time pay rules ownership.** [15](15-team-hr-payroll.md) owns jurisdiction rule packs; confirm it will publish reporting-time and call-in pay parameters per state and province so 4.9.3 can compute show-up cost, and who verifies them annually.
-16. **Event name registry.** [07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md) and [20](20-architecture-security.md) use different prefixes for the same agreement and payment events. This document now uses the producer's names for consumed events; the schema registry in [20](20-architecture-security.md) must publish one canonical name per event before MVP build starts.
-17. **Holiday skips on fixed-price agreements.** Should agreements default `excluded_holidays` to the Company's observed holidays (no occurrence, no credit) or leave it empty (a holiday skip becomes `missed_company` and is credited)? The answer changes how 4.1.3 maps outcomes and what proposals in [03](03-crm-sales-estimating-proposals.md) must say.
+1. **Matrix provider economics.** Rootline runs its own OR-Tools solver with Google Routes or Mapbox matrices chosen per region by cost (4.8.3); managed route-optimization APIs serve only as a benchmark and burst fallback (8.1). The finance agent reports matrix and solver cost per active crew every month (section 12), and the build agent re-runs the provider comparison when vendor pricing changes (verify current pricing).
+2. **Default for client time windows.** Soft for residential, hard for commercial (4.8.2); a Company can change either per client type.
+3. **Auto-apply for weather playbooks.** Offered. `auto` and `auto_after_deadline` are opt-in per playbook and service type, the default stays `propose`, and agent actions follow the autonomy levels in [17](17-ai-copilot-automation.md) (R25-C8). Notices use the rain-delay template in [16](16-marketing-growth-communications.md): the weather reason, the new date and a one-tap way to ask for a different day.
+4. **Growth-adaptive and fixed-price contracts.** `max_growth_skips_per_season` stays at 4 for level-pay agreements (4.2.6); skips beyond the cap need client consent.
+5. **First telematics partner.** All four connectors (Samsara, Motive, Geotab, Verizon Connect) are built; each switches on when a Company connects its account ([24](24-product-scope-decisions-catalog.md) section 1.4).
+6. **On-device re-sequencing.** No solver on the device. Crew leads reorder by hand offline ([05](05-field-crew-mobile-app.md) 4.1.3), and the server merges the order when the device syncs.
+7. **Subcontractor location data.** No subcontractor location tracking ([05](05-field-crew-mobile-app.md) 4.22.4); subs record arrival, completion and photos only (4.12).
+8. **Optimizer runs by plan.** OD-13: `sequence` and `insertion` on every plan; `day_plan`, `week_plan`, `territory` and cross-crew `repair` on Grow and above (4.8.1); heavy runs count against a fair-use quota of 300 per tenant per day, which the founder can raise per tenant (4.14.1).
+9. **Canadian weather and French notices.** Both are in v1 (R24-19): scheduling notices in English, Spanish and fr-CA (OD-70), and Canadian forecasts and alerts from ECCC alongside the commercial provider (OD-61). Quebec marketing waits for the founder's French-language check.
+10. **Storm routing ownership.** [14](14-service-line-modules.md) owns event state, billing evidence and the shift call-outs to employees and subs; this module routes the trucks and subs who accept and tracks them live (4.9.6).
+11. **Saturday default.** Off. A Company turns Saturday on in its crew shift templates (4.4.2); when a rain or holiday diff overflows, it offers Saturday for that week only (11.1).
+12. **Holiday data stewardship.** The engineering agent reviews the platform holiday tables every year and proposes changes; the founder approves them, and each affected tenant gets an in-app notice listing the changes (8.1).
+13. **Commercial weather provider.** OD-61: one commercial provider with soil temperature, certified reports and air quality index, alongside NWS and ECCC. The build agent compares candidates on nowcast quality, US-Canada coverage, certified reports for snow disputes, redistribution rights and cost per active cell, picks one and records the choice.
+14. **Pending ACH deposits.** OD-23: by default a pending ACH or PAD deposit up to $5,000 counts for scheduling but not dispatch; above $5,000, no date is promised until the payment clears (4.1.2). Both the limit and `deposit_pending_counts_for` are Company settings (4.15).
+15. **Reporting-time pay rules ownership.** [15](15-team-hr-payroll.md) rule packs carry reporting-time and call-in pay parameters per state and province (PTO-06), so 4.9.3 can compute show-up cost. The plant curator agent maintains the packs from licensed sources and the founder approves each pack before it publishes (OD-60).
+16. **Event name registry.** R24-28: producer event names are canonical in the schema registry in [20](20-architecture-security.md), and other spellings are registered as aliases. This document uses the producer's names for consumed events.
+17. **Holiday skips on fixed-price agreements.** `excluded_holidays` is empty by default, so a holiday skip maps to `missed_company` and is credited (4.1.3). A Company that does not credit holidays lists them in the agreement, and the proposal in [03](03-crm-sales-estimating-proposals.md) shows them as not included.
 
 ---
 

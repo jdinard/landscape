@@ -227,13 +227,14 @@ flowchart LR
 **KB-TAX-03 Accepted names, synonyms and the trade-name policy**
 - Every taxon record resolves to an accepted name in the backbone (WCVP via POWO) and stores the POWO/IPNI identifier, plus cross-references to World Flora Online, GBIF, USDA PLANTS symbol (for example `ACRU` for *Acer rubrum*) and ITIS TSN where they exist.
 - Synonyms are stored with a type: homotypic, heterotypic, misapplied, orthographic variant, or **trade synonym** (a name the nursery trade uses that is not botanically valid).
-- **Policy:** Rootline displays the *accepted* name, and keeps the familiar trade name visible in parentheses until a curator-set `trade_display_until` date (default: 5 years after the change). Example: "*Salvia yangii* (syn. *Perovskia atriplicifolia*), Russian sage". Search matches every synonym forever. Where the backbone itself is unsettled (for example Alaska cedar has moved among *Chamaecyparis*, *Xanthocyparis*, *Callitropsis* and *Cupressus*), a senior curator may pin the displayed name and record the rationale.
+- **Policy:** Rootline displays the *accepted* name, and keeps the familiar trade name visible in parentheses until a curator-set `trade_display_until` date (default: 5 years after the change). Example: "*Salvia yangii* (syn. *Perovskia atriplicifolia*), Russian sage". Search matches every synonym forever. Where the backbone itself is unsettled (for example Alaska cedar has moved among *Chamaecyparis*, *Xanthocyparis*, *Callitropsis* and *Cupressus*), the plant curator agent may propose pinning the displayed name with a recorded rationale, and the founder approves the pin.
 - Backbone refresh: a monthly job diffs our taxa against the latest backbone export and opens change requests for name changes, never applying them automatically.
 
 **KB-TAX-04 Common names in several languages**
 - Each common name has `locale` (`en-US`, `en-CA`, `es-US`, `es-MX`, `fr-CA`), optional `region_id` scope (common names vary: "ironwood" means different trees in different places), `is_preferred` per locale and Region, and a source.
+- **Canadian French (fr-CA) names are in v1** (OD-70) and are sourced like every other name; Quebec marketing waits for the founder's French-language check, the names do not.
 - Exactly one preferred name per locale (plus optional Region overrides). If no sourced name exists for a locale, the UI shows the botanical name plus the English common name. **Common names are never machine-translated** without a source; an AI-suggested Spanish name enters the queue as a suggestion like any other value.
-- Crew-facing Spanish names: curators may add "field names" used by Spanish-speaking crews in a Region (sourced to the curator and two tenant confirmations), flagged `informal`.
+- Crew-facing Spanish names: the plant curator agent may add "field names" used by Spanish-speaking crews in a Region (sourced to two tenant confirmations), flagged `informal`.
 
 **KB-TAX-05 Patents, breeders' rights and trademarks**
 - Fields: US plant patent number (`PP` plus digits), filing date, grant date, computed expected expiry (US plant patents run 20 years from filing; label "estimated, verify"), Canadian Plant Breeders' Rights certificate and term, optional EU Community Plant Variety Rights, trademark text and owner.
@@ -265,7 +266,7 @@ flowchart LR
 - Each trait value carries: the value, qualifiers (for example "in cultivated landscapes" vs "in the wild"; "once established" for drought tolerance), and provenance (source, citation with locator, method, confidence, author, reviewer, timestamps).
 - Several **candidate** values may exist for one trait (sources disagree); exactly one is **selected** per scope (global or Region). The quality dashboard counts unresolved conflicts.
 - Lengths are stored in centimeters and temperatures in Celsius, but the **original value and unit text are preserved** ("3-4 ft") so imperial users never see round-trip drift such as "2.95-3.94 ft". Display rounding: feet to the nearest 0.5 ft under 10 ft and to the nearest 1 ft above; centimeters to the nearest 5 cm under 2 m and to the nearest 0.1 m above.
-- **Critical traits** (USDA and Canadian hardiness zones, invasive and noxious status, toxicity, deer-resistance claims, mature size) need at least one Tier 1 citation (4.6) and a second curator's approval before publishing, matching [19](19-platform-admin-portal.md) PA-070.
+- **Critical traits** (USDA and Canadian hardiness zones, invasive and noxious status, toxicity, deer-resistance claims, mature size) need at least one Tier 1 citation (4.6), a review by someone other than the author and the founder's approval before publishing ([19](19-platform-admin-portal.md) PA-070; 5.3).
 
 **Form and ornamental traits**
 
@@ -387,13 +388,13 @@ A Region answers "where is this property, horticulturally?" Rootline combines pu
 | Soils | US (SSURGO), Canada (Soil Landscapes of Canada, coarser) | USDA NRCS; Agriculture and Agri-Food Canada | Property soil texture, drainage and pH hints (not Regions) |
 | Wildfire risk | US | USDA Forest Service Wildfire Risk to Communities | Fire-wise defaults |
 | Elevation | US | USGS 3DEP (already used by [10](10-design-studio.md)) | Elevation bands in mountain Regions |
-| Custom polygons | Anywhere | Drawn by curators | Curated Region edges |
+| Custom polygons | Anywhere | Drawn by the plant curator agent | Curated Region edges |
 
 **KB-RGN-02 Region kinds and hierarchy**
 - Region `kind`: `admin` (country, state or province, county, metro), `climate` (USDA zone, Canadian zone, heat zone, WUCOLS region), `eco` (EPA Level III and IV, CEC, Canadian ecozones) and `curated`.
 - **Curated hierarchy:** country -> macro-region (for example "Great Lakes and Ohio Valley") -> Region (for example "Central Ohio") -> optional microregion (for example "Lake Erie Shore", the lake-effect snow belt inside Northeast Ohio). The macro-regions are the same ones [18](18-reporting-analytics.md) uses for benchmarking.
-- Each curated Region has: name, slug, description, `geom` (MultiPolygon, SRID 4326), definition recipe (KB-RGN-03), parent, coverage tier (KB-RGN-09), lead curator, launch status, climate summary (computed zone mix, heat zone mix, precipitation, frost-free days), reference bloom calendar offset, and priority (tie-breaker).
-- Topology rules: curated Regions at the same level may not overlap (checked on publish); a microregion must lie inside its parent within a 50 m tolerance. Until national coverage exists, points outside any curated Region fall back to the macro-region if one contains them, else to `uncurated` with Basic coverage.
+- Each curated Region has: name, slug, description, `geom` (MultiPolygon, SRID 4326), definition recipe (KB-RGN-03), parent, coverage tier (KB-RGN-09), responsible curator (the plant curator agent by default), status, climate summary (computed zone mix, heat zone mix, precipitation, frost-free days), reference bloom calendar offset, and priority (tie-breaker).
+- Topology rules: curated Regions at the same level may not overlap (checked on publish); a microregion must lie inside its parent within a 50 m tolerance. Points outside any curated Region fall back to the macro-region if one contains them, else to `uncurated` with Basic coverage.
 
 **KB-RGN-03 Region definition recipes**
 - A curated Region is defined as an expression over layers plus manual edits, for example: `(epa_l3 = 55 OR epa_l4 IN [selected units]) AND state = OH AND usda_zone BETWEEN 5b AND 6b`, plus or minus drawn polygons. The recipe is stored, so a Region can be rebuilt when a layer is updated (for example a new hardiness map).
@@ -409,7 +410,7 @@ A Region answers "where is this property, horticulturally?" Rootline combines pu
 - Overrides: a Property-level microclimate override (frost pocket, urban heat island, coastal exposure, high elevation) and bed-level overrides in the Design Studio (for example a protected south wall treated half a zone warmer, [10](10-design-studio.md) VAL-ZONE-01). Overrides require a reason and appear in validation messages.
 - Edge cases: geocode failure asks the user to drop a pin; points in water (lakefront geocodes) snap to the nearest land polygon within 200 m; points on a boundary use the containing polygon or, if none, the nearest within 100 m and set `boundary_snapped`; PO-box or centroid-of-ZIP geocodes are rejected for Site Context ("needs a street address or a pin").
 
-Example Site Context (illustrative values for a Cedar & Stone client in Upper Arlington, Ohio; verify real values):
+Example Site Context (illustrative values for a Greenleaf Grounds client in Upper Arlington, Ohio; verify real values):
 
 ```json
 {
@@ -431,7 +432,7 @@ Example Site Context (illustrative values for a Cedar & Stone client in Upper Ar
 **KB-RGN-05 Hardiness map editions and transitions**
 - Every zone value records its map edition (`usda_2012`, `usda_2023`, NRCan edition). The 2023 USDA map moved many locations about half a zone warmer than 2012 (verify the share).
 - Adopting a new edition: recompute all Site Contexts, publish a diff report ("1,240 Properties moved from 6a to 6b"), notify affected tenants, re-run validations on **draft** designs only. Sold designs and their warranties are never rewritten.
-- Plant zone ranges are not automatically shifted by a map change; curators review plants whose ratings were borderline at the old zone.
+- Plant zone ranges are not automatically shifted by a map change; the plant curator agent reviews plants whose ratings were borderline at the old zone.
 
 **KB-RGN-06 Region climate summaries**
 - Computed per curated Region: frost-free days, median and 90%-probability last spring and first fall frost dates, annual precipitation, July mean maximum, dominant soil textures (aggregated SSURGO), elevation band.
@@ -454,11 +455,11 @@ Example Site Context (illustrative values for a Cedar & Stone client in Upper Ar
 | `watch` or `advisory` (non-legal invasive council lists) | State invasive plant council lists | Warning with explanation and alternatives |
 | `none` | | No message |
 
-- **Jurisdiction levels loaded at MVP:** federal (USDA APHIS Federal Noxious Weed List under 7 CFR 360, rarely a landscape ornamental but checked; CFIA-regulated plants in Canada), every US state and Canadian province, and municipalities only where a Region at Excellent has a municipal ban or street-tree list: at MVP, inside the beachhead states Ohio, Michigan, Indiana, Illinois and Wisconsin, with Ontario added at with Canada support (KB-SEED-01). USDA PLANTS' compiled state noxious status is a cross-check, never the authority, because it can lag state rule changes ([R3 section 4.6](research/R3-design-ai-plant-data.md); verify).
+- **Jurisdiction levels loaded:** federal (USDA APHIS Federal Noxious Weed List under 7 CFR 360, rarely a landscape ornamental but checked; CFIA-regulated plants in Canada), every US state and Canadian province, and municipalities where a Region at Excellent has a municipal ban or street-tree list, starting with the five Great Lakes states (Ohio, Michigan, Indiana, Illinois and Wisconsin) and Ontario (KB-SEED-01). USDA PLANTS' compiled state noxious status is a cross-check, never the authority, because it can lag state rule changes ([R3 section 4.6](research/R3-design-ai-plant-data.md); verify).
 - **Three statuses, never merged:** *legally prohibited* (hard stop), *legally restricted* (acknowledged override) and *ecologically invasive but legal* (warning with alternatives). Region-level invasiveness judgments, modeled on assessments such as UF/IFAS's per-zone conclusions for Florida (verify), live in the Plant Region Profile as reason code `invasive_tendency`, not in `regulatory_listing`.
 - **Alternatives:** each prohibited or advisory listing can carry curated "plant this instead" links, following the "Grow Me Instead" guides published by invasive-plant councils in Ontario and British Columbia (verify). The substitution engine (KB-SRCH-07) ranks those first.
 - Matching: a species listing applies to every cultivar and infraspecific taxon unless an exemption names it; a genus-level listing applies to all species (rare).
-- Monitoring: each list has a watcher (weekly content-hash check of the official page or document where stable, plus a quarterly human re-verification task). A detected change opens a high-priority change request.
+- Monitoring: each list has a watcher (weekly content-hash check of the official page or document where stable, plus a quarterly re-verification task for the plant curator agent against the official text). A detected change opens a high-priority change request.
 - **Hotfix releases:** regulatory changes ship outside the daily cadence if needed.
 - **Tenant alerts:** when a listing changes, Companies with drafts, open proposals, Company palettes, Price Book items or recurring maintenance programs that include the plant in that jurisdiction receive an alert with suggested substitutes (KB-SRCH-07).
 
@@ -466,18 +467,18 @@ Example Site Context (illustrative values for a Cedar & Stone client in Upper Ar
 
 | Tier | Criteria | What tenants see | What AI may do |
 |---|---|---|---|
-| **Excellent** | 600 or more plants with published Region profiles; palettes for at least 7 core uses; named lead curator; profiles reviewed within 24 months; 95% or more palette plants with licensed photos | Green badge "Curated for Central Ohio by our horticulture team" | Auto-layout and mockups use plants rated 3 or above only |
+| **Excellent** | 600 or more plants with published Region profiles; palettes for at least 7 core uses; a responsible `platform_curator` holder (the plant curator agent by default); profiles reviewed within 24 months; 95% or more palette plants with licensed photos | Green badge "Curated for Central Ohio" | Auto-layout and mockups use plants rated 3 or above only |
 | **Good** | Validated taxonomy and traits; profiles (own or inherited from macro-region) for 200 or more common plants; palettes for at least 3 uses | Blue badge "Regionally reviewed" | Same rule; falls back to macro-region palettes |
 | **Basic** | Zone, sun, water and legal validations only; no ratings | Grey badge "Not yet curated for your area: zone-checked only" | AI layouts allowed only with tenant opt-in, using zone-fit plants with an "unrated" disclosure on every output |
 
-The badge implements the "visible coverage badge, so we never over-promise" commitment in [22](22-business-model-pricing-gtm.md).
+The badge implements the "visible coverage badge, so we never over-promise" commitment in [22](22-business-model-pricing-gtm.md). Coverage switches on by itself: when a Region's profiles meet the Good or Excellent criteria, its badge and AI eligibility change with the next release, with no product change ([24](24-product-scope-decisions-catalog.md) section 1.4).
 
 **KB-RGN-10 Effective-date-aware legal checks**
 
 Legal status is not a property of "today". A Proposal signed in November for an April install, or a three-year phased master plan, must be checked against the law **on the date the plant goes in the ground**.
 
-- **Listing lifecycle:** `regulatory_listing.status` moves `proposed` (rule published for comment; informational only) -> `enacted` (adopted, effective in the future) -> `in_effect` -> optionally `phase_out` (for example sale banned but existing nursery stock may be sold until a date) -> `amended` or `repealed`. Each transition is a change request with a citation to the official text and a second curator's approval.
-- **Dates stored separately:** `enacted_on`, `sale_prohibited_from`, `planting_prohibited_from` (if the rule covers planting), `exemption_until` (for existing stock). Rare possession or removal mandates are recorded in the listing's citation notes and handled by curator review, not automated rules. A rule that bans *sale* but not *planting* still blocks a Company from **selling** the plant in a Proposal, because a landscape contractor that supplies and installs the plant is selling it (curator policy; counsel to confirm per jurisdiction).
+- **Listing lifecycle:** `regulatory_listing.status` moves `proposed` (rule published for comment; informational only) -> `enacted` (adopted, effective in the future) -> `in_effect` -> optionally `phase_out` (for example sale banned but existing nursery stock may be sold until a date) -> `amended` or `repealed`. Each transition is a change request with a citation to the official text and the founder's approval.
+- **Dates stored separately:** `enacted_on`, `sale_prohibited_from`, `planting_prohibited_from` (if the rule covers planting), `exemption_until` (for existing stock). Rare possession or removal mandates are recorded in the listing's citation notes and handled by the plant curator agent's review, not automated rules. A rule that bans *sale* but not *planting* still blocks a Company from **selling** the plant in a Proposal, because a landscape contractor that supplies and installs the plant is selling it (KB policy; the founder confirms it with counsel per jurisdiction).
 - **Check date resolution** (the date passed to `validatePlacement`): the earliest scheduled install Visit for the plant's phase if one exists ([04](04-scheduling-dispatch-routing.md)); else the Proposal's expected start date; else the Design phase's target season start (for example "Spring 2027" = April 1 in Central Ohio from the Region climate summary); else today.
 - **Severity by distance to the effective date:**
 
@@ -489,7 +490,7 @@ Legal status is not a property of "today". A Proposal signed in November for an 
 | Phased design with a later phase after the effective date | Error on the later phase only | Phase 3 (2028) shows the error; phases 1-2 do not |
 
 - **Schedule slip guard:** when a Visit containing install work is rescheduled across an effective date, the scheduling module receives a validation error from the KB and the dispatcher must swap the plant (substitutes offered) before saving ([04](04-scheduling-dispatch-routing.md)).
-- **Already-installed plants are never "made illegal" by Rootline.** Plant-registry entries for existing installs show an informational badge ("Now listed in Ohio") and can feed a removal opportunity (section 13), but the KB never asserts a removal obligation unless the listing text explicitly requires it and a curator has cited it.
+- **Already-installed plants are never "made illegal" by Rootline.** Plant-registry entries for existing installs show an informational badge ("Now listed in Ohio") and can feed a removal opportunity (section 13), but the KB never asserts a removal obligation unless the listing text explicitly requires it and the plant curator agent has cited it.
 
 ```mermaid
 stateDiagram-v2
@@ -509,7 +510,7 @@ stateDiagram-v2
 
 **KB-RGN-11 Jurisdiction rule packs**
 
-Some jurisdictions regulate *how* plants are combined and where they go, not just *which* plants are allowed. The KB stores these as versioned, cited **rule packs** attached to jurisdictions; the Design Studio validator ([10](10-design-studio.md)), the AI layout solver and the design assistant ([11](11-ai-design-mockups.md) AIM-GEN-C2, which adds site-geometry packs such as hydrant and sight-triangle clearances) evaluate them through one rule interface, and the KB supplies the plant attributes they need. Packs ship through the KB release pipeline and emit `kb.rule_pack_published`.
+Some jurisdictions regulate *how* plants are combined and where they go, not just *which* plants are allowed. The KB stores these as versioned, cited **rule packs** attached to jurisdictions; the Design Studio validator ([10](10-design-studio.md)), the AI layout solver and the design assistant ([11](11-ai-design-mockups.md) AIM-GEN-C2, which adds site-geometry packs such as hydrant and sight-triangle clearances) evaluate them through one rule interface, and the KB supplies the plant attributes they need. Packs ship through the KB release pipeline and emit `kb.rule_pack_published`. The plant curator agent maintains rule packs from licensed and cited sources, and the founder approves each pack before it publishes (OD-60). Every pack kind below is in v1, fire included.
 
 | Rule pack | What the KB contributes | Evaluated by |
 |---|---|---|
@@ -519,7 +520,7 @@ Some jurisdictions regulate *how* plants are combined and where they go, not jus
 | Street-tree and parking-lot planting lists (municipal) | Approved species lists resolved to KB Plants; minimum caliper and spacing | Commercial bid validation (sold as ordinance packs, section 13) |
 | HOA approved and prohibited lists | Client palettes (KB-PAL-07) | Design validation for the Client's Properties |
 
-- **Precedence:** law beats HOA rules beats Company preferences. If an HOA list *requires* a plant that is now prohibited, the legal error wins and the designer sees "HOA list conflicts with state law". Some states limit how far HOAs can prohibit water-wise or drought-tolerant landscaping (for example Texas Property Code section 202.007 and Colorado legislation on water-wise landscaping in common-interest communities; verify both). Where a curator has cited such a statute for the jurisdiction, a client palette that bans water-wise plants shows the info note "This HOA restriction may be limited by state law. This is not legal advice."
+- **Precedence:** law beats HOA rules beats Company preferences. If an HOA list *requires* a plant that is now prohibited, the legal error wins and the designer sees "HOA list conflicts with state law". Some states limit how far HOAs can prohibit water-wise or drought-tolerant landscaping (for example Texas Property Code section 202.007 and Colorado legislation on water-wise landscaping in common-interest communities; verify both). Where the plant curator agent has cited such a statute for the jurisdiction, a client palette that bans water-wise plants shows the info note "This HOA restriction may be limited by state law. This is not legal advice."
 - Every rule pack carries citation, effective dates, `last_verified_at` and a watcher, exactly like regulatory listings (KB-RGN-08).
 
 ### 4.4 Plant Region Profiles (KB-PRP)
@@ -535,7 +536,7 @@ A Plant Region Profile records how well a plant actually does in a Region. It is
 | 3 | Acceptable with conditions | Works if the listed conditions are met | Conditions required | AI allowed (conditions are checked against bed context) |
 | 2 | Marginal | Often struggles; specify with care and client disclosure | Reason code required | Design warning ([10](10-design-studio.md) VAL-RGN-01); excluded from AI |
 | 1 | Not recommended | Poor results here | Reason code required | Design warning; hidden from default search |
-| flag `do_not_use` | Fails or must not be planted | Illegal, consistently fails, or ecological harm | Senior curator approval | Design **error**; hidden; blocked for AI |
+| flag `do_not_use` | Fails or must not be planted | Illegal, consistently fails, or ecological harm | Founder approval | Design **error**; hidden; blocked for AI |
 | `not_rated` / `insufficient_evidence` | Unknown | No profile or too little evidence | | Shown with "not yet rated here"; zone-fit only |
 
 Reason codes: `cold_damage`, `heat_stress`, `humidity_disease`, `soil_ph`, `poor_drainage`, `drought`, `deer_browse`, `pest_pressure`, `short_lived`, `invasive_tendency`, `legal`.
@@ -554,7 +555,7 @@ Reason codes: `cold_damage`, `heat_stress`, `humidity_disease`, `soil_ph`, `poor
 **KB-PRP-03 Inheritance and effective profiles**
 - Profiles may be authored at macro-region, Region or microregion level and at species or cultivar level. The **effective profile** for (plant, Region) is computed field by field: most specific geography first, then cultivar before species.
 - **Legal status always wins:** a plant prohibited in Ohio is `do_not_use` in Central Ohio even if the macro-region profile rates it 4.
-- The UI shows where each value came from ("inherited from Great Lakes and Ohio Valley, reviewed by M. Ortiz, Mar 2027").
+- The UI shows where each value came from ("inherited from Great Lakes and Ohio Valley, reviewed Mar 2027").
 
 ```mermaid
 flowchart TD
@@ -569,13 +570,13 @@ flowchart TD
 
 **KB-PRP-04 Bloom timing shift**
 - Bloom months can be shifted per Region by a number of weeks relative to the reference Region, or set explicitly.
-- Default shift is computed from the difference in median last-frost dates between Regions (a heuristic labeled "estimated") and corrected by curators and, later, by dated crew and client photos (section 13).
+- Default shift is computed from the difference in median last-frost dates between Regions (a heuristic labeled "estimated") and corrected by the plant curator agent and by dated crew and client photos (section 13).
 
 **KB-PRP-05 Evidence model**
 - Evidence item types: `regional_trial` (for example published trial-garden evaluations such as Mt. Cuba Center or Chicago Botanic Garden plant evaluations; verify availability per plant), `extension_list`, `curator_observation` (date, place, photos), `rating_session`, `warranty_aggregate` (k of 10 or more Companies), `literature`, `nursery_grower_report`, `regional_program` (below).
 - `regional_program`: inclusion in a regional selection or award program such as Plant Select (Rocky Mountains and High Plains), Great Plant Picks (Pacific Northwest), PHS Gold Medal (Mid-Atlantic), Texas Superstar or Earth-Kind (Texas), Florida-Friendly Landscaping (Florida) or Missouri Botanical Garden Plants of Merit (Lower Midwest) ([R3 section 4.4.9](research/R3-design-ai-plant-data.md); verify each program's current list and terms). Rules: inclusion counts as one *local* evidence item only for curated Regions inside the program's stated geography; it supports a rating of 4 on its own and a 5 only with a second local item; the program's name is recorded as a fact with citation, and logos or "Recommended by" co-branding require a partnership (KB-SRC-04).
 - Each item: citation, date, weight, and whether it supports or contradicts the rating. The profile editor shows evidence for and against.
-- **Default weights (tunable by `platform_owner`):** `regional_trial` 1.0, `rating_session` 1.0, `warranty_aggregate` 1.0 (k of 10 or more Companies and 50 or more installs), `regional_program` 0.8, `curator_observation` 0.7, `extension_list` 0.7, `nursery_grower_report` 0.4, `literature` 0.5. Evidence older than 10 years is weighted at half. The editor shows the weighted support and contradiction totals; a rating whose contradiction total exceeds its support total cannot be published without a senior curator's written rationale.
+- **Default weights (tunable by `platform_owner`):** `regional_trial` 1.0, `rating_session` 1.0, `warranty_aggregate` 1.0 (k of 10 or more Companies and 50 or more installs), `regional_program` 0.8, `curator_observation` 0.7, `extension_list` 0.7, `nursery_grower_report` 0.4, `literature` 0.5. Evidence older than 10 years is weighted at half. The editor shows the weighted support and contradiction totals; a rating whose contradiction total exceeds its support total cannot be published without a written rationale that the founder approves.
 
 **KB-PRP-06 Review cadence and staleness**
 - `next_review_due` = last review + 24 months (the staleness rule in [19](19-platform-admin-portal.md) PA-074).
@@ -587,15 +588,15 @@ flowchart TD
 
 ### 4.5 Curation workflow at scale (KB-CUR)
 
-Thousands of plants times dozens of Regions times 80-plus traits is millions of facts. The curation system turns that into a queue that a small team can clear.
+Thousands of plants times dozens of Regions times 80-plus traits is millions of facts. The curation system turns that into a queue that the plant curator agent clears, with the founder approving what needs a person.
 
 **KB-CUR-01 Change requests are the unit of work**
 - Every modification (curator edit, import row, AI suggestion, tenant suggestion, feed-derived update, merge, bulk edit) is a `change_request` with one or more field-level `change_item`s: target record, field, old value, new value, provenance.
-- States: `draft` -> `in_review` -> `approved` -> `published` (in a release), or `rejected` or `withdrawn`. Critical items require a second reviewer who is not the author (state diagram in 5.3).
+- States: `draft` -> `in_review` -> `approved` -> `published` (in a release), or `rejected` or `withdrawn`. Critical items need a reviewer other than the author and the founder's approval (state diagram in 5.3).
 - Change requests are batched by origin (an import, an enrichment run, a rating session) so reviewers can work through them in context.
 
 **KB-CUR-02 Bulk CSV and Google Sheets import with validation and diff preview**
-- **Import profiles:** saved column mappings per source format (for example "Extension landscape plant list", "Curator rating sheet", "Brand catalog export"). Headers are auto-mapped by name and by an AI mapping suggestion that the curator confirms.
+- **Import profiles:** saved column mappings per source format (for example "Extension landscape plant list", "Curator rating sheet", "Brand catalog export"). Headers are auto-mapped by name and by an AI mapping suggestion that the plant curator agent confirms.
 - **Normalization:** units ("3-4'" becomes 91-122 cm with original text kept), enum synonyms ("Full Sun", "FS", "sun" become `full sun`), zone strings ("5-9" becomes 5a-9b; "Zone 4 to 8" likewise), month ranges ("Jun-Aug").
 - **Name resolution** per row: `matched`, `new_cultivar_of_existing_taxon`, `new_taxon`, `ambiguous` (several candidates shown), `unresolved`. Resolution uses exact, synonym, fuzzy (trigram) and AI-assisted matching against the backbone.
 - **Validation:** types and enums; ranges (height min not greater than max, zone min not greater than max, pH between 3.5 and 9.0); sanity checks (a shrub over 15 m, a perennial with zone min warmer than zone max); license present for every source.
@@ -612,24 +613,24 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 - **Confidence score (0-1):** a calibrated function of source tier (Tier 1 base 0.9, Tier 2 0.75, Tier 3 0.5), number of agreeing independent sources, extraction self-consistency (three runs agree), recency and a trait-specific prior. Calibrated monthly on curator decisions (isotonic regression) so that 0.9 means about 90% of such suggestions are accepted without edits.
 - **Output:** change requests authored by `ai:kb.enrich@<prompt_version>`, landing in the queue (console PA-073).
 - **Bulk accept:** allowed only for non-critical traits with confidence above 0.9 and at least two agreeing sources (PA-073). Critical traits are never bulk-accepted.
-- **Descriptions:** the AI drafts original 60-120 word descriptions in English and Spanish ( French-Canadian) from *selected trait values*, not from source prose. A copy check rejects drafts with more than 5% 8-gram overlap with any retrieved source text.
-- **MVP vs V1:** at MVP the pipeline is run in batches by `platform_engineer` for the seed set (4.13) and reviewed in the same queue; at V1 it becomes self-serve for curators and runs continuously (the KB Curation agent A26 in [17](17-ai-copilot-automation.md)).
-- **Evaluation:** a golden set of 300 curator-verified plants; metrics per prompt version: acceptance rate, edit rate, error rate on critical traits (target under 1% before any rejection by the second reviewer), hallucinated-citation rate (target 0; every locator is fetched and the snippet string-matched).
+- **Descriptions:** the AI drafts original 60-120 word descriptions in English, Spanish and Canadian French from *selected trait values*, not from source prose. A copy check rejects drafts with more than 5% 8-gram overlap with any retrieved source text.
+- **Runs:** the engineering agent (`platform_engineer`) runs the seed set (4.13) in batches; beyond the seed, the plant curator agent runs enrichment self-serve and continuously, drafting with the KB Curation agent (A26 in [17](17-ai-copilot-automation.md)). Every run lands in the same queue.
+- **Evaluation:** a golden set of 300 curator-verified plants; metrics per prompt version: acceptance rate, edit rate, error rate on critical traits (target under 1% reaching the founder's approval step), hallucinated-citation rate (target 0; every locator is fetched and the snippet string-matched).
 
 **KB-CUR-04 Curator review queue**
-- **Priority score** = impact (count of tenant uses of the plant in the last 90 days, weighted 2x in Wave 1 Regions, and in Wave 2 Regions from) x severity (legal 5, critical trait 3, conflict 2, standard 1) x age factor.
+- **Priority score** = impact (count of tenant uses of the plant in the last 90 days, weighted 2x in curated Regions) x severity (legal 5, critical trait 3, conflict 2, standard 1) x age factor.
 - Filters: Region, plant group, trait, source, author type (AI, import, tenant, curator), confidence band.
-- Keyboard-first: `A` accept, `E` edit and accept, `R` reject with reason (reasons feed prompt evaluation), `S` request second opinion, `J`/`K` next and previous, `Shift+A` bulk accept eligible items.
+- Keyboard-first: `A` accept, `E` edit and accept, `R` reject with reason (reasons feed prompt evaluation), `S` escalate to the founder, `J`/`K` next and previous, `Shift+A` bulk accept eligible items.
 - Side-by-side: current value, proposed value, source snippets with links, other sources' values, usage count.
 - Service levels: legal and takedown items 24 hours; tenant failure reports 5 business days; AI suggestions expire after 60 days unreviewed (and are re-generated if still relevant).
-- Assignment by Region and plant group (PA-070); workload balancing across curators.
+- Assignment by Region and plant group (PA-070). The plant curator agent holds every scope by default; any scope can be assigned to another `platform_curator` holder without a product change.
 
 **KB-CUR-05 Field-level provenance**
 - Every value stores `source_id`, `license_id`, citation locator, method (`imported`, `ai_extracted`, `curator_entered`, `computed`, `tenant_aggregate`, `rating_session`), confidence, author, reviewer, created, approved and published release.
 - An info popover on every field shows this history. Client-visible claims (native status, deer resistance, toxicity) show a short public citation on plant cards ("Source: USDA PLANTS; ASPCA").
 
 **KB-CUR-06 Versioning, releases and changelog**
-- `kb_release` is cut daily at MVP (PA-070), identified like `2027.04.12-1`. A release contains the approved change requests since the last release and produces immutable plant and profile **version snapshots**.
+- `kb_release` is cut daily (PA-070), identified like `2027.04.12-1`. A release contains the approved change requests since the last release and produces immutable plant and profile **version snapshots**. The plant curator agent requests each release and the founder approves it from its changelog (a senior power, 9.1).
 - Consumers pin a release: sold Design Versions and accepted Proposals keep the plant data they were sold with ([10](10-design-studio.md)).
 - Tenant changelog digest: "12 plants updated in your Regions this week, 1 regulatory change (Callery pear), 4 new photos."
 - **Rollback:** repoint `current_release` to the previous release within minutes. **Hotfix releases** for legal changes and image takedowns.
@@ -640,7 +641,7 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 - Presented in a duplicate queue with side-by-side records and usage counts.
 
 **KB-CUR-08 Merge and synonym resolution against POWO and WFO**
-- The curator chooses the surviving record and picks values field by field. The losing record becomes `merged` with `merged_into_id`; its names become synonyms of the survivor.
+- The plant curator agent chooses the surviving record and picks values field by field; the founder approves the merge (9.1). The losing record becomes `merged` with `merged_into_id`; its names become synonyms of the survivor.
 - All references (designs, Price Book items, palettes, tenant overlays, nursery mappings, warranties) resolve through the redirect at read time. A background job rewrites **mutable** references (draft designs, Price Book links, palettes) and leaves sold and snapshotted records untouched, matching [10](10-design-studio.md).
 - Merges can be undone for 30 days.
 - Name changes from the backbone (KB-TAX-03) use the same flow: the old accepted name becomes a synonym; the record identity does not change.
@@ -652,27 +653,27 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 
 **KB-CUR-10 Bulk edits**
 - Query-based edits (for example `genus = Hosta` -> `rabbit_resistance = low`) with preview of affected records, required reason and citation. Edits apply to the species record by default; "also apply to cultivars that override this trait" is an explicit checkbox.
-- Produces one batch change request; critical traits still require a second reviewer.
+- Produces one batch change request; critical traits still need the founder's approval.
 
 **KB-CUR-11 Regional rating sessions**
-- A session = Region + plant list (a palette or a query, for example "all shrubs used by 3 or more Companies in Central Ohio") + raters (curators and invited guests such as extension educators or veteran contractors) + mode.
+- A session = Region + plant list (a palette or a query, for example "all shrubs used by 3 or more Companies in Central Ohio") + raters (invited guest experts such as extension educators, arboretum horticulturists, veteran contractors and designers from customer Companies) + mode. The plant curator agent facilitates.
 - **Blind then reconcile:** raters score independently (rating 1-5, `do_not_use`, conditions, note, confidence) in a keyboard-driven grid or a Google Sheet; the facilitator sees the spread; items with a spread of 2 or more go to discussion; the facilitator publishes the median (or the discussed value) as profile change requests with evidence type `rating_session` naming the raters.
-- tablet mode for on-site sessions at trial gardens or nurseries, working offline.
-- Guest raters sign a contributor agreement (license to Rootline) and a conflict-of-interest disclosure. Throughput planning assumption: 60-100 plants per hour for experienced raters (estimate to validate in the first session).
-- **Guest access:** a guest rater is not a tenant user and not platform staff. The facilitator invites them by email; they sign in with an email one-time code ([02](02-personas-roles-permissions.md)) to a session-scoped account that can see only that session's plant list, current published values and their own votes. Access expires 14 days after the session closes. Guests never see other raters' votes before reconciliation, never see tenant data, and cannot open the review queue. A guest with a nursery or brand affiliation is flagged in the facilitator view, and their votes on that brand's plants are shown but excluded from the median.
-- **Reconciliation math:** the published rating is the median of submitted ratings, rounded half down (a 3.5 median publishes 3, because over-rating costs warranty money and under-rating costs only a missed sale). Any `do_not_use` vote from a senior curator forces a discussion item. A session needs at least 3 raters to publish; fewer raters produce evidence items only.
+- A tablet mode supports on-site sessions at trial gardens or nurseries, working offline.
+- Guest raters sign a contributor agreement (license to Rootline) and a conflict-of-interest disclosure.
+- **Guest access:** a guest rater is not a tenant user and holds no platform role. The plant curator agent invites them by email; they sign in with an email one-time code ([02](02-personas-roles-permissions.md)) to a session-scoped account that can see only that session's plant list, current published values and their own votes. Access expires 14 days after the session closes. Guests never see other raters' votes before reconciliation, never see tenant data, and cannot open the review queue. A guest with a nursery or brand affiliation is flagged in the facilitator view, and their votes on that brand's plants are shown but excluded from the median.
+- **Reconciliation math:** the published rating is the median of submitted ratings, rounded half down (a 3.5 median publishes 3, because over-rating costs warranty money and under-rating costs only a missed sale). Any `do_not_use` vote forces a discussion item. A session needs at least 3 raters to publish; fewer raters produce evidence items only.
 
 **KB-CUR-12 Tenant suggestions and failure reports**
 - "Suggest a correction" on any field (optional citation and photo) creates a change request authored by the tenant.
-- "This plant failed here" collects photos, install date, size, the Property's Site Context, bed sun class and soil, and probable cause. Before reaching curators it is **de-identified**: no Client name or address; location coarsened to county and Region.
-- contributor reputation: suggestions from Companies with high historical acceptance get priority.
+- "This plant failed here" collects photos, install date, size, the Property's Site Context, bed sun class and soil, and probable cause. Before it reaches the plant curator agent it is **de-identified**: no Client name or address; location coarsened to county and Region.
+- Contributor reputation: suggestions from Companies with high historical acceptance get priority.
 
 **KB-CUR-13 Curator scopes and editorial independence**
-- Curators have scopes (Regions, plant groups) and a level (`contributor`, `curator`, `senior`), matching the "senior curator publishes" rule in [02](02-personas-roles-permissions.md).
-- Conflict-of-interest registry: a curator affiliated with a nursery or plant brand must disclose it and cannot be the sole approver for that brand's plants.
+- `platform_curator` holders have scopes (Regions, plant groups) and a level (`contributor`, `curator`, `senior`), matching the "senior curator publishes" rule in [02](02-personas-roles-permissions.md). The plant curator agent holds the `curator` level in every scope; the senior powers (publishing releases, `do_not_use` flags, merges, Region republishing, pinned names) are exercised by the founder on the agent's request (9.1).
+- Conflict-of-interest registry: a guest rater, or any person given a curator scope, who is affiliated with a nursery or plant brand must disclose it and cannot be the sole approver for that brand's plants.
 - **No paid placement, ever.** Brands and nurseries can license media to us and publish availability, but they cannot buy ratings, palette membership or search ranking. This is a published policy, because trust in the ratings is the product.
 
-> **Competitive edge: curation as a system, not a spreadsheet.** Design tools ship plant libraries that change when the vendor gets around to an update, and field-service tools have no plant data to curate. Rootline's change-request model, AI enrichment with verified citations, rating sessions and daily releases let a team of four curators keep thousands of plants and dozens of Regions current, with every value traceable. That operating model, more than any single dataset, is what competitors would have to copy.
+> **Competitive edge: curation as a system, not a spreadsheet.** Design tools ship plant libraries that change when the vendor gets around to an update, and field-service tools have no plant data to curate. Rootline's change-request model, AI enrichment with verified citations, rating sessions and daily releases let one plant curator agent, with the founder approving, keep thousands of plants and dozens of Regions current, with every value traceable. That operating model, more than any single dataset, is what competitors would have to copy.
 
 ### 4.6 Data sources and licensing (KB-SRC)
 
@@ -680,7 +681,7 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 - Every dataset, document family and image source is registered with: publisher, URL, **tier** (Tier 1: government, extension, botanic garden, peer-reviewed; Tier 2: reputable trade sources such as grower and brand catalogs under license, standard reference books under license; Tier 3: general web, used only as weak corroboration), license type, allowed uses, attribution text, contract link, expiry and contact. This is the same registry the console exposes in [19](19-platform-admin-portal.md) PA-075.
 - **Allowed uses** are explicit flags: `display_in_app`, `print_in_proposal`, `public_web`, `fact_extraction`, `derived_text`, `ai_reference`, `ai_training`, `api_redistribution`.
 
-**Source plan** (license classes are the author's understanding and must be verified by counsel before use):
+**Source plan** (license classes are the author's understanding; the plant curator agent records each in the registry, the founder approves it, and the founder takes the classes to counsel, [24](24-product-scope-decisions-catalog.md) section 1.7):
 
 | Source | What we take | License class (verify) | Default use policy |
 |---|---|---|---|
@@ -717,15 +718,15 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 | Rootline-owned | Commissioned photos, curator writing, rating sessions, compiled profiles | Owned | All uses, including licensing |
 
 **KB-SRC-02 Facts-versus-expression policy**
-- In the US, facts are not protected by copyright (the Supreme Court's *Feist v. Rural Telephone* decision, 1991), but prose, photos and a database's original selection and arrangement can be; the EU adds a separate database right; Canada protects original compilations. Policy, to be confirmed by counsel:
+- In the US, facts are not protected by copyright (the Supreme Court's *Feist v. Rural Telephone* decision, 1991), but prose, photos and a database's original selection and arrangement can be; the EU adds a separate database right; Canada protects original compilations. Policy (OD-67; the founder confirms it with counsel):
   1. Extract individual facts with citations; write our own descriptions (KB-CUR-03 copy check).
   2. Never copy prose, photos or substantial parts of a restricted source's selection or arrangement.
-  3. **Concentration check:** if a single restricted source is the *only* evidence for a trait on more than 20% of plants, the trait goes to legal review and a second source or a license is obtained.
+  3. **Concentration check:** if a single restricted source is the *only* evidence for a trait on more than 20% of plants, the trait goes to the founder for a legal check and a second source or a license is obtained.
   4. Honor terms of use and robots rules; no scraping where terms prohibit it. Contract terms bind independently of copyright: US scraping litigation such as *hiQ v. LinkedIn* narrowed computer-fraud claims but left contract claims alive ([R3 section 4.9](research/R3-design-ai-plant-data.md); verify).
   5. Prefer written data agreements; budget for licenses on high-value sources.
   6. **Share-alike boundary:** CC BY-SA and ODbL content lives in separate, clearly bounded tables and never flows into compiled plant documents, the Plant API or AI training sets, so the KB as a whole never inherits a share-alike obligation. CC BY-NC content is excluded entirely (incompatible with a paid SaaS).
   7. **Trademarks:** brand series and trade names are used descriptively to identify plants, with the symbol the brand requires (®, ™), and never in a way that implies the brand endorses Rootline or a Company.
-  8. **Clean-room curation:** curators may consult any public reference but record facts in Rootline's own fields and write original notes. Every curator acknowledges this policy in onboarding, and the acknowledgment is stored with their curator scope.
+  8. **Clean-room curation:** the plant curator agent may consult any public reference but records facts in Rootline's own fields and writes original notes. The policy is part of the agent's instructions; any person given a curator scope acknowledges it, and the acknowledgment is stored with the scope.
 
 **KB-SRC-03 License enforcement at read time**
 - Every KB API response that contains media or source-derived text includes attribution strings and the allowed uses for the requested context. The KB service filters assets by context: proposal PDFs and the Customer Portal never receive non-commercial or expired assets (PA-075); public SEO pages receive only `public_web` assets; AI rendering receives only `ai_reference` assets.
@@ -733,7 +734,7 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 - **`license_class` summary:** the business model doc describes each KB field as `owned`, `cc_by` or `restricted` ([22](22-business-model-pricing-gtm.md) section 5.2.1). That `license_class` is **computed** from the source's `allowed_uses` flags, never stored by hand: `owned` = Rootline-owned source; `cc_by` = open license with attribution that includes `api_redistribution`; `restricted` = everything else. The Plant API and data exports filter on it; all other contexts filter on the full `allowed_uses` set.
 
 **KB-SRC-04 Data partnerships**
-- Land-grant universities and extension services (data license plus optional co-branding: "Ratings informed by [university] Extension"), botanic-garden trial programs, nursery brand programs (photos, trade names, GTINs), state and provincial invasive councils, and the paid regional horticulturist network in [19](19-platform-admin-portal.md).
+- Land-grant universities and extension services (data license plus optional co-branding: "Ratings informed by [university] Extension"), botanic-garden trial programs, nursery brand programs (photos, trade names, GTINs), state and provincial invasive councils, and paid guest experts for rating sessions (KB-CUR-11).
 
 ### 4.7 Photo and media pipeline (KB-MED)
 
@@ -744,28 +745,28 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 
 **KB-MED-02 Ingestion pipeline**
 1. **Ingest** from upload, licensed source API, partner feed or tenant contribution.
-2. **License gate:** license, author, source URL, attribution text and allowed uses are mandatory. Non-commercial and unknown licenses are rejected.
+2. **License gate:** license, author, source URL, attribution text and allowed uses are mandatory. Non-commercial and unknown licenses are rejected: every photo comes from a licensed or commissioned source, with attribution where the license requires (OD-67).
 3. **Privacy scrub:** strip GPS and device EXIF (keep capture date); detect faces, house numbers and license plates and blur them, or reject if central. Mandatory for tenant contributions.
 4. **De-duplication:** perceptual hash against the library; near-duplicates linked, best kept.
-5. **Taxon check:** a vision model compares the image with the claimed plant's existing photos; mismatches go to a curator ("This looks like *Spiraea*, labeled *Physocarpus*").
+5. **Taxon check:** a vision model compares the image with the claimed plant's existing photos; mismatches go to the plant curator agent ("This looks like *Spiraea*, labeled *Physocarpus*").
 6. **Quality scoring:** resolution (1,600 px long edge minimum for hero images, 800 px for gallery), blur (variance of Laplacian), exposure, subject framing, watermark detection (watermarked images rejected).
-7. **Tagging:** role, season, organ, background (nursery, studio, landscape), dominant colors; AI suggests, curator confirms for hero images.
+7. **Tagging:** role, season, organ, background (nursery, studio, landscape), dominant colors; AI suggests, and the plant curator agent confirms hero images.
 8. **Focal point and crops** for 1:1, 4:3, 16:9 and plant-card formats.
 9. **Derivatives:** 160, 480, 960 and 1,600 px in AVIF and WebP with JPEG fallback, served through the CDN ([20](20-architecture-security.md)).
 10. **Attribution string** compiled ("Photo: J. Smith, CC BY 4.0, via Wikimedia Commons").
 11. **Hero selection** per plant, season and Region. Regional photos are preferred: a *Baptisia* in a Columbus front-yard bed sells better in Central Ohio than the same plant in an English border.
 
 **KB-MED-03 Photo commissioning and contributions**
-- Curator field shoots in the six Wave 1 Great Lakes Regions first, then Wave 2 Regions as they are added, scheduled by season gaps from the quality dashboard; photo bounties for gaps. Great Lakes shot lists include winter habit under snow, salt damage on parkway plantings (`problem` role) and established rain gardens on clay, the images that sell Wave 1 palettes.
-- Tenant contribution program: opt-in license grant; credit line "Photo: Cedar & Stone Landscapes" (which doubles as marketing for the Company). Contributed photos run through the full pipeline.
+- Commissioned photography (OD-67), starting in the six Great Lakes Regions and extending to each Region as it is curated, scheduled by season gaps from the quality dashboard (bloom and fall color can only be shot in season); photo bounties for gaps. Until a plant has its own photos, licensed photos fill the gap. Great Lakes shot lists include winter habit under snow, salt damage on parkway plantings (`problem` role) and established rain gardens on clay, the images that sell Great Lakes palettes.
+- Tenant contribution program: opt-in license grant; credit line "Photo: Greenleaf Grounds Co." (which doubles as marketing for the Company). Contributed photos run through the full pipeline.
 
 **KB-MED-04 2D plan symbols**
-- Every plant maps to a **symbol family** ([21](21-ux-design-system-sitemaps.md)) with parameters from traits (form, texture, foliage color by season, evergreen, bloom color), producing the procedural symbols specified in [10](10-design-studio.md) DS-SYMB-02. Curators can override with a custom symbol.
+- Every plant maps to a **symbol family** ([21](21-ux-design-system-sitemaps.md)) with parameters from traits (form, texture, foliage color by season, evergreen, bloom color), producing the procedural symbols specified in [10](10-design-studio.md) DS-SYMB-02. The plant curator agent can override with a custom symbol.
 - Editor preview at typical plan scales (1 in = 10 ft and 1 in = 20 ft). A **distinctness check** warns when plants commonly used together (same palette) render nearly identically, addressing the "symbols are hard to tell apart" complaint.
 
 **KB-MED-05 3D archetypes and models**
 - Each plant maps to one of the parametric 3D archetypes defined in [10](10-design-studio.md) DS-3D-02, parameterized by KB height, spread, leaf color, bloom color and density.
-- hero 3D models (photogrammetry or Gaussian-splat captures) for the top 300 plants by usage.
+- Hero 3D models (photogrammetry or Gaussian-splat captures) for the top 300 plants by usage.
 
 **KB-MED-06 AI reference images**
 - Curated reference packs (1-3 best references per season and growth stage) with `ai_reference` license, consumed by the plant render packs in [11](11-ai-design-mockups.md) AIM-FID-02. Render-readiness status per plant is shown in the curator workbench.
@@ -783,7 +784,7 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 **KB-SRCH-02 Faceted filters**
 - Facets with counts: plant kind; size class and height and spread sliders (ft or m); sun; water need and WUCOLS (California); zone (pre-filled from the Property); soil texture; pH; drainage; salt; deer A-D; rabbit; bloom month and color; foliage and fall color; leaf persistence; form; native (ecoregion, state or province); pollinator, host and keystone; safe for dogs, cats and children; thorns; fire behavior; maintenance level; Region rating at or above n; availability within N miles; in Company palette; favorites; Company price range.
 - **Context by default:** when the picker opens from a Property or Design, Region and zone filters are pre-applied. Removing them shows a persistent banner: "Showing plants outside Central Ohio recommendations."
-- Implementation: Postgres facet tables at MVP, OpenSearch index `kb-plants-{release}` at V1 ([20](20-architecture-security.md)). Target p95 under 300 ms.
+- Implementation: Postgres facet tables (also used for natural-language hard filters) and an OpenSearch index `kb-plants-{release}` for faceted search ([20](20-architecture-security.md)). Target p95 under 300 ms.
 
 **KB-SRCH-03 Natural-language semantic search**
 1. A fast LLM (AI task `kb.search.parse`) parses the query into **hard filters**, **soft preferences** and residual semantic text, as JSON with confidence.
@@ -819,6 +820,7 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 4. **Regional prior:** candidates are re-weighted by presence in the Property's Region profiles, how often tenants install them in the Region, and season-appropriate appearance.
 5. A vision-language model verifies the top 5 with organ-level reasoning ("opposite leaves, panicle inflorescence").
 6. Output: top 5 with calibrated confidence; **abstain** when top-1 confidence is below 0.5 ("Not sure. Take a close-up of a leaf and a flower.").
+- Plant ID runs online and, in the crew app without signal, on-device against the offline subset (KB-API-03), with the same regional prior and abstention rule.
 - Optional fallback to a commercial plant-ID API (for example Pl@ntNet or Kindwise plant.id; terms and pricing to verify) for plants outside the KB; results map to a backbone taxon and log a KB search miss.
 - Uses: site assessments (existing plant inventory), warranty claims, PHC and tree inventory ([14](14-service-line-modules.md)), the crew app ([05](05-field-crew-mobile-app.md)), and "What's this plant?" in the portal ([06](06-customer-portal.md)).
 - Targets: top-1 accuracy 80% or more and top-5 95% or more on a regional landscape-plant test set.
@@ -858,7 +860,7 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 **KB-PAL-03 Palette health check**
 - Each role has 3 or more plants per sun class it claims; pollinator palettes cover bloom in at least 6 months (April to October) with no gap longer than 3 weeks; every member is legal and rated 3 or above in every target Region; native share is displayed. Failures show as fix-it items ("Thin in part shade: 1 groundcover").
 
-**KB-PAL-04 Example palettes: Wave 1 launch first, then later Regions (illustrative example data, not KB facts)**
+**KB-PAL-04 Example palettes: the Great Lakes and other Regions (illustrative example data, not KB facts)**
 
 | Palette | Uses and context | Sample members by role or zone | Curator notes |
 |---|---|---|---|
@@ -866,10 +868,10 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 | Great Lakes Salt-Tolerant Parkway Strip | Hell strip or parkway, full sun, deicing-salt spray and brine, plowed-snow piles, compacted clay | Curb zone (first 3 ft): *Panicum virgatum* 'Shenandoah', *Sporobolus heterolepis*, *Hemerocallis* cultivars, *Rhus aromatica* 'Gro-Low'. Back zone: *Juniperus horizontalis* 'Blue Chip', *Calamagrostis x acutiflora* 'Karl Foerster', *Nepeta x faassenii* 'Walker's Low', *Achillea millefolium* cultivars, *Hylotelephium* 'Matrona' | Put the plants rated high for both soil and spray salt where plow spray lands; keep low junipers out of snow-storage spots (plow piles break them); cut grasses back after the snow season; check municipal right-of-way and tree-lawn rules on plant height near driveways and sight triangles; verify every salt rating against a cited extension list |
 | Great Lakes Deer-Resistant Screen | Privacy screen, deer pressure, zones 5b-6b | *Juniperus virginiana* 'Taylor', *Picea omorika*, *Picea abies*, *Viburnum dentatum* (deciduous layer) | Arborvitae (*Thuja occidentalis*) is deliberately excluded: deer browse it heavily in winter |
 | Central Ohio Pollinator Sun Border | Pollinator, four-season, native-leaning | *Monarda fistulosa*, *Echinacea purpurea*, *Pycnanthemum muticum*, *Asclepias tuberosa*, *Baptisia australis*, *Symphyotrichum novae-angliae*, *Solidago rugosa* 'Fireworks' | Bloom succession June to October; add early bloomers (*Amsonia*, *Penstemon digitalis*) for May |
-| Great Lakes Ash Replacement Street Trees | Street tree or parkway replacing ash lost to emerald ash borer; road salt, compaction, high-pH clay | *Gymnocladus dioicus* 'Espresso', *Celtis occidentalis*, *Quercus macrocarpa*, *Ulmus* 'Morton' (Accolade®), *Ginkgo biloba* 'Princeton Sentry' (male), *Platanus x acerifolia* 'Morton Euclid' (Exclamation!®) | Excludes every *Fraxinus* (rated 1 for new planting, reason `pest_pressure`) and Callery pear (prohibited in Ohio; verify the other Wave 1 states); diversify by the 10-20-30 guideline (no more than 10% of one species, 20% of one genus, 30% of one family); check the city's approved street-tree list (KB-RGN-08); verify cultivar and trade names |
-| Golden Horseshoe Dry Shade (Wave 2, V1) | Shade garden, under maples | *Carex pensylvanica*, *Polystichum acrostichoides*, *Eurybia divaricata*, *Geranium maculatum*, *Diervilla lonicera* (shrub layer) | Root competition: plant small sizes (plugs, #1) and irrigate the first season |
-| Front Range Hell Strip (Wave 3 candidate, not an MVP palette) | Full sun, reflected heat, road salt, low water | *Bouteloua gracilis* 'Blonde Ambition', *Penstemon pinifolius*, *Agastache rupestris*, *Salvia yangii*, *Eriogonum umbellatum*, *Delosperma* cultivars | Check municipal right-of-way rules on height near driveways and sight triangles |
-| Front Range Fire-Wise Foundation (Wave 3 candidate, not an MVP palette) | Wildland-urban interface, 5-30 ft from structures | Low-growing, high-moisture perennials and groundcovers from a cited regional fire-resistant list | No plant is fireproof; maintenance (removing dead material) matters more than species; verify local guidance |
+| Great Lakes Ash Replacement Street Trees | Street tree or parkway replacing ash lost to emerald ash borer; road salt, compaction, high-pH clay | *Gymnocladus dioicus* 'Espresso', *Celtis occidentalis*, *Quercus macrocarpa*, *Ulmus* 'Morton' (Accolade®), *Ginkgo biloba* 'Princeton Sentry' (male), *Platanus x acerifolia* 'Morton Euclid' (Exclamation!®) | Excludes every *Fraxinus* (rated 1 for new planting, reason `pest_pressure`) and Callery pear (prohibited in Ohio; verify the other Great Lakes states); diversify by the 10-20-30 guideline (no more than 10% of one species, 20% of one genus, 30% of one family); check the city's approved street-tree list (KB-RGN-08); verify cultivar and trade names |
+| Golden Horseshoe Dry Shade | Shade garden, under maples | *Carex pensylvanica*, *Polystichum acrostichoides*, *Eurybia divaricata*, *Geranium maculatum*, *Diervilla lonicera* (shrub layer) | Root competition: plant small sizes (plugs, #1) and irrigate the first season |
+| Front Range Hell Strip | Full sun, reflected heat, road salt, low water | *Bouteloua gracilis* 'Blonde Ambition', *Penstemon pinifolius*, *Agastache rupestris*, *Salvia yangii*, *Eriogonum umbellatum*, *Delosperma* cultivars | Check municipal right-of-way rules on height near driveways and sight triangles |
+| Front Range Fire-Wise Foundation | Wildland-urban interface, 5-30 ft from structures | Low-growing, high-moisture perennials and groundcovers from a cited regional fire-resistant list | No plant is fireproof; maintenance (removing dead material) matters more than species; verify local guidance |
 
 **KB-PAL-05 Style resolution**
 - Design templates ([10](10-design-studio.md) DS-TMPL-03) and AI style presets ([11](11-ai-design-mockups.md)) reference palette **roles and tags**, not plants. At use time they resolve to the Property's Region palettes, filtered by bed sun class and validations. Resolution order: Company palette, then platform Region palette, then macro-region palette; if fewer than 5 eligible plants remain, the style is shown as "Adapted for your region" or hidden (the rule in [11](11-ai-design-mockups.md)).
@@ -901,7 +903,7 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 - Internal notes (staff only) and client-facing notes (plant cards, proposals, care guides); custom care-guide text per plant; hidden plants (excluded from the Company's picker); Company experience rating; **Company warranty policy per plant** (for example "1-year warranty except no warranty on *Buxus* in shade"), consumed by proposals ([03](03-crm-sales-estimating-proposals.md)) and warranty tracking ([13](13-operations-inventory-equipment.md)).
 
 **KB-TEN-05 Price Book linkage and price overrides**
-- Price Book items (owned by [03](03-crm-sales-estimating-proposals.md)) can reference `plant_id` plus `size_spec`. The KB supplies the size-spec catalog and, at V1, regional cost bands.
+- Price Book items (owned by [03](03-crm-sales-estimating-proposals.md)) can reference `plant_id` plus `size_spec`. The KB supplies the size-spec catalog and regional cost bands.
 - **Bulk create** Price Book items from a Company palette: choose sizes per role (for example #3 for shrubs, #1 for perennials, 2 in caliper B&B for shade trees), cost from the latest vendor price, sell price from Company pricing rules by size class (for example 2.0x markup on #1-#3, 1.8x on #5-#7, 1.6x on B&B trees; illustrative). Install labor comes from production-rate assemblies in [03](03-crm-sales-estimating-proposals.md).
 - **Price precedence:** Company item price, then Company pricing rule, then KB cost band times default markup (shown only as an estimate, never silently used in a sent proposal).
 - **Accounting boundary:** the KB never creates journal entries. When plants are bought, the vendor bill goes through AP in the built-in Ledger, and the cost posts to plants inventory or job materials cost ([09](09-accounting-ledger-integrations.md), [13](13-operations-inventory-equipment.md)). The Price Book item's `plant_id` and size spec ride along on the bill line, so job costing and the [18](18-reporting-analytics.md) plant-margin reports can group by plant, plant kind and Region. KB cost bands are reference data and never post anywhere. For Companies that sync to QuickBooks or Xero, the same lines map to the external item list through [09](09-accounting-ledger-integrations.md)'s mapping, with the plant name in the description.
@@ -918,7 +920,7 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 ### 4.11 Nursery and supplier availability and price feeds (KB-NUR)
 
 **KB-NUR-01 Inputs**
-- Nursery Connect uploads ([13](13-operations-inventory-equipment.md), free vendor portal), availability lists forwarded by Companies (PDF, XLSX, CSV, email body), partner APIs, punchout and EDI ([13](13-operations-inventory-equipment.md) levels L2-L4,) and brand availability feeds.
+- Nursery Connect uploads ([13](13-operations-inventory-equipment.md), free vendor portal), availability lists forwarded by Companies (PDF, XLSX, CSV, email body), partner APIs, punchout and EDI ([13](13-operations-inventory-equipment.md) levels L2-L4) and brand availability feeds.
 
 **KB-NUR-02 Line parsing and matching**
 - The parser ([13](13-operations-inventory-equipment.md) agent 3) extracts name text, size text, quantity, price and notes.
@@ -989,16 +991,17 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 **KB-API-04 Public SEO plant pages**
 - Platform pages at `rootline.com/plants/{slug}` (global) and `rootline.com/plants/{slug}/{region-slug}` (regional), published only for **Gold** plants with a published profile in that Region. Content: curated profile notes, licensed seasonal photos (`public_web` only), care calendar, native status, and a "Find a Rootline pro in Central Ohio" call to action routed per [16](16-marketing-growth-communications.md).
 - **Thin-content guard:** a regional page is indexable only if its profile has 80 or more words of Region-specific notes or 3 or more fields that differ from the macro-region; otherwise it canonicalizes to the global page.
-- Structured data (schema.org and Bioschemas Taxon markup; verify current vocabulary), breadcrumbs, hreflang for English, Spanish and French-Canadian.
+- Structured data (schema.org and Bioschemas Taxon markup; verify current vocabulary), breadcrumbs, hreflang for English, Spanish and Canadian French.
+- **Plant Finder pages (R26-1).** These public pages are the Plant Finder pages in [26](26-agent-led-marketing-playbook.md) section 4.1: the marketing agent drafts them from KB data and the plant curator agent checks every page. Both publishing gates apply (R26-2): a page publishes only when it passes this section's rules (Gold plant, published Region profile, thin-content guard, `public_web` assets only) and the gate in [22](22-business-model-pricing-gtm.md) section 6.5.
 - Tenant website plant pages follow [16](16-marketing-growth-communications.md) 4.1.5 (indexable only with Company-unique content).
 - Anti-scraping: rate limits, bot management, no public bulk endpoints, and "canary" facts to detect wholesale copying.
 
 **KB-API-05 Partner API and data licensing**
 - REST API with OAuth client credentials for nurseries, garden centers, irrigation designers, municipalities and ag-tech partners: `GET /v1/plants`, `GET /v1/plants/{id}`, `GET /v1/regions/lookup?lat=&lng=`, `GET /v1/plants/{id}/profiles/{regionId}`, `POST /v1/search`. Only fields whose sources allow `api_redistribution` are returned, with attribution. Metered and priced per [22](22-business-model-pricing-gtm.md) section 5.2.1 (Developer free and non-commercial; Commercial; Nursery Partner; Enterprise or data license; proposed prices there).
 - **Billing:** licensees are `data_customer` accounts billed by **Rootline's own Stripe account (Stripe Billing)**, the same account that bills Company subscriptions. API revenue never touches a Company's connected Stripe account, and no Company data is in the response ([08](08-payments-stripe.md), [19](19-platform-admin-portal.md)).
-- **Tier-to-field mapping:** Developer = names, IDs, core traits, zones; Commercial adds Region profiles (rating, client-safe notes, conditions), palettes and care calendars; Enterprise adds profile history, embeddings and internal curator notes only where the curator marked them `licensable`. Fields with `license_class = restricted` are never returned at any tier.
+- **Tier-to-field mapping:** Developer = names, IDs, core traits, zones; Commercial adds Region profiles (rating, client-safe notes, conditions), palettes and care calendars; Enterprise adds profile history, embeddings and internal curator notes only where the plant curator agent marked them `licensable`. Fields with `license_class = restricted` are never returned at any tier.
 - **Rate limits:** per-key token bucket at the tier's monthly quota divided by 30, burst 10x for 60 seconds; 429 with `Retry-After`. Responses carry `kb_release` so licensees can pin and diff.
-- bulk licensing of owned content (ratings, profiles, owned photos) as a data product.
+- Bulk licensing of owned content (ratings, profiles, owned photos) as a data product.
 
 **KB-API-06 Copilot grounding**
 - Copilot plant answers cite KB records. When the Copilot uses general knowledge not in the KB, it labels it "not verified for your Region" ([17](17-ai-copilot-automation.md)).
