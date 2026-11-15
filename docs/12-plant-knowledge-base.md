@@ -1009,90 +1009,90 @@ Illustrative results for Central Ohio might include compact inkberry cultivars (
 ### 4.13 Seed strategy: the first 3,000 plants and the first Regions (KB-SEED)
 
 **KB-SEED-01 Principles**
-- **Breadth at "Good" for what contractors actually buy;** depth at "Excellent" in the six Wave 1 Great Lakes Regions (KB-SEED-04); **legal coverage complete on day one** for every state and province where a Company can sign up (state- and province-level prohibited and regulated lists). Advisory council lists, municipal bans and street-tree lists (KB-RGN-08), municipal rule packs as they ship (KB-RGN-11) and a second review of every legal list cover the beachhead jurisdictions: Ohio, Michigan, Indiana, Illinois and Wisconsin at, and Ontario at with Canada support.
-- **Seed for the Great Lakes first.** The 3,000-plant mix is weighted to what Wave 1 Companies plant and fight: deicing-salt tolerance, deer and rabbit browse, heavy clay and alkaline glacial till, zone 5 winters, snow and ice breakage, emerald ash borer replacement, Great Lakes-native and pollinator palettes, and rain gardens and bioswales on clay (KB-SEED-03). Xeric, succulent and fire-wise depth waits for a dry-climate Wave 3 cluster.
+- **Breadth at "Good" for what contractors actually buy;** depth at "Excellent" in the six Great Lakes Regions where seeding starts (OD-01, KB-SEED-04); **legal coverage complete on day one** for every US state and Canadian province, since a Company anywhere in either country can sign up (state- and province-level prohibited and regulated lists). Advisory council lists, municipal bans and street-tree lists (KB-RGN-08), municipal rule packs (KB-RGN-11) and the founder's approval of every legal list start with the five Great Lakes states (Ohio, Michigan, Indiana, Illinois and Wisconsin) and Ontario; California's water and fire rule packs are part of the v1 jurisdiction set (R24-18). Every other jurisdiction is rule-pack and listing data that the plant curator agent maintains (OD-60).
+- **Seed for the Great Lakes first.** The 3,000-plant mix is weighted to what Great Lakes Companies plant and fight: deicing-salt tolerance, deer and rabbit browse, heavy clay and alkaline glacial till, zone 5 winters, snow and ice breakage, emerald ash borer replacement, Great Lakes-native and pollinator palettes, and rain gardens and bioswales on clay (KB-SEED-03). Xeric, succulent and fire-wise depth comes with the dry-climate Regions the plant curator agent curates (KB-SEED-04).
 
 **KB-SEED-02 Candidate list**
-- Union of: (a) design-partner Companies' historical plant purchases and estimates (the design-partner Companies in [22](22-business-model-pricing-gtm.md), all in Wave 1 Regions, with consent); (b) wholesale availability lists from nurseries serving Wave 1 Regions (frequency of appearance across lists); (c) extension-recommended landscape plant lists for Ohio, Michigan, Indiana, Illinois and Wisconsin, plus street-tree, salt-tolerance and rain-garden lists from Great Lakes extension services, arboreta and stormwater agencies (verify terms per source); (d) USDA PLANTS natives with landscape use in the Wave 1 ecoregions (KB-SEED-04); (e) all regulated species in US states and Canadian provinces; (f) turfgrasses (cool-season first) and common bedding annuals.
+- Union of: (a) customers' historical plant purchases and estimates, imported with consent through migration (KB-TEN-08), Founding Customers in the Great Lakes Regions first ([22](22-business-model-pricing-gtm.md)); the score is recomputed as they arrive; (b) wholesale availability lists from nurseries serving the six Great Lakes Regions (frequency of appearance across lists); (c) extension-recommended landscape plant lists for Ohio, Michigan, Indiana, Illinois and Wisconsin, plus street-tree, salt-tolerance and rain-garden lists from Great Lakes extension services, arboreta and stormwater agencies (verify terms per source); (d) USDA PLANTS natives with landscape use in the Great Lakes ecoregions (KB-SEED-04); (e) all regulated species in US states and Canadian provinces; (f) turfgrasses (cool-season first) and common bedding annuals.
 - Score = 0.4 contractor usage + 0.3 nursery frequency + 0.2 extension recommendation + 0.1 native-palette need; regulated species are must-include. Within each group, ties and the last 10% of slots go to plants that close a Great Lakes need target below.
 
 **KB-SEED-03 Composition targets (planning estimate)**
 
-Weighted for the Great Lakes launch: trees and sedges up, succulents and cacti down to cold-hardy staples, total unchanged at 3,000.
+Weighted for the Great Lakes, where seeding starts: trees and sedges up, succulents and cacti down to cold-hardy staples, total unchanged at 3,000.
 
 | Group | Records | Notes |
 |---|---|---|
 | Trees (shade, ornamental, evergreen, conifers) | 480 | Street-tree staples and common cultivars, weighted to salt-, clay- and high-pH-tolerant species with strong wood under snow and ice, and to ash replacements for emerald ash borer losses (*Fraxinus* stays in so ash can be recognized, inventoried and rated 1 for new planting) |
 | Shrubs (deciduous, broadleaf evergreen, conifer) | 850 | The core of foundation and screening work; deer- and rabbit-resistant, salt-tolerant (driveway and parkway edges) and snow-load-tolerant forms first |
-| Perennials | 900 | Great Lakes natives (the Wave 1 ecoregions in KB-SEED-04), pollinator palettes and trade staples; clay-tolerant and rain-garden species ahead of xeric ones |
+| Perennials | 900 | Great Lakes natives (the ecoregions in KB-SEED-04), pollinator palettes and trade staples; clay-tolerant and rain-garden species ahead of xeric ones |
 | Ornamental grasses, sedges, rushes | 230 | Native *Carex* and *Juncus* for rain gardens and bioswales on clay; salt-tolerant grasses for parkway strips |
 | Groundcovers and vines | 180 | |
 | Annuals and tropicals for seasonal color | 120 | Bedding programs for commercial maintenance |
 | Bulbs | 60 | Rabbit- and deer-resistant bulbs (for example *Allium*, *Narcissus*) emphasized |
 | Ferns | 50 | |
-| Succulents and cacti | 20 | Cold-hardy only at MVP: *Sedum*, *Hylotelephium*, *Sempervivum*, hardy *Delosperma* and the Great Lakes native *Opuntia humifusa*, for parkway strips and green roofs. The other 40 xeric records move to Wave 3 |
+| Succulents and cacti | 20 | Cold-hardy staples in the seed: *Sedum*, *Hylotelephium*, *Sempervivum*, hardy *Delosperma* and the Great Lakes native *Opuntia humifusa*, for parkway strips and green roofs. Further xeric records come with dry-climate Regions |
 | Turfgrass species and cultivar classes | 20 | Lawn programs ([14](14-service-line-modules.md)); cool-season classes first (Kentucky bluegrass, tall fescue, perennial ryegrass, fine fescues) |
 | Regulated and invasive reference records | 90 | Present so they can be recognized and blocked, including Great Lakes landscape escapes such as Callery pear, burning bush, Japanese barberry, bush honeysuckles and common buckthorn (listing status differs by state; verify) |
 | **Total** | **3,000** | About 1,100 taxon-level and 1,900 cultivar records (estimate) |
 
 **Great Lakes need targets inside the 3,000** (overlapping: one plant can count toward several rows; planning targets, not extra records)
 
-| Wave 1 need | Seed target | Traits and features that carry it |
+| Great Lakes need | Seed target | Traits and features that carry it |
 |---|---|---|
 | Deicing (road) salt tolerance | 700 or more plants with cited soil and spray salt ratings, including every tree and shrub in parkway, parking-island and driveway-edge palettes | `salt_tolerance_soil`, `salt_tolerance_spray`; profile condition `avoid_road_salt` |
 | Deer and rabbit resistance | Deer rating on every tree, shrub, perennial and groundcover; rabbit rating on 1,500 or more shrubs, perennials, groundcovers and bulbs | `deer_resistance` (critical), `rabbit_resistance` |
 | Heavy clay, glacial till and alkaline soils | 1,200 or more plants with clay tolerance, drainage and pH range cited | `soil_texture`, `soil_ph_min` and `soil_ph_max`, `drainage`; condition `needs_amended_soil` |
-| Zone 5 cold hardiness | `usda_zone_min` cited on every record; Wave 1 palettes admit only plants hardy to each Region's coldest half zone (5a in Southeast Wisconsin) | `usda_zone_min` (critical); reason code `cold_damage` |
+| Zone 5 cold hardiness | `usda_zone_min` cited on every record; Great Lakes palettes admit only plants hardy to each Region's coldest half zone (5a in Southeast Wisconsin) | `usda_zone_min` (critical); reason code `cold_damage` |
 | Snow load and ice breakage | Every tree and evergreen shrub rated | `snow_ice_breakage` (Requirements traits, 4.2) |
-| Emerald ash borer and ash replacement | 60 or more ash-replacement shade and street trees rated in every Wave 1 Region; every *Fraxinus* rated 1 for new planting | Region profiles with reason code `pest_pressure`; emerald ash borer in `pest_disease_links` |
-| Great Lakes-native and pollinator palettes | 900 or more plants native to at least one Wave 1 ecoregion | `native_status` (KB-RGN-07), `pollinator_value` |
+| Emerald ash borer and ash replacement | 60 or more ash-replacement shade and street trees rated in each of the six Great Lakes Regions; every *Fraxinus* rated 1 for new planting | Region profiles with reason code `pest_pressure`; emerald ash borer in `pest_disease_links` |
+| Great Lakes-native and pollinator palettes | 900 or more plants native to at least one Great Lakes ecoregion | `native_status` (KB-RGN-07), `pollinator_value` |
 | Rain gardens and bioswales on clay | 150 or more plants placed in rain-garden bottom, slope or rim zones, with wet and drought tolerance cited | `drainage`, `wet_tolerance`, `drought_tolerance`; palette sub-zones (KB-PAL-01) |
 
 **KB-SEED-04 First Regions (founder decision: Great Lakes launch)**
-- **Decision.** The founder chose the Great Lakes as Rootline's launch region: a single US launch cluster, replacing the earlier default of two beachhead clusters (Great Lakes and Ohio Valley plus the higher-scoring of Front Range Colorado or Mid-Atlantic Piedmont). The macro-region keeps its name, "Great Lakes and Ohio Valley". This answers the beachhead question in [22](22-business-model-pricing-gtm.md) section 6.2 ("where is the founder's plant knowledge strongest?") and open question 1 in section 14.
-- **Wave 1: six curated Regions at Excellent.** Each is built with a KB-RGN-03 recipe from EPA Level III and IV ecoregions intersected with 2023 USDA zones and metro extents. Together they span roughly zones 5a-6b on the 2023 map, with lake-moderated pockets. The ecoregion mapping and zones below are planning assumptions to verify per Region before publishing.
+- **Decision (OD-01).** The Great Lakes is where the Plant KB seed and marketing start: Central Ohio, Northeast Ohio, Southeast Michigan and Toledo, West Michigan, Chicagoland and Northwest Indiana, and Southeast Wisconsin, inside the macro-region "Great Lakes and Ohio Valley". The product works in every US state and Canadian province; more Regions are curation work, not product work. This answers the beachhead question in [22](22-business-model-pricing-gtm.md) section 6.2 and decision 1 in section 14.
+- **The six Great Lakes Regions, seeded to Excellent.** Each is built with a KB-RGN-03 recipe from EPA Level III and IV ecoregions intersected with 2023 USDA zones and metro extents. Together they span roughly zones 5a-6b on the 2023 map, with lake-moderated pockets. The ecoregion mapping and zones below are planning assumptions to verify per Region before publishing.
 
-| Wave 1 Region | Anchor metros | EPA Level III basis (verify) | USDA zones, 2023 map (verify) | What shapes the palettes |
+| Great Lakes Region | Anchor metros | EPA Level III basis (verify) | USDA zones, 2023 map (verify) | What shapes the palettes |
 |---|---|---|---|---|
 | Central Ohio | Columbus | 55 Eastern Corn Belt Plains | 6a-6b | Heavy clay over alkaline glacial till, suburban deer pressure, Ohio's Callery pear ban; this doc's running example |
 | Northeast Ohio | Cleveland, Akron | 61 Erie Drift Plain; 57 Huron/Erie Lake Plains near the shore | 5b-6b | Microregion **Lake Erie Shore** (lake-effect snow belt): heavy snow load, plow salt, lake-delayed spring bloom |
 | Southeast Michigan and Toledo | Detroit, Ann Arbor, Toledo | 57 Huron/Erie Lake Plains; 56 Southern Michigan/Northern Indiana Drift Plains | 6a-6b | Poorly drained lake-plain clay; emerald ash borer was first found in North America here, so ash replacement is everyday work |
 | West Michigan | Grand Rapids, Holland, Kalamazoo | 56 Southern Michigan/Northern Indiana Drift Plains | 5b-6b | Lake-effect snow belt; sandy lakeshore soils beside inland clay; Lake Michigan moderates the shoreline |
 | Chicagoland and Northwest Indiana | Chicago suburbs; Lake and Porter counties, Indiana | 54 Central Corn Belt Plains; 56 at the Indiana end | 5b-6b | High-pH clay till, parkway (tree-lawn) rules, stormwater ordinances that drive bioswales |
-| Southeast Wisconsin | Milwaukee, Madison | 53 Southeastern Wisconsin Till Plains | 5a-6a | The coldest Wave 1 Region; sets the zone 5 hardiness floor for Great Lakes palettes |
+| Southeast Wisconsin | Milwaukee, Madison | 53 Southeastern Wisconsin Till Plains | 5a-6a | The coldest of the six; sets the zone 5 hardiness floor for Great Lakes palettes |
 
-- Outside the six Regions, macro-region profiles for "Great Lakes and Ohio Valley" give Good coverage where Wave 1 profiles generalize; everywhere else starts at Basic (KB-RGN-09).
-- **Design partners.** The design-partner Companies ([22](22-business-model-pricing-gtm.md)) are all in Wave 1 Regions, so the candidate list, guest raters, search evaluations and early failure reports all come from Great Lakes work.
-- **Wave 2: extend within the region and across the border.**
-  - **Southern Ontario Golden Horseshoe** (Toronto, Hamilton, Kitchener-Waterloo, Niagara) ships with Canada support at, at Excellent. It inherits Great Lakes and Ohio Valley profiles, then adds Ontario legal lists (KB-RGN-08) and Canadian hardiness zones (stored separately, never converted).
+- Outside the six Regions, macro-region profiles for "Great Lakes and Ohio Valley" give Good coverage where the six Regions' profiles generalize; everywhere else starts at Basic (KB-RGN-09).
+- **Customers.** Founding Customers are Companies in the Great Lakes Regions ([22](22-business-model-pricing-gtm.md) section 4.6), so the first migrated plant lists, guest raters, search evaluations and failure reports come from Great Lakes work.
+- **More Regions are curation work.** The plant curator agent extends coverage one Region at a time, in the order the founder sets from customer demand and the framework in [22](22-business-model-pricing-gtm.md) section 6.2; nothing in the product changes, and each Region's badge and AI eligibility switch on by themselves when it meets the KB-RGN-09 criteria ([24](24-product-scope-decisions-catalog.md) section 1.4). The nearest Regions:
+  - **Southern Ontario Golden Horseshoe** (Toronto, Hamilton, Kitchener-Waterloo, Niagara). Canada is in v1, so this is the first Canadian Region curated to Excellent. It inherits Great Lakes and Ohio Valley profiles, then adds Ontario legal lists (KB-RGN-08), Canadian hardiness zones (stored separately, never converted) and fr-CA plant names (OD-70).
   - **Cincinnati-Dayton**, **Indianapolis**, **Western New York** (Buffalo-Rochester) and **Erie/Pittsburgh** sit inside or beside the macro-region (verify boundaries), so they open at Good through inheritance and are raised to Excellent one Region at a time, as Region-level ratings, palettes and photos meet the KB-RGN-09 criteria.
-- **Wave 3: the second US cluster,** chosen later, based on traction, with the framework in [22](22-business-model-pricing-gtm.md) section 6.2. Front Range Colorado, Mid-Atlantic Piedmont, North Texas and the Pacific Northwest remain candidates. The xeric, succulent and fire-wise depth held back from the MVP seed (KB-SEED-03), and the evidence from that cluster's regional programs (KB-PRP-05), arrive with it.
-- **After the waves:** further curated Regions are added cluster by cluster. Until then, macro-region profiles and the Basic tier (zone, sun, water and legal checks) cover every other Property.
+- **Other US and Canadian Regions**, for example Front Range Colorado, Mid-Atlantic Piedmont, North Texas and the Pacific Northwest, are curated the same way. Xeric, succulent and fire-wise depth (KB-SEED-03) and the evidence from those Regions' selection programs (KB-PRP-05) come with them.
+- Wherever no curated Region exists, macro-region profiles and the Basic tier (zone, sun, water and legal checks) cover the Property, so the product works at every address in the US and Canada.
 
 **KB-SEED-05 Seed plan: ordered steps and completion criteria**
 
-The seed is built as an ordered sequence of steps. Steps can overlap, but each step's exit criteria must be met before the release candidate (step 8) is cut. Photography is the one step that cannot be compressed: summer bloom and fall color can only be shot in season, so it starts first and runs alongside the others.
+The plant curator agent builds the seed as an ordered sequence of steps; the engineering agent runs the pipelines. Steps can overlap, but each step meets its completion criteria before the first KB release (step 8). Commissioned photography follows the growing season (summer bloom and fall color can only be shot in season), so it runs alongside the other steps and does not hold the release: licensed photos (step 6) cover every palette plant until a plant has its own (OD-67).
 
-| Step | Work | Exit criteria |
+| Step | Work | Done when |
 |---|---|---|
-| 1. Seasonal photography (starts first, runs in parallel) | Commission photography in the six Wave 1 Great Lakes Regions (summer bloom and fall color can only be shot in season). The shot list leads with Great Lakes-native and pollinator palette plants, ash-replacement and salt-tolerant street trees, and rain-garden plants | Seasonal shot list 60% covered for the top 600 plants |
+| 1. Seasonal photography (runs alongside) | Commission photography in the six Great Lakes Regions. The shot list leads with Great Lakes-native and pollinator palette plants, ash-replacement and salt-tolerant street trees, and rain-garden plants | The shot list is scheduled by season gaps and tracked on the quality dashboard |
 | 2. Backbone | Schema, trait dictionary, source and license registry, backbone load (WCVP/POWO, WFO, USDA PLANTS, ITIS IDs), Region layers | Backbone resolves 99% of candidate names |
-| 3. Candidates and legal lists | Candidate list scored; 3,000 records created with names, kinds, native ranges and USDA PLANTS attributes; regulatory lists entered with second review | Legal coverage complete for all Wave 1 jurisdictions |
-| 4. Enrichment and review | AI enrichment in batches of 250 plants; curator review; critical traits dual-reviewed | 100% of critical traits cited and dual-reviewed; Silver or better for 90% of records |
-| 5. Region ratings and palettes | Rating sessions per Wave 1 Region (for example 8 sessions of 3 hours with 4 raters each); palettes for the 7 core uses | 600 or more rated plants per Wave 1 Region |
+| 3. Candidates and legal lists | Candidate list scored; 3,000 records created with names, kinds, native ranges and USDA PLANTS attributes; regulatory lists entered by the plant curator agent and approved by the founder | Legal coverage complete for every US state and Canadian province, with depth in the Great Lakes jurisdictions |
+| 4. Enrichment and review | AI enrichment in batches of 250 plants; review by the plant curator agent; critical traits approved by the founder | 100% of critical traits cited, reviewed and founder-approved; Silver or better for 90% of records |
+| 5. Region ratings and palettes | Rating sessions with guest raters in each of the six Regions (for example 8 sessions with 4 raters each); palettes for the 7 core uses | 600 or more rated plants per Great Lakes Region |
 | 6. Media and symbols | Open-license photo import; gap list; symbol mapping; render packs for the top 300 plants ([11](11-ai-design-mockups.md)) | 95% of palette plants with licensed photos |
-| 7. QA and evals | QA: audit sample of 300 plants; evals (500 Region-correct recommendation queries); search eval on design-partner query logs | Audit error rate under 2% non-critical and 0 critical; eval region-compliance 99% or more; zero-result rate under 5% |
-| 8. Release candidate | Release candidate; design-partner feedback; first KB release for | Founder sign-off |
+| 7. QA and evals | QA: audit sample of 300 plants; evals (500 Region-correct recommendation queries); search eval on a labeled query set, extended with customer query logs as they arrive | Audit error rate under 2% non-critical and 0 critical; eval region-compliance 99% or more; zero-result rate under 5% |
+| 8. First KB release | The plant curator agent requests the release built from the approved seed | KB-SEED-07 is met and the founder approves the release |
 
 **KB-SEED-06 Curation quality bar and process**
-- **Scope of review (estimate):** 3,000 plants x about 70 traits = about 210,000 values. AI enrichment (KB-CUR-03) drafts them with verified citations; curators review individually every value that is low-confidence, conflicting, uncited or outside the bulk-accept rule (non-critical traits only, confidence above 0.9, two agreeing sources; PA-073).
-- **Critical traits:** about 24,000 critical values (8 per plant) each get two independent curator reviews; no critical value publishes on a single review, and critical traits are never bulk-accepted.
-- **Region ratings:** every Wave 1 Region gets blind-then-reconcile rating sessions (KB-CUR-11) with at least 3 raters per published rating, and 5/5 ratings publish only with 2 or more local evidence items.
-- **Beyond trait review:** imports, palettes, duplicate resolution, photo gaps and rework are planned as first-class curation work, not squeezed in after review. If the share of values needing individual review runs higher than expected, the quality bar holds and the release candidate waits for the KB-SEED-07 gates; the bar is never lowered to make a release.
+- **Scope of review (estimate):** 3,000 plants x about 70 traits = about 210,000 values. AI enrichment (KB-CUR-03) drafts them with verified citations; the plant curator agent reviews individually every value that is low-confidence, conflicting, uncited or outside the bulk-accept rule (non-critical traits only, confidence above 0.9, two agreeing sources; PA-073).
+- **Critical traits:** about 24,000 critical values (8 per plant) each get the plant curator agent's review and the founder's approval (the founder's inbox shows each value with its citations side by side); no critical value publishes on a single review, and critical traits are never bulk-accepted.
+- **Region ratings:** each of the six Great Lakes Regions gets blind-then-reconcile rating sessions (KB-CUR-11) with at least 3 raters per published rating, and 5/5 ratings publish only with 2 or more local evidence items.
+- **Beyond trait review:** imports, palettes, duplicate resolution, photo gaps and rework are planned as first-class curation work, not squeezed in after review. If the share of values needing individual review runs higher than expected, the quality bar holds: a Region's coverage switches on only when it meets KB-SEED-07, and the bar is never lowered to make a release.
 - AI enrichment spend for the seed set is expected in the low thousands of US dollars of model usage (estimate; depends on model choice and retrieval volume), metered through the AI Gateway.
 
-**KB-SEED-07 Launch quality gates**
-- Every Wave 1 Region meets the Excellent criteria (KB-RGN-09); 100% of critical traits cited and dual-reviewed; prohibited and regulated lists complete for all US states and Canadian provinces; plant-recommendation eval at 99% or more region-compliance (the gate in [19](19-platform-admin-portal.md)); 95% or more of palette plants with licensed photos; audit error rates as above.
+**KB-SEED-07 Seed quality bar**
+- Prohibited and regulated lists complete for all US states and Canadian provinces (legal coverage on day one); 100% of critical traits cited, reviewed and founder-approved; plant-recommendation eval at 99% or more region-compliance (the eval gate in [19](19-platform-admin-portal.md)); 95% or more of palette plants with licensed photos; audit error rates as above. Each of the six Great Lakes Regions shows its Excellent badge, and AI uses its ratings, once it meets the Excellent criteria (KB-RGN-09).
 
 ---
 
