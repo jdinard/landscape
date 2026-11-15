@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rootline recurring work walkthrough</title>
+<meta name="description" content="A clickable walkthrough of small and recurring landscape work in Rootline: a 2-minute Quick Quote, an online instant quote, a season of route visits, the Spanish-first crew app, Spot it upsells, a rain-day reshuffle, level billing with autopay, collections, true-up and renewal.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/rootline.css">
+<style>
+/* ---------- shell ---------- */
+html { scroll-padding-top: 64px; }
+body { overflow-x: hidden; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 12px; top: -40px; z-index: 60; background: var(--surface); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); }
+.skip:focus { top: 8px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ic { width: 15px; height: 15px; flex: none; display: inline-block; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ic.s { width: 12px; height: 12px; vertical-align: -2px; }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); }
+.pt-shell { display: grid; grid-template-columns: 206px minmax(0, 1fr); align-items: start; }
+.pt-rail { position: sticky; top: 53px; max-height: calc(100vh - 53px); overflow-y: auto; border-right: 1px solid var(--border); background: var(--surface-2); padding: 12px 10px 18px; font-size: .84rem; }
+.pt-rail .rstart { display: flex; gap: 8px; align-items: center; padding: 7px 9px; border-radius: 8px; color: var(--text); text-decoration: none; font-weight: 650; }
+.pt-rail .act { margin-top: 9px; }
+.pt-rail .act-h { font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); padding: 0 9px 4px; line-height: 1.35; }
+.pt-rail .act-h b { display: block; color: var(--accent); font-family: var(--font-mono); letter-spacing: .04em; }
+.pt-rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.pt-rail a.st { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 4px 8px; border-radius: 7px; color: var(--text-2); text-decoration: none; line-height: 1.3; }
+.pt-rail a.st:hover, .pt-rail .rstart:hover { background: var(--surface-3); color: var(--text); }
+.pt-rail a.st .n { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); }
+.pt-rail a.st.done .n { background: var(--primary-soft); border-color: var(--primary); color: var(--primary-soft-text); }
+.pt-rail a.st[aria-current="step"], .pt-rail .rstart[aria-current="step"] { background: var(--primary-soft); color: var(--primary-soft-text); font-weight: 650; }
+.pt-rail a.st[aria-current="step"] .n { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.pt-rail .ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ai-solid); }
+.pt-rail .rfoot { margin-top: 10px; padding: 8px 9px 0; border-top: 1px solid var(--border); color: var(--text-2); font-size: .76rem; }
+.pt-rail .rfoot b { color: var(--ai-text); font-family: var(--font-mono); }
+.meter { height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; margin-top: 6px; }
+.meter i { display: block; height: 100%; background: var(--ai-solid); border-radius: 4px; }
+.meter.ok i { background: var(--ok-solid); }
+.pt-main { min-width: 0; padding: 12px 18px 48px; }
+.pt-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 6px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.pt-bar .where { min-width: 0; flex: 1 1 320px; }
+.pt-bar .where .eyebrow { display: block; }
+.pt-bar h1 { font-size: clamp(1.25rem, 2.1vw, 1.6rem); margin: 2px 0 0; }
+.pt-bar h1:focus { outline: none; }
+.pt-bar .ctrls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.prog { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--text-2); }
+.prog .track { width: 120px; height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.prog .track i { display: block; height: 100%; background: var(--primary); border-radius: 4px; transition: width .3s; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.btn.xs { padding: 2px 8px; font-size: .74rem; }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--surface-3); }
+.pt-body { display: grid; grid-template-columns: minmax(0, 1fr) 334px; gap: 18px; align-items: start; }
+.pt-screen { min-width: 0; }
+.pt-bts { position: sticky; top: 66px; max-height: calc(100vh - 78px); overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface); box-shadow: var(--shadow-1); }
+.pt-bts.collapsed .bts-body { display: none; }
+.bts-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--surface-2); position: sticky; top: 0; z-index: 2; }
+.bts-head h2 { font-family: var(--font-body); font-size: .9rem; font-weight: 700; margin: 0; flex: 1; }
+.bts-body { padding: 4px 12px 14px; font-size: .82rem; }
+.bts-sec { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.bts-sec:last-child { border-bottom: 0; }
+.bts-sec > h3 { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); margin: 0 0 6px; display: flex; gap: 6px; align-items: center; }
+.bts-sec p { color: var(--text-2); }
+.agent { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 7px; }
+.agent .badge { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--ai-bg); color: var(--ai-text); flex: none; border: 1px solid var(--ai-solid); }
+.agent .badge.det { background: var(--surface-3); color: var(--text-2); border-color: var(--border-strong); }
+.agent b { display: block; font-size: .83rem; }
+.agent small { color: var(--text-3); font-size: .74rem; }
+ol.trace { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; counter-reset: tr; }
+ol.trace li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 6px; align-items: start; padding: 5px 6px; border-radius: 6px; background: var(--surface-2); border: 1px solid transparent; }
+ol.trace li .i { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); padding-top: 2px; }
+ol.trace li code { font-family: var(--font-mono); font-size: .72rem; font-weight: 600; color: var(--ai-text); word-break: break-word; }
+ol.trace li code.det { color: var(--text); }
+ol.trace li .res { display: block; color: var(--text-2); font-size: .74rem; line-height: 1.4; margin-top: 1px; }
+ol.trace li .ms { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); white-space: nowrap; padding-top: 2px; }
+ol.trace li.pending { opacity: .45; }
+ol.trace li.pending .res { visibility: hidden; }
+ol.trace li.running { border-color: var(--ai-solid); background: var(--ai-bg); }
+ol.trace li.human { background: var(--primary-soft); }
+ol.trace li.human code { color: var(--primary-soft-text); }
+.hitl { display: grid; gap: 6px; }
+.hitl div { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; color: var(--text-2); }
+.hitl .ic { color: var(--primary); margin-top: 2px; }
+.hitl b { color: var(--text); font-weight: 600; }
+.lvl { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.cred { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; align-items: baseline; }
+.cred .big { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600; color: var(--ai-text); }
+.cred small { color: var(--text-3); font-size: .74rem; grid-column: 1 / -1; }
+.specs { font-family: var(--font-mono); font-size: .7rem; color: var(--text-2); line-height: 1.6; }
+.tagrow { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.tagrow .note { font-size: .74rem; color: var(--text-2); }
+.pill .ic { width: 11px; height: 11px; }
+.ai-mark .ic { color: var(--ai-solid); }
+
+/* ---------- device frames ---------- */
+.dev-row { display: flex; gap: 22px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+.phone.pt-phone { width: 352px; flex: none; }
+.phone .status .bat { display: inline-flex; gap: 4px; align-items: center; }
+.phone .body.pt-pbody { max-height: 680px; overflow-y: auto; overscroll-behavior: contain; gap: 10px; padding: 0 0 14px; position: relative; }
+.pbody-pad { padding: 0 12px; display: flex; flex-direction: column; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 3; }
+.brand .logo { width: 26px; height: 26px; border-radius: 7px; background: var(--moss-700); color: var(--stone-0); display: grid; place-items: center; }
+.brand .logo .ic { stroke: var(--stone-0); }
+.brand b { font-size: .84rem; display: block; line-height: 1.1; }
+.brand small { font-size: .68rem; color: var(--text-3); }
+.brand .sp { flex: 1; }
+.ptitle { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.15; margin: 4px 0 0; }
+.psub { color: var(--text-2); font-size: .84rem; }
+.pcard { border: 1px solid var(--border); border-radius: 12px; padding: 10px 11px; background: var(--surface); }
+.pcard.soft { background: var(--surface-2); }
+.pcard h4 { margin: 0 0 4px; font-size: .84rem; }
+.pfoot { font-size: .66rem; color: var(--text-3); text-align: center; padding: 4px 12px 0; }
+.fld { display: grid; gap: 4px; font-size: .78rem; font-weight: 600; color: var(--text-2); }
+.fld .hint { font-weight: 500; color: var(--text-3); font-size: .72rem; }
+.inp { width: 100%; border: 1px solid var(--border-strong); border-radius: 8px; padding: 7px 9px; background: var(--surface); font-size: .86rem; font-weight: 500; color: var(--text); }
+.inp.sm { padding: 5px 7px; font-size: .8rem; }
+.inp[readonly] { background: var(--surface-2); }
+.inrow { display: flex; gap: 6px; align-items: center; }
+.inrow .inp { flex: 1; min-width: 0; }
+.unit { position: relative; }
+.unit .inp { padding-right: 30px; }
+.unit span { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-size: .74rem; color: var(--text-3); pointer-events: none; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; background: var(--surface); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 5px 10px; font-size: .76rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); font-size: .76rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.chip[aria-pressed="true"], .chip[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-soft-text); }
+.chip.ai { border-color: var(--ai-solid); background: var(--ai-bg); color: var(--ai-text); }
+.chip.ai[disabled] { opacity: .55; cursor: default; }
+.check { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 7px; align-items: start; font-size: .74rem; color: var(--text-2); font-weight: 500; }
+.check input { margin: 2px 0 0; width: 15px; height: 15px; accent-color: var(--primary); }
+.okline { display: flex; gap: 6px; align-items: center; color: var(--ok-text); font-weight: 600; font-size: .78rem; }
+.okline .ic { color: var(--ok-solid); }
+.warnline { display: flex; gap: 6px; align-items: flex-start; color: var(--warn-text); font-weight: 600; font-size: .78rem; }
+.kv { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 3px 10px; margin: 0; font-size: .78rem; }
+.kv dt { color: var(--text-3); }
+.kv dd { margin: 0; font-weight: 600; }
+.loading { display: flex; gap: 8px; align-items: center; color: var(--text-2); font-size: .8rem; }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--primary); animation: spin .8s linear infinite; }
+.runitem .spin, .thumb .spin, ol.trace .spin { border-top-color: var(--ai-solid); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .35s ease both; }
+
+/* desktop frame */
+.frame-scroll { overflow-x: auto; padding: 2px 2px 10px; -webkit-overflow-scrolling: touch; }
+.frame-scroll > .browser { min-width: 760px; }
+.pt-app { display: grid; grid-template-columns: 146px minmax(0, 1fr); min-height: 600px; font-size: .82rem; }
+.pt-app .app-side { flex-direction: column; overflow: visible; border-right: 1px solid var(--border); border-bottom: 0; padding: 10px 7px; gap: 1px; font-size: .8rem; }
+.pt-app .app-side .item { padding: 5px 8px; white-space: nowrap; gap: 7px; }
+.pt-app .app-side .item .badge { margin-left: auto; font-size: .64rem; font-weight: 700; background: var(--accent); color: var(--stone-0); border-radius: 999px; padding: 0 6px; }
+.pt-app .app-side .co { display: flex; gap: 7px; align-items: center; padding: 2px 4px 10px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
+.pt-app .app-side .co .logo { width: 24px; height: 24px; border-radius: 6px; background: var(--moss-700); display: grid; place-items: center; flex: none; }
+.pt-app .app-side .co .logo .ic { stroke: var(--stone-0); width: 14px; height: 14px; }
+.pt-app .app-side .co b { font-size: .74rem; line-height: 1.15; display: block; }
+.pt-app .app-side .co small { font-size: .64rem; color: var(--text-3); }
+.pt-app .app-side .sidefoot { margin-top: auto; padding: 10px 6px 2px; font-size: .68rem; color: var(--text-2); border-top: 1px solid var(--border); }
+.pt-app .app-side .sidefoot b { color: var(--ai-text); font-family: var(--font-mono); }
+.pt-app .app-main { padding: 12px 14px; }
+.apphead { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-bottom: 10px; }
+.apphead h3 { font-size: 1rem; margin: 0; }
+.apphead .crumb { font-size: .74rem; color: var(--text-3); width: 100%; }
+.apphead .sp { flex: 1; }
+.av { width: 24px; height: 24px; border-radius: 50%; display: inline-grid; place-items: center; font-size: .62rem; font-weight: 700; color: var(--on-primary); background: var(--primary); border: 2px solid var(--surface); flex: none; }
+.av.b { background: var(--accent); color: var(--stone-0); }
+.av.c { background: var(--sky-600); color: var(--stone-0); }
+.av.ai { background: var(--ai-solid); color: var(--stone-0); }
+.panel { border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface); padding: 10px 12px; }
+.panel.soft { background: var(--surface-2); }
+.panel h4 { margin: 0 0 6px; font-size: .82rem; display: flex; gap: 6px; align-items: center; }
+.ph { font-size: .66rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+.ai-box { border: 1px solid var(--ai-solid); background: var(--ai-bg); border-radius: var(--radius-m); padding: 10px 12px; }
+.ai-box .ai-h { display: flex; align-items: center; gap: 6px; color: var(--ai-text); font-weight: 700; font-size: .8rem; margin-bottom: 4px; }
+.ai-box ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; font-size: .78rem; color: var(--text); }
+.cost { font-family: var(--font-mono); font-size: .72rem; color: var(--ai-text); font-weight: 600; white-space: nowrap; }
+table.data.tight td, table.data.tight th { padding: 5px 7px; }
+table.data td .sub { display: block; color: var(--text-3); font-size: .72rem; }
+.stat { display: inline-flex; gap: 5px; align-items: center; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--border-strong); }
+.dot.ok { background: var(--ok-solid); } .dot.warn { background: var(--warn-solid); } .dot.ai { background: var(--ai-solid); } .dot.info { background: var(--info-solid); }
+.flex { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.grow { flex: 1; }
+.muted { color: var(--text-2); }
+.faint { color: var(--text-3); }
+.tiny { font-size: .72rem; }
+.mt6 { margin-top: 6px; } .mt10 { margin-top: 10px; } .mt14 { margin-top: 14px; }
+.toast { display: flex; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; background: var(--ok-bg); color: var(--ok-text); font-weight: 600; font-size: .8rem; }
+.toast.ai { background: var(--ai-bg); color: var(--ai-text); }
+.event { font-family: var(--font-mono); font-size: .7rem; padding: 1px 7px; border-radius: 4px; background: var(--surface-3); color: var(--text); border: 1px solid var(--border); }
+
+/* chat */
+.chat { display: grid; gap: 8px; }
+.msg { max-width: 88%; padding: 7px 10px; border-radius: 12px; font-size: .78rem; line-height: 1.45; }
+.msg.me { justify-self: end; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 4px; }
+.msg.ai { justify-self: start; background: var(--ai-bg); color: var(--text); border: 1px solid color-mix(in srgb, var(--ai-solid) 45%, transparent); border-bottom-left-radius: 4px; }
+.msg.ai .who { display: flex; gap: 5px; align-items: center; font-size: .66rem; font-weight: 700; color: var(--ai-text); margin-bottom: 2px; }
+.diff { margin-top: 6px; border: 1px solid var(--ai-solid); border-radius: 8px; background: var(--surface); padding: 6px 8px; font-size: .72rem; }
+.diff .dh { display: flex; justify-content: space-between; gap: 6px; font-weight: 700; color: var(--ai-text); font-size: .66rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.diff ul { margin: 0; padding-left: 15px; display: grid; gap: 1px; }
+.diff .val { color: var(--ok-text); font-weight: 600; display: flex; gap: 4px; align-items: center; margin-top: 3px; }
+.typing { display: inline-flex; gap: 3px; } .typing i { width: 5px; height: 5px; border-radius: 50%; background: var(--ai-solid); animation: pulse 1s infinite; } .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+
+/* ---------- overview ---------- */
+.ov-hero { padding: 6px 0 16px; }
+.ov-hero h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); max-width: 22ch; }
+.ov-hero .lede { margin-top: 10px; }
+.ov-hero .flex { margin-top: 14px; }
+.jm { display: grid; gap: 10px; margin-top: 6px; }
+.jm-act { border: 1px solid var(--border); border-radius: var(--radius-l); background: var(--surface); padding: 10px 12px 12px; }
+.jm-act .jh { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; }
+.jm-act .jh b { font-family: var(--font-mono); font-size: .72rem; color: var(--accent); letter-spacing: .05em; }
+.jm-act .jh span { font-weight: 650; font-size: .9rem; }
+.jm-act .jh small { color: var(--text-3); font-size: .76rem; }
+.jm-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 14px; align-items: stretch; }
+.jm-node { position: relative; display: grid; gap: 3px; align-content: start; min-width: 0; padding: 7px 7px 8px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); color: var(--text); text-decoration: none; font-size: .72rem; line-height: 1.28; }
+.jm-node::after { content: ""; position: absolute; right: -12px; top: 50%; width: 9px; height: 2px; background: var(--border-strong); }
+.jm-node::before { content: ""; position: absolute; right: -13px; top: calc(50% - 3px); border: 4px solid transparent; border-left-color: var(--border-strong); border-right: 0; }
+.jm-node.last::after, .jm-node.last::before { display: none; }
+.jm-node:hover { border-color: var(--primary); background: var(--primary-soft); }
+.jm-node .k { display: flex; gap: 5px; align-items: center; font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); font-weight: 600; }
+.jm-node .k .ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ai-solid); }
+.jm-node b { font-size: .76rem; }
+.jm-node .who { color: var(--text-3); font-size: .64rem; }
+.jm-node .tag { justify-self: start; }
+.cast { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.cast .card { padding: 12px; }
+.cast .card h3 { font-size: .9rem; display: flex; gap: 7px; align-items: center; }
+.cast ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: .78rem; color: var(--text-2); }
+.cast li b { color: var(--text); font-weight: 600; }
+.prop { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 14px; align-items: center; }
+.prop svg { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); display: block; }
+.sec-t { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; margin: 18px 0 8px; }
+
+/* ---------- step-specific ---------- */
+.capview { position: relative; }
+.capview .chipo { position: absolute; z-index: 4; padding: 2px 8px; border-radius: 999px; font-size: .64rem; font-weight: 700; background: color-mix(in srgb, var(--stone-900) 78%, transparent); color: var(--stone-0); }
+.capview .guide { position: absolute; inset: 13% 18% 22% 18%; border: 2px dashed var(--stone-0); border-radius: 6px; z-index: 3; pointer-events: none; }
+.capview .level { position: absolute; left: 0; right: 0; top: 56%; border-top: 2px dotted var(--moss-200); z-index: 3; pointer-events: none; }
+.shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.shot { border: 1px solid var(--border); border-radius: 9px; padding: 4px; background: var(--surface); font-size: .66rem; line-height: 1.25; display: grid; gap: 3px; color: var(--text-2); cursor: pointer; text-align: left; }
+.shot .scene { aspect-ratio: 4/3; border-radius: 6px; }
+.shot .ph0 { aspect-ratio: 4/3; border-radius: 6px; border: 1px dashed var(--border-strong); display: grid; place-items: center; color: var(--text-3); font-weight: 700; font-size: .9rem; background: var(--surface-2); }
+.shot b { color: var(--text); font-size: .68rem; }
+.shot[aria-pressed="true"] { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.qbar { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: .74rem; }
+.qbar .track { height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; } .qbar .track i { display: block; height: 100%; background: var(--ok-solid); }
+.qgrid { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: .7rem; color: var(--text-2); }
+.minimap svg { width: 100%; height: auto; display: block; }
+.runlist { display: grid; gap: 6px; }
+.runitem { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: .78rem; }
+.runitem .st { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--border-strong); background: var(--surface); }
+.runitem.done .st { background: var(--ok-solid); border-color: var(--ok-solid); color: var(--stone-0); }
+.runitem.done .st .ic { stroke: var(--stone-0); width: 11px; height: 11px; }
+.runitem.run .st { border-color: var(--ai-solid); }
+.runitem.wait { opacity: .45; }
+.runitem b { display: block; font-size: .8rem; }
+.runitem small { color: var(--text-2); font-size: .72rem; }
+.codebox { display: flex; gap: 5px; }
+.codebox span { width: 30px; height: 36px; border: 1px solid var(--border-strong); border-radius: 7px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 1rem; font-weight: 600; background: var(--surface); }
+.legend-sm { display: flex; flex-wrap: wrap; gap: 4px 9px; font-size: .66rem; color: var(--text-2); }
+.legend-sm i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; opacity: .8; }
+.vthumbs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.inbox { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 10px; }
+.icard { border: 1px solid var(--border); border-radius: 9px; padding: 8px 9px; background: var(--surface); display: grid; gap: 3px; font-size: .74rem; text-align: left; cursor: pointer; width: 100%; }
+.icard[aria-pressed="true"] { border-color: var(--ai-solid); box-shadow: 0 0 0 1px var(--ai-solid); }
+.icard .t { display: flex; gap: 5px; align-items: center; font-weight: 700; font-size: .72rem; color: var(--ai-text); }
+.icard .t .tm { margin-left: auto; color: var(--text-3); font-weight: 500; }
+.icard b { font-size: .78rem; color: var(--text); }
+.icard.done { opacity: .7; }
+.sms { border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); padding: 10px; display: grid; gap: 6px; }
+.sms .bub { max-width: 92%; padding: 7px 10px; border-radius: 12px; font-size: .78rem; line-height: 1.45; }
+.sms .bub.out { justify-self: end; background: var(--moss-600); color: var(--stone-0); border-bottom-right-radius: 3px; }
+.sms .bub.out.draft { background: var(--ai-bg); color: var(--text); border: 1px dashed var(--ai-solid); }
+.sms .bub.in { justify-self: start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 3px; }
+.sms .meta { font-size: .64rem; color: var(--text-3); }
+.sms .meta.r { justify-self: end; }
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.slot { border: 1px solid var(--border); border-radius: 8px; padding: 6px 7px; font-size: .72rem; background: var(--surface); }
+.slot b { display: block; font-size: .78rem; }
+.slot.on { border-color: var(--primary); background: var(--primary-soft); }
+.lt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.lt .scene { aspect-ratio: 4/3; border-radius: 6px; }
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.opt { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 7px; display: grid; gap: 5px; text-align: left; cursor: pointer; font-size: .72rem; align-content: start; }
+.opt[aria-pressed="true"] { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.opt .oh { display: flex; justify-content: space-between; gap: 4px; align-items: baseline; }
+.opt .oh b { font-size: .8rem; }
+.opt .price { font-family: var(--font-mono); font-weight: 600; font-size: .8rem; }
+.opt table { width: 100%; border-collapse: collapse; }
+.opt td { padding: 1px 0; color: var(--text-2); }
+.opt td + td { text-align: right; color: var(--text); font-variant-numeric: tabular-nums; font-weight: 600; }
+.mtr { display: inline-block; width: 34px; height: 4px; border-radius: 3px; background: var(--surface-3); vertical-align: middle; margin-right: 4px; overflow: hidden; }
+.mtr i { display: block; height: 100%; background: var(--primary); }
+.cons { display: grid; grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)); gap: 6px 12px; font-size: .74rem; }
+.cons .c { display: grid; gap: 1px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.cons .c:last-child { border-bottom: 0; grid-column: 1 / -1; }
+.cons .c > span:first-child { font-size: .64rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 700; }
+.cons .pin { display: inline-flex; gap: 4px; align-items: center; font-weight: 600; }
+.studio { display: grid; grid-template-columns: 38px minmax(0, 1fr) 214px; gap: 0; border-top: 1px solid var(--border); }
+.st-rail { background: var(--surface-2); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0; }
+.st-rail span { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 7px; color: var(--text-2); }
+.st-rail span.on { background: var(--primary-soft); color: var(--primary-soft-text); }
+.st-rail span.ai { color: var(--ai-solid); }
+.st-canvas { padding: 8px; min-width: 0; display: grid; gap: 8px; align-content: start; }
+.cv-bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: .7rem; color: var(--text-2); }
+.cv-bar .sp { flex: 1; }
+.st-side { border-left: 1px solid var(--border); padding: 9px; display: grid; gap: 10px; align-content: start; font-size: .74rem; background: var(--surface); }
+.layer { display: flex; gap: 6px; align-items: center; padding: 2px 0; }
+.layer button { width: 22px; height: 22px; border-radius: 5px; border: 1px solid var(--border-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--text-2); }
+.layer button[aria-pressed="true"] { background: var(--primary-soft); color: var(--primary-soft-text); border-color: var(--primary); }
+.layer .nm { flex: 1; }
+.layer .ct { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); }
+.vitem { border: 1px solid var(--warn-solid); background: var(--warn-bg); color: var(--warn-text); border-radius: 8px; padding: 7px 8px; font-size: .72rem; }
+.vitem b { display: flex; gap: 5px; align-items: center; }
+.vitem .acts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.vitem .btn { color: var(--text); }
+.vok { display: grid; gap: 3px; font-size: .7rem; color: var(--text-2); }
+.vok div { display: flex; gap: 5px; align-items: flex-start; }
+.vok .ic { color: var(--ok-solid); width: 12px; height: 12px; margin-top: 2px; }
+.yrs { display: grid; grid-template-columns: repeat(4, 1fr); font-size: .62rem; color: var(--text-3); text-align: center; margin-top: 2px; }
+.yrs b { color: var(--text); }
+input[type="range"].rng { width: 100%; accent-color: var(--primary); }
+.takeoff { display: flex; flex-wrap: wrap; gap: 4px 0; align-items: stretch; border-top: 1px solid var(--border); background: var(--surface-2); font-size: .7rem; }
+.takeoff > div { padding: 6px 9px; border-right: 1px solid var(--border); display: grid; gap: 1px; }
+.takeoff > div b { font-family: var(--font-mono); font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text); }
+.takeoff > div span { color: var(--text-3); font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+.takeoff .price { margin-left: auto; border-right: 0; background: var(--primary-soft); }
+.takeoff .price b { font-size: 1rem; color: var(--primary-soft-text); }
+.delta { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; }
+.delta.up { color: var(--warn-text); } .delta.dn { color: var(--ok-text); }
+.est { display: grid; grid-template-columns: minmax(0, 1fr) 222px; gap: 10px; }
+table.est td { font-size: .74rem; }
+table.est tr.phase td { background: var(--surface-2); font-weight: 700; font-size: .72rem; }
+table.est td .math { display: block; color: var(--text-3); font-family: var(--font-mono); font-size: .64rem; line-height: 1.4; margin-top: 1px; }
+table.est tr.flag td { background: color-mix(in srgb, var(--ai-bg) 70%, transparent); }
+.conf { display: inline-flex; gap: 4px; align-items: center; font-size: .64rem; font-weight: 700; padding: 0 6px; border-radius: 999px; }
+.conf.med { background: var(--warn-bg); color: var(--warn-text); } .conf.low { background: var(--danger-bg); color: var(--danger-text); } .conf.fixed { background: var(--ok-bg); color: var(--ok-text); }
+.flagnote { margin-top: 4px; border-left: 3px solid var(--ai-solid); padding: 4px 7px; background: var(--surface); font-size: .7rem; color: var(--text); border-radius: 0 6px 6px 0; }
+.flagnote .acts { display: flex; gap: 5px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+.rowx { display: flex; justify-content: space-between; gap: 6px; padding: 3px 0; font-size: .74rem; border-bottom: 1px dashed var(--border); }
+.rowx span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+.rowx small { display: block; color: var(--text-3); font-size: .66rem; }
+.rowx.tot { font-weight: 700; border-bottom: 1px solid var(--border-strong); }
+.rowx.big span:last-child { font-size: 1.05rem; color: var(--primary-soft-text); }
+.eq { font-family: var(--font-mono); font-size: .66rem; background: var(--surface-2); border-radius: 6px; padding: 6px 7px; margin: 6px 0; line-height: 1.5; }
+.gm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align: center; margin: 6px 0; }
+.gm div { border: 1px solid var(--border); border-radius: 6px; padding: 4px; font-size: .62rem; color: var(--text-3); }
+.gm b { display: block; font-size: .86rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.tiers { display: flex; gap: 4px; flex-wrap: wrap; }
+.tiers .t { border: 1px solid var(--border); border-radius: 7px; padding: 3px 9px; font-size: .72rem; font-weight: 600; background: var(--surface); color: var(--text-2); }
+.tiers .t.on { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-soft-text); }
+.tiers .t small { display: block; font-family: var(--font-mono); font-weight: 600; color: var(--text); }
+.approval { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; border: 1px solid var(--ai-solid); background: var(--ai-bg); border-radius: 10px; padding: 8px 10px; font-size: .76rem; }
+.approval .grow b { display: block; }
+.prop-doc { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 10px; }
+.doc { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 12px 14px; display: grid; gap: 10px; font-size: .76rem; }
+.doc h4 { font-family: var(--font-display); font-size: 1.1rem; margin: 0; }
+.doc .lab { font-size: .62rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); font-weight: 700; }
+.aidraft { border: 1px dashed var(--ai-solid); border-radius: 8px; padding: 8px 9px; background: color-mix(in srgb, var(--ai-bg) 55%, var(--surface)); }
+.aidraft .tagai { display: flex; justify-content: space-between; gap: 6px; font-size: .64rem; font-weight: 700; color: var(--ai-text); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.aidraft.ok { border-style: solid; border-color: var(--ok-solid); background: var(--surface); }
+.aidraft.ok .tagai { color: var(--ok-text); }
+textarea.inp { min-height: 88px; resize: vertical; line-height: 1.45; font-size: .76rem; }
+.tl { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; counter-reset: tl; }
+.tl li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; align-items: start; }
+.tl li::before { counter-increment: tl; content: counter(tl); width: 18px; height: 18px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-soft-text); font-size: .62rem; font-weight: 800; display: grid; place-items: center; }
+table.tiert { width: 100%; border-collapse: collapse; font-size: .72rem; }
+table.tiert th, table.tiert td { border: 1px solid var(--border); padding: 4px 6px; text-align: left; vertical-align: top; }
+table.tiert th { background: var(--surface-2); font-size: .66rem; }
+table.tiert td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+table.tiert .rec { background: var(--primary-soft); }
+.ptier { display: grid; gap: 6px; }
+.ptier label { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; align-items: center; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font-size: .78rem; cursor: pointer; background: var(--surface); }
+.ptier label.on { border-color: var(--primary); background: var(--primary-soft); }
+.ptier input { accent-color: var(--primary); margin: 0; }
+.ptier small { display: block; color: var(--text-3); font-size: .68rem; }
+.ptier .pr { font-family: var(--font-mono); font-weight: 600; font-size: .8rem; }
+.sums { display: grid; gap: 3px; font-size: .76rem; }
+.sums div { display: flex; justify-content: space-between; gap: 6px; }
+.sums div span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+.sums .due { font-weight: 700; border-top: 1px solid var(--border); padding-top: 4px; font-size: .84rem; }
+.stripe { border: 1px solid var(--border-strong); border-radius: 9px; padding: 8px 9px; display: grid; gap: 6px; background: var(--surface); }
+.stripe .sl { font-size: .62rem; color: var(--text-3); display: flex; justify-content: space-between; }
+.sig { font-family: "Brush Script MT", "Segoe Script", cursive; font-size: 1.3rem; color: var(--sky-700); border-bottom: 1px solid var(--border-strong); padding: 2px 4px; min-height: 34px; }
+.cards3 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dcard { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 9px 10px; display: grid; gap: 6px; font-size: .74rem; align-content: start; }
+.dcard.ai { border-color: var(--ai-solid); }
+.dcard .dh { display: flex; gap: 6px; align-items: center; font-weight: 700; font-size: .8rem; }
+.dcard .dh .sp { flex: 1; }
+.dcard table { width: 100%; border-collapse: collapse; font-size: .7rem; }
+.dcard td { padding: 2px 0; border-bottom: 1px dashed var(--border); }
+.dcard td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.phases { display: grid; gap: 3px; }
+.phases div { display: flex; gap: 6px; align-items: center; font-size: .72rem; }
+.phases div .grow { color: var(--text-2); }
+.recap table.data td { font-size: .76rem; }
+.principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 12px; }
+.principles .card { padding: 11px 12px; font-size: .78rem; color: var(--text-2); }
+.principles .card b { color: var(--text); display: block; margin-bottom: 3px; font-size: .84rem; }
+.bars { display: grid; gap: 5px; font-size: .74rem; }
+.bars div { display: grid; grid-template-columns: 86px minmax(0, 1fr) 36px; gap: 6px; align-items: center; }
+.bars .b { height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; } .bars .b i { display: block; height: 100%; background: var(--ai-solid); }
+.bars span:last-child { text-align: right; font-family: var(--font-mono); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .pt-shell { grid-template-columns: minmax(0, 1fr); }
+  .pt-rail { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--border); display: flex; gap: 6px 14px; overflow-x: auto; padding: 8px 12px; align-items: flex-start; }
+  .pt-rail .act { margin-top: 0; flex: none; }
+  .pt-rail ol { display: flex; gap: 2px; }
+  .pt-rail a.st { grid-template-columns: 22px auto; white-space: nowrap; }
+  .pt-rail a.st .ai-dot { display: none; }
+  .pt-rail a.st .t { max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+  .pt-rail .rfoot { display: none; }
+  .pt-rail .rstart { flex: none; margin-top: 14px; }
+}
+@media (max-width: 900px) {
+  .jm-row { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); }
+  .jm-node::after, .jm-node::before { display: none; }
+}
+@media (max-width: 1100px) {
+  .pt-body { grid-template-columns: minmax(0, 1fr); }
+  .pt-bts { position: static; max-height: none; }
+}
+@media (max-width: 700px) {
+  .pt-main { padding: 10px 10px 40px; }
+  .phone.pt-phone { width: 100%; max-width: 352px; border-width: 8px; }
+  .big-view { min-width: 0; flex-basis: 100%; }
+  .prop { grid-template-columns: 1fr; }
+  .pt-rail a.st .t { display: none; }
+  .prog .track { width: 70px; }
+}
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+@media print { .pt-rail, .pt-bar .ctrls { display: none; } }
+
+/* ---------- recurring walkthrough additions ---------- */
+.rec-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.aerial-box svg { width: 100%; height: auto; display: block; border-radius: 8px; }
+.prop svg { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); display: block; }
+.ae-bg { fill: color-mix(in srgb, var(--moss-700) 55%, var(--stone-700)); }
+.ae-lot { fill: none; stroke: var(--stone-0); stroke-width: .8; stroke-dasharray: 3 2; opacity: .7; }
+.ae-turf { fill: var(--moss-400); }
+.ae-roof { fill: var(--stone-500); stroke: var(--stone-700); stroke-width: .8; }
+.ae-ridge { stroke: var(--stone-700); stroke-width: 1; }
+.ae-drive { fill: var(--stone-300); }
+.ae-bed { fill: var(--clay-500); }
+.ae-road { fill: var(--stone-600); }
+.ae-tree { fill: var(--moss-800); opacity: .85; }
+.ae-fence { fill: none; stroke: var(--clay-300); stroke-width: 1.4; }
+.ae-meas { fill: color-mix(in srgb, var(--iris-500, #7b6cf6) 30%, transparent); stroke: var(--iris-50, #f2f0ff); stroke-width: 1.2; stroke-dasharray: 3 2; }
+.ae-ex { fill: color-mix(in srgb, var(--stone-900) 45%, transparent); stroke: var(--clay-300); stroke-width: 1; stroke-dasharray: 2 2; }
+.ae-lab rect { fill: color-mix(in srgb, var(--stone-900) 82%, transparent); }
+.ae-lab text { fill: var(--stone-0); font: 700 8px var(--font-body); text-anchor: middle; }
+.ae-st { fill: var(--stone-100); font: 600 6px var(--font-body); text-anchor: middle; }
+.ae-n path { fill: var(--stone-0); } .ae-n text { fill: var(--stone-0); font: 700 7px var(--font-body); text-anchor: middle; }
+.cal { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; }
+.cm { border: 1px solid var(--border); border-radius: 8px; padding: 6px; display: grid; gap: 4px; justify-items: center; background: var(--surface-2); font-size: .72rem; }
+.cm span { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; min-height: 22px; }
+.cm small { color: var(--text-3); font-family: var(--font-mono); }
+.cd { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.cd.mow { background: var(--moss-600); } .cd.fert { background: var(--marigold-400); } .cd.extra { background: var(--sky-500); }
+tr.ghost-row td { color: var(--text-3); font-style: italic; background: color-mix(in srgb, var(--ai-bg) 50%, transparent); }
+.big-check { padding: 6px 0; font-size: .82rem; font-weight: 600; color: var(--text); grid-template-columns: 24px minmax(0, 1fr); }
+.big-check input { width: 20px; height: 20px; }
+.photo-btn { display: grid; gap: 4px; place-items: center; min-height: 82px; padding: 4px; border: 2px dashed var(--border-strong); border-radius: 10px; background: var(--surface); cursor: pointer; font-size: .72rem; font-weight: 650; color: var(--text-2); }
+.photo-btn[aria-pressed="true"] { border-style: solid; border-color: var(--primary); }
+.photo-btn[disabled] { opacity: .5; cursor: not-allowed; }
+.photo-btn svg:not(.ic) { width: 100%; height: auto; border-radius: 6px; display: block; }
+.lp-sky { fill: var(--sky-100); } .lp-lawn { fill: var(--moss-500); } .lp-lawn2 { fill: var(--moss-400); } .lp-stripe { fill: var(--moss-500); opacity: .55; }
+.lp-blade { stroke: var(--moss-700); stroke-width: 1; fill: none; } .lp-house { fill: var(--stone-100); } .lp-roof { fill: var(--stone-600); } .lp-walk { fill: var(--stone-300); }
+.rp-body { fill: var(--stone-800); } .rp-cap { fill: var(--stone-500); } .rp-crack { stroke: var(--marigold-400); stroke-width: 2; fill: none; } .rp-tire { stroke: var(--stone-700); stroke-width: 6; fill: none; opacity: .4; }
+.rec-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--danger-solid, #c0392b); margin-right: 4px; animation: pulse 1s infinite; }
+.lanes { display: grid; gap: 6px; }
+.ln { display: grid; grid-template-columns: 96px minmax(0, 1fr) minmax(0, 180px); gap: 8px; align-items: center; font-size: .74rem; }
+.lnl { font-weight: 650; }
+.lnb { height: 20px; background: var(--surface-3); border-radius: 5px; overflow: hidden; }
+.lnb i { display: flex; align-items: center; gap: 4px; height: 100%; padding: 0 6px; font-style: normal; font-size: .68rem; font-weight: 700; background: var(--moss-600); color: var(--stone-0); white-space: nowrap; }
+.lnb i.hot { background: var(--marigold-600); }
+.lnb i.rain { background: repeating-linear-gradient(135deg, var(--sky-600) 0 6px, var(--sky-500) 6px 12px); }
+.lnb i .ic { stroke: var(--stone-0); }
+.lnn { color: var(--text-2); }
+.meter-card svg { width: 100%; height: auto; display: block; margin-top: 4px; }
+.mt-earn { fill: var(--moss-500); } .mt-bill { fill: var(--sky-500); } .mt-earn.dim, .mt-bill.dim { opacity: .3; }
+.mt-t { font: 600 8px var(--font-body); fill: var(--text-3); text-anchor: middle; }
+.mt-ax { stroke: var(--border-strong); stroke-width: 1; }
+.ladder { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.ladder div { border: 1px solid var(--border); border-radius: 8px; padding: 6px; font-size: .7rem; display: grid; gap: 2px; background: var(--surface); }
+.ladder div b { font-family: var(--font-mono); }
+.ladder div small { color: var(--text-3); }
+.ladder .on { border-color: var(--ai-solid); background: var(--ai-bg); }
+.ladder .past { opacity: .6; }
+table.ledger td:first-child { font-size: .74rem; }
+@media (max-width: 900px) { .rec-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cal { grid-template-columns: repeat(4, minmax(0, 1fr)); } .ladder { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ln { grid-template-columns: 80px minmax(0, 1fr); } .lnn { grid-column: 2; } }
+.meter-card { align-self: start; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the walkthrough</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8.5 5.5-13.5 15-14-.4 9.5-5.5 14.5-14 14"/><path d="M5 19l8-8"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="8" width="17" height="9" rx="2"/><path d="M22 11v3"/><path d="M5 11h9v3H5z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></symbol>
+<symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+<symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-2.7 3.4M6.3 7.6A16 16 0 0 0 2 12s3.5 6 10 6a9.6 9.6 0 0 0 4.2-.9"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.7-3.2 3-5 6-5s5.3 1.8 6 5"/><path d="M16 5.2a3 3 0 0 1 0 5.6M18 14.4c1.6.7 2.6 2.2 3 4.6"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-7z"/><path d="M11 13l9-9"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h1M4 12h1M4 18h1"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.8 3.5-6 7-6s6.2 2.2 7 6"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L5 13h6l-1 8 8-10h-6z"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+<symbol id="i-approve" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l3 3 5-6"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13l2-8h12l2 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></symbol>
+<symbol id="i-today" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+<symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M16.5 7.5c-.8-1.3-2.4-2-4.5-2-2.6 0-4.3 1.3-4.3 3.2 0 4.6 9 2.4 9 7 0 2-1.9 3.3-4.7 3.3-2.2 0-3.9-.8-4.7-2.3"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6-6-6-11a6 6 0 0 1 12 0c0 5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></symbol>
+<symbol id="i-cursor" viewBox="0 0 24 24"><path d="M5 3l13 8-6 1.5L9 19z"/></symbol>
+<symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3 16L16 3l5 5L8 21z"/><path d="M7 12l2 2M10 9l2 2M13 6l2 2"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+</svg>
+<header class="site-nav"><div class="inner"><a class="wordmark" href="index.html">Rootline</a><nav aria-label="Proposal"><a href="index.html">Vision</a><a href="prototype.html">AI design prototype</a><a href="recurring.html" aria-current="page">Recurring work prototype</a><a href="screens-office.html">Office app</a><a href="screens-design.html">Design and AI</a><a href="screens-field-client-admin.html">Crew, client and admin</a></nav></div></header>
+<div class="pt-shell">
+  <nav class="pt-rail" id="rail" aria-label="Walkthrough steps"></nav>
+  <main class="pt-main" id="main">
+    <div class="pt-bar" id="bar"></div>
+    <div class="pt-body">
+      <section class="pt-screen" id="screen" aria-labelledby="step-h"></section>
+      <aside class="pt-bts" id="bts" aria-label="Behind the scenes"></aside>
+    </div>
+  </main>
+</div>
+<noscript><p style="padding:20px">This walkthrough needs JavaScript to run. The concept screens on <a href="screens-office.html">Office app</a> work without it.</p></noscript>
+<script>
+'use strict';
+/* ============================================================
+   Rootline recurring work walkthrough: core model (no DOM)
+   One visit model prices the Quick Quote, the proposal tiers,
+   the season, the installments, the true-up and the renewal.
+   Rates follow the worked example in 03 EST-12 (illustrative).
+   ============================================================ */
+var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+var money = function (n, cents) { var v = Math.abs(n); var s = v.toLocaleString('en-US', { minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: cents ? 2 : 0 }); return (n < 0 ? '-$' : '$') + s; };
+var m2 = function (n) { return money(n, true); };
+var num = function (n, d) { return Number(n).toLocaleString('en-US', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
+var r2 = function (n) { return Math.round(n * 100) / 100; };
+
+/* ---------- visit model (03 EST-12) ---------- */
+var RATE = { labor: 28.15, ztr: 10, hand: 3, truck: 18, flh: 21, mowSqftH: 40000, trimLfH: 1500, blowSqftH: 10000 };
+function visitModel(o) {
+  var crew = o.crew, gateMin = o.gate === false ? 3 : 4;
+  var mow = o.turf / RATE.mowSqftH, trim = o.trim / RATE.trimLfH, blow = o.hard / RATE.blowSqftH;
+  var setup = crew * gateMin / 60, onsite = mow + trim + blow + setup, drive = o.drive * crew / 60, mh = onsite + drive;
+  var c = { labor: mh * RATE.labor, ztr: mow * RATE.ztr, hand: (trim + blow) * RATE.hand, truck: RATE.truck * mh / crew, flh: mh * RATE.flh };
+  var be = c.labor + c.ztr + c.hand + c.truck + c.flh;
+  var raw = be / (1 - o.margin / 100), lenMult = o.freq === 'biweekly' ? 1.2 : 1;
+  var price = Math.ceil(raw * lenMult - 1e-9);
+  return { mow: mow, trim: trim, blow: blow, setup: setup, onsite: onsite, drive: drive, mh: mh, c: c, be: be, raw: raw, price: price, onsiteMin: onsite / crew * 60, gateMin: gateMin, crew: crew, lenMult: lenMult };
+}
+var BANDS = [[3000, 57], [5000, 63], [7500, 69], [10000, 76], [15000, 88], [20000, 100]];
+function bandPrice(sqft) { for (var i = 0; i < BANDS.length; i++) if (sqft <= BANDS[i][0]) return { price: BANDS[i][1], lo: i ? BANDS[i - 1][0] + 1 : 0, hi: BANDS[i][0] }; return null; }
+
+/* ---------- season (Tuesdays, 2027) ---------- */
+var MONTHS = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'];
+var MOW_DATES = [[6, 13, 20, 27], [4, 11, 18, 25], [1, 8, 15, 22, 29], [13, 27], [10, 24], [7, 14, 21, 28], [5, 12, 19, 26], [2, 9, 16, 23, 30]];
+var FERT_M = [1, 0, 1, 1, 0, 1, 1, 0];
+var FERT = 64, SPRING = 340, FALL = 390, AERATE = 145, TAX = 0.08;
+var TIERS = {
+  good: { n: 'Mow only', gbb: 'Good', lines: ['mow'] },
+  better: { n: 'Mow + 5-step lawn program', gbb: 'Better', lines: ['mow', 'fert'] },
+  best: { n: 'Full care', gbb: 'Best', lines: ['mow', 'fert', 'spring', 'aerate', 'fall'] }
+};
+var LINE = {
+  mow: { n: 'Weekly mowing, trim, edge, blow', occ: function () { return MOW_DATES.map(function (d) { return d.length; }); }, rev: '4100 Maintenance Revenue' },
+  fert: { n: '5-step fertilizer and weed control', occ: function () { return FERT_M.slice(); }, unit: FERT, rev: '4400 Lawn Care and PHC Revenue' },
+  spring: { n: 'Spring cleanup', occ: function () { return [1, 0, 0, 0, 0, 0, 0, 0]; }, unit: SPRING, rev: '4100 Maintenance Revenue' },
+  aerate: { n: 'Core aeration', occ: function () { return [0, 0, 0, 0, 0, 1, 0, 0]; }, unit: AERATE, rev: '4400 Lawn Care and PHC Revenue' },
+  fall: { n: 'Fall cleanup', occ: function () { return [0, 0, 0, 0, 0, 0, 0, 1]; }, unit: FALL, rev: '4100 Maintenance Revenue' }
+};
+function unitOf(k, mowP) { return k === 'mow' ? mowP : LINE[k].unit; }
+/* season plan for a tier: per-line occurrences and earned value by month */
+function season(tier, mowP, skips) {
+  var lines = TIERS[tier].lines.map(function (k) {
+    var occ = LINE[k].occ(), u = unitOf(k, mowP);
+    if (k === 'mow' && skips) skips.forEach(function (mi) { occ[mi] -= 1; });
+    var n = occ.reduce(function (a, b) { return a + b; }, 0);
+    return { k: k, n: LINE[k].n, occ: occ, unit: u, count: n, value: r2(n * u), rev: LINE[k].rev };
+  });
+  var earned = MONTHS.map(function (_, mi) { return r2(lines.reduce(function (s, l) { return s + l.occ[mi] * l.unit; }, 0)); });
+  var acv = r2(earned.reduce(function (a, b) { return a + b; }, 0));
+  return { tier: tier, lines: lines, earned: earned, acv: acv };
+}
+/* level installments, remainder on the last one (07 4.2.3) */
+function installments(acv, n) { var each = Math.floor(acv / n * 100) / 100; var arr = []; for (var i = 0; i < n; i++) arr.push(each); arr[n - 1] = r2(acv - each * (n - 1)); return arr; }
+function meter(plan, inst) {
+  var ce = 0, cb = 0;
+  return plan.earned.map(function (e, i) { ce = r2(ce + e); cb = r2(cb + (inst ? inst[i] : e)); return { m: MONTHS[i], earned: ce, billed: cb, pos: r2(cb - ce) }; });
+}
+function stripeFee(amt) { return r2(amt * 0.029 + 0.30); }
+
+/* ============================================================
+   UI: state, shared components
+   ============================================================ */
+var RM = false;
+try { RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { RM = false; }
+
+var S = {
+  qq: { measured: false, measuring: false, gate: true, freq: 'weekly', tier: 'better', sent: false, t0: null },
+  vm: { crew: 2, drive: 9, margin: 15 },
+  pp: { tier: 'better', plan: 'level8', name: '', agree: false, card: false, signed: false },
+  iq: { measuring: false, measured: false, exclude: false, booked: false, card: false },
+  rt: { accepted: false },
+  cv: { lang: 'es', otw: false, gate: false, tasks: { mow: false, trim: false, edge: false, blow: false }, before: false, after: false, done: false },
+  sp: { photo: false, rec: false, recording: false, synced: false, sel: 'rotor', approved: false, replied: false },
+  rn: { opt: 'absorb', approved: false },
+  br: { posted: false, charging: false, charged: false },
+  co: { approved: false, updated: false, paid: false },
+  sc: { approved: false }
+};
+var MOW_P_DEFAULT = 73;
+function vmInputs(over) {
+  var o = { turf: 9000, trim: 350, hard: 1100, crew: S.vm.crew, drive: S.vm.drive, margin: S.vm.margin, gate: S.qq.gate, freq: S.qq.freq };
+  if (over) for (var k in over) o[k] = over[k];
+  return o;
+}
+function mowP() { return visitModel(vmInputs()).price; }
+function gPlan(tier, skips) { return season(tier || S.pp.tier, mowP(), skips); }
+var SKIPS = [3, 4];
+
+var CREDITS = { 'r07-spotit': 2, 'r08-rain': 18, 'r10-collect': 1, 'r11-close': 1 };
+var ALLOWANCE = 6000;
+
+function ic(n, c) { return '<svg class="ic' + (c ? ' ' + c : '') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
+function tag(t) { return '<span class="tag ' + t + '">' + t.toUpperCase() + '</span>'; }
+
+/* ---------- step registry ---------- */
+var ACTS = [
+  { n: 'Act 1', t: 'Win the work', sub: 'February-March: Quick Quote, visit model, proposal, online booking' },
+  { n: 'Act 2', t: 'Run the season', sub: 'March-May: agreement, route, crew app, Spot it, rain day' },
+  { n: 'Act 3', t: 'Get paid and close the season', sub: 'June-December: billing run, ledger, collections, true-up, renewal' }
+];
+var STEPS = [
+  { id: 'overview', act: -1, short: 'Start here', title: 'Rootline recurring work walkthrough' },
+  { id: 'r01-quickquote', act: 0, short: 'Quick Quote', title: 'Quick Quote on a phone, in under 2 minutes', who: 'Sam Kowalski, estimator', when: 'Tue Feb 23, 2027', tags: ['mvp'] },
+  { id: 'r02-model', act: 0, short: 'Why $73', title: 'The visit model behind the price', who: 'Erin Castillo, owner', when: 'Tue Feb 23, 2027', tags: ['mvp', 'v1'] },
+  { id: 'r03-sign', act: 0, short: 'Sign and autopay', title: 'Grace picks a tier, signs and saves a card', who: 'Grace Whitfield, on her phone', when: 'Thu Feb 25, 2027', tags: ['mvp'] },
+  { id: 'r04-instant', act: 0, short: 'Neighbor books online', title: 'The neighbor gets a firm price and books online', who: 'Tom Brennan, on his phone', when: 'Tue Mar 9, 2027', tags: ['v1'] },
+  { id: 'r05-route', act: 1, short: 'Season and route', title: 'A season of visits, inserted into the Tuesday route', who: 'Luis Ortega, operations', when: 'Wed Mar 10, 2027', tags: ['mvp'] },
+  { id: 'r06-visit', act: 1, short: 'Crew visit', title: 'A Tuesday visit in the crew app, Spanish first', who: 'Marco Reyes, crew lead', when: 'Tue May 11, 2027', tags: ['mvp'] },
+  { id: 'r07-spotit', act: 1, short: 'Spot it upsell', title: 'A Spanish voice note becomes an add-on quote', who: 'Javier Ruiz, then Tasha Greene', when: 'Tue May 11, 2027', ai: true, tags: ['mvp', 'v1'] },
+  { id: 'r08-rain', act: 1, short: 'Rain day', title: 'The Scheduling agent reshuffles a rain day', who: 'Luis Ortega', when: 'Mon May 17, 2027', ai: true, tags: ['v1'] },
+  { id: 'r09-billing', act: 2, short: 'Billing run', title: 'June billing run: installments, autopay, ledger', who: 'Priya Shah, bookkeeper', when: 'Tue Jun 1, 2027', tags: ['mvp'] },
+  { id: 'r10-collect', act: 2, short: 'Failed autopay', title: 'An expired card, a reminder, a paid invoice', who: 'Tasha Greene, office manager', when: 'Tue Jul 6, 2027', ai: true, tags: ['mvp'] },
+  { id: 'r11-close', act: 2, short: 'True-up and renewal', title: 'Season close: true-up, then renewal at +4%', who: 'Erin Castillo, owner', when: 'Tue Dec 14, 2027', ai: true, tags: ['mvp'] },
+  { id: 'r12-recap', act: 2, short: 'Recap', title: 'Recap: one client, one season, every action', who: 'Erin Castillo', when: 'Season 2027', tags: ['mvp', 'v1'] }
+];
+function stepIndex(id) { for (var i = 0; i < STEPS.length; i++) if (STEPS[i].id === id) return i; return 0; }
+function creditsThrough(idx) { var t = 0; for (var i = 1; i <= idx; i++) t += CREDITS[STEPS[i].id] || 0; return t; }
+var TOTAL_CREDITS = creditsThrough(STEPS.length - 1);
+
+/* narrative completion: visiting a later step completes the scripted actions of earlier ones */
+var ENSURE = {
+  'r01-quickquote': function () { S.qq.measured = true; S.qq.measuring = false; S.qq.sent = true; },
+  'r03-sign': function () { if (!S.pp.signed) { S.pp.name = S.pp.name || 'Grace Whitfield'; S.pp.agree = true; S.pp.card = true; S.pp.signed = true; } },
+  'r04-instant': function () { S.iq.measured = true; S.iq.measuring = false; S.iq.exclude = true; S.iq.card = true; S.iq.booked = true; },
+  'r05-route': function () { S.rt.accepted = true; },
+  'r06-visit': function () { var C = S.cv; C.otw = true; C.gate = true; C.before = true; C.after = true; Object.keys(C.tasks).forEach(function (k) { C.tasks[k] = true; }); C.done = true; },
+  'r07-spotit': function () { var P = S.sp; P.photo = true; P.rec = true; P.recording = false; P.synced = true; P.approved = true; P.replied = true; },
+  'r08-rain': function () { S.rn.approved = true; },
+  'r09-billing': function () { S.br.posted = true; S.br.charging = false; S.br.charged = true; },
+  'r10-collect': function () { S.co.approved = true; S.co.updated = true; S.co.paid = true; }
+};
+function ensureBefore(idx) { for (var i = 1; i < idx; i++) { var f = ENSURE[STEPS[i].id]; if (f) f(); } }
+
+/* ---------- frames ---------- */
+function phone(inner, opt) {
+  opt = opt || {};
+  var brand = '<div class="brand"><span class="logo">' + ic(opt.logo || 'leaf') + '</span><span><b>' + esc(opt.title || 'Greenleaf Grounds Co.') + '</b><small>' + esc(opt.sub || '') + '</small></span><span class="sp"></span>' + (opt.right || '<span class="faint">' + ic('menu') + '</span>') + '</div>';
+  return '<div class="phone pt-phone" style="position:relative" role="group" aria-label="' + esc(opt.label || 'Phone screen') + '"><div class="status"><span>' + esc(opt.time || '9:41') + '</span><span class="bat">5G ' + ic('battery', 's') + '</span></div><div class="body pt-pbody" data-keep="pbody-' + esc(opt.key || 'a') + '">' + brand + '<div class="pbody-pad">' + inner + '</div><div class="pfoot">' + esc(opt.foot || 'Powered by Rootline') + '</div></div></div>';
+}
+function browser(url, inner, label) {
+  return '<div class="frame-scroll"><div class="browser" role="group" aria-label="' + esc(label || 'Desktop screen') + '"><div class="browser-bar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="url">' + esc(url) + '</div></div>' + inner + '</div></div>';
+}
+var NAV = [['today', 'Today'], ['inbox', 'Inbox'], ['approve', 'Approvals'], ['users', 'Clients'], ['dollar', 'Sales'], ['calendar', 'Schedule'], ['refresh', 'Agreements'], ['bank', 'Money'], ['cog', 'Settings']];
+function appShell(active, main, counts) {
+  counts = counts || {};
+  var nav = NAV.map(function (n) { var on = n[1] === active; var b = counts[n[1]] ? '<span class="badge">' + counts[n[1]] + '</span>' : ''; return '<span class="item' + (on ? ' active' : '') + '"' + (on ? ' aria-current="page"' : '') + '>' + ic(n[0]) + n[1] + b + '</span>'; }).join('');
+  var used = creditsThrough(stepIndex(current));
+  return '<div class="app pt-app"><nav class="app-side" aria-label="Company app navigation (concept)"><div class="co"><span class="logo">' + ic('leaf') + '</span><span><b>Greenleaf Grounds Co.</b><small>Columbus, OH · Pro</small></span></div>' + nav + '<div class="sidefoot">This walkthrough: <b>' + used + '</b> AI credits<div class="meter"><i style="width:' + Math.max(1, used / TOTAL_CREDITS * 100).toFixed(1) + '%"></i></div>Pro includes 6,000 a month</div></nav><div class="app-main">' + main + '</div></div>';
+}
+function ctxCard(title, items, extra) {
+  return '<aside class="big-view" aria-label="About this screen"><div class="card"><h3 style="font-size:.95rem">' + esc(title) + '</h3><ul style="margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:.82rem;color:var(--text-2)">' + items.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul></div>' + (extra || '') + '</aside>';
+}
+function stepBtn(label, k, to) { return '<button type="button" class="btn primary" style="justify-content:center" data-act="' + (to ? 'goto' : 'next') + '"' + (to ? ' data-to="' + to + '"' : '') + ' data-k="' + k + '">' + label + ' ' + ic('arrow-r') + '</button>'; }
+
+/* ---------- aerial property map ---------- */
+var PROPS = {
+  whitfield: { addr: '2240 Kenview Rd', polys: [['Front lawn', 3450, [[18, 132], [118, 132], [118, 112], [138, 112], [138, 132], [282, 132], [282, 186], [18, 186]]], ['Back lawn', 4900, [[18, 14], [282, 14], [282, 58], [228, 58], [228, 70], [70, 70], [70, 58], [18, 58]]], ['Side strip', 650, [[236, 70], [282, 70], [282, 124], [236, 124]]]], trees: [[60, 36, 20], [250, 160, 15]] },
+  brennan: { addr: '2251 Kenview Rd', polys: [['Front lawn', 3500, [[18, 132], [150, 132], [150, 112], [170, 112], [170, 132], [282, 132], [282, 186], [18, 186]]], ['Back lawn', 5750, [[18, 14], [282, 14], [282, 58], [230, 58], [230, 70], [72, 70], [72, 58], [18, 58]]], ['Dog run (fenced)', 1150, [[18, 70], [66, 70], [66, 124], [18, 124]], 'dog']], trees: [[200, 30, 18]] }
+};
+function aerial(key, o) {
+  o = o || {};
+  var P = PROPS[key], s = '<svg viewBox="0 0 300 200" role="img" aria-label="' + esc(o.label || ('Aerial view of ' + P.addr + (o.measured ? ' with measured turf areas' : ''))) + '">';
+  s += '<rect x="0" y="0" width="300" height="200" class="ae-bg"/><rect x="10" y="8" width="280" height="182" class="ae-lot"/>';
+  P.polys.forEach(function (p) { s += '<polygon points="' + p[2].map(function (q) { return q.join(','); }).join(' ') + '" class="ae-turf"/>'; });
+  s += '<rect x="70" y="70" width' + '="' + (key === 'brennan' ? 160 : 166) + '" height="42" class="ae-roof"/><path d="M' + (key === 'brennan' ? '72,91 H228' : '70,91 H236') + '" class="ae-ridge"/>';
+  s += '<rect x="' + (key === 'brennan' ? 150 : 118) + '" y="112" width="20" height="78" class="ae-drive"/><rect x="' + (key === 'brennan' ? 84 : 76) + '" y="112" width="' + (key === 'brennan' ? 60 : 36) + '" height="8" class="ae-bed"/>';
+  s += '<rect x="0" y="190" width="300" height="10" class="ae-road"/>';
+  P.trees.forEach(function (t) { s += '<circle cx="' + t[0] + '" cy="' + t[1] + '" r="' + t[2] + '" class="ae-tree"/>'; });
+  if (key === 'brennan') s += '<rect x="18" y="70" width="48" height="54" class="ae-fence"/>';
+  if (o.measured) {
+    P.polys.forEach(function (p, i) {
+      var ex = p[3] === 'dog' && o.exclude;
+      s += '<polygon points="' + p[2].map(function (q) { return q.join(','); }).join(' ') + '" class="' + (ex ? 'ae-ex' : 'ae-meas') + '"/>';
+      var cx = p[2].reduce(function (a, q) { return a + q[0]; }, 0) / p[2].length, cy = p[2].reduce(function (a, q) { return a + q[1]; }, 0) / p[2].length;
+      if (i === 0) cy = 168;
+      s += '<g class="ae-lab"><rect x="' + (cx - 30) + '" y="' + (cy - 8) + '" width="60" height="15" rx="3"/><text x="' + cx + '" y="' + (cy + 3) + '">' + (ex ? 'excluded' : num(p[1]) + ' sq ft') + '</text></g>';
+    });
+  }
+  s += '<text x="150" y="198" class="ae-st">Kenview Rd</text><g class="ae-n"><path d="M287 22 l4 -10 l4 10 z"/><text x="291" y="32">N</text></g></svg>';
+  return s;
+}
+function turfOf(key, exclude) { return PROPS[key].polys.reduce(function (a, p) { return a + (p[3] === 'dog' && exclude ? 0 : p[1]); }, 0); }
+
+/* ============================================================
+   Screens: overview and Act 1
+   ============================================================ */
+var SCREEN = {}, BTS = {};
+
+SCREEN['overview'] = function () {
+  var nodes = function (act) {
+    var list = STEPS.filter(function (s) { return s.act === act; });
+    return list.map(function (s, i) {
+      var n = stepIndex(s.id);
+      return '<a class="jm-node' + (i === list.length - 1 ? ' last' : '') + '" href="#' + s.id + '"><span class="k">' + (n < 10 ? '0' + n : n) + (s.ai ? '<span class="ai-dot" title="AI or agent step"></span>' : '') + '</span><b>' + esc(s.short) + '</b><span class="who">' + esc(s.who || '') + '</span><span class="who">' + esc(s.when || '') + '</span><span class="tagrow">' + (s.tags || []).map(tag).join('') + '</span></a>';
+    }).join('');
+  };
+  var jm = ACTS.map(function (a, i) { return '<div class="jm-act"><div class="jh"><b>' + a.n.toUpperCase() + '</b><span>' + esc(a.t) + '</span><small>' + esc(a.sub) + '</small></div><div class="jm-row rec-row">' + nodes(i) + '</div></div>'; }).join('');
+  var g = gPlan('better');
+  return '<div class="ov-hero"><span class="eyebrow">Clickable prototype · small and recurring jobs</span><h2>One lawn, one season: from a 2-minute quote to closed books</h2>' +
+    '<p class="lede">Most landscape revenue is small and repeats: weekly mowing, a lawn program, cleanups. Grace Whitfield calls Greenleaf Grounds Co. in February. Sam quotes her lawn from his phone in under two minutes, using an AI turf measurement and the same visit model that sets every maintenance price. She signs on her phone and saves a card. Her neighbor books himself online. The agreement becomes 30 Tuesday visits on an existing route. The crew works in Spanish. A voice note turns into an add-on sale, the Scheduling agent moves a rain day, autopay collects through Greenleaf\'s own Stripe account, and the season closes with a true-up and a renewal. Agents draft. People approve. Most of the loop is plain automation, which costs no AI credits.</p>' +
+    '<div class="flex"><a class="btn primary" href="#r01-quickquote" data-k="ov-start">Start walkthrough ' + ic('arrow-r') + '</a><span class="muted small">12 steps · about 8 minutes · use the ← → keys</span><a class="btn ghost" href="prototype.html">Or see the AI design walkthrough</a></div></div>' +
+    '<h3 class="sec-t">The journey</h3><div class="jm" aria-label="Journey map: click any step">' + jm + '</div>' +
+    '<h3 class="sec-t">The cast</h3><div class="cast">' +
+    '<div class="card"><h3>' + ic('home') + 'The clients</h3><ul><li><b>Grace Whitfield</b>, 2240 Kenview Rd, Upper Arlington, Ohio. A 9,000 sq ft lawn, a side gate and a dog called Biscuit</li><li><b>Tom Brennan</b>, her neighbor across the street at 2251, who books online</li></ul></div>' +
+    '<div class="card"><h3>' + ic('leaf') + 'Greenleaf Grounds Co.</h3><ul><li>Design-build-maintain, 28 people, Columbus · Rootline Pro</li><li><b>Sam Kowalski</b>, estimator · <b>Erin Castillo</b>, owner · <b>Tasha Greene</b>, office manager · <b>Luis Ortega</b>, operations · <b>Priya Shah</b>, bookkeeper</li><li><b>Marco Reyes</b> and <b>Javier Ruiz</b>, mowing Crew 2, who work in Spanish</li></ul></div>' +
+    '<div class="card" style="border-color:var(--ai-solid)"><h3><span class="ai-mark">' + ic('spark') + '</span>The agents and automations</h3><ul><li><b>AI turf measurement</b> (metered as a parcel lookup, not credits)</li><li><b>A4 Field-Note agent</b> · <b>A7 Scheduling agent</b> · <b>A5 Collections</b> reminders</li><li>Deterministic: visit model, recurrence engine, route insertion, billing runs, autopay, ledger postings, true-up, escalators</li></ul></div></div>' +
+    '<h3 class="sec-t">The numbers this walkthrough uses</h3><div class="card prop"><div>' + aerial('whitfield', { measured: true }) + '</div><div><dl class="kv" style="grid-template-columns:150px 1fr;font-size:.84rem"><dt>Property</dt><dd>2240 Kenview Rd, Upper Arlington, OH 43221 · turf 9,000 sq ft in 3 areas</dd><dt>Visit model</dt><dd>2-person crew, 21 min on site, 1.002 man-hours with drive · break-even $61.55 · <b>$73 a visit</b> at 15% net (03 EST-12)</dd><dt>Season</dt><dd>30 Tuesday mows, April 6 to November 30 (every other week in July and August)</dd><dt>Tiers</dt><dd>Mow only $2,190 · <b>Mow + 5-step lawn program ' + money(g.acv) + '</b> · Full care ' + money(gPlan('best').acv) + '</dd><dt>Billing</dt><dd>8 level payments April-November, autopay on Greenleaf\'s own Stripe account, Ohio sales tax 8.00% (illustrative)</dd><dt>AI credits</dt><dd><b>' + TOTAL_CREDITS + '</b> for the whole season of this client</dd></dl></div></div>' +
+    '<p class="tiny faint mt14">Concept prototype with sample data: no backend, no real people, no real payments. Prices, rates and tax figures are illustrative and follow the worked examples in the specification documents.</p>';
+};
+BTS['overview'] = function () {
+  return { what: 'Each step shows the product screen on the left: a phone for Sam, the clients and the crew, a browser for Greenleaf\'s office. The interactions work. This panel shows what happens behind the screen.',
+    sections: '<div class="bts-sec"><h3>' + ic('spark', 's') + 'In every step</h3><div class="hitl"><div>' + ic('list') + '<span><b>Trace:</b> the agent, service or automation, with numbered calls such as <span class="mono">route.insert</span> or <span class="mono">ledger.post</span>. Gray calls are deterministic; iris calls use AI.</span></div><div>' + ic('user') + '<span><b>Human in the loop:</b> who approves what, with the autonomy level and risk tier.</span></div><div>' + ic('bolt') + '<span><b>AI credits:</b> this step and the running total.</span></div><div>' + ic('tag') + '<span><b>Scope tag</b> and <b>spec references</b>.</span></div></div></div>' +
+      '<div class="bts-sec"><h3>Autonomy and risk</h3><div class="specs" style="font-family:var(--font-body);font-size:.76rem">L2 draft and approve is the default. T3 is external or financial (messages, invoices). T4 is never done by AI: charging a card or signing. Autopay charges happen because the client authorized them, by deterministic rule.</div></div>' +
+      '<div class="bts-sec"><h3>Legend</h3><div class="tagrow"><span class="pill ai">' + ic('spark', 's') + 'Iris = AI or agent</span>' + tag('mvp') + '<span class="note">first sellable release</span>' + tag('v1') + '<span class="note">next wave</span></div></div>',
+    specs: 'Spec sources: 03 EST-11, EST-12, INTEL-03 · 04 §4.2 recurrence · 05 §4.10-4.11 · 06 portal · 07 §4.2.3, §4.3 · 08 · 09 §4.3 postings · 16 §4.3 · 17 A4, A5, A7 · 22 §4.4.1' };
+};
+
+/* ---------- r01 Quick Quote ---------- */
+function qqModel() { return visitModel(vmInputs()); }
+function qqTiers() { return ['good', 'better', 'best'].map(function (t) { var s = season(t, qqModel().price); return { t: t, acv: s.acv, inst: installments(s.acv, 8)[0] }; }); }
+SCREEN['r01-quickquote'] = function () {
+  var Q = S.qq, v = qqModel(), visits = Q.freq === 'weekly' ? 30 : 16;
+  var meas = Q.measured ? '<div class="pcard rise" style="padding:6px"><div class="aerial-box">' + aerial('whitfield', { measured: true }) + '</div><div class="flex tiny mt6"><span class="pill ai">' + ic('spark', 's') + 'AI turf measure</span><span>9,000 sq ft · confidence 0.93 · imagery Sep 2026</span></div></div>'
+    : '<div class="pcard soft"><div class="aerial-box">' + aerial('whitfield', {}) + '</div>' + (Q.measuring ? '<div class="loading mt6"><span class="spin"></span>Segmenting turf from the aerial image…</div>' : '<button type="button" class="btn sm mt6" data-act="qqmeasure" data-k="qq-measure">' + ic('spark') + 'Measure turf from aerial</button>') + '</div>';
+  var inputs = '<div class="pcard"><div class="ph"><span>Weekly mowing · 4 of 5 inputs</span><span class="faint">Template v3</span></div>' +
+    '<div class="g2"><label class="fld">Turf<span class="unit"><input class="inp" readonly value="' + (Q.measured ? '9,000' : '') + '" placeholder="measure" data-k="qq-turf"><span>sq ft</span></span></label><label class="fld">Trim<span class="unit"><input class="inp" readonly value="' + (Q.measured ? '350' : '') + '" data-k="qq-trim"><span>lf</span></span></label></div>' +
+    '<div class="fld mt6">Gate<div class="seg" role="group" aria-label="Gate"><button type="button" aria-pressed="' + Q.gate + '" data-act="qqgate" data-v="1" data-k="qq-g1">Side gate</button><button type="button" aria-pressed="' + !Q.gate + '" data-act="qqgate" data-v="0" data-k="qq-g0">Open yard</button></div></div>' +
+    '<div class="fld mt6">Frequency<div class="seg" role="group" aria-label="Frequency"><button type="button" aria-pressed="' + (Q.freq === 'weekly') + '" data-act="qqfreq" data-v="weekly" data-k="qq-fw">Weekly (30)</button><button type="button" aria-pressed="' + (Q.freq === 'biweekly') + '" data-act="qqfreq" data-v="biweekly" data-k="qq-fb">Every 2 weeks (16)</button></div></div></div>';
+  var price = !Q.measured ? '' : '<div class="pcard rise"><div class="flex"><span class="grow"><b style="font-size:1.4rem" class="num">' + money(v.price) + '</b> <span class="muted tiny">per visit · ' + visits + ' visits</span></span><span class="pill ok">Margin 15%</span></div><div class="tiny muted">' + Math.round(v.onsiteMin) + ' min on site for 2 · break-even ' + m2(v.be) + ' · route day <b>Tuesday</b> (Crew 2 is on Kenview Rd)</div>' +
+    '<div class="ptier mt6">' + qqTiers().map(function (x) { return '<label class="' + (Q.tier === x.t ? 'on' : '') + '"><input type="radio" name="qqt" ' + (Q.tier === x.t ? 'checked' : '') + ' data-act="qqtier" data-v="' + x.t + '" data-k="qq-t-' + x.t + '"><span><b>' + TIERS[x.t].gbb + ' · ' + esc(TIERS[x.t].n) + '</b><small>8 payments of ' + m2(x.inst) + (x.t === 'better' ? ' · recommended' : '') + '</small></span><span class="pr">' + money(x.acv) + '</span></label>'; }).join('') + '</div></div>';
+  var send = !Q.measured ? '' : (Q.sent ? '<div class="toast rise">' + ic('check') + '<span>Proposal P-1187 sent by text and email · 1 min 48 s from opening Quick Quote</span></div>' + stepBtn('See why it is $73', 'r01-next') : '<button type="button" class="btn primary" style="justify-content:center" data-act="qqsend" data-k="qq-send">' + ic('send') + 'Send Good / Better / Best to Grace</button>');
+  var body = '<div class="flex"><span class="pill">' + ic('phone', 's') + 'On a call</span><span class="grow"></span><span class="mono tiny faint">0:' + (Q.sent ? '1:48' : Q.measured ? '0:52' : '0:21') + '</span></div><h2 class="ptitle">Quick Quote</h2><p class="psub">Grace Whitfield · 2240 Kenview Rd · new client, called in</p>' + meas + inputs + price + send;
+  return '<div class="dev-row">' + phone(body, { label: 'Sam\'s phone: Quick Quote', title: 'Rootline', sub: 'Sam Kowalski · Estimator', logo: 'leaf', foot: 'Greenleaf Grounds Co. · Rootline mobile', key: 'qq' }) +
+    ctxCard('Two minutes, five inputs at most', ['A Quick Quote Template binds one visit model to at most 5 visible inputs. Everything else (crew size, drive time, overhead method, margin, rounding) comes from defaults the owner set.', 'The turf comes from aerial imagery. Sam can redraw it; trees covering the lawn lower the confidence.', 'The price is the full cost build-up, not a guess: one tap shows the math (next step).', '<b>Try it:</b> measure, flip the gate or the frequency and watch the price move, pick a tier, send.']) + '</div>';
+};
+BTS['r01-quickquote'] = function () {
+  var Q = S.qq, v = qqModel();
+  return { what: 'Quick Quote and the full cost builder are one engine at two speeds. The phone shows five inputs; the price comes from the same visit model, budget and production rates as a 40-line estimate.',
+    agents: [['Aerial turf measurement (INTEL-03)', 'Segmentation on self-hosted models, clipped to the parcel', false], ['Visit model + Quick Quote Template', 'Deterministic pricing', true]],
+    trace: [{ c: 'parcel.lookup(2240 Kenview Rd)', r: 'Lot 0.37 ac · Franklin County parcel', ms: '0.3 s', det: 1, done: Q.measured || Q.measuring }, { c: 'aerial.segment(turf)', r: '3 turf polygons · 9,000 sq ft · 2 canopies masked · conf 0.93', ms: '2.1 s', done: Q.measured }, { c: 'geometry.derive(trim_lf)', r: '350 lf from bed edges and the fence line', ms: '40 ms', det: 1, done: Q.measured }, { c: 'visit_model.price', r: Q.measured ? v.mh.toFixed(3) + ' mh → ' + money(v.price) + ' per visit' : '', ms: '12 ms', det: 1, done: Q.measured }, { c: 'route.nearest_day', r: 'Tuesday · Crew 2 already serves 4 stops on Kenview Rd', ms: '80 ms', det: 1, done: Q.measured }, { c: 'proposal.generate(3 tiers)', r: Q.sent ? 'P-1187 · template "Residential maintenance"' : '', ms: '0.2 s', det: 1, done: Q.sent }, { c: 'send', r: Q.sent ? 'Text and email to Grace · Sam tapped Send' : 'Waiting for Sam', human: 1, done: Q.sent }],
+    hitl: [['Sam', 'confirms the measurement, chooses the inputs and sends. Nothing about the price is AI-set: the model does the arithmetic.']], levels: ['T1 draft', 'T3 send (Sam taps)'],
+    credits: { n: 0, note: 'Turf auto-measure is metered as one parcel lookup, not AI credits (22 §4.4.1).' },
+    tags: [['mvp', 'Quick Quote, turf auto-measure, recurring pricing, 3-tier proposal']],
+    specs: 'Spec: 03 EST-11 Quick Quote · 03 INTEL-03 turf auto-measure · 03 EST-12 · 03 flow 5.1 path 1 · 22 §4.4.1 (parcel lookups)' };
+};
+
+/* ---------- r02 Visit model ---------- */
+SCREEN['r02-model'] = function () {
+  var v = visitModel(vmInputs()), V = S.vm, base = visitModel(vmInputs({ crew: 2, drive: 9, margin: 15, gate: true, freq: 'weekly' }));
+  var row = function (n, calc, mh) { return '<tr><td>' + n + '</td><td class="mono tiny">' + calc + '</td><td class="num">' + (mh == null ? '' : mh.toFixed(3)) + '</td></tr>'; };
+  var tbl = '<table class="data tight"><thead><tr><th>Component</th><th>Calculation</th><th class="num">Man-hours</th></tr></thead><tbody>' +
+    row('Mowing, 60 in ZTR', '9,000 / 40,000 sq ft/h', v.mow) + row('Trimming', '350 lf / 1,500 lf/h', v.trim) + row('Blowing hardscape', '1,100 sq ft / 10,000 sq ft/h', v.blow) + row('Setup, gate, unload', V.crew + ' × ' + v.gateMin + ' min', v.setup) +
+    '<tr><td><b>On site</b></td><td class="mono tiny">≈ ' + Math.round(v.onsiteMin) + ' min for a crew of ' + V.crew + '</td><td class="num"><b>' + v.onsite.toFixed(3) + '</b></td></tr>' + row('Drive allocation', V.drive + ' min between stops × ' + V.crew, v.drive) + '<tr><td><b>Total</b></td><td></td><td class="num"><b>' + v.mh.toFixed(3) + '</b></td></tr></tbody></table>';
+  var cost = '<div class="panel"><h4>Cost and price</h4>' + [['Burdened labor', v.mh.toFixed(3) + ' mh × $' + RATE.labor.toFixed(2), v.c.labor], ['ZTR mower', v.mow.toFixed(3) + ' h × $10.00', v.c.ztr], ['Handhelds', (v.trim + v.blow).toFixed(3) + ' h × $3.00', v.c.hand], ['Truck and trailer', (v.mh / V.crew).toFixed(3) + ' h × $18.00', v.c.truck], ['Overhead (field labor hour)', v.mh.toFixed(3) + ' mh × $21.00', v.c.flh]].map(function (r) { return '<div class="rowx"><span>' + r[0] + '<small>' + r[1] + '</small></span><span>' + m2(r[2]) + '</span></div>'; }).join('') +
+    '<div class="rowx tot"><span>Break-even</span><span>' + m2(v.be) + '</span></div><div class="rowx"><span>At ' + V.margin + '% net<small>' + m2(v.be) + ' / ' + (1 - V.margin / 100).toFixed(2) + ' = ' + m2(v.raw) + ', rounded up to whole dollars</small></span><span></span></div><div class="rowx big"><span>Price per visit</span><span>' + money(v.price) + '</span></div>' +
+    (v.price !== base.price ? '<div class="flagnote">' + ic('warn', 's') + ' Changed from $73. Saving would create model v8 as a <b>draft</b>: open quotes keep their price, and the public price bands regenerate for Erin to approve.</div>' : '') + '</div>';
+  var ctrls = '<div class="panel soft"><h4>' + ic('cog', 's') + 'Try the model</h4><div class="fld">Crew size<div class="seg" role="group" aria-label="Crew size">' + [1, 2, 3].map(function (c) { return '<button type="button" aria-pressed="' + (V.crew === c) + '" data-act="vmcrew" data-v="' + c + '" data-k="vm-c' + c + '">' + c + '</button>'; }).join('') + '</div></div>' +
+    '<div class="g2 mt6"><label class="fld">Drive between stops<span class="unit"><input class="inp sm" type="number" min="2" max="30" value="' + V.drive + '" data-bind="vm.drive" data-k="vm-drive"><span>min</span></span><span class="hint">From the Tuesday route (04)</span></label><label class="fld">Target net margin<span class="unit"><input class="inp sm" type="number" min="5" max="35" value="' + V.margin + '" data-bind="vm.margin" data-k="vm-margin"><span>%</span></span></label></div>' +
+    '<button type="button" class="btn xs mt6" data-act="vmreset" data-k="vm-reset">' + ic('refresh', 's') + 'Reset to the spec example</button></div>';
+  var bands = '<div class="panel"><h4>Public price bands <span class="pill ai" style="margin-left:auto">' + tag('v1') + '</span></h4><table class="data tight"><thead><tr><th>Turf sq ft</th><th class="num">Per visit</th></tr></thead><tbody>' + BANDS.map(function (b, i) { var on = i === 3; return '<tr' + (on ? ' class="flag"' : '') + '><td>' + (i ? num(BANDS[i - 1][0] + 1) : 'up to') + (i ? '-' : ' ') + num(b[0]) + '</td><td class="num">$' + b[1] + '</td></tr>'; }).join('') + '<tr><td>over 20,000</td><td class="num">site visit</td></tr></tbody></table><p class="tiny muted mt6">Each band is priced at its upper bound so it never underprices. Grace\'s 9,000 sq ft lawn is $73 in precise mode (estimators) and $76 banded (online booking).</p></div>';
+  var main = '<div class="apphead"><span class="crumb">Settings · Price Book · Visit models</span><h3>Weekly mowing · residential · model v7</h3><span class="pill ok">Active since Jan 4</span><span class="sp"></span><span class="av b" title="Erin Castillo, owner">EC</span></div>' +
+    '<div class="est"><div style="display:grid;gap:10px;align-content:start"><div class="panel"><h4>Production time · 2240 Kenview Rd</h4>' + tbl + '</div>' + ctrls + '</div><div style="display:grid;gap:10px;align-content:start">' + cost + bands + '</div></div>' +
+    '<div class="panel mt10"><h4>Season at this price</h4><div class="flex tiny"><span>30 visits × ' + money(v.price) + ' = <b>' + money(30 * v.price) + '</b></span><span>·</span><span>8 payments of ' + m2(installments(30 * v.price, 8)[0]) + ' (Apr-Nov)</span><span>·</span><span>or 12 of ' + m2(installments(30 * v.price, 12)[0]) + '</span></div></div>';
+  return browser('app.rootline.com/t/greenleaf/settings/price-book/visit-models/mow-res', appShell('Settings', main), 'Greenleaf Company web app: visit model') + '<div class="flex mt10"><span class="grow"></span>' + stepBtn('Send it to Grace', 'r02-next') + '</div>';
+};
+BTS['r02-model'] = function () {
+  var v = visitModel(vmInputs());
+  return { what: 'Maintenance is priced from a visit model: the time to service one visit, priced per visit, then expanded to a season. The same model feeds Quick Quote, full estimates, the public price bands and renewals, so a public price never undercuts the Company budget.',
+    agents: [['Visit model (EST-12)', 'Burden, overhead recovery (field labor hour) and margin from the Company Budget', true]],
+    trace: [{ c: 'budget.rates', r: 'Burdened labor $28.15/mh · overhead $21.00/FLH (Budget 2027 v2)', ms: '8 ms', det: 1, done: 1 }, { c: 'route.density(UA-TUE)', r: S.vm.drive + ' min average between stops', ms: '30 ms', det: 1, done: 1 }, { c: 'visit_model.compute', r: v.mh.toFixed(3) + ' mh · break-even ' + m2(v.be) + ' → ' + money(v.price), ms: '4 ms', det: 1, done: 1 }, { c: 'bands.fit(online rule)', r: 'Line $49.41 + $2.53 per 1,000 sq ft, within 1.7% of every band', ms: '6 ms', det: 1, done: 1 }],
+    hitl: [['Erin', '(owner) owns the model. A change saves as a draft; public prices move only after she approves.']], levels: ['T2 internal write'],
+    sections: '<div class="bts-sec"><h3>Note on rounding</h3><p>The spec\'s worked example rounds each line before adding, so it shows a break-even of $61.55; computed unrounded it is ' + m2(visitModel(vmInputs({ crew: 2, drive: 9, margin: 15, gate: true, freq: 'weekly' })).be) + '. Both round to $73.</p></div>',
+    credits: { n: 0, note: 'Pricing is arithmetic. No AI.' },
+    tags: [['mvp', 'visit models, recurring pricing, banded tables'], ['v1', 'export to the online pricing rule, budget what-if']],
+    specs: 'Spec: 03 EST-12 worked example · 03 EST-04 overhead recovery · 03 extra idea 17 (budget what-if) · 16 §4.3.3 pricing rules' };
+};
+
+/* ---------- r03 Grace signs ---------- */
+SCREEN['r03-sign'] = function () {
+  var P = S.pp, plan = gPlan(P.tier), inst = installments(plan.acv, 8);
+  if (P.signed) {
+    var body0 = '<div class="pcard rise" style="text-align:center;padding:16px 12px"><div style="width:52px;height:52px;border-radius:50%;background:var(--ok-bg);display:grid;place-items:center;margin:0 auto">' + ic('check') + '</div><h2 class="ptitle">You\'re on the Tuesday route</h2><p class="psub mt6">First visit Tuesday April 6. You\'ll get a text when the crew is on the way.</p></div>' +
+      '<div class="pcard soft"><dl class="kv"><dt>Plan</dt><dd>' + esc(TIERS[P.tier].n) + '</dd><dt>Season</dt><dd>' + money(plan.acv) + ' + tax</dd><dt>Payments</dt><dd>' + (P.plan === 'level8' ? '8 × ' + m2(inst[0]) + ' + tax, on the 1st, Apr-Nov' : 'Monthly invoice for visits done') + '</dd><dt>Autopay</dt><dd>Visa ending 4242</dd><dt>Agreement</dt><dd>AGR-2291 · renews each February unless you opt out</dd></dl></div>' + stepBtn('Meanwhile, across the street', 'r03-next');
+    return '<div class="dev-row">' + phone(body0, { label: 'Grace\'s phone: confirmation', sub: 'Client portal', foot: 'portal.greenleafgrounds.com · Powered by Rootline', key: 'pp' }) + ctxCard('From proposal to agreement', ['Signing creates a Service Agreement with lines, unit prices and the billing schedule, and a saved payment method on Greenleaf\'s own Stripe account. Nothing is charged today.', 'The agreement is the billing plan: the first installment goes out April 1 by the billing run.']) + '</div>';
+  }
+  var exp = meter(plan, inst), peak = exp.reduce(function (a, x) { return Math.min(a, x.pos); }, 0);
+  var tiers = '<div class="ptier">' + ['good', 'better', 'best'].map(function (t) { var s = gPlan(t); return '<label class="' + (P.tier === t ? 'on' : '') + '"><input type="radio" name="ppt" ' + (P.tier === t ? 'checked' : '') + ' data-act="pptier" data-v="' + t + '" data-k="pp-t-' + t + '"><span><b>' + TIERS[t].gbb + ' · ' + esc(TIERS[t].n) + '</b><small>' + s.lines.map(function (l) { return l.count + ' × ' + esc(l.n.split(',')[0].toLowerCase()); }).join(' · ') + '</small></span><span class="pr">' + money(s.acv) + '</span></label>'; }).join('') + '</div>';
+  var plans = '<div class="fld">How to pay<div class="ptier">' + [['level8', '8 equal payments, April-November', '8 × ' + m2(inst[0]) + ' + tax · trued up to visits done'], ['pervisit', 'Pay for each visit, billed monthly', 'Amount varies by month']].map(function (p) { return '<label class="' + (P.plan === p[0] ? 'on' : '') + '"><input type="radio" name="ppp" ' + (P.plan === p[0] ? 'checked' : '') + ' data-act="ppplan" data-v="' + p[0] + '" data-k="pp-p-' + p[0] + '"><span><b>' + p[1] + '</b><small>' + p[2] + '</small></span><span></span></label>'; }).join('') + '</div></div>';
+  var card = '<div class="stripe"><span class="sl"><span>Card · secured by Stripe</span><span>Greenleaf Grounds Co.</span></span>' + (P.card ? '<div class="okline">' + ic('check') + 'Visa •••• 4242 saved for autopay</div>' : '<div class="g2"><input class="inp sm" value="4242 4242 4242 4242" readonly aria-label="Card number"><input class="inp sm" value="06 / 27   ·   123" readonly aria-label="Expiry and CVC"></div><button type="button" class="btn sm" data-act="ppcard" data-k="pp-card">Save card for autopay</button>') + '</div>';
+  var ok = P.name.trim().length > 2 && P.agree && P.card;
+  var body = '<h2 class="ptitle">Your lawn care proposal</h2><p class="psub">From Sam at Greenleaf · 2240 Kenview Rd · 9,000 sq ft of lawn, measured from the air</p>' + tiers + plans + card +
+    '<form data-form="sign" class="pbody-pad" style="padding:0;gap:8px"><label class="fld">Type your name to sign<input class="inp" value="' + esc(P.name) + '" data-bind="pp.name" data-k="pp-name" autocomplete="name" placeholder="Grace Whitfield"></label>' +
+    '<label class="check"><input type="checkbox" ' + (P.agree ? 'checked' : '') + ' data-bind="pp.agree" data-k="pp-agree"><span>I agree to the service agreement. It renews each February at the price in a notice sent 30 days ahead, and I can opt out online any time before then. Visits skipped for drought are credited; rain days are rescheduled.</span></label>' +
+    '<button type="submit" class="btn primary" style="justify-content:center" data-k="pp-sign"' + (ok ? '' : ' disabled') + '>' + ic('pen') + 'Sign and start my season</button>' + (ok ? '' : '<span class="hint" style="text-align:center">Save a card, type your name and tick the box</span>') + '</form>';
+  return '<div class="dev-row">' + phone(body, { label: 'Grace\'s phone: proposal', sub: 'Client portal', foot: 'portal.greenleafgrounds.com · Powered by Rootline', key: 'pp' }) +
+    ctxCard('Level billing that stays honest', ['Eight equal payments are easy to budget, but the work is not even: June has 5 mows and the lawn program, August has 2 mows. Rootline tracks earned against billed every month and trues up at the end.', 'The schedule builder warns when the Company would be owed too much if the client leaves. For this plan the most Greenleaf is ever owed is ' + m2(-peak) + ' (' + (-peak / plan.acv * 100).toFixed(1) + '% of the season), under the 25% threshold.', 'The card is saved with a Stripe SetupIntent on Greenleaf\'s connected account. Card data never touches Rootline.', '<b>Try it:</b> switch tiers, save the card, sign.'], meterSVG(plan, inst, -1)) + '</div>';
+};
+BTS['r03-sign'] = function () {
+  var P = S.pp, plan = gPlan(P.tier);
+  return { what: 'The accepted proposal becomes Service Agreement AGR-2291: lines, unit prices, planned occurrences, a level billing schedule with its true-up method, the renewal terms and an autopay mandate.',
+    agents: [['Agreement and billing engine', 'Deterministic', true], ['Stripe (Greenleaf\'s connected account)', 'SetupIntent, direct charges later', true]],
+    trace: [{ c: 'stripe.setup_intent.create', r: P.card ? 'pm_…4242 on acct_greenleaf · off-session use allowed' : 'Waiting for the card', ms: '0.6 s', det: 1, done: P.card }, { c: 'proposal.accept(P-1187)', r: P.signed ? TIERS[P.tier].gbb + ' · signature + IP + timestamp' : 'Waiting for Grace', human: 1, done: P.signed }, { c: 'agreement.create', r: P.signed ? 'AGR-2291 · ACV ' + m2(plan.acv) + ' · ' + plan.lines.length + ' lines' : '', ms: '0.1 s', det: 1, done: P.signed }, { c: 'billing_schedule.create', r: P.signed ? (P.plan === 'level8' ? '8 installments · per_visit_leveled · adjust_final_installment' : 'per-visit, monthly batch') : '', ms: '20 ms', det: 1, done: P.signed }, { c: 'renewal.schedule_notice', r: P.signed ? 'Notice Jan 5, 2028 (rule table OH row, verify)' : '', ms: '10 ms', det: 1, done: P.signed }],
+    hitl: [['Grace', 'signs and authorizes autopay. Charging a card is T4 for AI: only the client\'s mandate and the billing run do it.']], levels: ['Client action', 'T4 never AI'],
+    credits: { n: 0, note: 'No AI in signing or setup.' },
+    tags: [['mvp', 'e-signature, service agreements, level billing with true-up, card on file, renewal terms']],
+    specs: 'Spec: 07 §4.2.3 level billing · 07 §4.3 agreement lifecycle · 07 §4.3.4 renewal notices · 08 card on file · 06 portal' };
+};
+
+/* earned vs billed chart */
+function meterSVG(plan, inst, upto) {
+  var m = meter(plan, inst), max = plan.acv, W = 300, H = 120, bw = 26, gap = (W - 30 - 8 * bw) / 7;
+  var y = function (v) { return H - 18 - v / max * (H - 30); };
+  var s = '<div class="card meter-card"><h3 style="font-size:.86rem">Earned vs billed, by month</h3><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Cumulative earned value and billed amount by month">';
+  m.forEach(function (x, i) {
+    var cx = 22 + i * (bw + gap), dim = upto >= 0 && i > upto;
+    s += '<rect x="' + cx + '" y="' + y(x.earned) + '" width="' + (bw / 2 - 1) + '" height="' + (H - 18 - y(x.earned)) + '" class="mt-earn' + (dim ? ' dim' : '') + '"/><rect x="' + (cx + bw / 2) + '" y="' + y(x.billed) + '" width="' + (bw / 2 - 1) + '" height="' + (H - 18 - y(x.billed)) + '" class="mt-bill' + (dim ? ' dim' : '') + '"/><text x="' + (cx + bw / 2) + '" y="' + (H - 5) + '" class="mt-t">' + x.m + '</text>';
+  });
+  s += '<line x1="18" x2="' + W + '" y1="' + (H - 18) + '" y2="' + (H - 18) + '" class="mt-ax"/></svg><div class="legend-sm"><span><i style="background:var(--moss-500)"></i>Earned (work done)</span><span><i style="background:var(--sky-500)"></i>Billed</span></div></div>';
+  return s;
+}
+
+/* ---------- r04 neighbor instant quote ---------- */
+SCREEN['r04-instant'] = function () {
+  var I = S.iq, turf = turfOf('brennan', I.exclude), band = bandPrice(turf), adj = 3, price = band.price - adj, chg = (10400 - turf) / 10400;
+  if (I.booked) {
+    var b0 = '<div class="pcard rise" style="text-align:center;padding:16px 12px"><div style="width:52px;height:52px;border-radius:50%;background:var(--ok-bg);display:grid;place-items:center;margin:0 auto">' + ic('check') + '</div><h2 class="ptitle">Booked: Tuesdays from April 6</h2><p class="psub mt6">Weekly mowing at <b>' + money(price) + '</b> a visit + tax, billed monthly to Visa •••• 1881. Your crew lead confirms the lawn on the first visit.</p></div><div class="pcard soft tiny">Agreement AGR-2304 · portal invite sent · price firm for 30 days of quoting and the 2027 season</div>' + stepBtn('Build the season and the route', 'r04-next');
+    return '<div class="dev-row">' + phone(b0, { label: 'Tom\'s phone: booking confirmed', sub: 'Book lawn care online', foot: 'greenleafgrounds.com/book · Powered by Rootline', key: 'iq' }) + ctxCard('Self-serve, onto a real route day', ['Booking created the client, property, a one-page agreement with e-signature and a saved card, and placed Tom on the route that already passes his house.']) + '</div>';
+  }
+  var map = I.measured ? '<div class="pcard rise" style="padding:6px"><div class="aerial-box">' + aerial('brennan', { measured: true, exclude: I.exclude }) + '</div><label class="check mt6"><input type="checkbox" ' + (I.exclude ? 'checked' : '') + ' data-act="iqex" data-self="1" data-k="iq-ex"><span><b>Don\'t mow the fenced dog run</b> (1,150 sq ft). Redraw the lawn if anything else is wrong.</span></label></div>'
+    : '<div class="pcard soft"><div class="aerial-box">' + aerial('brennan', {}) + '</div>' + (I.measuring ? '<div class="loading mt6"><span class="spin"></span>Measuring your lawn from aerial imagery…</div>' : '<button type="button" class="btn primary sm mt6" data-act="iqmeasure" data-k="iq-measure">Get my price</button>') + '</div>';
+  var quote = !I.measured ? '' : '<div class="pcard rise"><div class="flex"><b style="font-size:1.4rem" class="num">' + money(price) + '</b><span class="muted tiny">per weekly visit + tax</span><span class="grow"></span><span class="pill ok">Firm price</span></div><div class="rowx"><span>Lawn ' + num(turf) + ' sq ft · band ' + num(band.lo) + '-' + num(band.hi) + '</span><span>$' + band.price + '</span></div><div class="rowx"><span>Greenleaf already mows 5 lawns on Kenview Rd</span><span>-$' + adj + '</span></div>' + (I.exclude ? '<div class="tiny muted mt6">You changed the area by ' + (chg * 100).toFixed(0) + '%. Under 25%, so the price stays firm. The crew confirms on the first visit.</div>' : '') +
+    '<div class="slot on mt6"><b>' + ic('calendar', 's') + ' Your crew visits on Tuesdays</b>Starting April 6 · Crew 2 is already on your street</div></div>';
+  var pay = !I.measured ? '' : '<div class="stripe"><span class="sl"><span>Card · secured by Stripe</span><span>Greenleaf Grounds Co.</span></span>' + (I.card ? '<div class="okline">' + ic('check') + 'Visa •••• 1881 saved</div>' : '<button type="button" class="btn sm" data-act="iqcard" data-k="iq-card">Add a card (charged after each month\'s visits)</button>') + '</div><button type="button" class="btn primary" style="justify-content:center" data-act="iqbook" data-k="iq-book"' + (I.card ? '' : ' disabled') + '>Sign and book weekly mowing</button>';
+  var body = '<h2 class="ptitle">Weekly lawn mowing</h2><p class="psub">2251 Kenview Rd, Upper Arlington</p>' + map + quote + pay;
+  return '<div class="dev-row">' + phone(body, { label: 'Tom\'s phone: instant quote', sub: 'Book lawn care online', foot: 'greenleafgrounds.com/book · Powered by Rootline', key: 'iq' }) +
+    ctxCard('A firm price without a site visit', ['Tom saw Greenleaf\'s truck at Grace\'s and opened their website. The online price uses the banded table from the same visit model, priced at each band\'s upper bound.', 'A firm price shows only when measurement confidence is at least 0.85, imagery is under 36 months old and the lawn is under 20,000 sq ft. Otherwise Tom sees a range or books a visit.', 'Route density lowers the neighbor\'s price: Greenleaf\'s rule takes $3 off on streets it already serves.', '<b>Try it:</b> get the price, exclude the dog run (10,400 → 9,250 sq ft drops a band), add a card, book.']) + '</div>';
+};
+BTS['r04-instant'] = function () {
+  var I = S.iq, turf = turfOf('brennan', I.exclude);
+  return { what: 'The public instant quote runs the same aerial measurement as Sam\'s Quick Quote and prices from bands generated by the visit model. Confidence gating decides between a firm price, a range and a site visit.',
+    agents: [['Instant quote pipeline (16 §4.3)', 'Measurement + pricing rule + capacity', false]],
+    trace: [{ c: 'parcel.lookup', r: '2251 Kenview Rd', ms: '0.3 s', det: 1, done: I.measured || I.measuring }, { c: 'aerial.segment(turf)', r: '3 areas · 10,400 sq ft · conf 0.91 · imagery 7 months old', ms: '2.3 s', done: I.measured }, { c: 'gate.instant_firm', r: 'conf ≥ 0.85 ✓ · imagery < 36 mo ✓ · in band ✓ · in season ✓', ms: '5 ms', det: 1, done: I.measured }, { c: 'client.redraw', r: I.exclude ? '-1,150 sq ft (dog run) → ' + num(turf) + ' · change 11% < 25%' : 'none', ms: '', human: 1, done: I.measured }, { c: 'pricing_rule.apply', r: I.measured ? 'band $' + bandPrice(turf).price + ' · existing-route modifier -$3' : '', ms: '3 ms', det: 1, done: I.measured }, { c: 'capacity.route_day', r: 'UA-TUE · Crew 2 · 1.2 h free', ms: '40 ms', det: 1, done: I.measured }, { c: 'booking.create', r: I.booked ? 'Client, property, AGR-2304, card on file, portal invite' : '', ms: '0.3 s', det: 1, done: I.booked }],
+    hitl: [['Tom', 'redraws, signs and saves a card.'], ['Marco', '(crew lead) confirms conditions on the first visit; more than 15% over triggers a reprice proposal Tom can decline.']], levels: ['Client self-serve', 'First-visit verification'],
+    credits: { n: 0, note: 'One parcel lookup. Measurement is not billed in credits.' },
+    tags: [['v1', 'online booking and instant quotes (24 §4.6 retag)'], ['mvp', 'turf auto-measure itself']],
+    specs: 'Spec: 16 §4.3.2-4.3.5 · 16 flow 5.1 · 03 EST-12 banded tables · 03 E19 disputed measurement · 24 §4.6' };
+};
+
+/* ============================================================
+   Screens: Act 2 (run the season)
+   ============================================================ */
+
+/* ---------- r05 season and route ---------- */
+var ROUTE = [
+  ['Hale', '2101 Northam Rd', 8], ['Moreno', '2118 Northam Rd', 3], ['Bishop', '2190 Kenview Rd', 4], ['Lindqvist', '2228 Kenview Rd', 2],
+  ['Whitfield', '2240 Kenview Rd', 1, 'new'], ['Brennan', '2251 Kenview Rd', 1, 'new'],
+  ['Novak', '2265 Kenview Rd', 2], ['Carver', '2277 Kenview Rd', 1], ['Duffy', '1980 Arlington Ave', 9], ['Ellison', '2011 Arlington Ave', 3],
+  ['Foster', '3355 Sunningdale Way', 11], ['Grant', '3390 Sunningdale Way', 2], ['Haddad', '2560 Tremont Rd', 14], ['Ingram', '2603 Tremont Rd', 3],
+  ['Jensen', '1874 Lane Rd', 16], ['Keller', '1890 Lane Rd', 2]
+];
+function seasonCal(plan) {
+  var mowLine = plan.lines[0], fert = plan.lines.filter(function (l) { return l.k === 'fert'; })[0];
+  return '<div class="cal">' + MONTHS.map(function (m, mi) {
+    var dots = MOW_DATES[mi].map(function (d) { return '<i class="cd mow" title="Mow ' + m + ' ' + d + '"></i>'; }).join('') + (fert && fert.occ[mi] ? '<i class="cd fert" title="Lawn program application"></i>' : '') + plan.lines.filter(function (l) { return ['spring', 'aerate', 'fall'].indexOf(l.k) >= 0 && l.occ[mi]; }).map(function (l) { return '<i class="cd extra" title="' + esc(l.n) + '"></i>'; }).join('');
+    return '<div class="cm"><b>' + m + '</b><span>' + dots + '</span><small>' + (mowLine.occ[mi] + (fert ? fert.occ[mi] : 0)) + '</small></div>';
+  }).join('') + '</div>';
+}
+SCREEN['r05-route'] = function () {
+  var R = S.rt, plan = gPlan(), fert = plan.lines.filter(function (l) { return l.k === 'fert'; })[0];
+  var t = 7 * 60 + 30, rows = ROUTE.map(function (r, i) {
+    var isNew = r[3] === 'new'; if (isNew && !R.accepted) return '<tr class="ghost-row"><td class="mono">+</td><td><b>' + r[0] + '</b><span class="sub">' + r[1] + ' · proposed</span></td><td class="mono tiny">+' + r[2] + ' min drive</td><td class="tiny">' + (r[0] === 'Brennan' ? 'First visit: confirm lawn' : 'New agreement') + '</td></tr>';
+    t += r[2]; var start = t; t += 21;
+    var hh = Math.floor(start / 60), mm = start % 60;
+    return '<tr' + (isNew ? ' class="flag"' : '') + '><td class="mono">' + (i + 1) + '</td><td><b>' + r[0] + '</b><span class="sub">' + r[1] + '</span></td><td class="mono tiny">' + (hh > 12 ? hh - 12 : hh) + ':' + (mm < 10 ? '0' : '') + mm + (hh >= 12 ? ' pm' : ' am') + '</td><td class="tiny">' + (isNew ? (r[0] === 'Brennan' ? '<span class="pill info">First visit: confirm lawn</span>' : '<span class="pill ok">New</span>') : 'Weekly') + '</td></tr>';
+  }).join('');
+  var stats = R.accepted ? [['Stops', '14 → 16'], ['On site', '4.9 h → 5.6 h'], ['Drive', '118 → 120 min'], ['Avg drive between stops', '9.1 → 8.0 min'], ['Day length', '8.4 h → 9.1 h of 10']] : [['Stops', '14'], ['Day length', '8.4 h of 10'], ['Insertion cost', '+2 min drive, +42 min on site'], ['Best alternative', 'Thursday route, +19 min drive']];
+  var main = '<div class="apphead"><span class="crumb">Agreements · AGR-2291 Whitfield</span><h3>Season 2027 · ' + esc(TIERS[S.pp.tier].n) + '</h3><span class="pill ok">Active</span><span class="sp"></span><span class="av c" title="Luis Ortega, operations">LO</span></div>' +
+    '<div class="panel"><h4>' + ic('refresh', 's') + 'Generated visits</h4>' + seasonCal(plan) + '<div class="legend-sm mt6"><span><i style="background:var(--moss-600)"></i>Mow, Crew 2, Tuesdays (30)</span>' + (fert ? '<span><i style="background:var(--marigold-400)"></i>Lawn program, Jen H.\'s lawn care route (5)</span>' : '') + '<span><i style="background:var(--sky-500)"></i>Cleanups and aeration</span></div><p class="tiny muted mt6">Weekly April-June and September-November, every other week in July and August. The recurrence engine generates 12 weeks ahead and extends weekly; holidays and blackout dates are skipped by rule.</p></div>' +
+    '<div class="g2 mt10" style="grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)"><div class="panel"><h4>' + ic('pin', 's') + 'Route UA-TUE · Crew 2 · Marco Reyes, Javier Ruiz</h4><div class="table-scroll"><table class="data tight"><thead><tr><th>#</th><th>Client</th><th>' + (R.accepted ? 'Arrive' : 'Drive') + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div></div>' +
+    '<div style="display:grid;gap:10px;align-content:start"><div class="panel"><h4>Route insertion</h4>' + stats.map(function (s) { return '<div class="rowx"><span>' + s[0] + '</span><span>' + s[1] + '</span></div>'; }).join('') +
+    (R.accepted ? '<div class="toast mt6">' + ic('check') + '<span>Accepted by Luis · 30 + 30 visits on UA-TUE · clients notified of their route day</span></div>' : '<button type="button" class="btn primary mt6" data-act="rtaccept" data-k="rt-accept">' + ic('check') + 'Accept both insertions</button>') + '</div>' +
+    '<div class="panel soft tiny"><b>Why Tuesday:</b> Kenview Rd already has 4 Tuesday stops. Inserting both houses between Lindqvist and Novak adds 2 minutes of driving for 42 minutes of paid work, and lowers the route\'s average drive between stops, which lowers the next quote on this street.</div></div></div>' +
+    (R.accepted ? '<div class="flex mt10"><span class="grow"></span>' + stepBtn('Jump to a Tuesday in May', 'r05-next') + '</div>' : '');
+  return browser('app.rootline.com/t/greenleaf/agreements/AGR-2291', appShell('Agreements', main), 'Greenleaf Company web app: agreement and route');
+};
+BTS['r05-route'] = function () {
+  var R = S.rt;
+  return { what: 'Signing turns the agreement lines into planned occurrences. The recurrence engine creates visits; the route optimizer proposes where they fit. Luis accepts, so the crew sees them on their phones.',
+    agents: [['Recurrence engine (04 §4.2)', 'Deterministic visit generation', true], ['Route optimizer (OR-Tools service)', 'Cheapest insertion with time windows and day caps', true]],
+    trace: [{ c: 'agreement.activated', r: 'AGR-2291, AGR-2304', ms: '', det: 1, done: 1 }, { c: 'recurrence.generate', r: '30 mows + ' + (gPlan().lines.length - 1 ? gPlan().lines.slice(1).reduce(function (a, l) { return a + l.count; }, 0) : 0) + ' other visits for Whitfield · 30 for Brennan', ms: '0.2 s', det: 1, done: 1 }, { c: 'route.insert(UA-TUE)', r: 'Between stops 4 and 5 · +2 min drive · day 9.1 h', ms: '0.8 s', det: 1, done: 1 }, { c: 'approve', r: R.accepted ? 'Luis Ortega' : 'Waiting for Luis', human: 1, done: R.accepted }, { c: 'notify.route_day (template)', r: R.accepted ? '"Your crew visits on Tuesdays" to both clients' : '', ms: '', det: 1, done: R.accepted }],
+    hitl: [['Luis', 'accepts route changes. Small insertions can be set to auto-accept under a drive-time threshold.']], levels: ['T2 internal write'],
+    credits: { n: 0, note: 'Routing and recurrence are optimization, not generative AI.' },
+    tags: [['mvp', 'recurrence engine, route insertion, route-day notices']],
+    specs: 'Spec: 04 §4.2 recurrence · 04 route optimization · 07 §4.3.2 agreement states · 16 transactional templates' };
+};
+
+/* ---------- r06 crew visit ---------- */
+var TX = {
+  es: { today: 'Hoy · martes 11 de mayo', route: 'Ruta UA-MAR · visita 5 de 16', otw: 'En camino', otwSent: 'Grace recibió: "Marco de Greenleaf llega en unos 6 min"', gate: 'Código del portón', show: 'Mostrar', dog: 'PERRO: Biscuit, amistoso, en el patio trasero. Cerrar el portón.', tasks: 'Lista', mow: 'Cortar el césped (patrón diagonal)', trim: 'Recortar orillas y cerca', edge: 'Orillar la entrada y la banqueta', blow: 'Soplar entrada, banqueta y patio', before: 'Foto antes', after: 'Foto después', done: 'Completar visita', doneOk: 'Visita completada 9:42 · 23 min', note: 'Nota de la oficina: no cortar la esquina trasera izquierda, semilla nueva.', need: 'Faltan pasos para completar' },
+  en: { today: 'Today · Tuesday May 11', route: 'Route UA-TUE · visit 5 of 16', otw: 'On my way', otwSent: 'Grace got: "Marco from Greenleaf arrives in about 6 min"', gate: 'Gate code', show: 'Show', dog: 'DOG: Biscuit, friendly, in the back yard. Close the gate.', tasks: 'Checklist', mow: 'Mow the lawn (diagonal pattern)', trim: 'Trim edges and fence line', edge: 'Edge the driveway and sidewalk', blow: 'Blow driveway, sidewalk and patio', before: 'Before photo', after: 'After photo', done: 'Complete visit', doneOk: 'Visit complete 9:42 · 23 min', note: 'Office note: don\'t mow the back left corner, new seed.', need: 'Steps left before completing' }
+};
+function lawnPhoto(after) {
+  var s = '<svg viewBox="0 0 160 90" role="img" aria-label="' + (after ? 'After photo: freshly striped lawn' : 'Before photo: overgrown lawn') + '"><rect width="160" height="90" class="lp-sky"/><rect y="28" width="160" height="62" class="' + (after ? 'lp-lawn2' : 'lp-lawn') + '"/>';
+  if (after) for (var i = 0; i < 8; i++) s += '<path d="M' + (i * 24 - 20) + ' 90 L' + (i * 24 + 10) + ' 28 L' + (i * 24 + 22) + ' 28 L' + (i * 24 - 8) + ' 90Z" class="lp-stripe"/>';
+  else for (var j = 0; j < 40; j++) s += '<path d="M' + (j * 4 + 2) + ' ' + (60 + (j % 5) * 6) + ' l-2 -7 M' + (j * 4 + 2) + ' ' + (60 + (j % 5) * 6) + ' l2 -8" class="lp-blade"/>';
+  return s + '<rect x="96" y="6" width="54" height="26" class="lp-house"/><path d="M92 8 L123 -6 L154 8Z" class="lp-roof"/><rect x="0" y="80" width="160" height="10" class="lp-walk"/></svg>';
+}
+SCREEN['r06-visit'] = function () {
+  var C = S.cv, T = TX[C.lang], allT = Object.keys(C.tasks).every(function (k) { return C.tasks[k]; }), can = allT && C.before && C.after;
+  var lang = '<span class="seg" role="group" aria-label="Language"><button type="button" aria-pressed="' + (C.lang === 'es') + '" data-act="cvlang" data-v="es" data-k="cv-es">ES</button><button type="button" aria-pressed="' + (C.lang === 'en') + '" data-act="cvlang" data-v="en" data-k="cv-en">EN</button></span>';
+  var body = '<div class="flex tiny"><b>' + T.today + '</b><span class="grow"></span><span class="faint">' + T.route + '</span></div>' +
+    '<div class="pcard"><div class="flex"><span class="grow"><b style="font-size:1rem">Whitfield</b><br><span class="tiny muted">2240 Kenview Rd · ' + (C.lang === 'es' ? 'Corte semanal' : 'Weekly mow') + ' · 21 min</span></span>' + (C.otw ? '<span class="pill ok">' + ic('check', 's') + T.otw + '</span>' : '<button type="button" class="btn sm primary" data-act="cvotw" data-k="cv-otw">' + ic('send') + T.otw + '</button>') + '</div>' + (C.otw ? '<div class="tiny okline mt6">' + esc(T.otwSent) + '</div>' : '') + '</div>' +
+    '<div class="warnline pcard" style="background:var(--warn-bg)">' + ic('warn') + '<span>' + esc(T.dog) + '</span></div>' +
+    '<div class="pcard soft tiny">' + ic('chat', 's') + ' ' + esc(T.note) + '</div>' +
+    '<div class="flex"><span class="tiny"><b>' + T.gate + ':</b> ' + (C.gate ? '<span class="mono">4471</span>' : '••••') + '</span>' + (C.gate ? '' : '<button type="button" class="btn xs" data-act="cvgate" data-k="cv-gate">' + T.show + '</button>') + '</div>' +
+    '<div class="g2"><button type="button" class="shot photo-btn" aria-pressed="' + C.before + '" data-act="cvphoto" data-v="before" data-k="cv-before">' + (C.before ? lawnPhoto(false) : ic('camera')) + '<span>' + T.before + '</span></button><button type="button" class="shot photo-btn" aria-pressed="' + C.after + '" data-act="cvphoto" data-v="after" data-k="cv-after"' + (allT ? '' : ' disabled') + '>' + (C.after ? lawnPhoto(true) : ic('camera')) + '<span>' + T.after + '</span></button></div>' +
+    '<div class="pcard"><div class="ph"><span>' + T.tasks + '</span><span>' + Object.keys(C.tasks).filter(function (k) { return C.tasks[k]; }).length + '/4</span></div>' + ['mow', 'trim', 'edge', 'blow'].map(function (k) { return '<label class="check big-check"><input type="checkbox" ' + (C.tasks[k] ? 'checked' : '') + ' data-act="cvtask" data-self="1" data-v="' + k + '" data-k="cv-t-' + k + '"' + (C.before ? '' : ' disabled') + '><span>' + esc(T[k]) + '</span></label>'; }).join('') + '</div>' +
+    (C.done ? '<div class="toast rise">' + ic('check') + '<span>' + T.doneOk + '</span></div>' + stepBtn(C.lang === 'es' ? 'Javier vio algo · Spot it' : 'Javier spotted something', 'r06-next') : '<button type="button" class="btn primary" style="justify-content:center;min-height:48px" data-act="cvdone" data-k="cv-done"' + (can ? '' : ' disabled') + '>' + ic('check') + T.done + '</button>' + (can ? '' : '<span class="hint" style="text-align:center">' + T.need + '</span>'));
+  var sms = '<div class="card"><h3 style="font-size:.9rem">' + ic('phone') + ' Grace\'s phone</h3><div class="sms mt6">' + (C.otw ? '<div class="bub in rise">Greenleaf: Marco from Greenleaf is on the way and should arrive in about 6 min. Reply STOP to opt out.</div><span class="meta">9:13 am</span>' : '<span class="meta">No messages yet today</span>') + (C.done ? '<div class="bub in rise">Greenleaf: Your lawn was mowed today at 9:42. Trimmed, edged and blown. Photo: grnlf.co/v/88213 · Next visit Tue May 18.</div><span class="meta">9:43 am</span>' : '') + '</div><p class="tiny muted mt6">Both texts are transactional templates sent by automations, not AI. They respect quiet hours and Grace\'s consent for project texts.</p></div>';
+  return '<div class="dev-row">' + phone(body, { label: 'Marco\'s phone: crew app visit', title: 'Rootline Crew', sub: 'Marco Reyes · Cuadrilla 2', right: lang, time: '9:19', foot: 'Outdoor Mode · offline-ready', key: 'cv' }) +
+    ctxCard('Built for gloves, sun and Spanish', ['Spanish is the default for Marco and Javier; office notes are auto-translated onto the visit card. Big targets, high contrast and offline-first sync.', 'Required steps gate completion: a before photo, the checklist, an after photo. The completed visit is what bills, recognizes revenue and feeds job costing.', '<b>Try it:</b> send "On my way", reveal the gate code, take the before photo, tick the steps, take the after photo, complete. Switch ES/EN any time.'], sms) + '</div>';
+};
+BTS['r06-visit'] = function () {
+  var C = S.cv;
+  return { what: 'The visit card carries everything the crew needs: gate code, dog, office notes in their language, the checklist and required photos. Completing the visit emits visit.completed, which drives the client summary, revenue recognition and job costing.',
+    agents: [['Crew app sync engine', 'Offline-first, conflict rules per field', true], ['Automations', '"On the way" and "Visit summary" templates', true]],
+    trace: [{ c: 'visit.on_the_way', r: C.otw ? 'ETA 6 min from the route · SMS template' : 'Waiting', ms: '0.4 s', det: 1, done: C.otw }, { c: 'contact_arbiter.check', r: 'Project texts allowed · quiet hours OK', ms: '8 ms', det: 1, done: C.otw }, { c: 'visit.photo(before)', r: C.before ? 'GPS + time stamped, queued for sync' : '', ms: '', det: 1, done: C.before }, { c: 'visit.checklist', r: Object.keys(C.tasks).filter(function (k) { return C.tasks[k]; }).length + ' of 4', ms: '', human: 1, done: Object.keys(C.tasks).every(function (k) { return C.tasks[k]; }) }, { c: 'visit.complete', r: C.done ? '9:19-9:42 · 2 crew · 0.77 mh vs 0.70 planned' : '', ms: '', det: 1, done: C.done }, { c: 'event visit.completed', r: C.done ? 'billing.P5 recognizes $' + mowP() + ' · job cost updated · summary text sent' : '', ms: '', det: 1, done: C.done }],
+    hitl: [['Marco', 'completes the visit; his crew\'s time is clocked by the app.']], levels: ['Crew action'],
+    credits: { n: 0, note: 'No AI in a normal visit.' },
+    tags: [['mvp', 'crew app, visit workflow, photos, Spanish-first, on-my-way and visit summary texts']],
+    specs: 'Spec: 05 §4.0-4.5 visit workflow · 05 Outdoor Mode and Spanish-first UX · 16 transactional messages · 09 billing.P5' };
+};
+
+/* ---------- r07 Spot it ---------- */
+var VN_ES = 'Oye, en la casa de Whitfield, el aspersor de la zona dos junto a la entrada está roto, el cabezal está quebrado, parece que le pasó un carro encima. Y los tres arbolitos del lado norte, los arborvitae, tienen las puntas cafés, creo que es quemadura del invierno.';
+var VN_EN = 'At the Whitfield house, the sprinkler in zone 2 next to the driveway is broken, the head is cracked, looks like a car drove over it. And the three small trees on the north side, the arborvitae, have brown tips, I think it\'s winter burn.';
+function rotorMsg() { return 'Hi Grace, during today\'s mow Javier noticed a broken sprinkler head in zone 2 by the driveway (photo: grnlf.co/p/5521). It looks like it was driven over. We can replace it on Thursday for $65 plus tax, added to your next invoice. Reply YES to book it.'; }
+SCREEN['r07-spotit'] = function () {
+  var P = S.sp;
+  var cap = '<div class="flex tiny"><b>Spot it · Whitfield</b><span class="grow"></span><span class="faint">Javier Ruiz</span></div>' +
+    '<button type="button" class="shot photo-btn" style="min-height:96px" aria-pressed="' + P.photo + '" data-act="spphoto" data-k="sp-photo">' + (P.photo ? rotorPhoto() : ic('camera')) + '<span>' + (P.photo ? 'Foto: aspersor zona 2' : 'Tomar foto') + '</span></button>' +
+    '<div class="pcard"><div class="ph"><span>Nota de voz</span><span>' + (P.rec ? '0:24' : P.recording ? '<span class="rec-dot"></span>grabando' : '') + '</span></div>' +
+    (P.rec ? '<p class="tiny" lang="es">“' + esc(VN_ES) + '”</p>' : '<button type="button" class="btn ' + (P.recording ? '' : 'primary') + '" style="justify-content:center;width:100%;min-height:48px" data-act="sprec" data-k="sp-rec"' + (P.photo ? '' : ' disabled') + '>' + ic('mic') + (P.recording ? 'Detener' : 'Grabar nota') + '</button>') + '</div>' +
+    (P.rec ? '<div class="pcard soft tiny">' + (P.synced ? '<span class="okline">' + ic('check') + 'Sincronizado 9:47 · enviado a la oficina</span>' : '<span class="loading"><span class="spin"></span>Sin señal: en cola, se sincroniza solo</span>') + '</div>' : '');
+  var phoneHtml = phone(cap, { label: 'Javier\'s phone: Spot it capture', title: 'Rootline Crew', sub: 'Javier Ruiz · Cuadrilla 2', time: '9:44', foot: 'Outdoor Mode · offline-ready', key: 'sp' });
+  var office;
+  if (!P.synced) office = '<div class="panel"><p class="muted">Waiting for Javier\'s capture to sync. Take the photo and record the note on his phone.</p></div>';
+  else {
+    var issues = [['rotor', 'irrigation_issue', 'Broken rotor head, zone 2, by the driveway', 'Rotor head replacement (Hunter PGP) · price book $65 · truck stock: 3', 'Route: client message for approval (Tasha)'], ['arb', 'plant_health', '3 arborvitae, north side: brown tips', 'Likely winter desiccation (confidence medium). Suggest a look before quoting; KB suggests anti-desiccant in late fall or replacing with \'Green Giant\' if dieback spreads', 'Route: opportunity for Sam, site look next Tuesday']];
+    var list = issues.map(function (x) { return '<button type="button" class="icard" aria-pressed="' + (P.sel === x[0]) + '" data-act="spsel" data-v="' + x[0] + '" data-k="sp-i-' + x[0] + '"><span class="t">' + ic('spark', 's') + 'A4 · <span class="mono">' + x[1] + '</span></span><b>' + esc(x[2]) + '</b><span class="faint">' + esc(x[4]) + '</span></button>'; }).join('');
+    var det;
+    if (P.sel === 'arb') det = '<div class="panel" style="display:grid;gap:8px"><b>' + esc(issues[1][2]) + '</b><p class="tiny">' + esc(issues[1][3]) + '</p><div class="toast ai">' + ic('spark') + '<span>Opportunity OPP-3402 drafted for Sam with the photo and the transcript line. No client message: the agent asks for a site look when plant health confidence is medium.</span></div></div>';
+    else det = '<div class="panel" style="display:grid;gap:8px"><div class="flex"><span class="agent" style="margin:0"><span class="badge">' + ic('spark') + '</span><span><b>Client message draft</b><small>L2 draft and approve · T3 external message</small></span></span><span class="grow"></span><span class="cost">1 credit</span></div>' +
+      '<div class="flex" style="align-items:flex-start;gap:10px"><span class="scene" style="width:120px;aspect-ratio:4/3;flex:none">' + rotorPhoto() + '</span><span class="tiny"><b>Evidence</b><br>Photo 9:44, GPS on the zone 2 line<br>Transcript, Spanish, confidence 0.94<br>Price book: Rotor head replacement (Hunter PGP) $65</span></div>' +
+      '<div class="sms"><div class="bub out' + (P.approved ? '' : ' draft') + '">' + esc(rotorMsg()) + '</div><span class="meta r">' + (P.approved ? 'Sent 10:05 by Tasha Greene' : 'Draft · not sent') + '</span>' + (P.replied ? '<div class="bub in rise">YES please, thank you!</div><span class="meta">10:31</span>' : '') + '</div>' +
+      (P.approved ? (P.replied ? '<div class="toast rise">' + ic('calendar') + '<span>Work order WO-7730 for the irrigation tech, Thu May 13 · $65 billable item added to the June invoice · "Spot it" credited to Javier on the crew leaderboard</span></div>' : '<div class="loading"><span class="spin"></span>Waiting for Grace…</div>') : '<div class="flex"><button type="button" class="btn primary" data-act="spapprove" data-k="sp-approve">' + ic('check') + 'Approve and send</button><button type="button" class="btn ghost" data-act="noop" data-k="sp-edit">' + ic('pen') + 'Edit</button><button type="button" class="btn ghost" data-act="noop" data-k="sp-rej">Reject</button></div>') + '</div>';
+    var report = '<div class="panel soft" style="display:grid;gap:6px"><div class="ph"><span>Field report · voice note 0:24</span><span class="pill ai">' + ic('spark', 's') + 'ES → EN</span></div><p class="tiny" lang="es"><b>ES</b> ' + esc(VN_ES) + '</p><p class="tiny"><b>EN</b> ' + esc(VN_EN) + '</p><p class="tiny faint">Glossary hits: aspersor → sprinkler head · arbolitos → small trees. The original transcript is kept.</p></div>';
+    office = browser('app.rootline.com/t/greenleaf/approvals', appShell('Approvals', '<div class="apphead"><span class="crumb">Approvals · from the field</span><h3>Spot it: Whitfield, 2240 Kenview Rd</h3><span class="sp"></span><span class="av" title="Tasha Greene, office manager">TG</span></div>' + report + '<div class="inbox mt10"><div style="display:grid;gap:6px;align-content:start">' + list + '</div>' + det + '</div>', { Approvals: P.approved ? 2 : 3 }), 'Greenleaf Company web app: Approval Inbox');
+  }
+  return '<div class="dev-row">' + phoneHtml + ctxCard('Every visit is a sales call', ['Javier speaks Spanish into his phone with a mower running. The note works offline and syncs when the truck finds a signal.', 'The Field-Note agent transcribes, translates with a landscape glossary, and splits the note into typed issues: one irrigation repair with a price, one plant-health question for the estimator.', 'The client message waits for a person. Tasha approves it; Grace answers YES; the repair is booked and lands on her next invoice.', '<b>Try it:</b> take the photo, record, stop, then approve the message in the office.']) + '</div>' + (P.synced ? '<div class="mt14">' + office + '</div>' : '') + (P.replied ? '<div class="flex mt10"><span class="grow"></span>' + stepBtn('A storm is coming', 'r07-next') + '</div>' : '');
+};
+function rotorPhoto() { return '<svg viewBox="0 0 160 120" role="img" aria-label="Photo: cracked sprinkler rotor head at the edge of the driveway"><rect width="160" height="120" class="lp-lawn"/><rect x="104" y="0" width="56" height="120" class="lp-walk"/><circle cx="84" cy="64" r="15" class="rp-body"/><circle cx="84" cy="64" r="7" class="rp-cap"/><path d="M76 54 L90 74 M88 52 L80 70" class="rp-crack"/><path d="M60 100 q40 -8 100 -4" class="rp-tire"/></svg>'; }
+BTS['r07-spotit'] = function () {
+  var P = S.sp;
+  return { what: 'Spot it plus a voice note becomes structured work. The Field-Note agent turns Spanish speech into an English summary, typed issues and draft opportunities, and drafts the client message. A person approves before anything reaches Grace.',
+    agents: [['A4 Field-Note agent', 'STT with a landscape glossary, translation, extraction', false], ['Copilot drafting', 'Client message from the issue and the price book', false]],
+    trace: [{ c: 'capture.queue(offline)', r: P.rec ? 'Photo + 0:24 audio, queued' : '', ms: '', det: 1, done: P.rec }, { c: 'sync', r: P.synced ? '9:47 · LTE back' : '', ms: '1.2 s', det: 1, done: P.synced }, { c: 'stt(es, glossary)', r: P.synced ? 'Spanish · confidence 0.94' : '', ms: '3.1 s', done: P.synced }, { c: 'translate(es→en)', r: P.synced ? 'aspersor → sprinkler head' : '', ms: '0.9 s', done: P.synced }, { c: 'extract.issues', r: P.synced ? 'irrigation_issue (zone 2) · plant_health (arborvitae)' : '', ms: '1.4 s', done: P.synced }, { c: 'pricebook.match', r: P.synced ? 'Rotor head replacement (Hunter PGP) $65' : '', ms: '60 ms', det: 1, done: P.synced }, { c: 'messages.draft', r: P.synced ? rotorMsg().length + ' characters' : '', ms: '1.5 s', done: P.synced }, { c: 'approve', r: P.approved ? 'Tasha Greene' : 'Waiting for Tasha', human: 1, done: P.approved }, { c: 'reply.classify', r: P.replied ? '"YES please" → accept' : '', ms: '0.3 s', done: P.replied }, { c: 'work_order.create + billable_item', r: P.replied ? 'WO-7730 · $65 on the June invoice' : '', ms: '40 ms', det: 1, done: P.replied }],
+    hitl: [['Tasha', 'approves the client message (T3).'], ['Sam', 'decides on the arborvitae after a site look.']], levels: ['L2 draft and approve', 'T3 external message'],
+    credits: { n: 2, note: 'Field voice note 1 credit per minute (1) + Copilot drafting (1).' },
+    tags: [['mvp', 'Spot it, voice notes with EN/ES translation, A4 office-side summaries and opportunities'], ['v1', 'A4 client-facing message draft']],
+    specs: 'Spec: 05 §4.10 Spot it · 05 §4.11 voice notes · 17 §4.5.5 A4 · 22 §4.4.1 (voice note 1/min, drafting 1)' };
+};
+
+/* ---------- r08 rain day ---------- */
+var RAIN_OPTS = {
+  absorb: { n: 'Absorb into Wednesday', rec: true, lanes: [['Crew 2 Tue', 0, 'Rain'], ['Crew 2 Wed', 9.9, '15 + 7 stops (incl. Kenview Rd)'], ['Crew 4 Wed', 8.8, '13 + 9 stops'], ['Crew 2 Thu', 7.6, 'unchanged']], m: [['Clients moved', '16, all by 1 day'], ['Extra drive', '+24 min'], ['Overtime', 'none'], ['Saturday work', 'none']] },
+  slide: { n: 'Slide the week by a day', lanes: [['Crew 2 Tue', 0, 'Rain'], ['Crew 2 Wed', 9.1, 'Tuesday\'s 16 stops'], ['Crew 2 Thu', 8.2, 'Wednesday\'s 15 stops'], ['Crew 2 Sat', 7.4, 'Friday\'s 14 stops']], m: [['Clients moved', '59, by 1 day'], ['Extra drive', '0 min'], ['Overtime', '2 crew × 7.4 h Saturday'], ['Saturday work', 'needs owner approval']] }
+};
+SCREEN['r08-rain'] = function () {
+  var R = S.rn, O = RAIN_OPTS[R.opt];
+  var opts = '<div class="opts" style="grid-template-columns:repeat(2,minmax(0,1fr))">' + Object.keys(RAIN_OPTS).map(function (k) { var o = RAIN_OPTS[k]; return '<button type="button" class="opt" aria-pressed="' + (R.opt === k) + '" data-act="rnopt" data-v="' + k + '" data-k="rn-' + k + '"' + (R.approved ? ' disabled' : '') + '><span class="oh"><b>' + o.n + '</b>' + (o.rec ? '<span class="pill ai">' + ic('spark', 's') + 'Recommended</span>' : '') + '</span><table>' + o.m.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') + '</table></button>'; }).join('') + '</div>';
+  var lanes = '<div class="lanes">' + O.lanes.map(function (l) { return '<div class="ln"><span class="lnl">' + l[0] + '</span><span class="lnb"><i class="' + (l[1] === 0 ? 'rain' : l[1] > 9.5 ? 'hot' : '') + '" style="width:' + (l[1] === 0 ? 100 : l[1] * 10) + '%">' + (l[1] === 0 ? ic('drop', 's') + ' ' + l[2] : l[1].toFixed(1) + ' h') + '</i></span><span class="lnn tiny">' + (l[1] === 0 ? '' : esc(l[2])) + '</span></div>'; }).join('') + '<div class="tiny faint">Day cap 10.0 h · bars show crew hours</div></div>';
+  var texts = '<div class="sms"><div class="bub out' + (R.approved ? '' : ' draft') + '">Greenleaf: Rain is forecast for Tuesday, so your mow moves to Wednesday May 19. No action needed. Reply STOP to opt out.</div><span class="meta r">' + (R.approved ? '16 sent at 8:00 am (quiet hours end) · 0 opted out' : 'Template "Weather reschedule" · ' + (R.opt === 'absorb' ? 16 : 59) + ' recipients · held for approval') + '</span></div>';
+  var main = '<div class="apphead"><span class="crumb">Schedule · week of May 17</span><h3>Weather: Tuesday May 18</h3><span class="pill danger">' + ic('drop', 's') + '90% rain · 1.2 in · 9 am-5 pm</span><span class="sp"></span><span class="av c" title="Luis Ortega, operations">LO</span></div>' +
+    '<div class="panel" style="display:grid;gap:9px"><div class="flex"><span class="agent" style="margin:0"><span class="badge">' + ic('spark') + '</span><span><b>Scheduling agent (A7) · ScheduleDiff SD-0418</b><small>Run quoted at up to 30 credits, used 18 · L2 draft and approve · approval expires Tue 5:00 am</small></span></span><span class="grow"></span><span class="cost">18 credits</span></div>' +
+    '<p class="tiny">Mowing rule: skip or move when rain probability is 60% or more in the crew window or the forecast is at least 0.25 in; move within 2 days and keep route density. Wednesday and Thursday are dry (10% and 5%).</p>' + opts + lanes + texts +
+    (R.approved ? '<div class="toast rise">' + ic('check') + '<span>Approved by Luis at 6:42 pm · 16 visits moved to Wednesday · Whitfield and Brennan stay together on Crew 2 · both visits count as <b>rescheduled</b>, so no credits are due</span></div>' : '<div class="flex"><button type="button" class="btn primary" data-act="rnapprove" data-k="rn-approve">' + ic('check') + 'Approve "' + O.n + '"</button><button type="button" class="btn ghost" data-act="noop" data-k="rn-rej">Reject</button></div>') + '</div>';
+  return browser('app.rootline.com/t/greenleaf/schedule?week=2027-05-17', appShell('Schedule', main, { Approvals: R.approved ? 1 : 2 }), 'Greenleaf Company web app: rain-day proposal') + (R.approved ? '<div class="flex mt10"><span class="grow"></span>' + stepBtn('Fast forward to June 1', 'r08-next') + '</div>' : '');
+};
+BTS['r08-rain'] = function () {
+  var R = S.rn;
+  return { what: 'The Scheduling agent watches forecasts 1-3 days ahead, applies Greenleaf\'s rule for each service type, asks the route optimizer for options, and drafts client texts. Luis picks and approves before the 5 a.m. deadline.',
+    agents: [['A7 Scheduling agent', 'Weather rules + route optimizer + notification drafts', false]],
+    trace: [{ c: 'forecast.watch(NWS gridpoint)', r: 'Tue: 90%, 1.2 in in the crew window', ms: '0.6 s', det: 1, done: 1 }, { c: 'rules.apply(mowing)', r: '≥ 60% and ≥ 0.25 in → move within 2 days', ms: '5 ms', det: 1, done: 1 }, { c: 'optimizer.solve × 2', r: 'Absorb (+24 min drive) · Slide (Saturday overtime)', ms: '4.2 s', det: 1, done: 1 }, { c: 'diff.explain', r: 'Recommends Absorb: no overtime, no Saturday', ms: '2.0 s', done: 1 }, { c: 'notify.draft(template)', r: '16 texts, quiet hours respected', ms: '0.3 s', det: 1, done: 1 }, { c: 'approve', r: R.approved ? 'Luis Ortega · ' + RAIN_OPTS[R.opt].n : 'Waiting for Luis (TTL Tue 5:00 am)', human: 1, done: R.approved }, { c: 'schedule.apply + notify.send', r: R.approved ? 'Visits moved · texts at 8:00 am' : '', ms: '1.1 s', det: 1, done: R.approved }],
+    hitl: [['Luis', 'approves the reschedule (T2) and the client texts (T3). Unapproved diffs expire, and the crew keeps the original plan.']], levels: ['L2 draft and approve', 'T2 schedule', 'T3 client texts'],
+    credits: { n: 18, note: 'Agent task run, quoted before it ran (10-30).' },
+    tags: [['v1', 'A7 Scheduling agent, weather reschedules'], ['mvp', 'manual reschedule with the same optimizer and templates']],
+    specs: 'Spec: 17 §4.5.8 A7 · 04 route optimizer · 07 §4.3.7 skipped visits (rescheduled = no credit) · 22 §4.4.1 agent task run' };
+};
+
+/* ============================================================
+   Screens: Act 3 (get paid and close the season)
+   ============================================================ */
+var ROTOR = 65;
+function juneInvoice() {
+  var plan = gPlan(), inst = installments(plan.acv, 8), sub = r2(inst[2] + ROTOR), tax = r2(sub * TAX), tot = r2(sub + tax);
+  return { inst: inst[2], sub: sub, tax: tax, tot: tot, fee: stripeFee(tot), plan: plan, all: inst };
+}
+function ledgerTable(rows) {
+  return '<table class="data tight ledger"><thead><tr><th>Account</th><th class="num">Debit</th><th class="num">Credit</th></tr></thead><tbody>' + rows.map(function (r) { return r[0] === '#' ? '<tr class="phase"><td colspan="3">' + r[1] + '</td></tr>' : '<tr><td>' + r[0] + '</td><td class="num">' + (r[1] ? m2(r[1]) : '') + '</td><td class="num">' + (r[2] ? m2(r[2]) : '') + '</td></tr>'; }).join('') + '</tbody></table>';
+}
+SCREEN['r09-billing'] = function () {
+  var B = S.br, J = juneInvoice(), mayRev = r2(MOW_DATES[1].length * mowP());
+  var run = '<div class="panel"><h4>' + ic('list', 's') + 'Billing run BR-2027-06 · June 1</h4><div class="takeoff" style="border:1px solid var(--border);border-radius:8px">' + [['Agreements', '61'], ['Installment invoices', '52'], ['Per-visit invoices', '9'], ['Extra billable items', '14'], ['Exceptions', B.posted ? '0' : '1']].map(function (x) { return '<div><span>' + x[0] + '</span><b>' + x[1] + '</b></div>'; }).join('') + '<div class="price"><span>Total incl. tax</span><b>$24,318.40</b></div></div>' +
+    (B.posted ? '' : '<div class="flagnote mt6">' + ic('warn', 's') + ' 1 exception: Brennan has his first per-visit invoice and no tax exemption question answered. Resolved by rule: residential, taxable. <button type="button" class="btn xs" data-act="noop" data-k="br-exc">Review</button></div>') +
+    '<div class="flex mt6">' + (B.posted ? '<span class="okline">' + ic('check') + 'Posted by Priya 7:05 am · 61 invoices sent · autopay runs at 9:00 am</span>' : '<button type="button" class="btn primary" data-act="brpost" data-k="br-post">' + ic('send') + 'Approve and send 61 invoices</button>') + '</div></div>';
+  var inv = '<div class="doc"><div class="flex"><h4 class="grow">Invoice INV-20614 · Grace Whitfield</h4><span class="pill ' + (B.charged ? 'ok' : B.posted ? 'info' : '') + '">' + (B.charged ? 'Paid' : B.posted ? 'Sent · autopay 9:00' : 'Draft') + '</span></div>' +
+    '<div class="rowx"><span>Installment 3 of 8 · ' + esc(TIERS[S.pp.tier].n) + '<small>AGR-2291 · level billing, trued up at season end</small></span><span>' + m2(J.inst) + '</span></div><div class="rowx"><span>Rotor head replacement (Hunter PGP), zone 2<small>WO-7730 · Thu May 13 · from Javier\'s Spot it</small></span><span>' + m2(ROTOR) + '</span></div><div class="rowx"><span>Ohio sales tax 8.00% (illustrative)<small>State 5.75 · Franklin County 1.25 · transit 1.00</small></span><span>' + m2(J.tax) + '</span></div><div class="rowx tot big"><span>Total</span><span>' + m2(J.tot) + '</span></div>' +
+    '<div class="tiny muted">May: 4 mows done (May 4, 11, 19 after the rain day, 25). Photos and visit times attached as proof of service.</div>' +
+    (B.posted && !B.charged ? (B.charging ? '<div class="loading"><span class="spin"></span>Charging Visa •••• 4242 on Greenleaf\'s Stripe account…</div>' : '<button type="button" class="btn sm" data-act="brcharge" data-k="br-charge">' + ic('play') + 'Run 9:00 am autopay</button>') : '') +
+    (B.charged ? '<div class="toast rise">' + ic('check') + '<span>Paid 9:00:41 · direct charge on Greenleaf\'s connected account · Stripe fee ' + m2(J.fee) + ' (2.9% + 30¢, verify) · Rootline markup $0</span></div>' : '') + '</div>';
+  var led = B.charged ? '<div class="panel"><h4>' + ic('bank', 's') + 'Ledger postings (built-in double entry)</h4>' + ledgerTable([['#', 'May 31 · billing.P5 · revenue recognized as visits completed (Whitfield share)'], ['2200 Deferred Revenue - Service Agreements', mayRev, 0], ['4100 Maintenance Revenue', 0, mayRev], ['#', 'Jun 1 · billing.P1 · invoice INV-20614'], ['1200 Accounts Receivable', J.tot, 0], ['2200 Deferred Revenue - Service Agreements', 0, J.inst], ['4500 Irrigation Revenue', 0, ROTOR], ['2101 Sales Tax Payable - Ohio Dept. of Taxation', 0, J.tax], ['#', 'Jun 1 · payments.succeeded and payments.fee'], ['1050 Stripe Clearing', J.tot, 0], ['1200 Accounts Receivable', 0, J.tot], ['6150 Merchant Processing Fees', J.fee, 0], ['1050 Stripe Clearing', 0, J.fee]]) + '<p class="tiny muted mt6">Every entry balances and is idempotent per event. The Stripe payout later moves 1050 to the bank account and reconciles to Stripe\'s reported balance.</p></div>' : '';
+  var main = '<div class="apphead"><span class="crumb">Money · Billing runs</span><h3>June billing</h3><span class="sp"></span><span class="av" title="Priya Shah, bookkeeper" style="background:var(--clay-600)">PS</span></div>' + run +
+    '<div class="prop-doc mt10" style="grid-template-columns:minmax(0,1fr) 300px">' + inv + meterSVG(J.plan, J.all, 1) + '</div>' + (led ? '<div class="mt10">' + led + '</div>' : '');
+  return browser('app.rootline.com/t/greenleaf/money/billing-runs/BR-2027-06', appShell('Money', main), 'Greenleaf Company web app: billing run') + (B.charged ? '<div class="flex mt10"><span class="grow"></span>' + stepBtn('July: a card expires', 'r09-next') + '</div>' : '');
+};
+BTS['r09-billing'] = function () {
+  var B = S.br, J = juneInvoice();
+  return { what: 'Every completed visit, approved add-on and installment is a billable item. The billing run rolls them into invoices on each agreement\'s schedule; Priya approves the run, and autopay collects on the Company\'s own Stripe account. Each money event posts to the ledger.',
+    agents: [['Billing engine (07)', 'Billable items → invoices → billing run', true], ['Payments (08)', 'Direct charges on Greenleaf\'s connected account', true], ['Ledger posting engine (09)', 'Rule-based postings', true]],
+    trace: [{ c: 'billable_items.collect', r: '52 installments, 9 per-visit, 14 add-ons (incl. WO-7730)', ms: '1.4 s', det: 1, done: 1 }, { c: 'tax.calculate', r: 'Ohio: lawn care taxable · Franklin County 8.00% (illustrative)', ms: '0.3 s', det: 1, done: 1 }, { c: 'approve run', r: B.posted ? 'Priya Shah' : 'Waiting for Priya', human: 1, done: B.posted }, { c: 'invoices.send', r: B.posted ? '61 emails with proof of service' : '', ms: '2.2 s', det: 1, done: B.posted }, { c: 'autopay.charge (mandate)', r: B.charged ? m2(J.tot) + ' · pi_…4242 · succeeded' : '', ms: '1.8 s', det: 1, done: B.charged }, { c: 'ledger.post × 3', r: B.charged ? 'billing.P1, payments.succeeded, payments.fee · balanced' : '', ms: '40 ms', det: 1, done: B.charged }],
+    hitl: [['Priya', 'approves the run (sending invoices is T3).'], ['Autopay', 'is a deterministic charge under Grace\'s signed mandate. AI never charges a card (T4).']], levels: ['T3 invoices', 'Client mandate'],
+    credits: { n: 0, note: 'No AI in billing, payments or postings.' },
+    tags: [['mvp', 'billing runs, level billing, sales tax, autopay, built-in ledger postings']],
+    specs: 'Spec: 07 §4.2 generation modes · 07 billing runs · 08 direct charges, card on file · 09 §4.3 posting rules (billing.P1, P5; payments.*) · 09 chart of accounts' };
+};
+
+/* ---------- r10 collections ---------- */
+function julyTotal() { var plan = gPlan(), inst = installments(plan.acv, 8); return r2(inst[3] * (1 + TAX)); }
+function collMsg() { return 'Hi Grace, this is Greenleaf. Your July payment of ' + m2(julyTotal()) + ' didn\'t go through because the card on file expired in June. You can update it here in a minute: grnlf.co/pay/W2291. Thanks! Reply STOP to opt out.'; }
+SCREEN['r10-collect'] = function () {
+  var C = S.co, tot = julyTotal();
+  var ladder = '<div class="panel soft"><div class="ph"><span>Collections policy · residential</span></div><div class="ladder">' + [['-3', 'Coming due', 'skipped: autopay on'], ['+3', 'Friendly SMS with pay link', 'today'], ['+10', 'Email + SMS, firmer', ''], ['+21', 'Call task with script', ''], ['+45', 'Suggest service hold (owner)', '']].map(function (r, i) { return '<div class="' + (i === 1 ? 'on' : i === 0 ? 'past' : '') + '"><b>' + r[0] + '</b><span>' + r[1] + '</span><small>' + r[2] + '</small></div>'; }).join('') + '</div></div>';
+  var det = '<div class="panel" style="display:grid;gap:9px"><div class="flex"><span class="agent" style="margin:0"><span class="badge">' + ic('spark') + '</span><span><b>Collections (A5) · day +3 reminder</b><small>Day +3 fell on July 4. Greenleaf\'s holiday rule held it to Tuesday. L2 · T3 external message</small></span></span><span class="grow"></span><span class="cost">1 credit</span></div>' +
+    '<div class="rowx"><span>INV-20871 · installment 4 of 8 + tax<small>Due Jul 1 · autopay declined: <span class="mono">expired_card</span> · Stripe retries skipped (an expired card won\'t succeed)</small></span><span>' + m2(tot) + '</span></div>' +
+    '<div class="tiny muted">Payment history: 3 of 3 paid on time by autopay · no dispute · propensity score high → gentle tone</div>' +
+    '<div class="sms"><div class="bub out' + (C.approved ? '' : ' draft') + '">' + esc(collMsg()) + '</div><span class="meta r">' + (C.approved ? 'Sent 9:02 by Tasha Greene' : 'Draft · not sent') + '</span>' + (C.updated ? '<div class="bub in rise">Oops, new card added. Sorry!</div><span class="meta">9:20</span>' : '') + '</div>' +
+    (!C.approved ? '<div class="flex"><button type="button" class="btn primary" data-act="coapprove" data-k="co-approve">' + ic('check') + 'Approve and send</button><button type="button" class="btn ghost" data-act="noop" data-k="co-edit">' + ic('pen') + 'Edit</button></div>'
+      : !C.updated ? '<div class="pcard soft"><b class="tiny">Grace\'s portal (simulated)</b><div class="stripe mt6"><span class="sl"><span>Update card · secured by Stripe</span><span>Greenleaf Grounds Co.</span></span><div class="g2"><input class="inp sm" value="4000 0566 5566 5556" readonly aria-label="New card number"><input class="inp sm" value="09 / 30   ·   321" readonly aria-label="Expiry and CVC"></div><button type="button" class="btn sm primary" data-act="coupdate" data-k="co-update">Save card and pay ' + m2(tot) + '</button></div></div>'
+      : '<div class="toast rise">' + ic('check') + '<span>Paid 9:19 with the new card · Collections stopped automatically · AR back to $0 · the August autopay uses the new card</span></div>') + '</div>';
+  var main = '<div class="apphead"><span class="crumb">Approvals · Finance</span><h3>Failed autopay: Grace Whitfield</h3><span class="sp"></span><span class="av" title="Tasha Greene, office manager">TG</span></div>' + ladder + '<div class="mt10">' + det + '</div>';
+  return browser('app.rootline.com/t/greenleaf/approvals?filter=finance', appShell('Approvals', main, { Approvals: C.approved ? 0 : 1 }), 'Greenleaf Company web app: collections reminder') + (C.updated ? '<div class="flex mt10"><span class="grow"></span>' + stepBtn('Close the season', 'r10-next') + '</div>' : '');
+};
+BTS['r10-collect'] = function () {
+  var C = S.co;
+  return { what: 'An expired card is the most common autopay failure and the easiest to fix. The Collections agent reads the decline code, skips useless retries, follows the Company\'s ladder and drafts a short, friendly message with a pay link. Tasha approves it.',
+    agents: [['A5 Collections (MVP reminders)', 'Policy ladder + payment-propensity tone', false]],
+    trace: [{ c: 'stripe.webhook payment_intent.payment_failed', r: 'Jul 1 · expired_card', ms: '', det: 1, done: 1 }, { c: 'policy.next_step', r: '+3 → Jul 4 holiday → Tue Jul 6', ms: '10 ms', det: 1, done: 1 }, { c: 'checks', r: 'not disputed · not processing · consent OK', ms: '20 ms', det: 1, done: 1 }, { c: 'messages.draft', r: collMsg().length + ' characters, friendly tone', ms: '1.2 s', done: 1 }, { c: 'approve', r: C.approved ? 'Tasha Greene' : 'Waiting for Tasha', human: 1, done: C.approved }, { c: 'portal.update_payment_method', r: C.updated ? 'Grace saved a new card' : '', ms: '', human: 1, done: C.updated }, { c: 'charge + ledger.post', r: C.paid ? m2(julyTotal()) + ' paid · AR cleared · collections closed' : '', ms: '1.9 s', det: 1, done: C.paid }],
+    hitl: [['Tasha', 'approves the message (T3).'], ['Grace', 'updates her card and pays. Payment plans and service holds would need the owner.']], levels: ['L2 draft and approve', 'T3 message', 'T4 never AI'],
+    credits: { n: 1, note: 'Copilot drafting, 1 credit.' },
+    tags: [['mvp', 'A5 reminders, decline-code handling, pay links, card update in the portal']],
+    specs: 'Spec: 17 §4.5.6 A5 · 07 dunning · 08 failed payments and retries · 06 portal payment methods' };
+};
+
+/* ---------- r11 season close and renewal ---------- */
+function renewP(p) { return Math.round(p * 1.04); }
+SCREEN['r11-close'] = function () {
+  var X = S.sc, planned = gPlan(), act = gPlan(null, SKIPS), inst = installments(planned.acv, 8);
+  var billed7 = r2(inst.slice(0, 7).reduce(function (a, b) { return a + b; }, 0)), finalInst = r2(act.acv - billed7);
+  var rows = act.lines.map(function (l, i) { var pl = planned.lines[i]; return '<tr><td>' + esc(l.n) + '</td><td class="num">' + pl.count + '</td><td class="num">' + l.count + '</td><td class="num">' + (pl.count - l.count ? (pl.count - l.count) + ' drought' : '-') + '</td><td class="num">' + m2(l.value) + '</td></tr>'; }).join('');
+  var newMow = renewP(mowP()), newPlan = season(S.pp.tier, newMow).lines.map(function (l) { return l.k === 'mow' ? l : (function () { var u = renewP(l.unit); return { k: l.k, n: l.n, count: l.count, unit: u, value: u * l.count }; })(); });
+  var newAcv = newPlan.reduce(function (a, l) { return a + l.value; }, 0);
+  var close = '<div class="panel"><h4>' + ic('approve', 's') + 'Season close · AGR-2291 · closed automatically Dec 14 (14 days after the last visit)</h4><div class="table-scroll"><table class="data tight"><thead><tr><th>Line</th><th class="num">Planned</th><th class="num">Done</th><th class="num">Skipped, credited</th><th class="num">Earned</th></tr></thead><tbody>' + rows + '<tr><td colspan="4"><b>Earned value</b> (planned ' + m2(planned.acv) + ')</td><td class="num"><b>' + m2(act.acv) + '</b></td></tr></tbody></table></div>' +
+    '<div class="g2 mt6" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))"><div class="panel soft"><div class="rowx"><span>Installments 1-7 billed</span><span>' + m2(billed7) + '</span></div><div class="rowx"><span>Installment 8 as planned</span><span>' + m2(inst[7]) + '</span></div><div class="rowx tot"><span>Installment 8 after true-up<small>adjust_final_installment, recomputed when the August skip was logged</small></span><span>' + m2(finalInst) + '</span></div><div class="rowx"><span>Position at close (billed - earned)</span><span>$0.00</span></div></div>' +
+    '<div class="panel soft tiny"><b>Two skips, two rules.</b> The May 18 rain day was <i>rescheduled</i>, so it counts as done and earns no credit. The July 27 and August 24 mows were <i>skipped for drought</i> (dormant turf, photo and weather data attached), and per-visit leveled lines credit their unit value, ' + m2(mowP()) + ' each. Grace saw each credit on the next invoice.</div></div></div>';
+  var renew = '<div class="panel" style="display:grid;gap:8px"><h4>' + ic('refresh', 's') + 'Renewal 2028 · auto-renew with fixed +4% escalator, rounded to $1</h4><div class="table-scroll"><table class="data tight"><thead><tr><th>Line</th><th class="num">2027</th><th class="num">2028</th></tr></thead><tbody>' + newPlan.map(function (l, i) { return '<tr><td>' + esc(l.n) + '</td><td class="num">' + m2(planned.lines[i].unit) + '</td><td class="num">' + m2(l.unit) + '</td></tr>'; }).join('') + '<tr><td><b>Season value</b></td><td class="num">' + m2(planned.acv) + '</td><td class="num"><b>' + m2(newAcv) + '</b></td></tr></tbody></table></div>' +
+    '<div class="aidraft' + (X.approved ? ' ok' : '') + '"><div class="tagai"><span>' + (X.approved ? 'Approved note' : 'AI-drafted note for the notice') + '</span><span>1 credit</span></div><p class="tiny">Thanks for a great first season, Grace. Your 2028 plan renews on February 15 at ' + money(newMow) + ' a mow, up from ' + money(mowP()) + ', because wages and fuel rose about 4% in central Ohio this year. If you would like to change or cancel, you can do it online any time before then.</p></div>' +
+    '<div class="panel soft tiny"><b>Batch preview, 61 residential agreements:</b> +$6,940 a season · 3 clients with high churn risk held for a personal call from Sam · notices go out Jan 5 by email (the renewal-notice rule table sets the window and content; verify with counsel).</div>' +
+    (X.approved ? '<div class="toast rise">' + ic('check') + '<span>Erin approved the batch · 58 notices scheduled for Jan 5 · 3 routed to Sam · AGR-2291 renews Feb 15 unless Grace opts out</span></div>' : '<button type="button" class="btn primary" data-act="scapprove" data-k="sc-approve">' + ic('check') + 'Approve renewal batch</button>') + '</div>';
+  var main = '<div class="apphead"><span class="crumb">Agreements · Season close and renewals</span><h3>Whitfield season 2027</h3><span class="pill ok">Settled</span><span class="sp"></span><span class="av b" title="Erin Castillo, owner">EC</span></div>' + close + '<div class="mt10">' + renew + '</div>';
+  return browser('app.rootline.com/t/greenleaf/agreements/AGR-2291/close', appShell('Agreements', main), 'Greenleaf Company web app: season close and renewal') + (X.approved ? '<div class="flex mt10"><span class="grow"></span>' + stepBtn('See the recap', 'r11-next') + '</div>' : '');
+};
+BTS['r11-close'] = function () {
+  var X = S.sc;
+  return { what: 'Level billing ends where the work ended. Skips logged during the season reduced the last installment, so the agreement closes at exactly earned value. Renewal applies the signed escalator and schedules compliant notices; the owner approves the batch.',
+    agents: [['Billing engine: true-up and season close', 'Deterministic', true], ['Escalator + renewal engine', 'Deterministic, rule table for notices', true], ['Copilot drafting', 'Optional explanation in the notice', false]],
+    trace: [{ c: 'occurrence.skip(dormancy) × 2', r: 'Jul 27, Aug 24 · credited ' + m2(mowP()) + ' each', ms: '', det: 1, done: 1 }, { c: 'trueup.adjust_final_installment', r: 'Installment 8 recomputed', ms: '30 ms', det: 1, done: 1 }, { c: 'season.close', r: 'Earned = billed · deferred revenue for AGR-2291 is $0', ms: '0.2 s', det: 1, done: 1 }, { c: 'escalator.apply(fixed 4%, round $1)', r: money(mowP()) + ' → ' + money(renewP(mowP())), ms: '5 ms', det: 1, done: 1 }, { c: 'churn.score', r: '3 of 61 high risk, held', ms: '0.4 s', det: 1, done: 1 }, { c: 'notice.draft_explanation', r: 'One paragraph, Company tone', ms: '1.3 s', done: 1 }, { c: 'approve batch', r: X.approved ? 'Erin Castillo' : 'Waiting for Erin', human: 1, done: X.approved }, { c: 'notice.schedule', r: X.approved ? '58 × Jan 5 by email, delivery proof stored' : '', ms: '', det: 1, done: X.approved }],
+    hitl: [['Erin', 'approves price changes and the renewal batch. Without a delivered notice, an agreement converts to a renewal proposal that needs a signature.']], levels: ['T3 client notices'],
+    credits: { n: 1, note: 'Copilot drafting for the notice text, 1 credit.' },
+    tags: [['mvp', 'true-up, season close, fixed escalators, auto-renewal with notice rules'], ['v1', 'CPI-linked escalators']],
+    specs: 'Spec: 07 §4.2.3 true-up methods · 07 §4.3.3 escalators · 07 §4.3.4 renewals · 07 §4.3.7 skipped visits · 09 §4.8.2 deferred revenue' };
+};
+
+/* ---------- r12 recap ---------- */
+var RECAP = [
+  ['01', 'AI turf measurement', 'Measured 9,000 sq ft from the aerial', 'Sam confirmed', 0, 'parcel lookup'],
+  ['01-03', 'Visit model, proposal, agreement', 'Priced $73, 3 tiers, agreement and billing schedule', 'Sam sent · Grace signed', 0],
+  ['04', 'Instant quote pipeline', 'Firm price and online booking for the neighbor', 'Tom booked', 0, 'parcel lookup'],
+  ['05', 'Recurrence + route optimizer', '60 visits generated, both inserted on UA-TUE', 'Luis accepted', 0],
+  ['06', 'Automations', 'On-my-way and visit summary texts, 30 times each', 'Templates, no approval', 0],
+  ['07', 'A4 Field-Note + drafting', 'Spanish note → 2 issues, $65 add-on sold', 'Tasha approved the text', 2],
+  ['08', 'A7 Scheduling', 'Rain day absorbed into Wednesday, 16 texts', 'Luis approved', 18],
+  ['09', 'Billing runs, autopay, ledger', '8 invoices, 8 charges, every posting balanced', 'Priya approved each run', 0],
+  ['10', 'A5 Collections', 'Expired-card reminder, paid same morning', 'Tasha approved', 1],
+  ['11', 'True-up, escalator, renewal', 'Closed at earned value, renewal at +4%', 'Erin approved', 1]
+];
+SCREEN['r12-recap'] = function () {
+  var planned = gPlan(), act = gPlan(null, SKIPS), billed = r2(act.acv + ROTOR), tax = r2(billed * TAX), inst = installments(planned.acv, 8);
+  var charges = inst.slice(0, 7).concat([r2(act.acv - inst.slice(0, 7).reduce(function (a, b) { return a + b; }, 0))]);
+  charges[2] = r2(charges[2] + ROTOR);
+  var fees = r2(charges.reduce(function (a, c) { return a + stripeFee(r2(c * (1 + TAX))); }, 0));
+  var rows = RECAP.map(function (r) { return '<tr><td class="mono">' + r[0] + '</td><td>' + (r[4] ? '<span class="ai-mark">' + ic('spark', 's') + '</span> ' : '') + esc(r[1]) + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td><td class="num">' + r[4] + (r[5] ? '<span class="sub">' + r[5] + '</span>' : '') + '</td></tr>'; }).join('');
+  var main = '<div class="apphead"><span class="crumb">Clients · Grace Whitfield · season 2027</span><h3>One client, one season</h3><span class="sp"></span><span class="av b" title="Erin Castillo, owner">EC</span></div>' +
+    '<div class="recap table-scroll"><table class="data tight"><thead><tr><th>Step</th><th>Agent, service or automation</th><th>What it did</th><th>Who approved</th><th class="num">AI credits</th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><td></td><td colspan="3"><b>Total for the season</b> · ' + (TOTAL_CREDITS / ALLOWANCE * 100).toFixed(2) + '% of one month of Greenleaf\'s Pro allowance · about $' + (TOTAL_CREDITS * 0.017).toFixed(2) + '-$' + (TOTAL_CREDITS * 0.025).toFixed(2) + ' at pack prices</td><td class="num"><b>' + TOTAL_CREDITS + '</b></td></tr></tfoot></table></div>' +
+    '<div class="g2 mt10" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))"><div class="panel"><h4>Money</h4><div class="rowx"><span>Earned, ' + esc(TIERS[S.pp.tier].n.toLowerCase()) + '</span><span>' + m2(act.acv) + '</span></div><div class="rowx"><span>Add-on from Spot it</span><span>' + m2(ROTOR) + '</span></div><div class="rowx"><span>Sales tax collected for Ohio</span><span>' + m2(tax) + '</span></div><div class="rowx"><span>Stripe fees on 8 card charges</span><span>' + m2(fees) + '</span></div><div class="rowx"><span>Rootline payment markup</span><span>$0.00</span></div><div class="rowx tot"><span>Open balance and deferred revenue at close</span><span>$0.00</span></div></div>' +
+    '<div class="panel"><h4>Operations</h4><div class="rowx"><span>Visits done</span><span>' + act.lines.reduce(function (a, l) { return a + l.count; }, 0) + ' of ' + planned.lines.reduce(function (a, l) { return a + l.count; }, 0) + ' planned</span></div><div class="rowx"><span>Rain days rescheduled</span><span>1, no credit</span></div><div class="rowx"><span>Drought skips credited</span><span>2 × ' + money(mowP()) + '</span></div><div class="rowx"><span>Quote to signed</span><span>2 days, no site visit</span></div><div class="rowx"><span>Neighbor won from the same truck</span><span>1 · ' + money(30 * 73) + ' a season</span></div></div>' +
+    '<div class="panel"><h4>Scope in this walkthrough</h4><div style="display:grid;gap:5px"><span>' + tag('mvp') + ' <span class="tiny">Quick Quote, turf auto-measure, visit models, agreements, level billing, recurrence, route insertion, crew app, Spot it, voice notes, A4 office summaries, A5 reminders, billing runs, autopay, ledger, true-up, fixed escalators, renewals</span></span><span>' + tag('v1') + ' <span class="tiny">online booking and instant quotes, A4 client message drafts, A7 Scheduling agent, CPI escalators</span></span></div></div></div>';
+  var principles = '<div class="principles">' + [['Most of the loop is not AI', 'Pricing, scheduling, billing and postings are deterministic. AI appears where language or judgment helps: a voice note, a reschedule trade-off, a message.'], ['One model prices everything', 'Quick Quote, online bands, the season, installments and renewals all come from the visit model and the Company Budget.'], ['People approve what clients see', 'Every client message the agents drafted was approved. Charging a card is never an AI action.'], ['Level billing stays honest', 'Earned vs billed is tracked monthly; skips flow into the final installment, and the season closes at $0.'], ['Money goes to the Company\'s Stripe', 'Direct charges on Greenleaf\'s own account, zero markup by default, every fee posted to the ledger.']].map(function (p) { return '<div class="card"><b>' + esc(p[0]) + '</b>' + esc(p[1]) + '</div>'; }).join('') + '</div>';
+  var links = '<div class="flex mt14"><a class="btn" href="#overview" data-k="r-start">' + ic('arrow-l') + 'Back to start</a><a class="btn" href="index.html">Vision site</a><a class="btn primary" href="prototype.html">AI design walkthrough ' + ic('arrow-r') + '</a></div>';
+  return browser('app.rootline.com/t/greenleaf/clients/C-5520/season/2027', appShell('Clients', main), 'Season recap') + principles + links;
+};
+BTS['r12-recap'] = function () {
+  return { what: 'The whole season for one client: every agent and automation, who approved what, what it cost in AI credits, and where the money went. For a maintenance client, AI is a small, cheap layer on top of a deterministic engine.',
+    sections: '<div class="bts-sec"><h3>Credits by step</h3><div class="bars">' + Object.keys(CREDITS).map(function (k) { var s = STEPS[stepIndex(k)]; return '<div><span>' + esc(s.short) + '</span><span class="b"><i style="width:' + (CREDITS[k] / 18 * 100).toFixed(0) + '%"></i></span><span>' + CREDITS[k] + '</span></div>'; }).join('') + '</div></div>',
+    agents: [['Agent observability', 'Run timelines, approvals and credits per run', true]],
+    hitl: [['Erin', 'sees every run and can raise or lower autonomy per agent and set per-agent credit caps.']], levels: ['Audit of every AI action'],
+    credits: { n: 0, note: 'Total for the season: ' + TOTAL_CREDITS + ' credits.' },
+    tags: [['mvp', 'credit metering and AI audit']],
+    specs: 'Spec: 17 §4.4.6 observability · 22 §4.4.1 rate card · 18 maintenance reporting' };
+};
+
+/* ============================================================
+   App: rail, step bar, behind-the-scenes panel, router, events
+   ============================================================ */
+var current = 'overview', navSource = 'load', btsOpen = true, timers = [], lastBtn = null, visited = {};
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function clearTimers() { timers.forEach(function (t) { clearTimeout(t); }); timers = []; }
+function later(fn, ms) { var t = setTimeout(function () { timers = timers.filter(function (x) { return x !== t; }); fn(); }, RM ? 0 : ms); timers.push(t); return t; }
+function focusK(k) { var n = $('[data-k="' + k + '"]'); if (n && !n.disabled) { try { n.focus({ preventScroll: true }); } catch (e) { n.focus(); } } }
+
+function renderRail() {
+  var idx = stepIndex(current);
+  var h = '<a class="rstart" href="#overview"' + (current === 'overview' ? ' aria-current="step"' : '') + '>' + ic('play') + 'Start here</a>';
+  ACTS.forEach(function (a, ai) {
+    h += '<div class="act"><div class="act-h"><b>' + a.n.toUpperCase() + '</b>' + esc(a.t) + '</div><ol>';
+    STEPS.forEach(function (s, i) {
+      if (s.act !== ai) return;
+      var cls = 'st' + (visited[s.id] && s.id !== current ? ' done' : '');
+      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
+    });
+    h += '</ol></div>';
+  });
+  var used = creditsThrough(idx);
+  h += '<div class="rfoot">AI credits so far <b>' + used + '</b> of ' + TOTAL_CREDITS + '<div class="meter"><i style="width:' + (used / TOTAL_CREDITS * 100).toFixed(1) + '%"></i></div><div class="mt6">for one client\'s whole season</div></div>';
+  $('#rail').innerHTML = h;
+}
+function themeName() { return theme; }
+function renderBar() {
+  var idx = stepIndex(current), s = STEPS[idx], n = STEPS.length - 1;
+  var where = idx === 0 ? 'Overview' : ACTS[s.act].n + ' · ' + ACTS[s.act].t + ' · step ' + idx + ' of ' + n + (s.when ? ' · ' + s.when : '');
+  var prevDis = idx === 0 ? ' disabled' : '', nextDis = idx === n ? ' disabled' : '';
+  $('#bar').innerHTML = '<div class="where"><span class="eyebrow">' + esc(where) + '</span><h1 id="step-h" tabindex="-1">' + esc(s.title) + '</h1></div><div class="ctrls"><div class="prog"><span class="track" role="progressbar" aria-valuemin="0" aria-valuemax="' + n + '" aria-valuenow="' + idx + '" aria-label="Walkthrough progress"><i style="width:' + (idx / n * 100).toFixed(1) + '%"></i></span><span class="num">' + idx + ' / ' + n + '</span></div>' +
+    '<button type="button" class="btn sm" data-act="prev" data-k="prev"' + prevDis + '>' + ic('arrow-l') + 'Back</button><button type="button" class="btn sm primary" data-act="next" data-k="next"' + nextDis + '>' + (idx === 0 ? 'Start' : 'Next') + ic('arrow-r') + '</button><button type="button" class="btn sm ghost" data-act="theme" data-k="theme" aria-label="Theme: ' + themeName() + '. Change theme">' + ic(themeName() === 'dark' ? 'moon' : 'sun') + '<span class="tiny">' + themeName() + '</span></button></div>';
+}
+function btsRender() {
+  var b = BTS[current] ? BTS[current]() : null; if (!b) return '';
+  var idx = stepIndex(current), h = '';
+  h += '<div class="bts-sec"><h3>What\'s happening</h3><p>' + b.what + '</p></div>';
+  if (b.sections) h += b.sections;
+  if (b.agents) h += '<div class="bts-sec"><h3>' + ic('spark', 's') + 'Trace</h3>' + b.agents.map(function (a) { return '<div class="agent"><span class="badge' + (a[2] ? ' det' : '') + '">' + ic(a[2] ? 'cog' : 'spark') + '</span><span><b>' + esc(a[0]) + '</b><small>' + esc(a[1]) + '</small></span></div>'; }).join('') +
+    (b.trace ? '<ol class="trace">' + b.trace.map(function (t, i) { var st = t.done ? '' : (t.running ? ' running' : ' pending'); if (t.human) st += ' human'; return '<li class="' + st.trim() + '"><span class="i">' + (i + 1) + '</span><span><code class="' + (t.det ? 'det' : '') + '">' + esc(t.c) + '</code><span class="res">' + esc(t.r || '') + '</span></span><span class="ms">' + (t.done ? esc(t.ms || '') : '') + '</span></li>'; }).join('') + '</ol>' : '') + '</div>';
+  if (b.hitl) h += '<div class="bts-sec"><h3>' + ic('user', 's') + 'Human in the loop</h3><div class="hitl">' + b.hitl.map(function (x) { return '<div>' + ic('check') + '<span><b>' + esc(x[0]) + '</b> ' + esc(x[1]) + '</span></div>'; }).join('') + '</div><div class="lvl">' + (b.levels || []).map(function (l) { return '<span class="pill info">' + esc(l) + '</span>'; }).join('') + '</div></div>';
+  if (b.credits) { var run = creditsThrough(idx); h += '<div class="bts-sec"><h3>' + ic('bolt', 's') + 'AI credits</h3><div class="cred"><span>This step</span><span class="big">' + b.credits.n + '</span><span>Running total</span><span class="mono" style="font-weight:600">' + run + ' of ' + TOTAL_CREDITS + '</span><small>' + esc(b.credits.note) + '</small></div></div>'; }
+  if (b.tags) h += '<div class="bts-sec"><h3>Scope</h3><div style="display:grid;gap:5px">' + b.tags.map(function (t) { return '<div class="tagrow">' + tag(t[0]) + '<span class="note">' + esc(t[1]) + '</span></div>'; }).join('') + '</div></div>';
+  if (b.specs) h += '<div class="bts-sec"><h3>Spec references</h3><div class="specs">' + esc(b.specs) + '</div></div>';
+  return h;
+}
+function renderBTS() {
+  var el = $('#bts');
+  el.classList.toggle('collapsed', !btsOpen);
+  var scroll = el.scrollTop;
+  el.innerHTML = '<div class="bts-head"><span class="ai-mark">' + ic('spark') + '</span><h2>Behind the scenes</h2><button type="button" class="btn xs" data-act="bts" data-k="bts" aria-expanded="' + btsOpen + '" aria-controls="bts-body">' + (btsOpen ? 'Hide' : 'Show') + '</button></div><div class="bts-body" id="bts-body">' + btsRender() + '</div>';
+  el.scrollTop = scroll;
+}
+function renderScreen() {
+  var el = $('#screen'), keep = {};
+  $$('[data-keep]', el).forEach(function (n) { keep[n.getAttribute('data-keep')] = n.scrollTop; });
+  el.innerHTML = SCREEN[current] ? SCREEN[current]() : '';
+  $$('[data-keep]', el).forEach(function (n) { var k = n.getAttribute('data-keep'); if (keep[k] != null) n.scrollTop = keep[k]; });
+}
+function update() {
+  var a = document.activeElement, k = a && a.getAttribute ? a.getAttribute('data-k') : null;
+  renderScreen(); renderBTS(); renderRail(); renderBar();
+  if (k) focusK(k);
+}
+function go(id, src) { navSource = src || 'link'; if (location.hash.slice(1) === id) route(); else location.hash = id; }
+function route() {
+  var id = (location.hash || '').replace(/^#/, '');
+  if (!SCREEN[id]) id = 'overview';
+  var idx = stepIndex(id), changed = id !== current;
+  if (changed) clearTimers();
+  ensureBefore(idx);
+  visited[id] = true;
+  current = id;
+  renderScreen(); renderBTS(); renderRail(); renderBar();
+  document.title = (id === 'overview' ? '' : STEPS[idx].short + ' · ') + 'Rootline recurring work walkthrough';
+  if (changed) {
+    var top = $('#main'); if (top && window.scrollY > top.offsetTop - 60) window.scrollTo(0, Math.max(0, top.offsetTop - 60));
+    if (navSource === 'button') { var b = $('[data-k="' + (lastBtn || 'next') + '"]') || $('[data-k="prev"]'); if (b && !b.disabled) b.focus({ preventScroll: true }); }
+    else if (navSource !== 'load') { var hh = $('#step-h'); if (hh) hh.focus({ preventScroll: true }); }
+  }
+  navSource = 'link';
+}
+function nav(delta) { var i = stepIndex(current) + delta; if (i < 0 || i >= STEPS.length) return; go(STEPS[i].id, 'button'); }
+
+/* ---------- theme ---------- */
+var THEMES = ['auto', 'light', 'dark'], theme = 'auto';
+try { theme = localStorage.getItem('rootline-proto-theme') || 'auto'; } catch (e) { theme = 'auto'; }
+function applyTheme() { if (theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', theme); }
+applyTheme();
+
+/* ---------- actions ---------- */
+function setPath(path, val) { var ks = path.split('.'), o = S; for (var i = 0; i < ks.length - 1; i++) o = o[ks[i]]; o[ks[ks.length - 1]] = val; }
+var ACT = {
+  next: function () { lastBtn = 'next'; nav(1); },
+  prev: function () { lastBtn = 'prev'; nav(-1); },
+  goto: function (el) { go(el.getAttribute('data-to'), 'link'); },
+  noop: function () {},
+  theme: function () { theme = THEMES[(THEMES.indexOf(theme) + 1) % 3]; try { localStorage.setItem('rootline-proto-theme', theme); } catch (e) { /* storage unavailable */ } applyTheme(); renderBar(); focusK('theme'); },
+  bts: function () { btsOpen = !btsOpen; renderBTS(); focusK('bts'); },
+  // r01
+  qqmeasure: function () { S.qq.measuring = true; update(); later(function () { S.qq.measuring = false; S.qq.measured = true; update(); focusK('qq-send'); }, 900); },
+  qqgate: function (el) { S.qq.gate = el.getAttribute('data-v') === '1'; update(); },
+  qqfreq: function (el) { S.qq.freq = el.getAttribute('data-v'); update(); },
+  qqtier: function (el) { S.qq.tier = el.getAttribute('data-v'); S.pp.tier = S.qq.tier; update(); },
+  qqsend: function () { S.qq.sent = true; update(); focusK('r01-next'); },
+  // r02
+  vmcrew: function (el) { S.vm.crew = +el.getAttribute('data-v'); update(); },
+  vmreset: function () { S.vm = { crew: 2, drive: 9, margin: 15 }; S.qq.gate = true; S.qq.freq = 'weekly'; update(); },
+  // r03
+  pptier: function (el) { S.pp.tier = el.getAttribute('data-v'); update(); },
+  ppplan: function (el) { S.pp.plan = el.getAttribute('data-v'); update(); },
+  ppcard: function () { S.pp.card = true; update(); focusK('pp-name'); },
+  // r04
+  iqmeasure: function () { S.iq.measuring = true; update(); later(function () { S.iq.measuring = false; S.iq.measured = true; update(); focusK('iq-ex'); }, 1000); },
+  iqex: function () { S.iq.exclude = !S.iq.exclude; update(); },
+  iqcard: function () { S.iq.card = true; update(); focusK('iq-book'); },
+  iqbook: function () { S.iq.booked = true; update(); focusK('r04-next'); },
+  // r05
+  rtaccept: function () { S.rt.accepted = true; update(); focusK('r05-next'); },
+  // r06
+  cvlang: function (el) { S.cv.lang = el.getAttribute('data-v'); update(); },
+  cvotw: function () { S.cv.otw = true; update(); focusK('cv-gate'); },
+  cvgate: function () { S.cv.gate = true; update(); focusK('cv-before'); },
+  cvphoto: function (el) { S.cv[el.getAttribute('data-v')] = true; update(); },
+  cvtask: function (el) { var k = el.getAttribute('data-v'); S.cv.tasks[k] = !S.cv.tasks[k]; update(); },
+  cvdone: function () { S.cv.done = true; update(); focusK('r06-next'); },
+  // r07
+  spphoto: function () { S.sp.photo = true; update(); focusK('sp-rec'); },
+  sprec: function () {
+    var P = S.sp;
+    if (!P.recording) { P.recording = true; update(); focusK('sp-rec'); return; }
+    P.recording = false; P.rec = true; update();
+    later(function () { P.synced = true; update(); focusK('sp-approve'); }, 1100);
+  },
+  spsel: function (el) { S.sp.sel = el.getAttribute('data-v'); update(); },
+  spapprove: function () { S.sp.approved = true; update(); later(function () { S.sp.replied = true; update(); focusK('r07-next'); }, 1200); },
+  // r08
+  rnopt: function (el) { S.rn.opt = el.getAttribute('data-v'); update(); },
+  rnapprove: function () { S.rn.approved = true; update(); focusK('r08-next'); },
+  // r09
+  brpost: function () { S.br.posted = true; update(); focusK('br-charge'); },
+  brcharge: function () { S.br.charging = true; update(); later(function () { S.br.charging = false; S.br.charged = true; update(); focusK('r09-next'); }, 900); },
+  // r10
+  coapprove: function () { S.co.approved = true; update(); focusK('co-update'); },
+  coupdate: function () { S.co.updated = true; update(); later(function () { S.co.paid = true; update(); focusK('r10-next'); }, 600); },
+  // r11
+  scapprove: function () { S.sc.approved = true; update(); focusK('r11-next'); }
+};
+var FORMS = {
+  sign: function () { var P = S.pp; if (P.name.trim().length > 2 && P.agree && P.card) { P.signed = true; update(); focusK('r03-next'); } }
+};
+document.addEventListener('click', function (e) {
+  var t = e.target.closest('[data-act]');
+  if (!t) return;
+  if (t.disabled) return;
+  var fn = ACT[t.getAttribute('data-act')];
+  if (!fn) return;
+  if (t.getAttribute('data-self')) { fn(t, e); return; }
+  if (t.type === 'radio') { fn(t, e); return; }
+  e.preventDefault(); fn(t, e);
+});
+document.addEventListener('submit', function (e) {
+  var f = e.target.closest('form[data-form]'); if (!f) return;
+  e.preventDefault();
+  var fn = FORMS[f.getAttribute('data-form')]; if (fn) fn(f);
+});
+function onBind(e, commit) {
+  var el = e.target, path = el.getAttribute && el.getAttribute('data-bind'); if (!path) return;
+  var v;
+  if (el.type === 'checkbox') v = el.checked;
+  else if (el.type === 'number') { v = parseFloat(el.value); if (isNaN(v)) return; var lim = { 'vm.drive': [2, 30], 'vm.margin': [5, 35] }[path]; if (lim) v = Math.max(lim[0], Math.min(lim[1], v)); }
+  else v = el.value;
+  setPath(path, v);
+  if (path === 'pp.name') { var b = $('[data-k="pp-sign"]'); if (b) b.disabled = !(S.pp.name.trim().length > 2 && S.pp.agree && S.pp.card); return; }
+  if (el.type === 'number' && !commit) return;
+  update();
+}
+document.addEventListener('input', function (e) { if (e.target.getAttribute && e.target.getAttribute('data-bind') && e.target.type !== 'checkbox') onBind(e, false); });
+document.addEventListener('change', function (e) { if (e.target.getAttribute && e.target.getAttribute('data-bind')) onBind(e, true); });
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  var t = e.target, tn = t && t.tagName;
+  if (tn === 'INPUT' || tn === 'TEXTAREA' || tn === 'SELECT' || (t && t.isContentEditable)) return;
+  if (t && t.closest && t.closest('[role="radiogroup"],.seg')) return;
+  e.preventDefault();
+  lastBtn = e.key === 'ArrowRight' ? 'next' : 'prev';
+  nav(e.key === 'ArrowRight' ? 1 : -1);
+});
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

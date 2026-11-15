@@ -4,9 +4,9 @@
 
 ## At a glance
 
-- **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, and a clickable walkthrough prototype of the AI design flow.
+- **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, and two clickable walkthrough prototypes: the AI design flow, and a season of small recurring work.
 - **Decided:** bring-your-own Stripe, a built-in double-entry ledger, the Great Lakes launch region, Snow Lite in the MVP, pricing tiers, the region-aware Plant Knowledge Base, and "humans approve AI actions by default".
-- **Remains:** founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the other workflows (the biggest gap: small and recurring jobs such as weekly grass cutting), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
+- **Remains:** founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the remaining workflows (office lead-to-cash, a crew member's full day, month-end close, the operator console and commercial approvals), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
 
 ## 1. What's done
 
@@ -49,6 +49,7 @@ All pages live in [site/](site/) as static HTML that runs in any browser, and ar
 | Page | What it shows |
 |---|---|
 | [site/prototype.html](site/prototype.html) | **Clickable walkthrough of the agentic AI design flow**, from a homeowner's photos and measurements through AI mockups, design-assistant edits, a to-scale plan in the Design Studio, the estimating agent's draft, the proposal, client approval with deposit, and the agents that act afterwards. Each step shows what the agents did, who approved it and the AI credits used |
+| [site/recurring.html](site/recurring.html) | **Clickable walkthrough of small and recurring work**: one 9,000 sq ft lawn for one season. A 2-minute Quick Quote with AI turf measurement, the visit model behind $73 a visit (editable), Good / Better / Best with level billing and autopay, the neighbor's online instant quote, season and route insertion, a Tuesday visit in the Spanish-first crew app, a Spanish voice note turned into a $65 add-on, the Scheduling agent's rain-day reshuffle, the June billing run with ledger postings, an expired-card reminder, and the season true-up and +4% renewal. 22 AI credits for the whole season |
 | [site/index.html](site/index.html) | The vision site: problem, big bets, personas, lead-to-ledger flow, module atlas, competitive landscape, business model, product scope and architecture |
 | [site/screens-office.html](site/screens-office.html) | Static concepts: owner dashboard, client record, dispatch board, estimate builder, client proposal, job costing and ledger |
 | [site/screens-design.html](site/screens-design.html) | Static concepts: Design Studio, AI mockup flow, AI layout options, plant search, plant curator console |
@@ -107,28 +108,31 @@ No step below carries a time or effort estimate. The order within each list is a
 
 - Interviews with landscape companies in the six Wave 1 Regions, recruited as design partners ([22](22-business-model-pricing-gtm.md) section 6.10).
 - Usability tests of the clickable AI design prototype with homeowners and with designers and estimators.
+- Usability tests of the recurring work prototype with owners, estimators, office managers, bookkeepers and Spanish-speaking crew leads: is $73 explainable, is level billing with true-up trusted, is the rain-day trade-off clear.
 - Glove, sun, offline and in-truck tests of the crew app concepts using the protocols in [21](21-ux-design-system-sitemaps.md).
 - Pricing validation from [22](22-business-model-pricing-gtm.md) section 6.10.
 
 ### 2.4 More clickable prototypes
 
-The AI design flow is clickable. The other workflows exist as static concept screens and would benefit from clickable walkthroughs too.
+Two workflows are clickable: the AI design flow ([site/prototype.html](site/prototype.html)) and small recurring work ([site/recurring.html](site/recurring.html)). The recurring work walkthrough closed the gap this section used to flag as the biggest. It follows the loop the specification describes, step by step:
 
-**The biggest gap: small and recurring jobs.** The clickable walkthrough covers the large design-build proposal, but most landscape work is small and repeats: weekly grass cutting, mulch, cleanups, aeration, lawn programs, irrigation start-ups. The specification already covers this loop end to end, but no walkthrough shows it yet:
-
-| Step | Specified in |
+| Step in the walkthrough | Specified in |
 |---|---|
-| Quick Quote on a phone in under 2 minutes, with turf area from AI aerial measurement and auto-generated tiers [MVP] | [03](03-crm-sales-estimating-proposals.md) EST-11, INTEL-03 |
-| Recurring pricing from a visit model (for example 9,000 sq ft of turf at $73 a visit, $2,190 a season) [MVP] | [03](03-crm-sales-estimating-proposals.md) EST-12 |
-| Homeowner instant quote and online booking with a route day and card on file [V1] | [16](16-marketing-growth-communications.md) sections 4.3 and 5.1 |
-| Service agreement, generated season of visits, route insertion, "on the way" texts; rain-day reshuffles by the scheduling agent [V1] | [04](04-scheduling-dispatch-routing.md), [07](07-invoicing-billing-contracts.md) section 4.3, [17](17-ai-copilot-automation.md) A7 |
-| Crew route and visit run sheet, photos, Spot-it upsells and Spanish voice notes turned into add-on quotes [MVP] | [05](05-field-crew-mobile-app.md), [17](17-ai-copilot-automation.md) A4 |
-| Per-visit or level monthly billing, autopay on the Company's own Stripe account, ledger posting, collections reminders [MVP] | [07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md), [17](17-ai-copilot-automation.md) A5 |
+| Quick Quote on a phone with AI turf measurement and three tiers [MVP] | [03](03-crm-sales-estimating-proposals.md) EST-11, INTEL-03 |
+| Visit model: 9,000 sq ft at $73 a visit, $2,190 a season, banded prices for online booking [MVP, bands V1] | [03](03-crm-sales-estimating-proposals.md) EST-12 |
+| Proposal, e-signature, level billing and card on file [MVP] | [07](07-invoicing-billing-contracts.md) section 4.2.3, [08](08-payments-stripe.md) |
+| Neighbor's instant quote and online booking onto the route day [V1] | [16](16-marketing-growth-communications.md) section 4.3 |
+| Season of visits and route insertion [MVP] | [04](04-scheduling-dispatch-routing.md) section 4.2 |
+| Crew visit, Spot it and a Spanish voice note turned into an add-on [MVP; client message draft V1] | [05](05-field-crew-mobile-app.md) sections 4.10-4.11, [17](17-ai-copilot-automation.md) A4 |
+| Rain-day reshuffle by the Scheduling agent [V1] | [17](17-ai-copilot-automation.md) A7 |
+| Billing run, autopay on the Company's Stripe, ledger postings [MVP] | [07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md) section 4.3 |
+| Expired-card reminder [MVP] | [17](17-ai-copilot-automation.md) A5 |
+| Season true-up, fixed escalator and renewal [MVP] | [07](07-invoicing-billing-contracts.md) sections 4.2.3, 4.3.3-4.3.7 |
 
-The other workflows that would benefit from clickable walkthroughs:
+The workflows that would still benefit from clickable walkthroughs:
 
-- office lead-to-cash: dispatch board, visit completion, invoicing and payment
-- a crew member's day in the crew app, including offline sync and Snow Lite
+- office lead-to-cash for project work: dispatch board, visit completion, invoicing and payment
+- a crew member's full day in the crew app, including clock-in, breaks, offline sync and Snow Lite
 - the bookkeeper's month-end close in the ledger
 - the operator console and the plant curator's workflow
 - commercial and HOA approvals in the portal
