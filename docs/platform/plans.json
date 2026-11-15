@@ -845,7 +845,7 @@
     },
     {
       "key": "inventory",
-      "name": "Inventory, purchasing, vendor bills",
+      "name": "Inventory, purchasing, vendor bills (Off, Light, Standard and Advanced modes; per-job buy lists, POs, receiving, 2-way and 3-way bill match, purchasing workbench; default mode per OD-43)",
       "module": "Operations",
       "docs": [
         "13"
@@ -873,7 +873,7 @@
     },
     {
       "key": "equipment",
-      "name": "Equipment and fleet",
+      "name": "Equipment and fleet (asset registry, meters, DVIR, rate calculator, PM schedules and work orders, telematics, fuel cards)",
       "module": "Operations",
       "docs": [
         "13"
@@ -925,7 +925,7 @@
     },
     {
       "key": "snow_lite",
-      "name": "Snow Lite: crew-app storm visit logging per site (timestamped GPS photos, notes), basic snow site list with priority order, per-push / per-application invoices from those logs, per-site PDF proof-of-service export (no hash sealing)",
+      "name": "Snow Lite, included at no charge alongside the Snow & Ice add-on: crew-app storm visit logging per site (timestamped GPS photos, notes), basic snow site list with priority order, per-push / per-application invoices from those logs, per-site PDF proof-of-service export (no hash sealing)",
       "module": "Jobs",
       "docs": [
         "14",
@@ -1405,7 +1405,7 @@
     },
     {
       "key": "agents_ops",
-      "name": "Operations agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A17, A19, A21; A18 Review Requests runs under Reputation in 16; A20 Snow Event comes with the Snow and Ice add-on)",
+      "name": "Operations agents: Scheduling, Bookkeeping, AP, full Collections, Renewal, Change Order, Procurement and others (A7-A17, A19, A21; A18 review requests run with [16](16-marketing-growth-communications.md), and A20 Snow Event runs with the Snow & Ice add-on)",
       "module": "AI",
       "docs": [
         "17"
@@ -1481,7 +1481,7 @@
     },
     {
       "key": "benchmarks",
-      "name": "Benchmarking (opt-in peer comparisons)",
+      "name": "Benchmarking (opt-in peer comparisons; on once a cell has 10 contributing Companies; Starter contributes and sees a teaser, OD-14)",
       "module": "Reports",
       "docs": [
         "18"

@@ -271,8 +271,8 @@ Legend: Y = included, L = included with limits, A = add-on, - = not available. E
 | Commercial multi-property portal + approval workflows | - | L (5 commercial clients) | Y | Y | [06](06-customer-portal.md) |
 | Invoicing, service agreement billing, sales tax, AR | Y | Y | Y | Y | [07](07-invoicing-billing-contracts.md) |
 | BYO Stripe payments (cards, ACH, card on file, autopay) | Y | Y | Y | Y | [08](08-payments-stripe.md) |
-| Ledger Essentials: double-entry GL, auto-posting, 1 bank feed, P&L/BS | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
-| Ledger Plus: AP and bills, unlimited bank feeds, bank rec, 1099 tracking, budgets | A | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
+| Ledger Essentials: double-entry GL, auto-posting, 1 bank feed with reconciliation, P&L/BS | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
+| Ledger Plus: AP and bills, unlimited bank feeds with reconciliation, 1099 tracking, budgets | A | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
 | Ledger Advanced: WIP / percent-complete, classes and departments, multi-entity, consolidations | - | A | Y | Y | [09](09-accounting-ledger-integrations.md) |
 | QuickBooks Online sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
 | Xero sync | Y | Y | Y | Y | [09](09-accounting-ledger-integrations.md) |
@@ -459,7 +459,7 @@ A credit is a unit of AI work that is published and stable. The raw provider cos
 | **SMS packs** | 5,000 segments $79 | All | Pooled segments | Variable cost |
 | **Website + Online Booking** | $49/mo per site (Pro includes 1) | All | Hosted site builder, templates, custom domain, booking widget, SEO plant pages for the Company's region | Many already have a website |
 | **Payroll (embedded)** | $39/mo + $6 per paid employee per month (estimate; depends on the embedded payroll partner's wholesale cost) | US and Canada, where the payroll partner supports the Company (24 section 1.4) | Full-service payroll, tax filings, direct deposit, piece-rate and overtime from Rootline timesheets | Partner cost per employee |
-| **Ledger Plus** | $49/mo | Starter | AP, unlimited bank feeds, bank reconciliation, budgets | Bank-feed aggregator cost and support |
+| **Ledger Plus** | $49/mo | Starter | AP, unlimited bank feeds with reconciliation, budgets | Bank-feed aggregator cost and support |
 | **Ledger Advanced** | $99/mo | Grow (included in Pro) | WIP and percent-complete revenue recognition, classes and departments, multi-entity, consolidations | Complexity and support cost |
 | **QuickBooks Desktop connector** | $29/mo | Grow (included in Pro) | Web Connector sync | Support burden |
 | **Snow & Ice module** | **$99/mo billed Nov-Mar only** ($495 per season); $79/mo in season on annual plans ($395 per season) | All | Storm events, trigger depths (e.g., 2-inch push trigger), per-push / per-event / seasonal billing, salt and ice-melt logs, timestamped photo proof for slip-and-fall defense, weather feeds. Builds on Snow Lite, which every tier includes at no charge (rule below) | Regional |
