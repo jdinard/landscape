@@ -1838,7 +1838,7 @@
       "code": "payroll",
       "name": "Payroll (embedded)",
       "price": "$39/mo + $6 per paid employee per month (estimate; depends on the embedded payroll partner's wholesale cost)",
-      "available_on": "US first, Canada later",
+      "available_on": "US; Canada where the embedded payroll partner supports it (15 EMB-03)",
       "includes": "Full-service payroll, tax filings, direct deposit, piece-rate and overtime from Rootline timesheets",
       "why": "Partner cost per employee"
     },

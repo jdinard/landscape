@@ -1314,7 +1314,7 @@ flowchart TD
 2. They run the Territory solver with 2 mowing crews plus a planned third crew from April 12. The proposal rebalances Tuesday and Thursday, changing the service day for 11% of clients.
 3. They open a scenario: "Add Saturday shifts for enhancement crews in weeks 16-19" and "Subcontract 40 fall cleanups". The comparison shows overtime cost vs sub cost.
 4. They promote the territory plan effective April 1 (client day-change notices drafted for March 18) and set a hiring target in [15](15-team-hr-payroll.md).
-5. The sales team sees "Earliest start: week of May 10" for new enhancement proposals ([03](03-crm-sales-estimating-proposals.md)).
+5. Estimators see "Earliest start: week of May 10" for new enhancement proposals ([03](03-crm-sales-estimating-proposals.md)).
 
 ```mermaid
 sequenceDiagram
@@ -1448,7 +1448,7 @@ sequenceDiagram
 ### 5.6 Scheduling a fertilizer round inside its window
 
 1. Round 2 (broadleaf + fertilizer) window opens May 1 - June 5 for 1,412 enrolled lawns ([14](14-service-line-modules.md)).
-2. The Round Planner groups eligible round instances (28+ days since Round 1, notices sent) by zone and week and requests `week_plan` (; at MVP the ops manager drops blocks onto zone-days and each route is sequenced) with skill `pesticide_applicator` (state category turf) and sprayer capacity.
+2. The Round Planner groups eligible round instances (28+ days since Round 1, notices sent) by zone and week and requests `week_plan` (on plans without multi-crew optimization the ops manager drops blocks onto zone-days and each route is sequenced, 4.2.5) with skill `pesticide_applicator` (state category turf) and sprayer capacity.
 3. The optimizer returns routes for 5 licensed applicators over 4 weeks at about 75 lawns per applicator-day (illustrative), with wind/rain flags per day.
 4. Two applicators' licenses expire May 31; Visits after that date fail validation and are reassigned before publish, and the owner gets a renewal alert.
 5. When a weather playbook moves a round Visit, the window guard prevents moving past June 5 and re-notification fires if the date leaves the notified range.
@@ -1554,17 +1554,17 @@ sequenceDiagram
 
 ### 6.1 Screen inventory
 
-| # | Screen | Surface | Primary roles | Priority |
+| # | Screen | Surface | Primary roles | Wireframe or spec |
 |---|---|---|---|---|
-| S1 | Dispatch board: Day (Gantt by crew) | Web | ops_manager, office_manager | (wireframe in [21](21-ux-design-system-sitemaps.md) 18.4) |
-| S2 | Dispatch board: Week (crew x day) with unassigned tray | Web | ops_manager, office_manager | (6.2) |
-| S3 | Map view and live map | Web, manager mode on mobile | ops_manager, owner | (6.5) |
-| S4 | ScheduleDiff review (optimizer, playbook, Copilot, bulk) | Web | ops_manager, office_manager | (6.3) |
-| S5 | Capacity planner (season heatmap, week detail) | Web | owner, ops_manager | basic (6.4) |
-| S6 | Backlog | Web | ops_manager, office_manager | (6.7) |
-| S7 | Scenario compare (what-if) | Web | ops_manager, owner | (6.6) |
-| S8 | Territories and zones editor; Master Route editor | Web | ops_manager, owner | zones, solver |
-| S9 | Service Schedule editor (recurrence presets, frequency profiles, growth-adaptive) | Web | office_manager, ops_manager | (6.8) |
+| S1 | Dispatch board: Day (Gantt by crew) | Web | ops_manager, office_manager | [21](21-ux-design-system-sitemaps.md) 18.4 |
+| S2 | Dispatch board: Week (crew x day) with unassigned tray | Web | ops_manager, office_manager | 6.2 |
+| S3 | Map view and live map | Web, manager mode on mobile | ops_manager, owner | 6.5 |
+| S4 | ScheduleDiff review (optimizer, playbook, Copilot, bulk) | Web | ops_manager, office_manager | 6.3 |
+| S5 | Capacity planner (season heatmap, week detail, what-if levers) | Web | owner, ops_manager | 6.4 |
+| S6 | Backlog | Web | ops_manager, office_manager | 6.7 |
+| S7 | Scenario compare (what-if) | Web | ops_manager, owner | 6.6 |
+| S8 | Territories and zones editor; Master Route editor | Web | ops_manager, owner | 4.7 (territory solver on Grow and above) |
+| S9 | Service Schedule editor (recurrence presets, frequency profiles, growth-adaptive) | Web | office_manager, ops_manager | 6.8 |
 | S10 | Season calendar settings (per Region and branch) | Web | owner, ops_manager | |
 | S11 | Holiday and blackout calendars | Web | owner, office_manager | |
 | S12 | Weather playbooks editor | Web | owner, ops_manager | |
@@ -1572,8 +1572,8 @@ sequenceDiagram
 | S14 | Resource reservations view | Web | ops_manager | |
 | S15 | Project Gantt (single and multi-project) | Web | ops_manager, designer, owner | |
 | S16 | Subcontractor offers inbox (sub side) and sub lanes (office side) | Crew app (sub mode), web | subcontractor, ops_manager | |
-| S17 | Crew app: Today route, route changes banner, rain stop, recover requests | Mobile | crew_lead, technician | (spec in [05](05-field-crew-mobile-app.md)) |
-| S18 | Portal: next visit, ETA, reschedule and skip, booking windows | Portal | client_residential, client_commercial | (spec in [06](06-customer-portal.md)) |
+| S17 | Crew app: Today route, route changes banner, rain stop, recover requests | Mobile | crew_lead, technician | [05](05-field-crew-mobile-app.md) |
+| S18 | Portal: next visit, ETA, reschedule, skip and pause, add-on booking windows | Portal | client_residential, client_commercial | [06](06-customer-portal.md) |
 | S19 | Route sheet (print/PDF) | Web | office_manager, crew_lead | |
 | S20 | Optimization run inspector | Web (tenant) and Platform Admin | ops_manager, platform_engineer | |
 | S21 | Scheduling settings | Web | owner | |
@@ -2438,22 +2438,22 @@ erDiagram
 |---|---|---|
 | Google Routes API or Mapbox Matrix/Directions | Travel-time matrices, live-traffic next-leg ETAs | Provider per region/cost; matrix element limits and traffic-aware limits differ by provider and change (verify); caching and pruning in 4.8.3 |
 | Google OR-Tools (in-house service) | Vehicle routing solver | Apache 2.0 open source; runs in the Python routing service ([OR-Tools routing](https://developers.google.com/optimization/routing)) |
-| Managed route-optimization APIs (e.g., Google Route Optimization API, Mapbox Optimization) | Benchmark and possible burst fallback | Evaluated, not primary: per-request pricing and limited control over stability penalties and landscape-specific constraints (verify current capabilities and pricing) |
+| Managed route-optimization APIs (e.g., Google Route Optimization API, Mapbox Optimization) | Benchmark and burst fallback | Evaluated, not primary: per-request pricing and limited control over stability penalties and landscape-specific constraints (verify current capabilities and pricing) |
 | Geocoding (Google or Mapbox) and parcels (Regrid) | Rooftop geocodes, parcel polygons for geofences and access points | Pin-correction tool; parcel polygons improve arrival detection ([20](20-architecture-security.md)) |
 | USGS 3DEP elevation | Slope hints for equipment class constraints (no ZTR above slope threshold) | Cached per Property ([20](20-architecture-security.md)) |
 | US National Weather Service API | Hourly gridpoint forecasts and alerts (US) | Free; requires an identifying User-Agent; rate limits apply ([NWS API](https://www.weather.gov/documentation/services-web-api)) |
 | Environment and Climate Change Canada (MSC open data) | Canadian forecasts and alerts | Verify endpoints, licensing and attribution |
-| Commercial weather provider | Nowcasts, soil temperature, consistent cross-border data, certified historical reports for disputes | Vendor selection is open question 13 (Tomorrow.io, DTN and The Weather Company class candidates; verify terms) |
+| Commercial weather provider | Nowcasts, soil temperature, air quality index, consistent cross-border data, certified historical reports for disputes | One provider alongside NWS and ECCC (OD-61); the build agent picks it from Tomorrow.io, DTN and The Weather Company class candidates and records the choice (decision 13; verify terms) |
 | Telematics: Samsara, Motive, Geotab, Verizon Connect (candidates) | Vehicle positions, ignition, engine hours | OAuth or API-key connectors via the integration framework ([20](20-architecture-security.md) section 4.8); Aspire lists Motive in its marketplace ([Motive marketplace](https://marketplace.gomotive.com/app/aspire)) |
 | Google Calendar, Microsoft 365 (Graph) | Busy/free sync for office roles (estimators, designers) | Two-way for Rootline-created events; read busy/free otherwise |
 | Twilio, email, push | Client and crew notifications | Via the notifications service and [16](16-marketing-growth-communications.md) templates; 10DLC registration per Company ([Twilio A2P 10DLC](https://www.twilio.com/docs/messaging/compliance/a2p-10dlc)) |
-| Holiday data | US federal, Canadian federal/provincial holidays | Platform-curated table, reviewed annually by `platform_engineer` ([19](19-platform-admin-portal.md)) |
+| Holiday data | US federal, Canadian federal/provincial holidays | Platform-curated table, reviewed annually by the engineering agent (`platform_engineer`) in [19](19-platform-admin-portal.md); tenants are notified of changes |
 | Stripe (indirect) | Deposit and booking-hold outcomes | Scheduling never calls Stripe and never sees card data. Each Company's own connected Stripe account is integrated once, by [08](08-payments-stripe.md); this module consumes `payments.*` domain events only (4.1.2, 4.13) |
 | Smart irrigation controllers (indirect, Hunter Hydrawise, Rachio) | Mow-day watering suspend and water-in requests (section 13, idea 17) | Through the controller integration and consent model owned by [14](14-service-line-modules.md) |
 
 ### 8.2 APIs (internal and public)
 
-All endpoints are tenant-scoped, permission-checked ([20](20-architecture-security.md) section 4.6) and available to the web app, the Copilot tool layer and, from, the public API with OAuth scopes `schedule:read` and `schedule:write`.
+All endpoints are tenant-scoped, permission-checked ([20](20-architecture-security.md) section 4.6) and available to the web app, the Copilot tool layer and the public API with OAuth scopes `schedule:read` and `schedule:write`.
 
 | Endpoint | Purpose | Sync/async |
 |---|---|---|
@@ -2461,13 +2461,13 @@ All endpoints are tenant-scoped, permission-checked ([20](20-architecture-securi
 | `POST /visits/{id}/move` | Move a Visit: `service_date`, `crew_id`, `position`, `lock`, `reason`, `notify_client` | Sync; returns validation tier and new version |
 | `POST /scheduling/diffs` | Build a ScheduleDiff from a list of operations (bulk, Copilot) | Sync up to 500 items, else async |
 | `POST /scheduling/diffs/{id}/apply` | Apply all or selected items | Sync; idempotent with `Idempotency-Key` |
-| `POST /scheduling/optimize` | Run an optimizer mode over a scope with a preset and overrides | `sequence`/`insertion` sync; others async with run id |
+| `POST /scheduling/optimize` | Run an optimizer mode over a scope with a preset and overrides; multi-crew modes need the `route_vrp` entitlement (4.8.1) | `sequence`/`insertion` sync; others async with run id |
 | `GET /scheduling/runs/{id}` | Run status, objective breakdown, resulting diff | Sync |
 | `POST /scheduling/best-day` | Ranked service-day options for a new recurring Service Schedule | Sync, < 1.5 s p95 |
 | `GET /scheduling/availability` | Slot supply for portal, booking and receptionist | Sync, < 800 ms p95 |
 | `POST /scheduling/holds`, `DELETE /scheduling/holds/{id}` | 10-minute slot holds | Sync |
 | `GET /capacity?pool&from&to&granularity` | Supply, demand and utilization | Sync (cached 5 min) |
-| `POST /weather/declarations` | Declare a rain day with a playbook; returns a diff | Async |
+| `POST /weather/declarations` | Declare a rain day with a playbook or a manual bulk move; returns a diff | Async |
 | `GET /routes/{id}/eta` | Current ETAs for remaining stops | Sync, served from cache |
 | `POST /scenarios`, `POST /scenarios/{id}/promote` | What-if scenarios | Async |
 | `POST /projects/{id}/schedule` | Forward-schedule a project; returns critical path and diff | Async |
@@ -2561,7 +2561,7 @@ Rules:
 - `gps_history.view` "with reason" requires a reason string per access (logged); employees always see their own location data ([05](05-field-crew-mobile-app.md) section 4.23).
 - `crew_lead` "reorder same day only" cannot move Visits to other days or crews, cannot touch locked sequences, and the change applies immediately to the crew's route with a notice to the dispatcher.
 - Clients' requests become office tasks or auto-confirm according to 4.2.8 and 4.13; `client_commercial` approver contacts must approve changes on their sites when the Company enables approval workflows ([06](06-customer-portal.md)).
-- Platform roles: `platform_support` and `platform_engineer` see schedules and optimization runs only inside a consented support session; write access requires the per-ticket "act as user (read-write)" grant defined in [02](02-personas-roles-permissions.md). `platform_owner` manages holiday data, weather providers and solver versions globally from [19](19-platform-admin-portal.md) but has no default access to tenant schedules. `platform_curator` edits Region season templates, growth-potential coefficients and default playbook thresholds (platform-level data only; tenants receive them as versioned defaults they can override). `platform_finance` sees per-tenant aggregates of matrix-API calls, weather cells and solver minutes for cost and quota management, never Visit-level or client data.
+- Platform roles: `platform_owner` is the founder; the other platform roles are held by Rootline's operator agents ([24](24-product-scope-decisions-catalog.md) section 1.2). The support and engineering agents (`platform_support`, `platform_engineer`) see schedules and optimization runs only inside a consented support session; write access requires the per-ticket "act as user (read-write)" grant defined in [02](02-personas-roles-permissions.md). The founder manages holiday data, weather providers and solver versions globally from [19](19-platform-admin-portal.md), approving the engineering agent's proposals (4.8.10), but has no default access to tenant schedules; break-glass access by the founder takes step-up authentication, a written reason and the audit log. The plant curator agent (`platform_curator`) edits Region season templates, growth-potential coefficients and default playbook thresholds (platform-level data only; tenants receive them as versioned defaults they can override). The finance agent (`platform_finance`) sees per-tenant aggregates of matrix-API calls, weather cells and solver minutes for cost and quota management, never Visit-level or client data.
 
 ---
 
@@ -2644,7 +2644,7 @@ The rule throughout: **deterministic engines decide feasibility and cost; AI pre
 | Noise and equipment ordinances | Municipal hours for power equipment; some jurisdictions restrict gas-powered leaf blowers or new small off-road engines (e.g., California rules for new small off-road engines; verify specific local ordinances) | Municipal access windows and equipment-class constraints ("electric blower only") |
 | Client location privacy | Live tracking links must not reveal other clients | Tracking link shows only the crew's approach to this Property, expires at arrival + 30 min ([16](16-marketing-growth-communications.md)) |
 | Accessibility | WCAG 2.2 AA for office and portal surfaces | Drag alternatives, list equivalents for maps and Gantt ([21](21-ux-design-system-sitemaps.md)) |
-| Data residency | Canadian tenant data in Canadian region where required | Optimizer and weather caches run in the tenant's region cell ([20](20-architecture-security.md)) |
+| Data residency | Canadian tenant data in a Canadian region | Every Canadian Company runs on the Canadian regional stack (OD-62); optimizer runs, matrices and weather caches stay in the tenant's region cell ([20](20-architecture-security.md)) |
 
 **Anomaly detection and employee surveillance.** AI-10 signals (idle time, deviations) are shown to managers only as operational prompts, never as automated discipline; Companies in jurisdictions with monitoring-policy requirements must have a published policy before anomaly alerts turn on (setup wizard check).
 
@@ -2658,10 +2658,10 @@ The rule throughout: **deterministic engines decide feasibility and cost; AI pre
 | Bad geocodes and parcel data | High in rural and new-build areas | Wrong ETAs, missed arrivals | Pin correction, crew feedback, parcel polygons, confidence scores |
 | Weather false positives move work unnecessarily | Medium | Lost production days | Confidence-aware triggers, `hold_for_decision` near threshold, post-event review of "moved but stayed dry" days to tune thresholds |
 | Alert fatigue | Medium | Ignored real problems | Grouping, rate limits, severity tiers, morning brief |
-| Data import from competitors' schedules is messy | High | Bad first impression | Importers for Jobber, Service Autopilot, LMN, SingleOps exports ([R2](research/R2-landscape-specific-platforms.md) recommends both LMN and SingleOps by); Copilot-assisted cleanup of recurrence patterns |
+| Data import from competitors' schedules is messy | High | Bad first impression | Switch-kit importers for Jobber, Service Autopilot, LMN, SingleOps and Real Green schedules (R24-15; [R2](research/R2-landscape-specific-platforms.md) recommends both LMN and SingleOps); Copilot-assisted cleanup of recurrence patterns |
 | Optimizer performance on very large tenants | Low-medium | Timeouts | Decomposition, async modes, greedy fallback, benchmark suite gates in CI |
 | Liability for ETAs and weather decisions | Low | Disputes | ETAs shown as windows, not promises; weather evidence stored; final decisions logged as human-approved |
-| Scope creep into a full ERP/CPM scheduler | Medium | Delivery delay | Non-goals (1.2); resource leveling deferred to |
+| Scope creep into a full ERP/CPM scheduler | Medium | Product complexity and solver load | Non-goals (1.2); resource leveling only proposes start-date shifts as a ScheduleDiff (4.11.3); no earned-value or portfolio scheduling |
 
 ---
 
@@ -2695,7 +2695,7 @@ Definitions are shared with [18](18-reporting-analytics.md). Targets are Rootlin
 | Rain decisions before deadline | Rain declarations applied before the playbook's `decision_deadline` / all rain declarations | >= 85% (each late call carries show-up cost, 4.9.3) |
 | Unverified visit share | Completed Visits not `verified` at end of day / completed Visits (shared with [05](05-field-crew-mobile-app.md)) | <= 5% |
 | Deposit-gate latency | Median minutes from `payments.deposit.received` to the first phase confirmed on the board | < 60 minutes during business hours |
-| Solver cost per active crew | Matrix-API, weather-cell and solver compute cost per active crew per month (platform metric for `platform_finance`) | Tracked against the gross-margin model in [22](22-business-model-pricing-gtm.md); alert at 2x the tier median |
+| Solver cost per active crew | Matrix-API, weather-cell and solver compute cost per active crew per month (platform metric for `platform_finance`) | Tracked against the gross-margin model in [22](22-business-model-pricing-gtm.md); alert at 2x the plan median |
 
 ---
 

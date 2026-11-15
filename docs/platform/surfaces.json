@@ -254,7 +254,7 @@
       "nav": "Sales",
       "label": "Change orders",
       "path": "/sales/change-orders",
-      "purpose": "Basic office and field change orders with signature and price delta; verbal-emergency flow (24 C03-037).",
+      "purpose": "Office and field change orders with signature and price delta; verbal-emergency flow (24 C03-037).",
       "feature": "change_orders_basic",
       "perm": "change_order",
       "spec": "03"
@@ -388,7 +388,7 @@
       "nav": "Schedule",
       "label": "Capacity planner",
       "path": "/schedule/capacity",
-      "purpose": "Basic: sold vs available crew-hours by pool and week; full planner (24 C04-009).",
+      "purpose": "Sold vs available crew-hours by pool and week, with the full capacity planner (24 C04-009).",
       "feature": "scheduling",
       "perm": "visit.dispatch",
       "spec": "04"
@@ -1844,7 +1844,7 @@
       "roles": [
         "homeowner"
       ],
-      "spec": "11 AIM-AUD-01; 21 §5.7; 24 §4.6 #14"
+      "spec": "11 AIM-AUD-01; 21 §5.7; 24 R24-14"
     }
   ]
 }

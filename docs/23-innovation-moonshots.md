@@ -70,7 +70,7 @@
 ### 1.3 Innovation principles
 
 1. **Data exhaust first.** Prefer bets that turn data crews already create (photos, time, chemical logs, plant installs) into value, over bets that ask crews to do extra work.
-2. **Rails before rockets.** Ship the cheap data structures early: stable object IDs, geotags, consent records and device abstraction. These are the hard-to-retrofit parts.
+2. **Rails under rockets.** Build the cheap data structures into the core: stable object IDs, geotags, consent records and device abstraction. These are the hard-to-retrofit parts.
 3. **The Company is the hero.** Every network feature strengthens the Company's relationship with its Clients. Nothing lets Rootline or another tenant poach a Client.
 4. **Neutral and explainable.** Plant, pricing and vendor recommendations are never for sale. Every AI recommendation shows its evidence.
 5. **Earn autonomy.** Automation climbs a trust ladder (suggest, then draft and approve, then act and notify with an undo window, then act autonomously within budget, surfacing only exceptions) based on measured accuracy per tenant and per task, capped by each tool's risk tier ([17](17-ai-copilot-automation.md) sections 4.1.2 and 4.3).
@@ -367,10 +367,6 @@ Every bet is in v1. "Rootline TRL" is the readiness of the technology for our us
 **Dependencies.** R-01-R-04, R-12; Design Studio as-builts ([10](10-design-studio.md)); AI Gateway vision models ([17](17-ai-copilot-automation.md)); storage cost model ([20](20-architecture-security.md)).
 
 **In v1.** The rails (object IDs, plant instances, rich photo metadata); the Living Property Map (as-built), photo stations and crew status updates; the Twin Timeline with change detection, human confirmation, the Property Health Score and enhancement suggestions; and the 3D twin (Gaussian splats per season), sensor fusion, "what-if" simulation (growth of every plant over 10 years, shade evolution, water budget) and a digital twin API for commercial Clients' facility systems. The drone, robot and sensor layers fill in when the Company connects those sources (M-02, M-05, M-07).
-- Rails: object IDs, plant instances, rich photo metadata.
-- Living Property Map (as-built), photo stations, manual object status updates from the crew app.
-- Twin Timeline, change detection with human confirmation, Property Health Score, enhancement suggestions.
-- 3D twin (splats per season), sensor fusion, "what-if" simulation (growth of every plant over 10 years, shade evolution, water budget), digital twin API for commercial Clients' facility systems.
 
 **Headline demo.** *An account manager opens a 22-acre office park on a Monday morning. The twin shows three red pins. Two 'Emerald Green' arborvitae on the north berm went from `ok` to `declining` between the June and July station photos. The irrigation zone feeding them shows 40% less flow than its baseline. The mulch on the entrance beds has thinned. One click creates a repair ticket, a warranty-replacement task and an enhancement Proposal for 18 cubic yards of mulch. The property manager approves it from her phone before lunch.*
 

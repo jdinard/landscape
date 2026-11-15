@@ -188,7 +188,7 @@ RL.modal('crew-eod', (c) => {
     [T('Hours', 'Horas'), `${f1(S.reduce((a, v) => a + v.budgetHrs, 0) * 1.04)} h ${T('of', 'de')} ${f1(S.reduce((a, v) => a + v.budgetHrs, 0))} h ${T('budget', 'presupuesto')}`],
     [T('Safety', 'Seguridad'), T('Talk signed, DVIR done, 0 incidents', 'Charla firmada, DVIR hecho, 0 incidentes')],
     [T('Spot it', 'Spot it'), T('2 submitted', '2 enviados')],
-  ]) + h.note(T('Template at MVP; the AI draft arrives in V1 (05 §4.17.4).', 'Plantilla en MVP; el borrador con IA llega en V1 (05 §4.17.4).')), foot: h.btn(T('Submit report', 'Enviar informe'), { kind: 'primary', act: 'crew-eod-send' }) };
+  ]) + h.note(T('The AI draft fills the template from today\'s visits, time and notes; you review it before it goes (05 §4.17.4).', 'El borrador con IA llena la plantilla con las visitas, horas y notas de hoy; lo revisas antes de enviarlo (05 §4.17.4).')), foot: h.btn(T('Submit report', 'Enviar informe'), { kind: 'primary', act: 'crew-eod-send' }) };
 });
 RL.act('crew-eod-send', (el, ev, c) => { RL.closeModal(); RL.toast(c.tr('Report sent to operations.', 'Informe enviado a operaciones.')); return false; });
 
@@ -271,7 +271,7 @@ RL.screen('crew.visit', (c) => {
   out += h.card({ title: `${icon('mic')} ${T('Voice note', 'Nota de voz')}`, body: voice ? h.aiCard({ agent: 'A4 Field-Note', level: 'L2', credits: 1, title: T('Transcribed and translated (0:42)', 'Transcrita y traducida (0:42)'), body: `<div class="small"><b>ES</b> "La señora pide cotización para limpieza de otoño y más mantillo en las camas del frente."</div><div class="small"><b>EN</b> "The client asks for a fall cleanup quote and more mulch in the front beds."</div>`, why: T('The office gets a draft opportunity to review. Nothing is sent to the client by AI.', 'La oficina recibe un borrador para revisar. La IA no envía nada al cliente.') })
     : `<div class="flex between"><span class="tiny t3">${T('A4 Field-Note: 1 credit per minute, L2 (drafts go to the office for approval). Records offline, transcribes on sync.', 'A4 Field-Note: 1 crédito por minuto, L2 (los borradores van a la oficina para aprobar). Graba sin señal, transcribe al sincronizar.')}</span></div>${bb(T('Hold to talk', 'Mantén para hablar'), { act: 'crew-voice', val: v.id, icon: 'mic', ghost: true })}` });
   out += `<div class="cols cols-2" style="gap:8px">${bb(T('Spot it', 'Spot it'), { modal: 'crew-spotit', icon: 'camera', ghost: true })}${bb(T('Report issue', 'Reportar'), { act: 'crew-issue', icon: 'flag', ghost: true })}</div>`;
-  if (c.inLens('V1')) out += h.card({ title: `${T('Client signature', 'Firma del cliente')} ${h.tag('V1')}`, body: signed ? `${sig()}<div class="tiny t3">${T('Signed on this phone 9:36 am, attached to the visit report.', 'Firmado en este teléfono 9:36 am, adjunto al informe.')}</div>` : `<div style="border:1px dashed var(--border-strong);border-radius:10px;height:56px;display:grid;place-items:center" class="tiny t3">${T('Hand the phone to the client to sign', 'Pasa el teléfono al cliente para firmar')}</div>${h.btn(T('Capture signature', 'Capturar firma'), { sm: true, ui: 'sig.' + v.id, val: 'true', icon: 'pen' })}` });
+  out += h.card({ title: T('Client signature', 'Firma del cliente'), body: signed ? `${sig()}<div class="tiny t3">${T('Signed on this phone 9:36 am, attached to the visit report.', 'Firmado en este teléfono 9:36 am, adjunto al informe.')}</div>` : `<div style="border:1px dashed var(--border-strong);border-radius:10px;height:56px;display:grid;place-items:center" class="tiny t3">${T('Hand the phone to the client to sign', 'Pasa el teléfono al cliente para firmar')}</div>${h.btn(T('Capture signature', 'Capturar firma'), { sm: true, ui: 'sig.' + v.id, val: 'true', icon: 'pen' })}` });
   if (K.lead) out += h.card({ title: T('Crew time on this visit', 'Tiempo de cuadrilla en la visita'), body: K.roster.map((n, i) => meta(esc(n) + (n === K.crew.lead ? ' (' + T('lead', 'líder') + ')' : ''), onsite ? `0:${onsite - i * 2}` : '-')).join('') });
   out += sticky(v.status === 'Done' ? bb(T('Visit complete', 'Visita completada'), { ghost: true, icon: 'check', go: 'crew.today' }) : bb(T('Complete visit', 'Completar visita'), { act: 'crew-complete', val: v.id, icon: 'check' }));
   out += '<!--side-->' + side(`${icon('eye')} What the office sees`, h.timeline([
@@ -359,7 +359,7 @@ RL.screen('crew.chem', (c, a) => {
     : bb(T('Hold to save application', 'Mantén para guardar'), { act: 'chem-save', val: v.id, icon: 'check' }));
   out += '<!--side-->' + side(`${icon('eye')} What the office sees`, h.kv([
     ['Record', `CHM-${String(hs(v.id) % 9000 + 1000)} · ${saved ? 'locked' : canSave ? 'in progress' : 'flagged draft'}`], ['Applicator', esc(K.me) + (sup ? ` under ${esc(sup)}` : '')], ['License', lic ? esc(lic) : '<b style="color:var(--danger-text)">missing</b>'], ['Product', `${esc(P.en)} · ${total} ${P.unit}`], ['Wind', `${wind} mph (label ${P.labelMax}, Company ${P.coMax})`],
-  ]) + h.note('Records are immutable after signature; corrections create an amendment. Default retention 7 years. State reports in V1 (05 §4.7).'))
+  ]) + h.note('Records are immutable after signature; corrections create an amendment. Default retention 7 years. State-format reports export from the office (05 §4.7).'))
     + side('Try the gates', `<div class="small b">Simulate wind</div><div class="flex gap4">${['6', '12', '17'].map(w => h.btn(w + ' mph', { sm: true, ui: 'chem.wind', val: w, kind: String(wind) === w ? 'primary' : '' })).join('')}</div>${h.toggle('License on file for ' + esc(first(K.me)), 'chem.lic', !!licOf(D, K.me))}${h.note('From data: ' + esc(K.me) + (licOf(D, K.me) ? ' holds ' + esc(licOf(D, K.me)) : ' has no applicator license on file') + '.')}`);
   return out;
 });
@@ -412,7 +412,7 @@ RL.screen('crew.time', (c) => {
     out += h.card({ title: T('Today', 'Hoy'), body: segList });
     out += h.card({ title: T('My week', 'Mi semana'), body: meta(T('Hours this week', 'Horas esta semana'), `${f1(ts.hrs)} h`) + meta(T('Overtime', 'Horas extra'), `${f1(ts.ot)} h`) + `<div class="tiny t3">${T('You see only your own time. Your crew lead punches the crew.', 'Solo ves tu propio tiempo. Tu líder marca a la cuadrilla.')}</div>` });
     out += sticky(st === 'OUT' ? bb(T('Clock in', 'Marcar entrada'), { act: 'time-me', val: 'JOB', icon: 'play' }) : bb(T('Clock out', 'Marcar salida'), { modal: 'time-attest', icon: 'clock' }));
-    out += '<!--side-->' + side(`${icon('eye')} What the office sees`, h.kv([['Status', `${esc(K.me)} · ${TST[st][0]}`], ['Pay rate', h.mask(c, 'pay_rate', 'Visible to self') ], ['Edits', 'Only the crew lead or office can edit, always with a reason']]) + h.note('Technician: own time (time_entry W/o + R/o). Daily attestation at clock-out (05 §4.5).'));
+    out += '<!--side-->' + side(`${icon('eye')} What the office sees`, h.kv([['Status', `${esc(K.me)} · ${TST[st][0]}`], ['Pay rate', h.mask(c, 'pay_rate', 'Visible to self') ], ['Edits', 'Only the crew lead or office can edit, always with a reason']]) + h.note('Technician: own time (time_entry.own W/o + R/o). Daily attestation at clock-out (05 §4.5).'));
     return out;
   }
   const sel = K.roster.map((n, i) => RL.ui['tsel.' + i] !== 'false');
@@ -424,7 +424,7 @@ RL.screen('crew.time', (c) => {
   out += h.card({ title: T('Crew segments today', 'Segmentos de hoy'), body: segList });
   out += h.card({ title: T('Approve crew time', 'Aprobar tiempo de la cuadrilla'), body: `<div class="small">${T('Yesterday: 2 people, 18.5 h. 1 flag: missed meal punch (Javier).', 'Ayer: 2 personas, 18.5 h. 1 aviso: falta marca de comida (Javier).')}</div>${h.btn(RL.ui['tappr'] ? T('Approved', 'Aprobado') : T('Approve day', 'Aprobar día'), { sm: true, act: 'time-approve', kind: RL.ui['tappr'] ? '' : 'primary', disabled: !!RL.ui['tappr'] })}` });
   out += sticky(bb(T('Clock out selected', 'Marcar salida a seleccionados'), { act: 'time-switch', val: 'OUT', icon: 'clock' }));
-  out += '<!--side-->' + side(`${icon('eye')} What the office sees`, h.kv([['Punch mode', 'Crew-level punch from the lead device'], ['Edits', Object.keys(RL.ui).filter(k => k.startsWith('tedit.')).length + ' today, each with a reason, flagged for ' + esc(K.ops)], ['Approval', 'Lead approves first level; office can still edit (05 §4.17.1)']]) + h.note('Crew lead: time_entry RW/c within limits, timesheet.approve first level. Offline punches carry device timestamps.'));
+  out += '<!--side-->' + side(`${icon('eye')} What the office sees`, h.kv([['Punch mode', 'Crew-level punch from the lead device'], ['Edits', Object.keys(RL.ui).filter(k => k.startsWith('tedit.')).length + ' today, each with a reason, flagged for ' + esc(K.ops)], ['Approval', 'Lead approves first level; office can still edit (05 §4.17.1)']]) + h.note('Crew lead: time_entry.others RW/c within limits, timesheet.approve first level. Offline punches carry device timestamps.'));
   return out;
 });
 RL.act('time-switch', (el, ev, c) => { const K = crewCtx(c); let n = 0; K.roster.forEach((x, i) => { if (RL.ui['tsel.' + i] !== 'false') { RL.ui['tst.' + i] = el.dataset.val; n++; } }); RL.toast(c.tr(`${n} switched to ${TST[el.dataset.val][0]}`, `${n} cambiados a ${TST[el.dataset.val][1]}`)); });
@@ -446,7 +446,7 @@ RL.act('time-out', (el, ev, c) => { RL.ui['time.me'] = 'OUT'; RL.closeModal(); R
 // CREW APP: Messages
 // =====================================================================
 RL.screen('crew.messages', (c) => {
-  const K = crewCtx(c), T = c.tr, tx = isOn('msg.tx', true) && c.inLens('V1');
+  const K = crewCtx(c), T = c.tr, tx = isOn('msg.tx', true);
   const ops = K.ops, off = K.office;
   const threads = [
     { id: 'office', name: T('Office', 'Oficina') + ' · ' + first(ops), last: T('Stop 6 asked for a text 20 min before.', 'La parada 6 pidió un mensaje 20 min antes.'), n: 1 },
@@ -470,10 +470,10 @@ RL.screen('crew.messages', (c) => {
     all: [msg(first(off), false, 'Payday is Friday. Safety talk Monday: heat illness.', 'El pago es el viernes. Charla de seguridad el lunes: golpe de calor.', 'en', T('Yesterday', 'Ayer'))],
   };
   let out = `<div class="flex gap4">${threads.map(t => `<button type="button" class="btn sm${t.id === cur ? ' primary' : ''}" data-ui="msg.th" data-val="${t.id}">${esc(t.name)}${t.n ? ` <span class="pill warn" style="padding:0 6px">${t.n}</span>` : ''}</button>`).join('')}</div>`;
-  if (c.inLens('V1')) out += `<div class="flex between">${h.toggle(T('Auto-translate', 'Traducir automáticamente'), 'msg.tx', true)}${h.tag('V1')}</div>`;
+  out += `<div class="flex between">${h.toggle(T('Auto-translate', 'Traducir automáticamente'), 'msg.tx', true)}</div>`;
   out += `<div style="display:grid;gap:10px;padding:6px 0">${(bodies[cur] || bodies.office).join('')}</div>`;
   out += sticky(`<div class="flex nw">${h.btn(icon('camera'), { act: 'msg-photo', title: 'Photo' })}<input class="inp" placeholder="${esc(T('Message', 'Mensaje'))}" aria-label="Message" data-ui-input="msg.draft" value="${esc(U('msg.draft', ''))}">${h.btn(icon('mic'), { act: 'msg-voice', title: 'Voice' })}${h.btn(icon('send'), { kind: 'primary', act: 'msg-send', title: 'Send' })}</div>`);
-  out += '<!--side-->' + side(`${icon('eye')} What the office sees`, `<div class="small">The office reads crew messages in English with the Spanish original one tap away. Glossary: "orillar" means edge, "desbrozadora" means string trimmer (05 §4.11.2).</div>` + h.note('Crew-office threads and broadcasts at MVP; auto-translate is V1. Client numbers never appear in crew chat.'));
+  out += '<!--side-->' + side(`${icon('eye')} What the office sees`, `<div class="small">The office reads crew messages in English with the Spanish original one tap away. Glossary: "orillar" means edge, "desbrozadora" means string trimmer (05 §4.11.2).</div>` + h.note('Crew-office threads and broadcasts, with auto-translate on by default. Client numbers never appear in crew chat.'));
   return out;
 });
 RL.act('msg-send', (el, ev, c) => { RL.ui['msg.draft'] = ''; RL.toast(c.tr('Sent. Delivers when you have signal.', 'Enviado. Se entrega cuando haya señal.')); });
@@ -493,9 +493,9 @@ RL.screen('crew.more', (c) => {
     { icon: 'clock', title: K.lead ? T('Timesheets and approvals', 'Hojas de tiempo y aprobaciones') : T('My timesheet', 'Mi hoja de tiempo'), sub: K.lead ? T('1 day waiting for you', '1 día te espera') : T('This week 12.0 h', 'Esta semana 12.0 h'), go: 'crew.time', right: K.lead ? h.pill('1', 'warn') : icon('arrow-r') },
     c.access('crew.equipment').ok ? { icon: 'truck', title: T('Equipment checkout and inspection', 'Equipo e inspección'), sub: K.crew ? esc(K.crew.truck) + ' · ' + T('pre-trip inspection', 'inspección previa') : '', go: 'crew.equipment', right: icon('arrow-r') } : null,
     c.access('crew.snow').ok ? { icon: 'snow', title: T('Storm visit log', 'Registro de tormenta'), sub: c.winter ? T('Storm route active', 'Ruta de tormenta activa') : T('No storm active', 'Sin tormenta activa'), go: 'crew.snow', right: icon('arrow-r') } : null,
-    { icon: 'shield', tone: 'warn', title: T('Safety: talks, SDS, incident report', 'Seguridad: charlas, SDS, incidentes'), sub: c.winter ? T('This week: cold stress and slips on ice', 'Esta semana: frío y resbalones en hielo') : T('This week: heat illness basics', 'Esta semana: golpe de calor'), act: 'more-safety', right: h.tag('V1') },
+    { icon: 'shield', tone: 'warn', title: T('Safety: talks, SDS, incident report', 'Seguridad: charlas, SDS, incidentes'), sub: c.winter ? T('This week: cold stress and slips on ice', 'Esta semana: frío y resbalones en hielo') : T('This week: heat illness basics', 'Esta semana: golpe de calor'), act: 'more-safety', right: icon('arrow-r') },
     { icon: 'key', title: T('Training and certifications', 'Capacitación y certificaciones'), sub: certs ? esc(certs) : T('No applicator license on file', 'Sin licencia de aplicador'), act: 'more-cert', right: certs ? h.pill(T('Valid', 'Vigente'), 'ok') : h.pill(T('Missing', 'Falta'), 'warn') },
-    { icon: 'leaf', title: T('Plant ID and plant guide', 'Identificar plantas y guía'), sub: T('Photo to plant suggestion, care notes', 'Foto a sugerencia de planta, cuidados'), act: 'more-plant', right: h.tag('V1') },
+    { icon: 'leaf', title: T('Plant ID and plant guide', 'Identificar plantas y guía'), sub: T('Photo to plant suggestion, care notes', 'Foto a sugerencia de planta, cuidados'), act: 'more-plant', right: icon('arrow-r') },
   ].filter(Boolean);
   out += h.card({ flush: true, body: h.list(items) });
   out += h.card({ title: T('Sync and settings', 'Sincronización y ajustes'), body: meta(T('Pending changes', 'Cambios pendientes'), pend ? h.pill(pend + ' ' + T('to send', 'por enviar'), 'warn') : h.pill(T('All sent 7:41 am', 'Todo enviado 7:41 am'), 'ok'))
@@ -503,12 +503,12 @@ RL.screen('crew.more', (c) => {
     + `<div class="flex between small"><span class="t3">${T('Language', 'Idioma')}</span><span class="flex gap4">${h.btn('Español', { sm: true, set: 'lang=es', kind: c.es ? 'primary' : '' })}${h.btn('English', { sm: true, set: 'lang=en', kind: c.es ? '' : 'primary' })}</span></div>`
     + h.btn(T('Sync now', 'Sincronizar ahora'), { sm: true, act: 'more-sync', icon: 'refresh' }) });
   if (K.lead) out += h.card({ title: T('End of day', 'Fin del día'), body: `<div class="small t2">${T('Submit after every stop is done or skipped and crew time is approved.', 'Envía cuando todas las paradas estén hechas u omitidas y el tiempo aprobado.')}</div>${h.btn(T('Open end of day report', 'Abrir informe de fin de día'), { sm: true, modal: 'crew-eod', icon: 'clipboard' })}` });
-  out += '<!--side-->' + side('Device and session', h.kv([['Device', 'Personal phone, PIN unlock'], ['Offline limit', '7 days; warns from day 5'], ['Signed in', esc(K.me)]]) + h.note('More holds My week, timesheets, equipment, safety, plant ID and sync (21 §5.3).'));
+  out += '<!--side-->' + side('Device and session', h.kv([['Device', 'Personal phone, PIN unlock'], ['Offline limit', '14 days (Company sets 7 to 30); warns 2 days before'], ['Signed in', esc(K.me)]]) + h.note('More holds My week, timesheets, equipment, safety, plant ID and sync (21 §5.3).'));
   return out;
 });
 RL.act('more-safety', (el, ev, c) => { RL.toast(c.tr('Safety hub: talk library, SDS sheets (cached offline) and incident report.', 'Centro de seguridad: charlas, hojas SDS (sin conexión) y reporte de incidentes.')); return false; });
 RL.act('more-cert', (el, ev, c) => { RL.toast(c.tr('Upload a photo of your license; the office verifies it.', 'Sube una foto de tu licencia; la oficina la verifica.')); return false; });
-RL.act('more-plant', (el, ev, c) => { RL.toast(c.tr('Plant ID uses the curated regional palette (V1).', 'Identificar plantas usa la paleta regional (V1).')); return false; });
+RL.act('more-plant', (el, ev, c) => { RL.toast(c.tr('Plant ID uses the curated regional palette.', 'Identificar plantas usa la paleta regional.')); return false; });
 RL.act('more-sync', (el, ev, c) => { RL.ui['crew.offline'] = 'false'; RL.toast(c.tr('Synced. Nothing waiting.', 'Sincronizado. Nada pendiente.')); });
 
 const DVIR = [['Tires and wheels', 'Llantas y ruedas'], ['Lights and signals', 'Luces y direccionales'], ['Brakes', 'Frenos'], ['Hitch, chains and pins', 'Enganche, cadenas y pasadores'], ['Mirrors and glass', 'Espejos y vidrios'], ['Fluids and leaks', 'Líquidos y fugas'], ['Mower blades and guards', 'Cuchillas y protectores']];
@@ -723,7 +723,7 @@ RL.screen('crew.kiosk', (c) => {
       ${h.card({ title: `${icon('shield')} ${T(talk[0], talk[1])}`, body: `<div class="small t2">${W ? T('Walk like a penguin on ice, three points of contact on trucks, layers you can remove.', 'Camina como pingüino en el hielo, tres puntos de apoyo en camiones, ropa en capas.') : T('Drink water every 15 minutes, rest in the shade, watch new crew members (first 2 weeks).', 'Toma agua cada 15 minutos, descansa en la sombra, cuida a los nuevos (primeras 2 semanas).')}</div>${ack ? h.pill(T('Acknowledged', 'Confirmado'), 'ok', 'check') : h.btn(T('I attended this talk', 'Asistí a esta charla'), { kind: 'primary', ui: 'kiosk.ack.' + P.name, val: 'true' })}` })}
       ${h.btn(T('Done', 'Listo'), { act: 'kiosk-done' })}</div>`;
   }
-  return `<div class="flex between"><div><h1 style="font-family:var(--font-display);font-size:1.5rem">${esc(c.t.name)} · ${T(esc(c.t.branches[0]) + ' yard', 'Taller ' + esc(c.t.branches[0]))}</h1><div class="small t2">${c.today.label} · ${W ? '4:52 am' : '6:44 am'} · ${T('Shop kiosk', 'Kiosco del taller')} ${h.tag('V1')}</div></div><span class="flex">${h.btn('EN', { sm: true, set: 'lang=en', kind: c.es ? '' : 'primary' })}${h.btn('ES', { sm: true, set: 'lang=es', kind: c.es ? 'primary' : '' })}<button type="button" class="btn danger" data-act="kiosk-sos">${icon('warn')}${T('Emergency', 'Emergencia')}</button></span></div>`
+  return `<div class="flex between"><div><h1 style="font-family:var(--font-display);font-size:1.5rem">${esc(c.t.name)} · ${T(esc(c.t.branches[0]) + ' yard', 'Taller ' + esc(c.t.branches[0]))}</h1><div class="small t2">${c.today.label} · ${W ? '4:52 am' : '6:44 am'} · ${T('Shop kiosk', 'Kiosco del taller')}</div></div><span class="flex">${h.btn('EN', { sm: true, set: 'lang=en', kind: c.es ? '' : 'primary' })}${h.btn('ES', { sm: true, set: 'lang=es', kind: c.es ? 'primary' : '' })}<button type="button" class="btn danger" data-act="kiosk-sos">${icon('warn')}${T('Emergency', 'Emergencia')}</button></span></div>`
     + `<div class="cols cols-21"><div class="stack12"><b>${T('Who are you?', '¿Quién eres?')}</b><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px">${field.map(tile).join('')}</div>`
     + h.card({ title: `${icon('mega')} ${T('Announcements', 'Avisos')}`, body: `<div class="small">${W ? T('Storm shift pay applies tonight. Salt yard is open 24 h.', 'Pago de turno de tormenta aplica esta noche. El patio de sal abre 24 h.') : T('Payday Friday. Truck 15 is in the shop; Maintenance 2 takes Truck 21.', 'Pago el viernes. El camión 15 está en el taller; Mantenimiento 2 usa el camión 21.')}</div>` })
     + `</div><div class="stack12">${right}</div></div>`
@@ -843,7 +843,7 @@ RL.screen('sub.invoices', (c) => {
   else out += h.card({ body: `<div class="small t2">${T('No completed orders waiting for a bill.', 'No hay órdenes completas por facturar.')}</div>` });
   out += h.card({ title: T('Your bills', 'Tus facturas'), flush: true, body: h.list(bills.map(o => ({ icon: o.status === 'Paid' ? 'check' : 'receipt', tone: o.status === 'Paid' ? 'ok' : 'info', title: `B-${o.id.slice(3)} · ${money(o.amount)}`, sub: `${o.po} · ${o.status === 'Paid' ? T(`Paid ${o.date} by ACH`, `Pagada ${o.date} por ACH`) : T('Approved, scheduled for payment in 15 days', 'Aprobada, pago programado en 15 días')}`, right: soPill(c, o.status) }))) });
   out += h.card({ title: T('Payout account', 'Cuenta de pago'), body: meta(T('Checking', 'Cuenta'), '•••• 6621') + `<div class="tiny t3">${T('Changing bank details needs a passkey and the Company confirms by phone.', 'Cambiar datos bancarios requiere passkey y la empresa confirma por teléfono.')}</div>` });
-  out += '<!--side-->' + side(`${icon('eye')} What ${esc(c.t.name)} sees`, `<div class="small">Bills land in accounts payable, matched to the PO and the work order (2-way match). Payment status flows back here.</div>` + h.note('Sub portal with all orders, COI and W-9 uploads and banking is V1; single-order links work at MVP (02 §5.12).'));
+  out += '<!--side-->' + side(`${icon('eye')} What ${esc(c.t.name)} sees`, `<div class="small">Bills land in accounts payable, matched to the PO and the work order (2-way match). Payment status flows back here.</div>` + h.note('The sub portal holds all orders, COI and W-9 uploads and banking; a single-order link works without signing in (02 §5.12).'));
   return out;
 });
 RL.act('sub-pdf', (el, ev, c) => { RL.toast(c.tr('PDF attached (mock).', 'PDF adjunto (simulado).')); return false; });
@@ -939,7 +939,7 @@ function pside(c, note) {
     'portal.account': [['Consent', 'Per contact, per channel, with source and time'], ['Contact changes', 'Primary only, with step-up'], ['Contact scope', scope]],
     'portal.approvals': com ? [['Policy', K.isHoa ? 'Vote: 2 yes of 5 over $5,000' : 'Sequential: primary then regional VP over $5,000'], ['Ballot evidence', 'Identity, method, time, version hash'], ['Contact scope', scope]] : [],
     'portal.documents': com ? [['COI', 'Valid to Mar 31, 2028; renewal tracked'], ['Shared with', esc(K.name)], ['Contact scope', scope]] : [],
-    'portal.reports': com ? [['Snow events', c.winter ? '7 this season' : '11 this season'], ['Proof', c.has('snow_ice') ? 'Snow Lite export now; sealed packets in V1' : 'Snow Lite service-log export'], ['Contact scope', scope]] : [],
+    'portal.reports': com ? [['Snow events', c.winter ? '7 this season' : '11 this season'], ['Proof', c.has('snow_ice') ? 'Sealed proof packets per site (Snow & Ice)' : 'Snow Lite service-log export'], ['Contact scope', scope]] : [],
   }[id] || [['Contact scope', scope]];
   return '<!--side-->' + h.card({ title: `${icon('eye')} What ${esc(c.t.name)} sees`, body: h.kv(P) + (note ? h.note(note) : '') });
 }
@@ -1188,11 +1188,11 @@ RL.screen('portal.requests', (c) => {
     + h.field(T('What do you need?', '¿Qué necesitas?'), h.select([T('Something is broken', 'Algo está roto'), T('Irrigation', 'Riego'), T('Plants or trees', 'Plantas o árboles'), T('New work or a quote', 'Trabajo nuevo o cotización'), T('Other', 'Otro')], ''))
     + h.field(T('Describe it', 'Descríbelo'), h.textarea(U('rq.desc', ''), { ui: 'rq.desc', ph: T('A sprinkler head is spraying the sidewalk by the east door.', 'Un aspersor moja la acera junto a la puerta este.'), label: 'Description' }))
     + `<div class="flex">${Array.from({ length: Math.min(nPh, 2) }, () => `<span style="width:84px">${h.photo('lawn')}</span>`).join('')}${h.btn(T('Add photo', 'Añadir foto'), { sm: true, act: 'rq-photo', icon: 'camera' })}</div>`
-    + (com && c.inLens('V1') && sc !== 'property_contact' ? h.field(`${T('PO number', 'Número de PO')} ${h.tag('V1')}`, h.input('', { ph: K.po(9) }), T(`Format ${abbr(K.name)}-000000; the invoice carries it.`, `Formato ${abbr(K.name)}-000000; la factura lo lleva.`)) : '')
+    + (com && sc !== 'property_contact' ? h.field(T('PO number', 'Número de PO'), h.input('', { ph: K.po(9) }), T(`Format ${abbr(K.name)}-000000; the invoice carries it.`, `Formato ${abbr(K.name)}-000000; la factura lo lleva.`)) : '')
     + h.btn(T('Send request', 'Enviar solicitud'), { kind: 'primary', act: 'rq-send', icon: 'send' }) });
   const track = h.card({ title: T('Your requests', 'Tus solicitudes'), flush: true, body: `<div class="li">${list.map(r => `<div class="li-i" style="align-items:start"><span class="ico ${stp[r.st][1]}">${icon(r.st === 'done' ? 'check' : r.st === 'quote' ? 'pen' : 'clock')}</span><div class="grow"><div class="tt">${esc(T(r.t[0], r.t[1]))}</div><div class="ss">${T('Sent', 'Enviada')} ${r.when} · ${esc(r.end)}${r.po ? ' · PO ' + r.po : ''}</div>${r.photo ? `<div class="cols cols-2" style="gap:6px;max-width:300px;margin-top:6px">${h.photo('before', { badge: T('Reported', 'Reportado') })}${h.photo('after', { badge: T('Fixed', 'Arreglado') })}</div>` : ''}</div>${h.pill(stp[r.st][0], stp[r.st][1])}</div>`).join('')}</div>` });
   return h.page({ title: T('Requests', 'Solicitudes'), sub: T('Send a photo and we take it from there.', 'Manda una foto y nosotros nos encargamos.') }) + pcols('12', [form, track])
-    + pside(c, sc === 'property_contact' ? 'Property contact: requests for the assigned property; quotes go to the account holder with no amount shown here.' : 'Requests create a service request or an opportunity for the office; commercial work orders carry a PO (V1).');
+    + pside(c, sc === 'property_contact' ? 'Property contact: requests for the assigned property; quotes go to the account holder with no amount shown here.' : 'Requests create a service request or an opportunity for the office; commercial work orders carry a PO.');
 });
 RL.act('rq-photo', () => { RL.ui['rq.ph'] = String(Number(RL.ui['rq.ph'] || 0) + 1); });
 RL.act('rq-send', (el, ev, c) => { RL.ui['rq.sent'] = 'true'; RL.toast(c.tr('Request sent with your photos.', 'Solicitud enviada con tus fotos.')); });
@@ -1301,7 +1301,7 @@ RL.screen('portal.account', (c) => {
 RL.act('acc-out', (el, ev, c) => { RL.toast(c.tr('Signed out of all other sessions.', 'Sesiones cerradas en otros dispositivos.')); return false; });
 
 // =====================================================================
-// COMMERCIAL WORKSPACE (V1; 06 §4.16; 21 §18.17)
+// COMMERCIAL WORKSPACE (06 §4.16; 21 §18.17)
 // =====================================================================
 RL.screen('portal.portfolio', (c) => {
   const T = c.tr, K = comCtx(c), sc = c.scope, money_ = sc !== 'viewer', ops = sc !== 'billing';
@@ -1398,6 +1398,6 @@ RL.screen('portal.reports', (c) => {
     + h.card({ title: `${icon('snow')} ${T('Snow event log', 'Registro de eventos de nieve')}`, sub: `${ev[1]} · ${ev[2]} in${ev[3] ? ' · ' + ev[3] : ''} · ${T('station of record: airport', 'estación oficial: aeropuerto')}`, actions: `<span class="flex gap4">${events.map(e => h.btn(e[1].replace(', 2027', '').replace(', 2026', ''), { sm: true, ui: 'rp.ev', val: e[0], kind: e[0] === ev[0] ? 'primary' : '' })).join('')}</span>`, flush: true, body: ptable([{ k: 'prop', label: T('Property', 'Propiedad') }, { k: 'arr', label: T('Arrived', 'Llegada') }, { k: 'dep', label: T('Departed', 'Salida') }, { k: 'push', label: T('Pushes', 'Despejes'), n: true }, { k: 'salt', label: T('De-icer', 'Deshielo') }, { k: 'walks', label: T('Walks', 'Aceras') }, { k: 'photos', label: T('Photos', 'Fotos'), n: true }], log, { hl: r => r.prop === prop.name }) })
     + pcols('2', [h.card({ title: `${T('Photos', 'Fotos')} · ${esc(prop.name)}`, body: `<div class="cols cols-2" style="gap:6px">${h.photo('snow', { badge: `${sel.arr.toUpperCase()} · 39.97, -83.12` })}${h.photo('snow', { badge: `${sel.dep.toUpperCase()} · 39.97, -83.12` })}</div><div class="tiny t3">${T('Device and server timestamps with GPS on every photo.', 'Hora del equipo y del servidor con GPS en cada foto.')}</div><div class="flex">${h.btn(T('Evidence package (PDF)', 'Paquete de evidencia (PDF)'), { sm: true, act: 'pt-dl', icon: 'download' })}${h.btn('CSV', { sm: true, act: 'pt-dl', icon: 'download' })}</div>${c.has('snow_ice') ? '' : `<div class="tiny t3">${T('Service-log export, not a sealed proof packet (Snow Lite).', 'Exportación del registro, no un paquete sellado (Snow Lite).')}</div>`}` }),
       h.card({ title: T('Service frequency', 'Frecuencia de servicio'), sub: W ? T('January to date', 'Enero a la fecha') : T('Mar 1 to May 11', '1 mar a 11 may'), body: h.bars(freq.map(f => ({ label: esc(f.name), value: f.done, max: f.sched, tone: f.done < f.sched ? 'warn' : '', right: `${f.done}/${f.sched}` }))) + `<div class="tiny t3">${T('Visits completed vs the contract schedule.', 'Visitas hechas vs el calendario del contrato.')}</div>` })])
-    + pside(c, `Snow logs with timestamps and photos for slip-and-fall defense (06 §4.16.7)${c.has('snow_ice') ? '; sealed proof packets with the full Snow and Ice module (V1)' : ''}.`);
+    + pside(c, `Snow logs with timestamps and photos for slip-and-fall defense (06 §4.16.7)${c.has('snow_ice') ? '; sealed proof packets with the full Snow and Ice module' : ''}.`);
 });
 })();
