@@ -14,7 +14,7 @@
 - **Differentiators:** migration as a product (live in days, not ~90-day implementations), season-aware health scores and dunning (Winter Mode offers, a snow carve-out), a tenant-visible support access log, and per-tenant AI margin tracking with kill switches.
 - **Cross-links:** RBAC and break-glass rules in [02](02-personas-roles-permissions.md) section 5.13; access enforcement per lifecycle state in [20](20-architecture-security.md) section 4.4.7; prices, dunning timings and catalog codes in [22](22-business-model-pricing-gtm.md); console IA and the Tenant 360 wireframe in [21](21-ux-design-system-sitemaps.md) sections 5.5 and 18.13.
 
-**Related docs:** [Personas and RBAC](02-personas-roles-permissions.md) - [Payments (bring-your-own Stripe)](08-payments-stripe.md) - [Ledger and integrations](09-accounting-ledger-integrations.md) - [Plant Knowledge Base](12-plant-knowledge-base.md) - [Marketing and comms](16-marketing-growth-communications.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Architecture and security](20-architecture-security.md) - [UX and sitemaps](21-ux-design-system-sitemaps.md) - [Business model and pricing](22-business-model-pricing-gtm.md) - [Product scope](24-roadmap-feature-catalog.md)
+**Related docs:** [Personas and RBAC](02-personas-roles-permissions.md) - [Payments (bring-your-own Stripe)](08-payments-stripe.md) - [Ledger and integrations](09-accounting-ledger-integrations.md) - [Plant Knowledge Base](12-plant-knowledge-base.md) - [Marketing and comms](16-marketing-growth-communications.md) - [AI copilot and automation](17-ai-copilot-automation.md) - [Reporting and analytics](18-reporting-analytics.md) - [Architecture and security](20-architecture-security.md) - [UX and sitemaps](21-ux-design-system-sitemaps.md) - [Business model and pricing](22-business-model-pricing-gtm.md) - [Product scope](24-product-scope-decisions-catalog.md)
 
 ---
 
@@ -169,59 +169,59 @@ Custom staff roles can be composed from granular platform permissions (for examp
 ---
 ## 4. Feature specification
 
-Feature IDs use the prefix `PA-` (Platform Admin). Every feature carries a priority tag: [MVP], [V1], [V2] or [V3].
+Feature IDs use the prefix `PA-` (Platform Admin). Every feature carries a priority tag:,, or.
 
 ### 4.1 Console foundations
 
-**PA-001 Console shell and navigation [MVP]**
+**PA-001 Console shell and navigation
 - Separate web app at `console.rootline.app` (never on a tenant custom domain), built on the shared Next.js/Radix design system ([21](21-ux-design-system-sitemaps.md)) with a denser "operator" theme.
 - Left nav: Home, Tenants, Migrations, Billing, Entitlements and Flags, Support, Plant KB, Content, AI Ops, Comms, Payments Oversight, Risk and Trust, Compliance, Analytics, System Health, Partners, Staff and Audit, Settings.
 - Global command palette (Cmd/Ctrl-K) searching tenants, staff, flags, prompts, plants, articles and runbooks; actions are invokable from the palette ("extend trial for Greenway Lawn by 7 days").
 - Persistent "context bar": when a tenant is selected, its name, plan, lifecycle state, health band, region and current Support Access Grant status (none / read-only until 3:40 pm / read-write) are pinned at the top.
 - Mobile-responsive for the Home, Incidents, Approvals and Tenant 360 summary screens (the founder approves things from a truck or a trade show floor).
 
-**PA-002 Staff authentication [MVP]**
+**PA-002 Staff authentication
 - SSO only (Google Workspace at MVP; Okta/Entra in V1) with SCIM deprovisioning in V1. No password logins for staff.
 - Phishing-resistant MFA required: WebAuthn security keys or platform passkeys; SMS OTP is not allowed for staff.
 - Session lifetime 8 hours, idle timeout 30 minutes; step-up re-authentication (WebAuthn tap) required for sensitive actions: starting impersonation, break-glass, changing prices, toggling global kill switches, exporting data, approving DSAR deletions.
-- Network controls: console reachable only through the corporate identity-aware proxy / ZTNA (V1); MVP uses IP allowlisting plus device posture check via SSO provider.
+- Network controls: console reachable only through the corporate identity-aware proxy / ZTNA; MVP uses IP allowlisting plus device posture check via SSO provider.
 - Staff accounts are distinct from any tenant account; a staff member who also owns a test Company uses a separate login.
 
-**PA-003 Reason codes and ticket linkage [MVP]**
+**PA-003 Reason codes and ticket linkage
 - Every mutating action presents a reason-code picker. Seed list: `customer_request`, `bug_remediation`, `billing_adjustment`, `migration`, `fraud_investigation`, `legal_request`, `security_incident`, `compliance_obligation`, `internal_testing`, `goodwill`.
 - Reason codes in the `legal_request`, `security_incident` and `fraud_investigation` family require free-text justification (min 20 characters) and are flagged for weekly review.
 - Optional (required for `customer_request`) ticket reference that deep-links to the helpdesk.
 
-**PA-004 Two-person approval ("four-eyes") [MVP]**
+**PA-004 Two-person approval ("four-eyes")
 - Configurable per action. Default list requiring a second approver: break-glass data access, tenant hard delete, legal hold release, global AI kill switch (except during a declared SEV1, where the incident commander alone may toggle and approval is retroactive), plan price changes, AI credit rate-card changes, bulk credit grants over $1,000 equivalent, refunds of Rootline subscription charges over $1,000 (per [02](02-personas-roles-permissions.md) section 10.4), payments compliance rule-set publication (PA-115), staff role elevation to `platform_owner`, retention-policy changes, breach notifications to regulators (PA-136).
 - Approval request shows the diff, reason, blast radius (number of tenants/users affected) and expires after 4 hours.
 - The requester cannot approve their own request; `platform_owner` can approve anything but cannot self-approve. During the solo-founder phase, a designated **trusted second approver** (e.g., co-founder, fractional CTO or outside counsel with a scoped console account) is configured; see section 11 for the bus-factor plan.
 
-**PA-005 Platform audit log [MVP]**
+**PA-005 Platform audit log
 - Append-only table plus streaming copy to WORM object storage (S3 Object Lock, compliance mode) and the SIEM.
 - Fields: `id`, `occurred_at`, `actor_type` (staff, system, api_token, tenant_user), `actor_id`, `on_behalf_of_user_id` (during impersonation), `tenant_id` (nullable), `action` (dotted verb, e.g., `tenant.lifecycle.suspend`), `target_type`, `target_id`, `reason_code`, `reason_text`, `ticket_ref`, `before` and `after` JSON diffs (with secrets and PII redacted per field policy), `ip`, `user_agent`, `session_id`, `approval_id`, `prev_hash`, `hash`.
 - Hash chain: each record stores `SHA-256(prev_hash || canonical_json(record))`; a daily anchor hash is written to WORM storage and to the SOC 2 evidence store. A nightly verifier job alerts `platform_engineer` and `platform_owner` on any break.
 - Retention: 7 years. Searchable in the console by actor, tenant, action, date range, reason code.
 - Tenants see a filtered projection of events about their own tenant (section 4.6, PA-054).
 
-**PA-006 Staff RBAC [MVP]** - see section 4.17 and the matrix in section 9.
+**PA-006 Staff RBAC - see section 4.17 and the matrix in section 9.
 
-**PA-007 Admin API [MVP internal, V1 external tokens]** - see section 4.18.
+**PA-007 Admin API - see section 4.18.
 
-**PA-008 Operator Morning Brief [V1]**
+**PA-008 Operator Morning Brief
 - A daily (6 am operator local time) digest by email, Slack and console Home: MRR movement yesterday, trials started/converted, lifecycle changes, new incidents, top 5 at-risk tenants with "why", AI spend vs forecast, 10DLC approvals/rejections, DSARs due within 7 days, open breach-case clocks (PA-136), Spring-Ready Guarantee tenants at risk (Jan-Mar), approvals waiting.
 - Generated by the Operator Copilot (section 10) from structured metrics; every number links to its source dashboard. No free-form hallucinated numbers: the LLM only narrates values it is handed.
 
 ### 4.2 Tenant management
 
-**PA-010 Tenant directory [MVP]**
+**PA-010 Tenant directory
 - Server-paginated table, 50 rows default, virtualized. Default columns: Company name, legal name, tenant ID (short form `TNT-48213`), plan, lifecycle state, health score and band, MRR, seats used/purchased (office and field), Region (primary), country, signup date, last active, CSM owner, tags.
 - Optional columns: AI credits used this period, SMS segments this period, 10DLC status, Stripe connection status, accounting mode (Rootline Ledger / QBO sync / Xero sync / none), migration source, partner, billing owner (`direct` or `reseller`, PA-163), Winter Mode months used in the trailing 12, Spring-Ready Guarantee status (PA-022), data residency, cell and dedicated-cell flag ([20](20-architecture-security.md) section 4.4.5), app versions in use.
 - Filters: any column; saved views ("Trials ending this week", "Past due over $500 MRR", "Ledger users with bank feed errors", "Snow tenants in Zone 5 with no snow agreements by Nov 1").
 - Bulk actions (with reason code and dry-run count): add tag, assign CSM, enroll in beta program, send announcement, extend trial (max +30 days in bulk), export list (CSV, staff with export permission only; export itself is audited).
 - Search is typo-tolerant on names and exact on IDs, emails, phone numbers (E.164 normalized), domains and Stripe IDs (`acct_`, `cus_`).
 
-**PA-011 Tenant 360 profile [MVP]**
+**PA-011 Tenant 360 profile
 - Header: name, logo, plan and add-ons, lifecycle state with time-in-state, health score with sparkline (last 26 weeks), MRR, region, primary owner contact, CSM, partner, quick actions.
 - Tabs:
   - **Overview:** key facts, active alerts (Stripe requirements due, 10DLC rejected, sync errors, low AI credits, failed payment), activation checklist progress, seasonality chart (visits per week this year vs last year).
@@ -236,7 +236,7 @@ Feature IDs use the prefix `PA-` (Platform Admin). Every feature carries a prior
   - **Risk:** risk score, signals, enforcement history.
 - Redaction: client names, addresses, invoice line items and designs are never shown here; counts and statuses only. Viewing actual records requires an active grant and happens through impersonation (section 4.6).
 
-**PA-012 Tenant lifecycle state machine [MVP]**
+**PA-012 Tenant lifecycle state machine
 
 The lifecycle below is the **platform-level tenant state**. Timings and entitlements per state follow the dunning and packaging policy owned by [22 - Business model](22-business-model-pricing-gtm.md) sections 4.6-4.7 and 8.2; access behavior per state is enforced by the tenancy module in [20 - Architecture](20-architecture-security.md) section 4.4.7. If those docs change a timing, the console's lifecycle engine reads it from the versioned billing policy, not from code.
 
@@ -249,10 +249,10 @@ The lifecycle below is the **platform-level tenant state**. Timings and entitlem
 | `past_due` | Rootline subscription invoice unpaid, days 0-13 | `invoice.payment_failed` on Rootline's own Stripe Billing account | Nothing restricted; banners to `owner`, `office_manager` and the billing contact only (crew never see billing banners) | Paid -> `active`; day 14 unpaid -> `restricted` |
 | `restricted` | Still unpaid, days 14-29 | Dunning day 14 | New AI generations, new campaigns, adding seats or add-ons and new Rootline Match leads are blocked. Scheduling, crew app, invoicing, Customer Portal, **client payments**, Ledger and exports keep working | Paid -> `active`; day 30 unpaid -> `suspended` |
 | `suspended` | Access restricted for non-payment (days 30-59), risk or terms violation | Dunning day 30, risk enforcement, or staff action (two-person for non-billing reasons) | Office users read-only **except invoicing, payments and AR**; crew app read-only after the current visit (unsynced field data still uploads); Customer Portal stays up so clients can still **pay open invoices into the Company's own Stripe** (we never block a Company's revenue for our own collection); automations, campaigns and outbound marketing SMS paused; transactional receipts still send; exports allowed | Paid or resolved -> `active`; day 60 unpaid -> `churned` |
-| `winter_mode` | Seasonal pause ("Winter Mode", [22](22-business-model-pricing-gtm.md) 4.7), e.g., Dec-Feb for maintenance-only Companies with no snow work | Owner schedules Winter Mode (monthly plans only) [V1] | Base price 25% of plan list; 2 editable office users (others read-only); field app off except Snow Lite and Snow module users (storm visit logging); **invoicing, autopay, portal, client payments, Ledger, CRM read and inbox stay on**; no new proposals, designs or AI generation (included credits pause) | Resume (manual or scheduled date) -> `active`; auto-resume when 4 months in any rolling 12 are used |
+| `winter_mode` | Seasonal pause ("Winter Mode", [22](22-business-model-pricing-gtm.md) 4.7), e.g., Dec-Feb for maintenance-only Companies with no snow work | Owner schedules Winter Mode (monthly plans only) | Base price 25% of plan list; 2 editable office users (others read-only); field app off except Snow Lite and Snow module users (storm visit logging); **invoicing, autopay, portal, client payments, Ledger, CRM read and inbox stay on**; no new proposals, designs or AI generation (included credits pause) | Resume (manual or scheduled date) -> `active`; auto-resume when 4 months in any rolling 12 are used |
 | `pending_cancellation` | Cancel requested, runs to end of paid period | Owner cancels online (same number of steps as signup or fewer) | Full access until period end; exit survey; the cancel flow always offers Winter Mode (if eligible) and the Archive plan | Period end -> `churned`; owner reverses -> `active` |
-| `churned` | No longer a customer | Period end after cancel, day 60 of dunning, or termination | Login shows the export center only; data retained for a **90-day export window**. When reached through non-payment, the Customer Portal remains in **payments-only mode** until at least day 90 after the first failed Rootline payment ([08](08-payments-stripe.md) principle), then shows "Contact the Company to pay" | Reactivates within 90 days -> `active` (data intact); buys Archive plan -> `archive_plan` [V1]; day 90 -> `pending_deletion` |
-| `archive_plan` | Paid read-only records retention ($9/mo Archive plan, [22](22-business-model-pricing-gtm.md) 4.5) [V1] | Owner buys the Archive plan | Read-only invoices, Ledger, chemical application records and photos; no users except `owner` and `bookkeeper`; no portal, SMS, AI or automations | Reactivates -> `active`; Archive plan canceled or unpaid 30 days -> `pending_deletion` |
+| `churned` | No longer a customer | Period end after cancel, day 60 of dunning, or termination | Login shows the export center only; data retained for a **90-day export window**. When reached through non-payment, the Customer Portal remains in **payments-only mode** until at least day 90 after the first failed Rootline payment ([08](08-payments-stripe.md) principle), then shows "Contact the Company to pay" | Reactivates within 90 days -> `active` (data intact); buys Archive plan -> `archive_plan`; day 90 -> `pending_deletion` |
+| `archive_plan` | Paid read-only records retention ($9/mo Archive plan, [22](22-business-model-pricing-gtm.md) 4.5) | Owner buys the Archive plan | Read-only invoices, Ledger, chemical application records and photos; no users except `owner` and `bookkeeper`; no portal, SMS, AI or automations | Reactivates -> `active`; Archive plan canceled or unpaid 30 days -> `pending_deletion` |
 | `pending_deletion` | Scheduled for deletion | End of export window, never-paid trial expiry, or DSAR/contract-driven deletion | No access; final notice emailed to `owner` and `bookkeeper` 14 days before deletion, with a last export link | Legal hold blocks -> stays; deletion job completes -> `deleted` |
 | `deleted` | Tenant data purged | Deletion workflow | Tombstone record (tenant ID, dates, reason, deletion certificate) retained; backups age out per backup retention (35 days); legally retained financial records pseudonymized per [20](20-architecture-security.md) | Terminal |
 
@@ -278,7 +278,7 @@ Rules:
 - The crew app must never strand a crew mid-job: any restriction takes effect at the next visit boundary, with a 24-hour grace for clock-outs and chemical application logs (state recordkeeping cannot be lost because of our billing).
 - **Snow carve-out:** a tenant in `suspended` (crew dispatch still works in `restricted`) with an active snow agreement during a forecast event (PA-104) keeps crew dispatch and per-push logging for the duration of the event, because blocking plowing on a commercial lot creates slip-and-fall liability for the Company's client. The carve-out is automatic, logged and capped at 72 hours per event.
 
-**PA-013 Tenant health score [MVP basic, V1 seasonal model]**
+**PA-013 Tenant health score
 - Score 0-100, bands: green (70-100), yellow (40-69), red (0-39). Recomputed nightly and on key events.
 - MVP components and default weights (configurable in the console, versioned):
 
@@ -292,60 +292,60 @@ Rules:
 | Support sentiment | 10 | Ticket volume trend, CSAT, open escalations, negative NPS |
 | Growth | 5 | Seat and client count trend |
 
-- **Seasonality adjustment [V1]:** throughput and engagement are compared to the same ISO weeks of the prior season for tenants older than 12 months, and to the tenant's **regional cohort curve** (Companies in the same Region and segment, e.g., "maintenance-heavy, USDA zone 5") for newer tenants. A Minneapolis mowing Company with 80% fewer visits in January than in July is "normal"; one with 40% fewer visits than last May is a red flag.
+- **Seasonality adjustment:** throughput and engagement are compared to the same ISO weeks of the prior season for tenants older than 12 months, and to the tenant's **regional cohort curve** (Companies in the same Region and segment, e.g., "maintenance-heavy, USDA zone 5") for newer tenants. A Minneapolis mowing Company with 80% fewer visits in January than in July is "normal"; one with 40% fewer visits than last May is a red flag.
 - Every score shows its top three contributing factors in plain language ("Invoices sent down 62% vs. same weeks last year"; "QuickBooks sync failing for 9 days").
 - Score history retained; model version stamped on each snapshot so changes in weights do not rewrite history.
 - V2: ML churn-probability model trained on lifecycle outcomes, shown alongside the rules-based score; it never replaces the rules-based score without a documented back-test and sign-off by `platform_owner`.
 
-**PA-014 Tenant tags, segments and CSM assignment [MVP]**
+**PA-014 Tenant tags, segments and CSM assignment
 - Free tags plus system segments: `segment:solo_lawn` (1-3 users, mowing-heavy), `segment:maintenance`, `segment:design_build`, `segment:commercial_maintenance`, `segment:snow`, `segment:tree_care`, `segment:irrigation`, `segment:multi_branch`. Derived from usage and onboarding answers; overridable.
 - CSM assignment rules: by MRR band and region; round-robin within team; reassignment audited.
 
-**PA-015 Organizations (multi-tenant parents) [V1]**
+**PA-015 Organizations (multi-tenant parents)
 - An `organization` groups multiple tenants: franchise systems, holding companies with several brands, or branches that the customer wants kept as separate books.
 - Consolidated billing option (one Rootline invoice), organization admins (tenant-side role `owner` at org level), cross-tenant reporting for the organization (in [18](18-reporting-analytics.md)).
 - Operator actions: link/unlink tenants (two-person), transfer billing responsibility.
 
-**PA-016 Tenant merge, split and ownership transfer [V1]**
+**PA-016 Tenant merge, split and ownership transfer
 - **Ownership transfer:** when a business is sold or the owner leaves, the transfer requires (a) request by current owner, or (b) if unreachable, documentary evidence (bill of sale, state business filing, notarized letter) reviewed by two staff, a 7-day notice to the current owner's email and phone, and audit. Never done on a phone call alone.
 - **Merge (acquisition):** Company A acquires Company B; migration tooling (section 4.3) imports B into A as a new branch with duplicate detection on clients/properties. B's tenant is moved to `pending_cancellation`.
 - **Split (divestiture):** select a branch or a set of Properties/Clients to carve into a new tenant; Rootline Ledger carve-out produces opening balances. Requires both parties' signatures (in-app e-sign) and legal review flag.
 
-**PA-017 Per-tenant limits and overrides [MVP]**
+**PA-017 Per-tenant limits and overrides
 - Overridable limits with expiry date and reason: seats, storage GB, AI credit monthly cap, AI hard-stop behavior (block vs allow overage), SMS daily cap, email daily cap, API rate limit, file upload size, number of custom domains, number of Properties geocoded per day (cost control on parcel/geocoding APIs).
 - Every override shows who set it, when it expires and what the plan default is; expired overrides revert automatically, with a notification to the CSM 7 days before.
 
-**PA-018 Data residency, cells and dedicated database [V1 residency and cell tools, V2 dedicated cell and tenant moves]**
-- Residency attribute per tenant: `us` (default) or `ca` (the `prod-ca` stack for PIPEDA/Quebec Law 25-sensitive customers; verify legal need per customer). Set at signup from the billing address and **immutable without a migration case** opened by `platform_support` and approved by `platform_owner` ([20](20-architecture-security.md) section 4.4.6). The actual tenant move uses the freeze-copy-verify-flip tooling in [20](20-architecture-security.md) (V2).
-- **Cell placement view [V1]:** every tenant lives in a cell (an Aurora cluster plus worker pools; about 2,500 tenants per US cell is the planning estimate in [20](20-architecture-security.md)). The console shows tenants per cell, the hottest tenants by DB time and queue load, replica lag and connection-pool health, and offers a manual "rebalance" request that engineering executes (V1 manual, V2 assisted).
+**PA-018 Data residency, cells and dedicated database
+- Residency attribute per tenant: `us` (default) or `ca` (the `prod-ca` stack for PIPEDA/Quebec Law 25-sensitive customers; verify legal need per customer). Set at signup from the billing address and **immutable without a migration case** opened by `platform_support` and approved by `platform_owner` ([20](20-architecture-security.md) section 4.4.6). The actual tenant move uses the freeze-copy-verify-flip tooling in [20](20-architecture-security.md).
+- **Cell placement view:** every tenant lives in a cell (an Aurora cluster plus worker pools; about 2,500 tenants per US cell is the planning estimate in [20](20-architecture-security.md)). The console shows tenants per cell, the hottest tenants by DB time and queue load, replica lag and connection-pool health, and offers a manual "rebalance" request that engineering executes.
 - Dedicated cell tier for large Enterprise tenants (more than 150 users, contractual isolation or customer-managed keys); console shows placement and health per dedicated cluster.
 - Schema migrations roll out **cell by cell, canary cell first**; the console's deploy panel shows which cells are on which schema version so support knows whether a bug report is cell-specific.
 
-**PA-019 Sandbox and demo tenants [MVP]**
+**PA-019 Sandbox and demo tenants
 - One-click creation of a **demo tenant** using the same seed generator as the in-trial sample Company "Greenleaf Grounds Co." ([22](22-business-model-pricing-gtm.md) section 4.6), at a selectable scale: `standard` (120 clients, the trial sample) or `large` for sales demos to commercial prospects (180 residential and 22 commercial clients including two HOAs with multi-board approvals, 260 Properties with real-looking synthetic addresses in a chosen metro), weekly mowing agreements April-November, a 5-step fertilizer program, three paver patio projects, a snow agreement set with 2-inch triggers, a seeded price book, two designs and a populated ledger. Used for sales demos, training and QA.
 - Demo tenants are flagged `is_demo`, excluded from all revenue and health metrics, cannot send real SMS or email (sinks to a test inbox) and auto-delete after 30 days of inactivity.
-- **Customer sandbox [V1]:** paying Companies on higher plans can request a sandbox copy of their own configuration (price book, templates, automations; no client PII) to test automations safely.
+- **Customer sandbox:** paying Companies on higher plans can request a sandbox copy of their own configuration (price book, templates, automations; no client PII) to test automations safely.
 
 ### 4.3 Onboarding and migration tooling
 
-**PA-020 Onboarding tracker [MVP]**
+**PA-020 Onboarding tracker
 - Each tenant has an activation checklist with system-detected milestones: company profile complete; Stripe connected with `charges_enabled`; logo and portal branding; price book seeded (template or import); first client/property; first Estimate or Proposal; first Visit scheduled; crew app installed by at least one `crew_lead`; first Invoice sent; first Payment collected; accounting mode chosen (Rootline Ledger or QBO/Xero sync); 10DLC submitted.
-- **Activated** definition (MVP, revisable): within 30 days of signup, the tenant has (a) at least one Visit completed in the crew app and (b) at least one Invoice paid through the Company's connected Stripe. This is the activation event used in analytics (section 4.14).
+- **Activated** definition: within 30 days of signup, the tenant has (a) at least one Visit completed in the crew app and (b) at least one Invoice paid through the Company's connected Stripe. This is the activation event used in analytics (section 4.14).
 - Console view: funnel by cohort; tenants stuck at a step for more than 5 days get a CSM task and an in-app nudge (section 4.8).
 
-**PA-021 Migration Center: self-serve importers [MVP for CSV, Jobber, QuickBooks Online; V1 for the rest]**
+**PA-021 Migration Center: self-serve importers
 
 | Source | Method | Objects | Priority |
 |--------|--------|---------|----------|
-| Generic CSV/XLSX | Upload; AI-assisted column mapping | Clients, contacts, properties, price book, recurring services, open invoices, employees, equipment, vendors | [MVP] |
-| Jobber | Jobber's own data-export files as-is (clients, quotes, jobs, invoices); optional API connector with tenant OAuth if/when available to us (verify Jobber developer program terms) | Clients, properties, quotes -> Proposals (archived), jobs/visits -> history and recurring Service Agreements, invoices (open -> AR, paid -> history), products/services -> Price Book | [MVP] |
-| QuickBooks Online | OAuth API connection | Customers, items, chart of accounts, open invoices, credit memos, vendors, opening balances (trial balance as of cutover) | [MVP] |
-| QuickBooks Desktop | IIF/CSV exports or Web Connector | Customers, items, chart of accounts, open AR/AP, trial balance | [V1] |
-| LMN | LMN exports (customers, estimates, price/cost data, production rates) | Clients, properties, Price Book items with production rates, estimate templates | [V1] |
-| Service Autopilot | Report exports (customers, recurring schedules, invoices) | Clients, properties, recurring Service Agreements, open AR | [V1] |
-| Yardbook | Customer and invoice exports | Clients, properties, recurring jobs, open AR | [V1] |
-| Xero | OAuth API | Contacts, items, chart of accounts, open invoices, trial balance | [V1] |
-| Aspire, SingleOps, Real Green, Arborgold, Copilot CRM, Housecall Pro, ServiceTitan | File-based mapping profiles built from first white-glove migrations | Varies | [V2] |
+| Generic CSV/XLSX | Upload; AI-assisted column mapping | Clients, contacts, properties, price book, recurring services, open invoices, employees, equipment, vendors | |
+| Jobber | Jobber's own data-export files as-is (clients, quotes, jobs, invoices); optional API connector with tenant OAuth if/when available to us (verify Jobber developer program terms) | Clients, properties, quotes -> Proposals (archived), jobs/visits -> history and recurring Service Agreements, invoices (open -> AR, paid -> history), products/services -> Price Book | |
+| QuickBooks Online | OAuth API connection | Customers, items, chart of accounts, open invoices, credit memos, vendors, opening balances (trial balance as of cutover) | |
+| QuickBooks Desktop | IIF/CSV exports or Web Connector | Customers, items, chart of accounts, open AR/AP, trial balance | |
+| LMN | LMN exports (customers, estimates, price/cost data, production rates) | Clients, properties, Price Book items with production rates, estimate templates | |
+| Service Autopilot | Report exports (customers, recurring schedules, invoices) | Clients, properties, recurring Service Agreements, open AR | |
+| Yardbook | Customer and invoice exports | Clients, properties, recurring jobs, open AR | |
+| Xero | OAuth API | Contacts, items, chart of accounts, open invoices, trial balance | |
+| Aspire, SingleOps, Real Green, Arborgold, Copilot CRM, Housecall Pro, ServiceTitan | File-based mapping profiles built from first white-glove migrations | Varies | |
 
 Pipeline (all importers share it):
 1. **Upload / connect.** Files stored in an isolated, encrypted migration bucket (auto-deleted 30 days after commit). Source auto-detected from header signatures (e.g., Jobber export column sets).
@@ -366,16 +366,16 @@ Validation rules (examples, all configurable per importer):
 - Price Book: units normalized (cu yd, sq ft, ea, hr, flat); duplicate SKUs merged; cost greater than price flagged as a warning.
 - Employees: no SSN/SIN imported (blocked by rule); pay rates allowed only for `owner`-approved imports.
 
-**PA-022 White-glove migration queue [MVP]**
+**PA-022 White-glove migration queue
 - Kanban board with states: `requested` -> `scoping` -> `awaiting_files` -> `mapping` -> `validating` -> `tenant_review` -> `committing` -> `reconciling` -> `live` -> `closed` (plus `blocked` and `canceled`; US spelling, matching the platform-wide `canceled` state keys).
 - Each migration project has: source systems, object scope, cutover date, go-live target, assigned specialist, SLA clock, file checklist, mapping profile, validation report, tenant approvals, reconciliation report, hours logged.
 - SLA targets (targets, not benchmarks): scoping call within 2 business days; files-to-dry-run within 5 business days for up to 5,000 clients; go-live within 15 business days for standard scope.
 - Entitlement (owned by [22](22-business-model-pricing-gtm.md) sections 4.2 and 6.8): the migration concierge is free for **one source system on annual Grow** and **up to three on Pro**; Enterprise gets a scoped project; Starter is self-serve; monthly plans pay **$499 per source system**, credited back automatically if the tenant switches to annual within 60 days. The console enforces the count (a "source system" is one of the importer rows in PA-021) and posts the one-time charge or credit to the platform Stripe account. Specialist hours are still logged per project for cost-to-serve analysis.
-- **Spring-Ready Guarantee tracking [V1]:** tenants that sign an annual Grow or Pro plan by **Feb 15** and complete the onboarding checklist are guaranteed live (imported, crews on the app, first invoices sent) by **Mar 31**, or their first 3 months are free ([22](22-business-model-pricing-gtm.md) 4.6). The console flags each eligible tenant, shows a countdown and a "guarantee at risk" state when any milestone is more than 5 business days behind plan, routes at-risk projects to the top of the queue, and on Apr 1 computes misses. A miss caused by the tenant (files never supplied, checklist incomplete) is recorded with evidence; a miss caused by Rootline auto-applies the 3-month credit through PA-034 with reason code `goodwill` and a link to the project.
-- **Cutover planning:** recommended cutover dates are tied to the season: maintenance Companies are steered to November-February ("Winter Switch" program). Companies whose snow work fits Snow Lite ([14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp): a priority-ordered site list, storm visit logs, per-push and per-application invoices and a per-site proof-of-service PDF) can also cut over in winter, or move everything else and run snow in parallel in the old system until the last storm. Companies that need the full Snow & Ice module [V1] (site maps, triggers, the Storm Command Center, event pricing models, sealed proof packets or subcontractor management) are steered away from November-March cutovers until that module is available to them, unless they cut over their green work and keep snow in the old system in parallel. Mid-season migrations get a **parallel-run mode** where Rootline is used for new work while the old system finishes in-flight invoices.
+- **Spring-Ready Guarantee tracking:** tenants that sign an annual Grow or Pro plan by **Feb 15** and complete the onboarding checklist are guaranteed live (imported, crews on the app, first invoices sent) by **Mar 31**, or their first 3 months are free ([22](22-business-model-pricing-gtm.md) 4.6). The console flags each eligible tenant, shows a countdown and a "guarantee at risk" state when any milestone is more than 5 business days behind plan, routes at-risk projects to the top of the queue, and on Apr 1 computes misses. A miss caused by the tenant (files never supplied, checklist incomplete) is recorded with evidence; a miss caused by Rootline auto-applies the 3-month credit through PA-034 with reason code `goodwill` and a link to the project.
+- **Cutover planning:** recommended cutover dates are tied to the season: maintenance Companies are steered to November-February ("Winter Switch" program). Companies whose snow work fits Snow Lite ([14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp): a priority-ordered site list, storm visit logs, per-push and per-application invoices and a per-site proof-of-service PDF) can also cut over in winter, or move everything else and run snow in parallel in the old system until the last storm. Companies that need the full Snow & Ice module (site maps, triggers, the Storm Command Center, event pricing models, sealed proof packets or subcontractor management) are steered away from November-March cutovers until that module is available to them, unless they cut over their green work and keep snow in the old system in parallel. Mid-season migrations get a **parallel-run mode** where Rootline is used for new work while the old system finishes in-flight invoices.
 - Data access: white-glove migration requires a Support Access Grant with scope `migration` (section 4.6), which the tenant grants during the scoping call.
 
-**PA-023 Payment method continuity [V1, depends on Stripe processes]**
+**PA-023 Payment method continuity
 - Three cases, detected from the onboarding questionnaire and the migration source:
   1. **The Company already owns a Stripe account** that held its saved cards (for example, it used Stripe directly or through an app that connected to the Company's own account). Connecting that account to Rootline via OAuth ([08](08-payments-stripe.md)) means the saved payment methods are already there; the importer maps source customer IDs to the existing Stripe `cus_` IDs. No data copy needed.
   2. **Saved cards sit in a vendor-controlled account** (for example, an incumbent's embedded payments product, where a third party says the accounts are "NOT Stripe accounts you control" for LMN Pay; see 2.1). The console tracks a **card-data migration request** through Stripe's account-to-account payment-data copy process or a PCI-compliant processor export, which needs the cooperation of whoever controls the source account (verify current Stripe process, eligibility and turnaround). Status: `requested`, `source_vendor_contacted`, `in_progress`, `completed`, `refused`.
@@ -387,26 +387,26 @@ Validation rules (examples, all configurable per importer):
 
 Rootline bills Companies through **its own** Stripe account (Stripe Billing), completely separate from the Companies' connected accounts used for client payments ([08](08-payments-stripe.md), which assigns it a separate webhook endpoint, keys and service). Plan names, prices, allowances and discount policy are owned by [22 - Business model and pricing](22-business-model-pricing-gtm.md). This section specifies the **operator tooling** that enforces them. Plan keys: `starter`, `grow`, `pro`, `enterprise` (22 section 4.2). Figures quoted below are 22's proposed values and are read from the catalog, never hard-coded.
 
-**PA-030 Product catalog manager [MVP]**
+**PA-030 Product catalog manager
 - Console manages **Rootline catalog objects** and syncs them to Stripe Products/Prices (Rootline is source of truth; Stripe IDs stored as references). Catalog objects: Plan, Seat type, Add-on, Usage meter, Credit pack, One-time service (e.g., migration concierge per source system, on-site training day).
 - Plans define: base price per interval (monthly; annual prepaid; annual commitment billed monthly at annual price + 5%), included seats by type (office, active field, designer), included usage allotments, entitlement set (section 4.5), trial length, availability (country, partner-only, grandfathered). USD and CAD are separate price points (for example Grow at $289/mo or C$395/mo), reviewed twice a year by `platform_finance`, never live-FX converted.
 - Versioning: price changes create a new price version; existing subscribers stay on their version until a migration is scheduled. A **price migration tool** schedules existing subscribers to a new version and enforces the **Price Lock Promise** ([22](22-business-model-pricing-gtm.md) 4.7): annual and annual-commit customers keep list price for 24 months from first subscription; after that, increases are capped at 7% per year with at least 90 days' notice; monthly customers get at least 60 days' notice. The tool refuses to schedule a migration that would violate any of these for any tenant and lists the excluded tenants.
 - Price changes require two-person approval and show projected MRR impact per segment, plus the count of tenants who would be excluded by the Price Lock Promise.
 
-**PA-031 Seats [MVP]**
+**PA-031 Seats
 - Seat types follow [22](22-business-model-pricing-gtm.md) section 4.3: **Office seat** (`owner`, `office_manager`, `estimator`, `ops_manager`, `designer` and custom roles with any office write permission), **Designer entitlement** (Design Studio edit, add-on on top of an office seat), **Field seat** (`crew_lead`, `technician`). Free: one `bookkeeper` per Company (more when linked to a verified Accountant Partner firm), unlimited `subcontractor` and client users, up to 3 read-only "Observer" users.
-- **Active field seat billing [MVP]:** a field user counts in a billing period if they authenticate in the crew app (a token refresh counts; background sync alone does not), have a clock-in dated in the period, or are on the crew of a Visit that moved to `in_progress` or `completed` in the period. Billed field seats = `max(0, distinct_active_field_users - included_field_seats)`, billed in arrears. Field activity is **never blocked** for seat reasons; the owner is notified at 80% and 100% of included field seats. Field seats are unlimited during trials.
+- **Active field seat billing:** a field user counts in a billing period if they authenticate in the crew app (a token refresh counts; background sync alone does not), have a clock-in dated in the period, or are on the crew of a Visit that moved to `in_progress` or `completed` in the period. Billed field seats = `max(0, distinct_active_field_users - included_field_seats)`, billed in arrears. Field activity is **never blocked** for seat reasons; the owner is notified at 80% and 100% of included field seats. Field seats are unlimited during trials.
 - **Office seats:** billed on the peak number of enabled office-seat users in the period, prorated on add; removal takes effect at the next renewal (monthly) or becomes a seat-bank credit (annual, V1).
 - **Console tooling:** per-tenant seat ledger (who counted and why, with the triggering event), a dispute action for support ("technician Jose R. counted only because of a stale token refresh on Nov 3": remove from count with reason code `billing_adjustment`), and the shared-login heuristic from 22 (one field user on more than 2 devices more than 15 km apart on the same day) shown as a CSM signal, never auto-billed.
 
 > **Competitive edge - pricing that follows the season:** seat-capped plans (Jobber, Housecall Pro) and per-user pricing (SynkedUP, SingleOps add-on users) charge for the same users all year ([22](22-business-model-pricing-gtm.md)). Rootline bills field seats only in the months they work and offers Winter Mode, so a 25-person summer crew that shrinks to 4 in winter pays for 4 in winter. The operator side is what makes this credible: a seat ledger that support can explain line by line, so "why was I billed for 14 field seats in October?" is answered in one screen instead of an engineering ticket.
 
-**PA-032 Add-ons [MVP]**
-- Catalog per [22](22-business-model-pricing-gtm.md) section 4.5, for example: Design Studio seat, Design Studio 3D [V1], AI Receptionist [V1], Website + Online Booking [V1], Ledger Plus, Ledger Advanced [V1], QuickBooks Desktop connector [V1], Snow and Ice module [V1] (Snow Lite is a plan entitlement in every tier, not an add-on), Tree Care module [V2], Advanced Marketing [V1], Premium aerial imagery (cost + 20% per pull) [V1], Sandbox tenant [V1], Premium Success [V1], Archive plan [V1]. Each add-on grants entitlements and can carry its own included usage.
+**PA-032 Add-ons
+- Catalog per [22](22-business-model-pricing-gtm.md) section 4.5, for example: Design Studio seat, Design Studio 3D, AI Receptionist, Website + Online Booking, Ledger Plus, Ledger Advanced, QuickBooks Desktop connector, Snow and Ice module (Snow Lite is a plan entitlement in every tier, not an add-on), Tree Care module, Advanced Marketing, Premium aerial imagery (cost + 20% per pull), Sandbox tenant, Premium Success, Archive plan. Each add-on grants entitlements and can carry its own included usage.
 - **Seasonal add-ons:** an add-on can declare a `billing_months_mask` ([22](22-business-model-pricing-gtm.md) 4.5; the Snow and Ice module is billed only November-March). The billing engine skips the line in other months without the tenant doing anything, and the console shows "dormant until Nov 1" rather than "canceled".
 - An add-on that a higher tier includes is removed automatically on upgrade with prorated credit; removing an add-on makes its data read-only, never deleted.
 
-**PA-033 Usage-based billing: AI credits, SMS, voice, email, storage [MVP]**
+**PA-033 Usage-based billing: AI credits, SMS, voice, email, storage
 - Internal **usage ledger** (append-only) is the source of truth: every billable unit (AI operation, SMS segment where MMS counts as 3, voice and AI receptionist minutes, campaign email above allowance, GB-month storage above quota, parcel lookups) writes a `usage_event` with tenant, meter, quantity, unit cost (our COGS) and idempotency key. Meter keys and allowances are those in [22](22-business-model-pricing-gtm.md) section 4.4.
 - **AI credits** are Rootline's universal AI currency ([17](17-ai-copilot-automation.md)). The console's **Credit Rate Card** holds the published price list from [22](22-business-model-pricing-gtm.md) 4.4.1 (proposed values: Copilot answer 1 credit, estimate or proposal draft 8, photo mockup set of 4 variants 40, mockup refinement 10, dimension-aware AI layout with 3 to-scale options 60, plant palette recommendation 3, document page 2), versioned and effective-dated. Rules enforced by the console: a published action price is held for at least 12 months; an increase needs 60 days' notice and two-person approval; the AI Gateway's `max_raw_cost` circuit breaker per action is configured alongside the price so margin alerts (PA-093) and pricing stay consistent.
 - **Credit ledger rules (from 22, enforced here):** included monthly credits are consumed first and expire at period end with no rollover; then purchased packs and promotional grants in FIFO order by expiry (packs expire 12 months after purchase; grants carry their own expiry). Starting an action places a **hold** for the quoted credits; success settles it, and a provider failure, safety refusal or timeout releases it in full. "Unusable" mockup or layout feedback within 10 minutes refunds 50% (max 10 per user per month). Trials get 500 credits with no top-up.
@@ -416,30 +416,30 @@ Rootline bills Companies through **its own** Stripe account (Stripe Billing), co
 - Carrier fees for 10DLC brand and campaign registration are passed through as one-time items or absorbed by plan, per [22](22-business-model-pricing-gtm.md) (amounts as of Nov 2026, verify with Twilio).
 - Budget alerts: tenant-configurable per-user and per-role caps; alerts at 50/80/100% of included credits; operator alerts on anomalies (sections 4.9, 4.12).
 
-**PA-034 Coupons, promotions and credits [MVP]**
+**PA-034 Coupons, promotions and credits
 - Coupons (percent or amount; once, repeating N months, forever or "while subscribed"), promotion codes (partner-specific, campaign-specific, expiry, max redemptions, first-time only), account credits (goodwill, SLA credits, Spring-Ready Guarantee credits) applied to the next invoice.
 - Programs from [22](22-business-model-pricing-gtm.md) 4.8 configured as catalog promotions: Founding Customer (25% off base plan while subscribed, first 100 paying Companies in the Great Lakes launch Regions, automatic), association member and Accountant Partner client (10% off base in year 1, via partner code), switching credit (up to 3 months free with proof of a competitor contract).
 - **Discount authority ladder:** `platform_support` may apply the switching credit (up to 3 months), goodwill account credits up to $250 or one month's base fee per grant (at most one grant per tenant per quarter) and usage or field-seat overage waivers up to $100 per period; `platform_finance` may grant credits up to $5,000 per grant ([22](22-business-model-pricing-gtm.md) section 12.2); sales-negotiated discounts up to 10% (rep) or 20% (sales lead) are recorded in the deal-desk record and applied by `platform_finance`; anything above 20%, or any discount without an expiry or "while subscribed" flag, requires `platform_owner`. All audited.
 - **Hard rules:** discounts never apply to usage meters (credits, SMS, minutes) except in Enterprise contracts; every discount is visible on the Company's invoice; no "secret" price without a recorded reason. "Coupon dependence" feeds the health score.
 
-**PA-035 Trials [MVP]**
-- Trial types: no-card trial (default: 14 days of Grow features, 500 AI credits, unlimited field seats), Winter trial (30 days for trials started Nov 1-Feb 28), partner-referred and white-glove migration trials (30 days), card-required trial (for paid acquisition channels where fraud is higher), and a Pro-feature **reverse trial** [V1] run only as an experiment flag (PA-041) against the default.
+**PA-035 Trials
+- Trial types: no-card trial (default: 14 days of Grow features, 500 AI credits, unlimited field seats), Winter trial (30 days for trials started Nov 1-Feb 28), partner-referred and white-glove migration trials (30 days), card-required trial (for paid acquisition channels where fraud is higher), and a Pro-feature **reverse trial** run only as an experiment flag (PA-041) against the default.
 - **Earned extension:** +14 days, applied automatically when the tenant completes 4 of 6 milestones (import clients, connect Stripe, send a proposal, schedule a Visit, invite a crew member, connect a bank feed).
 - Manual extension by `platform_support` up to +14 days once; further extensions need `platform_owner`.
 - Trial-to-paid: tenant picks plan in-app (Stripe Checkout or embedded Payment Element on Rootline's own Stripe), or sales sends a quote (Stripe Quotes) for annual and Enterprise deals.
 
-**PA-036 Dunning [MVP]**
+**PA-036 Dunning
 - Retry schedule: Stripe Smart Retries on Rootline's Billing account (or a fixed retry on days 1, 3, 5 and 7). Payment methods: card, ACH debit (US) and pre-authorized debit (Canada); card updater on.
 - Comms ladder to `owner` and billing contacts, aligned with [22](22-business-model-pricing-gtm.md) 8.2: day 0 email + in-app banner; day 3 email; day 7 email + SMS (if the owner opted in) + CSM task when MRR > $300; day 12 "features restrict in 2 days" notice; day 14 `restricted`; day 25 "account suspends in 5 days" notice by email and SMS; day 30 `suspended`; day 55 final notice with export link; day 60 `churned`. "Pay now" link in every message; no message ever reaches crew or clients.
 - **Seasonal sensitivity:** monthly-plan tenants flagged `segment:snow` or `segment:maintenance` in their off-season months get an automatic offer to switch to Winter Mode (if eligible) on day 7, which clears the arrears into a smaller invoice instead of pushing the tenant toward suspension.
 - Dunning never affects the Company's own clients or the Customer Portal's ability to collect payments (PA-012 payments-only mode).
 
-**PA-037 Sales tax, GST/HST and invoices [MVP]**
+**PA-037 Sales tax, GST/HST and invoices
 - Tax calculation on Rootline subscriptions via Stripe Tax (or equivalent): SaaS taxability varies by US state and Canadian province (GST/HST, QST, PST), so the console holds registration records per jurisdiction, nexus/threshold monitoring, tax-exempt certificates for exempt customers, and tax ID collection (GST/HST number) for Canadian businesses. Specific rules: verify with tax advisor; as of Nov 2026, verify.
 - Invoice templates for Rootline's own invoices (branding, legal entity, tax IDs), credit notes and refunds. Refund policy from [22](22-business-model-pricing-gtm.md) 4.7: monthly plans are not refunded (cancel any time, effective end of period); annual plans carry a 30-day money-back guarantee from the first annual charge; otherwise only where law requires. Refunds are `platform_finance` only, with reason code; refunds over $1,000 need a second approver. Refunds of Rootline subscription charges are the only refunds the console can issue.
 - Currency: USD for US-addressed tenants, CAD for Canadian tenants, fixed at subscription creation; a currency change is a `platform_finance` action (cancel and recreate with credit transfer).
 
-**PA-038 Revenue reporting [MVP basic, V1 full]**
+**PA-038 Revenue reporting
 - MRR and ARR with movements: new, expansion, contraction, churn, reactivation; by plan, segment, region, partner, acquisition channel.
 - Usage revenue reported separately from recurring (AI credits overage and packs, SMS overage).
 - Deferred revenue schedule for annual prepaid plans; recognized revenue by month (ASC 606 / IFRS 15 ratable recognition for subscriptions; usage recognized as consumed).
@@ -450,40 +450,40 @@ Rootline bills Companies through **its own** Stripe account (Stripe Billing), co
 
 Entitlements answer **"has this tenant paid for it?"**; flags answer **"is this code path turned on for them right now?"** They share an evaluation service but are managed and audited separately.
 
-**PA-040 Entitlement model [MVP]**
+**PA-040 Entitlement model
 - Entitlement types: `boolean` (feature on/off, e.g., `design_studio.3d`), `limit` (numeric cap, e.g., `seats.office = 5`, `properties.max = 2000`), `quota` (metered per period, e.g., `ai_credits.monthly = 2000` on Grow), `tier` (enumerated level, e.g., `support.level = priority`).
 - Resolution order: global default -> plan -> add-ons (additive) -> organization override -> tenant override (with expiry) -> kill switch (can only remove).
 - Downgrade behavior defined per entitlement: `hide`, `read_only` (default for data-bearing features, e.g., designs stay viewable but not editable), or `grace_days` (e.g., 30 days to export).
 - Every entitlement change emits `entitlements.changed` (event name per [22](22-business-model-pricing-gtm.md) section 11.3) with tenant, key, old and new value; the tenant app subscribes to update UI without reload.
 
-**PA-041 Feature flag service [MVP]**
+**PA-041 Feature flag service
 - Flag types: `release` (temporary, gate new code), `experiment` (A/B with variants and metrics), `ops` (operational toggles like "use fallback geocoder"), `kill_switch` (permanent safety valve), `permission` (beta access).
 - Targeting rules evaluated in order: explicit tenant include/exclude lists -> beta program membership -> attributes (plan, segment, region, country, data residency, tenant age, user role, app platform and version, locale) -> percentage rollout with sticky hashing on `tenant_id` (so all users in a Company see the same behavior, which matters when an office manager and a crew lead are on the phone together) -> default.
 - SDKs for web, Node services and React Native, OpenFeature-compatible interface (verify fit); local evaluation with streaming updates; p99 evaluation latency < 5 ms; offline crew app caches the last flag set and defaults safe (new features off) if never fetched.
 - Change propagation: < 60 seconds to all online clients; kill switches < 15 seconds.
 - Flag hygiene: owner and expiry required for `release` flags; stale-flag report (fully rolled out or untouched for 90 days); flags cannot be deleted while referenced in code (CI check against the code index).
 
-**PA-042 Percentage rollouts and guardrails [V1]**
+**PA-042 Percentage rollouts and guardrails
 - Rollout plans: e.g., internal tenants -> 5% -> 25% -> 50% -> 100% with minimum soak times; each step can require guardrail metrics to be healthy (error rate, latency, support tickets tagged with the feature, a business metric like "proposal acceptance rate").
 - Auto-rollback when a guardrail breaches its threshold for 15 minutes.
 - **Peak-season change freeze**: risky rollouts are blocked by default during configurable windows (e.g., the first two weeks of April in each Region's spring start, the morning dispatch window 5-9 am local on weekdays), overridable by `platform_owner`.
 
-**PA-043 Beta programs [V1]**
+**PA-043 Beta programs
 - Named programs ("AI Layout Generator beta", "Snow Ops 2027"), with eligibility, capacity, NDA/terms acceptance, feedback form, Slack/Discord community link, and graduation date.
 - Tenant `owner` can opt in from Settings > Labs; operators can invite. Beta participants get a "Beta" pill in the UI and a direct feedback widget.
 
-**PA-044 Mobile app version control [MVP]**
+**PA-044 Mobile app version control
 - Minimum supported crew app version per platform; soft prompt (update recommended) and hard block (update required) thresholds; over-the-air update channel selection (Expo updates) per flag cohort.
 - Hard blocks never fire during an active clock-in: the crew app defers the block until the next clock-out.
 
 ### 4.6 Support console
 
-**PA-050 Global search across tenants [MVP]**
+**PA-050 Global search across tenants
 - One search box, results grouped by type: Tenants, Tenant users, Clients (metadata only), Invoices/Payments (number, status, amount; no line items), Phone numbers, Email addresses, Stripe IDs, Jobs/Visits (number and status), Designs (ID and status), Tickets, Migration projects.
 - Without an active Support Access Grant, client-level results show **redacted** values (e.g., "Client C-10293, Tenant Greenway Lawn, matched on phone ending 4471") so support can route the conversation without viewing PII. Matching uses hashed normalized phone/email indexes so full values never need to be displayed.
 - Search queries themselves are audited (who searched for which phone number), because search over PII is itself a sensitive act.
 
-**PA-051 Support Access Grants (tenant consent) [MVP]**
+**PA-051 Support Access Grants (tenant consent)
 - A grant is a record of **who** (specific staff member, a named partner user, or "any support agent"), **what scope** (`read_only`, `read_write`, `migration`, `billing_setup`, `ledger` and a module allowlist such as scheduling, invoicing, design, settings), **how long**, **why** (ticket reference and reason) and **who approved**. The modes map to [02 - Personas and RBAC](02-personas-roles-permissions.md) section 5.13 ("view as user" = `read_only`, "act as user" = `read_write`).
 
 | Scope | Who can approve | Default duration | Maximum | Session cap inside the grant |
@@ -504,7 +504,7 @@ Entitlements answer **"has this tenant paid for it?"**; flags answer **"is this 
 - **Role ceiling:** support can impersonate only users whose role is equal to or lower than the approver's (an `office_manager` cannot grant "view as `owner`"), per [02](02-personas-roles-permissions.md).
 - Financial scopes: `ledger` scope (journal entries, bank rec) and payroll data require explicit opt-in and are excluded from "full access" shortcuts; payment and bank account details are never viewable even with a grant (they live in Stripe and are tokenized).
 
-**PA-052 Impersonation ("view as user") sessions [MVP]**
+**PA-052 Impersonation ("view as user") sessions
 - Staff with an active grant can start a session **as a specific tenant user** (to reproduce role-specific issues, e.g., what a `crew_lead` sees) or as a synthetic "Rootline Support" user with the grant's scope.
 - UI: persistent orange banner (the Clay impersonation band, token `color.banner.impersonation` in [21](21-ux-design-system-sitemaps.md) section 8.3) "Rootline Support (Maria G.) is viewing as Jose R. (crew_lead) - read-only - ends 3:40 pm - [End session]" on the support side; tenant users see a subtle indicator in the app header and the event appears in the Support Access Log.
 - Hard restrictions during impersonation regardless of scope: cannot change login email, password, MFA, owner, Stripe connection, bank feed connections or API keys; cannot send messages to clients (SMS/email) unless scope `read_write` **and** the action is explicitly confirmed with a second dialog; cannot sign proposals or approve on behalf of clients; cannot create charges or refunds; cannot export bulk client data.
@@ -512,54 +512,54 @@ Entitlements answer **"has this tenant paid for it?"**; flags answer **"is this 
 - Blocked in addition, per [02](02-personas-roles-permissions.md): reading `employee_pii` (SSN/SIN, pay details) and `vendor_banking` fields, and hard deletes (any delete in a session is a soft delete flagged "deleted by Rootline Support").
 - The tenant Copilot is disabled inside impersonation sessions so AI actions are never attributed to the wrong principal.
 - Sessions auto-end at grant expiry, the session cap in PA-051, 15 minutes idle, or staff logout. When a session ends, the `owner` receives an email summary (who, duration, pages viewed, records changed, ticket).
-- **Crew app impersonation [V1]:** a web-based emulator renders the crew app UI for the impersonated `technician` or `crew_lead` with their synced data snapshot, so support can see what the crew sees without touching a device.
+- **Crew app impersonation:** a web-based emulator renders the crew app UI for the impersonated `technician` or `crew_lead` with their synced data snapshot, so support can see what the crew sees without touching a device.
 
-**PA-053 Break-glass access [MVP]**
+**PA-053 Break-glass access
 - For security incidents, legal process (subpoena, court order), suspected fraud or a tenant locked out with urgent need and identity verified out-of-band.
 - Requires: reason code from the restricted list, free-text justification, second approver (`platform_owner`, or a second senior engineer if the founder is unavailable, per [02](02-personas-roles-permissions.md)), duration 30-120 minutes with automatic revocation, read-only by default, one tenant per session.
 - Two forms: **console break-glass** (impersonation without tenant consent, for a locked-out owner whose identity was verified out-of-band or for fraud investigation) and **engineer break-glass** (audited bastion SQL for incident response or data repair). Both are requested and approved in the console's Approvals inbox.
 - Tenant notification is sent within 24 hours unless legal counsel records a documented non-disclosure obligation (e.g., court order), which itself is logged and reviewed monthly.
 - All break-glass sessions are recorded (screen-level session recording of the console session) and reviewed within 5 business days by someone other than the user.
 
-**PA-054 Tenant-visible Support Access Log [MVP]**
+**PA-054 Tenant-visible Support Access Log
 - In the Company app (Settings > Security > Support access), owners see every grant, session, staff first name and last initial, duration, scope, actions taken (summarized: "viewed 14 pages, edited 2 Visits") and a link to the ticket. Exportable CSV.
 - Trust feature for sales: "You can see every time we touched your account."
 
 > **Competitive edge - visible, consent-based support:** in the public help content we reviewed for landscape tools (Jobber, LMN, Aspire and Service Autopilot; limited review, verify), we did not find a documented, tenant-visible log of vendor support access. Enterprise software buyers already expect customer-granted, time-boxed login access (the Salesforce model in section 2.3). Rootline gives that to a six-person lawn company, and gives commercial property managers who vet their landscaper's vendors a concrete answer to "who can see our data?"
 
-**PA-055 Session replay (opt-in) [V1]**
+**PA-055 Session replay (opt-in)
 - Product session replay (PostHog-style or equivalent) is **off by default**. The tenant `owner` can enable it for the whole Company or for a single user for 7 days to help debug an issue.
 - Masking: all input fields masked by default, text in elements tagged `data-pii` masked, images of client properties blurred, payment elements never recorded (Stripe Elements iframes are excluded by design).
 - Replays retained 30 days, then deleted; access to replays requires an active grant or the tenant's ticket link.
 - Never enabled in the Customer Portal for end clients at MVP/V1 (clients did not consent to Rootline directly).
 
-**PA-056 Helpdesk integration [MVP]**
+**PA-056 Helpdesk integration
 - Integrate one vendor at MVP (Intercom or Plain recommended for in-app chat with user identity verification; Zendesk if phone support scale demands). Identity verification via signed user hash so chat users cannot spoof another tenant user.
 - Sidebar app inside the helpdesk shows: tenant name, plan, lifecycle, health, region, user role, app version, open incidents affecting the tenant, recent errors for this user (last 24 h), Stripe/QBO/10DLC status, and buttons for common support actions.
 - Conversations link back to the Tenant 360 timeline.
 - Languages: English and Spanish agents at launch (crew leads and technicians frequently prefer Spanish); routing by user locale. French support for Quebec in V2.
 
-**PA-057 Macros and support actions [MVP]**
+**PA-057 Macros and support actions
 - **Macros** = canned reply text (EN/ES), optionally bundled with one or more **support actions** that run with the agent's permissions and the conversation's grant.
 - Safe support actions (no grant required, operate on metadata): resend user invite, force logout all sessions, unlock user after failed logins, resend tenant-owner verification email, extend trial (within limit), apply goodwill credit (within limit), re-trigger QBO/Xero sync, re-send a failed webhook to the tenant's endpoint, regenerate custom-domain TLS certificate, clear crew app sync cursor for a device (forces full resync), re-run 10DLC submission with corrected fields.
 - Data-touching support actions (grant required): bulk price update on Service Agreements (dry run first), re-generate a month of recurring Visits, re-compute an Invoice batch, merge duplicate Clients, re-import a failed migration batch.
 - Each action has a dry-run mode, a blast-radius preview and an undo where technically possible.
 
-**PA-058 Runbook actions (engineer-grade data repair) [V1]**
+**PA-058 Runbook actions (engineer-grade data repair)
 - Parameterized, code-reviewed repair functions registered in the console (e.g., "rebuild route geometry cache for tenant X on date Y", "replay outbox events from offset A to B for tenant X", "recompute Ledger balances for period P").
 - Require `platform_engineer`, an active grant if tenant data is touched, a ticket, dry-run output review and (for writes over 1,000 rows) second approval.
 - No free-form SQL console against production. Read-only, PII-masked analytics queries run in the warehouse ([18](18-reporting-analytics.md)).
 
-**PA-059 Tenant diagnostics [MVP]**
+**PA-059 Tenant diagnostics
 - Per tenant: recent errors by surface (web, crew app, portal, API), slow requests, failed background jobs, webhook delivery logs (tenant's outbound webhooks), email bounces and spam complaints for the tenant's sending domain, SMS delivery failures with carrier error codes, crew device list with last sync time, pending mutations count and app version.
 - "Explain this error" button runs the Operator Copilot over logs and known-issue articles (section 10).
 
-**PA-060 Support SLAs and queues [MVP]**
+**PA-060 Support SLAs and queues
 - Support channels per plan come from [22](22-business-model-pricing-gtm.md) 4.2 (Starter: help center and business-hours chat; Grow: chat and phone plus onboarding webinars; Pro: named onboarding specialist and priority phone; Enterprise: CSM and contractual SLA). Proposed first-response targets the console measures against: `starter` 1 business day; `grow` 4 business hours; `pro` 1 business hour; `enterprise` 30 minutes for SEV1 and 4 business hours otherwise. Targets, not promises, until written into contracts.
 - **Peak-hours routing:** from April through June, tickets tagged `crew_app` or `routing` that arrive between 5 and 9 am in the tenant's time zone jump the queue, because a crew stuck at the yard costs the Company more than any billing question.
 - Seasonal staffing plan: the console forecasts ticket volume from tenant count, season and signup trend (spring spike in March-May; snow-event spikes in winter for snow Companies).
 
-**PA-061 Caller verification and support PIN [MVP]**
+**PA-061 Caller verification and support PIN
 - Social engineering of support is the cheapest way to take over a small business's account ("I'm the owner, I lost my phone, move the login to my new email"). Every tenant user has a rotating 6-digit **support PIN** shown in the Company app (Help > Contact support) and in the crew app profile; it rotates every 24 hours and after each use.
 - Phone and email requests that change identity or access (owner email change, MFA reset, ownership transfer, adding an `owner`) require: the PIN, **or** an in-app confirmation from another `owner`, **or** the documentary process in PA-016. Agents cannot override this; the attempt is logged.
 - Chat inside the authenticated app is already identity-verified (signed user hash, PA-056) and does not need the PIN.
@@ -569,57 +569,57 @@ Entitlements answer **"has this tenant paid for it?"**; flags answer **"is this 
 
 The Plant KB is specified in [12 - Plant Knowledge Base](12-plant-knowledge-base.md). The console provides the operational tooling for `platform_curator` and `platform_owner`.
 
-**PA-070 Curator workflow [MVP]**
+**PA-070 Curator workflow
 - Record states for Plant and Plant Region Profile: `draft` -> `in_review` -> `approved` -> `published` -> `deprecated` (plus `rejected`). Published changes are versioned; tenants see changes at the next KB release (daily at MVP).
 - Assignment by Region and plant group; review requires a curator other than the author for traits flagged critical (invasiveness, toxicity to pets/children, deer resistance claims, hardiness zone).
 - Diff view between versions; comment threads per field; source citations required for critical traits.
 
-**PA-071 Region builder map [MVP]**
+**PA-071 Region builder map
 - Map editor (Mapbox GL) to define a Region by union/intersection of layers: USDA hardiness zones (2023 map), EPA Level III/IV ecoregions, states/provinces, counties, metros/CBSAs, and custom polygons; optional climate filters (annual precipitation, elevation band).
 - Preview: area, number of tenants and Properties inside, number of plants with profiles, overlap with existing Regions.
 - Regions are versioned; republishing a Region triggers recomputation of Property -> Region assignments (async, with a report of how many Properties changed Region).
 
-**PA-072 Bulk imports [MVP]**
+**PA-072 Bulk imports
 - CSV/JSON import of plants, synonyms, traits and region profiles; source datasets mapped through import profiles; every imported field carries `source_id` and `license_id`.
 - Validation: taxonomy name resolution against the accepted-name backbone, unit normalization (feet/meters for height/spread), enum validation for traits.
 
-**PA-073 AI enrichment queue [V1]**
+**PA-073 AI enrichment queue
 - LLM agents propose trait values, regional notes and descriptions with citations; each suggestion lands in a queue with confidence, cited sources, and diff to current value.
 - Curator actions: accept, edit and accept, reject (with reason that is fed back into prompt evaluation), request second opinion. Bulk accept allowed only for non-critical traits with confidence above 0.9 and at least two agreeing sources.
 - Throughput and acceptance rate tracked per prompt version (feeds AI Ops evals, section 4.9).
 
-**PA-074 Quality dashboard [MVP]**
+**PA-074 Quality dashboard
 - Completeness by Region (percent of palette plants with full trait sets, images, region profiles), conflicts (sources disagree), stale records (not reviewed in 24 months), missing images, invasive-status coverage by state/province, tenant feedback ("this plant failed in my area" reports), and search-miss reports (tenant searched for a plant not in KB).
 
-**PA-075 Licensing and attribution tracking [MVP]**
+**PA-075 Licensing and attribution tracking
 - License registry: each dataset and image has license type (public domain, CC BY, CC BY-SA, CC BY-NC, commercial license, owned), attribution text, allowed uses (display, derivative, AI training, print in proposals), expiry date and contract link.
 - Enforcement: the KB API returns attribution strings for any image displayed; images with non-commercial or expired licenses are blocked from proposal PDFs and the Customer Portal; a takedown workflow removes an asset platform-wide within 24 hours and logs it.
 
-**PA-076 Nursery availability feed operations [V1]**
+**PA-076 Nursery availability feed operations
 - Monitor nursery and distributor availability feed ingestion (freshness, error rates, SKU match rate to KB plants) and manage partner nurseries' feed credentials; details in [12](12-plant-knowledge-base.md) and [13](13-operations-inventory-equipment.md).
-- Tags follow [12](12-plant-knowledge-base.md) section 4.11: Nursery Connect uploads, forwarded availability lists, line parsing and matching, the nursery directory, regional aggregates and availability in workflows (KB-NUR-01 to KB-NUR-05) are [V1]; partner API, punchout and EDI feed credentials and brand availability feeds are [V2]; demand signals to growers (KB-NUR-06) stay [V2].
+- Tags follow [12](12-plant-knowledge-base.md) section 4.11: Nursery Connect uploads, forwarded availability lists, line parsing and matching, the nursery directory, regional aggregates and availability in workflows (KB-NUR-01 to KB-NUR-05) are; partner API, punchout and EDI feed credentials and brand availability feeds are; demand signals to growers (KB-NUR-06) stay.
 
 ### 4.8 Global content and templates
 
-**PA-080 Template library with versioning [MVP]**
+**PA-080 Template library with versioning
 - Template types: Proposal templates (residential maintenance, design-build install, commercial maintenance RFP response, snow contract), email and SMS templates (appointment reminders, "on our way", invoice, payment receipt, review request, seasonal upsell for aeration/overseeding), Chart of Accounts templates (US landscape COA, Canadian COA with GST/HST accounts, see [09](09-accounting-ledger-integrations.md)), Automation recipes ([17](17-ai-copilot-automation.md)), Design templates (front foundation bed, pollinator border, paver patio with seat wall) ([10](10-design-studio.md)), Checklists (irrigation spring start-up, irrigation winterization, pre-trip vehicle inspection, mower daily maintenance, pesticide application pre-check), Price Book starter kits by segment and region, Service Agreement templates (weekly mowing April-November, 5-step fertilizer program, seasonal snow per-push and per-season).
 - Each template has: key, version, locale variants (en-US, es-US, en-CA, fr-CA later), applicable segments/regions/plans, preview with sample data, changelog.
 
-**PA-081 Distribution model: fork vs subscribe [V1]**
+**PA-081 Distribution model: fork vs subscribe
 - **Forked** templates (default for proposals, emails and price books): copied into the tenant at onboarding or on demand; tenant edits are theirs; Rootline updates appear as "Update available" with a three-way diff (original, Rootline's new version, tenant's edits) and one-click merge.
 - **Subscribed** templates (default for legal/compliance text, e.g., TCPA consent language, chemical-application notification wording by state): tenant can append but not remove required clauses; updates propagate automatically with notification.
 - Publishing a template update shows the number of tenants who will see "update available" vs. auto-receive it, and requires review by a second staff member for subscribed templates.
 
-**PA-082 Help center and knowledge base CMS [MVP]**
+**PA-082 Help center and knowledge base CMS
 - Articles (Markdown + embeds), videos, GIF walkthroughs; EN/ES at launch; versioned; audience tags by role (`technician` articles are short, mobile-first, Spanish-first); contextual mapping from app routes to articles (the "?" panel in each screen shows the right articles).
 - AI-assisted drafting and translation with human review; feedback ("Was this helpful?") and search-miss analytics feed content backlog.
 - Article content is also the retrieval corpus for the in-app Copilot's help answers ([17](17-ai-copilot-automation.md)), with publish state respected (drafts never retrievable).
 
-**PA-083 Release notes and changelog [MVP]**
+**PA-083 Release notes and changelog
 - Release note entries linked to flags/entitlements: the in-app "What's new" panel shows only what that tenant actually has (no announcing a Design Studio feature to a `starter` tenant without it, unless marked as an upsell).
 - Public changelog page on the marketing site; RSS and email digest.
 
-**PA-084 In-app announcements and guides [MVP banners, V1 guides]**
+**PA-084 In-app announcements and guides
 - Announcement types: banner (info, warning, critical), modal, toast, product tour (multi-step tooltips), checklist, NPS/CSAT survey.
 - Targeting: plan, segment, region, role, locale, tenant age, feature usage, lifecycle state, platform (web/crew app/portal). Scheduling with start/end and local-time windows.
 - Frequency caps (max one modal per user per day; never show modals in the crew app while a Visit is in progress; never interrupt the dispatch board between 5 and 9 am local).
@@ -629,91 +629,91 @@ The Plant KB is specified in [12 - Plant Knowledge Base](12-plant-knowledge-base
 
 AI strategy is defined in [17](17-ai-copilot-automation.md) and the AI Gateway in [20](20-architecture-security.md). The console gives operators control over it.
 
-**PA-090 Model routing configuration [MVP]**
+**PA-090 Model routing configuration
 - Routing table keyed by **AI task** (e.g., `copilot.chat`, `proposal.write_scope`, `estimate.draft_from_notes`, `inbox.classify`, `receipt.extract`, `kb.enrich`, `kb.answer`, `support.triage`, `receptionist.voice`, plus the mockup and layout routes whose task keys are owned by the route table in [11](11-ai-design-mockups.md) section 8.2: `restyle.preview`, `restyle.economy`, `restyle.hd`, `restyle.4k`, `p2p.harmonize`, `layout.plan`, `chat.design_agent` and so on). Task keys follow the AI Gateway task list in [20](20-architecture-security.md) section 4.13; the console edits routes, it does not invent task names.
 - Per task: primary provider/model, fallback chain, max tokens/resolution, timeout, temperature, safety settings, data-handling constraints (e.g., `no_training`, `zero_retention_required`, `region=us|ca`), cost ceiling per call, plan-based quality tier (e.g., `business` gets higher-resolution mockups).
 - Changes are versioned, flag-gated and can be rolled out by percentage (section 4.5) with eval gates (PA-092).
 - Provider health panel: latency, error rate, rate-limit headroom, and automatic failover status per provider.
 
-**PA-091 Prompt registry and versioning [MVP]**
+**PA-091 Prompt registry and versioning
 - Prompts (system prompts, tool definitions, output schemas, few-shot examples) stored as versioned artifacts with semantic versions, author, change description, linked eval suite and deployment state per environment (`dev`, `staging`, `prod-canary`, `prod`).
 - Prompts are referenced by key from code; no prompt text hardcoded in services (CI check).
 - Diff view; rollback to any previous version in one click (audited); per-tenant pinning for debugging.
 - Tenant-specific prompt customizations (e.g., Company tone of voice for proposals) are stored in the tenant's settings, not in the registry; the registry stores the platform templates they plug into.
 
-**PA-092 Evaluation suites and dashboards [MVP basic release gates, V1 full dashboards]**
+**PA-092 Evaluation suites and dashboards
 - Eval suites per task with golden datasets (e.g., 300 annotated property photos for mockup fidelity; 500 plant-recommendation queries with region-correct answers; 200 handwritten site-measurement notes for extraction; 150 proposals with known-correct scopes).
 - Metrics: task-specific accuracy, schema-validity rate, hallucination rate (e.g., recommending a plant not hardy in the Property's zone, or not in the Company's Region palette), safety violations, latency p50/p95, cost per call.
 - Methods: deterministic checks, LLM-as-judge with calibrated rubrics, and human review samples (curators review plant outputs; designers review mockups).
 - **Release gates:** a prompt or model change cannot reach `prod` if any gating metric regresses beyond tolerance (e.g., region-compliance of plant recommendations must stay at or above 99%).
 - Online metrics: user acceptance rate (proposal drafts accepted with < 20% edits), thumbs up/down, regeneration rate.
 
-**PA-093 Cost per tenant and AI margin [MVP]**
+**PA-093 Cost per tenant and AI margin
 - Every AI call records tenant, user, task, model, input/output tokens or image units, provider cost, credits charged.
 - Dashboards: cost by task/model/day, credits vs. cost (gross margin per credit), top 50 tenants by AI cost, tenants whose AI cost exceeds their subscription revenue, forecast vs. actual.
 - Alerts: tenant AI spend > 3x its trailing 7-day average; platform AI spend > 120% of daily forecast; any single call over the per-call cost ceiling.
 
 > **Competitive edge - AI that does not sink the margin:** image generation and agentic layout work have real per-call costs, and competitors have answered with opaque packaging: Jobber's AI Receptionist add-on is reported with conflicting conversation allowances (30 vs 100), and Housecall Pro's CSR AI is sold with unpublished pricing (as of Nov 2026, verify; sourced in [22](22-business-model-pricing-gtm.md) and [17](17-ai-copilot-automation.md)). Opaque pricing is usually a sign the vendor cannot see its own per-tenant cost. Rootline meters every call against a published, versioned credit rate card, shows margin per tenant, per task and per model route, and can degrade or cut off a model in seconds. That lets the founder publish AI prices and hold them for 12 months, which competitors with flat or hidden AI pricing cannot safely do.
 
-**PA-094 Abuse monitoring and AI content moderation [MVP]**
+**PA-094 Abuse monitoring and AI content moderation
 - Input and output moderation on image generation (no people-focused edits, no explicit content, no logos/trademarks of third parties in mockups, no faces in uploaded property photos beyond incidental, which are auto-blurred before storage in shared contexts).
 - Prompt-injection and jailbreak detection on Copilot and agent tool calls (especially agents that can send messages or create invoices); flagged sessions land in a review queue.
 - Volume anomalies (scripted mockup generation, credit-farming from repeated trials) feed Risk and Trust (section 4.12).
 
-**PA-095 AI kill switches [MVP]**
+**PA-095 AI kill switches
 - Levels: global (all AI), per provider, per model, per task, per tenant, per user. Kill switch states: `on`, `degraded` (route to cheaper/fallback model or disable non-essential tasks), `off` (feature hidden with friendly message).
 - Effect within 15 seconds; in-flight durable workflows (e.g., batch mockup jobs) are paused, not lost, and resume when re-enabled.
 - Two-person approval for global switches except during a declared SEV1/SEV2 incident.
 
-**PA-096 AI data governance [MVP]**
+**PA-096 AI data governance
 - Settings recorded per provider contract: retention, training use, regions; tenant-level opt-in for using their anonymized data to improve Rootline models (off by default); per-tenant "no AI" mode for customers who refuse AI processing (all AI features disabled and entitlements adjusted).
 - AI incident log: harmful output reports, wrong-plant recommendations that caused tenant losses, with remediation and eval additions.
 
 ### 4.10 Communications operations
 
-**PA-100 10DLC Registration Center [MVP]**
+**PA-100 10DLC Registration Center
 - Rootline operates as an ISV. Each Company is registered as its own brand under a Secondary Customer Profile, with campaigns registered per Company (no shared campaigns), and **one Twilio subaccount per tenant** for isolation and per-tenant usage metering, as decided in [16](16-marketing-growth-communications.md) ([Twilio ISV onboarding](https://www.twilio.com/docs/messaging/compliance/a2p-10dlc/onboarding-isv)). Companies without an EIN use the Sole Proprietor brand path, which has lower limits; the console flags them for an upgrade once they obtain an EIN.
 - Intake during onboarding: legal business name exactly as on IRS/CRA records, EIN (US) or Business Number (Canada), business type, address, website (Rootline can auto-provision a simple website from the Website builder for Companies without one, see [16](16-marketing-growth-communications.md)), contact, use-case selection (customer care, account notifications, marketing), sample messages and opt-in flow description generated from Rootline's actual templates.
 - Status board across tenants: `not_started`, `profile_submitted`, `brand_pending`, `brand_approved`, `brand_failed`, `campaign_pending`, `campaign_approved`, `campaign_rejected`, `numbers_attached`, `live`. Ages and SLA flags per state.
 - Rejection assistant: maps carrier/TCR rejection reasons to plain-language fixes ("Your website does not show an SMS opt-in or privacy policy. We added one to your Rootline site; click Resubmit."), with AI drafting of corrected campaign descriptions.
-- Fallbacks while pending: email-only notifications, or toll-free number with toll-free verification (V1) if that path is faster; texting UI shows "Texting activates after carrier approval (typical 2-4 weeks, estimate)".
+- Fallbacks while pending: email-only notifications, or toll-free number with toll-free verification if that path is faster; texting UI shows "Texting activates after carrier approval (typical 2-4 weeks, estimate)".
 - Low-volume vs standard brand selection based on expected monthly volume, with upgrade path. Snow tenants are sized on **storm-day peak**, not monthly average: a 300-lot snow contractor sends "pushed at 4:10 am" proof-of-service texts in a burst, so the console recommends a standard brand when forecast peak-day volume exceeds the low-volume brand's daily cap (verify current caps).
 - **Trial gating:** SMS stays off for trial tenants until the campaign is `live` and the risk score allows it (PA-120); email, push and portal notifications work from minute one ([22](22-business-model-pricing-gtm.md) 4.6).
 
 > **Competitive edge - texting that works on day one:** small landscapers do not know what 10DLC is, and unregistered traffic is blocked by carriers. LMN reportedly sells SMS as an add-on (about $75 one-time plus $30/mo per third-party cost data, as of Nov 2026, verify; [R2](research/R2-landscape-specific-platforms.md)), which leaves registration as the customer's problem. Rootline includes SMS allowances in every plan ([22](22-business-model-pricing-gtm.md)), starts registration at signup, pre-fills it from data the Company already entered, generates compliant sample messages from its real templates, and turns carrier rejections into one-click fixes, so the "crew on the way" text works by the first spring route.
 
-**PA-101 Number management [MVP]**
+**PA-101 Number management
 - Provision local numbers by area code near the Company's office; port-in workflow for Companies bringing an existing business number (LOA collection, port status tracking, FOC date); release numbers 30 days after churn (with option for Company to port out).
 - STOP/HELP/START handling enforced at the platform level; global and per-tenant opt-out lists; quiet hours default 8 pm-8 am recipient local time for non-urgent messages (urgent operational texts like "crew arriving in 15 minutes" allowed per configuration); per-tenant consent records stored with source (portal checkbox, signed proposal, verbal with staff attestation).
-- **Revocation by any reasonable means (US) [MVP]:** besides STOP/END/CANCEL/UNSUBSCRIBE/QUIT/REVOKE/OPT OUT keywords, inbound replies are classified for free-text revocation ("please stop texting me", "no more messages", in English and Spanish); a high-confidence match opts the number out immediately, a medium-confidence match goes to the tenant's inbox with a one-tap "Treat as opt-out" and auto-applies after 24 hours if untouched. This keeps every tenant far inside the FCC's 10-business-day window (section 2.4, verify).
-- **CASL for Canadian recipients [MVP]:** each consent record carries `consent_basis` (`express`, `implied_purchase`, `implied_inquiry`, `transactional_exempt`) and `implied_consent_expires_at` (2 years after the last purchase, 6 months after an inquiry, verify). Marketing sends to Canadian recipients whose implied consent has lapsed are blocked at the comms layer, and the tenant sees a "re-permission" campaign suggestion before the lapse. Every commercial message carries sender identification and an unsubscribe that takes effect immediately.
-- **Opt-out and consent audit [V1]:** the console reports per tenant the opt-out rate, consent coverage of recipients (share of SMS recipients with a stored consent record) and messages blocked by consent rules; tenants below 95% consent coverage on marketing sends get a guided fix.
+- **Revocation by any reasonable means (US):** besides STOP/END/CANCEL/UNSUBSCRIBE/QUIT/REVOKE/OPT OUT keywords, inbound replies are classified for free-text revocation ("please stop texting me", "no more messages", in English and Spanish); a high-confidence match opts the number out immediately, a medium-confidence match goes to the tenant's inbox with a one-tap "Treat as opt-out" and auto-applies after 24 hours if untouched. This keeps every tenant far inside the FCC's 10-business-day window (section 2.4, verify).
+- **CASL for Canadian recipients:** each consent record carries `consent_basis` (`express`, `implied_purchase`, `implied_inquiry`, `transactional_exempt`) and `implied_consent_expires_at` (2 years after the last purchase, 6 months after an inquiry, verify). Marketing sends to Canadian recipients whose implied consent has lapsed are blocked at the comms layer, and the tenant sees a "re-permission" campaign suggestion before the lapse. Every commercial message carries sender identification and an unsubscribe that takes effect immediately.
+- **Opt-out and consent audit:** the console reports per tenant the opt-out rate, consent coverage of recipients (share of SMS recipients with a stored consent record) and messages blocked by consent rules; tenants below 95% consent coverage on marketing sends get a guided fix.
 
-**PA-102 Email deliverability and sender domains [MVP]**
-- Default sending from a Rootline-managed subdomain per tenant (e.g., `greenway.mail.rootline.app`) with Rootline-managed SPF/DKIM/DMARC; custom domain wizard for Companies sending from `@greenwaylandscapes.com`: DNS records to add, live verification, DMARC policy guidance, and Entri-style automatic DNS setup for common registrars (V1).
+**PA-102 Email deliverability and sender domains
+- Default sending from a Rootline-managed subdomain per tenant (e.g., `greenway.mail.rootline.app`) with Rootline-managed SPF/DKIM/DMARC; custom domain wizard for Companies sending from `@greenwaylandscapes.com`: DNS records to add, live verification, DMARC policy guidance, and Entri-style automatic DNS setup for common registrars.
 - Separate streams: transactional (invoices, reminders, receipts) vs broadcast (campaigns, newsletters), with separate IP pools/reputation and one-click unsubscribe headers on broadcast only ([Gmail/Yahoo rules](https://bird.com/docs/knowledge-base/deliverability/gmail-yahoo-requirements)). The domain wizard validates against Gmail, Yahoo and Microsoft Outlook.com bulk-sender requirements (section 2.4) and shows a single pass/fail per provider.
 - Dashboard: delivery rate, bounce rate (hard/soft), spam complaint rate per tenant and platform-wide (warn at 0.1%, auto-throttle broadcasts at 0.2%, hard pause at 0.3%), blocklist monitoring, DMARC aggregate report summaries.
 - Suppression management: global hard-bounce suppression, per-tenant unsubscribe lists, complaint suppression; support action to remove a suppression with reason (e.g., client fixed their mailbox).
 
-**PA-103 Voice and push [V1]**
+**PA-103 Voice and push
 - Voice: CNAM registration, STIR/SHAKEN attestation status, call recording consent settings by state/province (two-party consent states), AI receptionist health ([16](16-marketing-growth-communications.md)).
 - Push: APNs/FCM credential expiry tracking, delivery success rates by app version.
 
-**PA-104 Comms surge planning [V1]**
+**PA-104 Comms surge planning
 - Forecasts SMS and email volume by day from scheduled reminders, recurring invoice runs and weather: a forecast 4-inch snowfall across the Upper Midwest triggers expected "snow push scheduled/completed" messages for all snow tenants in affected Regions. The console pre-checks throughput limits per brand and warns operators 24 hours ahead.
 
 ### 4.11 Payments oversight (no access to funds)
 
 Bring-your-own-Stripe architecture is defined in [08](08-payments-stripe.md). The console observes; it never moves money.
 
-**PA-110 Connected Account Health board [MVP]**
+**PA-110 Connected Account Health board
 - Rows per tenant: connection method (`oauth`, `account_link`, `embedded`, `restricted_key`) and API generation (`v1_controller` or `v2_config`, since [08](08-payments-stripe.md) plans a move to Stripe Accounts v2), Stripe account ID, country, `charges_enabled`, `payouts_enabled`, `requirements.currently_due` count, `past_due` count, `disabled_reason`, `current_deadline`, last `account.updated` received, capabilities (card, ACH debit, Apple Pay/Google Pay, pre-authorized debit in Canada) ([Stripe verification handling](https://docs.stripe.com/connect/handling-api-verification)).
 - Saved views: "Deadline within 7 days", "Charges disabled", "Payouts disabled but charges enabled", "Restricted-key mode with failing key check".
 - Automated nudges to `owner` and `office_manager` (in-app + email) when requirements appear, at 7 and 2 days before `current_deadline`, and immediately on `charges_enabled=false`, with a deep link to Stripe's hosted onboarding/update flow.
 - Handling `account.application.deauthorized` (tenant disconnected Rootline in Stripe): tenant alert, portal payment buttons switched to "Contact us to pay" until reconnected, CSM task, and the tenant joins the **"Payments disconnected" cohort** that [08](08-payments-stripe.md) relies on for proactive outreach.
-- **Seasonal pre-flight [V1]:** on Mar 1 (and Oct 15 for snow tenants) the board runs a readiness sweep: every active tenant with recurring Service Agreements must have `charges_enabled=true`, no `requirements.eventually_due` with a deadline inside the season, and a successful test of autopay mandates; failures become CSM tasks ranked by the tenant's autopay volume last season.
+- **Seasonal pre-flight:** on Mar 1 (and Oct 15 for snow tenants) the board runs a readiness sweep: every active tenant with recurring Service Agreements must have `charges_enabled=true`, no `requirements.eventually_due` with a deadline inside the season, and a successful test of autopay mandates; failures become CSM tasks ranked by the tenant's autopay volume last season.
 
-**PA-111 What the console can and cannot see [MVP]**
+**PA-111 What the console can and cannot see
 
 | Visible to authorized staff | Never visible or actionable |
 |-----------------------------|-----------------------------|
@@ -727,49 +727,49 @@ Bring-your-own-Stripe architecture is defined in [08](08-payments-stripe.md). Th
 
 > **Competitive edge - the Company keeps its money and its cards:** when payments run through a software vendor's own platform account, saved client cards stay behind if the Company switches; one competitor's Jobber migration guide notes that clients must re-enter payment details after switching ([Rebolt](https://help.rebolthq.com/en/articles/14063025-jobber-migration-guide)). With bring-your-own Stripe, the Company owns the account, the payouts, the disputes and the saved payment methods. The Operator Console still gives Rootline enough oversight (health, webhooks, dispute rates) to prevent problems before they hit the Company's cash flow.
 
-**PA-112 Webhook health [MVP]**
+**PA-112 Webhook health
 - One panel per Stripe endpoint defined in [08](08-payments-stripe.md): `/webhooks/stripe/connect` (all connected-account money events), `/webhooks/stripe/platform` (application fees and platform-level account events), `/webhooks/stripe/v2` (Accounts v2 thin events, always re-fetched), `/webhooks/stripe/direct/{endpoint_token}` (advanced restricted-key accounts, per-account secrets) and `/webhooks/stripe/saas` (Rootline's own SaaS billing account, a separate service). Metrics per endpoint: events received per minute, processing lag (p95), failures by event type, signature verification failures (possible attack or misconfiguration), duplicate deliveries absorbed by idempotency, dead-letter queue size.
 - Tools: replay a Stripe event by ID for a tenant (re-fetch from Stripe API, never trust stored payload), reprocess dead-lettered events after a fix, backfill a tenant's account state.
 
-**PA-113 Dispute and fraud rate monitoring [V1]**
+**PA-113 Dispute and fraud rate monitoring
 - Per tenant: dispute rate (disputes / successful card charges, 30-day and 90-day), refund rate, failed payment rate, card-testing patterns on the tenant's portal (many small failed attempts), sudden volume spikes vs. history (e.g., a new tenant processes $40,000 in its first week).
 - Internal policy thresholds (our choice, not network rules): watch at 0.5% dispute rate, alert CSM at 0.75%, risk review at 1.0%, plus a count floor (no alert below 5 disputes in 30 days, so a 40-invoice landscaper with one angry client is not flagged). Network programs (Visa VAMP, Mastercard's Excessive Chargeback Program, section 2.4) use different formulas and counts; the board shows each tenant's position against the **current network thresholds stored as a versioned rule table** and highlights anyone within 50% of a network threshold. Verify current network figures before launch.
 - Landscaping-specific dispute patterns the board labels: chargebacks filed after a plant died within the warranty window (route to the plant-warranty workflow in [14](14-service-line-modules.md)), "service not rendered" disputes on per-visit mowing (the Company's best evidence is crew GPS, timestamps and photos from [05](05-field-crew-mobile-app.md)), and snow-removal disputes after a light event (per-push trigger evidence). The console links to the evidence the Company can submit; it never submits it.
 - Actions available: contact tenant, add portal friction (CAPTCHA/3DS on portal payments via flag), or as a last resort a **"Rootline payments hold"** that stops Rootline from creating new charges for that tenant (two-person approval). This does not touch funds or Stripe's own controls.
 
-**PA-114 Payments volume analytics [MVP]**
+**PA-114 Payments volume analytics
 - Platform-visible **Payments Volume via Rootline** (sum of charges created through Rootline on connected accounts), by method (card vs ACH), tenant segment and region; adoption of portal autopay; average days-to-pay. Feeds GTM and partnership metrics in [22](22-business-model-pricing-gtm.md).
 
-**PA-115 Payments compliance rule tables [MVP]**
+**PA-115 Payments compliance rule tables
 - [08](08-payments-stripe.md) treats surcharging, convenience fees and related payment rules as **versioned data with effective dates**, maintained by platform staff in this console. Tables: card surcharge allowed or banned per US state and Canadian province, maximum surcharge percentage, debit-card exclusion, required disclosure text per jurisdiction, ACH incentive rules, and the network-program thresholds used by PA-113.
 - Workflow: `platform_finance` drafts a rule-set version with a source citation per row; `platform_owner` approves (two-person, PA-004); publication sets an effective date at least 7 days out unless a law is already in force; affected tenants (those with surcharging enabled in the changed jurisdictions) receive an in-app notice and their checkout configuration is revalidated on the effective date.
-- An AI compliance watcher [V2] drafts proposed rule changes from monitored legal sources; it never publishes ([08](08-payments-stripe.md) AI10).
+- An AI compliance watcher drafts proposed rule changes from monitored legal sources; it never publishes ([08](08-payments-stripe.md) AI10).
 
 ### 4.12 Risk and trust
 
-**PA-120 Signup fraud screening [MVP]**
+**PA-120 Signup fraud screening
 - Signals at signup: disposable email domains, VoIP/non-fixed phone numbers for the owner, IP reputation and proxy/VPN detection, device fingerprint reuse across trials, mismatched geography (US business address, IP from a high-risk region), velocity (many signups from one device/IP), payment-method checks on card-required trials (card-testing protection on Rootline's own checkout).
-- Business verification signals (V1): business name matches state/provincial registry or Google Business Profile, website exists and is older than 90 days, EIN/BN provided for 10DLC.
+- Business verification signals: business name matches state/provincial registry or Google Business Profile, website exists and is older than 90 days, EIN/BN provided for 10DLC.
 - Outcome: risk score 0-100 with decision `allow`, `allow_with_limits` (no SMS, AI credits capped at 50, no custom domains until verified), `manual_review`, `block`. Decisions and the features behind them are logged for appeal handling.
 
-**PA-121 Abuse detection [MVP]**
+**PA-121 Abuse detection
 - SMS: spam patterns, high opt-out rates (> 2% per campaign triggers review), messages to purchased lists (high invalid-number rate), SMS pumping on OTP or "text me a quote" forms (international or premium-rate number bursts, blocked by geo-permissions).
 - Email: complaint spikes, spam-trap hits, broadcasts to never-engaged lists.
 - White-label portal and custom domains: phishing detection (portal pages imitating banks, login forms for non-Rootline credentials), newly added custom domains scanned, reports via `abuse@` mailbox and a public report form.
 - AI: credit farming, generation of disallowed content, prompt-injection attacks against agents.
 - Payments: card testing through portal pay pages (also handled by Stripe Radar on the tenant's account; we add rate limits and CAPTCHA).
 
-**PA-122 Enforcement ladder and appeals [MVP]**
+**PA-122 Enforcement ladder and appeals
 - Ladder: `warning` -> `feature_restriction` (e.g., SMS broadcast disabled) -> `suspension` (two-person) -> `termination` (two-person + `platform_owner`).
 - Each enforcement has evidence attachments, policy reference (Acceptable Use Policy clause), notification template, appeal window (14 days) and reviewer other than the enforcer.
 - Enforcement actions never delete data; termination moves the tenant to `suspended` with export-only access, then normal churn retention.
 
-**PA-123 Trust and Safety review queue [MVP]**
+**PA-123 Trust and Safety review queue
 - Unified queue of flagged items: signups in `manual_review`, AI moderation hits, abuse reports, phishing scans, dispute-rate alerts. SLA: 4 business hours for high severity, 2 business days for low.
 
 ### 4.13 Compliance
 
-**PA-130 DSAR workflows [MVP]**
+**PA-130 DSAR workflows
 - Two legal roles, two workflows:
   1. **Rootline as controller** (data about tenant users, staff, marketing-site visitors, trial signups): Rootline fulfills directly.
   2. **Rootline as processor** (data about the Company's Clients, Contacts and employees inside the tenant): the Company is the controller. Requests received by Rootline are **routed to the Company** with a ready-made fulfillment kit; Rootline assists under the DPA.
@@ -779,31 +779,31 @@ Bring-your-own-Stripe architecture is defined in [08](08-payments-stripe.md). Th
 - Fulfillment: **data discovery** across all stores via the data catalog (Postgres tables tagged with PII classes, object storage prefixes, search indexes, warehouse, logs with retention, AI prompt logs, helpdesk, email/SMS providers); export package (JSON + CSV + human-readable PDF summary); deletion runs as a durable workflow with per-system confirmation and a deletion certificate.
 - Exceptions engine: records needed for legal obligations (e.g., invoices and ledger entries retained for tax law; pesticide application records retained per state law) are **restricted** rather than deleted, with the reason recorded.
 
-**PA-131 Retention policies [MVP]**
+**PA-131 Retention policies
 - Policy per data class with default and allowed tenant overrides (within legal bounds): e.g., audit logs 7 years; Rootline Ledger and invoices: tenant-controlled, minimum retention shown per jurisdiction (verify: US federal tax record guidance generally ranges 3-7 years; CRA generally 6 years); pesticide application records: per state rule (verify per state, often 2-3 years); GPS breadcrumbs 13 months; session replays 30 days; call recordings 90 days; AI prompt/response logs 30 days (tenant-identifiable) then aggregated; deleted-tenant backups 35 days.
 - Retention jobs run nightly with dry-run reports; any policy change is two-person and versioned.
 
-**PA-132 Legal holds [MVP]**
+**PA-132 Legal holds
 - Scope: tenant, user, client, date range, data classes. A hold suspends deletion (lifecycle, DSAR deletions, retention jobs) for the scope and records custodian, matter name, counsel, start date.
 - Holds are visible only to compliance-permissioned staff; tenant notification per counsel's instruction.
 - Release requires two-person approval; released holds re-enable pending deletions with a 7-day delay.
-- E-discovery export (V1): scoped, hashed export package with chain-of-custody log.
+- E-discovery export: scoped, hashed export package with chain-of-custody log.
 
-**PA-133 Subprocessor registry and DPA management [MVP]**
+**PA-133 Subprocessor registry and DPA management
 - Registry of subprocessors (cloud hosting, Stripe, Twilio, Postmark/SendGrid, AI providers, maps/parcel providers, helpdesk, analytics, error tracking) with purpose, data categories, location, transfer mechanism, DPA link, security review date.
 - Public subprocessor page generated from the registry; tenants can subscribe to change notifications; new subprocessors announced at least 30 days before use (commitment configurable in the DPA).
 - DPA: click-through DPA at signup for all tenants, countersigned PDFs for enterprise, tracked per tenant.
 
-**PA-134 SOC 2 audit evidence [MVP for evidence capture, V1 for GRC integration]**
+**PA-134 SOC 2 audit evidence
 - Control library mapped to Trust Services Criteria (Security at MVP; Availability and Confidentiality in V1), each control linked to automated evidence produced by the console: quarterly staff access reviews (generated, signed in-console), offboarding timeliness, approval records for risky changes, change management (deploy logs linked to PRs), incident records and postmortems, backup restore test results, vulnerability scan summaries, DSAR logs, vendor reviews.
 - Integration with a GRC platform (Vanta, Drata or Secureframe, V1) via API; evidence export bundle per audit period.
 - Policy management: policies with version, owner, staff acknowledgements.
 
-**PA-135 Regulatory records support [V1]**
+**PA-135 Regulatory records support
 - Configurable regulatory templates the operator maintains for tenants: state pesticide applicator record fields and retention, Canadian provincial requirements, TCPA consent language, call-recording disclosures, sales-tax templates. Published as subscribed templates (PA-081) so updates reach every tenant.
-- Quebec French-language requirements (V2, with fr-CA launch).
+- Quebec French-language requirements.
 
-**PA-136 Security incident and breach notification [MVP]**
+**PA-136 Security incident and breach notification
 - A **breach case** opens automatically when a SEV1 incident is tagged `security` or `data_integrity` (PA-154), when DLP or anomaly detection fires (PA-173), or manually by `platform_owner` or `platform_engineer`. It is separate from the operational incident because its clocks, audience and confidentiality are different.
 - **Breach register:** every confidentiality incident is recorded, including ones that turn out not to require notification. Fields: discovery time, description, data classes, tenants and data subjects affected (computed from access logs and the data catalog), jurisdictions of affected subjects, containment steps, risk-of-harm assessment (for example PIPEDA's "real risk of significant harm" test and Quebec Law 25's "risk of serious injury" test), decision and rationale, notifications sent. Records are retained at least 24 months, matching PIPEDA's record-keeping requirement (verify), and the register itself satisfies Quebec Law 25's confidentiality-incident register (verify).
 - **Clocks:** the console starts a timer per obligation as soon as the case is opened: the contractual DPA commitment to notify affected Companies (controllers) **without undue delay and no later than 48 hours** after confirming a breach affecting their data (proposed commitment; confirm with counsel), GDPR Art. 33's 72 hours where Rootline is itself a controller (staff, trial signups, marketing data), and US state and Canadian deadlines from a jurisdiction rule table (verify per jurisdiction). The case view shows the earliest deadline at the top.
@@ -815,64 +815,64 @@ Bring-your-own-Stripe architecture is defined in [08](08-payments-stripe.md). Th
 
 Definitions here are platform (operator) metrics; tenant-facing analytics live in [18](18-reporting-analytics.md).
 
-**PA-140 Revenue dashboards [MVP]** - MRR/ARR, movements waterfall, ARPA (average revenue per account), seat and add-on attach rates, usage revenue, revenue by segment/region/partner/channel, deferred revenue.
+**PA-140 Revenue dashboards - MRR/ARR, movements waterfall, ARPA (average revenue per account), seat and add-on attach rates, usage revenue, revenue by segment/region/partner/channel, deferred revenue.
 
-**PA-141 Retention and churn [MVP]**
+**PA-141 Retention and churn
 - Logo churn, gross revenue retention (GRR), net revenue retention (NRR), involuntary vs voluntary churn split, churn reasons (exit survey + CSM classification: price, missing feature, went out of business, sold business, switched to competitor X, seasonal).
 - **Seasonal churn lens:** distinguishes Winter Mode (`winter_mode`) and hibernation from true churn; computes churn on a trailing-12-month basis so winter pauses do not inflate monthly churn; reports Winter Mode MRR contraction separately from churn.
 
-**PA-142 Cohorts [MVP]**
+**PA-142 Cohorts
 - Cohort tables by signup month, segment, region, acquisition channel, migration source (e.g., "came from Jobber"), plan: retention, revenue retention, activation rate, time to activation.
 
-**PA-143 Activation funnel [MVP]**
+**PA-143 Activation funnel
 - Steps: visit -> signup -> onboarding questionnaire -> Stripe connected -> first client -> first Proposal sent -> first Visit scheduled -> first Visit completed in crew app -> first Invoice sent -> first Payment collected -> **Activated** (PA-020) -> converted to paid -> 90-day retained.
 - Breakdowns by segment and channel; drop-off reasons from in-app micro-surveys.
 
-**PA-144 Feature adoption [MVP]**
+**PA-144 Feature adoption
 - Per feature: % of entitled tenants using it in the last 30 days, depth (uses per active tenant), retention correlation, adoption by role. Feature keys align with entitlement and flag keys so adoption is joinable to rollouts.
 
-**PA-145 NPS and CSAT [V1]**
+**PA-145 NPS and CSAT
 - In-app NPS by role (owners quarterly; office and field users semi-annually; never during peak dispatch hours), CSAT after tickets; verbatims clustered by AI into themes; links to tenant health.
 
-**PA-146 Unit economics [V1]**
+**PA-146 Unit economics
 - Per tenant and per segment: revenue, COGS (infra allocation, AI provider cost, SMS/email provider cost, maps/parcel API cost, support time), gross margin, CAC by channel (from marketing data), payback months. Estimates labeled as allocations, not exact costs.
 
-**PA-147 Metric definitions registry [MVP]**
+**PA-147 Metric definitions registry
 - Every metric has a definition, formula, owner, data source, refresh cadence and change log; the console shows the definition on hover. Shared with [18](18-reporting-analytics.md) and investor reporting so numbers match board decks.
 
 ### 4.15 System health
 
-**PA-150 Service health dashboard [MVP]**
+**PA-150 Service health dashboard
 - Golden signals per service and surface (latency p50/p95/p99, error rate, throughput, saturation), SLO status and error-budget burn (e.g., API availability 99.9% monthly; crew app sync success 99.5% of mutations within 60 seconds of connectivity), database health (replica lag, connection pool, slow queries, RLS policy violations blocked), Redis, object storage, CDN.
 - Data from the observability stack ([20](20-architecture-security.md)); the console embeds summaries and deep-links to the observability tool.
 
-**PA-151 Queues and workflows [MVP]**
+**PA-151 Queues and workflows
 - Temporal workflow counts by type and state (running, failed, timed out), outbox lag (oldest unpublished event age), event bus consumer lag per subscriber, scheduled-job health (recurring Visit generation, nightly invoice runs, health-score recompute, retention jobs), mobile sync backlog (pending mutations across devices, conflicts per hour).
 - Tools: retry failed workflow, cancel workflow (with reason), pause a consumer, drain a queue to dead-letter.
 
-**PA-152 Integration error console [MVP]**
+**PA-152 Integration error console
 - Per integration (Stripe, QBO, QBD Web Connector, Xero, Plaid, Twilio, Postmark/SendGrid, Google/Mapbox routing, Regrid, USGS elevation, aerial imagery provider, AI providers, helpdesk): error rate, top error codes, affected tenants, quota usage vs limit, credential expiry (OAuth refresh failures).
 - Example: "QBO sync: 214 tenants, 37 with errors in last 24 h, top error 'Duplicate Name Exists' (customer name collision) - 22 tenants - [Open runbook]".
-- **Integrity center [MVP]:** the money-and-field-data view of System Health (ledger invariant checks and subledger drift cases, Stripe webhook dead-letter and unknown-account quarantine, crew sync rejections, accounting sync quarantines), metadata only; its checks and wireframe are specified in [20](20-architecture-security.md) section 6.5, and opening a tenant's records still requires a Support Access Grant.
+- **Integrity center:** the money-and-field-data view of System Health (ledger invariant checks and subledger drift cases, Stripe webhook dead-letter and unknown-account quarantine, crew sync rejections, accounting sync quarantines), metadata only; its checks and wireframe are specified in [20](20-architecture-security.md) section 6.5, and opening a tenant's records still requires a Support Access Grant.
 
-**PA-153 Status page [MVP]**
+**PA-153 Status page
 - Public status page (hosted on independent infrastructure, e.g., a managed status page service) with components: Company web app, Crew app sync, Customer Portal, Payments (Rootline side), Notifications (SMS/email), Design Studio and AI, Integrations (QuickBooks, Xero), API.
 - Automated incident creation from SLO burn alerts (draft for human approval within 5 minutes), subscriber notifications (email/SMS/RSS/Slack), per-tenant targeted notices for tenant-specific degradations (e.g., only Canadian residency cluster).
 - In-app incident banner synchronized with the status page.
 
-**PA-154 Incident management [MVP]**
+**PA-154 Incident management
 - Severity: SEV1 (platform-wide outage or data integrity/security issue), SEV2 (major feature down for many tenants, e.g., crew app sync failing during morning dispatch), SEV3 (degraded or single integration), SEV4 (minor).
 - Roles: incident commander, communications lead, ops lead; paging via PagerDuty/Opsgenie; incident channel auto-created; timeline auto-captured from console actions (flags toggled, kill switches, deploys).
 - Customer comms templates (EN/ES), affected-tenant list computed from telemetry, SLA credit calculator for enterprise contracts.
 - Postmortems: blameless template, action items tracked to completion, linked to SOC 2 evidence.
 - **Season-aware on-call**: heavier on-call coverage 5-9 am in each North American time zone during April-June (dispatch rush) and during forecast snow events for snow tenants.
 
-**PA-155 Maintenance windows [MVP]**
+**PA-155 Maintenance windows
 - Scheduled maintenance avoids weekday mornings 5-10 am local in all served time zones and the first business days of the month (invoice runs); default window Sunday 1-4 am Eastern (Saturday late night Pacific); advance notice 72 hours via status page and in-app.
 
 ### 4.16 Partners, resellers and affiliates
 
-**PA-160 Partner program management [V1]**
+**PA-160 Partner program management
 - Partner types: **Affiliates** (referral link, cash or credit commission), **Referral partners** (industry coaches, consultants, suppliers who refer Companies), **Resellers** (sell and bill Rootline under contract, possibly with their own pricing), **Implementation partners** (certified migration and setup specialists, bookkeeping firms), **Integration partners** (nurseries, distributors, equipment dealers with data integrations), **Franchisors** (multi-location groups using organizations, PA-015).
 - Partner tracks and terms are owned by [22](22-business-model-pricing-gtm.md) section 5.4 (distributors, nurseries, equipment dealers, associations, franchise systems, accountants, consultants, creators, technology partners, schools). The console stores each partner's agreement as data: track, tier, commission rule, discount it unlocks for referred Companies, effective dates and a contract link.
 - Partner tiers from 22: **Registered** (0-4 referred paying Companies), **Silver** (5-19), **Gold** (20+). Tier is recomputed monthly; a downgrade takes effect after a 90-day grace so a partner is not punished for one seasonal churn wave.
@@ -880,15 +880,15 @@ Definitions here are platform (operator) metrics; tenant-facing analytics live i
 - **Commission rules engine:** accrues monthly on **collected** subscription revenue, excluding usage meters, taxes and refunds; supports percentage of first-year revenue (for example 20% for creators and consultants), fixed-term recurring share (for example 15% for 24 months for accountants), flat bounty per activated tenant (activation as defined in PA-020) and per-partner overrides. **Clawback** when the referred Company is refunded within 60 days ([22](22-business-model-pricing-gtm.md) 5.4.2).
 - **Neutrality guard:** the partner record has no field that can influence plant recommendations, design suggestions or Price Book defaults; a CI rule blocks any code path that reads partner tier inside recommendation services. Sponsored catalog placements are labeled "Sponsored".
 
-**PA-161 Partner Portal [V1]**
+**PA-161 Partner Portal
 - Separate surface (`partners.rootline.app`) for `partner_admin` and `partner_member`: referral links and codes, deal registration, referred-tenant status (lifecycle state and plan only, never tenant data), commission statements, payout settings, marketing assets, certification courses.
 - Implementation partners can request **partner-scoped Support Access Grants** from the tenant (same consent model as staff, PA-051) to perform migrations or setup.
 - Accounting partners (bookkeeping/CPA firms) get a **multi-tenant switcher** with the tenant-side `bookkeeper` role in each client Company, granted by each Company's owner; specified in [02](02-personas-roles-permissions.md) and [09](09-accounting-ledger-integrations.md).
 
-**PA-162 Partner payouts [V1]**
+**PA-162 Partner payouts
 - Commissions are Rootline's own money, paid monthly once the partner's balance is at least $100, via ACH/EFT through the platform's AP process on the Rootline Ledger (or Stripe Connect Express accounts for partners, if chosen; open question 13); tax forms collected before the first payout (W-9 and 1099-NEC reporting for US partners; Canadian equivalents verify). Statements and adjustments audited.
 
-**PA-163 Reseller-billed tenants [V2]**
+**PA-163 Reseller-billed tenants
 - Some partners (franchisors, regional resellers, association programs) will want to bill their Companies directly. A tenant's `billing_owner` is `direct` (default) or `reseller:<partner_id>`.
 - For reseller-billed tenants, Rootline invoices the **reseller** monthly on its own Stripe account at the agreed wholesale price, with one line per tenant (plan, seats, add-ons, usage) so the reseller can rebill. The tenant's Settings > Plan & Billing page shows "Billed by <Reseller>" and hides payment-method screens; usage meters and credit balances still show, because credit transparency is a product promise.
 - Dunning targets the reseller, never the tenant: a reseller 30 days past due triggers partner-level escalation, not tenant suspension, for 30 more days. If the reseller agreement ends (termination, insolvency), every affected tenant gets 60 days' notice and a one-click path to direct billing at list price, with any reseller-specific discount honored until the period ends. Tenant data and Stripe connections are untouched throughout, because the Company's client payments never ran through the reseller.
@@ -896,34 +896,34 @@ Definitions here are platform (operator) metrics; tenant-facing analytics live i
 
 ### 4.17 Internal staff RBAC and audit
 
-**PA-170 Staff roles and permissions [MVP]**
+**PA-170 Staff roles and permissions
 - Base roles: `platform_owner`, `platform_support`, `platform_curator`, `platform_finance`, `platform_engineer` (matrix in section 9). Permissions are granular verbs (`tenant.read_metadata`, `tenant.lifecycle.suspend`, `support_access.request`, `impersonation.start`, `billing.coupon.apply`, `billing.price.change`, `flag.edit`, `flag.kill_switch.global`, `kb.plant.publish`, `ai.route.edit`, `ai.kill_switch`, `comms.10dlc.submit`, `compliance.dsar.fulfill`, `compliance.legal_hold.apply`, `compliance.breach.notify`, `payments.rules.publish`, `billing.seat.adjust`, `billing.refund`, `partner.billing_owner.change`, `cell.rebalance.request`, `audit.read`, `staff.manage`, `runbook.execute`, `export.data`). Platform permission keys carry the `platform.` prefix in the shared taxonomy of [02](02-personas-roles-permissions.md) (for example `platform.tenant.lifecycle.suspend`).
 - Custom roles composed from permissions; role changes two-person.
 
-**PA-171 Just-in-time elevation [V1]**
+**PA-171 Just-in-time elevation
 - Engineers have read-only defaults; elevated permissions (e.g., `runbook.execute`, `flag.kill_switch.global`) are requested for a time window (max 8 hours) with reason, auto-approved during declared incidents for the on-call engineer, otherwise approved by a peer.
 
-**PA-172 Access reviews and offboarding [MVP]**
+**PA-172 Access reviews and offboarding
 - Quarterly access review campaign: each manager attests to each staff member's roles; unreviewed access auto-revokes after 14 days; results archived as SOC 2 evidence.
 - Offboarding: SSO deprovisioning cascades within 15 minutes (SCIM in V1, manual checklist with timer at MVP); active grants and sessions terminated; API tokens revoked.
 
-**PA-173 Staff audit views [MVP]**
+**PA-173 Staff audit views
 - Per staff member: actions, tenants touched, grants used, exports, search queries over PII; anomaly flags (e.g., a support agent viewing 40 tenants in an hour without tickets; an export outside business hours).
 - Weekly digest of sensitive actions to `platform_owner`.
 
 ### 4.18 Admin API
 
-**PA-180 Admin API [MVP as the console's own backend; V1 for scripts and service tokens]**
-- Private REST API (OpenAPI 3.1 spec) under `admin-api.rootline.app/v1`, same domain model as the console; GraphQL read endpoint optional (V2).
+**PA-180 Admin API
+- Private REST API (OpenAPI 3.1 spec) under `admin-api.rootline.app/v1`, same domain model as the console; GraphQL read endpoint optional.
 - Auth: staff OAuth (acts as the staff user, inherits their permissions and step-up rules) or **service tokens** (scoped to explicit permissions, IP-restricted, max 90-day lifetime, owner and purpose required).
 - Resources: tenants, lifecycle transitions, subscriptions (read, schedule changes), entitlements and overrides, flags, beta programs, support access grants (request only; never approve on the tenant's behalf), announcements, templates, prompts, model routes, kill switches, incidents, DSARs, legal holds, audit log (read), metrics.
 - Write calls require `reason_code` and `ticket_ref` fields; idempotency keys required for POST; rate limits per token; all calls audited identically to console actions.
-- **Config-as-code [V2]:** plans, entitlements, flags, prompts and templates exportable/importable as versioned YAML in a Git repo, applied via CI with plan/apply diffs (like infrastructure-as-code), giving reviewable history for platform configuration.
+- **Config-as-code:** plans, entitlements, flags, prompts and templates exportable/importable as versioned YAML in a Git repo, applied via CI with plan/apply diffs (like infrastructure-as-code), giving reviewable history for platform configuration.
 - **Outbound platform webhooks** to internal tools (Slack channels, CRM, data warehouse): `tenant.lifecycle_changed`, `subscription.trial_started`, `subscription.plan_changed`, `subscription.status_changed`, `incident.declared`, `risk.enforcement_applied`, etc.
 
 ### 4.19 Operator Copilot
 
-**PA-190 Operator Copilot [V1]**
+**PA-190 Operator Copilot
 - Natural-language Q&A over platform metrics and metadata (not tenant content): "Which snow tenants in Ohio have not registered 10DLC campaigns yet?", "Why did Greenway's health score drop?", "Summarize this week's churn reasons", "Draft a status page update for the QBO sync incident".
 - Tools exposed to the Copilot are read-only by default; write actions (extend a trial, apply a credit) are proposed as **action cards** the staff member must confirm, and they flow through the same permission, reason-code and approval checks.
 - Answers cite the dashboards or records used; numeric answers come from the metrics layer, not LLM arithmetic.
@@ -1228,48 +1228,48 @@ flowchart TD
 
 | # | Screen | Primary roles | Priority |
 |---|--------|---------------|----------|
-| 1 | Home / Command Center (KPIs, alerts, approvals, incidents; Morning Brief panel in V1) | all staff (content varies by role) | [MVP] |
-| 2 | Tenant directory with saved views | support, finance, owner | [MVP] |
-| 3 | Tenant 360 (overview, timeline, notes, subscription, usage, integrations, users, support, data and compliance, risk) | support, finance, owner | [MVP] |
-| 4 | Lifecycle action dialog (suspend, extend, pause, reactivate) | support, finance, owner | [MVP] |
-| 5 | Health score model editor and history | owner | [V1] |
-| 6 | Organizations and ownership transfers | support, owner | [V1] |
-| 7 | Migration Center: projects board | support | [MVP] |
-| 8 | Migration project detail (mapping, validation, diff, reconcile) | support | [MVP] |
-| 9 | Catalog: plans, add-ons, meters, credit rate card | finance, owner | [MVP] |
-| 10 | Subscriptions and invoices list; dunning queue | finance | [MVP] |
-| 11 | Coupons, promotions, credits | finance, support (limited) | [MVP] |
-| 12 | Revenue dashboards | finance, owner | [MVP] |
-| 13 | Entitlements editor (plan matrix, overrides) | owner, engineer | [MVP] |
-| 14 | Feature flags list and flag editor (targeting, rollout, guardrails) | engineer, owner | [MVP] |
-| 15 | Beta programs | owner, support | [V1] |
-| 16 | Global search results | support | [MVP] |
-| 17 | Support access grants and active sessions | support, owner | [MVP] |
-| 18 | Impersonation session view (banner, scope, timer) | support, engineer | [MVP] |
-| 19 | Macros and support actions library | support | [MVP] |
-| 20 | Runbook actions | engineer | [V1] |
-| 21 | Plant KB: curator queue, record editor, region builder map, quality dashboard, license registry | curator | [MVP] |
-| 22 | Template library and template editor | support, curator, owner | [MVP] |
-| 23 | Help center CMS, release notes, announcements and guides builder | support, owner | [MVP] |
-| 24 | AI Ops: routing, prompt registry, evals, cost, moderation queue, kill switches | engineer, owner | [MVP] |
-| 25 | Comms Ops: 10DLC board, numbers, sender domains, deliverability | support, engineer | [MVP] |
-| 26 | Payments oversight: connected account health, webhook health, dispute rates | finance, engineer, owner | [MVP] |
-| 27 | Risk and Trust review queue and enforcement | support, owner | [MVP] |
-| 28 | Compliance: DSAR queue, retention policies, legal holds, subprocessors, SOC 2 evidence | owner, finance | [MVP] |
-| 29 | Platform analytics: churn, cohorts, activation funnel, feature adoption, NPS, unit economics | owner, finance | [MVP] |
-| 30 | System health: services, queues, integrations, scheduled jobs, Integrity center ([20](20-architecture-security.md) 6.5) | engineer | [MVP] |
-| 31 | Incidents and status page management | engineer, support, owner | [MVP] |
-| 32 | Partners: directory, commissions, payouts | finance, owner | [V1] |
-| 33 | Staff, roles, access reviews, audit log | owner | [MVP] |
-| 34 | Approvals inbox (two-person requests) | owner, designated approvers | [MVP] |
-| 35 | Admin API tokens | engineer, owner | [V1] |
-| 36 | Seat ledger and usage/credit ledger viewer (per tenant) | finance, support | [MVP] |
-| 37 | Spring-Ready Guarantee board | support, owner | [V1] |
-| 38 | Payments compliance rule tables (surcharge, network thresholds) | finance, owner | [MVP] |
-| 39 | Breach register and breach case view | owner, engineer | [MVP] |
-| 40 | Cell placement and rebalancing view | engineer, owner | [V1] |
-| 41 | Reseller billing (wholesale invoices, billing-owner changes) | finance | [V2] |
-| 42 | Partner Portal (separate surface `partners.rootline.app`) | `partner_admin`, `partner_member` | [V1] |
+| 1 | Home / Command Center (KPIs, alerts, approvals, incidents; Morning Brief panel in V1) | all staff (content varies by role) | |
+| 2 | Tenant directory with saved views | support, finance, owner | |
+| 3 | Tenant 360 (overview, timeline, notes, subscription, usage, integrations, users, support, data and compliance, risk) | support, finance, owner | |
+| 4 | Lifecycle action dialog (suspend, extend, pause, reactivate) | support, finance, owner | |
+| 5 | Health score model editor and history | owner | |
+| 6 | Organizations and ownership transfers | support, owner | |
+| 7 | Migration Center: projects board | support | |
+| 8 | Migration project detail (mapping, validation, diff, reconcile) | support | |
+| 9 | Catalog: plans, add-ons, meters, credit rate card | finance, owner | |
+| 10 | Subscriptions and invoices list; dunning queue | finance | |
+| 11 | Coupons, promotions, credits | finance, support (limited) | |
+| 12 | Revenue dashboards | finance, owner | |
+| 13 | Entitlements editor (plan matrix, overrides) | owner, engineer | |
+| 14 | Feature flags list and flag editor (targeting, rollout, guardrails) | engineer, owner | |
+| 15 | Beta programs | owner, support | |
+| 16 | Global search results | support | |
+| 17 | Support access grants and active sessions | support, owner | |
+| 18 | Impersonation session view (banner, scope, timer) | support, engineer | |
+| 19 | Macros and support actions library | support | |
+| 20 | Runbook actions | engineer | |
+| 21 | Plant KB: curator queue, record editor, region builder map, quality dashboard, license registry | curator | |
+| 22 | Template library and template editor | support, curator, owner | |
+| 23 | Help center CMS, release notes, announcements and guides builder | support, owner | |
+| 24 | AI Ops: routing, prompt registry, evals, cost, moderation queue, kill switches | engineer, owner | |
+| 25 | Comms Ops: 10DLC board, numbers, sender domains, deliverability | support, engineer | |
+| 26 | Payments oversight: connected account health, webhook health, dispute rates | finance, engineer, owner | |
+| 27 | Risk and Trust review queue and enforcement | support, owner | |
+| 28 | Compliance: DSAR queue, retention policies, legal holds, subprocessors, SOC 2 evidence | owner, finance | |
+| 29 | Platform analytics: churn, cohorts, activation funnel, feature adoption, NPS, unit economics | owner, finance | |
+| 30 | System health: services, queues, integrations, scheduled jobs, Integrity center ([20](20-architecture-security.md) 6.5) | engineer | |
+| 31 | Incidents and status page management | engineer, support, owner | |
+| 32 | Partners: directory, commissions, payouts | finance, owner | |
+| 33 | Staff, roles, access reviews, audit log | owner | |
+| 34 | Approvals inbox (two-person requests) | owner, designated approvers | |
+| 35 | Admin API tokens | engineer, owner | |
+| 36 | Seat ledger and usage/credit ledger viewer (per tenant) | finance, support | |
+| 37 | Spring-Ready Guarantee board | support, owner | |
+| 38 | Payments compliance rule tables (surcharge, network thresholds) | finance, owner | |
+| 39 | Breach register and breach case view | owner, engineer | |
+| 40 | Cell placement and rebalancing view | engineer, owner | |
+| 41 | Reseller billing (wholesale invoices, billing-owner changes) | finance | |
+| 42 | Partner Portal (separate surface `partners.rootline.app`) | `partner_admin`, `partner_member` | |
 
 ### 6.2 Wireframe: Home / Command Center (founder view, desktop)
 
@@ -2213,20 +2213,20 @@ Partner users (`partner_admin`, `partner_member`) can only request partner-scope
 
 | # | Opportunity | Description | Priority |
 |---|-------------|-------------|----------|
-| 1 | **Operator Copilot and Morning Brief** | NL questions over platform metrics; daily narrative brief with linked numbers (PA-008, PA-190) | [V1] |
-| 2 | **Migration mapping assistant** | Auto-detect source system, propose field mappings, normalize messy recurring-schedule text ("bi-weekly mow + edge Apr-Oct, skip July if dry") into structured recurrence plus notes | [MVP] |
-| 3 | **Ticket triage and suggested macros** | Classify incoming tickets (billing, routing, sync, payments, design), detect language, attach tenant context, propose macro and support action; agents approve | [V1] |
-| 4 | **Explain this error** | Summarize logs, traces and known-issue articles for a tenant's error into a plain-language diagnosis and next step | [V1] |
-| 5 | **Churn risk explanations** | Turn health components and usage diffs into "why" statements and recommended plays (offer Winter Mode, schedule QBO fix call) | [V1] |
-| 6 | **10DLC rejection assistant** | Map rejection codes to fixes; draft compliant campaign descriptions and sample messages from the tenant's real templates | [MVP] |
-| 7 | **KB enrichment agents** | Propose plant traits and regional notes with citations into the curator queue (PA-073) | [V1] |
-| 8 | **Anomaly detection** | AI-spend spikes, SMS pumping, dispute-rate jumps, sign-up fraud rings (graph of shared devices/cards/IPs) | [V1] |
-| 9 | **Release notes and help article drafting** | Draft from merged PRs and flag descriptions in EN and ES; human review before publish | [MVP] |
-| 10 | **Eval case generation** | Mine real (consented, anonymized) failures and curator rejections into new eval cases | [V2] |
-| 11 | **Status page drafting** | Draft incident updates from alert context and affected components for comms-lead approval | [V1] |
-| 12 | **DSAR discovery assistant** | Fuzzy-match data subjects across tenants (name variants, old addresses) and draft routing notices | [V2] |
-| 13 | **Pricing simulator** | Simulate MRR impact of price/packaging changes on current tenant usage, with confidence ranges labeled as estimates | [V2] |
-| 14 | **Autonomous support agent (supervised)** | Resolves safe-action tickets end to end (resend invite, explain an invoice, re-trigger sync) with human review sampling | [V2] |
+| 1 | **Operator Copilot and Morning Brief** | NL questions over platform metrics; daily narrative brief with linked numbers (PA-008, PA-190) | |
+| 2 | **Migration mapping assistant** | Auto-detect source system, propose field mappings, normalize messy recurring-schedule text ("bi-weekly mow + edge Apr-Oct, skip July if dry") into structured recurrence plus notes | |
+| 3 | **Ticket triage and suggested macros** | Classify incoming tickets (billing, routing, sync, payments, design), detect language, attach tenant context, propose macro and support action; agents approve | |
+| 4 | **Explain this error** | Summarize logs, traces and known-issue articles for a tenant's error into a plain-language diagnosis and next step | |
+| 5 | **Churn risk explanations** | Turn health components and usage diffs into "why" statements and recommended plays (offer Winter Mode, schedule QBO fix call) | |
+| 6 | **10DLC rejection assistant** | Map rejection codes to fixes; draft compliant campaign descriptions and sample messages from the tenant's real templates | |
+| 7 | **KB enrichment agents** | Propose plant traits and regional notes with citations into the curator queue (PA-073) | |
+| 8 | **Anomaly detection** | AI-spend spikes, SMS pumping, dispute-rate jumps, sign-up fraud rings (graph of shared devices/cards/IPs) | |
+| 9 | **Release notes and help article drafting** | Draft from merged PRs and flag descriptions in EN and ES; human review before publish | |
+| 10 | **Eval case generation** | Mine real (consented, anonymized) failures and curator rejections into new eval cases | |
+| 11 | **Status page drafting** | Draft incident updates from alert context and affected components for comms-lead approval | |
+| 12 | **DSAR discovery assistant** | Fuzzy-match data subjects across tenants (name variants, old addresses) and draft routing notices | |
+| 13 | **Pricing simulator** | Simulate MRR impact of price/packaging changes on current tenant usage, with confidence ranges labeled as estimates | |
+| 14 | **Autonomous support agent (supervised)** | Resolves safe-action tickets end to end (resend invite, explain an invoice, re-trigger sync) with human review sampling | |
 
 Guardrails: the Copilot never sees tenant content without an active grant; write actions require human confirmation; outputs cite their data sources; all prompts live in the prompt registry with evals ([17](17-ai-copilot-automation.md)).
 
@@ -2278,7 +2278,7 @@ Compliance summary (details in [20](20-architecture-security.md)): SOC 2 Type II
 
 Targets below are Rootline's internal goals, not industry benchmarks.
 
-| Area | KPI | Definition | Target (V1) |
+| Area | KPI | Definition | Target |
 |------|-----|------------|-------------|
 | Leverage | Paying tenants per support FTE | Active paying tenants / support FTEs (monthly avg) | 400+ |
 | Support | First response time (median) | Ticket created -> first human or approved AI reply | < 1 business hour (`pro`+) |
@@ -2320,29 +2320,29 @@ Targets below are Rootline's internal goals, not industry benchmarks.
 
 ## 13. Beyond the brief: extra ideas
 
-1. **Tenant Trust Center [V1].** A page inside every Company's settings (and linkable for their own commercial clients) showing Rootline's security posture, uptime, subprocessors, the Company's Support Access Log, data residency and backups. Commercial property managers and HOA boards that vet their vendors can get the answer to "where is our data?" without a phone call.
-2. **"Winter Switch" program [MVP].** A seasonal GTM-plus-ops motion: November-February migration sprints with extra white-glove capacity, cohort onboarding webinars in English and Spanish, and price-book tune-up sessions, so Companies start spring fully live. The migration queue and capacity planner are built around it.
-3. **Season-aware everything [V1].** Health scores, churn metrics, maintenance windows, change freezes and on-call staffing that know a Company's Region and service mix. Generic SaaS admin tooling does not do this out of the box.
-4. **Operator mobile app (lite) [V1].** Approvals inbox, incidents, Morning Brief and Tenant 360 summary as a small Expo app for the founder; WebAuthn passkeys on device.
-5. **Tenant time machine [V2].** Point-in-time restore of a single entity (a Service Agreement, a Design, a Price Book) from event history, run as a support action with tenant consent, so "my office manager deleted our snow contracts" is a two-minute fix.
-6. **Anonymized repro clones [V2].** With tenant consent, clone a tenant's configuration and a synthetic version of its data shape (same counts, schedules and price structures, fake names) into a sandbox to reproduce performance bugs without touching PII.
-7. **Config-as-code for the whole platform [V2].** Plans, entitlements, flags, prompts and templates in Git with reviewable diffs, making investor and SOC 2 diligence trivial and enabling instant environment rebuilds.
-8. **Customer Advisory Board and roadmap voting [V1].** Feature requests captured from tickets and in-app, deduplicated by AI, tied to tenant MRR and segment; advisory board members get early betas.
-9. **Regional horticulturist network [V2].** Paid contract curators per Region with a bounty system for KB gaps, managed in the curator console; Companies can nominate their own local plant experts.
-10. **Chaos drills and game days [V1].** Quarterly scheduled drills (Stripe webhook outage, AI provider outage, SMS carrier filtering) run from the console with results stored as SOC 2 availability evidence.
-11. **Dead-man's switch for the founder [MVP].** If the sole `platform_owner` does not check in for a configured period during the early solo phase, sealed credentials are released to the designated successor per the continuity runbook.
-12. **Industry association bundles [V2].** Partner tier for state landscape associations and franchisors with member pricing, co-branded onboarding and benchmark reports (opt-in, aggregated, cross-ref [18](18-reporting-analytics.md)).
-13. **Cost-to-serve badges [V1].** Each tenant shows an estimated monthly cost-to-serve (AI, SMS, maps, support minutes) next to MRR, so pricing and packaging decisions are grounded in margin, not intuition.
-14. **"Data Doctor" [V1].** Automated weekly data-quality scan per tenant (properties without geocodes, clients without contacts, agreements without prices, overdue invoices with no reminder automation) surfaced to the tenant as a to-do list and to CSMs as health signals.
-15. **Public "Rootline Reliability" report [V2].** Quarterly public report on uptime, incident counts, support response times and AI eval scores; a trust differentiator, since in our limited review we found few landscape software vendors publishing operational data.
-16. **Autonomous operations agent [V3].** A supervised agent that runs the routine operator loop end to end: works the trial-nudge list, resolves safe-action tickets, re-submits fixable 10DLC rejections, tunes AI routing toward cheaper models when evals allow, and drafts the weekly board update. Every action still goes through permissions, reason codes and the audit log, and humans sample-review its work. The goal is a platform that a team of five can run at 10,000 Companies.
-17. **Open landscape data standard and "portable Company" export [V3].** Publish an open schema (Clients, Properties, Service Agreements, Price Book, Designs, Plant lists) and a one-click full-fidelity export, inviting other vendors to adopt it. It looks counterintuitive for a vendor, but it signals confidence, eases migration fears in sales, and positions Rootline as the industry's system of record.
+1. **Tenant Trust Center.** A page inside every Company's settings (and linkable for their own commercial clients) showing Rootline's security posture, uptime, subprocessors, the Company's Support Access Log, data residency and backups. Commercial property managers and HOA boards that vet their vendors can get the answer to "where is our data?" without a phone call.
+2. **"Winter Switch" program.** A seasonal GTM-plus-ops motion: November-February migration sprints with extra white-glove capacity, cohort onboarding webinars in English and Spanish, and price-book tune-up sessions, so Companies start spring fully live. The migration queue and capacity planner are built around it.
+3. **Season-aware everything.** Health scores, churn metrics, maintenance windows, change freezes and on-call staffing that know a Company's Region and service mix. Generic SaaS admin tooling does not do this out of the box.
+4. **Operator mobile app (lite).** Approvals inbox, incidents, Morning Brief and Tenant 360 summary as a small Expo app for the founder; WebAuthn passkeys on device.
+5. **Tenant time machine.** Point-in-time restore of a single entity (a Service Agreement, a Design, a Price Book) from event history, run as a support action with tenant consent, so "my office manager deleted our snow contracts" is a two-minute fix.
+6. **Anonymized repro clones.** With tenant consent, clone a tenant's configuration and a synthetic version of its data shape (same counts, schedules and price structures, fake names) into a sandbox to reproduce performance bugs without touching PII.
+7. **Config-as-code for the whole platform.** Plans, entitlements, flags, prompts and templates in Git with reviewable diffs, making investor and SOC 2 diligence trivial and enabling instant environment rebuilds.
+8. **Customer Advisory Board and roadmap voting.** Feature requests captured from tickets and in-app, deduplicated by AI, tied to tenant MRR and segment; advisory board members get early betas.
+9. **Regional horticulturist network.** Paid contract curators per Region with a bounty system for KB gaps, managed in the curator console; Companies can nominate their own local plant experts.
+10. **Chaos drills and game days.** Quarterly scheduled drills (Stripe webhook outage, AI provider outage, SMS carrier filtering) run from the console with results stored as SOC 2 availability evidence.
+11. **Dead-man's switch for the founder.** If the sole `platform_owner` does not check in for a configured period during the early solo phase, sealed credentials are released to the designated successor per the continuity runbook.
+12. **Industry association bundles.** Partner tier for state landscape associations and franchisors with member pricing, co-branded onboarding and benchmark reports (opt-in, aggregated, cross-ref [18](18-reporting-analytics.md)).
+13. **Cost-to-serve badges.** Each tenant shows an estimated monthly cost-to-serve (AI, SMS, maps, support minutes) next to MRR, so pricing and packaging decisions are grounded in margin, not intuition.
+14. **"Data Doctor".** Automated weekly data-quality scan per tenant (properties without geocodes, clients without contacts, agreements without prices, overdue invoices with no reminder automation) surfaced to the tenant as a to-do list and to CSMs as health signals.
+15. **Public "Rootline Reliability" report.** Quarterly public report on uptime, incident counts, support response times and AI eval scores; a trust differentiator, since in our limited review we found few landscape software vendors publishing operational data.
+16. **Autonomous operations agent.** A supervised agent that runs the routine operator loop end to end: works the trial-nudge list, resolves safe-action tickets, re-submits fixable 10DLC rejections, tunes AI routing toward cheaper models when evals allow, and drafts the weekly board update. Every action still goes through permissions, reason codes and the audit log, and humans sample-review its work. The goal is a platform that a team of five can run at 10,000 Companies.
+17. **Open landscape data standard and "portable Company" export.** Publish an open schema (Clients, Properties, Service Agreements, Price Book, Designs, Plant lists) and a one-click full-fidelity export, inviting other vendors to adopt it. It looks counterintuitive for a vendor, but it signals confidence, eases migration fears in sales, and positions Rootline as the industry's system of record.
 
-18. **Storm Mode [V1].** When the National Weather Service forecasts a significant snow or ice event (or a hurricane for Gulf Coast landscapers) over Regions with active snow tenants, one operator toggle (or an automatic trigger at a configurable forecast threshold) does five things at once: freezes risky rollouts in those Regions (PA-042), pre-checks SMS throughput per brand and pre-warms queues (PA-104), schedules extra support coverage for the 4-9 am window, pins an in-app storm checklist to affected tenants ("confirm per-push triggers, verify crew phones are charged and on app version 2.16+"), and applies the snow carve-out to any `suspended` snow tenant (PA-012). Generic SaaS consoles have no idea a 6-inch storm is a platform event; for a snow contractor it is the night the business makes or loses its season.
-19. **Plan preview mode [V1].** Support and sales can open the Company app as "any plan, any flag set" against the synthetic Greenleaf dataset, without impersonating anyone. That answers "does Starter include route optimization?" or "what will my office manager lose if we downgrade to Grow?" in seconds with zero tenant-data access, and it lets the founder see packaging changes as customers will before approving a price version (PA-030).
-20. **Free data hibernation for seasonal churners [V1].** A Company that cancels in October often intends to come back in March, but the 90-day export window ends in January. At cancellation the owner can opt into **free hibernation for 12 months**: data is encrypted into cold storage with no access and no portal, then restored in minutes on reactivation. Cold storage costs pennies per tenant, and a returning customer with five seasons of mowing history, plant lists and price books intact is the cheapest reactivation Rootline will ever get. It complements the paid Archive plan, which is for Companies that need read access for records. Opt-in only, because the Company is the controller of its clients' data, and a DSAR or deletion request still reaches hibernated data.
-21. **Pre-season readiness sweep [V1].** Every Feb 15 (Mar 15 for northern Regions) the console scores each tenant's readiness for opening day across modules: Stripe `charges_enabled` and no requirement deadlines in season (PA-110), 10DLC `live`, every field device on a supported app version, Service Agreements renewed for the new season, the annual price increase applied to recurring agreements (dry run), week-1 routes generated, and plant warranty terms published. CSMs work the list from the bottom up, and owners see the same checklist in-app. It turns the April support spike into February work, when everyone has time.
-22. **Switching-window radar [V1].** Consolidation creates switching windows (section 2.1): a forced processor change, a forced cloud upgrade or a price increase at an incumbent. The console tracks those events per source system (from public announcements, sales calls and the migration-source field) and forecasts migration demand by week, so the "Winter Switch" program can staff white-glove specialists ahead of a wave, and marketing in [16](16-marketing-growth-communications.md) can time importer-specific landing pages. Example: if a payments-bundled incumbent announces a mandatory processor move for next March, the radar projects the extra migration load, the specialist hours needed and the importer mapping profiles to harden first.
+18. **Storm Mode.** When the National Weather Service forecasts a significant snow or ice event (or a hurricane for Gulf Coast landscapers) over Regions with active snow tenants, one operator toggle (or an automatic trigger at a configurable forecast threshold) does five things at once: freezes risky rollouts in those Regions (PA-042), pre-checks SMS throughput per brand and pre-warms queues (PA-104), schedules extra support coverage for the 4-9 am window, pins an in-app storm checklist to affected tenants ("confirm per-push triggers, verify crew phones are charged and on app version 2.16+"), and applies the snow carve-out to any `suspended` snow tenant (PA-012). Generic SaaS consoles have no idea a 6-inch storm is a platform event; for a snow contractor it is the night the business makes or loses its season.
+19. **Plan preview mode.** Support and sales can open the Company app as "any plan, any flag set" against the synthetic Greenleaf dataset, without impersonating anyone. That answers "does Starter include route optimization?" or "what will my office manager lose if we downgrade to Grow?" in seconds with zero tenant-data access, and it lets the founder see packaging changes as customers will before approving a price version (PA-030).
+20. **Free data hibernation for seasonal churners.** A Company that cancels in October often intends to come back in March, but the 90-day export window ends in January. At cancellation the owner can opt into **free hibernation for 12 months**: data is encrypted into cold storage with no access and no portal, then restored in minutes on reactivation. Cold storage costs pennies per tenant, and a returning customer with five seasons of mowing history, plant lists and price books intact is the cheapest reactivation Rootline will ever get. It complements the paid Archive plan, which is for Companies that need read access for records. Opt-in only, because the Company is the controller of its clients' data, and a DSAR or deletion request still reaches hibernated data.
+21. **Pre-season readiness sweep.** Every Feb 15 (Mar 15 for northern Regions) the console scores each tenant's readiness for opening day across modules: Stripe `charges_enabled` and no requirement deadlines in season (PA-110), 10DLC `live`, every field device on a supported app version, Service Agreements renewed for the new season, the annual price increase applied to recurring agreements (dry run), week-1 routes generated, and plant warranty terms published. CSMs work the list from the bottom up, and owners see the same checklist in-app. It turns the April support spike into February work, when everyone has time.
+22. **Switching-window radar.** Consolidation creates switching windows (section 2.1): a forced processor change, a forced cloud upgrade or a price increase at an incumbent. The console tracks those events per source system (from public announcements, sales calls and the migration-source field) and forecasts migration demand by week, so the "Winter Switch" program can staff white-glove specialists ahead of a wave, and marketing in [16](16-marketing-growth-communications.md) can time importer-specific landing pages. Example: if a payments-bundled incumbent announces a mandatory processor move for next March, the radar projects the extra migration load, the specialist hours needed and the importer mapping profiles to harden first.
 
 ---
 

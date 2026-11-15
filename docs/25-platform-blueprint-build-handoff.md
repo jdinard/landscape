@@ -1,6 +1,6 @@
 # 25 - Platform Blueprint Build Handoff
 
-> The handoff for the autonomous coding agent that will build Rootline from the specs in this repository, the blueprint in [platform/](platform/), the architecture in [20](20-architecture-security.md) and the MVP in [24](24-roadmap-feature-catalog.md). It contains no dates, durations, effort estimates or staffing.
+> The handoff for the autonomous coding agent that will build Rootline from the specs in this repository, the blueprint in [platform/](platform/), the architecture in [20](20-architecture-security.md) and the MVP in [24](24-product-scope-decisions-catalog.md). It contains no dates, durations, effort estimates or staffing.
 
 | Field | Value |
 |---|---|
@@ -73,7 +73,7 @@ The JSON is the source of truth for code; the owner doc is the source of truth f
 
 ### 1.4 Repository rules that carry into the build
 
-- No dates, durations, effort or staffing anywhere; scope uses [MVP], [V1], [V2], [V3].
+- No dates, durations, effort or staffing anywhere; scope uses,,,.
 - Plain language, sentence case, no em dashes. Sample data is illustrative; no real company appears as a customer.
 - Facts marked "verify" (vendor prices and APIs, model IDs, legal rules) are checked against primary sources before they are hard-coded.
 
@@ -131,9 +131,9 @@ Parser facts: 846 grant cells, 106 distinct strings. 755 cells are plain `LETTER
 | Shape | TypeScript modular monolith `core`: one image run as `api`, `sync`, `realtime`, `webhook-ingest`, `worker`; satellites for AI Gateway, optimizer, GPU, media | 20 §4.2, ADR-001 |
 | Modules | `iam`, `tenancy`, `crm`, `sales`, `catalog`, `ops`, `field`, `people`, `billing`, `payments`, `ledger`, `inventory`, `design`, `mockup`, `kb`, `media`, `comms`, `portal`, `growth`, `automation`, `ai`, `integrations`, `reporting`, `platform`, `audit`. Each owns its schema; boundaries are checked in CI | 20 §4.3 |
 | Data | Aurora PostgreSQL per cell with PostGIS and pgvector; Redis; S3. UUIDv7 as TypeIDs; integer minor units; quantities as decimal strings plus unit | 20 §4.2, §4.7.2, ADR-002, -004, -005 |
-| Tenancy | `tenant_id` everywhere, forced RLS, composite keys, transaction-local context, fail closed, `withTenant` only. Cells; Canada [V1]; dedicated cell [V2] | 20 §4.4, ADR-003 |
+| Tenancy | `tenant_id` everywhere, forced RLS, composite keys, transaction-local context, fail closed, `withTenant` only. Cells; Canada; dedicated cell | 20 §4.4, ADR-003 |
 | Identity, authz | In-house auth with passkeys; field phone OTP and PIN; client magic links; staff realm with FIDO2. Cedar, RBAC plus ABAC, enforcement points E1-E10 | 20 §4.5-4.6, ADR-016, -017 |
-| Events, workflows | Outbox to SNS/SQS (MSK [V1]), idempotent consumers, CloudEvents, schemas in `packages/events`. Temporal Cloud, deterministic, `tenant_id` in every input | 20 §4.9-4.10, ADR-006, -007 |
+| Events, workflows | Outbox to SNS/SQS (MSK), idempotent consumers, CloudEvents, schemas in `packages/events`. Temporal Cloud, deterministic, `tenant_id` in every input | 20 §4.9-4.10, ADR-006, -007 |
 | Offline | SQLite (SQLCipher); UI reads local data only; authorization-derived buckets; push lanes; per-entity conflict rules; Rootline owns the write path | 20 §4.11, ADR-008 |
 | AI | One AI Gateway; pinned model ids per task; schema outputs; every call metered (hold, settle, release); budgets; no training on customer data | 20 §4.13, ADR-012 |
 | Money | BYO Stripe direct charges; webhooks verified, persisted, then processed; Rootline's billing on its own Stripe account; no client funds held. Ledger invariants L1-L12 in the database | 20 §4.18-4.19, ADR-010, -011 |
@@ -149,9 +149,9 @@ Parser facts: 846 grant cells, 106 distinct strings. 755 cells are plain `LETTER
 apps/web/          [20] Company web app (Next.js); [P] also Subcontractor lite at /{slug}/sub (21 §5.1)
 apps/console/      [20 calls it apps/admin] Platform Admin console; [P] named after surface `console`
 apps/portal/       [20] Customer Portal PWA
-apps/crew/         [20] Expo: crew mode [MVP]; manager mode, kiosk [V1]
-apps/marketing/    [20] rootline.com; [P] Rootline Home funnel at /design [V1]
-apps/partner/      [P] Accountant Hub [V1]
+apps/crew/         [20] Expo: crew mode      ; manager mode, kiosk     
+apps/marketing/    [20] rootline.com; [P] Rootline Home funnel at /design     
+apps/partner/      [P] Accountant Hub     
 services/core/     [20] Monolith: modules/<name> per 20 §4.3, five entrypoints
 services/ai-gateway/, optimizer/, gpu-workers/   [20]
 services/media/    [P] Media processor
@@ -188,7 +188,7 @@ Local development follows 20 §4.22, seeded from `tenants.json` (C9).
 | 1 | Surface | `roles[].surfaces` | `surface` | Separate apps and origins; staff realm (20 §4.5) |
 | 2 | Route roles | `route.roles` | `denied` | Router and API |
 | 3 | Navigation | `nav_visibility` (F, R, -, C) | `denied` | Hidden items removed, not greyed. Not security: layer 4 still runs |
-| 4 | Permission and scope | Tenant matrix: `own`, `crew` (visibility window), `branch` [V1], `all`; approval limits | `denied` (web routes, grant presence) | Cedar at E3 per command and query; scope as query predicates (02 §5.3); limits create approval requests; anti-escalation (02 §5.8) |
+| 4 | Permission and scope | Tenant matrix: `own`, `crew` (visibility window), `branch`, `all`; approval limits | `denied` (web routes, grant presence) | Cedar at E3 per command and query; scope as query predicates (02 §5.3); limits create approval requests; anti-escalation (02 §5.8) |
 | 5 | Module | Tenant modules from the 14 §4.0.1 catalog (`tenants.json` `module_catalog`); `core_maintenance` always on; `snow_ice` on means Snow Lite, the full module is the `snow_ice` add-on (layer 6); Books off when `books` is `qbo_system` | `off` | Hidden, not greyed (21 §5.2) |
 | 6 | Plan entitlement | Feature state per plan plus add-ons | `ok`, `limit`, `locked`, `hidden` | Entitlement service; rules in 4.3 |
 | 7 | Scope tier | `route.scope` | Lens filter | Feature flags; later tiers ship dark (19 PA-041) |
@@ -331,225 +331,225 @@ Every route in `docs/platform/surfaces.json`, generated by a script and grouped 
 
 86 routes: 77 MVP, 9 V1.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Today | `web.today` | Today | MVP | 21 §6.3; 17 A1 |
-| Inbox | `web.inbox` | Inbox | MVP | 16; 17 A2 |
-| Clients | `web.clients` | Client list | MVP | 03 |
-|  | `web.client` | Client record | MVP | 03; 21 §18 |
-|  | `web.property` | Property record | MVP | 03; 12 |
-|  | `web.contacts` | Contacts and portal access | MVP | 02 §5.11; 16 |
-| Sales | `web.leads` | Leads | MVP | 03; 17 A3 |
-|  | `web.pipeline` | Pipeline | MVP | 03 |
-|  | `web.assessments` | Site assessments | MVP | 03 |
-|  | `web.estimates` | Estimates | MVP | 03 |
-|  | `web.estimate` | Estimate builder | MVP | 03; 17 A6 |
-|  | `web.proposals` | Proposals | MVP | 03 |
-|  | `web.proposal` | Proposal editor | MVP | 03; 06 |
-|  | `web.renewals` | Renewals | V1 | 03; 07 |
-|  | `web.change_orders` | Change orders | MVP | 03 |
-|  | `web.sales_templates` | Templates and kits | MVP | 03 |
-| Design | `web.designs` | Designs | MVP | 10 |
-|  | `web.studio` | Design Studio | MVP | 10; 21 §18.7 |
-|  | `web.mockups` | Mockup lab | MVP | 11; 21 §18.8 |
-|  | `web.plants` | Plant library | MVP | 12 |
-|  | `web.palettes` | Palettes | MVP | 12 |
-|  | `web.design_library` | Symbols and materials | MVP | 10 |
-|  | `web.design_templates` | Design templates | V1 | 10 |
-| Schedule | `web.board` | Dispatch board | MVP | 04 |
-|  | `web.calendar` | Calendar | MVP | 04 |
-|  | `web.map` | Route map | MVP | 04 |
-|  | `web.capacity` | Capacity planner | MVP | 04 |
-|  | `web.programs` | Recurring programs | MVP | 04; 14 |
-|  | `web.weather` | Weather center | V1 | 04 |
-| Jobs | `web.jobs` | All jobs | MVP | 04; 14 |
-|  | `web.projects` | Projects (module `install_projects`) | MVP | 14 |
-|  | `web.agreements` | Service agreements | MVP | 07 |
-|  | `web.job` | Job record | MVP | 14; 09 |
-|  | `web.visit` | Visit record | MVP | 05 |
-|  | `web.snow` | Snow & Ice (module `snow_ice`) | MVP | 14 §4.3 |
-| Money | `web.invoices` | Invoices | MVP | 07 |
-|  | `web.invoice` | Invoice editor | MVP | 07 |
-|  | `web.payments` | Payments | MVP | 08 |
-|  | `web.ar` | Receivables | MVP | 07; 17 A5 |
-|  | `web.stripe` | Stripe payouts and disputes | MVP | 08 |
-| Books | `web.books` | Books overview (module `books`) | MVP | 09 |
-|  | `web.coa` | Chart of accounts (module `books`) | MVP | 09 |
-|  | `web.journal` | Journal (module `books`) | MVP | 09 |
-|  | `web.bills` | Bills and vendors (module `books`) | MVP | 09; 13 |
-|  | `web.banking` | Bank feeds and reconciliation (module `books`) | MVP | 09 |
-|  | `web.job_costing` | Job costing (module `books`; WIP with Ledger Advanced [V1]) | MVP | 09 |
-|  | `web.tax` | Sales tax (module `books`) | MVP | 07; 09 |
-|  | `web.close` | Period close (module `books`) | MVP | 09 |
-|  | `web.fin_reports` | Financial statements (module `books`) | MVP | 09 |
-|  | `web.sync` | QuickBooks / Xero sync | MVP | 09 |
-| Operations | `web.ops` | Operations overview | MVP | 13 |
-|  | `web.inventory` | Inventory and yards | MVP | 13 |
-|  | `web.purchasing` | Purchase orders | MVP | 13 |
-|  | `web.vendors` | Vendors and subcontractors | MVP | 13 |
-|  | `web.equipment` | Equipment and fleet | MVP | 13 |
-|  | `web.chemicals` | Chemical inventory and SDS (module `lawn_phc`) | MVP | 13; 14 |
-| Team | `web.people` | People | MVP | 15; 02 §7.3 |
-|  | `web.crews` | Crews | MVP | 15 |
-|  | `web.timesheets` | Timesheets | MVP | 15 |
-|  | `web.payroll` | Payroll export | MVP | 15 |
-|  | `web.certs` | Certifications and licenses | MVP | 15 |
-|  | `web.safety` | Safety and incidents | MVP | 15 |
-|  | `web.hiring` | Hiring | V1 | 15 |
-| Marketing | `web.campaigns` | Campaigns | MVP | 16 |
-|  | `web.reviews` | Reviews and NPS | MVP | 16 |
-|  | `web.referrals` | Referrals | V1 | 16 |
-|  | `web.website` | Website and booking | V1 | 16 |
-|  | `web.receptionist` | AI receptionist and calls | MVP | 16 |
-| Reports | `web.dashboards` | Dashboards | MVP | 18 |
-|  | `web.report_builder` | Report builder | V1 | 18 |
-|  | `web.benchmarks` | Peer benchmarks | V1 | 18; 22 §5.2.2 |
-|  | `web.forecasts` | 13-week forecasts | V1 | 18 |
-| Automations | `web.automations` | Rules | MVP | 17 |
-|  | `web.agents` | AI agents | MVP | 17 |
-| Settings | `web.settings.company` | Company profile and locations | MVP | 21 §5.2 |
-|  | `web.settings.users` | Users, roles and permissions | MVP | 21 §5.2 |
-|  | `web.settings.service_lines` | Service lines and modules | MVP | 21 §5.2 |
-|  | `web.settings.price_book` | Price book and production rates | MVP | 21 §5.2 |
-|  | `web.settings.payments` | Payments (Stripe connection) | MVP | 21 §5.2 |
-|  | `web.settings.accounting` | Accounting setup | MVP | 21 §5.2 |
-|  | `web.settings.portal` | Portal and branding | MVP | 21 §5.2 |
-|  | `web.settings.notifications` | Notifications and templates | MVP | 21 §5.2 |
-|  | `web.settings.integrations` | Integrations and API | MVP | 21 §5.2 |
-|  | `web.settings.data` | Data import and export | MVP | 21 §5.2 |
-|  | `web.settings.subscription` | Plan, billing and AI credits | MVP | 21 §5.2; 22 §9.4 |
-|  | `web.settings.security` | Security and audit log | MVP | 21 §5.2 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Today | `web.today` | Today | 21 §6.3; 17 A1 |
+| Inbox | `web.inbox` | Inbox | 16; 17 A2 |
+| Clients | `web.clients` | Client list | 03 |
+|  | `web.client` | Client record | 03; 21 §18 |
+|  | `web.property` | Property record | 03; 12 |
+|  | `web.contacts` | Contacts and portal access | 02 §5.11; 16 |
+| Sales | `web.leads` | Leads | 03; 17 A3 |
+|  | `web.pipeline` | Pipeline | 03 |
+|  | `web.assessments` | Site assessments | 03 |
+|  | `web.estimates` | Estimates | 03 |
+|  | `web.estimate` | Estimate builder | 03; 17 A6 |
+|  | `web.proposals` | Proposals | 03 |
+|  | `web.proposal` | Proposal editor | 03; 06 |
+|  | `web.renewals` | Renewals | 03; 07 |
+|  | `web.change_orders` | Change orders | 03 |
+|  | `web.sales_templates` | Templates and kits | 03 |
+| Design | `web.designs` | Designs | 10 |
+|  | `web.studio` | Design Studio | 10; 21 §18.7 |
+|  | `web.mockups` | Mockup lab | 11; 21 §18.8 |
+|  | `web.plants` | Plant library | 12 |
+|  | `web.palettes` | Palettes | 12 |
+|  | `web.design_library` | Symbols and materials | 10 |
+|  | `web.design_templates` | Design templates | 10 |
+| Schedule | `web.board` | Dispatch board | 04 |
+|  | `web.calendar` | Calendar | 04 |
+|  | `web.map` | Route map | 04 |
+|  | `web.capacity` | Capacity planner | 04 |
+|  | `web.programs` | Recurring programs | 04; 14 |
+|  | `web.weather` | Weather center | 04 |
+| Jobs | `web.jobs` | All jobs | 04; 14 |
+|  | `web.projects` | Projects (module `install_projects`) | 14 |
+|  | `web.agreements` | Service agreements | 07 |
+|  | `web.job` | Job record | 14; 09 |
+|  | `web.visit` | Visit record | 05 |
+|  | `web.snow` | Snow & Ice (module `snow_ice`) | 14 §4.3 |
+| Money | `web.invoices` | Invoices | 07 |
+|  | `web.invoice` | Invoice editor | 07 |
+|  | `web.payments` | Payments | 08 |
+|  | `web.ar` | Receivables | 07; 17 A5 |
+|  | `web.stripe` | Stripe payouts and disputes | 08 |
+| Books | `web.books` | Books overview (module `books`) | 09 |
+|  | `web.coa` | Chart of accounts (module `books`) | 09 |
+|  | `web.journal` | Journal (module `books`) | 09 |
+|  | `web.bills` | Bills and vendors (module `books`) | 09; 13 |
+|  | `web.banking` | Bank feeds and reconciliation (module `books`) | 09 |
+| | `web.job_costing` | Job costing (module `books`; WIP with Ledger Advanced) | 09 |
+|  | `web.tax` | Sales tax (module `books`) | 07; 09 |
+|  | `web.close` | Period close (module `books`) | 09 |
+|  | `web.fin_reports` | Financial statements (module `books`) | 09 |
+|  | `web.sync` | QuickBooks / Xero sync | 09 |
+| Operations | `web.ops` | Operations overview | 13 |
+|  | `web.inventory` | Inventory and yards | 13 |
+|  | `web.purchasing` | Purchase orders | 13 |
+|  | `web.vendors` | Vendors and subcontractors | 13 |
+|  | `web.equipment` | Equipment and fleet | 13 |
+|  | `web.chemicals` | Chemical inventory and SDS (module `lawn_phc`) | 13; 14 |
+| Team | `web.people` | People | 15; 02 §7.3 |
+|  | `web.crews` | Crews | 15 |
+|  | `web.timesheets` | Timesheets | 15 |
+|  | `web.payroll` | Payroll export | 15 |
+|  | `web.certs` | Certifications and licenses | 15 |
+|  | `web.safety` | Safety and incidents | 15 |
+|  | `web.hiring` | Hiring | 15 |
+| Marketing | `web.campaigns` | Campaigns | 16 |
+|  | `web.reviews` | Reviews and NPS | 16 |
+|  | `web.referrals` | Referrals | 16 |
+|  | `web.website` | Website and booking | 16 |
+|  | `web.receptionist` | AI receptionist and calls | 16 |
+| Reports | `web.dashboards` | Dashboards | 18 |
+|  | `web.report_builder` | Report builder | 18 |
+|  | `web.benchmarks` | Peer benchmarks | 18; 22 §5.2.2 |
+|  | `web.forecasts` | 13-week forecasts | 18 |
+| Automations | `web.automations` | Rules | 17 |
+|  | `web.agents` | AI agents | 17 |
+| Settings | `web.settings.company` | Company profile and locations | 21 §5.2 |
+|  | `web.settings.users` | Users, roles and permissions | 21 §5.2 |
+|  | `web.settings.service_lines` | Service lines and modules | 21 §5.2 |
+|  | `web.settings.price_book` | Price book and production rates | 21 §5.2 |
+|  | `web.settings.payments` | Payments (Stripe connection) | 21 §5.2 |
+|  | `web.settings.accounting` | Accounting setup | 21 §5.2 |
+|  | `web.settings.portal` | Portal and branding | 21 §5.2 |
+|  | `web.settings.notifications` | Notifications and templates | 21 §5.2 |
+|  | `web.settings.integrations` | Integrations and API | 21 §5.2 |
+|  | `web.settings.data` | Data import and export | 21 §5.2 |
+|  | `web.settings.subscription` | Plan, billing and AI credits | 21 §5.2; 22 §9.4 |
+|  | `web.settings.security` | Security and audit log | 21 §5.2 |
 
 ### 7.2 Crew mobile app ("Rootline Crew") (`crew`)
 
 9 routes: 9 MVP. Roles: `crew_lead`, `technician` unless the row says otherwise.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Today | `crew.today` | Today route | MVP | 05; 21 §5.3 |
-|  | `crew.visit` | Visit screen | MVP | 05 |
-|  | `crew.chem` | Chemical application log (module `lawn_phc`) | MVP | 05; 14 |
-|  | `crew.snow` | Storm visit log (Snow Lite) (module `snow_ice`) | MVP | 14 §4.3.0 |
-| Map | `crew.map` | Map | MVP | 05 |
-| Time | `crew.time` | Time | MVP | 05; 15 |
-| Messages | `crew.messages` | Messages | MVP | 05 |
-| More | `crew.more` | More | MVP | 05 |
-|  | `crew.equipment` | Equipment checkout and DVIR | MVP | 13 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Today | `crew.today` | Today route | 05; 21 §5.3 |
+|  | `crew.visit` | Visit screen | 05 |
+|  | `crew.chem` | Chemical application log (module `lawn_phc`) | 05; 14 |
+|  | `crew.snow` | Storm visit log (Snow Lite) (module `snow_ice`) | 14 §4.3.0 |
+| Map | `crew.map` | Map | 05 |
+| Time | `crew.time` | Time | 05; 15 |
+| Messages | `crew.messages` | Messages | 05 |
+| More | `crew.more` | More | 05 |
+|  | `crew.equipment` | Equipment checkout and DVIR | 13 |
 
 ### 7.3 Manager mode (crew app) (`crew_manager`)
 
 1 route: 1 V1. Roles: `owner`, `ops_manager`, `estimator`, `office_manager` unless the row says otherwise.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Today | `crew.manager` | Manager mode | V1 | 21 §5.3 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Today | `crew.manager` | Manager mode | 21 §5.3 |
 
 ### 7.4 Shop kiosk (`kiosk`)
 
 1 route: 1 V1. Roles: `crew_lead`, `technician` unless the row says otherwise.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Today | `crew.kiosk` | Shop kiosk | V1 | 02 §7.4; 05 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Today | `crew.kiosk` | Shop kiosk | 02 §7.4; 05 |
 
 ### 7.5 Subcontractor lite (`sub`)
 
 3 routes: 3 MVP. Roles: `subcontractor` unless the row says otherwise.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Work orders | `sub.orders` | My work orders | MVP | 21 §5.3; 02 §5.12 |
-|  | `sub.order` | Work order | MVP | 21 §5.3 |
-| Invoices | `sub.invoices` | Invoices | MVP | 21 §5.3; 09 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Work orders | `sub.orders` | My work orders | 21 §5.3; 02 §5.12 |
+|  | `sub.order` | Work order | 21 §5.3 |
+| Invoices | `sub.invoices` | Invoices | 21 §5.3; 09 |
 
 ### 7.6 Customer Portal (`portal`)
 
 14 routes: 10 MVP, 4 V1.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Home / Next step | `portal.home` | Home | MVP | 06; 21 §5.4 |
-| Proposals and designs | `portal.proposals` | Proposals and designs | MVP | 06 |
-|  | `portal.proposal` | Proposal view | MVP | 06 |
-| Schedule | `portal.schedule` | Schedule | MVP | 06 |
-| Invoices and payments | `portal.billing` | Invoices and payments | MVP | 06; 08 |
-| Requests | `portal.requests` | Requests | MVP | 06 |
-| Service history and visit reports | `portal.history` | Service history | MVP | 06 |
-| Plants and property | `portal.property` | My landscape | MVP | 06; 12 |
-| Messages | `portal.messages` | Messages | MVP | 06 |
-| Account: own language, notifications, consent, passkeys | `portal.account` | Account | MVP | 06; 02 §5.11 |
-| Commercial workspace | `portal.portfolio` | Portfolio (`client_commercial`) | V1 | 06; 21 §18.17 |
-|  | `portal.approvals` | Approvals (`client_commercial`) | V1 | 06; 02 §5.11 |
-|  | `portal.documents` | Documents (`client_commercial`) | V1 | 06 |
-|  | `portal.reports` | Reports and proof of service (`client_commercial`) | V1 | 06; 14 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Home / Next step | `portal.home` | Home | 06; 21 §5.4 |
+| Proposals and designs | `portal.proposals` | Proposals and designs | 06 |
+|  | `portal.proposal` | Proposal view | 06 |
+| Schedule | `portal.schedule` | Schedule | 06 |
+| Invoices and payments | `portal.billing` | Invoices and payments | 06; 08 |
+| Requests | `portal.requests` | Requests | 06 |
+| Service history and visit reports | `portal.history` | Service history | 06 |
+| Plants and property | `portal.property` | My landscape | 06; 12 |
+| Messages | `portal.messages` | Messages | 06 |
+| Account: own language, notifications, consent, passkeys | `portal.account` | Account | 06; 02 §5.11 |
+| Commercial workspace | `portal.portfolio` | Portfolio (`client_commercial`) | 06; 21 §18.17 |
+|  | `portal.approvals` | Approvals (`client_commercial`) | 06; 02 §5.11 |
+|  | `portal.documents` | Documents (`client_commercial`) | 06 |
+|  | `portal.reports` | Reports and proof of service (`client_commercial`) | 06; 14 |
 
 ### 7.7 Platform Admin console (`console`)
 
 19 routes: 18 MVP, 1 V1.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Home | `console.home` | Home and Command Center | MVP | 19 §4.1 |
-| Tenants / Tenant 360 | `console.tenants` | Tenant directory | MVP | 19 §4.2 |
-|  | `console.tenant` | Tenant 360 | MVP | 19 §4.2; 21 §18.13 |
-| Migrations | `console.migrations` | Migration Center | MVP | 19 §4.3 |
-| Billing | `console.billing` | Catalog and subscriptions | MVP | 19 §4.4; 22 |
-| Entitlements and flags | `console.flags` | Entitlements and flags | MVP | 19 §4.5 |
-| Support | `console.support` | Support console | MVP | 19 §4.6; 02 §6.3 |
-| Plant KB | `console.kb.queue` | Plant KB curation | MVP | 19 §4.7; 12; 21 §18.11 |
-| Content | `console.content` | Content | MVP | 19 §4.8 |
-| AI Ops | `console.ai` | AI Ops | MVP | 19 §4.9; 17 |
-| Comms | `console.comms` | Comms Ops | MVP | 19 §4.10; 16 |
-| Payments oversight | `console.payments` | Payments oversight | MVP | 19 §4.11; 08 |
-| Risk and trust | `console.risk` | Risk and trust | MVP | 19 §4.12 |
-| Compliance | `console.compliance` | Compliance | MVP | 19 §4.13 |
-| Analytics | `console.analytics` | Platform analytics | MVP | 19 §4.14; 22 §7 |
-| System health | `console.health` | System health | MVP | 19 §4.15; 20 §6.5 |
-| Partners | `console.partners` | Partners | V1 | 19 §4.16; 22 §5.4 |
-| Staff and audit | `console.staff` | Staff, approvals and audit | MVP | 19 §4.17 |
-| Settings | `console.settings` | Console settings | MVP | 19 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Home | `console.home` | Home and Command Center | 19 §4.1 |
+| Tenants / Tenant 360 | `console.tenants` | Tenant directory | 19 §4.2 |
+|  | `console.tenant` | Tenant 360 | 19 §4.2; 21 §18.13 |
+| Migrations | `console.migrations` | Migration Center | 19 §4.3 |
+| Billing | `console.billing` | Catalog and subscriptions | 19 §4.4; 22 |
+| Entitlements and flags | `console.flags` | Entitlements and flags | 19 §4.5 |
+| Support | `console.support` | Support console | 19 §4.6; 02 §6.3 |
+| Plant KB | `console.kb.queue` | Plant KB curation | 19 §4.7; 12; 21 §18.11 |
+| Content | `console.content` | Content | 19 §4.8 |
+| AI Ops | `console.ai` | AI Ops | 19 §4.9; 17 |
+| Comms | `console.comms` | Comms Ops | 19 §4.10; 16 |
+| Payments oversight | `console.payments` | Payments oversight | 19 §4.11; 08 |
+| Risk and trust | `console.risk` | Risk and trust | 19 §4.12 |
+| Compliance | `console.compliance` | Compliance | 19 §4.13 |
+| Analytics | `console.analytics` | Platform analytics | 19 §4.14; 22 §7 |
+| System health | `console.health` | System health | 19 §4.15; 20 §6.5 |
+| Partners | `console.partners` | Partners | 19 §4.16; 22 §5.4 |
+| Staff and audit | `console.staff` | Staff, approvals and audit | 19 §4.17 |
+| Settings | `console.settings` | Console settings | 19 |
 
 ### 7.8 Partner portal (Accountant Hub) (`partner`)
 
 3 routes: 3 V1. Roles: `partner_admin`, `partner_member` unless the row says otherwise.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Clients | `partner.clients` | Accountant Hub | V1 | 02 §7.8; 09 |
-| Referrals | `partner.referrals` | Referrals and commissions (`partner_admin`) | V1 | 22 §5.4.2; 19 §4.16 |
-| Resources | `partner.resources` | Certification and resources | V1 | 22 §5.4 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Clients | `partner.clients` | Accountant Hub | 02 §7.8; 09 |
+| Referrals | `partner.referrals` | Referrals and commissions (`partner_admin`) | 22 §5.4.2; 19 §4.16 |
+| Resources | `partner.resources` | Certification and resources | 22 §5.4 |
 
 ### 7.9 Public marketing site (`www`)
 
 11 routes: 8 MVP, 3 V1. Roles: `prospect`, `homeowner` unless the row says otherwise.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Home | `www.home` | Home | MVP | 21 §5.6 |
-| Product | `www.product` | Product tours | MVP | 21 §5.6 |
-| Solutions | `www.solutions` | Solutions by segment | MVP | 21 §5.6 |
-| Pricing | `www.pricing` | Pricing | MVP | 21 §5.6; 22 §9.2 |
-| Switch | `www.switch` | Switch | MVP | 21 §5.6 |
-| Compare | `www.compare` | Compare | V1 | 21 §5.6 |
-| Plant Finder | `www.plants` | Plant Finder | V1 | 21 §5.6 |
-| Resources | `www.resources` | Resources and calculators | MVP | 21 §5.6 |
-| Trust | `www.trust` | Trust center | MVP | 21 §5.6 |
-| Partners | `www.partners` | Partners | V1 | 21 §5.6 |
-| Start | `www.start` | Start a trial | MVP | 21 §5.6 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Home | `www.home` | Home | 21 §5.6 |
+| Product | `www.product` | Product tours | 21 §5.6 |
+| Solutions | `www.solutions` | Solutions by segment | 21 §5.6 |
+| Pricing | `www.pricing` | Pricing | 21 §5.6; 22 §9.2 |
+| Switch | `www.switch` | Switch | 21 §5.6 |
+| Compare | `www.compare` | Compare | 21 §5.6 |
+| Plant Finder | `www.plants` | Plant Finder | 21 §5.6 |
+| Resources | `www.resources` | Resources and calculators | 21 §5.6 |
+| Trust | `www.trust` | Trust center | 21 §5.6 |
+| Partners | `www.partners` | Partners | 21 §5.6 |
+| Start | `www.start` | Start a trial | 21 §5.6 |
 
 ### 7.10 Homeowner AI design funnel (Rootline Home) (`home`)
 
 7 routes: 1 MVP, 6 V1. Roles: `homeowner` unless the row says otherwise.
 
-| Nav | Route | Label | Scope | Spec |
-|---|---|---|---|---|
-| Design my yard | `home.start` | Start | V1 | 21 §5.7; 11; 22 §5.3 |
-|  | `home.measure` | Locate and measure | V1 | 21 §5.7; 11; 22 §5.3 |
-|  | `home.quiz` | Style and needs | V1 | 21 §5.7; 11; 22 §5.3 |
-|  | `home.concepts` | Concepts | V1 | 21 §5.7; 11; 22 §5.3 |
-|  | `home.budget` | Plant list and budget | V1 | 21 §5.7; 11; 22 §5.3 |
-|  | `home.quote` | Save or get a quote | V1 | 21 §5.7; 11; 22 §5.3 |
-|  | `home.widget` | Dream Yard Visualizer widget (on the Company's own site) | MVP | 11 AIM-AUD-01; 21 §5.7; 24 §4.6 #14 |
+| Nav | Route | Label | Spec |
+|---|---|---|---|
+| Design my yard | `home.start` | Start | 21 §5.7; 11; 22 §5.3 |
+|  | `home.measure` | Locate and measure | 21 §5.7; 11; 22 §5.3 |
+|  | `home.quiz` | Style and needs | 21 §5.7; 11; 22 §5.3 |
+|  | `home.concepts` | Concepts | 21 §5.7; 11; 22 §5.3 |
+|  | `home.budget` | Plant list and budget | 21 §5.7; 11; 22 §5.3 |
+|  | `home.quote` | Save or get a quote | 21 §5.7; 11; 22 §5.3 |
+|  | `home.widget` | Dream Yard Visualizer widget (on the Company's own site) | 11 AIM-AUD-01; 21 §5.7; 24 §4.6 #14 |
 
 ---
 
@@ -562,18 +562,18 @@ C1, C2, C4, C5 and C10 are resolved in the blueprint data (the row says how); th
 | # | Topic | What disagrees | Rule or ask |
 |---|---|---|---|
 | C1 | Route tags vs MVP | `web.assessments`, `web.change_orders`, `web.projects`, `web.capacity` are V1 in `surfaces.json`; offline assessments, basic change orders, phased projects with the 811 gate and the basic capacity planner are MVP (24 §3.2, §4.6 #13). `web.change_orders` uses the MVP feature `change_orders_basic` | **Resolved in the blueprint:** 24 wins; the four routes are retagged MVP (basic versions), with the V1 depth named in each route's purpose |
-| C2 | Job costing | E4 (MVP) needs job cost by phase and 22 §4.1 puts the full ledger in Grow, but `web.job_costing` is V1 behind `ledger_advanced`, a Grow add-on | **Resolved in the blueprint:** `web.job_costing` is MVP behind `ledger_essentials` (job cost by phase and cost type vs estimate); WIP and percent complete stay V1 with Ledger Advanced. Founder to confirm |
+| C2 | Job costing | E4 needs job cost by phase and 22 §4.1 puts the full ledger in Grow, but `web.job_costing` is V1 behind `ledger_advanced`, a Grow add-on | **Resolved in the blueprint:** `web.job_costing` is MVP behind `ledger_essentials` (job cost by phase and cost type vs estimate); WIP and percent complete stay V1 with Ledger Advanced. Founder to confirm |
 | C3 | Estimators on mobile | 03 §4.13 (SALES-01) and 05 §4.0 give estimators and designers mobile capture at MVP; `roles.json` and the crew routes give them no MVP mobile surface; manager mode is V1 (21 §5.1) | Ask |
-| C4 | Homeowner widget | 24 §4.6 #14 and 21 §5.1: embeddable widget at MVP behind a verify-first gate; only V1 `home.*` routes exist | **Resolved in the blueprint:** route `home.widget` [MVP] on the `home` surface, embedded on the Company's site |
-| C5 | Observer | In `roles.json` (02 §5.7 [V1]) and sold as free seats (22 §4.3), but absent from the tenant matrix and nav tables; `core.js` hard-codes it | **Resolved in the blueprint:** `roles.json` `custom_role_templates` holds the observer's nav, grants and field classes, marked as a blueprint reading of 02 §5.7 to confirm |
+| C4 | Homeowner widget | 24 §4.6 #14 and 21 §5.1: embeddable widget at MVP behind a verify-first gate; only V1 `home.*` routes exist | **Resolved in the blueprint:** route `home.widget` on the `home` surface, embedded on the Company's site |
+| C5 | Observer | In `roles.json` (02 §5.7) and sold as free seats (22 §4.3), but absent from the tenant matrix and nav tables; `core.js` hard-codes it | **Resolved in the blueprint:** `roles.json` `custom_role_templates` holds the observer's nav, grants and field classes, marked as a blueprint reading of 02 §5.7 to confirm |
 | C6 | `time_entry` | Two capability rows (own, others) | Key by capability and note |
 | C7 | Credit display | 22 §4.1 rule 4: every AI action shows its cost first. 17 §4.1.3, §4.11.5: cost on the button from 5 credits, confirmation above 20 | 22 wins; 17's thresholds as confirmation rules. Confirm |
-| C8 | L3 at MVP | 17 §4.3 tags pre-approved templates [V1]; 24 §3.5 and OD-46 allow L3 at MVP for two templates | 24 wins. Confirm OD-46 |
+| C8 | L3 at MVP | 17 §4.3 tags pre-approved templates; 24 §3.5 and OD-46 allow L3 at MVP for two templates | 24 wins. Confirm OD-46 |
 | C9 | Sample company | 20 §4.22 seeds "Green Acres Landscaping" (420 clients); 22 §4.6: Greenleaf with 120 clients; `tenants.json`: Greenleaf with 412 | Use `tenants.json`; ask the demo size |
 | C10 | Module keys | `build.py` knows 7 keys, only `books` gates a route, `tenants.json` uses others; service-line screens are not module-gated though 21 §5.2 hides disabled modules | **Resolved in the blueprint:** module keys follow 14 §4.0.1 (`tenants.json` `module_catalog`, checked by `build.py`); `web.projects`, `web.chemicals`, `web.snow`, `crew.chem` and `crew.snow` are module-gated |
 | C11 | Entitlement names | 19 PA-040 (`boolean`, `quota`, `tier`, `design_studio.3d`) vs 22 §10.1 (`flag`, `limit`, `meter`) and `plans.json` (`design_3d`) | 22 wins |
 | C12 | Console app | 20 §4.30 `apps/admin` vs surface `console` | Naming only (3.2) |
-| C13 | Summit tenant | "Central Ohio" with Dayton and Cincinnati branches, a Wave 2 [V1] Region (24 §1.3) | Sample data |
+| C13 | Summit tenant | "Central Ohio" with Dayton and Cincinnati branches, a Wave 2 Region (24 §1.3) | Sample data |
 
 ### 8.2 Open decisions that shape the build
 

@@ -11,7 +11,7 @@
 - **Decision 4, tax per line:** every line carries a tax category and every Job a real-property treatment; a tax engine adapter (manual rates and Stripe Tax at MVP, Avalara at V1) does the rate math for US states and Canadian provinces, with evidence stored per invoice ([4.5](#45-sales-tax-and-indirect-tax-us-and-canada)).
 - **Decision 5, money moves elsewhere:** collection runs on the Company's own Stripe account through [08](08-payments-stripe.md); posting rules P1-P42 use the canonical chart and rule registry of [09](09-accounting-ledger-integrations.md), which wins any account-code conflict.
 - **MVP:** per-visit, batch, level billing with true-up, prepaid seasons, deposits, milestones, T&M, basic snow billing (per-push and per-application lines generated from Snow Lite storm visit logs at Price Book rates, [4.2.10](#4210-event-based-snow-and-ice-billing-mvp-basic--v1-full)), agreement lifecycle, invoice approvals and Billing Runs, proof-of-service invoices, US/Canada sales tax, credit memos and write-offs, statements, late fees, dunning, collections workspace.
-- **Later:** [V1] percent-complete progress billing, retainage, AIA-style pay applications, full snow billing (storm events, depth tiers, caps and floors, with the `snow_ice` module), consolidated portfolio billing, client-side AP approval, indexed escalators, payment plans, AI collections agent, credit limits, cross-currency, filing partners; [V2] e-invoicing networks.
+- **Later:** percent-complete progress billing, retainage, AIA-style pay applications, full snow billing (storm events, depth tiers, caps and floors, with the `snow_ice` module), consolidated portfolio billing, client-side AP approval, indexed escalators, payment plans, AI collections agent, credit limits, cross-currency, filing partners; e-invoicing networks.
 - **Differentiators:** contract-native level billing with an automatic true-up, residential and commercial billing in one product, invoices that carry GPS-stamped proof of service, landscape-aware taxability, and ledger-exact postings at the moment of each event.
 - **Key cross-links:** proposals and deposits set in [03](03-crm-sales-estimating-proposals.md); visits from [04](04-scheduling-dispatch-routing.md) and [05](05-field-crew-mobile-app.md); portal pay and approvals in [06](06-customer-portal.md); permissions in [02](02-personas-roles-permissions.md); snow events in [14](14-service-line-modules.md).
 
@@ -131,7 +131,7 @@ Grouped from the sources above plus recurring themes in owner forums and review 
 
 The module is organized around five core objects. Engineers should read 4.1 first; every later feature is expressed in these terms.
 
-### 4.1 Billing Engine core concepts [MVP]
+### 4.1 Billing Engine core concepts
 
 | Concept | Definition | Key rules |
 |---|---|---|
@@ -178,7 +178,7 @@ flowchart LR
 
 Each mode below is a `billing_schedule.type`. A Company can mix modes per client, per job and per agreement service line.
 
-#### 4.2.1 Per-visit invoicing [MVP]
+#### 4.2.1 Per-visit invoicing
 
 - **What**: one invoice per completed visit (or per visit-day when a crew does two services at one property on the same day).
 - **Rules**
@@ -189,7 +189,7 @@ Each mode below is a `billing_schedule.type`. A Company can mix modes per client
   - Visits that are `skipped` or `canceled` produce no line by default; a configurable **trip charge** (e.g., $35 when the gate was locked and the client was notified) creates a Billable Item instead.
 - **Edge cases**: visit completed across midnight (bill on start date); crew splits property across two days (one visit, two time segments, one invoice line); visit re-opened after invoice sent (creates a supplemental invoice or credit memo, never edits the sent invoice).
 
-#### 4.2.2 Batched invoicing (weekly / bi-weekly / monthly / custom) [MVP]
+#### 4.2.2 Batched invoicing (weekly / bi-weekly / monthly / custom)
 
 - **What**: accumulate Billable Items and invoice on a cycle. Most common for residential per-visit mowing ("bill on the 1st for last month's mows").
 - **Rules**
@@ -200,7 +200,7 @@ Each mode below is a `billing_schedule.type`. A Company can mix modes per client
   - **Minimum invoice amount** (e.g., hold invoices under $25 until next cycle unless it is the final cycle of the season).
 - **Edge cases**: a client changes cycle mid-month (close the open period on change date and start the new cycle); a client with both per-visit and level-billed services (two schedules; one combined invoice if their cycle dates match, otherwise separate).
 
-#### 4.2.3 Level billing: fixed monthly installments with true-up [MVP]
+#### 4.2.3 Level billing: fixed monthly installments with true-up
 
 The flagship residential and small-commercial maintenance model: "30 weekly mows plus a 5-step fertilizer program, spring and fall cleanup, billed as 12 equal payments."
 
@@ -243,7 +243,7 @@ The flagship residential and small-commercial maintenance model: "30 weekly mows
 - **Tax on installments**: tax is calculated on each installment invoice using the agreement's blended taxable ratio (taxable value / ACV per jurisdiction) and corrected at true-up. Where a jurisdiction taxes only some lines (e.g., materials taxable, maintenance labor not), the installment invoice shows the split. See 4.5.
 - **Compliance guardrail**: in the US, a business that regularly extends consumer credit payable in more than four installments may be treated as a "creditor" under the Truth in Lending Act's Regulation Z. Level billing that keeps the client ahead (prepayment) is generally not credit, but schedules that let installments trail completed services across seasons could be. Rootline (a) defaults to client-ahead calendars, (b) never adds finance charges to installment schedules unless the Company has configured disclosed terms, and (c) flags schedules whose installments end more than 60 days after the last service. This is also why a 12-payment level plan can coexist with the 4-installment cap on past-due payment plans (4.9.4, [08](08-payments-stripe.md) 4.8): a client-ahead level plan pays for service in advance, whereas a payment plan spreads a debt for work already delivered. A residential level plan whose projected exposure exceeds the Company threshold (default 25% of ACV; the April-March Hernandez calendar peaks at 33%, the January-December one at 8%) is routed to the owner with the same warning as an over-cap payment plan. This is a product guardrail, not legal advice; see section 11.
 
-#### 4.2.4 Prepaid seasons and deferred revenue [MVP]
+#### 4.2.4 Prepaid seasons and deferred revenue
 
 - **What**: the client pays the whole season up front, usually for a discount ("Pay in full by March 15 and save 5%").
 - **Rules**
@@ -255,7 +255,7 @@ The flagship residential and small-commercial maintenance model: "30 weekly mows
   - Mid-season cancellation of a prepaid season: refund = paid - earned (at the discounted unit value) - early-termination fee (if contracted). Optional "discount clawback": if the client cancels, earned value is recomputed at undiscounted prices (must be in signed terms).
 - **Gift and prepaid credits**: prepaid "lawn care credits" sold as gifts are customer prepayment liabilities; see 4.7.
 
-#### 4.2.5 Deposits and deposit application [MVP]
+#### 4.2.5 Deposits and deposit application
 
 - **What**: money collected before work begins, mostly for installs (paver patios, plantings, irrigation systems), design retainers and special-order materials.
 - **Rules**
@@ -267,14 +267,14 @@ The flagship residential and small-commercial maintenance model: "30 weekly mows
   - Design retainer rule: "credit design fee toward installation if install is signed within 90 days" creates an automatic credit line on the first install invoice.
 - **Canada**: under the GST/HST rules a deposit is generally not treated as consideration until it is applied to the supply, which matches the liability treatment; tax is charged when the deposit is applied (verify with the Company's accountant).
 
-#### 4.2.6 Milestone and progress billing for projects [MVP]
+#### 4.2.6 Milestone and progress billing for projects
 
 - **Milestone billing**: fixed % or $ per milestone linked to project phases ([04](04-scheduling-dispatch-routing.md)). Example paver patio and planting project, contract $38,500: 30% deposit at signing ($11,550, held as a customer deposit); 50% invoiced at "hardscape complete" ($19,250); 50% invoiced at "final walkthrough accepted" ($19,250) less the deposit, so $7,700 is due at the end. With `apply_pro_rata`, each milestone invoice would instead consume $5,775 of the deposit.
   - Milestone completion requires a gate: crew lead marks phase complete + required photos; optional client sign-off in the portal ("Confirm the patio is complete?") before the invoice is released. Configurable per milestone.
   - Change orders ([03](03-crm-sales-estimating-proposals.md)) add either a new milestone, increase an existing one, or bill on approval (`co_billing = on_approval | with_next_milestone | at_completion`).
-- **Progress (percent-complete) billing** [V1]: each period the project manager enters % complete per phase or per schedule-of-values line; Rootline bills `contract_value x pct_complete - previously_billed`. Suggested % comes from tasks completed, labor hours burned vs budget and installed quantities from the Design takeoff ([10](10-design-studio.md)); the PM confirms. Over-billing guard: billing beyond 100% of a line is blocked; billing more than cost-based % complete + 15 points triggers a warning (front-loading is a real practice but should be deliberate).
+- **Progress (percent-complete) billing**: each period the project manager enters % complete per phase or per schedule-of-values line; Rootline bills `contract_value x pct_complete - previously_billed`. Suggested % comes from tasks completed, labor hours burned vs budget and installed quantities from the Design takeoff ([10](10-design-studio.md)); the PM confirms. Over-billing guard: billing beyond 100% of a line is blocked; billing more than cost-based % complete + 15 points triggers a warning (front-loading is a real practice but should be deliberate).
 
-#### 4.2.7 Retainage [V1]
+#### 4.2.7 Retainage
 
 - **What**: a % of each progress billing withheld by the client until substantial or final completion, common in commercial and public work (often 5-10%; varies by contract and by state prompt-payment and retainage statutes; verify per project).
 - **Rules**
@@ -284,7 +284,7 @@ The flagship residential and small-commercial maintenance model: "30 weekly mows
   - Retainage **payable** to subcontractors (mirror withholding) is handled on the AP side ([13](13-operations-inventory-equipment.md), [09](09-accounting-ledger-integrations.md)), but Rootline links them so the sub's retainage is released when the client releases ours ("pay-when-paid" if the subcontract says so).
   - Alerts: retainage older than N days after substantial completion; statutory release deadlines if the Company records the governing state.
 
-#### 4.2.8 Time and materials (T&M) [MVP]
+#### 4.2.8 Time and materials (T&M)
 
 - **What**: billing actual labor hours, equipment hours, materials and subs at agreed rates, common for enhancements, storm cleanup, irrigation repairs and drainage fixes.
 - **Rules**
@@ -294,34 +294,34 @@ The flagship residential and small-commercial maintenance model: "30 weekly mows
   - **Not-to-exceed (NTE)**: T&M jobs can carry an NTE; at 80% of NTE the ops manager is alerted; billing beyond NTE is blocked unless a change order raises it.
   - Approval: T&M invoices default to `requires_approval` because errors are common.
 
-#### 4.2.9 AIA G702/G703-style pay applications for commercial [V1]
+#### 4.2.9 AIA G702/G703-style pay applications for commercial
 
 - **What**: the standard US commercial format for requesting progress payment: an Application and Certificate for Payment summary (G702 style) plus a Continuation Sheet listing the schedule of values (G703 style).
-- **Licensing note**: "AIA", "G702" and "G703" are American Institute of Architects documents and trademarks. Rootline generates its own **AIA-style** pay application with the same columns and math (which is what most owners and GCs accept). Producing the official AIA form requires the user to hold an AIA Contract Documents license; Rootline can fill a licensed template the Company uploads [V2]. See open question 5 in section 14.
+- **Licensing note**: "AIA", "G702" and "G703" are American Institute of Architects documents and trademarks. Rootline generates its own **AIA-style** pay application with the same columns and math (which is what most owners and GCs accept). Producing the official AIA form requires the user to hold an AIA Contract Documents license; Rootline can fill a licensed template the Company uploads. See open question 5 in section 14.
 - **Continuation sheet columns** (computed): A item no.; B description of work; C scheduled value; D work completed from previous application; E work completed this period; F materials presently stored (not in D or E); G total completed and stored to date (D+E+F); G/C percent; H balance to finish (C-G); I retainage.
 - **Summary lines**: (1) original contract sum; (2) net change by change orders; (3) contract sum to date; (4) total completed and stored to date; (5) retainage on completed work and on stored material; (6) total earned less retainage; (7) less previous certificates for payment; (8) current payment due; (9) balance to finish including retainage.
 - **Rules**
   - Schedule of values comes from the accepted proposal or estimate (grouped lines) and is locked at contract; changes only through approved change orders, which append lines (CO-1, CO-2) or adjust scheduled values with an audit trail.
   - Stored materials require evidence (delivery ticket photo, storage location, insurance certificate if off-site); stored-material line items move into "completed" when installed.
   - Each pay app has a period (e.g., the 25th to the 25th), an application number, a status (`draft` -> `submitted` -> `certified` (architect/owner approved, possibly with adjusted amounts) -> `invoiced` -> `paid`), and supports **certified amount different from applied amount**: the owner's rep can reduce a line; Rootline records the certified amounts and carries the variance to the next application.
-  - Attachments packet: G702/G703-style PDF, conditional progress lien waiver for this payment, unconditional waiver for the prior payment (state statutory forms where required, e.g., states with mandated waiver forms), certified payroll if prevailing wage (V2), photos by schedule line, updated certificate of insurance.
-  - Notarization: some owners require notarized applications; Rootline supports a notary block and e-notarization partner integration [V2].
+  - Attachments packet: G702/G703-style PDF, conditional progress lien waiver for this payment, unconditional waiver for the prior payment (state statutory forms where required, e.g., states with mandated waiver forms), certified payroll if prevailing wage, photos by schedule line, updated certificate of insurance.
+  - Notarization: some owners require notarized applications; Rootline supports a notary block and e-notarization partner integration.
 - **Example** (Briarwood Clubhouse grounds, contract $186,400, retainage 10%): Pay App #3 shows $112,640 completed and stored to date, $11,264 retainage, $101,376 earned less retainage, previous certificates $63,900, current payment due $37,476.
 
-#### 4.2.10 Event-based snow and ice billing [MVP basic / V1 full]
+#### 4.2.10 Event-based snow and ice billing
 
 Snow contracts are where landscaping billing gets genuinely complex, and where documentation protects companies in slip-and-fall claims. Billing ships in two slices that match the snow module in [14](14-service-line-modules.md):
 
-- **[MVP] basic: Snow Lite billing.** Basic snow billing is per-push and per-application invoice lines generated from Snow Lite storm visit logs ([14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp)). Rules:
+- basic: Snow Lite billing.** Basic snow billing is per-push and per-application invoice lines generated from Snow Lite storm visit logs ([14 section 4.3.0](14-service-line-modules.md#430-snow-lite-mvp)). Rules:
   - Each completed storm visit (`visit.completed`) turns its logged counts (pushes; salt or ice-melt applications; walks cleared) into Billable Items at the snow site's **Price Book rates**: one line per service type per visit, quantity = logged count, with the visit date, arrival and departure times and a link to the visit's timestamped GPS photos.
   - Lines flow through the normal per-visit or on-cycle schedules (4.2.1, 4.2.2) and Billing Runs, post through P1 and carry tax category `snow_ice_removal` (4.5). The per-site PDF proof export from [14](14-service-line-modules.md#430-snow-lite-mvp) can be attached as the proof of service.
   - The office can add or correct counts on a storm visit before billing (for example from a paper log); each change records who, when and why, and the line shows "entered by office".
   - Seasonal fixed-fee clients keep billing through ordinary agreement installments (4.2.3); their storm visits are still logged and print as covered $0 lines on the next installment invoice, like any visit an agreement covers.
   - Not in Snow Lite: Snow Event records, trigger evaluation, depth tiers, weather reference checks, `per_event` pricing, seasonal caps and floors, hybrid contracts and event appendices. The office decides which sites get storm visits, so a "plow at 2 inches" clause relies on the crew's judgment and notes.
   - **Worked example, Snow Lite** (illustrative Price Book rates: push $95, lot salt application $120, sidewalk ice-melt application $45). A dental office lot gets two storm visits on Jan 14: at 2:10 a.m. the crew logs 1 push and 1 lot salt application, and at 9:40 a.m. 1 push, 1 lot salt application and 1 sidewalk ice-melt application. The per-visit invoices bill $95 + $120 = **$215** and $95 + $120 + $45 = **$260**, each with the visit times and GPS photos attached.
-- **[V1] full: storm-event billing with the `snow_ice` module.** Everything below (contract models with depth tiers, Snow Events, caps, floors, hybrid contracts and event appendices) ships with the full module ([14 section 4.3.8](14-service-line-modules.md#438-event-billing-automation-v1)). Flat-rate `per_push` and `per_application` lines without depth tiers are the MVP subset above.
+- full: storm-event billing with the `snow_ice` module.** Everything below (contract models with depth tiers, Snow Events, caps, floors, hybrid contracts and event appendices) ships with the full module ([14 section 4.3.8](14-service-line-modules.md#438-event-billing-automation-v1)). Flat-rate `per_push` and `per_application` lines without depth tiers are the MVP subset above.
 
-- **Contract models** [V1] (one per site per season; [14](14-service-line-modules.md) covers operations):
+- **Contract models** (one per site per season; [14](14-service-line-modules.md) covers operations):
 
   | Model | How it bills | Example rate card (illustrative) |
   |---|---|---|
@@ -334,7 +334,7 @@ Snow contracts are where landscaping billing gets genuinely complex, and where d
   | `seasonal_with_floor` | Per-event billing with a guaranteed seasonal **minimum** (contractor's revenue certainty) trued up at season end. | Minimum $6,000 billed in March if events total less. |
   | `hybrid` | Seasonal fixed plowing + per-application salting (most common commercial structure). | |
 
-- **Rules** [V1]
+- **Rules**
   - A **Snow Event** record (start/end timestamps, observed snowfall by site from crew logs, reference snowfall from a weather data source; see [04](04-scheduling-dispatch-routing.md)) groups all Site Service Logs (arrival/departure time, service type, depth measured, salt quantity, photos, GPS track).
   - Billable Items are created per site service log by applying the site's rate card; the depth tier uses the **crew-measured depth** with the weather reference shown alongside, and discrepancies over 2" are flagged for review before billing.
   - **Caps**: when cumulative season billing reaches the cap, subsequent items are created as `covered` ($0) lines so the client still sees every service delivered; the invoice shows "Seasonal cap reached on Feb 9; services continue at no charge".
@@ -344,26 +344,26 @@ Snow contracts are where landscaping billing gets genuinely complex, and where d
   - **Trigger evaluation**: the trigger is tested per site per push using the crew-measured depth at arrival; a push below trigger is logged but creates a `covered` or `excluded` item (reason `below_trigger`) unless the contract says "service on any accumulation" (common for hospitals and senior-living sites, which also often specify zero-tolerance salting). Client instructions such as "do not plow the north lot before 5 a.m." are stored on the site and printed on the log.
   - **Salt by weight**: when salt is billed per ton, quantity comes from the spreader calibration and the crew's loaded/unloaded log (or a scale ticket), rounded to 0.1 ton; when billed per application, quantity is 1 regardless of tons, but tons are still captured for inventory ([13](13-operations-inventory-equipment.md)) and job costing.
   - **Subcontracted sites**: snow subs log through the crew app's restricted subcontractor mode ([05](05-field-crew-mobile-app.md) 4.22.4) or the subcontractor portal ([13](13-operations-inventory-equipment.md)); their logs create both the client Billable Item (at the client rate card) and the sub's payable (at the sub rate card, AP in [13](13-operations-inventory-equipment.md)), linked so margin per push is visible.
-- **Worked example [V1]: Oak Ridge Apartments, Jan 14-15 storm** (`hybrid`: seasonal plowing plus per-application salting; illustrative rates). Two pushes logged (4.5 in at 2:10 a.m. and 3 in at 9:40 a.m.), two lot salt applications at $195 and two sidewalk ice-melt applications at $85. Plowing is covered by the $11,800 seasonal fee, so the pushes print as covered $0 lines with times, depths and photos; salting bills $390 + $170 = **$560** for the event. Under a `per_push` contract with the rate card above, the same event would bill $410 (4-8 in tier) + $285 (2-4 in tier) + $560 = **$1,255**; under `seasonal_capped` with $14,180 already billed against a $14,500 cap, only $320 would bill and the remaining $935 would print as covered with the note "Seasonal cap reached Jan 15".
+- **Worked example: Oak Ridge Apartments, Jan 14-15 storm** (`hybrid`: seasonal plowing plus per-application salting; illustrative rates). Two pushes logged (4.5 in at 2:10 a.m. and 3 in at 9:40 a.m.), two lot salt applications at $195 and two sidewalk ice-melt applications at $85. Plowing is covered by the $11,800 seasonal fee, so the pushes print as covered $0 lines with times, depths and photos; salting bills $390 + $170 = **$560** for the event. Under a `per_push` contract with the rate card above, the same event would bill $410 (4-8 in tier) + $285 (2-4 in tier) + $560 = **$1,255**; under `seasonal_capped` with $14,180 already billed against a $14,500 cap, only $320 would bill and the remaining $935 would print as covered with the note "Seasonal cap reached Jan 15".
 
 > **Competitive edge: snow billing that understands storms.** Aspire, the commercial benchmark, is described as supporting per-push and per-event billing with events booked back into the contract, while generic FSM tools reportedly fall back to duplicated job templates and spreadsheets for per-inch pricing (section 2.1). Rootline goes further in three specific ways: (1) **depth-tiered rate cards** priced from crew-measured depth and reconciled against an independent weather reference, with discrepancies queued before anything is billed; (2) **seasonal caps and floors** that keep recording every service after the cap as a covered $0 line, so the client sees the full record and the floor true-up is automatic; (3) the invoice's **event appendix is generated from the same site service logs** that SIMA's documentation guidance describes as a legal shield in slip-and-fall claims ([SIMA in-season documentation](https://resources.sima.org/snow-and-ice-resource-center/effective-in-season-documentation)), so the bill and the evidence can never disagree. We have not verified whether Aspire supports caps, floors or depth tiers; treat that part of the comparison as open until checked ([R2](research/R2-landscape-specific-platforms.md)).
 
-#### 4.2.11 Fixed recurring fees (subscriptions) [MVP]
+#### 4.2.11 Fixed recurring fees (subscriptions)
 
 - **What**: flat recurring charges not tied to visit counts: smart-irrigation monitoring ($12/month per controller), landscape lighting maintenance plan ($29/month), "priority service membership", equipment rental to the client.
 - **Rules**: monthly/quarterly/annual; proration on start and cancel (daily proration default); autopay required option; renewal and escalation as agreements (4.3).
 
-#### 4.2.12 Enhancements and not-to-exceed work orders [MVP]
+#### 4.2.12 Enhancements and not-to-exceed work orders
 
 - **What**: extra work proposed during maintenance ("replace 6 dead boxwoods, $480", "add 12 yards of mulch to the north beds, $1,140"), very common in commercial maintenance where property managers approve enhancements against a budget.
 - **Rules**: enhancement proposals are small proposals ([03](03-crm-sales-estimating-proposals.md)) approved in the portal; on completion they bill per-visit or join the next batch; commercial enhancements carry the client's PO and can be limited by an **annual enhancement budget** per property (Rootline shows remaining budget to the property manager in the portal).
 
-#### 4.2.13 Warranty, callbacks and no-charge work [MVP]
+#### 4.2.13 Warranty, callbacks and no-charge work
 
 - Plant warranty replacements (e.g., one-year replacement warranty on trees and shrubs, often conditional on the client watering) create Billable Items at $0 with a reference to the original job and warranty terms; out-of-warranty or excluded causes (drought without irrigation, deer damage) bill normally with the reason shown.
 - Callbacks for quality issues ("missed trim along the fence") are $0 visits linked to the original visit; their cost is tracked for job costing ([09](09-accounting-ledger-integrations.md)) but never invoiced.
 
-### 4.3 Service Agreement lifecycle [MVP unless tagged]
+### 4.3 Service Agreement lifecycle
 
 A **Service Agreement** is the signed contract for recurring work (a maintenance season, a lawn program, a snow season, an irrigation care plan). It is created from an accepted proposal ([03](03-crm-sales-estimating-proposals.md)), generates the recurring Visits ([04](04-scheduling-dispatch-routing.md)) and owns the Billing Schedule.
 
@@ -406,9 +406,9 @@ Rules:
 - Agreements are **versioned**: amendments create version N+1 with an effective date; billing and visits before the effective date keep version N's prices. The earned-value meter respects versions.
 - A renewal creates a **new agreement** (new term, new number suffix `-2028`) linked to the prior one; true-up of the prior term completes first.
 
-#### 4.3.3 Price escalators [MVP fixed % / V1 indexed]
+#### 4.3.3 Price escalators
 
-- Types: `fixed_pct` (e.g., +4% at renewal), `fixed_amount` (+$2 per mow), `cpi_linked` (US CPI-U or Canada CPI, with floor and ceiling, e.g., CPI with min 3%, max 6%) [V1], `fuel_surcharge` (monthly surcharge line indexed to a public diesel price series, e.g., the US EIA weekly on-highway diesel average, with a base price and a per-$0.10 step) [V1], `labor_index` (manual) [V2].
+- Types: `fixed_pct` (e.g., +4% at renewal), `fixed_amount` (+$2 per mow), `cpi_linked` (US CPI-U or Canada CPI, with floor and ceiling, e.g., CPI with min 3%, max 6%), `fuel_surcharge` (monthly surcharge line indexed to a public diesel price series, e.g., the US EIA weekly on-highway diesel average, with a base price and a per-$0.10 step), `labor_index` (manual).
 - Timing: at renewal (default), on anniversary, or mid-term on a date (commercial multi-year contracts often escalate yearly within the term).
 - Notice: the escalated price must be communicated before it applies; default 30 days before renewal, configurable per jurisdiction. The renewal notice shows old price, new price, reason (optional AI-drafted explanation: "fuel and labor costs rose 6% in our area this year").
 - Rounding rules: round unit prices to $0.50 or $1 (configurable) so mowing prices stay human ($55 -> $57, not $57.20).
@@ -420,7 +420,7 @@ Rules:
 - **Escalation guardrail**: an escalator can never produce a price decrease unless the escalator explicitly allows it (some CPI clauses are symmetric); a negative index reading with a floor of 0% leaves prices unchanged.
 - **Escalation impact preview**: before a renewal batch, the owner sees total revenue uplift and an AI churn-risk score per client ([17](17-ai-copilot-automation.md)) and can exclude at-risk VIPs.
 
-#### 4.3.4 Auto-renewal and renewal campaigns [MVP]
+#### 4.3.4 Auto-renewal and renewal campaigns
 
 - Renewal modes: `auto_renew` (same terms + escalator; client notified; can opt out), `renewal_proposal` (generate a new proposal requiring signature; default for commercial), `manual`.
 - **Notice compliance**: several jurisdictions regulate automatic renewal of consumer and service contracts. For example, New York General Obligations Law section 5-903 makes auto-renewal clauses in contracts for service, maintenance or repair to real or personal property unenforceable unless the provider sends written notice 15-30 days before the client's deadline to give notice of non-renewal; California's Automatic Renewal Law imposes disclosure, consent, reminder and online-cancellation requirements on consumer subscriptions (both verify; laws change frequently, and the federal FTC "click-to-cancel" rule was vacated by a federal appeals court in 2025, but state laws remain). Rootline ships a platform-maintained **renewal-notice rule table** by state/province (maintained by `platform_finance` with counsel) that sets minimum notice windows, required channel (written/email), required content and online cancellation availability; the engine schedules notices automatically and refuses to auto-renew an agreement whose required notice was not delivered (it converts to `renewal_proposal`).
@@ -428,7 +428,7 @@ Rules:
 - Renewal timing defaults: residential lawn programs renew in December-February (before the season and before competitors' spring mailers); commercial renewals align with client budget cycles (often July-October for calendar-year budgets). Renewal campaign tooling with [16](16-marketing-growth-communications.md).
 - Renewal cannot proceed while the client has a balance > 60 days past due (configurable); the renewal goes to the office for review.
 
-#### 4.3.5 Cancellation and proration [MVP]
+#### 4.3.5 Cancellation and proration
 
 - **Who can cancel**: client (portal request or written notice; the request is logged with timestamp), Company (for non-payment, property sold, safety), mutual.
 - **Notice period**: per agreement (e.g., 30 days written notice); effective date = later of requested date and notice date + notice period, unless waived.
@@ -444,7 +444,7 @@ Rules:
 - **Client cooling-off rights**: residential agreements signed in the client's home, and in some jurisdictions remote or online contracts, may carry a statutory cancellation window (for example, the US FTC Cooling-Off Rule gives buyers three business days to cancel certain sales made at the buyer's home, and Canadian provinces set cancellation periods for direct-sales and distance contracts; verify scope, thresholds and periods per jurisdiction). Estimators who sign agreements on a tablet at the kitchen table trigger the in-home rule; the proposal records the signing location ([03](03-crm-sales-estimating-proposals.md)). Agreements with an open cooling-off window cannot charge deposits beyond what the rule table allows, and a cancellation inside the window refunds in full (P35) with no fee.
 - **Property sold**: option to **transfer** the agreement to the new owner (new client, same property) with a new signature, carrying the earned-value position forward or settling with the seller.
 
-#### 4.3.6 Mid-season changes (amendments) [MVP]
+#### 4.3.6 Mid-season changes (amendments)
 
 | Change | Engine behavior |
 |---|---|
@@ -455,7 +455,7 @@ Rules:
 | Change billing (installments -> per-visit, or change billing day) | Close the current schedule at the effective date with a mini true-up; open the new schedule. |
 | Add a property (commercial) | New property scope with its own lines; consolidated billing updated. |
 
-#### 4.3.7 Skipped visits and credits [MVP]
+#### 4.3.7 Skipped visits and credits
 
 Every planned occurrence ends in a terminal state: `completed`, `rescheduled` (still counts toward the season), `skipped_weather`, `skipped_dormancy` (drought/heat), `skipped_client_request`, `skipped_access` (locked gate, dog in yard), `missed_company` (crew failure), `skipped_company_hold` (service hold for non-payment, 4.3.8), `canceled_by_amendment`.
 
@@ -473,7 +473,7 @@ Credit policy matrix (Company defaults, overridable per agreement):
 
 Credits are applied according to the true-up method: they reduce earned value (and therefore the final installment or re-leveled installments), or create a credit memo immediately if the Company chooses "visible credits" (clients like seeing "Credit: skipped mow Aug 17, drought: -$55.00" on their next invoice).
 
-#### 4.3.8 Service holds and non-payment suspension [MVP]
+#### 4.3.8 Service holds and non-payment suspension
 
 - Policy: when the oldest unpaid invoice is > N days past due (default 45) and the balance > $X (default $100), the agreement enters `suspended` after an advance notice (default 7 days). Suspension pauses visit generation for that client ([04](04-scheduling-dispatch-routing.md)) and shows a "Service on hold" banner to crews and in the portal.
 - Exemptions: snow and ice on commercial sites (safety and liability), irrigation winterization before a freeze (property damage risk), and any client flagged VIP. These require explicit owner choice to suspend.
@@ -484,7 +484,7 @@ Credits are applied according to the true-up method: they reduce earned value (a
 
 ### 4.4 Invoices
 
-#### 4.4.1 Invoice states [MVP]
+#### 4.4.1 Invoice states
 
 ```mermaid
 stateDiagram-v2
@@ -521,13 +521,13 @@ stateDiagram-v2
 - **Stored status vs UI state.** The `invoice.status` column uses the snake_case values of the entity model in [20](20-architecture-security.md) 7.4: `draft`, `pending_approval`, `approved`, `issued` (shown as **Sent**; the `invoice.issued` event fires on this transition), `partially_paid`, `paid`, `credited`, `written_off`, `void`. `Viewed`, `Overdue` and `Disputed` are flags, not statuses.
 - A `Sent` invoice can only be voided if no payment is allocated; otherwise a credit memo is required. Voids after the accounting period is closed post the reversal in the current open period ([09](09-accounting-ledger-integrations.md)).
 
-#### 4.4.2 Numbering [MVP]
+#### 4.4.2 Numbering
 
 - Per-Company sequential numbers with configurable prefix and per-document type (`INV-`, `DEP-`, `CM-`, `PA-` for pay apps, `ST-` for statements). Optional per-branch or per-year sequences (`INV-2027-00412`).
 - Numbers are assigned at **approval** (not at draft) so voided drafts never create gaps; once assigned, a number is never reused. Voided sent invoices keep their number and appear on the audit report. This satisfies auditors and is ready for e-invoicing regimes that expect unique, sequential identifiers.
 - Imported historical invoices (migration from Jobber/QuickBooks) keep their original numbers in a separate `legacy_number` field.
 
-#### 4.4.3 Line-item rules [MVP]
+#### 4.4.3 Line-item rules
 
 | Line type | Source | Rules |
 |---|---|---|
@@ -550,14 +550,14 @@ Rules:
 - Negative invoice totals are not allowed; the engine converts them into a credit memo.
 - Quantities support 3 decimals (0.125 acre); money is stored as integer minor units with currency.
 
-#### 4.4.4 Templates and branding [MVP basic / V1 designer]
+#### 4.4.4 Templates and branding
 
 - **Brand kit** shared with proposals and the portal ([06](06-customer-portal.md), [21](21-ux-design-system-sitemaps.md)): logo, colors, font pair, footer, legal entity name, license numbers (many states require contractor license numbers on documents), tax registration numbers (GST/HST, QST, PST numbers in Canada).
 - MVP: 3 professionally designed templates (Classic, Modern, Commercial) with toggles: show visit dates, show photos thumbnails, show crew notes, roll-up vs detail, show property map thumbnail, show season meter, show "pay now" QR code.
 - V1: block-based **template designer** (drag sections: header, bill-to/service-to, PO block, lines, tax summary, payment instructions, terms, attachments index, thank-you note) with per-client template assignment and per-language variants (English, Spanish at launch; French-Canadian later; client language drives invoice language).
 - Required content checks by jurisdiction (e.g., Canadian invoices show the supplier's GST/HST, QST and PST registration numbers and tax amounts in the form CRA requires for the client to claim input tax credits, see 4.5.3; US invoices for home-improvement work show the contractor license number where the state requires it). The template engine refuses to render a template missing required fields for the invoice's jurisdiction.
 
-#### 4.4.5 Attachments and proof of service [MVP]
+#### 4.4.5 Attachments and proof of service
 
 - Auto-attached per Company/client settings:
   - **Before/after photos** from the visit (GPS and timestamp watermarked), selectable "best 3" by AI.
@@ -567,17 +567,17 @@ Rules:
 - Attachments are rendered into the portal invoice view and optionally merged into a single PDF packet (commercial AP departments often require one PDF).
 - Size limits: 25 MB per invoice packet for email (larger packets are link-only).
 
-#### 4.4.6 Delivery channels [MVP / V1 mail]
+#### 4.4.6 Delivery channels
 
 - Email with secure portal link (magic link, expiring 30 days, re-issued on request) and PDF attachment toggle.
 - SMS with short link (requires SMS consent captured per TCPA/10DLC rules; see [16](16-marketing-growth-communications.md)).
 - Portal notification and push (native app later).
-- **Print batch** [MVP]: invoices for clients whose channel is mail are collected into one print-ready PDF per run (address block positioned for a standard double-window envelope, remittance stub with QR code), so the office prints and stuffs once instead of 40 times.
-- **Printed mail** [V1] via a print-and-mail API partner (for example Lob): invoice PDF + remittance stub + return envelope; cost per piece passed through or absorbed (Company setting); remittance stub carries invoice number and a QR code for online payment. Checks can be routed to a lockbox partner [V2].
+- **Print batch**: invoices for clients whose channel is mail are collected into one print-ready PDF per run (address block positioned for a standard double-window envelope, remittance stub with QR code), so the office prints and stuffs once instead of 40 times.
+- **Printed mail** via a print-and-mail API partner (for example Lob): invoice PDF + remittance stub + return envelope; cost per piece passed through or absorbed (Company setting); remittance stub carries invoice number and a QR code for online payment. Checks can be routed to a lockbox partner.
 - Commercial **AP portal / email-to-AP** routing: send to the client's AP inbox (e.g., `invoices@propertyco.com`) with the invoice PDF as the only attachment and a structured subject (`INV-2027-00412 | PO 77812 | Oak Ridge Apartments`).
 - Delivery tracking: sent, delivered, bounced, opened, link clicked; bounced emails create an office task.
 
-#### 4.4.7 Internal approval workflow before sending [MVP]
+#### 4.4.7 Internal approval workflow before sending
 
 - Approval rules (any match routes to `pending_approval`):
   - Invoice total > threshold (default $2,500) or T&M invoices of any size.
@@ -586,22 +586,22 @@ Rules:
   - Margin on the job below target (if job costing enabled; [09](09-accounting-ledger-integrations.md)).
   - AI anomaly flag (section 10): amount deviates > 2 standard deviations from the client's history, missing photos for a service that requires them, visit count mismatch.
   - Commercial client with required PO and PO missing.
-- Approver: role-based (`owner`, `office_manager`, or `ops_manager` for their accounts) with **multi-level** approval for large amounts [V1] (e.g., > $25,000 requires owner).
+- Approver: role-based (`owner`, `office_manager`, or `ops_manager` for their accounts) with **multi-level** approval for large amounts (e.g., > $25,000 requires owner).
 - Approvals can be done in bulk in the Billing Run and on mobile (push notification "12 invoices need approval, $18,420").
 - Rejected invoices return to draft with a note and a task for the preparer.
 
-#### 4.4.8 Client-side acceptance (commercial AP approval) [V1]
+#### 4.4.8 Client-side acceptance (commercial AP approval)
 
 - `client_commercial` contacts with the `approver` contact scope ([06](06-customer-portal.md) 3.3, with invoice visibility enabled) can review invoices in the portal, approve, reject with reason, or request changes; multi-step approval chains on the client side (site manager -> regional manager) are configurable per client.
 - Invoice shows `client_status`: `awaiting_client_approval`, `approved_by_client`, `rejected_by_client`. Payment terms clock can start at client approval if the contract says so (common in commercial "Net 30 from approved invoice").
 
-#### 4.4.9 PO numbers and ceilings [MVP]
+#### 4.4.9 PO numbers and ceilings
 
 - Purchase Orders recorded per client/property/agreement: PO number, issuer, amount ceiling (optional), date range, allowed service lines, remaining balance.
 - Client setting "PO required": invoices without a valid PO cannot be approved. When a PO's remaining balance would go negative, the invoice is blocked and the ops manager is alerted at 80% consumption.
 - Multiple POs per client (e.g., one for maintenance, one for enhancements, one per snow season).
 
-#### 4.4.10 Consolidated billing for commercial portfolios [V1]
+#### 4.4.10 Consolidated billing for commercial portfolios
 
 - **Billing hierarchy**: Client (e.g., "Greystone Property Management") -> Billing Groups (e.g., "Region North", "HOA: Maple Court") -> Properties. Each property can override the **bill-to entity** (property-management reality: the payer is each property's ownership entity, "Oak Ridge Apartments LLC c/o Greystone", even though the manager administers everything).
 - Modes: `per_property_invoices` (one invoice per property per cycle, plus a consolidated statement), `consolidated_invoice` (one invoice per billing group with per-property subtotals and per-property tax), `master_with_sub_invoices` (one summary invoice referencing per-property sub-invoices; each sub-invoice is numbered and payable on its own).
@@ -610,16 +610,16 @@ Rules:
 
 > **Competitive edge: the bill-to entity is per property, not per client.** Jobber's QuickBooks Online sync posts invoices and payments only to the parent customer, not to QBO sub-customers, and does not support QuickBooks Desktop (section 2.1), so a property manager with 22 sites collapses into one customer in the books. Rootline models Client -> Billing Group -> Property with a bill-to entity, PO and client GL code per property, posts every journal line with a `property_id` dimension in the built-in ledger, and still syncs per-property sub-customers to QBO for Companies that keep it ([09](09-accounting-ledger-integrations.md)).
 
-#### 4.4.11 Multi-currency [MVP single-currency / V1 cross-currency]
+#### 4.4.11 Multi-currency
 
 - Each Company has a **base currency** (USD or CAD at launch). MVP: invoices in base currency only.
 - V1: clients can have a **billing currency** different from base (a Windsor, Ontario company with Detroit clients). Price books per currency (no auto-conversion of prices by default). Invoice currency is fixed at creation; the GL records the base-currency equivalent at the invoice date rate; realized FX gain/loss posts at payment; unrealized revaluation at period end ([09](09-accounting-ledger-integrations.md)). Rate source: daily published reference rates (e.g., Bank of Canada) with manual override.
 - Stripe: charge in invoice currency on the Company's connected account; settlement currency and conversion are the Company's Stripe settings ([08](08-payments-stripe.md)).
 
-#### 4.4.12 E-invoicing readiness [V1 structured export / V2 networks]
+#### 4.4.12 E-invoicing readiness
 
-- Canonical invoice JSON is mapped to **UBL 2.1** fields from day one (supplier/customer parties with tax IDs, lines with classified tax category, allowances/charges, payment means, references to PO and contract). This lets us emit **Peppol BIS Billing 3.0** and similar profiles when US/Canadian e-invoicing networks (the US Digital Business Networks Alliance framework, Canadian initiatives) or large clients require them [V2].
-- Exports: UBL XML, CSV, hybrid PDF/A-3 with embedded XML [V2]; ANSI X12 810 EDI for national-account clients [V2].
+- Canonical invoice JSON is mapped to **UBL 2.1** fields from day one (supplier/customer parties with tax IDs, lines with classified tax category, allowances/charges, payment means, references to PO and contract). This lets us emit **Peppol BIS Billing 3.0** and similar profiles when US/Canadian e-invoicing networks (the US Digital Business Networks Alliance framework, Canadian initiatives) or large clients require them.
+- Exports: UBL XML, CSV, hybrid PDF/A-3 with embedded XML; ANSI X12 810 EDI for national-account clients.
 - National-account facility-management portals (e.g., ServiceChannel, Corrigo) are common for commercial landscapers serving retail chains; V2 integrations submit invoices and pull work orders and NTEs (verify partner API availability).
 - Invoices carry an immutable content hash and a rendering version so the PDF shown in 2031 matches what was sent in 2027.
 - **Mandate status**: we know of no US federal or Canadian federal B2B e-invoicing mandate in force as of Nov 2026 (verify); demand will come first from national-account and government clients and from large property-management AP platforms, which is why structured export is V1 and network delivery is V2.
@@ -628,7 +628,7 @@ Rules:
 
 Landscaping is one of the hardest small-business tax categories in North America: the same crew on the same day can perform a service that is taxable (lawn maintenance in some states), a capital improvement where the contractor pays tax on materials and charges none on labor (a new paver patio in many states), and a sale of tangible goods (bagged mulch delivered and left for the homeowner). Rootline's approach: **classify every line, determine tax per line by jurisdiction, keep an evidence trail, and let a professional tax engine do the rate math.**
 
-#### 4.5.1 Tax architecture [MVP]
+#### 4.5.1 Tax architecture
 
 | Component | Description | Priority |
 |---|---|---|
@@ -660,7 +660,7 @@ flowchart TD
 
 > **Competitive edge: tax per line, not per client.** Jobber's own help center notes that batch invoicing splits jobs at properties with different tax rates into separate invoices, a sign that tax is modeled per property rather than per line. Rootline classifies each line (maintenance labor vs capital-improvement labor vs installed materials vs goods sold vs snow removal), so a single commercial invoice can mix a taxable maintenance line and a non-taxable capital improvement correctly, with the evidence an auditor needs.
 
-#### 4.5.2 Taxability patterns (illustrative, verify) [MVP]
+#### 4.5.2 Taxability patterns (illustrative, verify)
 
 The platform ships a **default taxability matrix** curated by `platform_finance` with outside tax counsel, and the tax engine remains the source of truth for rates. The table below shows the *kinds* of differences the matrix must express; it is illustrative only, not tax advice, and every row must be verified before launch (as of Nov 2026, verify).
 
@@ -686,7 +686,7 @@ The platform ships a **default taxability matrix** curated by `platform_finance`
 
 The invoice prints a tax summary by jurisdiction and treatment, the certificate number on the capital-improvement line and the engine's document code. Without the certificate on file, the Billing Run raises the "capital improvement without certificate" exception (4.10) instead of silently taxing or exempting the line. Whether mulch replacement is maintenance or improvement is exactly the kind of call the default matrix must encode per state and the Company's accountant must confirm.
 
-#### 4.5.3 Canada: GST/HST, QST and PST [MVP]
+#### 4.5.3 Canada: GST/HST, QST and PST
 
 - **GST/HST**: GST 5% applies in provinces without HST; HST applies at 13% in Ontario, 15% in New Brunswick, Newfoundland and Labrador and Prince Edward Island, and 14% in Nova Scotia after its 2025 rate change (as of Nov 2026, verify). For services in relation to real property, the place of supply is generally the province where the property is located, so an Ottawa company servicing a Gatineau property charges GST + QST, not Ontario HST (verify with CRA guidance).
 - **QST** (Quebec, 9.975%) applies to most services and goods supplied in Quebec; registration required separately from GST.
@@ -694,11 +694,11 @@ The invoice prints a tax summary by jurisdiction and treatment, the certificate 
 - **Small suppliers**: businesses under the CAD $30,000 small-supplier threshold (over four consecutive calendar quarters) need not register for GST/HST; Rootline tracks trailing taxable revenue and warns the owner when they approach the threshold.
 - **Invoice requirements**: registration numbers (GST/HST, QST, PST) printed on invoices and tax amounts or rates stated so commercial clients can claim input tax credits. CRA's documentation requirements scale with the invoice total in three tiers, generally under $100, $100 to $499.99, and $500 or more (raised from $30 and $150 in 2021; as of Nov 2026, verify): the middle tier adds the supplier's registration number and the tax charged (or a statement that tax is included and the rate), and the top tier adds the recipient's name, the payment terms and a description of the supply. Rootline's Canadian templates always print the top-tier content, so every invoice qualifies regardless of amount.
 - **Tax point**: GST/HST generally becomes payable on the earlier of the day the consideration is paid and the day it becomes due, and an invoice date generally makes it due (verify), so each level-billing installment carries its own tax, deposits are taxed when applied (4.2.5) and a prepaid season is taxed in full on the prepay invoice. US sales tax is generally due at the invoice date on accrual filers; the per-jurisdiction cash/accrual setting is in 4.5.5.
-- **Tax-inclusive pricing** [V1]: some Canadian residential Companies quote "all-in" prices. Price books can be flagged tax-inclusive per Company; the engine backs tax out of each line (rounded per line), and the invoice states "Price includes 13% HST of $6.33" as CRA allows when the rate or amount is disclosed. US Companies default to tax-exclusive.
+- **Tax-inclusive pricing**: some Canadian residential Companies quote "all-in" prices. Price books can be flagged tax-inclusive per Company; the engine backs tax out of each line (rounded per line), and the invoice states "Price includes 13% HST of $6.33" as CRA allows when the rate or amount is disclosed. US Companies default to tax-exclusive.
 - **Exemptions**: First Nations (Indian Act section 87 relief for qualifying status-holders on reserve), certain public service bodies (rebates rather than exemptions), diplomats. Captured as exemption certificates with jurisdiction scope.
 - Engine: `manual_rates` is sufficient for most Canadian Companies (rates are provincial, not local), with Stripe Tax or Avalara optional.
 
-#### 4.5.4 Exemptions and certificates [MVP vault / V1 validation]
+#### 4.5.4 Exemptions and certificates
 
 - **Certificate vault**: per client (and optionally per property), store certificate type (`resale`, `nonprofit_501c3`, `government`, `agricultural`, `capital_improvement`, `first_nations`, `other`), jurisdictions covered, number, issue and expiry date, PDF/image, validation status.
 - **HOA reality check**: most homeowners associations are **not** sales-tax-exempt merely because they are nonprofit corporations; exemption usually requires a specific status (e.g., a 501(c)(3) charity in a state that exempts charities, or a government body). The default matrix does not exempt `client_type = hoa` unless a valid certificate is on file. Same for "nonprofit" churches, schools and clubs: certificate required.
@@ -707,15 +707,15 @@ The invoice prints a tax summary by jurisdiction and treatment, the certificate 
 - V1: validation via engine services (e.g., Avalara certificate management) and Stripe Tax customer exemption status (`exempt` / `reverse`) mapping.
 - Exempt invoices print the certificate reference.
 
-#### 4.5.5 Tax reporting and filing [MVP reports / V1 filing partner]
+#### 4.5.5 Tax reporting and filing
 
 - Sales tax liability report by jurisdiction and period (state, county, city, district; GST/HST/QST/PST lines), taxable vs exempt vs non-taxable sales, credits and bad-debt adjustments, on accrual or cash basis (Company setting per jurisdiction where cash-basis reporting is permitted).
 - Ties to GL `Sales Tax Payable` sub-accounts per agency ([09](09-accounting-ledger-integrations.md)).
 - Bad-debt tax recovery report: tax on written-off invoices that may be deductible on future returns where allowed.
 - V1: filing and remittance through Avalara Returns or Stripe Tax filing partners; Rootline never remits on behalf of the Company itself.
-- Economic nexus monitor: trailing 12-month sales into each US state vs that state's economic nexus threshold, for Companies working across state lines (Kansas City metro, Quad Cities, Twin Ports) [V1].
+- Economic nexus monitor: trailing 12-month sales into each US state vs that state's economic nexus threshold, for Companies working across state lines (Kansas City metro, Quad Cities, Twin Ports).
 
-### 4.6 Adjustments: credit memos, refunds, voids, write-offs [MVP]
+### 4.6 Adjustments: credit memos, refunds, voids, write-offs
 
 | Document | When used | Rules |
 |---|---|---|
@@ -726,15 +726,15 @@ The invoice prints a tax summary by jurisdiction and treatment, the certificate 
 | **Write-off** | Uncollectible balance, small residual, bankruptcy, settled dispute. | Reason code; approval matrix (e.g., `office_manager` up to $100, `owner` above); method `direct` (Bad Debt Expense) or `allowance` (against Allowance for Doubtful Accounts, if the Company uses it; [09](09-accounting-ledger-integrations.md)); sales-tax bad-debt adjustment recorded; client flagged (optional "do not service" until paid); recovery of a written-off amount reverses through "Bad debt recovered". |
 | **Small-balance auto write-off** | Residuals under a threshold (default $1.00, configurable to $10) from rounding or partial payments. | Automatic; contra-revenue `Small balance adjustments`; listed in a monthly report. |
 
-### 4.7 Customer balances: credits, prepayments, unapplied cash, gift credits [MVP]
+### 4.7 Customer balances: credits, prepayments, unapplied cash, gift credits
 
-- Every client has a **wallet** with typed balances: `credit_balance` (from credit memos and true-ups), `unapplied_payments` (overpayments or payments received without an invoice), `deposits_held` (per job), `prepaid_season` (per agreement), `gift_credit` [V1].
+- Every client has a **wallet** with typed balances: `credit_balance` (from credit memos and true-ups), `unapplied_payments` (overpayments or payments received without an invoice), `deposits_held` (per job), `prepaid_season` (per agreement), `gift_credit`.
 - **Auto-apply rules**: apply credits to the oldest open invoice (default), to the next invoice only, or manual. Deposits and prepaid seasons apply only to their own job/agreement.
 - Credits show in the portal with origin ("Credit from 2026 season true-up: $110.00").
-- **Unclaimed property**: long-dormant credit balances may be reportable to the state or province as unclaimed property after a dormancy period. Rootline reports credit balances with no activity for 24+ months and supports refund-or-escheat workflows (rules vary by jurisdiction; verify) [V1].
-- **Gift credits** [V1]: "Give Mom a spring cleanup" gift certificates sold through the website builder ([16](16-marketing-growth-communications.md)); liability until redeemed; expiry and breakage subject to gift-card laws (many jurisdictions restrict expiry), so default is no expiry.
+- **Unclaimed property**: long-dormant credit balances may be reportable to the state or province as unclaimed property after a dormancy period. Rootline reports credit balances with no activity for 24+ months and supports refund-or-escheat workflows (rules vary by jurisdiction; verify).
+- **Gift credits**: "Give Mom a spring cleanup" gift certificates sold through the website builder ([16](16-marketing-growth-communications.md)); liability until redeemed; expiry and breakage subject to gift-card laws (many jurisdictions restrict expiry), so default is no expiry.
 
-### 4.8 Statements [MVP]
+### 4.8 Statements
 
 - **Types**: `open_item` (all open invoices and credits, the default for residential), `balance_forward` (prior balance + this period's activity, preferred by some commercial clients), `activity` (all transactions in a date range), `agreement_statement` (earned vs billed vs paid for an agreement; doubles as the season summary), `consolidated_portfolio` (per billing group with per-property sections).
 - **Statement runs**: monthly on a chosen day for clients with open balances; delivered like invoices; include aging summary and pay-now link for the full balance.
@@ -746,14 +746,14 @@ The invoice prints a tax summary by jurisdiction and treatment, the certificate 
 
 ### 4.9 Accounts receivable, late fees, dunning and collections
 
-#### 4.9.1 AR aging and the collections workspace [MVP]
+#### 4.9.1 AR aging and the collections workspace
 
 - Aging buckets: Current, 1-30, 31-60, 61-90, 91-120, 120+ days past due (based on due date; option to age by invoice date). Retainage receivable aged separately.
 - Filters: client type, service line, property, salesperson/account manager, branch, billing group, autopay status, dunning stage, promise-to-pay status.
 - **Collections workspace**: prioritized queue (largest recoverable amount x probability of payment, from the AI model), client timeline (invoices, payments, messages, visits, disputes), quick actions (send reminder, log call, record promise, offer payment plan, place service hold, escalate).
 - Daily AR tie-out: AR subledger total = GL AR control account; discrepancies alert the bookkeeper ([09](09-accounting-ledger-integrations.md)).
 
-#### 4.9.2 Late fees and finance charges [MVP]
+#### 4.9.2 Late fees and finance charges
 
 - Policy fields: type (`flat`, `percent_monthly`, `flat_plus_percent`), amount, grace period (days after due), minimum fee, maximum per invoice, maximum per year, compounding (off by default; finance charges are never charged on finance charges unless explicitly enabled and lawful), frequency (once, monthly), applies to (residential/commercial), excluded clients.
 - **Legal guardrails**: late fees and finance charges are regulated (state usury and consumer credit laws, contract-law limits on penalties; in Canada, the federal Interest Act requires an annual rate to be stated where interest is expressed for a period of less than a year, or recovery may be limited) (verify). Rootline:
@@ -766,7 +766,7 @@ The invoice prints a tax summary by jurisdiction and treatment, the certificate 
 - **Worked example**: policy "1.5% per month (18% per year) on the past-due balance, $5 minimum, $50 maximum per invoice, assessed once at 10 days past due and monthly thereafter, no compounding". INV-00977 for $1,620 reaches 10 days past due: fee = max($5, 1.5% x $1,620 = $24.30) = **$24.30**. A $96 invoice: 1.5% = $1.44, so the $5 minimum applies, which is an effective 5.2% for that month; if the jurisdiction row caps fees on small consumer balances, the engine uses the lower capped amount and logs why.
 - Late fee assessment creates an invoice line (or a separate `FC-` invoice, Company setting) and posts to `Finance charge income`. Late fees can be waived in one click with a reason (waivers are the most common goodwill gesture); the AI collections agent can offer a waiver within owner-set bounds.
 
-#### 4.9.3 Dunning (automated reminders) [MVP]
+#### 4.9.3 Dunning (automated reminders)
 
 Default residential sequence (fully configurable; steps are Automations under the hood, [17](17-ai-copilot-automation.md)):
 
@@ -779,7 +779,7 @@ Default residential sequence (fully configurable; steps are Automations under th
 | +21 | Statement + personal note from owner (AI-drafted, owner-approved template) | Email + optional mail | |
 | +30 | Service hold warning (7-day notice) | Email + SMS + portal banner | Hold per 4.3.8. |
 | +45 | Service hold begins; office call task | Task + agent call option | |
-| +60 | Final notice | Email + certified mail [V1] | |
+| +60 | Final notice | Email + certified mail | |
 | +90 | Collections review: payment plan, agency hand-off, small claims packet, or write-off | Task for owner | |
 
 - Commercial sequence differs: no SMS by default, AP-inbox emails, PO and approval references, statement-based reminders, escalation to the property manager's supervisor contact at +45.
@@ -787,13 +787,13 @@ Default residential sequence (fully configurable; steps are Automations under th
 - Dunning pauses automatically when: a dispute is open, a promise to pay is active, a payment plan is current, the client is VIP-flagged, or a payment is pending (ACH in flight, 3-5 business days).
 - **Quiet hours and consent**: SMS and calls only 8 a.m.-9 p.m. client local time (TCPA-aligned default), honoring opt-outs, 10DLC-registered campaigns ([16](16-marketing-growth-communications.md)).
 
-#### 4.9.4 Payment plans and promises to pay [V1]
+#### 4.9.4 Payment plans and promises to pay
 
 - **Promise to pay**: date + amount, captured by office or AI agent; reminder the day before; broken promise resumes dunning and notifies the owner.
 - **Payment plan**: split a past-due balance into N installments with autopay required; plan status `current`/`broken`; services may resume while current. Owner bounds: minimum $50 per installment, no interest or fees by default, and **at most 4 installments for `client_residential`**, aligned with the Truth in Lending guardrail in [08](08-payments-stripe.md) 4.8 and the portal hardship flow in [06](06-customer-portal.md) (more than four installments can make the Company a Regulation Z "creditor"; raising the cap requires an explicit owner acknowledgment and a disclosed-terms template; verify with counsel). Commercial plans may run up to 12 installments. Plan mechanics (scheduled payment requests on one balance) are shared with [08](08-payments-stripe.md) 4.8.
 - **Worked example**: Thompson owes $612 of June-July mowing, 62 days past due, plus a $9.18 late fee, and is on service hold. The AI agent waives the late fee as a goodwill gesture within the owner's bound (P40) and offers 3 autopay installments of $204 on the 1st, 15th and 29th; the client accepts in the portal; dunning pauses and the service hold lifts once the first installment clears. If installment 2 fails and is not cured within 7 days, the plan becomes `broken`, the remaining $408 re-enters dunning at its real age and the hold returns after the standard 7-day notice.
 
-#### 4.9.5 AI collections agent [V1]
+#### 4.9.5 AI collections agent
 
 A first-party AR assistant that acts for the Company (not a third-party collector). Details of the agent framework, guardrails and evaluation are in [17](17-ai-copilot-automation.md); billing-specific behavior:
 
@@ -801,24 +801,24 @@ A first-party AR assistant that acts for the Company (not a third-party collecto
 - **Reads replies** (email/SMS/portal chat) and classifies: `paid_already` (searches payments and bank deposits, asks for remittance details), `dispute` (opens a dispute case, pauses dunning, routes to the account manager with a summary), `hardship` (offers a payment plan within bounds), `promise` (records promise to pay), `wrong_contact` (updates billing contact after verification), `unsubscribe` (honors immediately).
 - **Negotiates within hard bounds** set by the owner: maximum installments, maximum waiver of late fees, never discounts principal above X% without human approval, never threatens legal action, credit reporting or service suspension unless the Company's policy actually provides for it and it is the next scheduled step.
 - **Discloses it is an AI assistant** acting for the Company in every first message of a thread; offers a human hand-off at any time.
-- **Voice** [V2]: outbound calls via the AI receptionist stack ([16](16-marketing-growth-communications.md)) only for commercial accounts or residential clients who consented to calls; recording disclosures by jurisdiction.
+- **Voice**: outbound calls via the AI receptionist stack ([16](16-marketing-growth-communications.md)) only for commercial accounts or residential clients who consented to calls; recording disclosures by jurisdiction.
 - **Compliance posture**: although the US Fair Debt Collection Practices Act primarily governs third-party collectors, some state laws (California's Rosenthal Act is the usual example) apply similar rules to first-party creditors. The agent therefore follows conservative defaults inspired by Regulation F regardless of jurisdiction: Regulation F's call-frequency presumption (no more than 7 call attempts within 7 consecutive days per debt, and no call within 7 days after a phone conversation about that debt; verify), which Rootline applies to all channels combined, plus no contact at inconvenient times, no false urgency, no disclosure of the debt to third parties, and an easy opt-out from electronic messages. Every message is logged and auditable. Every message is logged and auditable.
-- **Agency hand-off** [V2]: export a collections packet (invoices, agreement, evidence, contact history) to a licensed agency partner; the balance moves to "placed with agency" status; recoveries net of agency fees post correctly.
-- **Small-claims packet** [V2]: generates a jurisdiction-appropriate summary (amount, timeline, evidence index) for the owner; no legal advice.
+- **Agency hand-off**: export a collections packet (invoices, agreement, evidence, contact history) to a licensed agency partner; the balance moves to "placed with agency" status; recoveries net of agency fees post correctly.
+- **Small-claims packet**: generates a jurisdiction-appropriate summary (amount, timeline, evidence index) for the owner; no legal advice.
 
 > **Competitive edge: collections with evidence and consequences.** Third-party roundups report that Jobber gates automated payment reminders to higher tiers, and reviewers describe Service Autopilot's invoice automation as generic (section 2). Rootline's reminders carry proof of service (photos, visit dates, signed terms), understand disputes, promises and payment plans, and connect to a real service-hold policy, so the polite reminder and the operational consequence come from one system the owner configured once.
 
-#### 4.9.6 Credit limits, credit holds and client billing profiles [V1]
+#### 4.9.6 Credit limits, credit holds and client billing profiles
 
 Commercial accounts and large residential installs need a credit decision before work starts, not a collections decision after.
 
 - **Client billing profile** (one per client, MVP for the fields, V1 for limits): default terms, bill-to party, delivery channel, invoice language, detail level, PO required, autopay required, statement type, dunning policy, late-fee policy, tax exemption status, credit limit, risk tier (`A` autopay or prepay, `B` standard, `C` deposit required, `D` cash in advance).
 - **Credit limit** = maximum open exposure: open AR + unbilled completed work + approved-but-not-started enhancements. Default limits by tier (e.g., `B` residential $2,500, `B` commercial $25,000), overridable per client by `owner`.
 - **Credit hold behavior** when exposure would exceed the limit, or when any invoice is more than N days past due (default 60): new proposals, enhancement approvals and change orders for that client require `owner` or `office_manager` approval before they become Jobs; recurring maintenance continues unless the service-hold policy (4.3.8) applies. Snow and safety-critical work is never blocked automatically.
-- **Signals**: payment history (average days to pay, broken promises, returns), autopay status, and for commercial clients an optional business credit report through a partner [V2]; the AI payment-likelihood model (AI4) suggests a tier, a human sets it.
+- **Signals**: payment history (average days to pay, broken promises, returns), autopay status, and for commercial clients an optional business credit report through a partner; the AI payment-likelihood model (AI4) suggests a tier, a human sets it.
 - **Deposit escalation**: tier `C` clients automatically get a higher default deposit on new proposals (e.g., 50% instead of 30%, subject to the deposit-cap rule table in 4.2.5).
 
-### 4.10 Batch invoicing: Billing Runs [MVP]
+### 4.10 Batch invoicing: Billing Runs
 
 The Billing Run is the office manager's month-end cockpit. It must handle 1,000+ invoices without the browser choking (server-side pagination, background generation via durable workflows; see [20](20-architecture-security.md)).
 
@@ -873,7 +873,7 @@ Rules:
 - Sending is resumable: a crash mid-send resumes from the last issued invoice (durable workflow, [20](20-architecture-security.md)); idempotency keys on autopay PaymentIntents prevent double charges.
 - Throughput target: 1,000 invoices gathered, taxed and rendered in under 5 minutes per tenant (tax engine calls batched; PDFs rendered lazily on first view or send).
 
-### 4.11 Ledger postings per billing event [MVP]
+### 4.11 Ledger postings per billing event
 
 Every billing event posts a balanced journal entry to the built-in ledger at the moment it happens (or as a daily summarized entry with full sub-ledger detail where volume is high). Codes below are the **canonical default chart of accounts** from [09 - 4.2.2](09-accounting-ledger-integrations.md), shown with their account roles; posting rules bind to roles, never to numbers, so a Company that renumbers its chart breaks nothing. ([09 - 4.2.6](09-accounting-ledger-integrations.md) keeps a crosswalk from the provisional codes used before the canonical chart existed, such as 1100 AR and 2210 deferred revenue, for anyone migrating prototypes or test fixtures built on them.) Revenue accounts are split by division (maintenance, enhancements, install, design, lawn and PHC, irrigation, snow, lighting, tree). Sales tax payable is sub-accounted per tax agency. Every journal line carries dimensions: `client_id`, `property_id`, `job_id`, `agreement_id`, `division` (service line), `branch_id`. In [09](09-accounting-ledger-integrations.md)'s rule registry these rules are namespaced `billing.P1` to `billing.P42`.
 
@@ -909,20 +909,20 @@ Default accounts used by billing: `1010 Operating checking` (`bank:operating`), 
 | P26 | Chargeback opened | 1075 Disputed payments receivable; 6155 Dispute fees | 1050 Stripe clearing | Detail in [08](08-payments-stripe.md). |
 | P27 | Chargeback won | 1050 Stripe clearing | 1075 Disputed payments receivable; 6155 (if Stripe returns the fee) | |
 | P28 | Chargeback lost | 1200 AR (invoice reopened for collection) or 6170 Bad debt expense | 1075 Disputed payments receivable | Company chooses. |
-| P29 | Gift credit sold / redeemed [V1] | Sold: 1050. Redeemed: 2170 | Sold: 2170. Redeemed: 1200 | Breakage only where gift-card law allows. |
-| P30 | Tip paid with an invoice payment [V1] | 1050 Stripe clearing | 2160 Tips payable | Cleared by payroll ([15](15-team-hr-payroll.md)); never revenue, never taxed, never surcharged. |
-| P31 | Foreign-currency invoice paid [V1] | 1050/1051 (base-currency equivalent at payment rate) | 1200 AR (at invoice rate); 7910 Realized FX gain/loss (difference, debit or credit) | Revaluation of open foreign AR at period end in [09](09-accounting-ledger-integrations.md). |
+| P29 | Gift credit sold / redeemed | Sold: 1050. Redeemed: 2170 | Sold: 2170. Redeemed: 1200 | Breakage only where gift-card law allows. |
+| P30 | Tip paid with an invoice payment | 1050 Stripe clearing | 2160 Tips payable | Cleared by payroll ([15](15-team-hr-payroll.md)); never revenue, never taxed, never surcharged. |
+| P31 | Foreign-currency invoice paid | 1050/1051 (base-currency equivalent at payment rate) | 1200 AR (at invoice rate); 7910 Realized FX gain/loss (difference, debit or credit) | Revaluation of open foreign AR at period end in [09](09-accounting-ledger-integrations.md). |
 | P32 | Seasonal snow installment / recognition | Installment: 1200. Recognition: 2200 | Installment: 2200. Recognition: 4600 Snow and ice | Installment via P4; ratable recognition over the season months via P6. |
 | P33 | Offline payment recorded: check, cash, Interac e-Transfer, wire | 1060 Undeposited funds (office), 1065 Cash in transit (crew-collected, crew lead dimension) or 1010 (wire or e-Transfer straight to bank) | 1200 AR (allocated); 2180 (excess) | Bank deposit later posts Dr 1010, Cr 1060 and is matched in bank rec. |
 | P34 | Payment returned after success: ACH R01/NSF, PAD return, bounced check | 1200 AR (invoice reopened) | 1050 Stripe clearing (or 1010 / 1060 for checks) | A returned-payment fee, only if disclosed in signed terms and lawful, is a separate P1 line to 7500 Other income. Allocation reverses; dunning restarts at the invoice's real age. |
 | P35 | Deposit refunded on a canceled job | 2150 Customer deposits | 1050 Stripe clearing (or 1010) | Any contracted cancellation fee or non-returnable special-order material kept from the deposit posts Dr 2150, Cr 4300 (or 7500, Company setting) plus tax where the fee is taxable. |
 | P36 | Early-termination fee or discount clawback invoiced on cancellation | 1200 AR | Revenue of the agreement's division (or 7500, Company setting); tax per engine | Only when the fee is in signed terms (4.3.5). |
 | P37 | Unearned prepaid value forfeited at season close | 2200 Deferred revenue | 4100-4800 revenue (breakage) | Only when signed terms state forfeiture (4.2.4); otherwise P11 credit. |
-| P38 | Card surcharge collected [V1] | 1050 Stripe clearing | 4950 Card surcharge income; tax where the surcharge is taxable | Rules owned by [08](08-payments-stripe.md) 4.10. |
-| P39 | Payment-method discount (ACH incentive) applied [V1] | 4920 Payment method discounts | 1200 AR | Rules owned by [08](08-payments-stripe.md) 4.10. |
+| P38 | Card surcharge collected | 1050 Stripe clearing | 4950 Card surcharge income; tax where the surcharge is taxable | Rules owned by [08](08-payments-stripe.md) 4.10. |
+| P39 | Payment-method discount (ACH incentive) applied | 4920 Payment method discounts | 1200 AR | Rules owned by [08](08-payments-stripe.md) 4.10. |
 | P40 | Late fee waived | 7200 Finance charge income | 1200 AR | Reversal of P20; a waiver in a later period posts in the current period. |
 | P41 | Design-fee credit on install conversion (4.2.5) | 4910 Discounts and allowances (reason `design_credit`) | 1200 AR | Posted with P1 of the first install invoice; the design fee already recognized in 4350 stays earned. |
-| P42 | Dormant credit escheated as unclaimed property [V1] | 2180 Customer credits | 2190 Unclaimed property payable (`unclaimed_property_payable`) | Remittance to the state or province posts Dr 2190, Cr 1010. |
+| P42 | Dormant credit escheated as unclaimed property | 2180 Customer credits | 2190 Unclaimed property payable (`unclaimed_property_payable`) | Remittance to the state or province posts Dr 2190, Cr 1010. |
 
 **Posting keys.** Each rule builds the deterministic business key required by [20](20-architecture-security.md) (L4 exactly-once posting): `invoice:{id}:issue`, `invoice:{id}:void`, `credit_memo:{id}:issue`, `agreement:{id}:recognize:{service_date}`, `agreement:{id}:reclass:{period}`, `late_fee:{id}:assess` and `:waive`, `write_off:{id}`, `deposit:{id}:apply:{invoice_id}`. Re-delivered or duplicated events therefore cannot double-post.
 
@@ -949,7 +949,7 @@ If the same agreement belonged to an Ontario Company, each installment would als
 
 ## 5. Key user flows
 
-### 5.1 Residential season agreement: sign, level bill, true-up, renew [MVP]
+### 5.1 Residential season agreement: sign, level bill, true-up, renew
 
 1. Estimator sends a maintenance proposal with two payment options: "12 monthly payments of $228.33 (autopay)" or "Pay in full by Mar 15: $2,603 (save 5%)" ([03](03-crm-sales-estimating-proposals.md)).
 2. Client signs in the portal, picks 12 payments, saves a card or bank account (Stripe SetupIntent on the Company's account).
@@ -988,7 +988,7 @@ sequenceDiagram
     Billing->>Client: Season summary and renewal notice
 ```
 
-### 5.2 Month-end Billing Run [MVP]
+### 5.2 Month-end Billing Run
 
 1. On the 1st at 6 a.m., an Automation creates a draft Billing Run for "Monthly batch + installments" and notifies the office manager: "Billing Run ready: 312 invoices, $86,410, 9 exceptions".
 2. Office manager opens the run, fixes exceptions (4 unverified visits, 2 missing POs, 1 expired exemption certificate, 2 anomalies).
@@ -997,7 +997,7 @@ sequenceDiagram
 5. Sends: 188 autopay charges, 118 emails, 6 printed letters (queued to the print-and-mail partner at V1; at MVP they export as one print-ready PDF batch with remittance stubs).
 6. The run posts journal entries and saves its report. Target: under 30 minutes end to end.
 
-### 5.3 Commercial install with deposit, progress billing, retainage and pay apps [V1]
+### 5.3 Commercial install with deposit, progress billing, retainage and pay apps
 
 ```mermaid
 sequenceDiagram
@@ -1028,7 +1028,7 @@ sequenceDiagram
 
 Steps of note: certified amount less than applied creates a carry-forward on that schedule line; a change order adds lines CO-1..n; the deposit is consumed pro rata across pay apps if configured.
 
-### 5.4 Snow event to invoice [MVP basic / V1 full]
+### 5.4 Snow event to invoice
 
 ```mermaid
 flowchart TD
@@ -1056,7 +1056,7 @@ flowchart TD
     K --> L["Commercial AP delivery with PO"]
 ```
 
-### 5.5 Overdue invoice to resolution with the AI collections agent [V1]
+### 5.5 Overdue invoice to resolution with the AI collections agent
 
 ```mermaid
 sequenceDiagram
@@ -1075,7 +1075,7 @@ sequenceDiagram
     Billing->>Agent: invoice.paid, close case
 ```
 
-### 5.6 Mid-season cancellation with proration [MVP]
+### 5.6 Mid-season cancellation with proration
 
 1. Client requests cancellation in the portal on Jul 15 (moving). Agreement notice period: 14 days; effective Jul 29.
 2. Engine computes: earned through Jul 29 (completed visits + cleanup + fertilizer apps) vs billed; no early-termination fee for "property sold" reason (Company policy).
@@ -1131,7 +1131,7 @@ flowchart LR
 | Payment plans and promises (create, track, broken-plan queue) | Company web, portal | `office_manager`, client | V1 |
 | Unbilled work and leakage report (Billable Items past cycle, unverified visits) | Company web | `owner`, `office_manager` | MVP |
 
-### 6.2 Wireframe: Billing Run review (office manager, desktop) [MVP]
+### 6.2 Wireframe: Billing Run review (office manager, desktop)
 
 ```text
 +----------------------------------------------------------------------------------------------+
@@ -1162,7 +1162,7 @@ flowchart LR
 +----------------------------------------------------------------------------------------------+
 ```
 
-### 6.3 Wireframe: Agreement detail, Billing tab (earned-value meter) [MVP]
+### 6.3 Wireframe: Agreement detail, Billing tab (earned-value meter)
 
 ```text
 +----------------------------------------------------------------------------------------------+
@@ -1193,7 +1193,7 @@ flowchart LR
 +----------------------------------------------------------------------------------------------+
 ```
 
-### 6.4 Wireframe: Collections workspace with AI agent [MVP workspace / V1 agent]
+### 6.4 Wireframe: Collections workspace with AI agent
 
 ```text
 +----------------------------------------------------------------------------------------------+
@@ -1218,7 +1218,7 @@ flowchart LR
 +----------------------------------------------------------------------------------------------+
 ```
 
-### 6.5 Wireframe: Pay application editor (G703-style continuation sheet) [V1]
+### 6.5 Wireframe: Pay application editor (G703-style continuation sheet)
 
 ```text
 +------------------------------------------------------------------------------------------------------+
@@ -1241,7 +1241,7 @@ flowchart LR
 +------------------------------------------------------------------------------------------------------+
 ```
 
-### 6.6 Wireframe: Client-facing invoice (portal and PDF) with proof of service [MVP]
+### 6.6 Wireframe: Client-facing invoice (portal and PDF) with proof of service
 
 ```text
 +------------------------------------------------------------------------+
@@ -1265,7 +1265,7 @@ flowchart LR
 +------------------------------------------------------------------------+
 ```
 
-### 6.7 Wireframe: Consolidated portfolio invoice (commercial, portal and PDF) [V1]
+### 6.7 Wireframe: Consolidated portfolio invoice (commercial, portal and PDF)
 
 ```text
 +-----------------------------------------------------------------------------------------------+
@@ -1292,7 +1292,7 @@ flowchart LR
 
 Notes: each property row carries its own bill-to entity, PO and client GL code; tax is computed per line by property jurisdiction (4.5), so one consolidated invoice can span several tax jurisdictions; regional approval is the second step of the client-side chain (4.4.8), and the Net 30 clock starts when the chain completes.
 
-### 6.8 Wireframe: Snow billing board (ops manager, desktop) [V1]
+### 6.8 Wireframe: Snow billing board (ops manager, desktop)
 
 ```text
 +------------------------------------------------------------------------------------------+
@@ -1314,7 +1314,7 @@ Notes: each property row carries its own bill-to entity, PO and client GL code; 
 
 Notes: depth discrepancies over 2 inches block staging until resolved; covered pushes (seasonal fee or cap reached) still appear in the appendix; the "Subs" count links to subcontractor logs whose payables are created at the same time (4.2.10).
 
-### 6.9 Wireframe: Approvals on mobile (owner) [MVP]
+### 6.9 Wireframe: Approvals on mobile (owner)
 
 ```text
 +----------------------------------+
@@ -1380,7 +1380,7 @@ All tables carry `tenant_id` (Company) with Postgres row-level security, `create
 | `pay_application` | id, project_id, number, period_from, period_to, status, retainage_pct_work, retainage_pct_stored, applied_amount, certified_amount, invoice_id | Pay apps. |
 | `sov_line` | id, project_id, item_no, description, scheduled_value, change_order_id, sort_order | Schedule of values. |
 | `pay_app_line` | id, pay_application_id, sov_line_id, previous_completed, this_period, stored_materials, certified_this_period, retainage | Continuation sheet rows. |
-| `snow_rate_card` | id, agreement_line_id, model, trigger_inches, tiers_json, application_rates_json, hourly_rates_json, seasonal_cap, seasonal_floor | Snow pricing for the full module [V1]; Snow Lite prices storm visit counts from the Price Book. |
+| `snow_rate_card` | id, agreement_line_id, model, trigger_inches, tiers_json, application_rates_json, hourly_rates_json, seasonal_cap, seasonal_floor | Snow pricing for the full module; Snow Lite prices storm visit counts from the Price Book. |
 | `price_escalator` | id, type, value, index_series, floor_pct, ceiling_pct, rounding, timing | Escalation. |
 | `renewal` | id, agreement_id, new_agreement_id, notice_rule_code, notice_due_on, notice_sent_at, status | Renewal tracking. |
 | `einvoice_document` | id, invoice_id, format (ubl, peppol_bis, x12_810), payload_file_id, network, status | E-invoicing. |
@@ -1576,7 +1576,7 @@ erDiagram
 | **Facility-management portals (e.g., ServiceChannel, Corrigo), Peppol access points, EDI VANs** | National-account invoice submission and e-invoicing. | V2 | Verify partner APIs. |
 | **Collections agency partners; e-notary partners** | Agency placement; notarized pay apps. | V2 | |
 
-### 8.2 Public API (tenant-scoped, OAuth 2.0) [MVP core / V1 full]
+### 8.2 Public API (tenant-scoped, OAuth 2.0)
 
 REST + webhooks, versioned (`/v1`), idempotency keys on all POSTs ([20](20-architecture-security.md)).
 
@@ -1625,7 +1625,7 @@ Consumed events:
 | `timesheet.approved`, `material.used`, `equipment.usage_logged` | [15](15-team-hr-payroll.md), [13](13-operations-inventory-equipment.md) | T&M billable items |
 | `milestone.reached`, `phase.completed` | [04](04-scheduling-dispatch-routing.md) | Milestone invoices |
 | `project_phase.completed` | [14](14-service-line-modules.md) | Progress billing for design-build projects (percent complete per phase feeds milestone and SOV lines) |
-| `snow_event.closed` | [14](14-service-line-modules.md) | Snow billable items for storm-event billing (full module [V1]); Snow Lite storm visits arrive as `visit.completed` [MVP] |
+| `snow_event.closed` | [14](14-service-line-modules.md) | Snow billable items for storm-event billing (full module); Snow Lite storm visits arrive as `visit.completed` |
 | `payment.succeeded` / `.failed` / `.refunded`, `dispute.created` / `.closed`, `payout.paid` | [08](08-payments-stripe.md) | Allocations, dunning, ledger |
 | `payment.pending` (ACH/PAD in flight) / `payment.returned` (R01, NSF, PAD return) | [08](08-payments-stripe.md) | Pending badge and dunning pause; on return, reopen invoice (P34) and restart dunning at real age |
 | `payments.client.payment_hold` / `.payment_hold_released` | [08](08-payments-stripe.md) | Reconciled with this module's service-hold policy (4.3.8); one hold state per client, whichever module raised it |
@@ -1670,7 +1670,7 @@ Granular permissions compose into roles ([02](02-personas-roles-permissions.md))
 
 Rules:
 - "To limit" thresholds are role limits from [02](02-personas-roles-permissions.md) 5.6, adjustable per user: by default `office_manager` may issue credit memos up to $250, refunds up to $500 each ($2,000 per day) and write-offs up to $100; `bookkeeper` refunds up to $500 and write-offs up to $500; `ops_manager` credit memos up to $250. Above the limit the action becomes an approval request to `owner`.
-- Segregation of duties option [V1]: the user who creates a credit memo or write-off cannot approve it; the user who records a cash payment cannot void the invoice it paid.
+- Segregation of duties option: the user who creates a credit memo or write-off cannot approve it; the user who records a cash payment cannot void the invoice it paid.
 - Additional client contacts (spouse, tenant, billing contact) see only invoices for properties and documents they are scoped to; a tenant contact can see service details without seeing amounts if the owner contact chooses ([06](06-customer-portal.md)).
 - `platform_owner` can change platform defaults (tax mapping, legal tables, dunning template library) but never edits tenant invoices.
 - `platform_curator` and `platform_engineer` have no access to tenant billing data; engineers debug with redacted, aggregated telemetry or through the same audited support session as `platform_support`.
@@ -1755,8 +1755,8 @@ All AI runs through the AI Gateway, is metered in AI credits, and follows the gu
 | **TCPA / 10DLC / CASL** | SMS consent and opt-out; Canadian anti-spam law for commercial electronic messages. | Transactional vs marketing classification; consent records ([16](16-marketing-growth-communications.md)). |
 | **Privacy (GDPR/CCPA/PIPEDA)** | Access, deletion, retention. | Financial records retained for legal periods despite deletion requests (lawful-basis exception), with minimization of non-financial personal data. |
 | **Pesticide recordkeeping** | State applicator records and customer notification rules. | Chemical notices generated from field logs and attached/delivered ([14](14-service-line-modules.md)). |
-| **Lien laws** | Preliminary notice and lien filing deadlines (state-specific) on install projects; statutory waiver forms in some states. | Lien deadline tracker and statutory waiver templates [V1] (see section 13). |
-| **Unclaimed property** | Dormant credit balances may be escheatable. | Dormant-credit report and refund workflow [V1]. |
+| **Lien laws** | Preliminary notice and lien filing deadlines (state-specific) on install projects; statutory waiver forms in some states. | Lien deadline tracker and statutory waiver templates (see section 13). |
+| **Unclaimed property** | Dormant credit balances may be escheatable. | Dormant-credit report and refund workflow. |
 | **AIA documents** | Copyrighted forms and trademarks. | AIA-style output by default; official forms only under the Company's license. |
 | **SOC 2** | Change management, access control, audit logs. | Every financial action audited with actor, before/after, reason. |
 
@@ -1766,7 +1766,7 @@ All AI runs through the AI Gateway, is metered in AI credits, and follows the gu
 |---|---|---|---|
 | Tax matrix errors cause under- or over-collection | Medium | High (tenant liability, trust) | Engine as rate source; counsel-reviewed defaults; per-line evidence; tenants confirm settings at onboarding with their accountant; clear disclaimers. |
 | Level-billing math confuses clients ("why is December $118?") | Medium | Medium | Season meter in portal; AI2 explanations; plain-language true-up notices sent 30 days before. |
-| Migration from Jobber/LMN/QuickBooks loses open balances or agreement positions | High | High | Migration toolkit: opening AR by invoice, opening agreement positions, legacy numbers, reconciliation report signed off by owner ([24](24-roadmap-feature-catalog.md)). |
+| Migration from Jobber/LMN/QuickBooks loses open balances or agreement positions | High | High | Migration toolkit: opening AR by invoice, opening agreement positions, legacy numbers, reconciliation report signed off by owner ([24](24-product-scope-decisions-catalog.md)). |
 | AI collections agent says something non-compliant or damages a relationship | Low-Medium | High | Hard bounds, templates + LLM within policy, pre-send classifiers, human review mode for first 30 days, full logs. |
 | Dual systems: QBO users edit invoices in QBO | High | Medium | Sync flags conflicts; Rootline wins by default; education. |
 | Performance at month-end peaks (thousands of tenants run on the 1st) | High | Medium | Durable workflows, queue partitioning per tenant, staggered sends, tax engine batching and caching. |
@@ -1807,27 +1807,27 @@ Formal KPI definitions and metric keys live in [18](18-reporting-analytics.md), 
 
 ## 13. Beyond the brief: extra ideas
 
-1. **Proof-of-service invoices as a brand moment** [MVP]: every invoice is a mini report card (photos, on-site time, what was skipped and why). Turns the most disliked document into a trust builder and reduces "did you even come?" disputes.
-2. **Season meter for clients** [MVP]: a portal widget showing "18 of 30 mows done, you're $60 ahead"; demystifies level billing and nearly eliminates true-up surprises.
-3. **Exposure curve advisor** [MVP]: when building installment plans, Rootline charts the Company's credit exposure across the season and suggests the calendar that keeps clients slightly ahead; a small feature that prevents real losses.
-4. **Lien deadline tracker** [V1]: for install projects, computes preliminary-notice and lien filing deadlines by state from first-furnishing and completion dates, reminds the owner, and prepares notices with statutory waivers. Landscapers often forget they have lien rights at all.
-5. **Budget-season pack for commercial clients** [V1]: in July-September, auto-generates next-year proposals, price letters and a "budget workbook" per property (maintenance, enhancements, snow scenarios at low/average/high snowfall) so property managers can drop Rootline's numbers into their budgets first.
-6. **Tips on invoices** [V1]: optional gratuity prompt on residential invoices and receipts, routed to the crew via payroll (P30). A crew-morale feature competitors rarely handle cleanly.
-7. **Neighbor bundles** [V2]: if three homes on the same street sign up, each gets a route-density discount applied automatically as a line; marketing ([16](16-marketing-growth-communications.md)) and routing ([04](04-scheduling-dispatch-routing.md)) benefit too.
-8. **Split billing** [V1]: one service, multiple payers: landlord pays maintenance while tenant pays enhancements; HOA pays common areas while owners pay their own yards; divorced co-owners split 50/50. Each payer gets their own invoice from one Billable Item set.
-9. **Weather-protected plans** [V2]: an optional "drought guarantee" add-on where the client pays a fixed season price and the Company commits to convert skipped mows into other services of equal value; makes skipped-visit policy a selling point.
-10. **Smart billing date** [V1]: clients choose their billing day (payday alignment) within a window; AI4 suggests days that maximize on-time payment.
-11. **Cash-flow smoothing for the Company** [V2]: Rootline shows owners how moving 20% of clients to Jan-Dec level billing would flatten winter cash troughs, with a one-click renewal campaign to offer it.
-12. **Early-payout partners** [V3]: for large commercial receivables, offer optional invoice factoring or early payment through licensed third-party partners, where funds flow from the partner to the Company's own accounts. Rootline never holds funds; this is a marketplace referral with clear disclosures ([22](22-business-model-pricing-gtm.md), [23](23-innovation-moonshots.md)).
-13. **Year-end homeowner summary** [V1]: a tidy annual statement for clients who own rental properties or need records for HOA reimbursements or insurance claims.
-14. **"Fix it before it's late" nudges** [V1]: if an autopay card expires next month, the client gets a friendly update link 3 weeks ahead; failed payments drop because problems are prevented, not chased.
-15. **Sustainability line** [V2]: invoices for smart-irrigation clients show gallons saved this month vs baseline (from controller data); a delightful, differentiating extra that supports price increases.
-16. **Charity round-up** [V3]: clients can round up payments to support a local tree-planting nonprofit chosen by the Company; remitted by the Company, tracked as a liability.
-17. **Pre-bill preview** [V1]: 48 hours before the monthly batch, batch-billed clients get a portal preview ("Here is what we plan to bill on the 1st: 4 mows, 1 aeration, $315. Something wrong?"). A one-tap "question this" pauses only that client's draft and routes it to the office with the visit evidence. Fixing a problem before the invoice exists avoids a credit memo, a dispute and a late payment; for commercial clients the same preview doubles as the PO-coding check their AP team wants.
-18. **Standing enhancement allowance** [V1]: a residential client can set "fix anything under $150 without asking" (broken sprinkler head, dead perennial, extra bag of leaf haul). The crew logs the fix with before/after photos, the Billable Item is pre-approved within the allowance, and the next invoice shows it with the photo. Turns field-found upsells into revenue without phone tag, while the "no unapproved add-ons" rule still protects everyone else.
-19. **Storm statements for property managers** [V1]: within 24 hours of each event closing, every commercial snow client gets one statement per portfolio covering that storm (sites served, pushes, salt, weather reference, cap meter, accrued cost to date) even when invoicing is monthly. Property managers can accrue storm costs immediately and answer their owners the next morning, which is the moment they judge their snow contractor.
-20. **Billing integrity score** [V1]: a daily 0-100 score per Company built from leakage (unbilled items past cycle), unverified visits, exception backlog, AR-to-GL tie-out, tax evidence coverage, expired certificates and dunning backlog, with the top three fixes listed. Owners see whether billing is healthy without reading reports; the platform team ([19](19-platform-admin-portal.md)) sees which tenants need onboarding help before they churn.
-21. **GC pay-app portal export** [V2]: landscape subcontractors on larger commercial jobs are often required to submit pay applications through the general contractor's construction payment platform (Oracle Textura and Procore Pay are common examples; verify current integration options). Rootline exports the continuation sheet, lien waivers and compliance documents in the format those platforms import, so the landscape sub stops re-keying the same pay app twice a month.
+1. **Proof-of-service invoices as a brand moment**: every invoice is a mini report card (photos, on-site time, what was skipped and why). Turns the most disliked document into a trust builder and reduces "did you even come?" disputes.
+2. **Season meter for clients**: a portal widget showing "18 of 30 mows done, you're $60 ahead"; demystifies level billing and nearly eliminates true-up surprises.
+3. **Exposure curve advisor**: when building installment plans, Rootline charts the Company's credit exposure across the season and suggests the calendar that keeps clients slightly ahead; a small feature that prevents real losses.
+4. **Lien deadline tracker**: for install projects, computes preliminary-notice and lien filing deadlines by state from first-furnishing and completion dates, reminds the owner, and prepares notices with statutory waivers. Landscapers often forget they have lien rights at all.
+5. **Budget-season pack for commercial clients**: in July-September, auto-generates next-year proposals, price letters and a "budget workbook" per property (maintenance, enhancements, snow scenarios at low/average/high snowfall) so property managers can drop Rootline's numbers into their budgets first.
+6. **Tips on invoices**: optional gratuity prompt on residential invoices and receipts, routed to the crew via payroll (P30). A crew-morale feature competitors rarely handle cleanly.
+7. **Neighbor bundles**: if three homes on the same street sign up, each gets a route-density discount applied automatically as a line; marketing ([16](16-marketing-growth-communications.md)) and routing ([04](04-scheduling-dispatch-routing.md)) benefit too.
+8. **Split billing**: one service, multiple payers: landlord pays maintenance while tenant pays enhancements; HOA pays common areas while owners pay their own yards; divorced co-owners split 50/50. Each payer gets their own invoice from one Billable Item set.
+9. **Weather-protected plans**: an optional "drought guarantee" add-on where the client pays a fixed season price and the Company commits to convert skipped mows into other services of equal value; makes skipped-visit policy a selling point.
+10. **Smart billing date**: clients choose their billing day (payday alignment) within a window; AI4 suggests days that maximize on-time payment.
+11. **Cash-flow smoothing for the Company**: Rootline shows owners how moving 20% of clients to Jan-Dec level billing would flatten winter cash troughs, with a one-click renewal campaign to offer it.
+12. **Early-payout partners**: for large commercial receivables, offer optional invoice factoring or early payment through licensed third-party partners, where funds flow from the partner to the Company's own accounts. Rootline never holds funds; this is a marketplace referral with clear disclosures ([22](22-business-model-pricing-gtm.md), [23](23-innovation-moonshots.md)).
+13. **Year-end homeowner summary**: a tidy annual statement for clients who own rental properties or need records for HOA reimbursements or insurance claims.
+14. **"Fix it before it's late" nudges**: if an autopay card expires next month, the client gets a friendly update link 3 weeks ahead; failed payments drop because problems are prevented, not chased.
+15. **Sustainability line**: invoices for smart-irrigation clients show gallons saved this month vs baseline (from controller data); a delightful, differentiating extra that supports price increases.
+16. **Charity round-up**: clients can round up payments to support a local tree-planting nonprofit chosen by the Company; remitted by the Company, tracked as a liability.
+17. **Pre-bill preview**: 48 hours before the monthly batch, batch-billed clients get a portal preview ("Here is what we plan to bill on the 1st: 4 mows, 1 aeration, $315. Something wrong?"). A one-tap "question this" pauses only that client's draft and routes it to the office with the visit evidence. Fixing a problem before the invoice exists avoids a credit memo, a dispute and a late payment; for commercial clients the same preview doubles as the PO-coding check their AP team wants.
+18. **Standing enhancement allowance**: a residential client can set "fix anything under $150 without asking" (broken sprinkler head, dead perennial, extra bag of leaf haul). The crew logs the fix with before/after photos, the Billable Item is pre-approved within the allowance, and the next invoice shows it with the photo. Turns field-found upsells into revenue without phone tag, while the "no unapproved add-ons" rule still protects everyone else.
+19. **Storm statements for property managers**: within 24 hours of each event closing, every commercial snow client gets one statement per portfolio covering that storm (sites served, pushes, salt, weather reference, cap meter, accrued cost to date) even when invoicing is monthly. Property managers can accrue storm costs immediately and answer their owners the next morning, which is the moment they judge their snow contractor.
+20. **Billing integrity score**: a daily 0-100 score per Company built from leakage (unbilled items past cycle), unverified visits, exception backlog, AR-to-GL tie-out, tax evidence coverage, expired certificates and dunning backlog, with the top three fixes listed. Owners see whether billing is healthy without reading reports; the platform team ([19](19-platform-admin-portal.md)) sees which tenants need onboarding help before they churn.
+21. **GC pay-app portal export**: landscape subcontractors on larger commercial jobs are often required to submit pay applications through the general contractor's construction payment platform (Oracle Textura and Procore Pay are common examples; verify current integration options). Rootline exports the continuation sheet, lien waivers and compliance documents in the format those platforms import, so the landscape sub stops re-keying the same pay app twice a month.
 
 ---
 
@@ -1843,7 +1843,7 @@ Formal KPI definitions and metric keys live in [18](18-reporting-analytics.md), 
 8. **AI agent voice calls**: are residential outbound AI collection calls worth the regulatory and brand risk, or do we restrict voice to commercial accounts permanently?
 9. **QuickBooks-first customers**: decided in [09](09-accounting-ledger-integrations.md) 4.17.1. When a Company keeps QBO, QuickBooks Desktop or Xero as its book of record (Mode C), the built-in ledger still posts every billing event as an operational subledger (job costing, agreement positions, deferred revenue) and invoices, credit memos and payments sync as documents. Remaining question for this module: should Mode C tenants see the earned-vs-billed agreement meter and true-up previews sourced from Rootline's subledger even when the CPA adjusts deferred revenue directly in QBO, and how is that drift surfaced?
 10. **Snow depth source of truth**: crew-measured depth vs weather-service depth when they disagree on a per-push contract; should contracts specify the source, and should Rootline offer a default clause?
-11. **Unclaimed property**: handle escheat reporting in-product (V2) or only report dormant credits and leave filing to the Company's accountant?
+11. **Unclaimed property**: handle escheat reporting in-product or only report dormant credits and leave filing to the Company's accountant?
 12. **Cross-border Companies**: how much of non-resident GST/HST registration and US sales tax for Canadian Companies do we automate in V1?
 13. **Unbilled accrual default (P8)**: should accrual-basis Companies get P8 on by default? It makes monthly P&L correct for monthly batch billers but adds reversing entries that confuse some small-company bookkeepers.
 14. **Credit limits at MVP or V1?** Commercial pilots may need credit holds on enhancement approvals from day one; residential Companies will not. Decide after the first five commercial pilot interviews.

@@ -2,7 +2,7 @@
 
 > **Rootline** (working name) is an all-in-one operating system for small and medium landscape companies. One system takes every job from first photo to to-scale design, priced proposal, crew schedule, paid invoice and closed books. A regional horticulturist's plant knowledge is built in, and client payments land in a Stripe account the Company owns. This page is the front door to the proposal: the thesis, the bets, who it serves, how the pieces fit, what is in scope for the MVP and after, how it makes money and how to read the rest.
 
-**Status:** design proposal, November 2026. See [STATUS.md](STATUS.md) for what's done and what remains. Prices and targets are proposals or labeled estimates. Scope is described by tier (MVP, V1, V2, V3), not by date. **Sample tenant** in examples and concept screens: Greenleaf Grounds Co. The journeys in [02](02-personas-roles-permissions.md) also use two reference Companies: Reyes Outdoor Living (residential design-build) and Summit Grounds Group (three-branch commercial with snow).
+**Status:** design proposal, November 2026. See [STATUS.md](STATUS.md) for what's done and what remains. Prices and targets are proposals or labeled estimates. Scope is described by tier, not by date. **Sample tenant** in examples and concept screens: Greenleaf Grounds Co. The journeys in [02](02-personas-roles-permissions.md) also use two reference Companies: Reyes Outdoor Living (residential design-build) and Summit Grounds Group (three-branch commercial with snow).
 
 ---
 
@@ -71,7 +71,7 @@ AI features are the easiest thing to copy and the least important part of the mo
 | Owning nothing of the Company's money | Copying it means giving up a payments profit pool, so it is economically blocked |
 | Opt-in benchmarks and plant performance data | Needs ledger-grade data at scale with exact KPI definitions |
 
-The go-to-market is focused. The beachhead is the 5-40 person residential design-build-maintain firm: too complex for horizontal apps, too small for long ERP implementations. Rootline launches in one region, the **Great Lakes**: six Wave 1 Regions at MVP (Central Ohio, Northeast Ohio, Southeast Michigan and Toledo, West Michigan, Chicagoland and Northwest Indiana, and Southeast Wisconsin), where the plant knowledge is seeded deepest. Wave 2 at V1 extends that region across the border into Ontario's Golden Horseshoe and into nearby US metros. A second US cluster (Wave 3) is chosen later, based on traction. Rootline sells into the November-March planning season and makes switching cheap with a free migration concierge ([12](12-plant-knowledge-base.md), [22](22-business-model-pricing-gtm.md), [24](24-roadmap-feature-catalog.md)).
+The go-to-market is focused. The beachhead is the 5-40 person residential design-build-maintain firm: too complex for horizontal apps, too small for long ERP implementations. Rootline launches in one region, the **Great Lakes**: six Wave 1 Regions at MVP (Central Ohio, Northeast Ohio, Southeast Michigan and Toledo, West Michigan, Chicagoland and Northwest Indiana, and Southeast Wisconsin), where the plant knowledge is seeded deepest. Wave 2 at V1 extends that region across the border into Ontario's Golden Horseshoe and into nearby US metros. A second US cluster (Wave 3) is chosen later, based on traction. Rootline sells into the November-March planning season and makes switching cheap with a free migration concierge ([12](12-plant-knowledge-base.md), [22](22-business-model-pricing-gtm.md), [24](24-product-scope-decisions-catalog.md)).
 
 ---
 
@@ -172,13 +172,13 @@ flowchart TB
   AI --> MODELS
 ```
 
-| Surface | Users | Scope |
-|---|---|---|
-| Company web app | All Company staff roles | [MVP] |
-| Rootline Crew app | `crew_lead`, `technician`, `subcontractor`; manager mode and shop kiosk in V1 | [MVP] |
-| Customer Portal (white-label, custom domain) | `client_residential`, `client_commercial` and their contacts | [MVP] |
-| Platform Admin console | `platform_*` roles | [MVP] |
-| Marketing site and homeowner AI funnel | Prospects and homeowners | Site [MVP]; funnel embed [V1]; platform-hosted network [V2] |
+| Surface | Users |
+|---|---|
+| Company web app | All Company staff roles |
+| Rootline Crew app | `crew_lead`, `technician`, `subcontractor`; manager mode and shop kiosk in V1 |
+| Customer Portal (white-label, custom domain) | `client_residential`, `client_commercial` and their contacts |
+| Platform Admin console | `platform_*` roles |
+| Marketing site and homeowner AI funnel | Prospects and homeowners |
 
 ---
 
@@ -250,7 +250,7 @@ flowchart TB
 | [21 - UX, Design System and Sitemaps](21-ux-design-system-sitemaps.md) | Surfaces and sitemaps, interaction patterns, brand, tokens, components, accessibility, localization, onboarding |
 | [22 - Business Model, Pricing and Go-to-Market](22-business-model-pricing-gtm.md) | Tiers, seats, meters, add-ons, payments stance, homeowner app and leads, partners, GTM, unit economics |
 | [23 - Innovation and Moonshots](23-innovation-moonshots.md) | 33 bets from digital twin to robotic mowers to fintech, MVP rails, stage gates, ranking and waves |
-| [24 - Product Scope and Master Feature Catalog](24-roadmap-feature-catalog.md) | Scope tiers (MVP, V1, V2, V3), the MVP scope definition and the full 747-feature catalog; the authority on priority tags |
+| [24 - Product Scope and Master Feature Catalog](24-product-scope-decisions-catalog.md) | Scope tiers, the MVP scope definition and the full 747-feature catalog; the authority on priority tags |
 | [25 - Platform Blueprint and Build Handoff](25-platform-blueprint-build-handoff.md) | How an implementation agent builds Rootline: the blueprint data, architecture summary, gating model, build order by dependency, definition of done, route-to-spec map |
 | [26 - Agent-Led Marketing Playbook](26-agent-led-marketing-playbook.md) | How a marketing agent markets Rootline: autonomy and approvals, claims and consent guardrails, per-segment plays, channel procedures, seasonal cycles, measurement |
 | [platform/](platform/) | The blueprint as data: roles and permissions, personas, plans and entitlements, segments, sample tenants and every route, with a validator (`build.py`) |
@@ -263,14 +263,14 @@ flowchart TB
 
 ## 7. Product scope at a glance
 
-**[24 - Product Scope and Master Feature Catalog](24-roadmap-feature-catalog.md)** defines the scope tiers and tags every feature, and wins wherever a module doc's tag differs. The tiers describe scope and order, not dates:
+**[24 - Product Scope and Master Feature Catalog](24-product-scope-decisions-catalog.md)** defines the scope tiers and tags every feature, and wins wherever a module doc's tag differs. The tiers describe scope and order, not dates:
 
-| Tag | Scope tier | Features in the catalog |
-|---|---|---|
-| **[MVP]** | The first sellable release | 442 |
-| **[V1]** | The next scope wave | 255 |
-| **[V2]** | A later wave | 46 |
-| **[V3]** | Moonshot or long-term | 4, plus the bets in [23](23-innovation-moonshots.md) |
+| Scope tier | Features in the catalog |
+|---|---|
+| The first sellable release | 442 |
+| The next scope wave | 255 |
+| A later wave | 46 |
+| Moonshot or long-term | 4, plus the bets in [23](23-innovation-moonshots.md) |
 
 Of 747 cataloged features, 442 are in the MVP. The MVP proves the beachhead promise in the Great Lakes launch region, from Columbus to Milwaukee: design, sell, schedule, do the work, get paid and close the books in one system. Because Great Lakes crews plow in winter, it also includes **Snow Lite**.
 
@@ -296,8 +296,8 @@ Of 747 cataloged features, 442 are in the MVP. The MVP proves the beachhead prom
 
 ### V2 and V3
 
-- **[V2], a later wave:** the tree care module; HOA board meeting workflows; SCIM, franchise and multi-brand mode; cash-basis and tax-basis views, embedded bill pay and a Sage Intacct connector; the property digital twin, drone capture, AR "See it in your yard", climate-adaptive planting, Plant Doctor diagnosis and Landscape Passport transfer; the Plant API and data licensing; the Plant Exchange and Overflow marketplaces; the Autopilot back office; and the **Wave 3** second US cluster, chosen based on traction.
-- **[V3], moonshot or long-term:** Gaussian-splat 3D walkthroughs from phone video; the Rootline Buying Network for opt-in group purchasing; Rootline Grounds for in-house grounds teams and public agencies; and Rootline Global (UK, Australia, New Zealand).
+-, a later wave:** the tree care module; HOA board meeting workflows; SCIM, franchise and multi-brand mode; cash-basis and tax-basis views, embedded bill pay and a Sage Intacct connector; the property digital twin, drone capture, AR "See it in your yard", climate-adaptive planting, Plant Doctor diagnosis and Landscape Passport transfer; the Plant API and data licensing; the Plant Exchange and Overflow marketplaces; the Autopilot back office; and the **Wave 3** second US cluster, chosen based on traction.
+-, moonshot or long-term:** Gaussian-splat 3D walkthroughs from phone video; the Rootline Buying Network for opt-in group purchasing; Rootline Grounds for in-house grounds teams and public agencies; and Rootline Global (UK, Australia, New Zealand).
 
 [23](23-innovation-moonshots.md#42-rails-what-mvp-and-v1-must-build-so-the-moonshots-stay-possible) adds 14 cheap "rails" MVP and V1 must build so the moonshots stay possible, such as stable object IDs in designs, plant instances, rich photo metadata and a consent ledger.
 
@@ -318,7 +318,7 @@ The full commercial spec is **[22 - Business Model, Pricing and Go-to-Market](22
 - **Seats follow the seasons.** Office seats are the main price metric. Field seats are cheap and billed only in months they are active. Bookkeeper, subcontractor and client seats are free.
 - **Usage is published and shown before it is billed.** AI credit packs: 1,000 for $25, 5,000 for $100, 20,000 for $340. SMS and AI receptionist minutes have their own meters.
 - **Every differentiator is reachable at Grow**: Design Studio 2D, AI mockups, the full Ledger, the white-label portal and route optimization. Add-ons match the trade: designer seats and 3D, Snow & Ice billed only November-March (Snow Lite is in every plan), advanced ledger, payroll and websites.
-- **Zero payment markup by default.** Clients pay the Company through its own Stripe account and Rootline adds nothing. The opt-in Pay-as-you-grow plan [V1] is Starter at $39 plus a disclosed 0.5% application fee, capped at $10 per payment. Rootline's own subscriptions run on a separate platform Stripe account with Stripe Billing.
+- **Zero payment markup by default.** Clients pay the Company through its own Stripe account and Rootline adds nothing. The opt-in Pay-as-you-grow plan is Starter at $39 plus a disclosed 0.5% application fee, capped at $10 per payment. Rootline's own subscriptions run on a separate platform Stripe account with Stripe Billing.
 - **New revenue lines** come from the same assets: Rootline Home and Rootline Match (design-ready homeowner leads), the Plant API, Rootline Pulse benchmarks (opt-in, k-anonymized), and partners such as distributors, nurseries, associations and CPAs.
 - **Go-to-market:** a winter-timed trial plus inside sales, a migration concierge with a Spring-Ready Guarantee, and a Price Lock Promise (24 months, then at most 7% a year).
 - **Unit economics (estimates):** blended gross margin of 72% or more, rising to 77% or more at scale, and CAC payback of 12 months or less in every self-serve and inside-sales segment. [22](22-business-model-pricing-gtm.md) models per-account economics only and makes no multi-year revenue projections.
@@ -329,16 +329,16 @@ The full commercial spec is **[22 - Business Model, Pricing and Go-to-Market](22
 
 **Structure.** Each module doc opens with an "at a glance" summary and a related-docs line. It then follows a shared template: goals, market research, personas, feature specification with priority tags, flows (Mermaid), wireframes, data model, APIs and events, permissions, AI opportunities, compliance and risks, KPIs, beyond-the-brief ideas, open questions and sources.
 
-**Who decides.** When docs disagree, the owner doc for the topic wins. Roles belong to [02](02-personas-roles-permissions.md), billing to [07](07-invoicing-billing-contracts.md), payments to [08](08-payments-stripe.md), posting rules to [09](09-accounting-ledger-integrations.md), entities and architecture to [20](20-architecture-security.md), brand and UX to [21](21-ux-design-system-sitemaps.md), prices to [22](22-business-model-pricing-gtm.md), and priority tags to [24](24-roadmap-feature-catalog.md).
+**Who decides.** When docs disagree, the owner doc for the topic wins. Roles belong to [02](02-personas-roles-permissions.md), billing to [07](07-invoicing-billing-contracts.md), payments to [08](08-payments-stripe.md), posting rules to [09](09-accounting-ledger-integrations.md), entities and architecture to [20](20-architecture-security.md), brand and UX to [21](21-ux-design-system-sitemaps.md), prices to [22](22-business-model-pricing-gtm.md), and priority tags to [24](24-product-scope-decisions-catalog.md).
 
 **Evidence tags.** **[S]** sourced, **[S3P]** third-party summary, **[B]** background knowledge, **[E]** estimate, or "verify".
 
 | Reader | Reading path | Time |
 |---|---|---|
-| **Founder / operator** | This page; the [Platform Explorer](site/app.html) (start with the console as the founder); [01](01-market-landscape.md) (summary, sections 8, 10, 11); [22](22-business-model-pricing-gtm.md); [12](12-plant-knowledge-base.md); [19](19-platform-admin-portal.md); [23](23-innovation-moonshots.md) (sections 4 and 15); [24](24-roadmap-feature-catalog.md) | Half a day |
-| **Engineer** | This page; [25](25-platform-blueprint-build-handoff.md) and [platform/](platform/); the [Platform Explorer](site/app.html); [20](20-architecture-security.md); [02](02-personas-roles-permissions.md) (sections 5-6); [09](09-accounting-ledger-integrations.md) (posting rules, invariants); [08](08-payments-stripe.md); [05](05-field-crew-mobile-app.md) (sync); [04](04-scheduling-dispatch-routing.md) (optimizer); [17](17-ai-copilot-automation.md) (trust layer); [24](24-roadmap-feature-catalog.md) | 1-2 days |
+| **Founder / operator** | This page; the [Platform Explorer](site/app.html) (start with the console as the founder); [01](01-market-landscape.md) (summary, sections 8, 10, 11); [22](22-business-model-pricing-gtm.md); [12](12-plant-knowledge-base.md); [19](19-platform-admin-portal.md); [23](23-innovation-moonshots.md) (sections 4 and 15); [24](24-product-scope-decisions-catalog.md) | Half a day |
+| **Engineer** | This page; [25](25-platform-blueprint-build-handoff.md) and [platform/](platform/); the [Platform Explorer](site/app.html); [20](20-architecture-security.md); [02](02-personas-roles-permissions.md) (sections 5-6); [09](09-accounting-ledger-integrations.md) (posting rules, invariants); [08](08-payments-stripe.md); [05](05-field-crew-mobile-app.md) (sync); [04](04-scheduling-dispatch-routing.md) (optimizer); [17](17-ai-copilot-automation.md) (trust layer); [24](24-product-scope-decisions-catalog.md) | 1-2 days |
 | **Designer** | [21](21-ux-design-system-sitemaps.md); the concept screens in [site/](site/); [02](02-personas-roles-permissions.md) (personas, journeys); [05](05-field-crew-mobile-app.md); [06](06-customer-portal.md); [10](10-design-studio.md); [11](11-ai-design-mockups.md) | 1 day |
-| **Investor** | This page; the vision site in [site/](site/); [01](01-market-landscape.md) (summary, sections 2, 8, 10); [22](22-business-model-pricing-gtm.md) (sections 4, 5, 7); [23](23-innovation-moonshots.md) (moats, ranking); [24](24-roadmap-feature-catalog.md) | 2-3 hours |
+| **Investor** | This page; the vision site in [site/](site/); [01](01-market-landscape.md) (summary, sections 2, 8, 10); [22](22-business-model-pricing-gtm.md) (sections 4, 5, 7); [23](23-innovation-moonshots.md) (moats, ranking); [24](24-product-scope-decisions-catalog.md) | 2-3 hours |
 
 ---
 

@@ -23,7 +23,7 @@ Rootline launches in one region, the **Great Lakes**: six Wave 1 Regions at MVP 
 - **[Clickable AI design walkthrough](docs/site/prototype.html)**: step through the agentic design flow, from a homeowner's photos and measurements to AI mockups, a to-scale plan, an estimate, a proposal and client approval.
 - **[Clickable recurring work walkthrough](docs/site/recurring.html)**: one 9,000 sq ft lawn for one season, from a 2-minute Quick Quote and an online booking to route visits in the Spanish-first crew app, a Spot it upsell, a rain-day reshuffle, level billing with autopay, a failed card and the season true-up and renewal.
 - **[Product design proposal](docs/README.md)**: the front door. It has the executive summary, the 10 big bets, personas, the surface map, the lead-to-cash-to-books flow, a map of every module doc, product scope at a glance, the business model, reading paths and the glossary.
-- **[Product scope and feature catalog](docs/24-roadmap-feature-catalog.md)**: what is in each scope tier, MVP, V1, V2 and V3, and all 747 cataloged features, 442 of them in the MVP. It is the authority on priority tags.
+- **[Product scope and feature catalog](docs/24-product-scope-decisions-catalog.md)**: what is in each scope tier, MVP, V1, V2 and V3, and all 747 cataloged features, 442 of them in the MVP. It is the authority on priority tags.
 - **[UI concept screens](docs/site/)**: the vision site (`index.html`), the Platform Explorer (`app.html`), the clickable walkthroughs (`prototype.html` for AI design, `recurring.html` for recurring work) and static screen mockups (`screens-*.html`). Open them in any browser, with no build step.
 
 ## What is in `docs/`
@@ -34,6 +34,6 @@ Rootline launches in one region, the **Great Lakes**: six Wave 1 Regions at MVP 
 - **platform/**: the blueprint as data (`roles`, `personas`, `plans`, `segments`, `tenants`, `surfaces` JSON) with a validator.
 - **research/R1-R4**: research on field-service platforms, landscape software, design tools and plant data, and industry payments and accounting.
 
-Scope tiers: **[MVP]** the first sellable release; **[V1]** the next scope wave; **[V2]** a later wave; **[V3]** moonshot or long-term. The tiers describe scope, not dates.
+Scope tiers: the first sellable release; the next scope wave; a later wave; moonshot or long-term. The tiers describe scope, not dates.
 
 Status: design proposal, November 2026. Competitor facts are marked "verify". Every Rootline price and cost figure is a proposal or an estimate.

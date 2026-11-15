@@ -11,11 +11,11 @@
 - **Decision 4, benchmarking privacy:** opt-in give-to-get with two consent scopes (`peer_benchmarks`, `external_aggregates`), at least 10 companies per cell, dominance limits of 25% (one company) and 40% (top two), a fixed cohort lattice, quarterly releases, clean-room computation and differential-privacy noise for public products. Price and wage benchmarks are counsel-gated ([4.11.4](#4114-privacy-and-disclosure-control-rules-non-negotiable)).
 - **Decision 5, grounded AI answers:** the Copilot compiles questions into semantic queries through `metrics.query` ([AI Copilot](17-ai-copilot-automation.md)). Numbers come only from query results, and the release gate is 98% numeric match with zero ungrounded numbers.
 - **MVP:** owner, operations, sales and office dashboards, the KPI Dictionary and Data Health, the standard report library (job costing, profitability by client, property and service), exports, scheduled delivery of standard reports (Grow and above), the rules-based Monday digest and Copilot certified answers.
-- **Later:** [V1] custom report builder, goals, alerts and anomaly detection, crew "My Stats", the Close Cockpit, the production-rate feedback loop, 13-week cash and capacity forecasts, Pulse peer benchmarks (beta, then the full metric set), commercial property scorecards and the metrics API; [V2] scenario planner, ML seasonal forecast, data shares, external Pulse Indices and the "State of the Landscape Industry" report; [V3] an autonomous analyst agent.
+- **Later:** custom report builder, goals, alerts and anomaly detection, crew "My Stats", the Close Cockpit, the production-rate feedback loop, 13-week cash and capacity forecasts, Pulse peer benchmarks (beta, then the full metric set), commercial property scorecards and the metrics API; scenario planner, ML seasonal forecast, data shares, external Pulse Indices and the "State of the Landscape Industry" report; an autonomous analyst agent.
 - **Differentiators:** numbers reconciled to a built-in Ledger rather than guessed from invoices; landscape-native KPIs (RPMH, revenue per crew-day, CARR, backlog weeks, overhead recovery); production rates fed back into estimating; peer benchmarks by climate Region, size band and service mix.
 - **Key cross-links:** costs and GL from [09](09-accounting-ledger-integrations.md), labor burden from [15](15-team-hr-payroll.md), Stripe data from [08](08-payments-stripe.md), predictive models and agents in [17](17-ai-copilot-automation.md), Pulse packaging and tier gates in [22](22-business-model-pricing-gtm.md) (tiers mapped in [4.18](#418-packaging-by-tier)), operator analytics in [19](19-platform-admin-portal.md), ESG reporting (M-09) in [23](23-innovation-moonshots.md).
 
-**Related docs:** [Personas and permissions](02-personas-roles-permissions.md) | [Estimating](03-crm-sales-estimating-proposals.md) | [Scheduling](04-scheduling-dispatch-routing.md) | [Crew app](05-field-crew-mobile-app.md) | [Customer portal](06-customer-portal.md) | [Invoicing](07-invoicing-billing-contracts.md) | [Payments](08-payments-stripe.md) | [Ledger](09-accounting-ledger-integrations.md) | [Operations and equipment](13-operations-inventory-equipment.md) | [Service lines](14-service-line-modules.md) | [Team and payroll](15-team-hr-payroll.md) | [Marketing](16-marketing-growth-communications.md) | [AI Copilot](17-ai-copilot-automation.md) | [Platform admin](19-platform-admin-portal.md) | [Architecture](20-architecture-security.md) | [UX and design system](21-ux-design-system-sitemaps.md) | [Pricing and GTM](22-business-model-pricing-gtm.md) | [Moonshots](23-innovation-moonshots.md) | [Product scope](24-roadmap-feature-catalog.md)
+**Related docs:** [Personas and permissions](02-personas-roles-permissions.md) | [Estimating](03-crm-sales-estimating-proposals.md) | [Scheduling](04-scheduling-dispatch-routing.md) | [Crew app](05-field-crew-mobile-app.md) | [Customer portal](06-customer-portal.md) | [Invoicing](07-invoicing-billing-contracts.md) | [Payments](08-payments-stripe.md) | [Ledger](09-accounting-ledger-integrations.md) | [Operations and equipment](13-operations-inventory-equipment.md) | [Service lines](14-service-line-modules.md) | [Team and payroll](15-team-hr-payroll.md) | [Marketing](16-marketing-growth-communications.md) | [AI Copilot](17-ai-copilot-automation.md) | [Platform admin](19-platform-admin-portal.md) | [Architecture](20-architecture-security.md) | [UX and design system](21-ux-design-system-sitemaps.md) | [Pricing and GTM](22-business-model-pricing-gtm.md) | [Moonshots](23-innovation-moonshots.md) | [Product scope](24-product-scope-decisions-catalog.md)
 
 ---
 
@@ -136,21 +136,21 @@ Features are grouped as: foundations (4.1), dashboards (4.2), KPI Dictionary (4.
 
 ### 4.1 Analytics foundations
 
-#### 4.1.1 Semantic layer and certified metrics [MVP]
+#### 4.1.1 Semantic layer and certified metrics
 
 - Every metric is defined once as a **Metric Definition** with: `metric_key` (for example `gross_margin_pct`), display name (English, Spanish; French-Canadian later), formula expressed over semantic-layer measures, unit (currency, percent, hours, count, ratio, days), default aggregation and time grain, allowed dimensions, "higher is better" flag, format, owner, certification status (`draft`, `certified`, `deprecated`), version and changelog.
 - Dashboards, reports, alerts, goals, Copilot answers, exports, the client portal and benchmarks reference `metric_key@version`. A widget can pin a version or follow `latest-certified`.
 - Changing a certified metric creates a new version. Tenants see a "definition changed on 2027-03-01" annotation on charts that cross the change date, and old snapshots keep their original version.
-- Tenants can create **tenant metrics** (V1) from certified measures, for example "Mowing revenue per mower-hour", which are labeled "custom" and are never benchmarked.
+- Tenants can create **tenant metrics** from certified measures, for example "Mowing revenue per mower-hour", which are labeled "custom" and are never benchmarked.
 
-#### 4.1.2 Time intelligence [MVP]
+#### 4.1.2 Time intelligence
 
 - Calendars: calendar year, **fiscal year with any start month** (many landscapers run a November-October or a March-February year so the snow season sits in one year), and **season** as a first-class dimension (`spring` Mar-May, `summer` Jun-Aug, `fall` Sep-Nov, `winter` Dec-Feb by default; boundaries editable per Company and per Region, because "spring" in Zone 9 Texas starts in February).
 - Standard comparisons: previous period, same period last year (aligned by ISO week for operational metrics and by calendar date for financial metrics), year-to-date, trailing 12 months, season-to-date vs. last season-to-date, budget/goal.
-- **Weather-adjusted comparisons** [V1]: weeks with at least 2 rain-out days (from the weather service in [Scheduling](04-scheduling-dispatch-routing.md)) are flagged, and "weather-normalized" comparison excludes or reweights them.
+- **Weather-adjusted comparisons**: weeks with at least 2 rain-out days (from the weather service in [Scheduling](04-scheduling-dispatch-routing.md)) are flagged, and "weather-normalized" comparison excludes or reweights them.
 - All timestamps are stored in UTC and reported in the Company's time zone. Visits crossing midnight (snow routes) are attributed to the **service date** of the visit, not the clock date.
 
-#### 4.1.3 Core dimensions [MVP]
+#### 4.1.3 Core dimensions
 
 | Dimension | Notes |
 |-----------|-------|
@@ -166,7 +166,7 @@ Features are grouped as: foundations (4.1), dashboards (4.2), KPI Dictionary (4.
 | Geography | Platform Region (ecoregion/zone), state/province, county, metro, ZIP/postal code, and the custom territories used in routing. |
 | Currency | USD/CAD. Multi-currency companies report in the functional currency, with transaction currency available. |
 
-#### 4.1.4 Data freshness tiers [MVP]
+#### 4.1.4 Data freshness tiers
 
 | Tier | Latency target | Source | Used for |
 |------|----------------|--------|----------|
@@ -178,7 +178,7 @@ Features are grouped as: foundations (4.1), dashboards (4.2), KPI Dictionary (4.
 
 Each tile shows its tier and its last refresh time. If a near-real-time pipeline lags more than 15 minutes, tiles show an amber "delayed" badge and the platform engineer gets an alert ([section 4.12](#412-data-platform-architecture)).
 
-#### 4.1.5 Revenue views [MVP]
+#### 4.1.5 Revenue views
 
 Rootline always distinguishes five revenue views. The KPI Dictionary names which one each metric uses.
 
@@ -192,7 +192,7 @@ Rootline always distinguishes five revenue views. The KPI Dictionary names which
 
 The gap between billed and earned is shown as **over/under-billing** (a contract asset or liability), which is crucial for seasonal agreements and for install projects billed on milestones. See [Invoicing](07-invoicing-billing-contracts.md) and [Ledger](09-accounting-ledger-integrations.md).
 
-#### 4.1.6 Cost allocation rules [MVP]
+#### 4.1.6 Cost allocation rules
 
 Profitability by job, property and client depends on allocation rules. Rootline ships opinionated defaults that the owner can change (changes are versioned and restate history only on request).
 
@@ -203,33 +203,33 @@ Profitability by job, property and client depends on allocation rules. Rootline 
 | Shop / load / yard time | Overhead (not allocated) | Spread across the day's visits proportional to on-site hours |
 | Burden | Payroll taxes + workers' comp by class code + benefits + PTO accrual, as a % of wages, configured in [Team](15-team-hr-payroll.md) | Actual burden from payroll journal (V1, once payroll integration posts actual burden) |
 | Materials | Actual cost from inventory issue or vendor bill line linked to job (FIFO or moving average per [Operations](13-operations-inventory-equipment.md)) | Price Book standard cost (when actual is missing, flagged) |
-| Equipment | Equipment **internal rate per hour** × hours assigned to the visit (from crew equipment assignment or telematics) | Actual equipment cost per hour (V1, see KPI `equipment_cost_per_hour`) |
+| Equipment | Equipment **internal rate per hour** × hours assigned to the visit (from crew equipment assignment or telematics) | Actual equipment cost per hour |
 | Subcontractors | Vendor bill lines linked to job | Purchase order commitments for in-progress jobs |
 | Disposal / dump fees, permits | Expense lines linked to job | |
 | Overhead | Not allocated in gross margin; allocated per man-hour in **net profit by job** views using `overhead_rate_per_man_hour` | Allocated per revenue dollar |
 
 ### 4.2 Per-persona dashboards
 
-All dashboards share common behaviors [MVP]:
+All dashboards share common behaviors:
 
 - Global filters: date range, comparison, division, branch, crew, client type, region/territory. Filter state is in the URL and shareable.
 - Tiles show value, comparison delta (absolute and %), sparkline, target band, freshness badge and data-quality badge. Click to drill down.
 - Each user can **pin, hide or reorder** tiles. Owners can publish a **company default layout per role**.
-- Annotations [V1]: users can annotate a date ("Hail storm, 3 days lost", "Price increase 6% effective"). Annotations appear on all charts of that Company.
+- Annotations: users can annotate a date ("Hail storm, 3 days lost", "Price increase 6% effective"). Annotations appear on all charts of that Company.
 - Responsive: dashboards collapse to a single-column card stack on mobile; owners get an "Owner Snapshot" card stack on the phone ([section 4.16](#416-mobile-analytics)).
 - Dashboards are permission-aware. A tile whose metric needs a permission the viewer lacks (for example wages) is not rendered rather than shown blank.
-- Empty and low-data states [MVP]: a tile whose metric has fewer observations than its minimum (for example close rate with fewer than 10 decided proposals) shows "Not enough data yet (6 of 10 proposals decided)" instead of a misleading percentage; new tenants see their cohort's target band (when benchmarks are available) as a placeholder.
+- Empty and low-data states: a tile whose metric has fewer observations than its minimum (for example close rate with fewer than 10 decided proposals) shows "Not enough data yet (6 of 10 proposals decided)" instead of a misleading percentage; new tenants see their cohort's target band (when benchmarks are available) as a placeholder.
 
 **Relationship to the Today home.** [UX and design system](21-ux-design-system-sitemaps.md) defines a role-aware **Today** home ("what needs me now": approvals, exceptions, inline actions). The dashboards in this section are the **analytical** views ("how are we doing, and why"). Today's KPI widgets (Cash and AR, Pipeline this week, Today's operations) are rendered from the same certified `metric_key`s and drill into these dashboards, so a number on Today always equals the same number on a dashboard. Today is owned by doc 21; tile definitions, metric logic and freshness rules are owned here.
 
-#### 4.2.1 Owner Command Center [MVP]
+#### 4.2.1 Owner Command Center
 
 Default tiles (metric keys in brackets, defined in [section 4.3](#43-kpi-dictionary-canonical-definitions)):
 
 | Section | Tiles | Priority |
 |---------|-------|----------|
 | Profit | Revenue MTD/YTD vs. goal and vs. last year [`revenue_earned`, `revenue_recognized`]; Gross margin % with division breakdown [`gross_margin_pct`]; Net operating profit % (when ledger in use) [`net_operating_margin_pct`]; Labor % of revenue [`labor_pct_revenue`] | MVP |
-| Cash | Cash on hand across connected bank accounts (Plaid) and the available balance of the Company's **own** connected Stripe account, read through Stripe Connect (Rootline never holds the funds) [`cash_on_hand`]; 13-week cash forecast low point [`cash_forecast_min_13w`] (V1); cash runway in off-season months [`cash_runway_months`] | MVP (forecast V1) |
+| Cash | Cash on hand across connected bank accounts (Plaid) and the available balance of the Company's **own** connected Stripe account, read through Stripe Connect (Rootline never holds the funds) [`cash_on_hand`]; 13-week cash forecast low point [`cash_forecast_min_13w`]; cash runway in off-season months [`cash_runway_months`] | MVP (forecast V1) |
 | Receivables | AR total and aging buckets [`ar_total`, `ar_aging_pct_over_60`]; DSO (countback) [`dso_countback`]; failed autopays this week | MVP |
 | Backlog | Backlog $ and backlog weeks by division [`backlog_value`, `backlog_weeks`] | MVP |
 | Pipeline | Open pipeline $, weighted pipeline, close rate trailing 90 days [`pipeline_value_open`, `pipeline_value_weighted`, `close_rate_value`] | MVP |
@@ -238,7 +238,7 @@ Default tiles (metric keys in brackets, defined in [section 4.3](#43-kpi-diction
 | Peers | 3 benchmark comparisons (for example "Your gross margin is at the 61st percentile of 23 peers in your region, size band and service mix") | V1 |
 | Insights | Top 3 Copilot insights and alerts ("3 install jobs are trending over budget", "Agreement renewals are 9 points behind last year") | V1 |
 
-#### 4.2.2 Operations dashboard [MVP]
+#### 4.2.2 Operations dashboard
 
 For `ops_manager` (and `owner`). Focus: today, this week, and jobs at risk.
 
@@ -247,10 +247,10 @@ For `ops_manager` (and `owner`). Focus: today, this week, and jobs at risk.
 - **On-time %** [`on_time_visit_pct`] and **visit completion rate** [`visit_completion_rate`], with missed-visit reasons (weather, equipment, client cancel, crew shortage).
 - **Route density** [`route_density_onsite_ratio`, `revenue_per_drive_hour`, `drive_time_pct`] per crew with a map of today's routes. Low-density outliers (for example a single $45 mow 22 miles from the rest of the route) are highlighted as candidates for re-pricing or swapping, linking to [Scheduling](04-scheduling-dispatch-routing.md).
 - **Callbacks and rework** [`callback_rate`].
-- **Equipment** downtime and cost per hour outliers [`equipment_cost_per_hour`] (V1).
-- **Snow mode** [V1]: when a snow event is active, the dashboard swaps to event KPIs: sites serviced vs. committed, average time-to-arrival after trigger, pushes per site, salt tons applied vs. contract, crew hours vs. event budget. See [Service lines](14-service-line-modules.md).
+- **Equipment** downtime and cost per hour outliers [`equipment_cost_per_hour`].
+- **Snow mode**: when a snow event is active, the dashboard swaps to event KPIs: sites serviced vs. committed, average time-to-arrival after trigger, pushes per site, salt tons applied vs. contract, crew hours vs. event budget. See [Service lines](14-service-line-modules.md).
 
-#### 4.2.3 Sales dashboard [MVP]
+#### 4.2.3 Sales dashboard
 
 For `estimator` (own data by default) and `owner`/`office_manager` (all reps). Wireframe: 6.9.
 
@@ -258,12 +258,12 @@ For `estimator` (own data by default) and `owner`/`office_manager` (all reps). W
 - **Average ticket** [`average_ticket_won`] and **average agreement value** [`average_agreement_value`].
 - **Pipeline** by stage with stage aging; **pipeline velocity** [`pipeline_velocity`]; **sales cycle length** [`sales_cycle_days_median`].
 - **Lead response time** [`lead_response_minutes_median`] (speed-to-lead strongly influences conversion in home services; we measure it rather than assert an industry figure).
-- **Estimate accuracy** on jobs this rep estimated and that are now complete [`estimate_hours_wape`, `estimate_margin_variance_pp`] (V1).
+- **Estimate accuracy** on jobs this rep estimated and that are now complete [`estimate_hours_wape`, `estimate_margin_variance_pp`].
 - **Proposal engagement:** views, time to first view, option chosen (Good/Better/Best tier mix), deposit conversion.
-- **Renewal desk** (for account managers): agreements expiring in the next 60/90 days with renewal probability (V1 uses rules; V2 uses a model).
+- **Renewal desk** (for account managers): agreements expiring in the next 60/90 days with renewal probability.
 - **Commission and goal progress** (V1, links to [Team](15-team-hr-payroll.md)).
 
-#### 4.2.4 Crew lead and technician "My Stats" [V1]
+#### 4.2.4 Crew lead and technician "My Stats"
 
 Mobile-first in the [Crew app](05-field-crew-mobile-app.md), in English and Spanish.
 
@@ -272,7 +272,7 @@ Mobile-first in the [Crew app](05-field-crew-mobile-app.md), in English and Span
 - **Visibility rules:** crew members never see company revenue, margins, other employees' pay, or client contract values unless granted. Efficiency is shown as hours and ratios, not dollars, by default.
 - **Fairness guardrails:** comparisons are crew vs. its own history and vs. budget, not ranked public leaderboards by default. Owners can enable leaderboards (team-level only by default).
 
-#### 4.2.5 Bookkeeper Close Cockpit [V1]
+#### 4.2.5 Bookkeeper Close Cockpit
 
 For `bookkeeper` and `owner`. Shows month-end readiness and data integrity (wireframe 6.10):
 
@@ -280,38 +280,38 @@ For `bookkeeper` and `owner`. Shows month-end readiness and data integrity (wire
 - **Checklist with auto-checks:** all bank and credit card accounts reconciled through period end; Stripe payouts matched to deposits ([Payments](08-payments-stripe.md)); AR subledger ties to GL control account; AP subledger ties to GL; payroll journal posted for all pay dates in period; inventory valuation adjustment posted; WIP / over-under-billing adjustment posted; deferred revenue for prepaid programs adjusted; depreciation posted; sales tax liability reconciled to tax report; no unposted or draft transactions dated in period; no uncategorized transactions.
 - **Exceptions list:** unapplied payments, negative inventory, time entries without job, vendor bills without job on job-costed accounts, invoices with zero tax in taxable jurisdictions.
 - **Sync health** (when QuickBooks/Xero is the system of record): last sync, failed records, mapping gaps ([Ledger](09-accounting-ledger-integrations.md)).
-- Multi-client view for external CPAs who serve several Rootline companies (V2), subject to each Company granting access.
+- Multi-client view for external CPAs who serve several Rootline companies, subject to each Company granting access.
 
-#### 4.2.6 Office / admin dashboard [MVP]
+#### 4.2.6 Office / admin dashboard
 
 Exception worklists: completed visits not yet invoiced (count and $), invoices due but unsent, failed autopay charges, expiring cards, agreements expiring in 30/60/90 days, proposals viewed but unsigned for more than 7 days, client requests open over 48 hours, certificates of insurance expiring for subcontractors, and today's unconfirmed appointments.
 
-#### 4.2.7 Designer dashboard [V1]
+#### 4.2.7 Designer dashboard
 
 Designs created and in progress, design-to-proposal conversion, design-led close rate vs. non-design proposals, average design turnaround days, design fee revenue and credits applied, AI mockup usage and credits, top plants specified, and plant warranty replacements on designs (feedback for [Plant Knowledge Base](12-plant-knowledge-base.md) and [AI design](11-ai-design-mockups.md)).
 
-#### 4.2.8 Client-facing service reports and commercial scorecards [V1]
+#### 4.2.8 Client-facing service reports and commercial scorecards
 
 Covered in depth in [section 4.14](#414-embedded-analytics-for-client-portals). In short: monthly service reports per property (visits performed vs. contracted, photos, issues, chemical applications, irrigation inspections, snow events with response times), portfolio rollups for multi-property managers, spend vs. budget, SLA compliance, all white-labeled in the [Customer portal](06-customer-portal.md).
 
-#### 4.2.9 TV / shop display mode [V1]
+#### 4.2.9 TV / shop display mode
 
 A kiosk view for a shop TV: today's routes progress, crews checked in, weekly goal thermometer, safety streak, top reviews this week, weather. Uses a device token with read-only access to a whitelisted set of tiles and no financial detail unless the owner opts in. Housecall Pro offers a comparable external-monitor leaderboard ([HCP](https://housecallpro.com/features/advanced-reporting)); ours is crew-centric and bilingual.
 
 ### 4.3 KPI Dictionary (canonical definitions)
 
-The KPI Dictionary [MVP] is published in-app (searchable, with examples) and in the public help center. Each entry carries its `metric_key`, formula, unit, grain, source tables, default target band (editable per Company) and notes. Benchmarkable metrics are marked **(B)**.
+The KPI Dictionary is published in-app (searchable, with examples) and in the public help center. Each entry carries its `metric_key`, formula, unit, grain, source tables, default target band (editable per Company) and notes. Benchmarkable metrics are marked **(B)**.
 
 **Availability rule (for estimation).** The Dictionary, its governance and the metrics whose inputs exist at MVP ship at MVP. A metric inherits the priority of the module that produces its inputs and appears in the Dictionary as "coming with <module>" until then:
 
 | Metric group | Earliest availability | Why |
 |--------------|----------------------|-----|
-| Base measures, financial KPIs on earned/billed/collected views, AR and DSO, labor productivity, operations (visits, on-time, callbacks), sales funnel, CARR and renewal, backlog | [MVP] | Inputs come from MVP modules: estimating, scheduling, crew app time capture, invoicing, BYO Stripe, Ledger Essentials |
-| `revenue_recognized`, `overhead_pct_revenue`, `net_operating_margin_pct`, `overhead_recovery_rate`, `dpo`, `operating_cash_flow` | [MVP] for Companies on the built-in Ledger or a reconciled QuickBooks/Xero sync; hidden otherwise | Need GL data |
-| Materials usage vs. estimate; `equipment_utilization_pct` from manual meter readings | [MVP] for branches with the inputs | In [Operations](13-operations-inventory-equipment.md), `issue_to_job` and `return_from_job` movements (4.3.1) are MVP in Light mode (memo quantities) and carry into Standard mode when it ships ([Product scope](24-roadmap-feature-catalog.md) section 4.6 #6 retags Standard to [V1]), and the asset registry, manual meters, DVIR and the rate calculator are MVP (4.19). Branches in Off mode have no issues, so usage vs. estimate shows "coming with inventory" |
-| Other equipment and fleet metrics (4.3.8): actual `equipment_cost_per_hour`, `equipment_recovery_pct`, `vehicle_cost_per_mile`, `fuel_per_route_hour`, `downtime_hours` | [V1] | They need the parts of [Operations](13-operations-inventory-equipment.md) that are V1: telematics, fuel cards, actuals-based rates and usage to job cost (4.14.7-4.14.9, 4.19); downtime comes from PM schedules and work orders, which [Product scope](24-roadmap-feature-catalog.md) section 4.6 #7 retags to [V1] |
-| Snow metrics, `cac_by_lead_source`, `ltv`, `ltv_to_cac`, retention cohorts (GRR, NRR), people and safety (4.3.9), estimate accuracy | [V1] | Snow module, campaign cost capture, 2+ seasons of history, HR records and closed jobs |
-| `ebitda_adjusted`, empirical cohort LTV | [V2] | Need add-back workflow and 3+ seasons of cohorts |
+| Base measures, financial KPIs on earned/billed/collected views, AR and DSO, labor productivity, operations (visits, on-time, callbacks), sales funnel, CARR and renewal, backlog | | Inputs come from MVP modules: estimating, scheduling, crew app time capture, invoicing, BYO Stripe, Ledger Essentials |
+| `revenue_recognized`, `overhead_pct_revenue`, `net_operating_margin_pct`, `overhead_recovery_rate`, `dpo`, `operating_cash_flow` | for Companies on the built-in Ledger or a reconciled QuickBooks/Xero sync; hidden otherwise | Need GL data |
+| Materials usage vs. estimate; `equipment_utilization_pct` from manual meter readings | for branches with the inputs | In [Operations](13-operations-inventory-equipment.md), `issue_to_job` and `return_from_job` movements (4.3.1) are MVP in Light mode (memo quantities) and carry into Standard mode when it ships ([Product scope](24-product-scope-decisions-catalog.md) section 4.6 #6 retags Standard to), and the asset registry, manual meters, DVIR and the rate calculator are MVP (4.19). Branches in Off mode have no issues, so usage vs. estimate shows "coming with inventory" |
+| Other equipment and fleet metrics (4.3.8): actual `equipment_cost_per_hour`, `equipment_recovery_pct`, `vehicle_cost_per_mile`, `fuel_per_route_hour`, `downtime_hours` | | They need the parts of [Operations](13-operations-inventory-equipment.md) that are V1: telematics, fuel cards, actuals-based rates and usage to job cost (4.14.7-4.14.9, 4.19); downtime comes from PM schedules and work orders, which [Product scope](24-product-scope-decisions-catalog.md) section 4.6 #7 retags to |
+| Snow metrics, `cac_by_lead_source`, `ltv`, `ltv_to_cac`, retention cohorts (GRR, NRR), people and safety (4.3.9), estimate accuracy | | Snow module, campaign cost capture, 2+ seasons of history, HR records and closed jobs |
+| `ebitda_adjusted`, empirical cohort LTV | | Need add-back workflow and 3+ seasons of cohorts |
 
 #### 4.3.1 Base measures
 
@@ -347,7 +347,7 @@ These measures are building blocks. They are not shown as KPIs on their own.
 | `materials_pct_revenue` | Materials % of revenue | `materials_cost / net_revenue` | % | |
 | `overhead_pct_revenue` **(B)** | Overhead % of revenue | `overhead_expense / net_revenue` | % | Ledger required |
 | `net_operating_margin_pct` **(B)** | Net operating margin | `(gross_profit − overhead_expense) / net_revenue` | % | Before interest, taxes, owner add-backs |
-| `ebitda_adjusted` | Adjusted EBITDA | Net income + interest + taxes + depreciation + amortization + owner-flagged add-backs | $ | Add-backs are explicit, labeled entries (V2, for valuation reports) |
+| `ebitda_adjusted` | Adjusted EBITDA | Net income + interest + taxes + depreciation + amortization + owner-flagged add-backs | $ | Add-backs are explicit, labeled entries |
 | `overhead_rate_per_man_hour` | Overhead rate per man-hour | `budgeted_overhead_annual / budgeted_billable_man_hours_annual` | $/hr | From the annual budget: the Company Budget wizard and FLH rate in [Estimating](03-crm-sales-estimating-proposals.md) EST-01 and EST-02 at MVP, and pinned budget versions in [Ledger](09-accounting-ledger-integrations.md) section 4.9.1 from V1. Feeds estimating. |
 | `overhead_recovery_rate` **(B)** | Overhead recovery rate | `overhead_recovered / overhead_expense` for the same period, where `overhead_recovered` = `man_hours_billable × overhead_rate_per_man_hour` for the FLH method (default), or the SORS or MORS equivalents when the Company prices with those methods ([Ledger](09-accounting-ledger-integrations.md) section 4.9.2, which owns the tracker screen) | % | Over 100% means work sold and performed has covered overhead; under 100% means overhead is not being absorbed (usually too few billable hours or overhead overspend). Shown YTD with a seasonal pacing line, since recovery is naturally low in Jan-Mar. |
 | `break_even_revenue` | Break-even revenue | `overhead_expense / gross_margin_pct` | $ | Monthly and annual |
@@ -483,7 +483,7 @@ These measures are building blocks. They are not shown as KPIs on their own.
 | `certification_compliance_pct` | Certification compliance | Required certifications current / required | % |
 | `training_completion_pct` | Training completion | Assigned modules completed / assigned | % |
 
-#### 4.3.10 Metric governance rules [MVP]
+#### 4.3.10 Metric governance rules
 
 1. Only `platform_owner` and delegated `platform_engineer`/`platform_curator` staff (the analytics curation function) can create or change **certified** metrics; every change needs a reviewer and a changelog entry.
 2. A metric cannot be certified unless it has a unit test suite: at least 10 fixture scenarios with expected values, including seasonal edge cases (agreement billed Jan-Dec, work Apr-Nov), credit memos, partial payments, retainage, deposits, multi-currency and a reopened period.
@@ -532,24 +532,24 @@ Standard reports ship pre-built, are permission-aware, support every global filt
 | Compliance | Pesticide / fertilizer application log | Product, EPA registration number, rate, area, applicator license, weather at application; exportable for state recordkeeping ([Crew app](05-field-crew-mobile-app.md), [Service lines](14-service-line-modules.md)) | MVP |
 | Compliance | Certification and license expiry | Applicator licenses, CDL, ISA certifications, crew training | V1 |
 | Equipment | Equipment cost per hour and recovery | Asset and class level | V1 |
-| Equipment | Maintenance due and downtime | From [Operations](13-operations-inventory-equipment.md) PM schedules and work orders ([V1] per [Product scope](24-roadmap-feature-catalog.md) section 4.6 #7) | V1 |
+| Equipment | Maintenance due and downtime | From [Operations](13-operations-inventory-equipment.md) PM schedules and work orders ( per [Product scope](24-product-scope-decisions-catalog.md) section 4.6 #7) | V1 |
 | Inventory | Materials usage vs. estimate | Mulch yards, stone tons, plants: estimated vs. issued vs. returned (branches in Light or Standard inventory mode; [Operations](13-operations-inventory-equipment.md) 4.3.1) | MVP |
 | Plants | Plant warranty replacements | By plant, nursery, region, crew, install month | V1 |
 | People | Turnover, overtime, safety (TRIR) | | V1 |
 | Marketing | Campaign performance | Leads, opportunities, revenue by campaign | V1 |
 | Client | Client statement of service | Visits, photos, applications by property (client-facing) | V1 |
 
-#### 4.4.2 Job costing report: detailed behavior [MVP]
+#### 4.4.2 Job costing report: detailed behavior
 
-- **Columns per cost type:** estimated qty, estimated cost, actual qty, actual cost, variance $, variance %, committed (open POs and scheduled sub work) and forecast at completion (V1).
+- **Columns per cost type:** estimated qty, estimated cost, actual qty, actual cost, variance $, variance %, committed (open POs and scheduled sub work) and forecast at completion.
 - **Labor section** shows estimated vs. actual man-hours per task/phase (for example "Excavation and base prep: 48 est / 61 act"), with drill-down to every time entry (employee, date, hours, crew, cost code).
 - **Materials section** shows estimated vs. issued vs. returned, for example "Mulch (double-shredded hardwood): 18 yd³ est, 21 yd³ issued, 1 yd³ returned".
 - **Revenue section:** contract value, change orders, billed to date, collected, retainage held.
 - **Status rules:** a job is "costing complete" only when all visits are complete, all time is approved, and all vendor bills linked to the job's POs are entered. Until then the report shows a "provisional" badge with the list of missing items.
 - **Margin waterfall chart:** estimated GP → labor variance → materials variance → equipment variance → subs variance → change orders → actual GP.
-- **Copilot summary** (V1): "This patio is forecast 19% over on labor, mostly excavation (+13 hours) on 2 days with photos tagged 'buried concrete'. A debris-removal change order recovered most of it. Consider an 'unknown subsurface' allowance on similar bids."
+- **Copilot summary**: "This patio is forecast 19% over on labor, mostly excavation (+13 hours) on 2 days with photos tagged 'buried concrete'. A debris-removal change order recovered most of it. Consider an 'unknown subsurface' allowance on similar bids."
 
-#### 4.4.3 Profitability by client, property and service: revenue allocation [MVP]
+#### 4.4.3 Profitability by client, property and service: revenue allocation
 
 Flat-fee agreements do not price each visit, so Rootline allocates agreement revenue to visits using **relative standalone selling price**, which mirrors ASC 606 / IFRS 15 logic. Each service in the agreement template carries a standalone price from the Price Book; the agreement's total is distributed proportionally.
 
@@ -557,9 +557,9 @@ Example: a $3,000 agreement includes 30 mows (standalone $55 each = $1,650), spr
 
 Visits that are skipped (for example a mow skipped in drought) reallocate per the agreement's skip policy: credit the client, or keep the price and redistribute across remaining visits (configured in [Invoicing](07-invoicing-billing-contracts.md)).
 
-Property profitability adds a **property P&L heatmap** (V1): every property plotted on the map colored by GP per man-hour, with hover for revenue, man-hours, drive time and GM%. Owners use it to spot the cul-de-sac of under-priced lawns, or the commercial site where the crew spends 40% longer than budget every week.
+Property profitability adds a **property P&L heatmap**: every property plotted on the map colored by GP per man-hour, with hover for revenue, man-hours, drive time and GM%. Owners use it to spot the cul-de-sac of under-priced lawns, or the commercial site where the crew spends 40% longer than budget every week.
 
-#### 4.4.4 Production-rate feedback loop into the estimating engine [V1]
+#### 4.4.4 Production-rate feedback loop into the estimating engine
 
 This is the "closed loop" differentiator. The estimating engine in [Estimating](03-crm-sales-estimating-proposals.md) prices labor using **production rates** per task code (for example "Mow, 52-inch stand-on, open lawn: 0.85 acres per man-hour"; "Hand-spread mulch, wheelbarrow access: 1.0 yd³ per man-hour"; "Install 2-inch paver field, after base: 25 sq ft per man-hour"; illustrative values, not industry standards).
 
@@ -577,11 +577,11 @@ This is the "closed loop" differentiator. The estimating engine in [Estimating](
 
 **Workflow.** Suggestions appear in the estimator's "Production rate review" queue with evidence (a chart of observations, n, CI, crews involved). An `owner` or user with `estimating.manage_rates` can accept (a new rate version with an effective date), modify, or dismiss with a reason. Accepted rates apply only to **new** estimates; sent proposals are never repriced. Each rate version records its source ("accepted from 23 observations, 2026-04 to 2026-10").
 
-**Network prior** [V2]: for companies with too little history, the prior is the opt-in benchmark median rate for the task code in the same region and property type (using the privacy rules in 4.11), which gives new tenants credible rates on day one.
+**Network prior**: for companies with too little history, the prior is the opt-in benchmark median rate for the task code in the same region and property type (using the privacy rules in 4.11), which gives new tenants credible rates on day one.
 
 > **Competitive edge:** LMN is known for budget-based estimating and Aspire for deep job costing, but in both, turning actuals into new production rates is a manual analyst exercise. Rootline proposes statistically defensible rate updates with evidence, one click to accept, and network priors for new companies.
 
-### 4.5 Custom report builder [V1]
+### 4.5 Custom report builder
 
 A drag-and-drop builder over semantic-layer **explores** (curated, joined data models), not raw tables, so users cannot build wrong joins.
 
@@ -597,7 +597,7 @@ A drag-and-drop builder over semantic-layer **explores** (curated, joined data m
 - Conditional formatting (thresholds, color scales, icons).
 - Limits: 50 columns, 100,000 rows rendered in-app with virtual scrolling, 1,000,000 rows for export (larger exports go to data shares). Query timeout 30 s interactive, 5 min for scheduled.
 - Every result is filtered by the viewer's row-level permissions (tenant, branch, own records) and field-level permissions (wages, margins, client contract values).
-- **Report templates gallery** [V2]: platform-curated and community-shared templates (no data, only definitions) such as "Fall cleanup profitability" or "Irrigation start-up crew efficiency".
+- **Report templates gallery**: platform-curated and community-shared templates (no data, only definitions) such as "Fall cleanup profitability" or "Irrigation start-up crew efficiency".
 
 ### 4.6 Saved reports, scheduling, subscriptions and exports
 
@@ -609,14 +609,14 @@ A drag-and-drop builder over semantic-layer **explores** (curated, joined data m
 | Scheduled email delivery | Daily, weekly (choose weekday), monthly (day N or last business day), seasonal (for example every Monday April-November). Time zone-aware. Recipients must be users with access or explicit external email addresses (owner/office_manager only). Grow and above (4.18); Starter receives only the Monday digest. | MVP |
 | Conditional delivery | "Send only if" a condition is met (for example AR over 90 days exceeds $5,000; jobs at risk exist) | V1 |
 | Report bursting | One schedule, many personalized outputs: each crew lead gets their crew's report; each commercial client gets their properties' service report; each estimator gets their pipeline | V1 |
-| Delivery channels | Email (Postmark/SendGrid), in-app inbox, push, Slack and Microsoft Teams (V1), SFTP and S3 (V2, for lenders and franchise groups) | MVP/V1/V2 |
+| Delivery channels | Email (Postmark/SendGrid), in-app inbox, push, Slack and Microsoft Teams, SFTP and S3 | MVP/V1/V2 |
 | Google Sheets and Excel live links | A report published to a Google Sheet or Excel workbook refreshes on schedule | V1 |
 | Delivery log and audit | Every delivery is logged with recipients, row counts, and a hash of the file | MVP |
 | Unsubscribe and expiry | External recipients get one-click unsubscribe; external schedules expire after 12 months unless renewed | MVP |
 
 Scheduling runs as durable Temporal workflows with retry and idempotency keys, so a report is never sent twice and a failed render is retried with exponential backoff and surfaced to the owner after 3 failures.
 
-### 4.7 Goals and targets [V1]
+### 4.7 Goals and targets
 
 - Goals attach to any certified metric at company, division, branch, crew, rep or employee level, for a period (month, quarter, season, fiscal year).
 - **Seasonal phasing:** an annual revenue goal of $2.4M is phased by month using last year's earned-revenue curve (default), the budget, or a custom curve. Pacing compares actual vs. phased target, not a straight line, so April is not judged against 1/12 of the year.
@@ -625,7 +625,7 @@ Scheduling runs as durable Temporal workflows with retry and idempotency keys, s
 - **Scorecards and bonuses:** crew scorecards combine efficiency, callbacks, safety and on-time goals into a weighted score that can feed a gain-share or bonus calculation exported to payroll ([Team](15-team-hr-payroll.md)). The bonus rule is always visible to the crew in plain language.
 - **Budget import:** owners can import an annual budget (XLSX template or from [Ledger](09-accounting-ledger-integrations.md)) which also feeds `overhead_rate_per_man_hour`.
 
-### 4.8 Alerts and anomaly detection [V1]
+### 4.8 Alerts and anomaly detection
 
 **Threshold alerts** (rule-based, user-configured): metric, scope, comparison operator, threshold, evaluation frequency, quiet hours, recipients and channels, plus a cooldown (default 24 h) to avoid alert storms.
 
@@ -647,7 +647,7 @@ Scheduling runs as durable Temporal workflows with retry and idempotency keys, s
 | Unbilled work aging | `unbilled_completed_value` older than 7 days exceeds $2,500 (default) |
 | Dispute ratio | `dispute_rate` above 0.5% trailing 90 days (internal default, conservative by design) |
 
-**Alert lifecycle and deduplication rules** [V1]:
+**Alert lifecycle and deduplication rules**:
 
 1. One open `alert_event` per (rule, scope member). Re-evaluations while it is open update `value` and `last_evaluated_at` instead of creating new events, so a job at risk for 9 days is one alert, not 9.
 2. `acknowledged` silences notifications but keeps evaluating. `monitoring` is set when a user records an intervention (for example a change order or re-forecast) and auto-resolves when the condition has been false for 2 consecutive evaluations.
@@ -685,7 +685,7 @@ stateDiagram-v2
 
 All forecasts show a range (P10-P50-P90), their inputs, the model used, and the accuracy of past forecasts (backtest MAPE), so owners learn how much to trust them.
 
-#### 4.9.1 13-week cash flow forecast [V1]
+#### 4.9.1 13-week cash flow forecast
 
 This is the same forecast engine as the Ledger's cash forecast in [Ledger](09-accounting-ledger-integrations.md) section 4.9.4, which also owns the seasonal 12-month view and the ledger-side scenarios; this section specifies the analytics behavior (P10-P50-P90 ranges, backtest, alerting and the dashboard). Predicted payment dates come from one payment-timing model ([Ledger](09-accounting-ledger-integrations.md) AI9, the payment-propensity model in [AI Copilot](17-ai-copilot-automation.md) section 4.7.5).
 
@@ -697,23 +697,23 @@ Direct method, week by week:
 - **Low-point alert:** when P10 cash dips below the owner's threshold, the owner is alerted with levers (accelerate collections, move a purchase, draw on the line of credit).
 - **Rules:** the forecast re-runs nightly and on material events (`invoice.posted` over $5,000, `payment.failed` on autopay, `bill.posted`, `period.closed`). Week 1 starts on the Company's week-start day; the opening balance is the latest reconciled bank balance plus in-transit Stripe payouts. Each week's actual vs. forecast is stored, so backtest accuracy (shown as MAPE of weekly ending cash over the last 13 closed weeks) is visible on the screen (wireframe 6.11). A Company without a bank feed sees a "manual opening balance" warning and no P10 band.
 
-#### 4.9.2 Capacity forecast [V1]
+#### 4.9.2 Capacity forecast
 
 - Next 1-16 weeks: available crew hours (roster, approved time off, seasonal hires starting dates) vs. demand hours (scheduled recurring visits + backlog + weighted pipeline hours + historical average of unscheduled enhancements sold-and-performed within the window).
 - Output by division and skill (for example licensed applicator hours, irrigation tech hours, hardscape crew hours). Snow capacity is planned in equipment-route units (trucks, sidewalk crews) rather than hours.
 - Recommendations: hire N seasonal technicians by a date, add a Saturday shift, sub out, or push start dates. Links to [Scheduling](04-scheduling-dispatch-routing.md) and [Team](15-team-hr-payroll.md).
 
-#### 4.9.3 Seasonal revenue forecast [V1 baseline, V2 ML]
+#### 4.9.3 Seasonal revenue forecast
 
 - **V1 (bottom-up, explainable):** contracted recurring (agreement schedules) + backlog by scheduled date + weighted pipeline × historical sales-cycle timing + run-rate of enhancement and one-off work from the trailing 2 seasons, phased by the Company's own seasonal curve.
 - **V2 (model-based):** hierarchical time-series forecasting (division → service line) with reconciliation, weather covariates (regional growing-degree days, precipitation from the weather provider) and snow-season expectations (regional snowfall climatology), trained per Company with pooled priors from similar companies in the benchmark cohort.
-- **Snow scenarios** [V2]: revenue and cost range for a light, average and heavy season based on historical event counts in the Company's region; shows how seasonal contracts vs. per-push contracts hedge the risk.
+- **Snow scenarios**: revenue and cost range for a light, average and heavy season based on historical event counts in the Company's region; shows how seasonal contracts vs. per-push contracts hedge the risk.
 
-#### 4.9.4 Scenario planner [V2]
+#### 4.9.4 Scenario planner
 
 What-if sliders on a driver-based model: price increase % by service line (with churn elasticity estimated from the Company's own past renewals and, if opted in, a cohort-level elasticity prior), crew count, wage rate change, overtime policy, fuel price, new service line launch. **Antitrust guardrail:** the cohort prior is a historical, aggregated response curve (renewal rate vs. the Company's *own* percentage price change); it never contains or reveals other Companies' prices, and no pricing feature in Rootline uses other Companies' non-public prices, or data derived from them (including Pulse indices), as inputs (same rule as [Pricing and GTM](22-business-model-pricing-gtm.md), see 11.2). Outputs: revenue, GP, NOI, cash low point, capacity utilization. Owners save scenarios and compare side by side, for example "6% maintenance price increase plus one added crew" vs. "status quo".
 
-### 4.10 Natural-language analytics via Copilot [MVP certified answers, V1 exploratory mode and "why" analysis]
+### 4.10 Natural-language analytics via Copilot
 
 The Copilot ([AI Copilot](17-ai-copilot-automation.md)) answers questions such as "What was our gross margin on mulch jobs last spring vs. this spring?", "Which commercial properties lost money in October?", or "Why is RPMH down this month?".
 
@@ -722,11 +722,11 @@ The Copilot ([AI Copilot](17-ai-copilot-automation.md)) answers questions such a
 **How it works (rules):**
 
 1. **Semantic grounding (certified mode, default):** the LLM (Claude family via the AI Gateway) produces a structured **semantic query** (metrics, dimensions, filters, time range, comparison) through the `metrics.query` tool defined in [AI Copilot](17-ai-copilot-automation.md). The semantic layer compiles it to warehouse SQL with tenant and permission filters injected server-side. The LLM never writes SQL against OLTP tables.
-   **Exploratory mode [V1]:** for questions the catalog cannot express ("which properties had more than 3 callbacks after a crew change?"), [AI Copilot](17-ai-copilot-automation.md) allows generated read-only SQL against **tenant-scoped analytics views** (warehouse row policies, separate read role, 10 s timeout, 10,000-row cap, columns classified `restricted` excluded). Answers are badged "Exploratory, not a certified metric", always show the SQL, cannot be benchmarked or used by goals and alerts, and can be pinned only after an analyst converts them into a saved report on a semantic explore. This mode is off for roles without `analytics.reports.create`.
+   **Exploratory mode:** for questions the catalog cannot express ("which properties had more than 3 callbacks after a crew change?"), [AI Copilot](17-ai-copilot-automation.md) allows generated read-only SQL against **tenant-scoped analytics views** (warehouse row policies, separate read role, 10 s timeout, 10,000-row cap, columns classified `restricted` excluded). Answers are badged "Exploratory, not a certified metric", always show the SQL, cannot be benchmarked or used by goals and alerts, and can be pinned only after an analyst converts them into a saved report on a semantic explore. This mode is off for roles without `analytics.reports.create`.
 2. **Metric resolution:** user phrases are mapped to certified metrics using a synonyms table plus pgvector semantic search over metric descriptions ("labor percentage" → `labor_pct_revenue`; "how fast we get paid" → `dso_countback`). If two metrics are plausible (earned vs. recognized revenue), Copilot asks a clarifying question or states its assumption explicitly.
 3. **Numbers come only from query results.** The response renders numbers from the result set; the LLM writes the narrative around placeholders bound to result values. A post-generation check verifies every number in the text exists in the results (within rounding).
 4. **Show your work:** every answer includes the chart or table, the metric definitions used (linked to the KPI Dictionary), filters, freshness, and an "Open in report builder" button that turns the answer into an editable saved report.
-5. **Why questions [V1]:** "why" triggers the variance decomposition engine (mix vs. rate vs. volume, contribution by dimension), and the narrative cites the top contributors with values.
+5. **Why questions:** "why" triggers the variance decomposition engine (mix vs. rate vs. volume, contribution by dimension), and the narrative cites the top contributors with values.
 6. **Permissions:** Copilot can only query what the user could query in the builder. A crew lead asking "what's our profit this month?" gets a polite explanation that this needs owner-level access.
 7. **Follow-ups** keep context ("now just commercial", "break it down by crew").
 8. **Saved questions and pinned answers** can be added to a dashboard as live tiles.
@@ -739,7 +739,7 @@ Wireframe: 6.12 shows a certified answer with its assumptions, freshness, provis
 
 > **Competitive edge:** Jobber Copilot and ServiceTitan's Atlas show that owners want to ask their software questions in plain language. But an assistant over generic field-service data can only report what was logged, with definitions it chooses on the fly. Rootline's Copilot compiles every certified answer from the same KPI Dictionary that drives dashboards and benchmarks. "Gross margin on mulch" therefore means burdened labor, issued materials and allocated equipment, reconciled to the ledger, whether it appears in the answer, the report or the peer comparison. Every number is traceable, uncertified exploration is labeled as such, and the answer ends in an action (accept a production rate, open a re-price list).
 
-### 4.11 Industry benchmarking (the moat) [V1 beta, V2 full]
+### 4.11 Industry benchmarking (the moat)
 
 Benchmarking is the feature competitors without a large, structured, landscape-specific dataset cannot copy. ServiceTitan proves the demand in the trades with its quarterly, opt-in Benchmark Report, which requires at least 100 jobs in the period and an "Industry Publications" data preference ([ServiceTitan docs](https://help.servicetitan.com/docs/access-benchmark-reports)). Rootline does this for landscaping, with finer segmentation and stronger, documented privacy guarantees.
 
@@ -794,15 +794,15 @@ A published cell combines at most 3 dimensions. When the viewer's most specific 
 
 - Each **(B)** metric shows: own value, cohort P25/P50/P75, percentile rank, n, cohort definition, period, and a 4-quarter trend of own value vs. cohort median.
 - **Benchmark Scorecard:** a single page with a quartile badge per metric grouped by Profit, Productivity, Cash, Growth, Retention and Safety, plus "biggest gaps to median" and "biggest strengths".
-- **Insights** [V2]: aggregated statements computed only within cells passing the thresholds, for example "In your cohort, companies in the top quartile for RPMH have a median drive time % of 14% vs. 21% for the bottom quartile". These are cohort-level correlations, never claims about any company.
+- **Insights**: aggregated statements computed only within cells passing the thresholds, for example "In your cohort, companies in the top quartile for RPMH have a median drive time % of 14% vs. 21% for the bottom quartile". These are cohort-level correlations, never claims about any company.
 - **Goal seeding:** "Set my goal to cohort P75" is one click from any benchmark.
-- **Production-rate priors** [V2]: cohort median production rates per task code (4.4.4).
+- **Production-rate priors**: cohort median production rates per task code (4.4.4).
 
 #### 4.11.6 Cold start
 
 Benchmarks need density. Until a Region tier has enough contributors, cells fall back to macro-region or country. The UI can also show **public reference data** (for example Canadian government financial-performance data for NAICS 56173 ([ISED](https://ised-isde.canada.ca/app/ixb/cis/performance/56173)) or published industry study figures with citation), always visually separated from Rootline peer data and never blended into it. The founder's admin console shows a **coverage map** of cells meeting thresholds, to direct go-to-market efforts toward regions where adding 5 more customers unlocks benchmarks ([Pricing and GTM](22-business-model-pricing-gtm.md)).
 
-#### 4.11.7 External products: "State of the Landscape Industry" report and Pulse Indices [V2]
+#### 4.11.7 External products: "State of the Landscape Industry" report and Pulse Indices
 
 Commercial packaging and pricing are owned by [Pricing and GTM](22-business-model-pricing-gtm.md) (section 5.2.2, Rootline Pulse). This module owns the computation and the privacy controls:
 
@@ -812,12 +812,12 @@ Commercial packaging and pricing are owned by [Pricing and GTM](22-business-mode
 
 #### 4.11.8 Benchmark metric catalog by phase
 
-| Phase | Metrics benchmarked | Notes |
-|-------|--------------------|-------|
-| [V1] beta (first 2-3 quarterly releases; macro-region and country cells while density builds) | `gross_margin_pct`, `labor_pct_revenue`, `rpmh`, `revenue_per_crew_day`, `crew_utilization`, `drive_time_pct`, `overtime_pct`, `on_time_visit_pct`, `callback_rate`, `close_rate_count`, `close_rate_value`, `lead_response_minutes_median`, `dso_countback`, `ar_aging_pct_over_60`, `autopay_penetration`, `agreement_renewal_rate_value`, `client_churn_rate`, `backlog_weeks` (install-led cohorts only) | Operational and ratio metrics with the strongest completeness checks; no absolute dollars |
-| [V1] full set (after the beta releases) | Adds `overhead_pct_revenue`, `net_operating_margin_pct`, `overhead_recovery_rate`, `average_ticket_won`, `average_agreement_value`, `upsell_attach_rate`, `change_order_rate`, `nrr`, `grr`, `trir` | Financial metrics require a closed, reconciled period (4.11.2) |
-| [V1] counsel-gated | Price metrics (mowing price per 1,000 sq ft, mulch install price per cubic yard), `price_realization_pct`, wage ranges | Off until antitrust counsel approves (rule 10) |
-| [V2] | Production-rate priors by task code (4.4.4), `equipment_cost_per_hour` by asset class, `cac_by_lead_source` by channel, `ltv`, snow response metrics | Need 2+ seasons of comparable data |
+| Metrics benchmarked | Notes |
+|--------------------|-------|
+| `gross_margin_pct`, `labor_pct_revenue`, `rpmh`, `revenue_per_crew_day`, `crew_utilization`, `drive_time_pct`, `overtime_pct`, `on_time_visit_pct`, `callback_rate`, `close_rate_count`, `close_rate_value`, `lead_response_minutes_median`, `dso_countback`, `ar_aging_pct_over_60`, `autopay_penetration`, `agreement_renewal_rate_value`, `client_churn_rate`, `backlog_weeks` (install-led cohorts only) | Operational and ratio metrics with the strongest completeness checks; no absolute dollars |
+| Adds `overhead_pct_revenue`, `net_operating_margin_pct`, `overhead_recovery_rate`, `average_ticket_won`, `average_agreement_value`, `upsell_attach_rate`, `change_order_rate`, `nrr`, `grr`, `trir` | Financial metrics require a closed, reconciled period (4.11.2) |
+| Price metrics (mowing price per 1,000 sq ft, mulch install price per cubic yard), `price_realization_pct`, wage ranges | Off until antitrust counsel approves (rule 10) |
+| Production-rate priors by task code (4.4.4), `equipment_cost_per_hour` by asset class, `cac_by_lead_source` by channel, `ltv`, snow response metrics | Need 2+ seasons of comparable data |
 
 A metric enters the catalog only when its certified definition is stable for 2 quarters; a definition change resets its benchmark trend line with an annotation.
 
@@ -825,7 +825,7 @@ A metric enters the catalog only when its certified definition is stable for 2 q
 
 ### 4.12 Data platform architecture
 
-#### 4.12.1 Overview [MVP: semantic layer over Postgres analytics schemas; V1: CDC into ClickHouse, lakehouse and metrics store]
+#### 4.12.1 Overview
 
 The diagram shows the V1 target. At MVP the same semantic layer and Analytics API run over Postgres analytics schemas on a read replica (incrementally maintained rollup tables fed by outbox events), which matches [Architecture](20-architecture-security.md), where the ClickHouse-class serving store and the lakehouse are V1. Because every consumer talks to the semantic layer, the V1 switch is invisible to dashboards, Copilot and the API.
 
@@ -884,8 +884,8 @@ flowchart LR
 - **Slowly changing dimensions:** Type 2 for crew membership, employee wage rates (restricted), client type, property attributes, price book prices, and division mapping.
 - **Tenant isolation:** `tenant_id` is the first column of every table's sort key; ClickHouse row policies filter by a tenant setting injected per session; the semantic layer injects `tenant_id` from the authenticated security context; dedicated-database tenants get dedicated ClickHouse databases. CI runs cross-tenant read tests on every model change.
 - **Restatements:** reopening a ledger period, changing an allocation rule, or approving late time entries triggers a scoped recomputation (affected tenant and date window). Metric snapshots keep a `computed_at` and `version`, alerts for restated windows are suppressed, and dashboards show a "restated" annotation.
-- **Imported history** [MVP]: invoices, visits, clients and agreements migrated from Jobber, LMN, Aspire, Service Autopilot or QuickBooks ([Platform admin](19-platform-admin-portal.md) migrations) land with `source_system` and `trust_level = imported`. Imported periods power year-over-year comparisons on day one but are badged "imported" and never feed benchmarks, production-rate suggestions or certified financial tiles unless their totals reconcile to the imported GL within 1%.
-- **Tenant offboarding** [MVP]: on cancellation the Company can download a full analytics export (star schema as Parquet plus CSV, KPI Dictionary as JSON). After the retention window set in [Architecture](20-architecture-security.md), tenant marts, snapshots and lake partitions are hard-deleted. Already-published benchmark aggregates remain, because they contain no identifiable data.
+- **Imported history**: invoices, visits, clients and agreements migrated from Jobber, LMN, Aspire, Service Autopilot or QuickBooks ([Platform admin](19-platform-admin-portal.md) migrations) land with `source_system` and `trust_level = imported`. Imported periods power year-over-year comparisons on day one but are badged "imported" and never feed benchmarks, production-rate suggestions or certified financial tiles unless their totals reconcile to the imported GL within 1%.
+- **Tenant offboarding**: on cancellation the Company can download a full analytics export (star schema as Parquet plus CSV, KPI Dictionary as JSON). After the retention window set in [Architecture](20-architecture-security.md), tenant marts, snapshots and lake partitions are hard-deleted. Already-published benchmark aggregates remain, because they contain no identifiable data.
 - **PII handling:** client and employee names, emails and phones live only in restricted dims; facts carry surrogate keys. Erasure requests (GDPR, CCPA, PIPEDA) propagate as CDC deletes plus tombstones, and the lakehouse applies Iceberg row-level deletes within 30 days. Benchmark aggregates contain no personal data and are unaffected.
 - **Residency:** Canadian tenants who require Canadian data residency get warehouse and lake storage in a Canadian region (V2, aligned with the dedicated-DB option in [Architecture](20-architecture-security.md)).
 
@@ -893,13 +893,13 @@ flowchart LR
 
 - **Source of truth:** a git-managed metrics catalog (YAML) defines measures, dimensions, metrics, synonyms (English/Spanish), tests and certification. CI generates Cube data models, KPI Dictionary docs, Copilot synonym tables and benchmark eligibility from it.
 - **Cube** serves queries through REST/GraphQL for the app and a Postgres-wire SQL API for BI tools, with pre-aggregations for the heaviest dashboards and caching (Redis-backed). Security context carries `tenant_id`, `branch_ids`, `role`, `field_restrictions`, and, for portal users, `client_id` and `property_ids`.
-- **Metrics store** [V1]: `metric_value_daily` holds computed values per tenant × metric × key dimension × day (and per week/month/season). It powers fast tiles, goal pacing, alerts, anomaly detection, benchmark contributions, and Copilot "what changed" queries.
+- **Metrics store**: `metric_value_daily` holds computed values per tenant × metric × key dimension × day (and per week/month/season). It powers fast tiles, goal pacing, alerts, anomaly detection, benchmark contributions, and Copilot "what changed" queries.
 
 #### 4.12.5 Service levels and scale
 
 | SLO | Target |
 |-----|--------|
-| CDC lag (commit to ClickHouse raw) [V1] | p95 under 60 s |
+| CDC lag (commit to ClickHouse raw) | p95 under 60 s |
 | Near-real-time marts freshness | p95 under 5 min |
 | Dashboard tile query latency | MVP (Postgres): p95 under 1.5 s, p99 under 4 s. V1 (ClickHouse): p95 under 1 s on 3 years of history, matching [Architecture](20-architecture-security.md) |
 | Nightly snapshot completion | 100% of tenants by 05:00 local time |
@@ -924,7 +924,7 @@ Scale planning (estimate): 5,000 tenants averaging 2-3 million analytic rows per
 
 The [Customer portal](06-customer-portal.md) is a white-label Rootline surface, so "embedded analytics" means client-scoped analytics components rendered inside it (and optionally embeddable elsewhere through signed URLs).
 
-#### 4.14.1 Commercial Property Scorecard and portfolio view [V1]
+#### 4.14.1 Commercial Property Scorecard and portfolio view
 
 For `client_commercial` users (property managers, HOA board members, facilities managers):
 
@@ -932,26 +932,26 @@ For `client_commercial` users (property managers, HOA board members, facilities 
 - **SLA compliance:** request response times, issue resolution times, and for snow, each event's trigger depth and time, arrival time per site, pushes, salt/ice-melt applied and whether the contracted response window was met.
 - **Quality:** site audit scores (from quality inspections in [Service lines](14-service-line-modules.md)), open issues and resolutions.
 - **Applications:** fertilizer and pesticide applications with product, EPA registration number, rate, area, applicator and weather, for clients who must keep their own records or post notifications.
-- **Irrigation:** inspections and repairs, controller schedules, and water usage where smart controllers or meters are connected (V2).
+- **Irrigation:** inspections and repairs, controller schedules, and water usage where smart controllers or meters are connected.
 - **Spend vs. budget:** the client enters an annual budget per property (or per GL code). The scorecard shows contract spend, approved enhancements and pending proposals against it ("$38,200 of $45,000 enhancement budget committed").
 - **Portfolio view:** all properties on a map and in a sortable table with compliance %, spend vs. budget, open requests and scorecard grade; filter by region or property manager.
 - **Board packet export:** a branded PDF/XLSX packet per property or portfolio, scheduled monthly to board members and contacts with scoped access.
 
-#### 4.14.2 Residential "Your Season" [V1]
+#### 4.14.2 Residential "Your Season"
 
 A simple, delightful summary: visits completed, a photo timeline (before and after), treatments applied, plants installed with warranty dates and care tips (from the [Plant KB](12-plant-knowledge-base.md)), invoices and payments, and a shareable year-end **Season in Review** card ("31 mows, 2 cleanups, 14 yards of mulch, 120 tulips planted").
 
-#### 4.14.3 Rules [V1]
+#### 4.14.3 Rules
 
 - **Client-safe data layer only:** client explores expose no costs, margins, wages, crew hours (unless the landscaper enables "show labor hours" for time-and-materials contracts), or internal notes. Only photos flagged client-visible appear.
 - **Per-client visibility settings:** the landscaper chooses which widgets each client (or client type) sees, and can preview "view as client".
 - **Security context:** a signed, short-lived token carries `tenant_id`, `client_id`, the contact's allowed `property_ids` and widget permissions. All queries are filtered server-side.
 - **Branding:** inherits the Company's portal theme, logo and custom domain.
-- **External embedding** [V2]: signed-URL iframes so a property management company can embed a Rootline scorecard in its own owner portal. Integration targets among property-management and facilities platforms are to be validated with customers.
+- **External embedding**: signed-URL iframes so a property management company can embed a Rootline scorecard in its own owner portal. Integration targets among property-management and facilities platforms are to be validated with customers.
 
 > **Competitive edge:** Commercial maintenance contracts are won and kept on proof of performance. Most field-service tools stop at emailing a visit summary; our research found no multi-property dashboard or HOA-board approval routing in Jobber's client hub, and Aspire lists a client portal but publishes no detail on what a property manager can see there ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md); verify in a demo). Rootline gives the property manager a live, branded portfolio scorecard with snow SLA evidence and spend-vs-budget tracking, so the landscaper looks like the most professional vendor the board has.
 
-### 4.15 Platform operator analytics [MVP basics, V1 full]
+### 4.15 Platform operator analytics
 
 Specified in [Platform admin](19-platform-admin-portal.md) (PA-140 to PA-145 and the operator Copilot, PA-190); summarized here because it runs on the same data platform. Operator metrics share the metric-definition format of 4.1.1, so board-deck numbers and console numbers match:
 
@@ -966,42 +966,42 @@ Specified in [Platform admin](19-platform-admin-portal.md) (PA-140 to PA-145 and
 ### 4.16 Mobile analytics
 
 - **Owner Snapshot** [MVP as a responsive web/PWA card stack; V1 inside the native app's manager mode per [UX](21-ux-design-system-sitemaps.md)]: today's revenue earned, crews on the clock, jobs at risk, cash, AR, and this week vs. last week, plus the Monday digest push. (Named "Snapshot" rather than "Pulse" so it is not confused with Rootline Pulse, the benchmark program.)
-- **Crew stats** [V1]: as in 4.2.4, cached offline from the last sync with an "as of" stamp ([Crew app](05-field-crew-mobile-app.md)).
-- **Estimator pipeline** [V1]: pipeline, follow-ups due, close rate, and "similar past jobs" actuals while on site.
-- **Push alerts** [V1]: any alert rule can target push.
+- **Crew stats**: as in 4.2.4, cached offline from the last sync with an "as of" stamp ([Crew app](05-field-crew-mobile-app.md)).
+- **Estimator pipeline**: pipeline, follow-ups due, close rate, and "similar past jobs" actuals while on site.
+- **Push alerts**: any alert rule can target push.
 
 ### 4.17 Data quality and trust
 
-- **Data Health score** [MVP] per Company (0-100), weighted: visits with clock times (30%), time entries assigned to jobs (20%), vendor bills linked to jobs (15%), materials issued to jobs (15%), bank accounts reconciled within 30 days (10%), Price Book cost completeness (10%). Each component has a fix-it link. The score gates benchmark eligibility (4.11.2).
-- **"How is this calculated?"** panel on every tile [MVP]: formula, inputs, filters, row counts, freshness, metric version, and a link to the source rows.
-- **Reconciliation checks** [V1]: job-costed labor vs. payroll journal labor (tolerance 2%); earned revenue vs. GL revenue with explained differences (deferral, timing); AR subledger vs. GL control; Stripe charges vs. payments recorded. Breaks appear in the Close Cockpit.
-- **Metric tests** [MVP]: fixture-based unit tests per certified metric run in CI, plus nightly data tests (uniqueness, referential integrity, freshness) on marts.
-- **Metric lineage for support** [V1]: with a tenant-granted, time-boxed support session ([Platform admin](19-platform-admin-portal.md)), `platform_support` can open the lineage view of any tile (metric version, compiled query, source row counts, last pipeline run) without seeing wage or client-contact fields, which answers "why does this number look wrong?" in minutes instead of a screen-share.
+- **Data Health score** per Company (0-100), weighted: visits with clock times (30%), time entries assigned to jobs (20%), vendor bills linked to jobs (15%), materials issued to jobs (15%), bank accounts reconciled within 30 days (10%), Price Book cost completeness (10%). Each component has a fix-it link. The score gates benchmark eligibility (4.11.2).
+- **"How is this calculated?"** panel on every tile: formula, inputs, filters, row counts, freshness, metric version, and a link to the source rows.
+- **Reconciliation checks**: job-costed labor vs. payroll journal labor (tolerance 2%); earned revenue vs. GL revenue with explained differences (deferral, timing); AR subledger vs. GL control; Stripe charges vs. payments recorded. Breaks appear in the Close Cockpit.
+- **Metric tests**: fixture-based unit tests per certified metric run in CI, plus nightly data tests (uniqueness, referential integrity, freshness) on marts.
+- **Metric lineage for support**: with a tenant-granted, time-boxed support session ([Platform admin](19-platform-admin-portal.md)), `platform_support` can open the lineage view of any tile (metric version, compiled query, source row counts, last pipeline run) without seeing wage or client-contact fields, which answers "why does this number look wrong?" in minutes instead of a screen-share.
 
 ### 4.18 Packaging by tier
 
-Tier names and commercial terms are owned by [Pricing and GTM](22-business-model-pricing-gtm.md) (Starter, Grow, Pro, Enterprise). This table maps every analytics capability in this doc to a tier so entitlement flags can be built; doc 22 and the product scope catalog in [24](24-roadmap-feature-catalog.md) win if they differ.
+Tier names and commercial terms are owned by [Pricing and GTM](22-business-model-pricing-gtm.md) (Starter, Grow, Pro, Enterprise). This table maps every analytics capability in this doc to a tier so entitlement flags can be built; doc 22 and the product scope catalog in [24](24-product-scope-decisions-catalog.md) win if they differ.
 
 | Capability | Starter | Grow | Pro | Enterprise | Priority |
 |-----------|---------|------|-----|------------|----------|
-| Role dashboards (owner, ops, sales, office), Owner Snapshot, KPI Dictionary, Data Health, "How is this calculated?" | Y | Y | Y | Y | [MVP] |
-| Standard report library incl. job costing and profitability by client/property/service | Y | Y | Y | Y | [MVP] |
-| Exports (CSV, XLSX with definitions sheet, PDF) | Y | Y | Y | Y | [MVP] |
-| Monday Weekly Insight Digest | Y (rules-based) | Y | Y | Y | [MVP] rules, [V1] Copilot-written |
-| Scheduled and conditional delivery, bursting | - | Y | Y | Y | [MVP] scheduling, [V1] conditional and bursting |
-| Custom report builder, calculated fields | - | Y | Y | Y | [V1] |
-| Goals, alerts, anomaly detection | L (built-in alert pack only) | Y | Y | Y | [V1] |
-| Natural-language analytics (certified mode) | Y (AI credits) | Y (credits) | Y (credits) | Y (pooled credits) | [MVP] certified answers; [V1] exploratory mode and "why" analysis |
-| Peer benchmarks (Rootline Pulse, opt-in) | - | Y | Y | Y | [V1] |
-| Production-rate feedback loop | - | Y | Y | Y | [V1] |
-| Crew "My Stats", TV display, Close Cockpit | Y | Y | Y | Y | [V1] |
-| Commercial Property Scorecard, board packets | - | L (5 commercial clients, matching the portal limit) | Y | Y | [V1] |
-| 13-week cash and capacity forecasts | - | - | Y | Y | [V1] (matches [22](22-business-model-pricing-gtm.md) section 4.2.1) |
-| Metrics API, semantic SQL API for BI tools | - | - | Y | Y | [V1] |
-| WIP schedule | - | - | Y | Y | [V1] (requires Ledger Advanced) |
-| Scenario planner, seasonal ML forecast | - | - | Y | Y | [V2] |
-| Organization consolidated dashboards (multi-company owners) | - | - | Y | Y | [V1] |
-| Data shares, full multi-company rollup, external embedding | - | - | A | Y | [V2] |
+| Role dashboards (owner, ops, sales, office), Owner Snapshot, KPI Dictionary, Data Health, "How is this calculated?" | Y | Y | Y | Y | |
+| Standard report library incl. job costing and profitability by client/property/service | Y | Y | Y | Y | |
+| Exports (CSV, XLSX with definitions sheet, PDF) | Y | Y | Y | Y | |
+| Monday Weekly Insight Digest | Y (rules-based) | Y | Y | Y | rules, Copilot-written |
+| Scheduled and conditional delivery, bursting | - | Y | Y | Y | scheduling, conditional and bursting |
+| Custom report builder, calculated fields | - | Y | Y | Y | |
+| Goals, alerts, anomaly detection | L (built-in alert pack only) | Y | Y | Y | |
+| Natural-language analytics (certified mode) | Y (AI credits) | Y (credits) | Y (credits) | Y (pooled credits) | certified answers; exploratory mode and "why" analysis |
+| Peer benchmarks (Rootline Pulse, opt-in) | - | Y | Y | Y | |
+| Production-rate feedback loop | - | Y | Y | Y | |
+| Crew "My Stats", TV display, Close Cockpit | Y | Y | Y | Y | |
+| Commercial Property Scorecard, board packets | - | L (5 commercial clients, matching the portal limit) | Y | Y | |
+| 13-week cash and capacity forecasts | - | - | Y | Y | (matches [22](22-business-model-pricing-gtm.md) section 4.2.1) |
+| Metrics API, semantic SQL API for BI tools | - | - | Y | Y | |
+| WIP schedule | - | - | Y | Y | (requires Ledger Advanced) |
+| Scenario planner, seasonal ML forecast | - | - | Y | Y | |
+| Organization consolidated dashboards (multi-company owners) | - | - | Y | Y | |
+| Data shares, full multi-company rollup, external embedding | - | - | A | Y | |
 
 Legend: Y = included, L = limited, A = paid add-on, - = not available. Downgrades never delete saved reports or history; gated features become read-only with an upgrade prompt.
 
@@ -1443,7 +1443,7 @@ stateDiagram-v2
 +----------------------------------------------------------------------------------------------+
 ```
 
-Behavior notes: an `estimator` sees only their own row and their own leads unless granted all-rep visibility; "(!)" marks values outside the owner's target band; the bias column links to the rep's estimate accuracy report (V1); CAC and LTV:CAC show "not enough data" until a source has at least 5 won clients. (Values are illustrative.)
+Behavior notes: an `estimator` sees only their own row and their own leads unless granted all-rep visibility; "(!)" marks values outside the owner's target band; the bias column links to the rep's estimate accuracy report; CAC and LTV:CAC show "not enough data" until a source has at least 5 won clients. (Values are illustrative.)
 
 ### 6.10 Bookkeeper Close Cockpit
 
@@ -1964,7 +1964,7 @@ erDiagram
 
 Automations can use analytics events as triggers, for example "When `analytics.alert.triggered` for Margin floor breach on an agreement, create a renewal re-price task for the account manager and draft a price-increase letter".
 
-### 8.4 Public API (V1) and webhooks
+### 8.4 Public API and webhooks
 
 | Endpoint | Purpose |
 |----------|---------|
@@ -2013,7 +2013,7 @@ Legend: **F** = full; **R** = read all; **O** = own or assigned scope only (own 
 | Cash and capacity forecasts | F | cfg | - | - | R (capacity) | - | - | R (cash) | - | - | - |
 | Scenario planner | F | - | - | - | - | - | - | cfg | - | - | - |
 | Copilot analytics | F | per underlying permissions | per | per | per | per | per | per | - | - | - |
-| Copilot exploratory SQL mode (V1) | F | cfg | - | - | cfg | - | - | cfg | - | - | - |
+| Copilot exploratory SQL mode | F | cfg | - | - | cfg | - | - | cfg | - | - | - |
 | Analytics settings (allocation rules, fiscal calendar, targets) | F | - | - | - | - | - | - | cfg (fiscal calendar) | - | - | - |
 | Tenant metrics: create | F | cfg | - | - | - | - | - | F | - | - | - |
 | Metrics API, SQL API, data shares | F | - | - | - | - | - | - | cfg | - | - | - |
@@ -2147,26 +2147,26 @@ All access by platform staff to tenant-level analytics is logged in the immutabl
 
 ## 13. Beyond the brief: extra ideas
 
-1. **Profit Leak Finder** [V1]. A ranked list of the top 10 dollar leaks with fix buttons: under-priced agreements (actual GM below floor), recurring visits running long, extra work logged by crews but never billed (no change order), materials over-issued vs. estimate, equipment under-recovery, discount creep by user, chronic late payers. Each leak is quantified in annualized dollars.
-2. **Route Profit Atlas and territory densifier** [V2]. A map of GP per man-hour by property and street, combined with parcel data, that recommends where to drop door hangers or run geo-targeted ads to fill the gaps in profitable routes ([Marketing](16-marketing-growth-communications.md)). It answers "where should my next 50 clients come from?".
-3. **Season Wrapped** [V1]. A shareable year-in-review for owners ("You mowed 41 million square feet, installed 2,310 plants and kept 93% of your clients") and for clients ("Your yard's 2026"), designed for social sharing with the Company's branding. It is a delight feature and free marketing. The client version is the Season in Review card of "Your Season" (4.14.2); the AI-written narrative and renewal hook are idea 7 in [AI Copilot](17-ai-copilot-automation.md) section 13, and its December send is the "Yard Report Card" in [Marketing](16-marketing-growth-communications.md).
-4. **Valuation and exit-readiness report** [V2]. Adjusted EBITDA with documented add-backs, CARR quality (GRR, NRR, contract terms), client concentration (top 10 clients % of revenue), owner dependency indicators, equipment age, and a trend pack formatted for buyers, brokers and lenders. Landscape is an active acquisition market, so owners care about this number.
-5. **Lender and insurer data room** [V3]. With owner consent, share certified metrics with equipment lenders or insurers for better terms, linking to the fintech ideas in [Moonshots](23-innovation-moonshots.md).
-6. **Weather impact ledger** [V2]. Quantifies revenue and margin lost to weather each season by comparing planned vs. performed work on weather-flagged days, and models a parametric "rain-day" cover a partner could underwrite (V3).
-7. **Sustainability scorecard for commercial clients** [V1 Snapshot, V2 full report]. Fuel burned and estimated CO2e from fuel (using published emission factors), battery-equipment hours share, irrigation water saved from smart controllers, IPM-driven pesticide reductions, and native or regionally adapted plant share from the [Plant KB](12-plant-knowledge-base.md). This is a hypothesis to validate with commercial and municipal clients whose RFPs ask for sustainability data. The product is specified as M-09 in [Moonshots](23-innovation-moonshots.md#m-09-esg-and-sustainability-reporting-for-commercial-clients) (V1 Sustainability Snapshot, V2 methodology-grade report); this module supplies the certified metrics and the portal widget (4.14).
-8. **Crew gain-share builder** [V1]. A transparent bonus program: a share of the hours saved vs. budget, gated by callbacks and safety, previewed in plain English and Spanish and exported to payroll.
+1. **Profit Leak Finder**. A ranked list of the top 10 dollar leaks with fix buttons: under-priced agreements (actual GM below floor), recurring visits running long, extra work logged by crews but never billed (no change order), materials over-issued vs. estimate, equipment under-recovery, discount creep by user, chronic late payers. Each leak is quantified in annualized dollars.
+2. **Route Profit Atlas and territory densifier**. A map of GP per man-hour by property and street, combined with parcel data, that recommends where to drop door hangers or run geo-targeted ads to fill the gaps in profitable routes ([Marketing](16-marketing-growth-communications.md)). It answers "where should my next 50 clients come from?".
+3. **Season Wrapped**. A shareable year-in-review for owners ("You mowed 41 million square feet, installed 2,310 plants and kept 93% of your clients") and for clients ("Your yard's 2026"), designed for social sharing with the Company's branding. It is a delight feature and free marketing. The client version is the Season in Review card of "Your Season" (4.14.2); the AI-written narrative and renewal hook are idea 7 in [AI Copilot](17-ai-copilot-automation.md) section 13, and its December send is the "Yard Report Card" in [Marketing](16-marketing-growth-communications.md).
+4. **Valuation and exit-readiness report**. Adjusted EBITDA with documented add-backs, CARR quality (GRR, NRR, contract terms), client concentration (top 10 clients % of revenue), owner dependency indicators, equipment age, and a trend pack formatted for buyers, brokers and lenders. Landscape is an active acquisition market, so owners care about this number.
+5. **Lender and insurer data room**. With owner consent, share certified metrics with equipment lenders or insurers for better terms, linking to the fintech ideas in [Moonshots](23-innovation-moonshots.md).
+6. **Weather impact ledger**. Quantifies revenue and margin lost to weather each season by comparing planned vs. performed work on weather-flagged days, and models a parametric "rain-day" cover a partner could underwrite.
+7. **Sustainability scorecard for commercial clients**. Fuel burned and estimated CO2e from fuel (using published emission factors), battery-equipment hours share, irrigation water saved from smart controllers, IPM-driven pesticide reductions, and native or regionally adapted plant share from the [Plant KB](12-plant-knowledge-base.md). This is a hypothesis to validate with commercial and municipal clients whose RFPs ask for sustainability data. The product is specified as M-09 in [Moonshots](23-innovation-moonshots.md#m-09-esg-and-sustainability-reporting-for-commercial-clients) (V1 Sustainability Snapshot, V2 methodology-grade report); this module supplies the certified metrics and the portal widget (4.14).
+8. **Crew gain-share builder**. A transparent bonus program: a share of the hours saved vs. budget, gated by callbacks and safety, previewed in plain English and Spanish and exported to payroll.
 9. **Morning audio brief** [MVP, in [AI Copilot](17-ai-copilot-automation.md)]. A short spoken summary of yesterday and today for owners driving to the yard. This ships as the audio version of the A1 Daily Owner Briefing ([AI Copilot](17-ai-copilot-automation.md) section 4.5.2); this module supplies its certified numbers and the anomaly and variance content of the digest, so no separate feature is built here.
-10. **Risk-adjusted estimates** [V2]. P50 and P80 hours on every estimate line, derived from the Company's actuals distribution, so the estimator sees "this patio has a 20% chance of exceeding 210 hours" and can price contingency deliberately.
-11. **Plant performance loop** [V1]. Warranty replacement rates by plant, nursery and Region feed the platform curators' ratings in the [Plant KB](12-plant-knowledge-base.md) (aggregated with k ≥ 10 across companies). Each install season makes the KB smarter.
-12. **Client concentration and dependency alerts** [V1]. Warns when one client exceeds 15% of revenue or one estimator owns more than 40% of the pipeline.
-13. **"Companies like you" onboarding targets** [V1]. New tenants get suggested target bands for their goals from their benchmark cohort on day one, instead of a blank goals page.
-14. **Daily field-to-finance tie-out** [V2]. Every evening, completed visits → invoices → payments → deposits reconcile automatically, and breaks are listed for the office manager. Unbilled work becomes structurally impossible to miss.
-15. **In-app wage and price ranges for tenants** [V1, counsel-gated before release]. Aggregated, historical, privacy-protected ranges for crew wages and common service prices by metro, shown to participating Companies (the external Pulse Indices in 4.11.7 are a separate, macro-region-level product). This is highly valuable for hiring and pricing, but launches only if antitrust counsel approves (see 11.2). These are the counsel-gated row of the benchmark catalog (4.11.8) and follow rule 10 of 4.11.4 (metro level or wider, n ≥ 15, at least 3 months old, P25-P75 ranges only).
-16. **Should-cost property audit** [V1]. For every recurring property, compute the expected man-hours per visit from its measured turf, bed and edge quantities (parcel and aerial measurement in [Design Studio](10-design-studio.md)) multiplied by the Company's own production rates, then compare with the price charged and the hours actually spent. The output is a "price-to-measure gap" list before renewal season: "Lot 14 Birch Ct: measured 11,900 sq ft of turf, priced as if it were 7,500; crews take 52 minutes vs. 34 expected." It turns the measurement stack into money in the existing book of business, not just in new bids.
-17. **Loan covenant monitor** [V1 in the Ledger, V2 analytics extensions]. Owners with equipment loans and lines of credit enter their covenants (debt service coverage ratio, current ratio, debt to EBITDA, minimum liquidity). Rootline computes them monthly from the Ledger, projects them from the 13-week cash forecast and the budget, and warns 60 days before a projected breach, with the lever that fixes it. The covenant calculations and the early warning ship at V1 as the Covenant monitor in [Ledger](09-accounting-ledger-integrations.md) (loan records section and idea 5 there); this module adds the V2 dashboard tile, scenario overlays and the certified covenant certificate that lenders can receive directly (with owner consent), which also serves idea 5.
-18. **Job flight recorder** [V2]. A scrubbable timeline replay of any job: hours burned vs. plan, GPS-confirmed crew presence, photos, weather, materials deliveries and change orders on one time axis. Used for post-mortems on over-budget installs, estimator coaching and, when needed, defending a disputed invoice with a commercial client.
-19. **Public KPI Dictionary and "Know Your Numbers" calculator** [V1]. Publish the KPI Dictionary as an ungated, SEO-indexed site with worked landscape examples, plus a free calculator (enter last year's revenue, labor, materials and overhead; get labor %, overhead recovery, break-even and a rough peer quartile from public reference data). LMN grew partly on free budgeting education ([R2](research/R2-landscape-specific-platforms.md)); this does the same for analytics, and every calculator user is a qualified lead for [Marketing](16-marketing-growth-communications.md).
-20. **Seasonal staffing planner** [V2]. Extend the capacity forecast to a 12-month horizon by month and skill (mowing operators, licensed applicators, hardscape installers, snow drivers), so the owner decides seasonal headcount early enough for recruiting lead times and H-2B program timelines handled in [Team and payroll](15-team-hr-payroll.md). It shows the revenue at risk if a role is not filled by April 1 and the overtime cost of covering the gap.
+10. **Risk-adjusted estimates**. P50 and P80 hours on every estimate line, derived from the Company's actuals distribution, so the estimator sees "this patio has a 20% chance of exceeding 210 hours" and can price contingency deliberately.
+11. **Plant performance loop**. Warranty replacement rates by plant, nursery and Region feed the platform curators' ratings in the [Plant KB](12-plant-knowledge-base.md) (aggregated with k ≥ 10 across companies). Each install season makes the KB smarter.
+12. **Client concentration and dependency alerts**. Warns when one client exceeds 15% of revenue or one estimator owns more than 40% of the pipeline.
+13. **"Companies like you" onboarding targets**. New tenants get suggested target bands for their goals from their benchmark cohort on day one, instead of a blank goals page.
+14. **Daily field-to-finance tie-out**. Every evening, completed visits → invoices → payments → deposits reconcile automatically, and breaks are listed for the office manager. Unbilled work becomes structurally impossible to miss.
+15. **In-app wage and price ranges for tenants**. Aggregated, historical, privacy-protected ranges for crew wages and common service prices by metro, shown to participating Companies (the external Pulse Indices in 4.11.7 are a separate, macro-region-level product). This is highly valuable for hiring and pricing, but launches only if antitrust counsel approves (see 11.2). These are the counsel-gated row of the benchmark catalog (4.11.8) and follow rule 10 of 4.11.4 (metro level or wider, n ≥ 15, at least 3 months old, P25-P75 ranges only).
+16. **Should-cost property audit**. For every recurring property, compute the expected man-hours per visit from its measured turf, bed and edge quantities (parcel and aerial measurement in [Design Studio](10-design-studio.md)) multiplied by the Company's own production rates, then compare with the price charged and the hours actually spent. The output is a "price-to-measure gap" list before renewal season: "Lot 14 Birch Ct: measured 11,900 sq ft of turf, priced as if it were 7,500; crews take 52 minutes vs. 34 expected." It turns the measurement stack into money in the existing book of business, not just in new bids.
+17. **Loan covenant monitor**. Owners with equipment loans and lines of credit enter their covenants (debt service coverage ratio, current ratio, debt to EBITDA, minimum liquidity). Rootline computes them monthly from the Ledger, projects them from the 13-week cash forecast and the budget, and warns 60 days before a projected breach, with the lever that fixes it. The covenant calculations and the early warning ship at V1 as the Covenant monitor in [Ledger](09-accounting-ledger-integrations.md) (loan records section and idea 5 there); this module adds the V2 dashboard tile, scenario overlays and the certified covenant certificate that lenders can receive directly (with owner consent), which also serves idea 5.
+18. **Job flight recorder**. A scrubbable timeline replay of any job: hours burned vs. plan, GPS-confirmed crew presence, photos, weather, materials deliveries and change orders on one time axis. Used for post-mortems on over-budget installs, estimator coaching and, when needed, defending a disputed invoice with a commercial client.
+19. **Public KPI Dictionary and "Know Your Numbers" calculator**. Publish the KPI Dictionary as an ungated, SEO-indexed site with worked landscape examples, plus a free calculator (enter last year's revenue, labor, materials and overhead; get labor %, overhead recovery, break-even and a rough peer quartile from public reference data). LMN grew partly on free budgeting education ([R2](research/R2-landscape-specific-platforms.md)); this does the same for analytics, and every calculator user is a qualified lead for [Marketing](16-marketing-growth-communications.md).
+20. **Seasonal staffing planner**. Extend the capacity forecast to a 12-month horizon by month and skill (mowing operators, licensed applicators, hardscape installers, snow drivers), so the owner decides seasonal headcount early enough for recruiting lead times and H-2B program timelines handled in [Team and payroll](15-team-hr-payroll.md). It shows the revenue at risk if a role is not filled by April 1 and the overtime cost of covering the gap.
 
 ---
 
@@ -2180,11 +2180,11 @@ All access by platform staff to tenant-level analytics is logged in the immutabl
 6. **Owner labor imputation:** default market rate source per region, and whether imputation should be mandatory for any benchmark participation.
 7. **Crew leaderboards:** default off or team-only? Gather feedback from crews (including Spanish-speaking crews) during beta.
 8. **Commercial client transparency:** should fixed-price commercial clients ever see crew hours? Current default: no, with an owner override.
-9. **Historical import:** how many years of history to import from Jobber, LMN, Aspire or QuickBooks during migration so year-over-year comparisons work on day one (recommendation: 2 seasons of invoices and visits where available; see [Product scope](24-roadmap-feature-catalog.md)).
+9. **Historical import:** how many years of history to import from Jobber, LMN, Aspire or QuickBooks during migration so year-over-year comparisons work on day one (recommendation: 2 seasons of invoices and visits where available; see [Product scope](24-product-scope-decisions-catalog.md)).
 10. **Metric governance body:** who sits on the metrics council (founder, a landscape CPA advisor, a veteran operations consultant) and how tenants propose new certified metrics.
 11. **Data share pricing:** flat Enterprise add-on vs. usage-based on rows or refresh frequency.
-12. **Forecasting scope and tier (cross-doc, resolved):** this doc ships the 13-week cash and capacity forecasts at V1 in Pro and Enterprise, because winter cash is the owner's most acute pain, and the scenario planner and ML seasonal forecast at V2. [Pricing](22-business-model-pricing-gtm.md) section 4.2.1 now lists the same split (13-week cash and capacity forecasts [V1]; scenario planner and seasonal ML forecast [V2]; data shares and the full multi-company rollup [V2]). The product scope catalog ([24](24-roadmap-feature-catalog.md)) remains the authority.
-13. **Scheduled delivery at MVP (cross-doc, resolved):** scheduled email delivery of standard reports is specified as MVP here (the Monday digest and month-end packs depend on it) for Grow and above, and the custom report builder at V1. [Pricing](22-business-model-pricing-gtm.md) section 4.2.1 now states the same ("Report builder (scheduled delivery ships at [MVP])", [V1]).
+12. **Forecasting scope and tier (cross-doc, resolved):** this doc ships the 13-week cash and capacity forecasts at V1 in Pro and Enterprise, because winter cash is the owner's most acute pain, and the scenario planner and ML seasonal forecast at V2. [Pricing](22-business-model-pricing-gtm.md) section 4.2.1 now lists the same split (13-week cash and capacity forecasts; scenario planner and seasonal ML forecast; data shares and the full multi-company rollup). The product scope catalog ([24](24-product-scope-decisions-catalog.md)) remains the authority.
+13. **Scheduled delivery at MVP (cross-doc, resolved):** scheduled email delivery of standard reports is specified as MVP here (the Monday digest and month-end packs depend on it) for Grow and above, and the custom report builder at V1. [Pricing](22-business-model-pricing-gtm.md) section 4.2.1 now states the same ("Report builder (scheduled delivery ships at)",).
 14. **ClickHouse timing:** the MVP runs on Postgres analytics schemas (4.12.2). Decide the go/no-go trigger owner and whether to pre-provision ClickHouse for the first large commercial tenants (for example 3-branch companies with 100+ field staff) before general V1.
 15. **Price benchmarks:** confirm with antitrust counsel whether mowing price per 1,000 sq ft and mulch price per cubic yard can be shown in-app at all, and at what geography, lag and n. Until then they stay behind a flag (4.11.8).
 
