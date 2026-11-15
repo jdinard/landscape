@@ -2,7 +2,7 @@
 
 > **Rootline** (working name) is an all-in-one operating system for small and medium landscape companies. One system takes every job from first photo to to-scale design, priced proposal, crew schedule, paid invoice and closed books. A regional horticulturist's plant knowledge is built in, and client payments land in a Stripe account the Company owns. This page is the front door to the proposal: the thesis, the bets, who it serves, how the pieces fit, what is in scope for the MVP and after, how it makes money and how to read the rest.
 
-**Status:** design proposal, November 2026. Prices and targets are proposals or labeled estimates. Scope is described by tier (MVP, V1, V2, V3), not by date. **Sample tenant** in examples and concept screens: Greenleaf Grounds Co. The journeys in [02](02-personas-roles-permissions.md) also use two reference Companies: Reyes Outdoor Living (residential design-build) and Summit Grounds Group (three-branch commercial with snow).
+**Status:** design proposal, November 2026. See [STATUS.md](STATUS.md) for what's done and what remains. Prices and targets are proposals or labeled estimates. Scope is described by tier (MVP, V1, V2, V3), not by date. **Sample tenant** in examples and concept screens: Greenleaf Grounds Co. The journeys in [02](02-personas-roles-permissions.md) also use two reference Companies: Reyes Outdoor Living (residential design-build) and Summit Grounds Group (three-branch commercial with snow).
 
 ---
 
@@ -341,7 +341,7 @@ The full commercial spec is **[22 - Business Model, Pricing and Go-to-Market](22
 
 ## 10. UI concept screens
 
-Concept screens live in [`docs/site/`](site/) as static HTML that renders in any browser with no build step. `index.html` is the vision site, and the `screens-*.html` pages show key screens from the Company web app, the crew app, the Customer Portal, the Platform Admin console and the homeowner funnel. They use the [21](21-ux-design-system-sitemaps.md) design system: Stone neutrals, Moss primary, Clay, Marigold for warnings and offline states, Sky for information and irrigation, Ember for danger, and Iris reserved only for AI. Type is Fraunces for display, Inter for UI and JetBrains Mono for numbers. The data belongs to the sample tenant Greenleaf Grounds Co. The screens illustrate intent; the module docs are the spec.
+Concept screens live in [`docs/site/`](site/) as static HTML that renders in any browser with no build step. `index.html` is the vision site, [`prototype.html`](site/prototype.html) is a clickable walkthrough of the agentic AI design flow, and the `screens-*.html` pages show key screens from the Company web app, the crew app, the Customer Portal, the Platform Admin console and the homeowner funnel. They use the [21](21-ux-design-system-sitemaps.md) design system: Stone neutrals, Moss primary, Clay, Marigold for warnings and offline states, Sky for information and irrigation, Ember for danger, and Iris reserved only for AI. Type is Fraunces for display, Inter for UI and JetBrains Mono for numbers. The data belongs to the sample tenant Greenleaf Grounds Co. The screens illustrate intent; the module docs are the spec.
 
 ---
 
