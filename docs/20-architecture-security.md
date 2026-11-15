@@ -1179,7 +1179,7 @@ Modes, durations and approvers below are those defined in [02](02-personas-roles
 
 | Mode | Consent / approval | Duration | Technical enforcement |
 |---|---|---|---|
-| **Infrastructure JIT** (no tenant data: cluster config, queues, deploys) | Ticket + reason. The engineering agent's request needs the founder's approval, except that it is auto-approved for the incident commander during a declared SEV1/SEV2; the founder's own access needs step-up and a written reason | 1-4 h | Time-boxed IAM role assumption via the IdP; SSM Session Manager recording; no `Decrypt` on `secrets-tenant` or `core-db` data keys |
+| **Infrastructure JIT** (no tenant data: cluster config, queues, deploys) | Ticket + reason. The engineering agent's request needs the founder's approval (a request raised during a declared SEV1/SEV2 pages the founder, [19](19-platform-admin-portal.md) PA-004); the founder's own access needs step-up and a written reason | 1-4 h | Time-boxed IAM role assumption via the IdP; SSM Session Manager recording; no `Decrypt` on `secrets-tenant` or `core-db` data keys |
 | **Metadata view** | None (covered by ToS; logged) | n/a | The Operator Console reads only the PII-free tenant directory, usage meters and redacted logs |
 | **View as user (read-only)** | Tenant grant by `owner` or `office_manager` (`support_access.grant`), per ticket or as standing read-only consent | 72 h per grant by default, maximum 7 days (standing consent is reconfirmed by the owner every 90 days); each session max 60 min | Session token carries `impersonation=true`, `grant_id` and the impersonated membership. **E2 rejects every non-GET** for read-only grants. E5 masks Restricted fields whatever the user's permissions |
 | **Act as user (read-write)** | Per-ticket grant with `read_write` scope; `owner` approval | 24 h; each session max 30 min | As above, plus money-moving commands (`payment.*`, `refund.*`, Stripe connection changes, payout settings) are hard-blocked by policy for `actor_type = platform_staff` |
@@ -1391,21 +1391,21 @@ Budgets are enforced in CI where possible (bundle size checks, Lighthouse CI on 
 <a id="431-team-topology-mvp--v2"></a>
 ### 4.31 Module ownership boundaries
 
-Ownership follows Team Topologies: **stream-aligned** owners hold bounded contexts end to end (web, mobile, API, data, on-call). A **platform** owner provides paved roads. **Complicated-subsystem** owners hold solvers and ML. **Enabling** owners raise capability in security and AI. The boundaries below are about who owns which modules and seams; they say nothing about team size.
+Rootline has no teams: the build agent builds every module, and the engineering agent operates all of them. The modules are still grouped by bounded context, borrowing the Team Topologies shapes (stream-aligned groups own a business flow end to end across web, mobile, API and data; the platform group provides paved roads; complicated-subsystem groups hold solvers and ML; enabling groups cover security and AI). Each group is a unit of build order, review scope, SLOs, cost dashboards and on-call scope.
 
-| Owner | Type | Owns (modules) | Spec docs | Publishes (event examples) | On-call scope |
-|---|---|---|---|---|---|
-| Sales and CRM | Stream-aligned | `crm`, `sales`, `catalog` | [03](03-crm-sales-estimating-proposals.md) | `client.created`, `proposal.accepted` | Proposal send, e-sign, price book |
-| Operations and Field | Stream-aligned | `ops`, `field`, `people`, crew app | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md), [15](15-team-hr-payroll.md) | `visit.completed`, `timesheet.approved` | Dispatch board, sync API, crew app releases |
-| Money | Stream-aligned | `billing`, `payments`, `ledger`, `integrations` (accounting connectors) | [07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md) | `invoice.issued`, `payment.succeeded`, `journal_entry.posted` | Stripe webhooks, invoice runs, ledger posting, accounting sync |
-| Design and Plants | Stream-aligned | `design`, `mockup`, `kb` | [10](10-design-studio.md), [11](11-ai-design-mockups.md), [12](12-plant-knowledge-base.md) | `design.version_published`, `mockup.generated`, `kb.release_published` | Design editor, mockup pipeline, KB releases |
-| Client Experience and Growth | Stream-aligned | `portal`, `growth`, `comms` | [06](06-customer-portal.md), [16](16-marketing-growth-communications.md) | `client_request.submitted`, `booking.created`, `message.delivered` | Client portal, message delivery, 10DLC |
-| Platform | Platform | `iam`, `tenancy`, `platform`, `audit`, infra, CI/CD, sync engine core, observability, data platform | [02](02-personas-roles-permissions.md), [19](19-platform-admin-portal.md), this doc | `tenant.provisioned`, `user.invited` | Cells, auth, CI/CD, sync engine core |
-| Routing and Geo | Complicated subsystem | Optimizer, geo services | [04](04-scheduling-dispatch-routing.md), section 4.17 | `route.optimized` (through `ops`) | Optimizer solve queue, geocoding |
-| AI and ML | Complicated subsystem + enabling | AI Gateway, GPU orchestration, evals, vision models | [17](17-ai-copilot-automation.md), [11](11-ai-design-mockups.md), sections 4.13-4.14 | `ai.credit_threshold_reached` | AI Gateway, GPU lanes, model routing |
-| Security and Compliance | Enabling | AppSec program, SOC 2, privacy engineering | Sections 4.24-4.25, [19](19-platform-admin-portal.md) | None (consumes the audit trail) | Security incidents, breach clocks |
+| Module group | Owns (modules) | Spec docs | Publishes (event examples) | On-call scope |
+|---|---|---|---|---|
+| Sales and CRM | `crm`, `sales`, `catalog` | [03](03-crm-sales-estimating-proposals.md) | `client.created`, `proposal.accepted` | Proposal send, e-sign, price book |
+| Operations and Field | `ops`, `field`, `people`, crew app | [04](04-scheduling-dispatch-routing.md), [05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md), [15](15-team-hr-payroll.md) | `visit.completed`, `timesheet.approved` | Dispatch board, sync API, crew app releases |
+| Money | `billing`, `payments`, `ledger`, `integrations` (accounting connectors) | [07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md) | `invoice.issued`, `payment.succeeded`, `journal_entry.posted` | Stripe webhooks, invoice runs, ledger posting, accounting sync |
+| Design and Plants | `design`, `mockup`, `kb` | [10](10-design-studio.md), [11](11-ai-design-mockups.md), [12](12-plant-knowledge-base.md) | `design.version_published`, `mockup.generated`, `kb.release_published` | Design editor, mockup pipeline, KB releases |
+| Client Experience and Growth | `portal`, `growth`, `comms` | [06](06-customer-portal.md), [16](16-marketing-growth-communications.md) | `client_request.submitted`, `booking.created`, `message.delivered` | Client portal, message delivery, 10DLC |
+| Platform | `iam`, `tenancy`, `platform`, `audit`, infra, CI/CD, sync engine core, observability, data platform | [02](02-personas-roles-permissions.md), [19](19-platform-admin-portal.md), this doc | `tenant.provisioned`, `user.invited` | Cells, auth, CI/CD, sync engine core |
+| Routing and Geo | Optimizer, geo services | [04](04-scheduling-dispatch-routing.md), section 4.17 | `route.optimized` (through `ops`) | Optimizer solve queue, geocoding |
+| AI and ML | AI Gateway, GPU orchestration, evals, vision models | [17](17-ai-copilot-automation.md), [11](11-ai-design-mockups.md), sections 4.13-4.14 | `ai.credit_threshold_reached` | AI Gateway, GPU lanes, model routing |
+| Security and Compliance | AppSec program, SOC 2, privacy engineering | Sections 4.24-4.25, [19](19-platform-admin-portal.md) | None (consumes the audit trail) | Security incidents, breach clocks |
 
-Each owner holds its on-call, SLOs and cost dashboards. Architecture decisions affecting more than one team go through a lightweight **ADR review** (async, 48 h comment window, final call by the tech lead group).
+Each module group has its own SLOs, cost dashboards and on-call scope, all watched by the engineering agent. An architecture decision that affects more than one group is written as an **ADR** (Appendix A): the build agent drafts it, an independent review agent comments, and the founder decides.
 
 ---
 
@@ -1541,14 +1541,14 @@ sequenceDiagram
 2. The global directory records `tenant_id → ca, cell ca-1`. The hashed owner email maps to `(tenant_id, ca)`.
 3. `TenantOnboardingWorkflow` runs in the `rootline-prod-ca` Temporal namespace. Seeds load: the Canadian chart of accounts (GST/HST payable accounts), CAD currency and metric/imperial preference (default imperial for landscaping trades, switchable).
 4. Stripe Connect onboarding (a CAD account). SMS setup uses Canadian long-code or toll-free paths (10DLC is a US carrier framework).
-5. The AI residency setting is shown: "Use AI features that may process data outside Canada" (default off for Quebec tenants, on with disclosure elsewhere; final defaults are a legal decision, Q5).
+5. The AI residency setting is shown: "Use AI features that may process data outside Canada" (default off for Quebec tenants, on with disclosure elsewhere in Canada, [24](24-product-scope-decisions-catalog.md) OD-48).
 
 ### 5.6 Support access with tenant consent
 
 1. The owner reports "Route optimization ignores my crew's lunch break" and clicks "Grant Rootline support access (read-only, 72 h)".
 2. `platform.support_access_grant` is created with scope `read_only` ("view as user"), the impersonated membership, an expiry and the requesting ticket id. A `support_access.approved` audit event is written.
-3. A `platform_support` agent opens the tenant from the admin console. The session is tagged `impersonation=true`, Restricted fields stay masked and money-moving actions are blocked.
-4. Every page view and action is logged into the tenant's audit log with the agent's name. The owner sees it under Settings → Security → Audit log.
+3. The support agent (`platform_support`) opens the tenant from the Operator Console. The session is tagged `impersonation=true`, Restricted fields stay masked and money-moving actions are blocked.
+4. Every page view and action is logged into the tenant's audit log under the support agent's identity. The owner sees it under Settings → Security → Audit log.
 5. The grant expires automatically, or the owner revokes it early.
 
 ### 5.7 Client deletion request (DSAR)
@@ -1561,7 +1561,7 @@ sequenceDiagram
 
 ### 5.8 Regional failover (US)
 
-1. Multiple alarms fire for us-east-2. The incident commander declares a regional failover (manual decision; automated failover is not used for the database tier).
+1. Multiple alarms fire for us-east-2. The engineering agent, as incident commander, recommends a regional failover and the founder declares it (manual decision; automated failover is not used for the database tier).
 2. Aurora Global Database switches over or fails over to us-west-2. Temporal and Redis endpoints switch over, and ECS services in us-west-2 scale from warm minimum to production size.
 3. Route 53 health-check-based records shift API, sync and webhook-ingest traffic. Stripe and Twilio webhooks keep arriving because the endpoints are region-independent hostnames.
 4. Crew devices keep queuing during the switch and drain on reconnect.
@@ -1571,7 +1571,7 @@ sequenceDiagram
 
 ## 6. Screens and wireframes
 
-Architecture capabilities surface in a few product screens. Sitemaps are in [UX and sitemaps](21-ux-design-system-sitemaps.md); admin console screens are in [Platform admin](19-platform-admin-portal.md).
+Architecture capabilities surface in a few product screens. Sitemaps are in [UX and sitemaps](21-ux-design-system-sitemaps.md); Operator Console screens are in [Platform admin](19-platform-admin-portal.md).
 
 | Screen | Surface | Primary roles | Purpose |
 |---|---|---|---|
@@ -1583,13 +1583,13 @@ Architecture capabilities surface in a few product screens. Sitemaps are in [UX 
 | Admin → Fleet and cells (tenant placement, heat, moves) | Platform Admin | `platform_owner`, `platform_engineer` | Capacity and isolation |
 | Admin → Integrity center (ledger drift, webhook DLQs, sync rejections) | Platform Admin | `platform_engineer`, `platform_support` | Correctness operations |
 | Admin → Access grants and break-glass log | Platform Admin | `platform_owner` | Insider-risk control |
-| Public trust center (status, SOC 2, subprocessors, data locations) | Marketing site | Everyone | Sales enablement |
+| Public trust center (status, SOC 2, subprocessors, data locations) | Marketing site | Everyone | Trust and marketing |
 
 ### 6.1 Settings → Developers
 
 ```text
 +--------------------------------------------------------------------------------------+
-| Green Acres Landscaping                         Settings > Developers        [?] Docs |
+| Greenleaf Grounds Co.                           Settings > Developers        [?] Docs |
 +----------------------+---------------------------------------------------------------+
 | General              |  API keys                                    [+ Create key]  |
 | Users & roles        |  +---------------------------------------------------------+  |
@@ -1629,7 +1629,7 @@ Architecture capabilities surface in a few product screens. Sitemaps are in [UX 
 |   Members without MFA: 2  [Remind]                                                    |
 |                                                                                      |
 | Single sign-on (Enterprise)            Status: Not configured   [Set up SAML/OIDC]   |
-|   Verified domains: greenacres.com  [Add domain]                                     |
+|   Verified domains: greenleaf.example  [Add domain]                                  |
 |                                                                                      |
 | Rootline support access                                                              |
 |   [ Grant read-only access for 72 hours ]   Active grants: none                      |
@@ -1640,7 +1640,7 @@ Architecture capabilities surface in a few product screens. Sitemaps are in [UX 
 | Audit log                                  [Export CSV]  Filter: [Actor v] [Type v]  |
 |  Nov 7 09:12  Maria L. (owner)        Refund $85 on INV-1988        web  MFA ok      |
 |  Nov 7 08:55  API key "Zapier"        Created client "J. Patel"     api              |
-|  Nov 6 16:20  Rootline Support (Sam)  Viewed route settings         impersonation    |
+|  Nov 6 16:20  Rootline Support agent  Viewed route settings         impersonation    |
 |  Nov 6 07:03  Automation "Rain day"   Rescheduled 34 visits         automation       |
 |  Nov 5 21:40  Copilot (for Dave K.)   Drafted proposal PRO-1201     ai_agent         |
 +--------------------------------------------------------------------------------------+
@@ -1688,7 +1688,7 @@ Architecture capabilities surface in a few product screens. Sitemaps are in [UX 
 | Metro Snow Pros (tenant_01j...)  plan: Enterprise  users: 214  heat: 9.7% of us-2        |
 |  Top statements: route_stop bulk update (snow event), visit list by date range           |
 |  [ Raise limits temporarily ]  [ Schedule move to us-4 ]  [ Propose dedicated cell ]     |
-|  Move plan: freeze ~6 min, 1.9M rows, window Sun 02:00 ET, owner approval: pending       |
+|  Move plan: freeze ~6 min, 1.9M rows, window Sun 02:00 ET, founder approval: pending     |
 +------------------------------------------------------------------------------------------+
 ```
 
@@ -1708,7 +1708,7 @@ The founder's "is anything wrong with anyone's money or field data?" screen. Eve
 +----------------------------+-----------------------------+-------------------------------+
 | OPEN CASES                                                     Sort: [Severity v]        |
 | SEV  Type                Tenant (cell)              Detail                  Age   Owner  |
-| P1   L7 Stripe clearing  Greenway Lawn (us-2)       Drift $412.18 vs payout  3 h  Ana    |
+| P1   L7 Stripe clearing  Greenway Lawn (us-2)       Drift $412.18 vs payout  3 h  eng    |
 |      [Open case] [Diff balance txns vs ledger] [Resync payout po_...9Qx] [Request grant] |
 | P2   Webhook DLQ         BrightScapes (us-1)        charge.dispute.created   5 h  -      |
 |      [Replay event] [Resync object] [View handler trace]                                 |
@@ -1722,7 +1722,7 @@ The founder's "is anything wrong with anyone's money or field data?" screen. Eve
 +------------------------------------------------------------------------------------------+
 ```
 
-**Rules:** a P1 case (any L1, L2 or L7 breach, or cross-tenant canary failure) pages on-call immediately. Cases auto-close only when the underlying check passes twice in a row. A case open longer than 72 h escalates to `platform_owner`. Replay and resync actions are idempotent by design (4.19, L4), so pressing them twice is safe.
+**Rules:** a P1 case (any L1, L2 or L7 breach, or cross-tenant canary failure) pages the engineering agent and the founder immediately. Cases auto-close only when the underlying check passes twice in a row. A case open longer than 72 h escalates to the founder (`platform_owner`). Replay and resync actions are idempotent by design (4.19, L4), so pressing them twice is safe.
 
 ---
 
@@ -2468,7 +2468,7 @@ erDiagram
 | `journal_entry` | See L1-L12. `source_type/source_id` link to the business document. `chain_hash` for tamper evidence |
 | `design_version` | The scene graph is stored as a versioned JSON document in S3 (`scene_uri`) plus an indexed projection (`design_object`) for takeoffs and queries. Published versions are immutable |
 | `plant` / `plant_region_profile` | Global, versioned by **KB release**. Tenants pin designs to a release, so a curator update never silently changes a sent proposal ([12](12-plant-knowledge-base.md)) |
-| `audit_event` | Append-only, partitioned monthly, shipped hourly to S3 Object Lock. Includes `actor_type ∈ {user, api_client, automation, ai_agent, platform_staff, system}` |
+| `audit_event` | Append-only, partitioned monthly, shipped hourly to S3 Object Lock. Includes `actor_type ∈ {user, api_client, automation, ai_agent, platform_staff, system}`. `platform_staff` covers the founder and the operator agents; `actor_id` points at the staff principal, whose `principal_type` says which ([19](19-platform-admin-portal.md) section 7). A Company's own Copilot stays `ai_agent` |
 
 ---
 
@@ -2483,7 +2483,7 @@ This section summarizes Section 4 for quick reference.
 | Outbound webhooks | Standard Webhooks signatures, retries for 3 days, replay, SSRF-safe egress, thin or snapshot payloads | 4.7.4 |
 | Inbound webhooks | Stripe (`/webhooks/stripe/connect`, `/platform`, `/v2` thin events, `/direct/{endpoint_token}` for restricted-key Companies, `/saas` for Rootline's own account; paths per [08](08-payments-stripe.md) section 4.22), Twilio (status, inbound SMS, voice), Postmark (delivery, bounces, inbound mail), Intuit/Xero (change notifications), Plaid (transactions updates) via the isolated `webhook-ingest` role: verify → persist → ack → process | 4.19 |
 | Connectors | QBO, QBD (Web Connector), Xero, Plaid, payroll, calendars, Regrid, weather, Zapier/Make, supplier catalogs | 4.8 |
-| Events | Outbox → SNS/SQS → MSK, CloudEvents envelope, JSON Schema registry, ~100 core event types in the 4.9.3 catalog plus registered aliases for sibling-doc spellings | 4.9 |
+| Events | Outbox → SNS/SQS, CDC into the lake, CloudEvents envelope, JSON Schema registry, ~100 core event types in the 4.9.3 catalog plus registered aliases for sibling-doc spellings | 4.9 |
 | Public API quotas | Per-minute token bucket per API client + daily `api_calls` quota per tenant aligned with [22](22-business-model-pricing-gtm.md) | 4.7.5 |
 | Workflows | Temporal Cloud per region; proposal, agreement billing, snow, mockups, sync, onboarding, close, DSAR, warranty | 4.10 |
 | Service RPC | Connect-gRPC to optimizer, GPU and vision services | 4.7.1 |
@@ -2522,19 +2522,21 @@ Full role definitions are in [02](02-personas-roles-permissions.md). The matrice
 
 ### 9.2 Platform roles
 
+`platform_owner` is the founder. The other four columns are permission sets held by operator agents; where an agent holds **C**, its request needs the founder's approval, and the founder's own **F** actions on privileged rows need step-up authentication and a written reason ([19](19-platform-admin-portal.md) PA-004).
+
 | Capability | platform_owner | platform_engineer | platform_support | platform_curator | platform_finance |
 |---|---|---|---|---|---|
 | Tenant directory, plans, suspension | F | R | S (view status) | - | S (billing status) |
 | Impersonate tenant (consent-gated) | C | C | C | - | - |
-| Break-glass access (one tenant, 30-120 min, two-person rule) | F (approver) | C (approved, time-boxed) | C (request only; console break-glass, [19](19-platform-admin-portal.md) PA-053) | - | - |
+| Break-glass access (one tenant, 30-120 min, founder approval) | F (approver; own use with step-up) | C (approved, time-boxed) | C (request only; console break-glass, [19](19-platform-admin-portal.md) PA-053) | - | - |
 | JIT production DB access | C (approver) | C | - | - | - |
-| Cell placement and tenant moves | F | F (with owner approval of tenant) | - | - | - |
+| Cell placement and tenant moves | F | C (founder approval; the tenant's `owner` approves its move window) | - | - | - |
 | Feature flags and kill switches | F | F | R | S (KB flags) | - |
 | Plant KB publish releases | F | - | - | F | - |
 | AI Gateway model registry and prompts | F | F | - | S (KB prompts) | R (costs) |
 | SaaS billing (Rootline's Stripe account) | F | - | R | - | F |
 | Webhook DLQ redrive, sync rejection tools | F | F | S | - | - |
-| Security tooling, KMS key policies | F (two-person rule) | C (two-person rule) | - | - | - |
+| Security tooling, KMS key policies | F (step-up) | C (founder approval) | - | - | - |
 | DSAR case handling (Rootline as controller) | F | S (execution of deletion/export jobs) | F | - | - |
 | Audit evidence exports (SOC 2) | F | R | - | - | R |
 
@@ -2546,12 +2548,12 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 
 | Opportunity | Description |
 |---|---|
-| **AI-assisted integration mapping** | When a Company connects QuickBooks, an LLM proposes account, tax-code and item mappings from names and historical usage ("'Lawn Maint Income' → Rootline 4010 Maintenance Revenue, 96% confidence"). A human confirms. Saves the bookkeeper an hour per onboarding |
+| **AI-assisted integration mapping** | When a Company connects QuickBooks, an LLM proposes account, tax-code and item mappings from names and historical usage ("'Lawn Maint Income' → Rootline 4010 Maintenance Revenue, 96% confidence"). The bookkeeper confirms. Saves the bookkeeper an hour per onboarding |
 | **Sync error explainer** | Converts raw provider errors into plain-English fixes with deep links ("Xero rejected this invoice because the contact is archived. Unarchive the contact or map to a new one.") |
 | **Import wizard** | Upload a messy CSV export from another tool. The AI maps columns, normalizes addresses, detects duplicate clients and suggests recurring schedules from visit history |
-| **Incident copilot** | For on-call: summarizes alerts, recent deploys, top affected tenants and probable cause from traces. Drafts the status page update for human approval |
+| **Incident copilot** | The engineering agent's working view during an incident: summarizes alerts, recent deploys, top affected tenants and probable cause from traces. Drafts the status page update for the founder's approval |
 | **Anomaly detection** | Unusual bulk exports, refund spikes, API key use from new countries, sudden webhook failures, ledger drift precursors. Combines statistical baselines with LLM triage summaries |
-| **Security review assistant** | PR bot that flags missing tenant scoping, unmasked Restricted fields, raw SQL outside `withTenant`, or new columns lacking a classification tag. Advisory, never a replacement for CI rules |
+| **Security review assistant** | PR bot that flags missing tenant scoping, unmasked Restricted fields, raw SQL outside `withTenant`, or new columns lacking a classification tag. Its findings feed the review agent and never replace CI rules |
 | **Natural-language reporting with guardrails** | Copilot translates questions to queries over the **semantic layer** (never raw SQL against OLTP), with tenant filters injected and costs capped (see [18](18-reporting-analytics.md)) |
 | **Synthetic data generation** | LLM-assisted generation of realistic landscaping companies, client notes and messages for test environments, so production PII is never needed |
 | **Test generation from incidents** | Every production bug produces a regression test proposal (including tenant-isolation and sync-conflict cases) |
@@ -2588,7 +2590,7 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 
 | Regime | Scope for Rootline | Key controls |
 |---|---|---|
-| SOC 2 Type II | Security, Availability, Confidentiality, Processing Integrity (Privacy at V2) | 4.24.8 |
+| SOC 2 Type II | Security, Availability, Confidentiality, Processing Integrity, Privacy | 4.24.8 |
 | PCI DSS | SAQ-A-style scope by design. Companies are merchants on their own Stripe accounts | 4.24.5 |
 | CCPA/CPRA (California) and other US state privacy laws | Service provider for Company client data; controller for user data | DPA, DSAR tooling, no sale/share |
 | PIPEDA, Quebec Law 25 | Canadian tenants and Canadian clients | Canadian residency, PIA template, privacy officer, breach records |
@@ -2605,15 +2607,15 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
 | RLS misconfiguration on a new table leaks data | Medium | Critical | Schema lint blocks merge; canaries; composite FKs; pen tests |
-| Offline sync complexity delays MVP | High | High | Constrain sync scope to crew-day buckets at MVP; spike PowerSync early; ship read-path first, then write-path for visits, punches and photos |
+| Offline sync complexity slows the build | High | High | Constrain sync scope to crew-day buckets; use the self-hosted sync service for the read path (OD-58); build and chaos-test the read path first, then the write path for visits, punches and photos |
 | Aurora writer becomes a bottleneck at seasonal peak | Medium | High | Cells, read replicas, telemetry and audit off the OLTP path, load tests at 2× projected peak before each April |
 | AI costs outrun pricing | Medium | High | Task routing to cheaper tiers, caching, credits with hard caps, batch lane, owned GPUs at scale (4.27) |
 | Temporal Cloud dependency (residency, outage, pricing) | Low-Medium | High | Encrypted payloads; abstraction layer around workflow starts and signals; self-host runbook as fallback |
 | Stripe Connect product changes (account types, OAuth deprecations) | Medium | Medium | Isolate Stripe in the `payments` module; track Stripe changelog; support account links and restricted keys |
 | Accounting provider API terms or fees change | Medium | Medium | Native ledger as the default book of record; sync minimizes reads via webhooks and change data |
-| Small team cannot run SOC 2 and ship features | Medium | Medium | Compliance automation platform, controls built into the paved road (CI, IaC), a part-time vCISO early |
-| Key-person risk on ledger and sync engines | Medium | High | Pairing, ADRs, invariant tests as executable documentation |
-| Seasonal on-call burnout | Medium | Medium | Surge rota, error budgets, change freezes during peak days |
+| Two people cannot run SOC 2 and ship features | Medium | Medium | Compliance automation platform, controls built into the paved road (CI, IaC), evidence produced by the Operator Console, operator agents that collect evidence, and an outside auditor's readiness assessment before the Type II window opens |
+| Key-person risk: the founder is the only approver | Medium | High | ADRs and invariant tests as executable documentation; sealed credentials and a dead-man's switch for founder continuity ([19](19-platform-admin-portal.md) section 11, edge case 19); the escrow "lifeboat" (section 13, idea 15) |
+| Founder alert overload at seasonal peaks | Medium | Medium | The engineering agent takes first response and pages the founder only for SEV1/SEV2 and approvals; error budgets; change freezes during peak days |
 
 ---
 
@@ -2621,7 +2623,7 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 
 | Area | Metric | Target |
 |---|---|---|
-| Reliability | Core API monthly availability | ≥ 99.9%, ≥ 99.95% |
+| Reliability | Core API monthly availability | ≥ 99.95% |
 | Reliability | SEV1 incidents per quarter | ≤ 2; MTTR < 60 min |
 | Isolation | Cross-tenant exposure incidents | 0 (any occurrence is a SEV1 with customer notification) |
 | Correctness | Unbalanced journal entries / L7 drift | 0 / $0.00 |
@@ -2635,13 +2637,13 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 | Integrations | Clients with *all* invoices blocked by one sync error | 0 by design (the failure mode ADR-020 exists to prevent) |
 | Lifecycle | Field mutations rejected because of tenant billing state | 0 (enforcement rule 2 in 4.4.7) |
 | AI | Calls for Canadian tenants with recorded inference geography | 100% (audit evidence for 4.4.6 and Q15) |
-| Readiness | Active tenants with spring-readiness score ≥ 90% by March 15 (Section 13, idea 14) | ≥ 80% by V1+1 season (estimate) |
+| Readiness | Active tenants with spring-readiness score ≥ 90% by March 15 (Section 13, idea 14) | ≥ 80% (estimate) |
 | API | Public API p95 latency | < 300 ms |
-| API | Active third-party integrations (OAuth apps with ≥ 5 tenants) | 25 by end of V1 (estimate) |
+| API | Active third-party integrations (OAuth apps with ≥ 5 tenants) | 25 (estimate) |
 | Performance | Web LCP p75 / INP p75 | < 2.0 s / < 200 ms |
 | Security | Critical vulnerabilities past SLA | 0 |
-| Security | % staff with phishing-resistant MFA | 100% |
-| Security | % tenants with MFA enforced for all members | > 40% by V1 (nudges, defaults) |
+| Security | % people with a platform role using phishing-resistant MFA / % operator agent credentials that are short-lived and role-scoped | 100% / 100% |
+| Security | % tenants with MFA enforced for all members | > 40% (nudges, defaults) |
 | Compliance | SOC 2 exceptions in Type II report | 0 material |
 | Engineering | Deploy frequency / change failure rate / lead time | ≥ 10 per day / < 10% / < 1 day |
 | Cost | Infra COGS per tenant per month (excl. pass-through AI, SMS, maps) | < $20 at 10k tenants (estimate) |
@@ -2658,18 +2660,18 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 4. **Per-tenant "time machine"**. View any record as it was at any moment (proposal at signing, price book on a given date, the schedule before the rain-day reshuffle), built on the audit log + versioned documents. It also doubles as an undo for bulk mistakes.
 5. **Season-aware autoscaling**. Pre-scale cells and worker pools using the platform's own seasonal calendar (first mow week by region from weather data, first-snow forecasts), not just reactive CPU alarms.
 6. **Offline map packs for rural routes**. Prefetch vector tiles and satellite imagery for each crew-day's stops on shop Wi-Fi, so even navigation and property-boundary overlays work in dead zones.
-7. **Developer sandbox seeded with a living company**. Every developer gets "Sunny Acres Lawn & Snow", whose simulated crews complete visits in real time, so webhooks fire continuously for testing.
+7. **Developer sandbox seeded with a living company**. Every developer gets "Greenleaf Grounds Co." (Columbus, Ohio, 120 clients, the 4.22 seed), whose simulated crews complete visits in real time, so webhooks fire continuously for testing.
 8. **Customer-managed encryption keys and dedicated cells for commercial-grade contracts**. A differentiator for large commercial maintenance and municipal contractors that face public-sector security questionnaires.
 9. **Live public trust center**. Real-time status per region, current SOC 2 report request flow, subprocessor list with data locations, a pen-test summary letter and the AI data-use policy. Commercial property managers ask for these, and incumbents rarely publish them.
 10. **Green compute scheduling**. Run batch AI and analytics in lower-carbon windows/regions where residency allows, and publish a per-tenant "digital footprint" alongside the landscape sustainability metrics in [23](23-innovation-moonshots.md). It fits an industry that sells environmental stewardship.
 11. **Field-network intelligence**. Aggregate (k-anonymized) crew-app connectivity maps show where offline happens. This informs prefetch strategies and could become a published "landscaper coverage map" content asset.
 12. **In-truck edge hub**. A rugged hub in each truck (Wi-Fi + LTE + satellite backhaul) runs a local sync relay: crew phones sync to the truck over Wi-Fi even in dead zones, the hub forwards over whatever backhaul exists, and it ingests equipment telematics (engine hours, mower blade hours, sprayer flow meters) into the same event stream. Rootline's sync protocol is already relay-friendly because mutations are idempotent and ordered per device.
 13. **Chaos day for customers**. An opt-in "simulate an outage" mode for training office staff on paper-fallback procedures. Run-sheets are printable from the crew app's local cache.
-14. **Spring-readiness pre-flight**. Every February (by region, keyed to the season-aware calendar in idea 5), the platform runs an automated per-tenant check of everything that silently breaks over winter. It checks that Stripe capabilities are still enabled, the 10DLC campaign is live, QuickBooks and Xero tokens are fresh, crew devices are on a supported app version, applicator licenses and certificates of insurance have not expired, recurring service agreements for the new season exist, and the price book was touched after last year's supplier increases. The owner gets a readiness score with one-click fixes. All the signals already exist (connector health, device registry, `certification`, `subcontract.coi_expires_on`). This turns April support tickets into February to-dos, during the period when the support team has the most slack.
+14. **Spring-readiness pre-flight**. Every February (by region, keyed to the season-aware calendar in idea 5), the platform runs an automated per-tenant check of everything that silently breaks over winter. It checks that Stripe capabilities are still enabled, the 10DLC campaign is live, QuickBooks and Xero tokens are fresh, crew devices are on a supported app version, applicator licenses and certificates of insurance have not expired, recurring service agreements for the new season exist, and the price book was touched after last year's supplier increases. The owner gets a readiness score with one-click fixes. All the signals already exist (connector health, device registry, `certification`, `subcontract.coi_expires_on`). This turns April support tickets into February to-dos, while the support agent's queue is at its quietest.
 15. **Vendor-continuity escrow ("lifeboat")**. Each night, every tenant's full-fidelity export (the "leave anytime" format in idea 2) is written to a separate escrow account and region under an agreement with a third-party escrow agent. If Rootline ever ceases operations, the agent releases each tenant's archive along with an open-source, offline "lifeboat" viewer (a static app over Parquet and media) that reads clients, properties, invoices, ledger, chemical records and photos. Commercial property managers, municipalities and lenders ask "what happens if you go under?". This answers them in writing and removes a real objection for 30-80 person firms choosing a young vendor.
 16. **"Verified books" close-assurance package**. When a bookkeeper closes a period, Rootline generates a signed package. It contains the trial balance, the L1-L12 invariant results for the period, the subledger-to-control tie-outs (AR, AP, Stripe clearing), the bank reconciliation status and the L8 chain-head digest anchored in Object Lock. A CPA, an equipment lender or an SBA loan officer can verify it without logging in. It turns the ledger's database-enforced integrity into something the owner can hand to a bank, and it seeds the fintech ideas in [23](23-innovation-moonshots.md) (equipment financing and working-capital offers underwritten on verified books).
 17. **Regulatory report adapters on the connector SDK**. Pesticide-use reporting, state sales-tax returns and workers'-compensation payroll reports are "connectors" whose destination is a regulator format (file export first, e-filing where a state offers an API). They reuse the SDK's mapping, idempotency, error UX and audit (4.8), so adding a state is a mapping file plus tests, not a feature project. Formats and deadlines must be verified per state ([14](14-service-line-modules.md)).
-18. **Per-tenant reliability receipts**. Each month the owner gets a one-page statement covering their own experience, not the fleet average: API availability and p95 for their cell, sync success rate for their devices, webhook delivery success to their endpoints, any incidents that touched them with links to postmortems, and every Rootline staff access to their data. Incumbents publish only fleet status pages at best. Personal, honest reliability numbers build the trust that keeps a Company through a bad April.
+18. **Per-tenant reliability receipts**. Each month the owner gets a one-page statement covering their own experience, not the fleet average: API availability and p95 for their cell, sync success rate for their devices, webhook delivery success to their endpoints, any incidents that touched them with links to postmortems, and every Rootline operator access to their data (the founder or a named operator agent). Incumbents publish only fleet status pages at best. Personal, honest reliability numbers build the trust that keeps a Company through a bad April.
 
 ---
 
@@ -2703,7 +2705,7 @@ AI here is for running the platform itself (AIOps, security, data quality) and f
 Format: **Decision**, then the **Context and rationale**, **Alternatives considered** and **Consequences**. Full ADRs live in `/docs/adr/` in the code repo. These are the founding decisions.
 
 **ADR-001: TypeScript modular monolith, not microservices.**
-*Context:* A small team needs speed and transactional consistency across estimates, jobs, invoices and the ledger. *Decision:* One TypeScript codebase with strict module boundaries, deployed as several process roles; satellites only for different runtimes or hardware. *Alternatives:* Microservices from day one (operational overhead, distributed transactions); a Rails/Django monolith (splits the language between web and mobile). *Consequences:* Shared types from database to React Native. We must enforce boundaries mechanically (4.3), or the monolith turns into a big ball of mud.
+*Context:* A two-person company (the founder and Claude) needs speed and transactional consistency across estimates, jobs, invoices and the ledger. *Decision:* One TypeScript codebase with strict module boundaries, deployed as several process roles; satellites only for different runtimes or hardware. *Alternatives:* Microservices from day one (operational overhead, distributed transactions); a Rails/Django monolith (splits the language between web and mobile). *Consequences:* Shared types from database to React Native. We must enforce boundaries mechanically (4.3), or the monolith turns into a big ball of mud.
 
 **ADR-002: PostgreSQL (Aurora) as the system of record, with PostGIS and pgvector.**
 *Context:* Relational, financial and geospatial data plus embeddings. *Decision:* Aurora PostgreSQL per cell. *Alternatives:* DynamoDB (poor fit for relational and financial queries), a separate vector DB (more infrastructure and an isolation surface). *Consequences:* One isolation mechanism (RLS) covers everything. Cells provide horizontal scale.
@@ -2717,8 +2719,8 @@ Format: **Decision**, then the **Context and rationale**, **Alternatives conside
 **ADR-005: Money as integer minor units + ISO currency; quantities as decimal + unit code.**
 *Decision:* As in 7.1. *Consequences:* No float bugs. Explicit unit handling for yards, flats and square feet.
 
-**ADR-006: Transactional outbox; SNS/SQS at MVP, MSK at V1.**
-*Context:* Reliable events without dual writes. *Decision:* Outbox in Postgres, relay to SNS/SQS. Add Kafka when replay, ordering and stream processing justify it. *Alternatives:* Kafka from day one (cost and operations for a small team), EventBridge (ordering and replay limitations for our use). *Consequences:* Consumers must be idempotent and order-tolerant from day one, which is good discipline anyway.
+**ADR-006: Transactional outbox; SNS/SQS; change data capture into the lake.**
+*Context:* Reliable events without dual writes. *Decision:* Outbox in Postgres, relay to SNS/SQS ([24](24-product-scope-decisions-catalog.md) OD-63). Replay comes from the lake, which change data capture fills directly from each cell. *Alternatives:* Kafka (Amazon MSK) for replay and stream processing (cost and operations for a two-person company), EventBridge (ordering and replay limitations for our use). *Consequences:* Consumers must be idempotent and order-tolerant from day one, which is good discipline anyway.
 
 **ADR-007: Temporal (Cloud) for durable workflows.**
 *Context:* Many long-running, human-in-the-loop processes. *Decision:* Temporal Cloud with per-region namespaces and client-side payload encryption. *Alternatives:* Cron + status columns (brittle), AWS Step Functions (weaker developer ergonomics for code-first sagas and long timers in TypeScript), BullMQ (no durable timers or history). *Consequences:* An external dependency with residency implications (Q3). Mitigated by encryption and an abstraction layer.
@@ -2726,8 +2728,8 @@ Format: **Decision**, then the **Context and rationale**, **Alternatives conside
 **ADR-008: Offline-first crew app with SQLite and a bucket-based sync protocol; we own the write path.**
 *Context:* Field durability is a core differentiator. *Decision:* Local-first reads and writes, authorization-derived buckets, append-only field records, per-entity conflict policies, HLC ordering. *Alternatives:* Online-first with caching (fails the core promise), generic CRDT stores (poor fit for server-validated business rules and permissions). *Consequences:* Significant engineering investment. A dedicated test regime (4.11.7).
 
-**ADR-009: Public REST + OpenAPI 3.1 + webhooks; no public GraphQL at MVP.**
-*Context:* The integrator audience values simplicity and predictable limits. *Decision:* REST, dated versions, Standard Webhooks, an MCP server at V1. *Alternatives:* GraphQL (query-cost limits are harder to reason about, and caching and authorization per field are more complex). *Consequences:* Some over-fetching, mitigated by `expand[]` and sparse fieldsets.
+**ADR-009: Public REST + OpenAPI 3.1 + webhooks; no public GraphQL.**
+*Context:* The integrator audience values simplicity and predictable limits. *Decision:* REST only ([24](24-product-scope-decisions-catalog.md) OD-64), dated versions, Standard Webhooks and an MCP server. *Alternatives:* GraphQL (query-cost limits are harder to reason about, and caching and authorization per field are more complex). *Consequences:* Some over-fetching, mitigated by `expand[]` and sparse fieldsets.
 
 **ADR-010: Bring-your-own Stripe via Connect direct charges; restricted-key fallback; Rootline never holds client funds.**
 *Context:* Founder requirement. Avoid money-transmission scope. The Company owns its disputes and payouts. *Decision:* As in 4.19 and [08](08-payments-stripe.md). *Consequences:* Revenue from payments is limited to optional application fees. Webhook handling must be multi-account aware.
@@ -2739,25 +2741,25 @@ Format: **Decision**, then the **Context and rationale**, **Alternatives conside
 *Decision:* As in 4.13. *Alternatives:* Each module calls providers directly (no cost control, inconsistent safety). *Consequences:* One place for evals, residency routing, budgets and provider swaps.
 
 **ADR-013: Hosted image APIs and serverless GPUs first; owned EKS GPU pools when utilization justifies it.**
-*Decision:* As in 4.14, triggered by the capacity math in 4.27. *Consequences:* Early flexibility; migration work at V1.
+*Decision:* As in 4.14, triggered by the capacity math in 4.27. *Consequences:* No idle GPU cost while volume is low, and a scheduler that already places work on either side when utilization crosses the threshold.
 
 **ADR-014: AWS, with ECS Fargate as the default compute and EKS only for GPU/batch.**
 *Context:* Canadian regions, Aurora, mature compliance tooling. *Decision:* As in 4.21. *Alternatives:* Vercel for the web front ends (strong developer experience, but residency and egress control are harder), GCP (strong AI tooling, but our database and compliance choices fit AWS). *Consequences:* We operate Next.js hosting ourselves (CloudFront + ECS).
 
 **ADR-015: Canadian data residency through separate regional stacks and cells.**
-*Decision:* As in 4.4.6. *Consequences:* Duplicate infrastructure cost, so the CA region launches at V1 once there is demand.
+*Decision:* As in 4.4.6. *Consequences:* Duplicate infrastructure cost, accepted because every Canadian Company runs on the Canadian stack ([24](24-product-scope-decisions-catalog.md) OD-62).
 
 **ADR-016: In-house core authentication; brokered enterprise SSO/SCIM.**
-*Context:* Passkeys, MFA and residency of identity data. *Decision:* Our own user and session store with proven libraries (Argon2id, WebAuthn, TOTP); SAML/OIDC/SCIM via a broker chosen for residency (Q6). *Alternatives:* A fully hosted identity vendor (fast, but identity data leaves the region and per-MAU pricing gets expensive with 5M client portal users). *Consequences:* More security-critical code, so ASVS Level 3 and focused pen tests apply.
+*Context:* Passkeys, MFA and residency of identity data. *Decision:* Our own user and session store with proven libraries (Argon2id, WebAuthn, TOTP); SAML/OIDC/SCIM via a self-hostable broker run inside each regional stack (section 14, Q6). *Alternatives:* A fully hosted identity vendor (fast, but identity data leaves the region and per-MAU pricing gets expensive with 5M client portal users). *Consequences:* More security-critical code, so ASVS Level 3 and focused pen tests apply.
 
 **ADR-017: Cedar policies for RBAC/ABAC, evaluated in-process; RLS only for tenant isolation.**
 *Decision:* As in 4.6. *Alternatives:* RLS for all authorization (hard to express ABAC, hard to debug), OPA sidecar (network hop per decision). *Consequences:* Two layers to keep coherent, covered by the isolation and authorization test suites.
 
-**ADR-018: Postgres FTS + pgvector first; OpenSearch at V1.**
-*Decision:* As in 4.15. *Consequences:* Fewer moving parts at MVP; an indexing pipeline built when it is needed.
+**ADR-018: Postgres FTS + pgvector for tenant search; OpenSearch for the plant KB and cross-entity search.**
+*Decision:* As in 4.15. *Consequences:* The global omnibox and semantic search stay inside Postgres with RLS; OpenSearch needs an indexing pipeline from SNS/SQS consumers and a mandatory tenant filter (E7).
 
 **ADR-019: Tenant lifecycle timings come from a versioned billing policy; access is enforced from a cached access class.**
-*Context:* Dunning, trial and Winter Mode timings are business decisions owned by [22](22-business-model-pricing-gtm.md) and operated from [19](19-platform-admin-portal.md). Hard-coding "21 days" in the tenancy module would put docs and code out of sync within a quarter. *Decision:* The `tenancy` module reads timings from an immutable, versioned `billing_policy` published by `platform_finance` (two-person approval for changes). Access is enforced from a `tenant_access` projection at E2, sync and portal (4.4.7). Three rules are not configurable: field data is always accepted, client money is never blocked, and legal holds always win. *Alternatives:* Constants in code (deploy per policy change, drift); evaluating policy per request (latency, and a policy-service outage would lock out tenants). *Consequences:* Every tenant transition records the policy version that caused it, so a suspended Company can be shown exactly which rule applied.
+*Context:* Dunning, trial and Winter Mode timings are business decisions owned by [22](22-business-model-pricing-gtm.md) and operated from [19](19-platform-admin-portal.md). Hard-coding "14 days" in the tenancy module would put docs and code out of sync within a quarter. *Decision:* The `tenancy` module reads timings from an immutable, versioned `billing_policy` drafted by the finance agent (`platform_finance`) and approved by the founder ([19](19-platform-admin-portal.md) PA-004). Access is enforced from a `tenant_access` projection at E2, sync and portal (4.4.7). Three rules are not configurable: field data is always accepted, client money is never blocked, and legal holds always win. *Alternatives:* Constants in code (deploy per policy change, drift); evaluating policy per request (latency, and a policy-service outage would lock out tenants). *Consequences:* Every tenant transition records the policy version that caused it, so a suspended Company can be shown exactly which rule applied.
 
 **ADR-020: Accounting sync quarantines per record and never blocks per client.**
 *Context:* The category's best-known sync failure mode is one bad client record blocking all of that client's invoices and payments ([Jobber help](https://help.getjobber.com/hc/en-us/articles/10466688449431-Common-QuickBooks-Sync-Errors-and-How-to-Fix-Them)). *Decision:* The sync engine computes the smallest dependent set of a failing object (4.8) and holds only that set. Everything else continues, and held objects retry automatically on `mapping_changed`. *Alternatives:* Strict dependency-order processing per client (simple, but blocks); best-effort with no dependency tracking (causes orphaned payments in QuickBooks). *Consequences:* The dependency graph per connector (Customer → Invoice → Payment → Deposit) must be declared in the Connector SDK and covered by connector tests. The bookkeeper sees an exception list instead of a frozen client.
