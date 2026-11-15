@@ -107,7 +107,7 @@ function bills(c) {
 }
 function assets(c) {
   const D = c.D, out = [];
-  const cls = n => /F-250|F-350|Truck/.test(n) ? 'vehicle' : /trailer/i.test(n) ? 'trailer' : /Lazer|V-Ride/.test(n) ? 'mower' : /Bobcat/.test(n) ? 'heavy_equipment' : /plow/i.test(n) ? 'snow_equipment' : /blower/i.test(n) ? 'handheld' : 'other';
+  const cls = n => (D.equipment.find(e => e.name === n) || {}).kind || (/Pickup|F-250|F-350|Truck/i.test(n) ? 'vehicle' : /trailer/i.test(n) ? 'trailer' : /mower/i.test(n) ? 'mower' : /loader/i.test(n) ? 'heavy_equipment' : /plow/i.test(n) ? 'snow_equipment' : /blower/i.test(n) ? 'handheld' : 'other');
   D.equipment.forEach((e, i) => {
     const m = String(e.meter).match(/(\d+)\s*(.*)/) || [0, 0, 'h'];
     const miles = /mi/.test(m[2]);
@@ -289,7 +289,7 @@ RL.screen('web.equipment', (c, a) => {
     { k: 'meter', label: 'Meter', n: true },
     { k: 'crew', label: 'Assigned' },
     { k: 'next', label: 'Next', fmt: v => v === 'OK' ? '<span class="t3">-</span>' : statusPill(v) },
-    { k: 'status', label: 'Status', fmt: (v, r) => over && list.indexOf(r) >= limit ? h.pill('Read only (over limit)', 'warn') : statusPill(v) },
+    { k: 'status', label: 'Status', fmt: (v, r) => over && list.indexOf(r) >= limit ? (v === 'Down' ? statusPill(v) + ' ' : '') + h.pill('Read only (over limit)', 'warn') : statusPill(v) },
     { k: 'cost', label: 'Cost', n: true, fmt: v => h.mask(c, 'cost', money(v)) },
   ], list, { dense: true });
   else if (tab === 'dvir') body = h.table([
@@ -856,7 +856,7 @@ RL.screen('web.automations', (c, a) => {
     { k: 0, label: '', fmt: (v, r) => { const on = ruleOn(c, v, RULES.indexOf(r)); return can ? `<button type="button" ${TGL_STYLE} class="tgl${on ? ' on' : ''}" data-act="au-toggle" data-x="${v}" aria-pressed="${on}" aria-label="${on ? 'Turn off' : 'Turn on'} ${esc(r[1])}"><i></i></button>` : h.pill(on ? 'On' : 'Off', on ? 'ok' : ''); } },
     { k: 1, label: 'Rule', fmt: (v, r) => `<b>${esc(v)}</b> <span class="tiny t3 mono">${r[0]}</span><div class="tiny t3">${esc(r[3])}</div>` },
     { k: 2, label: 'Trigger', m: true },
-    { k: 5, label: 'AI credits / mo', n: true, fmt: v => v ? `${h.ai('')} about ${num(v)}` : '<span class="t3">0</span>' },
+    { k: 5, label: 'AI credits / mo', n: true, fmt: v => v ? `${h.ai('')} about ${num(Math.round(v * Math.min(1, (c.plan.ai_credits || 2000) / 2000) / 10) * 10 || 10)}` : '<span class="t3">0</span>' },
     { k: 0, label: 'Runs (30 d)', n: true, fmt: (v, r) => ruleOn(c, v, RULES.indexOf(r)) ? num((hs(v + c.t.id) % (c.winter ? 60 : 400)) + (c.winter ? 3 : 40)) : '<span class="t3">-</span>' },
   ], RULES, { dense: true });
   else if (tab === 'recipes') body = h.table([{ k: 0, label: '#', m: true }, { k: 1, label: 'Recipe' }, { k: 2, label: 'Trigger' }, { k: 3, label: 'Scope', fmt: v => h.tag(v) }, { k: 0, label: '', fmt: (v, r) => can && (r[3] === 'MVP' || c.inLens(r[3])) ? h.btn('Install', { sm: true, act: 'au-install', x: v }) : '' }], RECIPES, { dense: true }) + h.note('Recipes are curated by Rootline and stay editable after install (17 §4.6.6).');
@@ -895,16 +895,15 @@ RL.screen('web.agents', (c) => {
     { id: 'q3', agent: 'Estimating from notes (A6)', title: `Draft estimate for ${esc(D.opps[1].client)} from a voice memo`, body: '14 lines mapped to the Price Book; 2 lines need a quantity.', conf: 'Low: 2 quantities guessed', cr: 8, lv: 'L2' },
   ].filter(q => !done.includes(q.id));
   return h.page({ title: 'AI agents', sub: `${rows.filter(r => !r.locked && r.lv !== 'L0').length} agents on · ${num(cr.used)} of ${num(cr.inc)} credits used this month`, actions: roPill(c, 'ai_agent.configure') + (isOwner(c) ? h.btn('Credits and caps', { go: 'web.settings.subscription' }) : '') })
-    + h.cols('21', [
-      sec('Roster', h.table([
+    + sec('Roster', h.table([
         { k: 'name', label: 'Agent', fmt: (v, r) => `<b>${esc(v)}</b> <span class="tiny t3 mono">${r.id} · ${r.tier}</span>${r.isV1 ? ' ' + h.tag('V1') : ''}<div class="tiny t3">${esc(r.cad)} · ${r.cost} cr per run</div>` },
         { k: 'lv', label: 'Autonomy', fmt: (v, r) => r.locked ? lockPill(v1ok ? 'Grow: 3 V1 agents' : 'Grow and Pro') : can ? h.select(r.opts, v, { ui: 'ag.lv.' + r.id, label: 'Autonomy for ' + r.name }) : h.pill(esc(v), 'ai') },
         { k: 'cap', label: 'Cap / mo', n: true, fmt: (v, r) => r.locked ? '-' : num(v) },
         { k: 'used', label: 'Used', n: true, fmt: (v, r) => r.locked ? '-' : `<span class="flex nw">${mini(v, r.cap, v / r.cap > .8 ? 'warn' : 'ai')}<span class="tiny">${num(v)}</span></span>` },
         { k: 'id', label: '', fmt: (v, r) => r.locked ? '' : h.btn('Log', { sm: true, ui: 'ag.sel', val: v, kind: sel.id === v ? 'primary' : 'ghost' }) },
-      ], rows, { dense: true }) + h.note(`L0 off, L1 suggest, L2 draft and approve, L3 act and notify (5-minute undo), L4 autonomous within budget. External or money actions (T3) stop at L3; card charges and signatures (T4) are never done by AI (17 §4.1.2, §4.3).${v1.s === 'L' ? ' Grow includes up to 3 V1 agents.' : v1.s === '-' ? ' V1 agents are not available on ' + esc(c.plan.name) + '.' : ''}`), { flush: true }),
-      `<div class="stack12">${sec(`Approval inbox <span class="tiny t3">${inbox.length}</span>`, inbox.length ? inbox.map(q => h.aiCard({ agent: q.agent, level: q.lv, credits: q.cr, title: q.title, body: `<div class="small">${q.body}</div><div class="tiny t3">Confidence: ${esc(q.conf)}</div>`, actions: can ? h.btn('Approve', { sm: true, kind: 'primary', act: 'ag-done', x: q.id }) + h.btn('Edit', { sm: true, act: 'ag-done', x: q.id }) + h.btn('Reject', { sm: true, act: 'ag-done', x: q.id }) : '<span class="tiny t3">Routed to people who can approve</span>' })).join('') : h.empty('Inbox zero. Items unhandled for 24 hours escalate to the owner.'))}
-      ${sec(`Run log: ${esc(sel.name)}`, h.timeline([{ when: c.today.short + ' 6:15', text: `Ran · ${sel.cost} cr · ${sel.lv}`, tone: 'ai' }, { when: past(c)[0] + ' 6:15', text: `Ran · ${sel.cost} cr · 1 item approved`, tone: 'ok' }, { when: past(c)[1] + ' 6:15', text: 'Skipped: daily cap reached', tone: 'warn' }]))}</div>`,
+      ], rows, { dense: true }) + h.note(`L0 off, L1 suggest, L2 draft and approve, L3 act and notify (5-minute undo), L4 autonomous within budget. External or money actions (T3) stop at L3; card charges and signatures (T4) are never done by AI (17 §4.1.2, §4.3).${v1.s === 'L' ? ' Grow includes up to 3 V1 agents.' : v1.s === '-' ? ' V1 agents are not available on ' + esc(c.plan.name) + '.' : ''}`), { flush: true })
+    + h.cols('2', [sec(`Approval inbox <span class="tiny t3">${inbox.length}</span>`, inbox.length ? inbox.map(q => h.aiCard({ agent: q.agent, level: q.lv, credits: q.cr, title: q.title, body: `<div class="small">${q.body}</div><div class="tiny t3">Confidence: ${esc(q.conf)}</div>`, actions: can ? h.btn('Approve', { sm: true, kind: 'primary', act: 'ag-done', x: q.id }) + h.btn('Edit', { sm: true, act: 'ag-done', x: q.id }) + h.btn('Reject', { sm: true, act: 'ag-done', x: q.id }) : '<span class="tiny t3">Routed to people who can approve</span>' })).join('') : h.empty('Inbox zero. Items unhandled for 24 hours escalate to the owner.')),
+      sec(`Run log: ${esc(sel.name)}`, h.timeline([{ when: c.today.short + ' 6:15', text: `Ran · ${sel.cost} cr · ${sel.lv}`, tone: 'ai' }, { when: past(c)[0] + ' 6:15', text: `Ran · ${sel.cost} cr · 1 item approved`, tone: 'ok' }, { when: past(c)[1] + ' 6:15', text: 'Skipped: daily cap reached', tone: 'warn' }])),
     ]);
 });
 RL.act('ag-done', (el) => { const cur = String(RL.ui['ag.done'] || '').split(',').filter(Boolean); cur.push(el.dataset.x); RL.ui['ag.done'] = cur.join(','); RL.toast('Done. Your decision feeds this Company\'s examples, not model training.'); });
@@ -937,7 +936,7 @@ const GRANTS = [['estimate.update:own', 'Estimates: update own', 'office'], ['in
 RL.screen('web.settings.users', (c, a) => {
   const D = c.D, S = seats(c), can = writes(c, 'role');
   const tab = h.tab('su.tab', 'editor');
-  const users = roster(c).filter(p => p.status !== 'Hibernated').slice(0, 12);
+  const allUsers = roster(c).filter(p => p.status !== 'Hibernated'), users = allUsers.slice(0, 12);
   const lim = c.feat('custom_roles'), cap = lim.s === 'L' ? 2 : null;
   const custom = [['Crew Lead - Irrigation', 'crew_lead', 3, 'field'], ['Account manager (commercial)', 'ops_manager', 1, 'office']].slice(0, cap == null ? 2 : Math.min(2, cap));
   const field = D.people.filter(p => p.seat === 'field');
@@ -959,7 +958,7 @@ RL.screen('web.settings.users', (c, a) => {
   if (tab === 'users') body = h.table([
     { k: 'name', label: 'User', fmt: (v, r) => `<span class="flex nw">${h.avatar(v)}<b>${esc(v)}</b></span>` }, { k: 'role', label: 'Role', fmt: v => `<span class="mono tiny">${esc(v)}</span>` },
     { k: 'role', label: 'Seat (from permissions)', fmt: v => h.pill(SEAT_OF[v] || 'office', SEAT_OF[v] === 'free' ? 'ok' : SEAT_OF[v] === 'field' ? 'info' : '') }, { k: 'mfa', label: 'MFA' }, { k: 'status', label: 'Status', fmt: v => statusPill(v) },
-  ], users, { dense: true }) + h.note('Seat type comes from effective permissions, not the role name (22 §4.3).');
+  ], users, { dense: true }) + h.note(`${allUsers.length > users.length ? `Showing ${users.length} of ${allUsers.length}. ` : ""}Seat type comes from effective permissions, not the role name (22 §4.3).`);
   else if (tab === 'roles') body = h.table([{ k: 'name', label: 'Role' }, { k: 'key', label: 'Key', m: true }, { k: 'n', label: 'Users', n: true }, { k: 'seat', label: 'Seat', fmt: v => h.pill(esc(v), '') }, { k: 'kind', label: '', fmt: v => v === 'custom' ? h.pill('Custom', 'info') : '<span class="tiny t3">Built in</span>' }],
     Object.keys(SEAT_OF).filter(k2 => k2 !== 'observer' || c.inLens('V1')).map(k2 => ({ name: (I.ROLES[k2] || {}).name || k2, key: k2, n: D.people.filter(p => p.role === k2).length + (k2 === 'subcontractor' && c.t.cast && c.t.cast.subcontractor ? 1 : 0), seat: SEAT_OF[k2], kind: 'built-in' }))
       .concat(custom.map(([n, base, u, s]) => ({ name: n, key: 'custom: from ' + base, n: u, seat: s, kind: 'custom' }))), { dense: true })
@@ -972,8 +971,8 @@ RL.screen('web.settings.users', (c, a) => {
       + `<div class="flex">${can ? tbtn('Save', `Saved. ${first}'s seat ${nextSeat === curSeat ? 'is unchanged' : 'changes to ' + nextSeat} from today; billing is prorated.`, { kind: 'primary' }) : ''}${tbtn('View as this role', 'Opened a read-only preview as ' + person.role + '.', { icon: 'eye' })}<span class="tiny t3">Impact: 1 user</span></div>`),
     sec('Guardrails', h.list([{ icon: 'shield', title: 'Anti-escalation', sub: 'You can assign only roles whose grants are less than or equal to your own; ops managers assign field roles in their branch.' }, { icon: 'lock', title: 'Owner-only permissions', sub: 'Stripe connection, bank accounts, roles, subscription, data export.' }, { icon: 'eye', title: 'Field roles never see prices, costs or margins', sub: 'Locked in every custom role cloned from a field role.' }]) + (can ? '' : h.note(ask(c))), { flush: true }),
   ]);
-  return h.page({ title: 'Users, roles and permissions', sub: `${users.length} users · ${S.office} office seats · ${cap != null ? `${custom.length} of ${cap} custom roles on ${esc(c.plan.name)}` : custom.length + ' custom roles'}`, actions: (can ? h.btn('Invite user', { kind: 'primary', icon: 'plus', act: 'more-toast' }) : '') + roPill(c, 'role') })
-    + h.tabs('su.tab', [['editor', 'Role editor'], ['roles', 'Roles', Object.keys(SEAT_OF).length + custom.length], ['users', 'Users', users.length]], 'editor') + body;
+  return h.page({ title: 'Users, roles and permissions', sub: `${allUsers.length} users · ${S.office} office seats · ${cap != null ? `${custom.length} of ${cap} custom roles on ${esc(c.plan.name)}` : custom.length + ' custom roles'}`, actions: (can ? h.btn('Invite user', { kind: 'primary', icon: 'plus', act: 'more-toast' }) : '') + roPill(c, 'role') })
+    + h.tabs('su.tab', [['editor', 'Role editor'], ['roles', 'Roles', Object.keys(SEAT_OF).length + custom.length], ['users', 'Users', allUsers.length]], 'editor') + body;
 });
 
 RL.screen('web.settings.service_lines', (c) => {
@@ -1177,11 +1176,11 @@ RL.screen('web.settings.subscription', (c) => {
       }
       return h.cols('4', plans.map(p => {
         const cur = p.code === c.planCode, up = ord[p.code] > ord[c.planCode];
-        const price = p.public && p.annual ? `${money(p.annual)}<small>/mo annual</small>` : `<small>${esc(p.annual_note || 'Custom')}</small>`;
+        const price = p.public && p.annual ? `${money(p.annual)}<small>/mo annual</small>` : `<small style="display:block;line-height:1.35;padding:6px 0">${esc(p.annual_note || 'Custom')}</small>`;
         return `<div class="plan-c${cur ? ' on' : ''}"><div class="flex between"><b>${esc(p.name)}</b>${p.scope !== 'MVP' ? h.tag(p.scope) : ''}</div><div class="pr">${price}</div><div class="tiny t2">${p.office_seats != null ? p.office_seats + ' office' : esc(p.office_note || '')} · ${p.field_seats != null ? p.field_seats + ' active field' : esc(p.field_note || 'Unlimited field')} · ${p.ai_credits ? num(p.ai_credits) + ' AI credits' : esc(p.ai_note || '')}</div><div class="tiny t3">${esc(p.for)}</div>${cur ? h.pill('Current plan', 'ok', 'check') : own ? (p.public ? h.btn(up ? 'Upgrade' : 'Downgrade', { sm: true, kind: up ? 'primary' : '', modal: 'more-plan', x: p.code }) : tbtn('Talk to sales', 'A specialist will reach out within one business day.', { sm: true })) : ''}</div>`;
       })) + sec('What changes between plans', h.table([{ k: 'name', label: 'Capability', fmt: (v, r) => `${esc(v)} ${r.tag}` }].concat(PCS.map(pc => ({ k: pc, label: esc(I.PLANS[pc].name), fmt: v => `<span class="nw">${h.chip(v.s)}${v.note ? ` <span class="tiny t3">${esc(v.note)}</span>` : ''}</span>` }))),
         CMP.filter(([k2]) => I.FEATS[k2]).map(([k2, name, notes]) => Object.assign({ name, tag: I.FEATS[k2].scope !== 'MVP' ? h.tag(I.FEATS[k2].scope) : '' }, ...PCS.map((pc, j) => ({ [pc]: { s: (I.FEATS[k2].plans[pc] || {}).s || '-', note: notes[j] || '' } })))), { dense: true })
-        + `<div class="tiny t3">Y included · L included with a limit · A paid add-on · - not on this plan</div>`)
+        + `<div class="flex tiny t3">${h.chip('Y')} included ${h.chip('L')} included with a limit ${h.chip('A')} paid add-on ${h.chip('-')} not on this plan</div>`)
         + h.note('Upgrades are immediate and prorated. Downgrades take effect at the end of the period or term, after an entitlement check lists what goes read only (22 §4.7).');
     })();
 });

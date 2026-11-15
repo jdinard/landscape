@@ -88,6 +88,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .mx-subnav button.locked { color: var(--text-3); }
 .mx-content { padding: 16px 18px 28px; min-width: 0; display: grid; gap: 14px; align-content: start; }
 .mx-banner { display: flex; gap: 8px; align-items: center; padding: 7px 14px; font-size: .78rem; border-bottom: 1px solid var(--border); }
+.mx-banner > span { min-width: 0; line-height: 1.45; } .mx-banner > span svg { vertical-align: -2px; margin-right: 4px; }
 .mx-banner.warn { background: var(--warn-bg); color: var(--warn-text); }
 .mx-banner.info { background: var(--info-bg); color: var(--info-text); }
 .mx-banner.ai { background: var(--ai-bg); color: var(--ai-text); }
@@ -205,7 +206,7 @@ table.tb { width: 100%; border-collapse: collapse; font-size: .8rem; }
 .bar-r .tr { height: 10px; border-radius: 5px; background: var(--surface-3); overflow: hidden; }
 .bar-r .tr i { display: block; height: 100%; background: var(--primary); border-radius: 5px; }
 .bar-r .tr i.warn { background: var(--warn-solid); } .bar-r .tr i.danger { background: var(--danger-solid); } .bar-r .tr i.info { background: var(--info-solid); } .bar-r .tr i.ai { background: var(--ai-solid); } .bar-r .tr i.accent { background: var(--accent); }
-.prog { height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.prog { height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; flex: 1 1 60px; min-width: 60px; }
 .prog i { display: block; height: 100%; background: var(--primary); }
 .prog i.warn { background: var(--warn-solid); } .prog i.danger { background: var(--danger-solid); } .prog i.ai { background: var(--ai-solid); } .prog i.info { background: var(--info-solid); }
 .meter { display: grid; gap: 3px; font-size: .74rem; }

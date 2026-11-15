@@ -23,7 +23,7 @@ const file = 'file://' + path.resolve(__dirname, '..', '..', 'app.html');
   const meta = await p.evaluate(() => ({ routes: RL.P.surfaces.routes.map(r => ({ id: r.id, surface: r.surface })), atlas: Object.keys(RL.atlasPages), as: RL.AS.map(o => ({ key: o.key, role: o.role })), surf: RL.SURF }));
   const list = meta.routes.filter(r => !prefixes.length || prefixes.some(px => r.id.startsWith(px)));
   if (!prefixes.length || prefixes.some(px => 'atlas.'.startsWith(px) || px.startsWith('atlas'))) meta.atlas.forEach(a => list.push({ id: a, surface: 'atlas' }));
-  const problems = [], missing = [];
+  const problems = errs.length ? ['page load: ' + errs.join(' | ')] : [], missing = [];
   let opened = 0;
   for (const r of list) {
     const ases = r.surface === 'atlas' ? [{ key: 'owner' }, { key: 'platform_owner' }] : meta.as.filter(o => meta.surf[o.role].includes(r.surface));

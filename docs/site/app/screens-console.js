@@ -281,7 +281,7 @@ const pct1 = v => (Math.round(v * 10) / 10) + '%';
 const waterfall = (c, m) => {
   const end = m.start + m.nw + m.exp + m.rea + m.con + m.chu;
   const rows = [['Starting MRR (7 days ago)', m.start, ''], ['New', m.nw, 'ok'], ['Expansion (seats, add-ons, upgrades)', m.exp, 'ok'], ['Reactivation', m.rea, 'ok'], ['Contraction (downgrades, Winter Mode)', m.con, 'warn'], ['Churn', m.chu, 'danger'], ['Ending MRR', end, '']];
-  return h.table([{ k: 0, label: 'Movement', fmt: (v, r) => r[2] ? esc(v) : `<b>${esc(v)}</b>` }, { k: 1, label: 'MRR', n: true, fmt: (v, r) => r[2] ? `${v > 0 ? '+' : ''}${money(v)}` : `<b>${money(v)}</b>` }, { k: 2, label: 'Share', fmt: (v, r) => r[2] ? `<div style="width:140px">${h.progress(Math.abs(r[1]), 10000, r[2] === 'ok' ? '' : r[2])}</div>` : '' }], rows, { dense: true });
+  return h.table([{ k: 0, label: 'Movement', fmt: (v, r) => r[2] ? esc(v) : `<b>${esc(v)}</b>` }, { k: 1, label: 'MRR', n: true, fmt: (v, r) => r[2] ? `${v > 0 ? '+' : ''}${money(v)}` : `<b>${money(v)}</b>` }, { k: 2, label: 'Share', fmt: (v, r) => r[2] ? `<div style="width:72px">${h.progress(Math.abs(r[1]), 10000, r[2] === 'ok' ? '' : r[2])}</div>` : '' }], rows, { dense: true });
 };
 RL.act('cx-nav', (el) => { if (el.dataset.k) RL.ui[el.dataset.k] = el.dataset.v; RL.go(el.dataset.r, el.dataset.x); return false; });
 const navB = (label, r, o) => B(label, { kind: (o && o.kind) || 'ghost', icon: o && o.icon, a: { 'data-act': 'cx-nav', 'data-r': r, 'data-k': o && o.k, 'data-v': o && o.v, 'data-x': o && o.x } });
@@ -293,11 +293,10 @@ const FUNNEL = c => c.winter
 const funnelBars = c => { const f = FUNNEL(c); return h.bars(f.map(([l, v], i) => ({ label: esc(l), value: v, max: f[0][1], tone: i === 7 ? 'accent' : i === 8 ? 'ok' : '', right: `${num(v)} · ${Math.round(100 * v / f[0][1])}%` }))); };
 const atRisk = c => allT(c).filter(t => t.health < 40 && t.mrr >= 75 && !['churned', 'trial', 'trial_expired'].includes(t.state)).sort((a, b) => b.mrr - a.mrr);
 const riskTable = (c, rows) => h.table([
-  { k: 'name', label: 'Tenant', fmt: (v, t) => `<b>${esc(v)}</b><div>${mono(t.tid)}</div>` },
+  { k: 'name', label: 'Tenant', fmt: (v, t) => `<b>${esc(v)}</b><div class="tiny t3">${mono(t.tid)} · CSM ${esc(t.csm)}</div>` },
   { k: 'mrr', label: 'MRR', n: true, fmt: (v, t) => bill(c, mrrF(t)) },
   { k: 'health', label: 'Score', n: true, fmt: v => hP(v) },
   { k: 'fac', label: 'Why (top factors)', fmt: v => `<div class="tiny">${v.filter(f => f[0] === '-').slice(0, 2).map(f => esc(f.slice(2))).join('<br>')}</div>` },
-  { k: 'csm', label: 'CSM', fmt: v => esc(v) },
 ], rows, { go: 'console.tenant', dense: true });
 const aiSpend = c => {
   const d = c.winter ? [1.12, 1.08, 1.15, 0.94, 0.88, 1.21, 1.18] : [1.42, 1.51, 1.38, 1.61, 1.88, 1.79, 1.94];
@@ -324,16 +323,19 @@ function homeOwner(c) {
       { label: 'Trials (7 days)', value: `${m.trials7} started`, delta: `${m.conv7} converted`, tone: 'ok' },
       { label: 'Activation (30-day cohort)', value: m.act + '%', delta: `target ${m.actTarget}%`, tone: 'warn' },
       { label: 'AI gross margin (week)', value: m.aiMargin + '%', delta: m.aiDelta, tone: m.aiDelta[0] === '-' ? 'warn' : 'ok', ai: true },
-      { label: 'Incidents', value: '1 open', delta: 'SEV3 monitoring', tone: 'warn' },
     ])
-    + h.cols('21', [
-      `<div class="stack12">${h.card({ title: `Needs you (${pend.length})`, sub: 'Two-person approvals waiting on the founder or the trusted second approver (PA-004)', flush: true, body: h.list(APPROVALS.slice(0, 5).map(a => apprRow(c, a))), actions: B('Approvals inbox', { kind: 'ghost', a: { 'data-go': 'console.staff' } }) })}
-      ${h.card({ title: 'Churn risk: red band, MRR $75 and up', sub: 'Rules-based health score, top factors in plain language (PA-013)', flush: true, body: riskTable(c, atRisk(c)) })}
-      ${h.card({ title: 'MRR movement', sub: 'Last 8 weeks and the last 7 days', body: mrrChart(c, m) + waterfall(c, m.mv) })}
-      ${h.card({ title: 'Trials and activation funnel', sub: 'Last 30 days of signups. Activated = a crew-app visit completed and an invoice paid through the Company\'s own Stripe within 30 days (PA-020)', body: funnelBars(c) })}</div>`,
+    + h.cols('2', [
+      h.card({ title: `Needs you (${pend.length})`, sub: 'Two-person approvals waiting on the founder or the trusted second approver (PA-004)', flush: true, body: h.list(APPROVALS.slice(0, 5).map(a => apprRow(c, a))), actions: B('Approvals inbox', { kind: 'ghost', a: { 'data-go': 'console.staff' } }) }),
       `<div class="stack12">${brief}
-      ${h.card({ title: 'Incidents', flush: true, body: incList(c), actions: B('System health', { kind: 'ghost', a: { 'data-go': 'console.health' } }) })}
-      ${h.card({ title: 'Queue depths', body: h.bars(QUEUES(c)) })}
+      ${h.card({ title: 'Queue depths', body: h.bars(QUEUES(c)) })}</div>`,
+    ])
+    + h.cols('2', [
+      h.card({ title: 'Churn risk: red band, MRR $75 and up', sub: 'Rules-based health score, top factors in plain language (PA-013)', flush: true, body: riskTable(c, atRisk(c)) }),
+      h.card({ title: 'Incidents', sub: '1 open, SEV3 monitoring', flush: true, body: incList(c), actions: B('System health', { kind: 'ghost', a: { 'data-go': 'console.health' } }) }),
+    ])
+    + h.cols('2', [
+      h.card({ title: 'MRR movement', sub: 'Last 8 weeks and the last 7 days', body: mrrChart(c, m) + waterfall(c, m.mv) }),
+      `<div class="stack12">${h.card({ title: 'Trials and activation funnel', sub: 'Last 30 days of signups. Activated = a crew-app visit completed and an invoice paid through the Company\'s own Stripe within 30 days (PA-020)', body: funnelBars(c) })}
       ${h.card({ title: 'AI spend vs forecast', sub: 'Provider cost, last 7 days', body: aiSpend(c), tone: c.winter ? '' : 'warn' })}</div>`,
     ]);
 }
@@ -344,7 +346,7 @@ function homeSupport(c) {
     + h.kpis([{ label: 'Open tickets', value: c.winter ? 61 : 84, delta: c.winter ? '4 near SLA' : '7 near SLA', tone: 'warn' }, { label: 'Median first response', value: c.winter ? '22 min' : '38 min', delta: 'Grow target 4 business hours', tone: 'ok' }, { label: 'CSAT (30 days)', value: '94%', delta: '+2 pts', tone: 'ok' }, { label: 'Active View as sessions', value: 2, delta: 'both read-only', tone: '' }, { label: 'Trials stuck > 5 days', value: stuck.length, delta: 'CSM tasks created', tone: 'warn' }])
     + h.cols('21', [
       `<div class="stack12">${h.card({ title: 'My queue', sub: 'Sorted by SLA, then peak-hours routing', flush: true, body: ticketTable(c, tickets) })}
-      ${h.card({ title: 'Trials stuck at a step for more than 5 days', sub: 'In-app nudge already sent. Spanish-first owners get a bilingual CSM (PA-020)', flush: true, body: h.table([{ k: 'name', label: 'Trial', fmt: (v, t) => `<b>${esc(v)}</b> ${mono(t.tid)}` }, { k: 'trialDay', label: 'Trial', fmt: (v, t) => esc(trialInfo(c, t)) }, { k: 'ms', label: 'Milestones', n: true, fmt: v => `${v}/6` }, { k: 'stripe', label: 'Stripe', fmt: v => strP(v) }, { k: 'fac', label: 'Stuck on', fmt: v => `<span class="tiny">${esc((v.find(f => f[0] === '-') || '').slice(2))}</span>` }], stuck, { go: 'console.tenant', dense: true }) })}</div>`,
+      ${h.card({ title: 'Trials stuck at a step for more than 5 days', sub: 'In-app nudge already sent. Spanish-first owners get a bilingual CSM (PA-020)', flush: true, body: h.table([{ k: 'name', label: 'Trial', fmt: (v, t) => `<b>${esc(v)}</b><div class="tiny t3">${mono(t.tid)}</div>` }, { k: 'trialDay', label: 'Day', fmt: (v, t) => esc(trialInfo(c, t)) }, { k: 'ms', label: 'Milestones', n: true, fmt: v => `${v}/6` }, { k: 'stripe', label: 'Stripe', fmt: v => strP(v) }, { k: 'fac', label: 'Stuck on', fmt: v => `<span class="tiny">${esc((v.find(f => f[0] === '-') || '').slice(2))}</span>` }], stuck, { go: 'console.tenant', dense: true }) })}</div>`,
       `<div class="stack12">${h.card({ title: 'Active access grants', sub: 'Consented, time-boxed (PA-051)', flush: true, body: h.list(GRANTS(c).slice(0, 3).map(g => ({ icon: 'key', tone: g.scope === 'read_write' ? 'warn' : 'info', title: `${esc(g.tenant)} · ${esc(g.scope)}`, sub: `${esc(g.who)} · approved by ${esc(g.by)} · ends ${esc(g.ends)}` }))) })}
       ${h.card({ title: 'Known issues', flush: true, body: h.list(KNOWN(c).slice(0, 3).map(k => ({ icon: 'warn', tone: k.tone, title: esc(k.title), sub: `${k.tenants} tenants · macro ${esc(k.macro)}` }))) })}
       ${h.card({ title: '10DLC fixes waiting', flush: true, body: h.list(allT(c).filter(t => ['brand_failed', 'campaign_rejected'].includes(t.tdlc)).map(t => ({ icon: 'chat', tone: 'danger', title: esc(t.name), sub: `${t.tdlc} · rejection assistant draft ready`, go: 'console.comms' }))) })}
@@ -373,24 +375,28 @@ function homeFinance(c) {
   const mine = APPROVALS.filter(a => a.byRole === 'platform_finance');
   return h.page({ title: 'Finance home', sub: `${esc(c.today.label)} · MRR movement, dunning and approvals you are waiting on (21 §5.5)`, actions: B('Billing', { icon: 'receipt', a: { 'data-go': 'console.billing' } }) })
     + h.kpis([{ label: 'MRR', value: money(m.mrr), delta: `${m.mrrWk > 0 ? '+' : ''}${money(m.mrrWk)} this week`, tone: 'ok' }, { label: 'Past due balance', value: money(d.reduce((s, r) => s + r.amt, 0)), delta: `${d.length} tenants in dunning`, tone: 'warn' }, { label: 'Restricted / suspended', value: `${d.filter(r => r.state === 'restricted').length} / ${d.filter(r => r.state === 'suspended').length}`, delta: 'client payments unaffected', tone: '' }, { label: 'Waiting on approval', value: mine.filter(a => !apprState(a.id)).length, delta: 'refunds, prices, holds', tone: 'warn' }, { label: 'Reconciliation mismatches', value: 2, delta: 'invoice finalization held', tone: 'danger' }])
-    + h.cols('21', [
-      `<div class="stack12">${h.card({ title: 'MRR movement', body: mrrChart(c, m) + waterfall(c, m.mv) })}
-      ${h.card({ title: 'Dunning queue', sub: 'Restricted and suspended never block a Company from getting paid (22 §8.2)', flush: true, body: dunTable(c, d.slice(0, 5)), actions: navB('Open dunning queue', 'console.billing', { k: 'cx.bill', v: 'dunning' }) })}</div>`,
-      `<div class="stack12">${h.card({ title: 'Your requests waiting on a second approver', flush: true, body: h.list(mine.map(a => apprRow(c, a))) })}
-      ${h.card({ title: 'Usage reconciliation', sub: 'Usage and credit ledgers vs Stripe draft invoices (PA-033)', flush: true, body: h.list([{ icon: 'warn', tone: 'danger', title: 'TNT-48477 Pine Ridge Grounds: SMS overage 412 vs 398 segments', sub: 'Finalization held in the draft-invoice window' }, { icon: 'warn', tone: 'danger', title: 'TNT-48990 Two Rivers Irrigation: pack purchase not on draft', sub: '5,000-credit pack, $100 one-time item' }, { icon: 'check', tone: 'ok', title: '1,212 other draft invoices matched', sub: 'Daily job ran 4:00 am ET' }]) })}
-      ${h.card({ title: 'Tax and filings', flush: true, body: h.list([{ icon: 'receipt', title: 'Ohio SaaS sales tax return', sub: 'Due ' + day(c, 12) + ' · Stripe Tax report ready' }, { icon: 'receipt', title: 'GST/HST (Ontario tenants)', sub: 'Quarterly · 11 tenants · registration on file' }]) })}
-      ${c.inLens('V1') ? h.card({ title: 'Partner commissions ' + h.tag('V1'), body: h.kv([['Accrued this month', money(4186)], ['Due for payout', money(3920) + ' to 9 partners'], ['Clawbacks', '1 (refund within 60 days)']]) + B('Review payouts', { a: { 'data-go': 'console.partners' } }) }) : ''}</div>`,
+    + h.cols('2', [
+      h.card({ title: 'MRR movement', sub: 'Last 8 weeks and the last 7 days', body: mrrChart(c, m) + waterfall(c, m.mv) }),
+      h.card({ title: 'Your requests waiting on a second approver', sub: 'Finance drafts, the founder approves (PA-004)', flush: true, body: h.list(mine.map(a => apprRow(c, a))) }),
+    ])
+    + h.card({ title: 'Dunning queue', sub: 'Restricted and suspended never block a Company from getting paid (22 §8.2)', flush: true, body: dunTable(c, d.slice(0, 5)), actions: navB('Open dunning queue', 'console.billing', { k: 'cx.bill', v: 'dunning' }) })
+    + h.cols('2', [
+      h.card({ title: 'Usage reconciliation', sub: 'Usage and credit ledgers vs Stripe draft invoices (PA-033)', flush: true, body: h.list([{ icon: 'warn', tone: 'danger', title: 'TNT-48477 Pine Ridge Grounds: SMS overage 412 vs 398 segments', sub: 'Finalization held in the draft-invoice window' }, { icon: 'warn', tone: 'danger', title: 'TNT-48990 Two Rivers Irrigation: pack purchase not on draft', sub: '5,000-credit pack, $100 one-time item' }, { icon: 'check', tone: 'ok', title: '1,212 other draft invoices matched', sub: 'Daily job ran 4:00 am ET' }]) }),
+      `<div class="stack12">${h.card({ title: 'Tax and filings', flush: true, body: h.list([{ icon: 'receipt', title: 'Ohio SaaS sales tax return', sub: 'Due ' + day(c, 12) + ' · Stripe Tax report ready' }, { icon: 'receipt', title: 'GST/HST (Ontario tenants)', sub: 'Quarterly · 11 tenants · registration on file' }]) })}
+      ${c.inLens('V1') ? h.card({ title: 'Partner commissions ' + h.tag('V1'), body: h.kv([['Accrued this month', money(4186)], ['Due for payout', money(3920) + ' to 9 partners'], ['Clawbacks', '1 (refund within 60 days)']]), actions: B('Review payouts', { kind: 'ghost', a: { 'data-go': 'console.partners' } }) }) : ''}</div>`,
     ]);
 }
 function homeEngineer(c) {
   return h.page({ title: 'Health home', sub: `${esc(c.today.label)} · SLOs, queues, integrations and rollouts (21 §5.5)`, actions: B('System health', { icon: 'server', a: { 'data-go': 'console.health' } }) + B('Flags', { icon: 'flag', a: { 'data-go': 'console.flags' } }) })
     + h.kpis([{ label: 'API availability (30 days)', value: '99.96%', delta: 'SLO 99.9%, 61% budget left', tone: 'ok' }, { label: 'Crew sync within 60 s', value: '99.71%', delta: 'SLO 99.5%', tone: 'ok' }, { label: 'Outbox lag (oldest)', value: '2.4 s', delta: 'p99 under 5 s', tone: 'ok' }, { label: 'Open incidents', value: 1, delta: 'SEV3 SMS carrier delay', tone: 'warn' }, { label: 'Deploys today', value: 4, delta: 'canary cell first', tone: '' }])
-    + h.cols('21', [
-      `<div class="stack12">${h.card({ title: 'Services', flush: true, body: svcTable(c) })}
-      ${h.card({ title: 'Integrations with errors (24 h)', flush: true, body: integTable(c, INTEG(c).filter(x => x.err > 0).slice(0, 5)) })}</div>`,
-      `<div class="stack12">${h.card({ title: 'Incidents', flush: true, body: incList(c) })}
-      ${h.card({ title: 'Rollouts in flight', flush: true, body: h.list(FLAGS(c).filter(f => f.pct > 0 && f.pct < 100).map(f => ({ icon: 'flag', tone: 'info', title: `${mono(f.key)} at ${f.pct}%`, sub: `${esc(f.type)} · guardrails ${f.guard}` }))) })}
-      ${h.card({ title: 'Workflows and queues', body: h.bars(WORKFLOWS(c).slice(0, 5).map(w => ({ label: w.name, value: w.run, max: 2000, tone: w.fail > 5 ? 'warn' : '', right: `${num(w.run)} run · ${w.fail} failed` }))) })}</div>`,
+    + h.cols('2', [
+      h.card({ title: 'Services', sub: 'Last 24 hours against SLOs (20 §6)', flush: true, body: svcTable(c) }),
+      h.card({ title: 'Incidents', sub: '1 open, SEV3 monitoring', flush: true, body: incList(c) }),
+    ])
+    + h.card({ title: 'Integrations with errors (24 h)', flush: true, body: integTable(c, INTEG(c).filter(x => x.err > 0).slice(0, 5)), actions: navB('All integrations', 'console.health', { k: 'cx.hl', v: 'integ' }) })
+    + h.cols('2', [
+      h.card({ title: 'Rollouts in flight', flush: true, body: h.list(FLAGS(c).filter(f => f.pct > 0 && f.pct < 100).map(f => ({ icon: 'flag', tone: 'info', title: `${mono(f.key)} at ${f.pct}%`, sub: `${esc(f.type)} · guardrails ${f.guard}` }))) }),
+      h.card({ title: 'Workflows and queues', body: h.bars(WORKFLOWS(c).slice(0, 5).map(w => ({ label: w.name, value: w.run, max: 2000, tone: w.fail > 5 ? 'warn' : '', right: `${num(w.run)} run · ${w.fail} failed` }))) }),
     ]);
 }
 RL.screen('console.home', (c) => {
@@ -413,6 +419,7 @@ const VIEWS = [
   ['due', 'Past due, MRR $300+', t => ['past_due', 'restricted', 'suspended'].includes(t.state) && t.mrr >= 300],
   ['pay', 'Payments not ready', t => ['none', 'req', 'off', 'disc'].includes(t.stripe) && t.plan !== 'archive'],
 ];
+const REGION_SHORT = { 'Central Ohio': 'Central OH', 'Northeast Ohio': 'NE Ohio', 'Southeast Michigan and Toledo': 'SE MI + Toledo', 'West Michigan': 'W Michigan', 'Chicagoland and Northwest Indiana': 'Chicagoland + NW IN', 'Southeast Wisconsin': 'SE Wisconsin', 'Ontario (Wave 2)': 'Ontario (Wave 2)', 'Great Lakes + Wave 2 (38 locations)': 'Great Lakes, 38 sites' };
 const selSet = () => String(RL.ui['cx.sel'] || '').split(',').filter(Boolean);
 const seatsF = t => `${t.office[0]}/${t.office[1]} · ${t.field[0]}/${t.field[1] == null ? '∞' : t.field[1]}`;
 RL.screen('console.tenants', (c) => {
@@ -421,18 +428,17 @@ RL.screen('console.tenants', (c) => {
   const rows = allT(c).filter(view[2]).filter(t => !q || (t.name + ' ' + t.tid + ' ' + t.city + ' ' + t.region).toLowerCase().includes(q));
   const sel = selSet(), canBulk = !RO(c);
   const selCol = { k: 'id', label: '', fmt: v => { const on = sel.includes(v); const next = on ? sel.filter(x => x !== v) : sel.concat(v); return `<button type="button" class="btn sm ghost" style="padding:1px 5px" data-ui="cx.sel" data-val="${esc(next.join(','))}" aria-pressed="${on}" aria-label="Select">${on ? '☑' : '☐'}</button>`; } };
-  const name = { k: 'name', label: 'Tenant', fmt: (v, t) => `<b>${esc(v)}</b>${t.sample ? ' ' + h.pill('sample', 'accent') : ''} ${mono(t.tid)}<div class="tiny t3">${esc(t.city)} · ${esc(t.region)} · active ${ago(t.last)}</div>` };
-  const plan = { k: 'plan', label: 'Plan', fmt: (v, t) => esc(planN(v)) + (t.addons && t.addons.length ? `<div class="tiny t3">+ ${t.addons.map(a => esc((I.ADDONS[a] || { name: a }).name)).join(', ')}</div>` : '') };
-  const state = { k: 'state', label: 'State', fmt: (v, t) => stP(v) + (trialInfo(c, t) ? `<div class="tiny t3">${esc(trialInfo(c, t))}${t.state === 'trial' ? ` · ${t.ms}/6` : ''}</div>` : t.due ? `<div class="tiny t3">dunning day ${t.due}</div>` : '') };
+  const name = { k: 'name', label: 'Tenant', fmt: (v, t) => `<b>${esc(v)}</b>${t.sample ? ' ' + h.pill('sample', 'accent') : ''}<div class="tiny t3" title="${esc(t.city + ' · ' + t.region + ' · active ' + ago(t.last))}">${mono(t.tid)} · ${esc(REGION_SHORT[t.region] || t.region)}${c.role === 'platform_engineer' || !t.csm || t.csm === '-' ? '' : ' · ' + esc(t.csm)}</div>` };
+  const plan = { k: 'plan', label: 'Plan', fmt: (v, t) => esc(planN(v)) + (t.addons && t.addons.length ? ` <span class="tiny t3" title="${esc(t.addons.map(a => (I.ADDONS[a] || { name: a }).name).join(', '))}">+${t.addons.length} add-on${t.addons.length > 1 ? 's' : ''}</span>` : '') };
+  const state = { k: 'state', label: 'State', fmt: (v, t) => stP(v) + (t.state === 'trial' ? `<div class="tiny t3">day ${t.trialDay}/${t.trialLen} · ${t.ms}/6 steps</div>` : t.state === 'trial_expired' ? `<div class="tiny t3">read-only day ${t.roDay}/60</div>` : t.due ? `<div class="tiny t3">dunning day ${t.due}</div>` : '') };
   const health = { k: 'health', label: 'Health', n: true, fmt: v => hP(v) };
-  const mrr = { k: 'mrr', label: 'MRR', n: true, fmt: (v, t) => mrrF(t) };
+  const mrr = { k: 'mrr', label: 'MRR', n: true, fmt: (v, t) => mrrF(t) + (c.role === 'platform_finance' ? '' : `<div class="tiny t3 num" title="Seats office used/included · field used/allowance">${seatsF(t)}</div>`) };
   const seats = { k: 'office', label: 'Seats office · field', n: true, fmt: (v, t) => `<span class="num">${seatsF(t)}</span>` };
   const integ = { k: 'stripe', label: 'Stripe · 10DLC', fmt: (v, t) => `${strP(v)}<div style="margin-top:2px">${tdP(t.tdlc)}</div>` };
-  const csm = { k: 'csm', label: 'CSM', fmt: v => esc(v) };
   let cols;
   if (c.role === 'platform_finance') cols = [name, plan, state, health, mrr, seats, { k: 'coupon', label: 'Discount', fmt: v => v ? `<span class="tiny">${esc(v)}</span>` : '<span class="t3">none</span>' }, { k: 'signup', label: 'Since', fmt: v => esc(day(c, v)) }];
   else if (c.role === 'platform_engineer') cols = [name, plan, state, health, { k: 'cell', label: 'Cell', fmt: (v, t) => mono(v) + `<div class="tiny t3">data: ${t.res === 'ca' ? 'prod-ca' : 'us'}</div>` }, { k: 'ver', label: 'Crew app', fmt: v => `<span class="mono tiny">${esc(v)}</span>${/^2\.1[45]/.test(v) ? ' ' + h.pill('below min 2.16', 'warn') : ''}` }, integ, { k: 'acct', label: 'Accounting', fmt: v => `<span class="tiny">${esc(v)}</span>` }];
-  else cols = (canBulk ? [selCol] : []).concat([name, plan, state, health, mrr, seats, integ, csm]);
+  else cols = (canBulk ? [selCol] : []).concat([name, plan, state, health, mrr, integ]);
   const blast = `${sel.length} tenant${sel.length === 1 ? '' : 's'} (dry-run count)`;
   const bulk = canBulk && sel.length ? h.card({ tone: 'warn', body: `<div class="flex"><b>Selected: ${sel.length}</b>
       ${ab(c, 'note', 'Add tag', { t: sel.length + ' tenants', id: 'bulk-tag', blast, audit: 'tenant.tag.add', repeat: true })}
@@ -443,7 +449,7 @@ RL.screen('console.tenants', (c) => {
       ${ab(c, 'export', 'Export CSV', { t: sel.length + ' tenants', id: 'bulk-export', blast, audit: 'data.export', two: !own(c), stepup: true })}
       ${B('Clear', { kind: 'ghost', a: { 'data-ui': 'cx.sel', 'data-val': '' } })}</div><div class="tiny t3">Every bulk action asks for a reason code and shows a dry-run count before it runs. Exports are audited and need export permission.</div>` }) : '';
   const p = PM(c);
-  return h.page({ title: 'Tenants', sub: `${num(p.tenants)} tenants · ${num(p.paying)} paying · showing ${rows.length} illustrative rows in view "${esc(view[1])}"`, actions: `<span style="width:240px">${h.input(RL.ui['cx.tq'] || '', { ui: 'cx.tq', ph: 'Name, TNT id, city, Stripe acct_ or cus_', label: 'Search tenants' })}</span>` + B('Columns', { icon: 'sliders', a: { 'data-act': 'cx-cols' } }) })
+  return h.page({ title: 'Tenants', sub: `${num(p.tenants)} tenants · ${num(p.paying)} paying · showing ${rows.length} illustrative rows in view "${esc(view[1])}"`, actions: `<span style="width:240px">${h.input(RL.ui['cx.tq'] || '', { ui: 'cx.tq', ph: 'Name, TNT id, city, acct_', label: 'Search tenants' })}</span>` + B('Columns', { icon: 'sliders', a: { 'data-act': 'cx-cols' } }) })
     + roBanner(c)
     + `<div class="flex">${VIEWS.map(([id, l, f]) => B(`${esc(l)} <span class="t3">${allT(c).filter(f).length}</span>`, { kind: view[0] === id ? 'primary' : '', a: { 'data-ui': 'cx.tview', 'data-val': id } })).join('')}</div>`
     + bulk
@@ -480,6 +486,7 @@ const alertsOf = (c, t) => {
   if (['brand_failed', 'campaign_rejected'].includes(t.tdlc)) a.push(['danger', `10DLC ${t.tdlc}: rejection assistant has a fix ready`, 'Open in Comms']);
   if (/^2\.1[45]/.test(t.ver)) a.push(['warn', `Crew app ${t.ver} on 3 devices (minimum 2.16)`, 'Send update macro']);
   if (t.due) a.push(['danger', `Rootline invoice unpaid, dunning day ${t.due} (${t.state}). Client payments keep working`, 'Dunning']);
+  if ((t.addons || []).includes('snow_ice') && !c.winter) a.push(['info', 'Snow & Ice add-on dormant until Nov 1: not billed Apr-Oct, settings and price kept (PA-032)', '']);
   if (t.hold) a.push(['info', `Legal hold ${t.hold} active: deletion and retention jobs suspended`, 'Compliance']);
   if (t.state === 'trial') a.push(['info', `Trial ${trialInfo(c, t)}; ends ${day(c, t.trialLen - t.trialDay)}`, 'Extend']);
   if (t.ai > (I.PLANS[t.plan].ai_credits || 500) * 0.8) a.push(['warn', `AI credits at ${Math.round(100 * t.ai / (I.PLANS[t.plan].ai_credits || 500))}% of included`, 'Grant credits']);
@@ -519,7 +526,7 @@ const mrrBreak = (c, t) => {
   const p = I.PLANS[t.plan]; if (t.state === 'trial' || t.state === 'trial_expired') return `Trial, no Rootline invoice yet${t.plan === 'grow' ? ' (Grow features)' : ''}`;
   const base = p.annual || p.monthly || 0;
   const xo = Math.max(0, t.office[0] - (p.office_seats || 0)), xf = t.field[1] == null ? 0 : Math.max(0, t.field[0] - t.field[1]);
-  return `${money(t.mrr)} = ${t.coupon ? money(Math.round(base * .75)) + ' base after Founding 25%' : money(base) + ' base'}${xo ? ` + ${xo} extra office (${money(xo * (p.extra_office || 35))})` : ''}${xf ? ` + ${xf} field over allowance (${money(xf * (p.extra_field || 8))})` : ''}${(t.addons || []).length ? ' + add-ons' : ''}`;
+  return `${money(t.mrr)} = ${t.coupon ? money(Math.round(base * .75)) + ' base after Founding 25%' : money(base) + ' base'}${xo ? ` + ${xo} extra office (${money(xo * (p.extra_office || 35))})` : ''}${xf ? ` + ${xf} field over allowance (${money(xf * (p.extra_field || 8))})` : ''}${(t.addons || []).map(a => a === 'snow_ice' ? (c.winter ? ` + ${money(p.annual ? 79 : 99)} Snow & Ice (Nov-Mar)` : ' + Snow & Ice dormant until Nov 1') : a === 'sandbox' && t.plan === 'enterprise' ? ' + Sandbox (included)' : a === 'dedicated_db' ? ' + Dedicated database (contract)' : ' + ' + (I.ADDONS[a] || { name: a }).name).join('')}`;
 };
 RL.screen('console.tenant', (c) => {
   const t = findT(c, c.x);
@@ -560,12 +567,12 @@ function t360Overview(c, t) {
   return h.cols('21', [
     `<div class="stack12">${h.card({ title: 'Alerts', flush: true, body: h.list(al.map(([tone, txt, act]) => ({ icon: tone === 'ok' ? 'check' : 'warn', tone, title: esc(txt), right: act ? `<span class="tiny t3">${esc(act)}</span>` : '' }))) })}
     ${h.card({ title: `Activation checklist ${md}/12`, sub: 'System-detected milestones (PA-020)', body: `<div class="cols cols-2" style="gap:4px 14px">${MILESTONES.map((m, i) => `<div class="tiny">${i < md ? `<span style="color:var(--ok-text)">${icon('check', 's')}</span>` : `<span class="t3">${icon('clock', 's')}</span>`} ${esc(m)}</div>`).join('')}</div>` })}
-    ${h.card({ title: 'Seasonality', sub: 'Visits completed per month', body: seasonality(c, t) })}</div>`,
-    `<div class="stack12">${h.card({ title: `Health ${t.health} (${bandOf(t.health)})`, sub: 'Model health-v1.3 rules, recomputed nightly', body: `<div class="flex">${hP(t.health)} ${sparkH(t)} <span class="tiny t3">26 weeks</span></div>` + h.list(t.fac.map(f => ({ icon: f[0] === '+' ? 'check' : 'warn', tone: f[0] === '+' ? 'ok' : 'warn', title: esc(f.slice(2)) }))) })}
-    ${h.card({ title: 'Account signals', body: h.kv([['NPS', t.nps != null ? String(t.nps) : 'not asked yet'], ['Tickets (30 days)', String(t.tickets)], ['Churn risk', t.health < 40 ? '<b style="color:var(--danger-text)">High</b>' : t.health < 60 ? 'Medium' : 'Low'], ['Expansion', t.plan === 'grow' && t.field[0] > 12 ? 'Pro fit: field overage 3 months running' : (t.addons || []).includes('snow_ice') ? 'Snow & Ice active' : 'Snow & Ice module trial candidate'], ['Segment', mono('segment:' + t.seg)]]) })}
-    ${h.card({ title: 'SaaS billing', body: h.kv([['MRR', bill(c, esc(mrrBreak(c, t)))], ['Interval', bill(c, p.annual ? 'Annual (price lock to ' + day(c, t.signup + 730) + ')' : 'Monthly')], ['Next invoice', bill(c, day(c, c.winter ? 20 : 21))], ['Card on file', bill(c, t.due ? '<span style="color:var(--danger-text)">Visa 4242, declined</span>' : 'Visa •••• 4242, current')]]) })}
+    ${h.card({ title: 'Seasonality', sub: 'Visits completed per month', body: seasonality(c, t) })}
     ${h.card({ title: 'Integrations', body: h.kv([['Stripe Connect', strP(t.stripe) + ' ' + tech(c, mono('acct_1P' + t.tid.slice(4) + '…'))], ['Accounting', esc(t.acct)], ['10DLC', tdP(t.tdlc)], ['Crew app', tech(c, mono(t.ver))], ['Cell', tech(c, mono(t.cell))]]) })}
     ${t.note ? h.card({ title: 'Pinned note', body: `<div class="small">${esc(t.note)}</div><div class="tiny t3">Visibility: all staff · pinned by ${esc(t.csm === '-' ? 'Maya D.' : t.csm)}</div>` }) : ''}</div>`,
+    `<div class="stack12">${h.card({ title: `Health ${t.health} (${bandOf(t.health)})`, sub: 'Model health-v1.3 rules, recomputed nightly', body: `<div class="flex">${hP(t.health)} ${sparkH(t)} <span class="tiny t3">26 weeks</span></div>` + h.list(t.fac.map(f => ({ icon: f[0] === '+' ? 'check' : 'warn', tone: f[0] === '+' ? 'ok' : 'warn', title: esc(f.slice(2)) }))) })}
+    ${h.card({ title: 'Account signals', body: h.kv([['NPS', t.nps != null ? String(t.nps) : 'not asked yet'], ['Tickets (30 days)', String(t.tickets)], ['Churn risk', t.health < 40 ? '<b style="color:var(--danger-text)">High</b>' : t.health < 60 ? 'Medium' : 'Low'], ['Expansion', t.plan === 'grow' && t.field[0] > 12 ? 'Pro fit: field overage 3 months running' : (t.addons || []).includes('snow_ice') ? (c.winter ? 'Snow & Ice active' : 'Snow & Ice on, dormant until Nov 1') : 'Snow & Ice module trial candidate'], ['Segment', `<span class="mono tiny" style="word-break:break-all">${esc(t.seg)}</span>`]]) })}
+    ${h.card({ title: 'SaaS billing', body: h.kv([['MRR', bill(c, esc(mrrBreak(c, t)))], ['Interval', bill(c, p.annual ? 'Annual (price lock to ' + day(c, t.signup + 730) + ')' : 'Monthly')], ['Next invoice', bill(c, day(c, c.winter ? 20 : 21))], ['Card on file', bill(c, t.due ? '<span style="color:var(--danger-text)">Visa 4242, declined</span>' : 'Visa •••• 4242, current')]]) })}</div>`,
   ]);
 }
 function t360Usage(c, t) {
@@ -577,7 +584,7 @@ function t360Usage(c, t) {
       + h.card({ title: 'Modules used (entitled)', body: `<div class="flex">${['Scheduling', 'Invoicing', 'Portal', 'Crew app', 'Ledger', 'Design Studio', 'Campaigns', 'Lawn programs', 'Snow Lite'].map((m, i) => h.pill(esc(m), (i + hsh(t.id)) % 4 === 0 ? '' : 'ok')).join('')}</div>` }),
       h.card({ title: 'Meters this period', body: [
         h.meter('AI credits', t.ai, planIncl(t), { unit: 'cr' }),
-        h.meter('SMS segments', t.sms, p.sms || 0),
+        p.sms != null ? h.meter('SMS segments', t.sms, p.sms) : t.plan === 'enterprise' ? h.meter('SMS segments (contract pool)', t.sms, 25000) : `<div class="meter"><div class="flex"><span>SMS segments</span><span class="num t2">${num(t.sms || 0)} · no included pool on ${esc(p.name)}</span></div></div>`,
         h.meter('Storage', Math.round(s * 4.2), p.storage_gb || 1000, { unit: 'GB' }),
         h.meter('Parcel lookups', Math.round(s * 9), { starter: 100, grow: 500, pro: 2000 }[t.plan] || 2000),
         h.meter('Active field seats', t.field[0], t.field[1] == null ? null : t.field[1]),
@@ -715,11 +722,11 @@ const MIGS = c => [
   { id: 'MIG-0418', t: 'kestrel', name: 'Kestrel Lawn franchise system', src: 'Scoped project: 7 remaining locations', state: 'committing', spec: 'Luis R.', cut: 2, live: 9, sla: 'scoped plan, on track', clients: 6400, ent: 'Enterprise scoped project' },
   { id: 'MIG-0421', t: 'northfield', name: 'Northfield Snow & Landscape', src: 'Service Autopilot reports', state: 'mapping', spec: 'Jordan P.', cut: 9, live: 24, sla: 'day 3 of 15', clients: 640, ent: '$499 per source (monthly), credited if annual in 60 days' },
   { id: 'MIG-0425', t: 'cardinal', name: 'Cardinal Outdoor', src: 'Generic CSV', state: 'tenant_review', spec: 'Jordan P.', cut: 1, live: 6, sla: 'day 8 of 15', clients: 388, ent: 'Free: 1 source system on annual Grow' },
-  { id: 'MIG-0427', t: 'hermanos', name: 'Hermanos Garcia Lawn Care', src: 'Spreadsheets (unknown)', state: 'requested', spec: 'unassigned (ES)', cut: 14, live: 30, sla: 'scoping call due in 1 business day', clients: 0, ent: 'Trial: self-serve or $499 per source' },
+  { id: 'MIG-0427', t: 'hermanos', name: 'Hermanos Garcia Lawn Care', src: 'Spreadsheets', state: 'requested', spec: 'unassigned (ES)', cut: 14, live: 30, sla: 'scoping call due tomorrow', clients: 0, ent: 'Trial: self-serve or $499 per source' },
   { id: 'MIG-0409', t: 'copperleaf', name: 'Copper Leaf Landscape', src: 'Generic CSV', state: 'awaiting_files', spec: 'Jordan P.', cut: 12, live: 26, sla: 'files 2 days late', clients: 0, ent: 'Trial' },
   { id: 'MIG-0401', t: 'kzoo', name: 'Kalamazoo Stoneworks', src: 'CSV + QuickBooks Online', state: 'reconciling', spec: 'Luis R.', cut: -2, live: 2, sla: 'day 13 of 15', clients: 510, ent: 'Free: 1 source (QBO counted as a second, $499)' },
   { id: 'MIG-0398', t: 'escarpment', name: 'Escarpment Gardens', src: 'QuickBooks Online (OAuth)', state: 'live', spec: 'Luis R.', cut: -20, live: -8, sla: 'met', clients: 290, ent: 'Free: 1 source system on annual Grow' },
-  { id: 'MIG-0403', t: 'maplestone', name: 'Maple & Stone LLC', src: 'Card data copy from a vendor-controlled account', state: 'scoping', spec: 'Maya D.', cut: 0, live: 10, sla: 'blocked: source vendor refused copy', clients: 0, ent: 'Payment method continuity (V1)', blocked: true },
+  { id: 'MIG-0403', t: 'maplestone', name: 'Maple & Stone LLC', src: 'Vendor-held card data', state: 'scoping', spec: 'Maya D.', cut: 0, live: 10, sla: 'blocked: vendor refused', clients: 0, ent: 'Payment method continuity (V1)', blocked: true },
 ];
 RL.screen('console.migrations', (c) => {
   const ms = MIGS(c), selId = RL.ui['cx.mig'] || 'MIG-0412', m = ms.find(x => x.id === selId) || ms[0], ro = RO(c);
@@ -732,18 +739,19 @@ RL.screen('console.migrations', (c) => {
     + h.board(cols.slice(0, 9))
     + h.card({ title: `${m.id} · ${esc(m.name)}`, sub: `Source: ${esc(m.src)} · state ${m.state}`, actions: B('Tenant 360', { kind: 'ghost', a: { 'data-go': 'console.tenant', 'data-x': m.t } }), body: h.kv([['Specialist', esc(m.spec)], ['Cutover', day(c, m.cut)], ['Go-live target', day(c, m.live)], ['SLA', esc(m.sla)], ['Entitlement', esc(m.ent)], ['Data access', 'Support Access Grant, scope migration (14 days)']])
       + h.steps(['Files', 'Mapping', 'Validation', 'Dry run', 'Approve', 'Commit', 'Reconcile', 'Live'], stepIdx) })
-    + h.cols('21', [
-      h.card({ title: 'Validation report', sub: 'Rows land in a per-migration staging schema, never in live tables', flush: true, body: h.table([{ k: 0, label: 'Object' }, { k: 1, label: 'Rows', n: true, fmt: v => num(v) }, { k: 2, label: 'Ready', n: true, fmt: v => num(v) }, { k: 3, label: 'Warnings', n: true, fmt: v => v ? `<span style="color:var(--warn-text)">${v}</span>` : '0' }, { k: 4, label: 'Errors', n: true, fmt: v => v ? `<b style="color:var(--danger-text)">${v}</b>` : '0' }, { k: 5, label: 'Auto-fixed' }], obj, { dense: true })
+    + h.card({ title: 'Validation report', sub: 'Rows land in a per-migration staging schema, never in live tables', flush: true, body: h.table([{ k: 0, label: 'Object' }, { k: 1, label: 'Rows', n: true, fmt: v => num(v) }, { k: 2, label: 'Ready', n: true, fmt: v => num(v) }, { k: 3, label: 'Warnings', n: true, fmt: v => v ? `<span style="color:var(--warn-text)">${v}</span>` : '0' }, { k: 4, label: 'Errors', n: true, fmt: v => v ? `<b style="color:var(--danger-text)">${v}</b>` : '0' }, { k: 5, label: 'Auto-fixed' }], obj, { dense: true })
         + `<div class="li">${[
           ['danger', 'ERROR INV-3381: balance -$45.00 not marked as credit', ab(c, 'migrate', 'Mark as credit memo', { t: 'INV-3381', audit: 'migration.fix', hide: true }) + ab(c, 'migrate', 'Exclude', { t: 'INV-3381', id: 'excl', audit: 'migration.fix', hide: true })],
           ['warn', 'WARN 22 addresses geocoded at interpolated precision', B('Review on map', { a: { 'data-act': 'cx-mapreview' } })],
           ['warn', 'WARN 6 schedules "every 7-10 days"', ab(c, 'migrate', 'Set to weekly', { t: '6 schedules', audit: 'migration.fix', hide: true }) + ab(c, 'migrate', 'Set to 10-day', { t: '6 schedules', id: 'ten', audit: 'migration.fix', hide: true })],
           ['warn', 'WARN 14 possible duplicate clients (Jaro-Winkler > 0.92)', B('Review merges', { a: { 'data-act': 'cx-merges' } })],
         ].map(([tone, txt, act]) => `<div class="li-i"><span class="ico ${tone}">${icon('warn')}</span><div class="grow tiny">${esc(txt)}</div><div class="flex nw">${act}</div></div>`).join('')}</div>`
-        + `<div class="cd-b"><div class="flex"><span class="mono tiny">AR check: source $48,255.55 · staged $48,210.55 · diff $45.00 (INV-3381)</span><span class="grow"></span>${ro ? '' : B('Run dry run', { dis: true, title: 'Blocked: 1 error' }) + ab(c, 'migrate', 'Commit', { t: m.name, audit: 'migration.commit', hide: true, sum: 'Commits in batches of 1,000 with import_batch_id on every record, after the tenant owner (and bookkeeper for financial objects) approves. 72-hour rollback window.' })}</div></div>` }),
-      `<div class="stack12">${h.card({ title: 'Mapping profile', sub: 'AI-proposed, confidence under 0.8 needs a human', body: h.table([{ k: 0, label: 'Source column', m: true }, { k: 1, label: 'Rootline field', m: true }, { k: 2, label: 'Conf.', n: true, fmt: v => v < .8 ? `<span class="pill warn">${v}</span>` : v }], [['Client Name', 'client.name', .99], ['Service Street 1', 'property.line1', .97], ['Visit Frequency', 'agreement.rrule', .74], ['Tags', 'client.tags', .66], ['Balance', 'invoice.balance', .95]], { dense: true }) + h.note('Saved as profile jobber-2027-01, reusable for the next Jobber export.') })}
-      ${c.inLens('V1') ? h.card({ title: 'Spring-Ready Guarantee ' + h.tag('V1'), sub: 'Annual Grow or Pro signed by Feb 15 and live by Mar 31, or 3 months free', body: c.winter ? h.kv([['Eligible tenants', '143'], ['At risk (5+ business days behind)', '<b style="color:var(--warn-text)">9</b>, routed to the top of the queue'], ['Countdown', `${79} days to Mar 31`]]) : h.kv([['Apr 1 sweep', '143 eligible · 138 met'], ['Tenant-caused misses', '3 (files never supplied), evidence recorded'], ['Rootline-caused misses', '2: 3-month credit applied with reason goodwill']]) }) : ''}
-      ${h.card({ title: 'Payment method continuity ' + h.tag('V1'), body: h.kv([['Own Stripe account', '61% of migrations: saved cards already there'], ['Vendor-controlled account', '27%: copy requested, 1 refused (MIG-0403)'], ['No portable data', '12%: "update your payment method" campaign 10 days before first autopay']]) })}</div>`,
+        + `<div class="cd-b"><div class="flex"><span class="mono tiny">AR check: source $48,255.55 · staged $48,210.55 · diff $45.00 (INV-3381)</span><span class="grow"></span>${ro ? '' : B('Run dry run', { dis: true, title: 'Blocked: 1 error' }) + ab(c, 'migrate', 'Commit', { t: m.name, audit: 'migration.commit', hide: true, sum: 'Commits in batches of 1,000 with import_batch_id on every record, after the tenant owner (and bookkeeper for financial objects) approves. 72-hour rollback window.' })}</div></div>` })
+    + h.cols('2', [
+      h.card({ title: 'Mapping profile', sub: 'AI-proposed, confidence under 0.8 needs a human', body: h.table([{ k: 0, label: 'Source column', m: true }, { k: 1, label: 'Rootline field', m: true }, { k: 2, label: 'Conf.', n: true, fmt: v => v < .8 ? `<span class="pill warn">${v}</span>` : v }], [['Client Name', 'client.name', .99], ['Service Street 1', 'property.line1', .97], ['Visit Frequency', 'agreement.rrule', .74], ['Tags', 'client.tags', .66], ['Balance', 'invoice.balance', .95]], { dense: true }) + h.note('Saved as profile jobber-2027-01, reusable for the next Jobber export.') }),
+      c.inLens('V1') ? `<div class="stack12">${h.card({ title: 'Spring-Ready Guarantee ' + h.tag('V1'), sub: 'Annual Grow or Pro signed by Feb 15 and live by Mar 31, or 3 months free', body: c.winter ? h.kv([['Eligible tenants', '143'], ['At risk (5+ business days behind)', '<b style="color:var(--warn-text)">9</b>, routed to the top of the queue'], ['Countdown', `${79} days to Mar 31`]]) : h.kv([['Apr 1 sweep', '143 eligible · 138 met'], ['Tenant-caused misses', '3 (files never supplied), evidence recorded'], ['Rootline-caused misses', '2: 3-month credit applied with reason goodwill']]) })}
+      ${h.card({ title: 'Payment method continuity ' + h.tag('V1'), body: h.kv([['Own Stripe account', '61% of migrations: saved cards already there'], ['Vendor-controlled account', '27%: copy requested, 1 refused (MIG-0403)'], ['No portable data', '12%: "update your payment method" campaign 10 days before first autopay']]) })}</div>`
+        : h.card({ title: 'Cutover checklist', body: h.list([{ icon: 'check', tone: 'ok', title: 'Owner approved the mapping', sub: 'Bookkeeper co-sign needed for financial objects' }, { icon: 'clock', title: 'Parallel run: old system stays live until reconcile', sub: 'Clients get portal invites only after go-live' }, { icon: 'clock', title: 'Rollback window 72 hours after commit', sub: 'import_batch_id on every record' }]) }),
     ]);
 });
 RL.act('cx-newmig', () => { RL.toast('New migration project (mock): pick the tenant, sources and scope. A scoping call is due within 2 business days (PA-022).'); return false; });
@@ -767,7 +775,7 @@ const DUNNING = c => {
   return rows;
 };
 const dunTable = (c, rows) => h.table([
-  { k: 'name', label: 'Tenant', fmt: (v, r) => `<b>${esc(v)}</b> ${mono(r.tid)}${r.snow ? `<div>${h.pill('snow carve-out: 41 of 72 h used this event', 'info')}</div>` : ''}${r.wm ? `<div>${h.pill('Winter Mode offer sent', 'info')}</div>` : ''}` },
+  { k: 'name', label: 'Tenant', fmt: (v, r) => `<b>${esc(v)}</b><div class="tiny t3">${mono(r.tid)}</div>${r.snow ? `<div>${h.pill('snow carve-out: 41 of 72 h used this event', 'info')}</div>` : ''}${r.wm ? `<div>${h.pill('Winter Mode offer sent', 'info')}</div>` : ''}` },
   { k: 'day', label: 'Day', n: true },
   { k: 'state', label: 'State', fmt: v => stP(v) },
   { k: 'amt', label: 'Due', n: true, fmt: v => money(v) },
@@ -782,26 +790,18 @@ RL.screen('console.billing', (c) => {
   if (cur === 'catalog') {
     const pend = apprState('APR-2291');
     body = h.card({ title: 'Plans', sub: 'Rootline is the source of truth; synced to Stripe Products and Prices on Rootline\'s own account. USD and CAD are separate price points (PA-030)', flush: true, body: h.table([
-      { k: 'name', label: 'Plan', fmt: (v, p) => `<b>${esc(v)}</b> ${mono(p.code)} ${h.tag(p.scope)}${p.public ? '' : ' <span class="tiny t3">sales-led</span>'}` },
-      { k: 'monthly', label: 'Monthly', n: true, fmt: (v, p) => v ? money(v) : '-' },
-      { k: 'annual', label: 'Annual /mo', n: true, fmt: (v, p) => v ? money(v) : `<span class="tiny">${esc(p.annual_note || '-')}</span>` },
-      { k: 'monthly_cad', label: 'CAD', n: true, fmt: (v, p) => v ? 'C' + money(v) + (p.annual_cad ? ' / C' + money(p.annual_cad) : '') : '-' },
-      { k: 'office_seats', label: 'Seats o · f · d', n: true, fmt: (v, p) => `${v == null ? '-' : v} · ${p.field_seats == null ? '∞' : p.field_seats} · ${p.designer_seats == null ? 'neg.' : p.designer_seats}` },
-      { k: 'extra_office', label: 'Extra o · f · d', n: true, fmt: (v, p) => v ? `$${v} · $${p.extra_field} · $${p.extra_designer}` : '-' },
-      { k: 'ai_credits', label: 'Credits', n: true, fmt: v => v ? num(v) : '-' },
-      { k: 'sms', label: 'SMS', n: true, fmt: v => v ? num(v) : '-' },
-      { k: 'code', label: 'Version · subs', n: true, fmt: v => `${v === 'pro' ? '2027.1' : '2026.4'} · ${num(PLAN_SUBS[v] || 0)}` },
+      { k: 'name', label: 'Plan', fmt: (v, p) => `<b>${esc(v)}</b> ${h.tag(p.scope)}${p.public ? '' : ' <span class="tiny t3">sales-led</span>'}<div class="tiny t3">${mono(p.code)} · v${p.code === 'pro' ? '2027.1' : '2026.4'} · ${num(PLAN_SUBS[p.code] || 0)} subs</div>` },
+      { k: 'monthly', label: 'USD mo · annual', n: true, fmt: (v, p) => `${v ? money(v) : '-'}<div class="tiny t3">${p.annual ? money(p.annual) + '/mo annual' : esc(p.annual_note || '-')}</div>` },
+      { k: 'monthly_cad', label: 'CAD', n: true, fmt: (v, p) => v ? 'C' + money(v) + (p.annual_cad ? `<div class="tiny t3">C${money(p.annual_cad)} annual</div>` : '') : '-' },
+      { k: 'office_seats', label: 'Seats o · f · d', n: true, fmt: (v, p) => `${v == null ? '-' : v} · ${p.field_seats == null ? '∞' : p.field_seats} · ${p.designer_seats == null ? 'neg.' : p.designer_seats}<div class="tiny t3">${p.extra_office ? `extra $${p.extra_office} · $${p.extra_field} · $${p.extra_designer}` : 'no extra seats'}</div>` },
+      { k: 'ai_credits', label: 'Credits · SMS', n: true, fmt: (v, p) => `${v ? num(v) : '-'}<div class="tiny t3">${p.sms ? num(p.sms) + ' SMS' : 'no SMS pool'}</div>` },
     ], P.plans, { dense: true }) })
-      + h.cols('21', [
-        h.card({ title: 'Draft price change: Pro 2027.2', tone: 'warn', sub: 'Finance drafts, the founder approves (two-person, PA-030)', body: h.kv([['Change', 'pro.monthly $599 → $629; pro.annual $529 → $549'], ['Applies to', 'New subscribers. Existing tenants stay on 2027.1 until a migration is scheduled'], ['Price Lock Promise', '214 tenants excluded (annual, under 24 months); later raises capped at 7%/yr, 90 days\' notice'], ['Projected MRR', '+$1,140/mo at the current Pro signup rate'], ['Status', pend ? h.pill(pend, pend === 'approved' ? 'ok' : '') : h.pill('APR-2291 waiting on the founder', 'warn')]])
-          + `<div class="flex">${own(c) && !pend ? B('Review APR-2291', { kind: 'primary', a: { 'data-modal': 'cx-appr', 'data-id': 'APR-2291' } }) : ''}${ab(c, 'catalog', 'Draft a price change', { id: 'price-draft', audit: 'billing.price.change', hide: true, two: true, stepup: true, blast: 'Price migration tool lists every excluded tenant', sum: 'Creates a new price version. Existing subscribers stay on their version; the migration tool refuses any schedule that breaks the Price Lock Promise.' })}</div>` }),
-        h.card({ title: 'Trials and offers', flush: true, body: h.table([{ k: 'item', label: 'Item' }, { k: 'rule', label: 'Rule', fmt: v => `<span class="tiny">${esc(v.length > 110 ? v.slice(0, 108) + '…' : v)}</span>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.trial_and_offers.slice(0, 6), { dense: true }) }),
-      ])
+      + h.card({ title: 'Draft price change: Pro 2027.2', tone: 'warn', sub: 'Finance drafts, the founder approves (two-person, PA-030)', body: h.kv([['Change', 'pro.monthly $599 → $629; pro.annual $529 → $549'], ['Applies to', 'New subscribers. Existing tenants stay on 2027.1 until a migration is scheduled'], ['Price Lock Promise', '214 tenants excluded (annual, under 24 months); later raises capped at 7%/yr, 90 days\' notice'], ['Projected MRR', '+$1,140/mo at the current Pro signup rate'], ['Status', pend ? h.pill(pend, pend === 'approved' ? 'ok' : '') : h.pill('APR-2291 waiting on the founder', 'warn')]])
+          + `<div class="flex">${own(c) && !pend ? B('Review APR-2291', { kind: 'primary', a: { 'data-modal': 'cx-appr', 'data-id': 'APR-2291' } }) : ''}${ab(c, 'catalog', 'Draft a price change', { id: 'price-draft', audit: 'billing.price.change', hide: true, two: true, stepup: true, blast: 'Price migration tool lists every excluded tenant', sum: 'Creates a new price version. Existing subscribers stay on their version; the migration tool refuses any schedule that breaks the Price Lock Promise.' })}</div>` })
+      + h.card({ title: 'Trials and offers', flush: true, body: h.table([{ k: 'item', label: 'Item', fmt: v => `<b>${esc(v)}</b>` }, { k: 'rule', label: 'Rule', fmt: v => `<span class="tiny" title="${esc(v)}">${esc(v.length > 150 ? v.slice(0, 148) + '…' : v)}</span>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.trial_and_offers.slice(0, 6), { dense: true }) })
       + h.card({ title: 'Add-ons', sub: 'Seasonal add-ons carry a billing month mask: Snow & Ice shows "dormant until Nov 1", not canceled (PA-032)', flush: true, body: h.table([{ k: 'name', label: 'Add-on', fmt: (v, a) => `<b>${esc(v)}</b> ${mono(a.code)}` }, { k: 'price', label: 'Price', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'available_on', label: 'Available on', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'billing_months', label: 'Months', fmt: v => v ? mono(v.join(' ')) : '<span class="t3">all</span>' }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.addons, { dense: true }) })
-      + h.cols('2', [
-        h.card({ title: 'Usage meters', flush: true, body: h.table([{ k: 'key', label: 'Meter', m: true }, { k: 'included', label: 'Included S / G / P', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'overage', label: 'Overage', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.meters, { dense: true }) }),
-        h.card({ title: 'AI credit rate card', sub: 'Published action prices held 12 months; an increase needs 60 days\' notice and two people (PA-033)', flush: true, body: h.table([{ k: 'action', label: 'Action', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'credits', label: 'Credits', n: true, fmt: v => `<b>${esc(v)}</b>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.ai_credit_rates.filter(r => c.inLens(r.scope)).slice(0, 14), { dense: true }) + `<div class="cd-b">${ab(c, 'catalog', 'Propose a rate change', { id: 'ratecard', audit: 'billing.rate_card.change', hide: true, two: true, stepup: true, blast: 'All tenants; 60-day notice email' })}</div>` }),
-      ]);
+      + h.card({ title: 'Usage meters', flush: true, body: h.table([{ k: 'key', label: 'Meter', m: true }, { k: 'included', label: 'Included S / G / P', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'overage', label: 'Overage', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.meters, { dense: true }) })
+      + h.card({ title: 'AI credit rate card', sub: 'Published action prices held 12 months; an increase needs 60 days\' notice and two people (PA-033)', flush: true, body: h.table([{ k: 'action', label: 'Action', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'credits', label: 'Credits', n: true, fmt: v => `<b>${esc(v)}</b>` }, { k: 'scope', label: '', fmt: v => h.tag(v) }], P.ai_credit_rates.filter(r => c.inLens(r.scope)).slice(0, 14), { dense: true }) + `<div class="cd-b">${ab(c, 'catalog', 'Propose a rate change', { id: 'ratecard', audit: 'billing.rate_card.change', hide: true, two: true, stepup: true, blast: 'All tenants; 60-day notice email' })}</div>` });
   } else if (cur === 'subs') {
     const rows = allT(c).filter(t => !['trial', 'trial_expired', 'churned'].includes(t.state));
     body = h.card({ title: 'Subscriptions', sub: `${num(PM(c).paying)} paying · illustrative rows`, flush: true, body: h.table([
@@ -816,7 +816,7 @@ RL.screen('console.billing', (c) => {
       + h.kpis([{ label: 'In dunning', value: d.length }, { label: 'Past due', value: money(d.reduce((s, r) => s + r.amt, 0)) }, { label: 'Recovered (30 days)', value: '71%', delta: 'Smart Retries + card updater', tone: 'ok' }, { label: 'Involuntary churn (90 d)', value: '0.4%', tone: '' }])
       + h.card({ title: 'Ladder', body: `<div class="steps">${['Day 0 email + banner', 'Day 3 email', 'Day 7 email, SMS, CSM task', 'Day 12 notice', 'Day 14 restricted', 'Day 25 notice', 'Day 30 suspended', 'Day 55 final notice', 'Day 60 churned'].map((s, i) => `<span class="${[4, 6, 8].includes(i) ? 'on' : ''}">${esc(s)}</span>`).join('')}</div><div class="tiny t3">Messages go to the owner and billing contacts only. Crew and clients never see billing messages. Maintenance and snow tenants on monthly plans get a Winter Mode offer on day 7 in their off-season.</div>` })
       + h.card({ title: 'Queue', flush: true, body: h.table([
-        { k: 'name', label: 'Tenant', fmt: (v, r) => `<b>${esc(v)}</b> ${mono(r.tid)}${r.snow ? `<div>${h.pill('snow carve-out: 41 of 72 h used this event', 'info')}</div>` : ''}${r.wm ? `<div>${h.pill('Winter Mode offer sent', 'info')}</div>` : ''}` },
+        { k: 'name', label: 'Tenant', fmt: (v, r) => `<b>${esc(v)}</b><div class="tiny t3">${mono(r.tid)}</div>${r.snow ? `<div>${h.pill('snow carve-out: 41 of 72 h used this event', 'info')}</div>` : ''}${r.wm ? `<div>${h.pill('Winter Mode offer sent', 'info')}</div>` : ''}` },
         { k: 'day', label: 'Day', n: true }, { k: 'state', label: 'State', fmt: v => stP(v) }, { k: 'amt', label: 'Due', n: true, fmt: v => money(v) },
         { k: 'last', label: 'Last attempt', fmt: v => `<span class="tiny">${esc(v)}</span>` }, { k: 'next', label: 'Next', fmt: v => `<span class="tiny">${esc(v)}</span>` },
         { k: 'tid', label: '', fmt: (v, r) => `<div class="flex nw gap4">${ab(c, 'suspend_pay', 'Grace +14 d', { t: r.name, id: 'grace', audit: 'billing.dunning.grace', hide: true, sum: 'Extends past_due by up to 14 days, once per 12 months, with a reason code (22 §8.2).' })}${ab(c, 'safe', 'Pay-now link', { t: r.name, id: 'paylink', audit: 'billing.dunning.paylink', hide: true, repeat: true })}</div>` },
@@ -904,9 +904,8 @@ const TICKETS = c => [
   { id: 'HD-21031', x: 'hermanos', tenant: 'Hermanos Garcia Lawn Care', plan: 'grow', subj: '¿Cómo conecto mi cuenta de Stripe?', tag: 'payments', lang: 'ES', age: '3h', sla: '1h left', tone: 'warn' },
 ];
 const ticketTable = (c, rows) => h.table([
-  { k: 'id', label: 'Ticket', fmt: (v, r) => `${mono(v)} <b>${esc(r.subj)}</b>${r.peak && r.tag === 'crew_app' ? ' ' + h.pill('peak hours: jumped queue', 'info') : ''}` },
+  { k: 'id', label: 'Ticket', fmt: (v, r) => `<b>${esc(r.subj)}</b><div class="tiny t3">${mono(v)} · ${mono(r.tag)} · ${esc(r.lang)}${r.peak && r.tag === 'crew_app' ? ' · ' + h.pill('peak hours: jumped queue', 'info') : ''}</div>` },
   { k: 'tenant', label: 'Tenant', fmt: (v, r) => `<a href="#" data-go="console.tenant" data-x="${esc(r.x)}">${esc(v)}</a>` },
-  { k: 'tag', label: 'Tag', fmt: v => mono(v) }, { k: 'lang', label: 'Lang' },
   { k: 'sla', label: 'SLA', fmt: (v, r) => h.pill(esc(v), r.tone) },
 ], rows, { dense: true });
 const KNOWN = c => [

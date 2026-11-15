@@ -125,7 +125,7 @@ const h = RL.h = {
   toggle(label, key, def) { const on = RL.ui[key] != null ? RL.ui[key] === 'true' || RL.ui[key] === true : !!def; return `<button type="button" class="tgl${on ? ' on' : ''}" data-ui="${esc(key)}" data-val="${on ? 'false' : 'true'}" aria-pressed="${on}"><i></i>${label}</button>`; },
   on(key, def) { return RL.ui[key] != null ? RL.ui[key] === 'true' || RL.ui[key] === true : !!def; },
   steps(labels, active) { return `<div class="steps">${labels.map((l, i) => `<span class="${i < active ? 'done' : i === active ? 'on' : ''}">${i + 1}. ${l}</span>`).join('')}</div>`; },
-  banner(text, tone) { return `<div class="mx-banner ${tone || 'info'}">${text}</div>`; },
+  banner(text, tone) { return `<div class="mx-banner ${tone || 'info'}"><span>${text}</span></div>`; },
   /* Simple map. o: { pins: [{x,y,n,tone,label}], route: [[x,y],...], h } (coordinates in 0-400 x 0-240) */
   map(o) {
     o = o || {}; const seed = o.seed || 7;

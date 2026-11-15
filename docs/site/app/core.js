@@ -211,6 +211,8 @@ function ctx() {
     route: rt, surface, x: s.x, lang: s.lang, es: s.lang === 'es', season: s.season, winter: s.season === 'winter',
     D: RL.data(t),
   };
+  // Usage follows the plan being viewed, so a plan override never shows usage above the plan's allowance
+  c.D.kpi.aiUsed = Math.round((c.plan.ai_credits || 600) * .58); c.D.kpi.sms = Math.round((c.plan.sms || 500) * .44);
   c.who = personFor(o, t);
   c.owner = (t.cast && t.cast.owner) || 'the owner';
   c.feat = k => featState(k, s);
