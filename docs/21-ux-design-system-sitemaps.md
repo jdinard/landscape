@@ -1,6 +1,6 @@
 # 21 - UX, Design System and Sitemaps
 
-> Rootline is five products wearing one coat: an office command center, a glove-proof crew app, a white-label client portal, a power-user operator console, and a public marketing site with a homeowner AI design funnel. This document defines how all of them look, read, move and behave. It contains the information architecture and full sitemaps for every surface; navigation patterns (command palette, role-aware "Today" home, record pages with timelines, contextual side panels); design principles per surface; Rootline's brand direction with concrete color, type and icon tokens (including a custom landscape icon set and a plant plan symbol library for the [Design Studio](10-design-studio.md)); the component library inventory; data-visualization conventions; responsive rules; WCAG 2.2 AA accessibility; internationalization for English, Spanish and French-Canadian crews and clients; the new-Company onboarding wizard; empty states and sample data; notification design; microcopy voice and tone; eighteen hero-screen wireframes; and the usability testing and design-ops plan that keeps it all coherent as the product grows. UX is not decoration here: the market leaders are already split between "easy but shallow" (Jobber) and "deep but dated" (Service Autopilot, older Aspire screens), and Rootline's whole thesis - replace 5-10 tools with one - only works if one product can feel simple to a 19-year-old technician in July sun and powerful to a controller closing the books.
+> Rootline is five products wearing one coat: an office command center, a glove-proof crew app, a white-label client portal, a power-user operator console, and a public marketing site with a homeowner AI design funnel. This document defines how all of them look, read, move and behave. It contains the information architecture and full sitemaps for every surface; navigation patterns (command palette, role-aware "Today" home, record pages with timelines, contextual side panels); design principles per surface; Rootline's brand direction with concrete color, type and icon tokens (including a custom landscape icon set and a plant plan symbol library for the [Design Studio](10-design-studio.md)); the component library inventory; data-visualization conventions; responsive rules; WCAG 2.2 AA accessibility; internationalization for English, Spanish and French-Canadian crews and clients; the new-Company onboarding wizard; empty states and sample data; notification design; microcopy voice and tone; eighteen hero-screen wireframes; and the test methods and design ops that keep it all coherent as the product grows. UX is not decoration here: the market leaders are already split between "easy but shallow" (Jobber) and "deep but dated" (Service Autopilot, older Aspire screens), and Rootline's whole thesis - replace 5-10 tools with one - only works if one product can feel simple to a 19-year-old technician in July sun and powerful to a controller closing the books.
 
 **At a glance**
 
@@ -8,9 +8,8 @@
 - **Decision - one shell for the office:** a left rail with nine destinations (Today, Inbox, Clients, Sales, Design, Schedule, Jobs, Money, Books) plus More, a role-aware Today home, record pages with activity timelines and a Cmd/Ctrl-K command palette. Modules a Company has not enabled are hidden, not greyed out.
 - **Decision - brand and tokens:** Stone neutrals carry the UI, Moss is the primary color, Clay, Marigold (warning and offline) and Sky (info and irrigation) are accents with jobs, Ember means danger, and **Iris is reserved exclusively for AI**. Fraunces for display, Inter for UI, JetBrains Mono for IDs and numerics. Tokens follow a three-tier W3C format with a CI contrast gate.
 - **Decision - a field-proof crew app:** the glove-and-sun standard (56 px minimum targets, 64 px primary actions, press-and-hold for irreversible steps), the `field-sun` "Outdoor mode" theme with every text pair at 7:1 or better, and offline state visible on every screen.
-- **Decision - accessibility and language are floors:** WCAG 2.2 AA on every surface; English and Spanish at MVP on the crew app and portal, French-Canadian at V1; three independent language settings (user UI, Company default, client communications).
-- **MVP:** office app, crew app, portal and admin console sitemaps, light and field-sun themes, white-label portal theming, the setup wizard with the "Greenleaf Grounds Co." sample dataset, notification center and preferences, the embeddable "Dream Yard Visualizer" homeowner widget, and 18 hero-screen wireframes.
-- **V1 and later:** dark and Night themes, manager mode and shop kiosk in the native app, presence and collaboration, design-system governance, a published Accessibility Conformance Report, and the full homeowner design funnel both embedded and platform-hosted (Rootline Home). V2 adds a native portal shell.
+- **Decision - accessibility and language are floors:** WCAG 2.2 AA on every surface; English (US and Canada), Spanish and French-Canadian on every surface (OD-70); three independent language settings (user UI, Company default, client communications).
+- **In v1:** office app, native app, portal and admin console sitemaps; light, dark, field-sun ("Outdoor mode") and field-night ("Night mode") themes (OD-40); one native app with crew, manager and sales modes plus the shop kiosk (OD-38, R25-C3); white-label portal theming and a native portal shell; presence and collaboration; design-system governance; a published Accessibility Conformance Report; the setup wizard with the "Greenleaf Grounds Co." sample dataset (Columbus, Ohio, 120 clients); notification center and preferences; the homeowner visualizer on all three surfaces (the website widget, the portal-hosted visualizer and Rootline Home with Rootline Match, R24-14), on by default for every Company with AI mockups (OD-33); and 18 hero-screen wireframes.
 - **Differentiators:** progressive depth (the same record page serves a 3-person lawn crew and a 120-person design-build firm), a landscape icon set and plant plan symbol library that runs from Design Studio to proposal, and AI output that is always previewable, attributable, editable and undoable.
 - **Cross-links:** roles in [02](02-personas-roles-permissions.md); console IA mirrors [19](19-platform-admin-portal.md) PA-001; domains, tenancy and data model in [20](20-architecture-security.md); AI behavior in [17](17-ai-copilot-automation.md); credit costs shown in the AI UX come from [22](22-business-model-pricing-gtm.md) section 4.4.1.
 
@@ -47,10 +46,10 @@
 25. [Edge cases, compliance and risks](#25-edge-cases-compliance-and-risks)
 26. [Metrics and KPIs](#26-metrics-and-kpis)
 27. [Beyond the brief: extra ideas](#27-beyond-the-brief-extra-ideas)
-28. [Open questions](#28-open-questions)
+28. [Decisions on former open questions](#28-open-questions)
 29. [Sources](#sources)
 
-Priority tags used throughout are scope tiers: first sellable release, next scope wave, later wave, moonshot / long-term.
+Every surface, sitemap entry and component in this document is part of v1 ([24](24-product-scope-decisions-catalog.md) section 1).
 
 ---
 
@@ -58,24 +57,24 @@ Priority tags used throughout are scope tiers: first sellable release, next scop
 
 ### 1.1 Goals
 
-| # | Goal | How we will know | Priority |
-|---|------|------------------|----------|
-| G1 | **One coherent product across five surfaces.** A user who learns "how Rootline works" on the web app should recognize the same objects, colors, statuses, words and gestures in the crew app, portal and admin console. | Shared token package and component library used by 100% of new screens; status vocabulary identical across surfaces (audited quarterly). | |
-| G2 | **Time-to-first-value under one working day.** A new Company goes from sign-up to a sent proposal or a scheduled recurring route on day one. | Median sign-up to first sent proposal or first scheduled visit < 24 h; 60% of trials complete the setup checklist core in week 1. | |
-| G3 | **Field-proof crew app.** Usable with work gloves, in direct sun, one-handed, offline, in Spanish. | Glove test task success >= 95%; sunlight legibility pass on all crew screens; offline state visible on 100% of crew screens. | |
-| G4 | **Dense but calm office app.** Dispatchers, estimators and bookkeepers can work at high information density without visual noise. | SUS >= 80 for office roles in benchmark testing; median clicks to schedule a visit <= 3; keyboard coverage of all list and record actions. | |
-| G5 | **A portal clients trust and enjoy.** Proposal approval, payment and service history feel like a premium consumer app under the Company's brand. | Proposal approval rate and time-to-approve improve vs. tenant's prior tool; portal CSAT >= 4.6/5. | |
-| G6 | **Accessibility as a floor, not a project.** WCAG 2.2 AA across all surfaces. | Zero open AA defects older than one sprint at release; published Accessibility Conformance Report (VPAT-based). | web, ACR |
-| G7 | **Bilingual from day one.** English and Spanish at launch on crew app and portal; French-Canadian later. | 100% of crew app and portal strings translated before release; Spanish-language crew task success equals English. | es, fr-CA |
-| G8 | **AI that feels like a sharp coworker, not a slot machine.** Every AI output is previewable, attributable, editable and undoable. | AI acceptance rate tracked per feature; zero AI writes to money or schedule without explicit confirm. | |
-| G9 | **A design system that scales with the org.** Designers and engineers ship consistent UI without a design review bottleneck. | Design system coverage >= 90% of UI by component count; component contribution lead time < 2 sprints. | |
+| # | Goal | How we will know |
+|---|---|---|
+| G1 | **One coherent product across five surfaces.** A user who learns "how Rootline works" on the web app should recognize the same objects, colors, statuses, words and gestures in the crew app, portal and admin console. | Shared token package and component library used by 100% of new screens; status vocabulary identical across surfaces (audited quarterly). |
+| G2 | **Time-to-first-value under one working day.** A new Company goes from sign-up to a sent proposal or a scheduled recurring route on day one. | Median sign-up to first sent proposal or first scheduled visit < 24 h; 60% of trials complete the setup checklist core in week 1. |
+| G3 | **Field-proof crew app.** Usable with work gloves, in direct sun, one-handed, offline, in Spanish. | Glove test task success >= 95%; sunlight legibility pass on all crew screens; offline state visible on 100% of crew screens. |
+| G4 | **Dense but calm office app.** Dispatchers, estimators and bookkeepers can work at high information density without visual noise. | SUS >= 80 for office roles in benchmark testing; median clicks to schedule a visit <= 3; keyboard coverage of all list and record actions. |
+| G5 | **A portal clients trust and enjoy.** Proposal approval, payment and service history feel like a premium consumer app under the Company's brand. | Proposal approval rate and time-to-approve improve vs. tenant's prior tool; portal CSAT >= 4.6/5. |
+| G6 | **Accessibility as a floor, not a project.** WCAG 2.2 AA across all surfaces. | Zero open AA defects older than 14 days; published Accessibility Conformance Report (VPAT-based). |
+| G7 | **Multilingual from day one.** English, Spanish and French-Canadian on every surface. | 100% of strings translated and reviewed in `es-US` and `fr-CA` before release; Spanish-language crew task success equals English. |
+| G8 | **AI that feels like a sharp coworker, not a slot machine.** Every AI output is previewable, attributable, editable and undoable. | AI acceptance rate tracked per feature; zero AI writes to money or schedule without explicit confirm. |
+| G9 | **A design system that keeps every screen consistent.** The build agent ships consistent UI from shared components, with no design review bottleneck. | Design system coverage >= 90% of UI by component count; every new component passes the contribution pipeline in 9.5. |
 
 ### 1.2 Non-goals
 
 - **Not a theme marketplace.** Tenants brand the Customer Portal, emails, proposals and website within guardrails (logo, colors, curated fonts, corner style). They do not get arbitrary CSS on the portal; arbitrary CSS breaks accessibility and support. (Website builder pages in [16 - Marketing](16-marketing-growth-communications.md) allow more freedom, still on our blocks.)
 - **Not pixel-identical native vs web.** The crew app follows iOS/Android conventions where they matter (back navigation, share sheets, permissions dialogs, haptics). Consistency is at the level of tokens, objects and words, not chrome.
-- **Not a mobile-first office app.** The office web app is desktop-first (>= 1024 px). Phone access for office roles is a focused "manager mode" in the native app, not a squeezed dispatch board.
-- **Not RTL at launch.** We build RTL-ready (logical properties, bidi isolation) but ship no RTL locale until a market requires it.
+- **Not a mobile-first office app.** The office web app is desktop-first (>= 1024 px). Phone access for office roles is a focused "manager mode" (and "sales mode" for estimators and designers) in the native app, not a squeezed dispatch board.
+- **No RTL locale.** We build RTL-ready (logical properties, bidi isolation) but ship no RTL locale until a market requires it.
 - **Not a full CAD UI.** The Design Studio borrows CAD precision (snapping, dimensions, layers) without AutoCAD's command-line culture. Detailed Studio behaviors live in [10 - Design Studio](10-design-studio.md).
 - **Not dark patterns.** No confirm-shaming, no hidden cancellation, no pre-checked marketing consent, no fake urgency on the portal or marketing site.
 
@@ -83,7 +82,7 @@ Priority tags used throughout are scope tiers: first sellable release, next scop
 
 ## 2. Market research: what competitors do, what users complain about, the gap we exploit
 
-> **Verification note (November 2026).** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. Several crew-app, AI and regulatory facts below come from the sibling research reports ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and module docs ([06](06-customer-portal.md), [16](16-marketing-growth-communications.md)), with their original citations. Locale formats were checked against Unicode CLDR 48 using the Node.js `Intl` APIs, and every contrast ratio in sections 7.2 and 8.3 was computed with the WCAG 2 formula. Claims below are cited. Anything not verified is labeled as an observation to confirm in the hands-on competitive teardown scheduled in [section 24](#24-usability-testing-plan-and-design-ops). Broader competitor coverage lives in [01 - Market landscape](01-market-landscape.md) and the raw research reports in [research/](research/).
+> **Verification note (November 2026).** Items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before public use. The marketing agent verifies each one against a primary source before it is used publicly (OD-07); the build does not depend on them. Several crew-app, AI and regulatory facts below come from the sibling research reports ([R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)) and module docs ([06](06-customer-portal.md), [16](16-marketing-growth-communications.md)), with their original citations. Locale formats were checked against Unicode CLDR 48 using the Node.js `Intl` APIs, and every contrast ratio in sections 7.2 and 8.3 was computed with the WCAG 2 formula. Claims below are cited. Anything not verified is labeled as an observation to confirm in the hands-on competitive teardown described in [section 24](#24-usability-testing-plan-and-design-ops). Broader competitor coverage lives in [01 - Market landscape](01-market-landscape.md) and the raw research reports in [research/](research/).
 
 ### 2.1 What competitors do in UX and IA
 
@@ -103,7 +102,7 @@ Priority tags used throughout are scope tiers: first sellable release, next scop
 Synthesized from the review sources above and the field-workforce UX literature; specific counts are not claimed where sources did not give them.
 
 1. **"It took forever to get running."** Long onboarding and configuration before first value (Service Autopilot reviewers on [Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/)). Rootline answer: opinionated defaults, starter price books, sample data and a setup wizard that front-loads value ([section 14](#14-onboarding-and-the-setup-wizard)).
-2. **"It's slow when I'm scheduling."** Perceived latency on dense boards ([Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/)). Answer: optimistic UI, local-first data on the dispatch board, performance budgets (INP < 200 ms) as release gates ([section 11](#11-responsive-and-platform-rules)).
+2. **"It's slow when I'm scheduling."** Perceived latency on dense boards ([Capterra](https://www.capterra.com/p/122075/Service-Autopilot/reviews/)). Answer: optimistic UI, local-first data on the dispatch board, performance budgets (INP < 200 ms) enforced in CI ([section 11](#11-responsive-and-platform-rules)).
 3. **"Too much on every screen / looks like 2008."** Density without hierarchy ([fieldservicesoftware.io](https://fieldservicesoftware.io/comparisons/service-autopilot-vs-jobber/)). Answer: density modes, progressive disclosure via side panels, calm neutral palette that reserves color for meaning ([section 4](#4-design-principles)).
 4. **"The mobile app can't do what desktop does."** ([mowbosshq](https://mowbosshq.pages.dev/tools/service-autopilot)). Answer: crew app is a first-class product with its own IA, offline-first, not a shrunken web app ([section 5.3](#53-crew-mobile-app-sitemap)).
 5. **"My guys can't use it with gloves on / in the sun."** Field UX research shows workers missing 44-pt targets while gloved and recommends 48-56 dp minimums for heavy gloves; bright blues and greens wash out in direct sun ([Glance](https://thisisglance.com/learning-centre/how-should-i-design-apps-for-construction-workers); [App Fabric](https://app-fabric.pages.dev/blog/2024-03-field-workforce-ux); [Apario](https://blog.apario.net/on-writing-software-for-people-who-work-outside)). Answer: 56 px minimum crew targets, 64 px primary actions, field-sun theme ([section 12.4](#124-field-specific-accessibility-the-glove-and-sun-standard-mvp)).
@@ -111,7 +110,7 @@ Synthesized from the review sources above and the field-workforce UX literature;
 7. **"Common tasks take too many steps."** Aspire reviewers mention a "learning curve, and some common tasks require too many steps" and an "intensive ramp up period" ([GetApp UK](https://www.getapp.co.uk/reviews/9108/aspire); [Capterra Aspire reviews](https://www.capterra.com/p/161544/Aspire/reviews/?page=3)). Answer: step budgets per benchmark task ([section 24.3](#243-office-and-client-benchmark-tasks)), a state-aware primary action on every record ([6.4](#64-record-page-anatomy-mvp)), and "do" verbs in the command palette ([6.2](#62-global-search-and-command-palette-mvp)).
 8. **"Measuring a big site takes days."** An LMN reviewer says measuring large sites "would take literal days" ([G2 LMN](https://www.g2.com/products/lmn)), and measurement is often a separate subscription ([R2](research/R2-landscape-specific-platforms.md)). Answer: tracing on aerial imagery in the Design Studio produces the takeoff directly. The Studio wireframe ([18.7](#187-design-studio)) shows the live takeoff panel with a "Push to estimate" button.
 9. **"The field seat can't do field work."** LMN's legacy Crew Member seat could not punch in or upload photos ([LMN user permissions](https://intercom.help/lmn/en/articles/17699017-lmn-user-permissions)). UX rule: a `technician` seat is never a crippled UI. Clock-in, photos, checklists, voice notes and issue reporting are always available to it; only money and margin data are withheld.
-10. **"The update broke my app."** Long-time LMN Time users reported problems after an app update ([App Store: LMN Time](https://apps.apple.com/us/app/id1012359605)). Answer: staged rollouts, crash-free-session release gates and a "What changed" sheet in the crew user's language after every major update ([05](05-field-crew-mobile-app.md), [24.6](#246-definition-of-done-for-any-ui-story-mvp)).
+10. **"The update broke my app."** Long-time LMN Time users reported problems after an app update ([App Store: LMN Time](https://apps.apple.com/us/app/id1012359605)). Answer: staged rollouts that halt when crash-free sessions drop, and a "What changed" sheet in the crew user's language after every major update ([05](05-field-crew-mobile-app.md), [24.6](#246-definition-of-done-for-any-ui-story-mvp)).
 
 ### 2.3 The gap we exploit
 
@@ -119,11 +118,11 @@ Synthesized from the review sources above and the field-workforce UX literature;
 |---|---|
 | Tools are either easy or deep, never both. | **Progressive depth:** the same record page serves a 3-person lawn crew (defaults collapsed) and a 120-person design-build firm (sections expanded, custom fields, saved views). Density and module visibility adapt to Company size and enabled service lines. |
 | Design, estimating and the client experience live in different tools with different aesthetics. | **One visual language from plan to invoice:** the plant symbol a designer drops in the Studio is the same symbol on the proposal, the crew's install sheet and the client's service history. |
-| Crew apps are an afterthought. | **Crew app has its own design principles, theme (field-sun) and research program** with glove and sunlight protocols. |
+| Crew apps are an afterthought. | **Crew app has its own design principles, themes (field-sun and field-night) and test program** with glove and sunlight protocols. |
 | AI features are bolted on as a chat box. | **AI is ambient and object-aware:** Copilot lives in a side panel bound to the current record, and AI suggestions appear inline with a consistent visual signature (the Iris accent) and explicit apply/undo. |
 | Accounting UIs scare non-accountants; field UIs scare accountants. | **Two lenses on one ledger:** plain-language "money" views for owners, debit/credit precision for bookkeepers, switchable per user ([section 18.12](#1812-ledger-journal-entry)). |
 
-> **Competitive edge.** Jobber wins on approachability and loses on depth; Service Autopilot and Aspire win on depth and lose on approachability (ease-of-use scores of 3.8 and 4.1 on Capterra, as of 2026, verify). Rootline's design system is engineered to break that trade-off: density modes, progressive disclosure, a command palette for power users and a role-aware Today home for everyone else. In the field, Aspire is the one incumbent we found that documents offline ticket completion; LMN's crew apps draw "clunky" and crash complaints, and no incumbent was confirmed to ship a Spanish crew UI. Rootline's crew app is offline-first, Spanish at launch, and comes with a published glove-and-sun test protocol ([24.2](#242-field-test-protocols-mvp)) that buyers can watch us run. On AI, Jobber's Copilot is an advisor that works through its own entry point. Rootline's AI appears on the record being edited, as a draft the user previews, applies and can undo ([23.1](#231-ai-ux-conventions-apply-to-every-module-mvp)). In the research to date we found no landscape-vertical competitor advertising a keyboard-first command palette, a sunlight theme, or a plant-symbol system that runs from design through invoice (to be confirmed in the Discovery teardown).
+> **Competitive edge.** Jobber wins on approachability and loses on depth; Service Autopilot and Aspire win on depth and lose on approachability (ease-of-use scores of 3.8 and 4.1 on Capterra, as of 2026, verify). Rootline's design system is engineered to break that trade-off: density modes, progressive disclosure, a command palette for power users and a role-aware Today home for everyone else. In the field, Aspire is the one incumbent we found that documents offline ticket completion; LMN's crew apps draw "clunky" and crash complaints, and no incumbent was confirmed to ship a Spanish crew UI. Rootline's crew app is offline-first, Spanish from day one, and comes with a published glove-and-sun test protocol ([24.2](#242-field-test-protocols-mvp)) that buyers can run with their own crews. On AI, Jobber's Copilot is an advisor that works through its own entry point. Rootline's AI appears on the record being edited, as a draft the user previews, applies and can undo ([23.1](#231-ai-ux-conventions-apply-to-every-module-mvp)). In the research to date we found no landscape-vertical competitor advertising a keyboard-first command palette, a sunlight theme, or a plant-symbol system that runs from design through invoice (to be confirmed in the Discovery teardown).
 
 ---
 
@@ -144,8 +143,8 @@ Full persona definitions, journeys and RBAC live in [02 - Personas, roles and pe
 | Subcontractor (`subcontractor`) | Native app (limited) or magic-link web | Not an employee; low commitment to learning | See assigned work orders; upload completion photos; submit invoice |
 | Residential homeowner (`client_residential`) | Portal on phone, opened from SMS/email | Low frequency; trust and clarity matter; no training | Review and sign a proposal; see the design; pay; request service; see what was done |
 | Commercial PM / HOA / facilities (`client_commercial`) | Portal on desktop | Multiple properties; approval chains; budget cycles | Approve proposals within authority; see service logs per property; download invoices/COIs; submit work requests |
-| Platform Operator (`platform_owner`) | Admin console, desktop | Power user; wants everything one search away | Tenant health; SaaS revenue; plant KB quality; AI cost; incidents; compliance |
-| Platform staff (`platform_support`, `platform_curator`, `platform_finance`, `platform_engineer`) | Admin console | Queue-driven work | Resolve tickets with consented impersonation; curate plant records at scale; reconcile SaaS billing; ship flags safely |
+| The founder (`platform_owner`) | Admin console, desktop and phone | Power user; wants everything one search away | Tenant health; SaaS revenue; plant KB quality; AI cost; incidents; compliance |
+| Operator agents holding `platform_support`, `platform_curator`, `platform_finance` or `platform_engineer` (support, plant curator, finance and engineering agents) | Admin console and Admin API | Queue-driven work; privileged actions go to the founder for approval | Resolve tickets with consented impersonation; curate plant records at scale; reconcile SaaS billing; ship flags safely |
 
 **Emotional jobs worth designing for:** owners want to feel *in control* (no surprises); crews want to feel *trusted and not watched* (GPS and time tracking explained plainly); clients want to feel *taken care of* (photos of the finished work, the crew lead's name); bookkeepers want to feel *certain* (every number traceable to a source document).
 
@@ -170,10 +169,10 @@ Full persona definitions, journeys and RBAC live in [02 - Personas, roles and pe
 
 | Surface | North-star feeling | Principles | Concrete rules |
 |---|---|---|---|
-| **Crew mobile app** (field) | "Built for my hands and my truck." | Glove-friendly; sunlight-readable; offline state always visible; one primary action per screen; minimal typing; works one-handed; language follows the person. | Targets >= 56 x 56 px (64 px for primary actions); 12 px default gap between adjacent targets, with an 8 px hard floor (the [05](05-field-crew-mobile-app.md) minimum); body text >= 17 pt, key numbers >= 22 pt; no swipe-only actions. Swipe-to-confirm (used in [05](05-field-crew-mobile-app.md) for irreversible steps) always has a press-and-hold button (800 ms, with a visible fill) as its equal alternative; persistent sync chip in the header; field-sun theme auto-suggested when ambient light sensor reads very bright (Android) or user toggles; camera opens in <= 1 tap from a visit; voice-to-text on every free-text field; haptic confirm on clock-in and visit complete. |
+| **Crew mobile app** (field) | "Built for my hands and my truck." | Glove-friendly; sunlight-readable; offline state always visible; one primary action per screen; minimal typing; works one-handed; language follows the person. | Targets >= 56 x 56 px (64 px for primary actions); 12 px default gap between adjacent targets, with an 8 px hard floor (the [05](05-field-crew-mobile-app.md) minimum); body text >= 17 pt, key numbers >= 22 pt; no swipe-only actions. Irreversible steps use a press-and-hold button (800 ms, with a visible fill), never swipe-to-confirm (OD-39, [05](05-field-crew-mobile-app.md)); persistent sync chip in the header; field-sun theme auto-suggested when ambient light sensor reads very bright (Android) or user toggles; camera opens in <= 1 tap from a visit; voice-to-text on every free-text field; haptic confirm on clock-in and visit complete. |
 | **Company web app** (office) | "Dense but calm, fast as a spreadsheet." | High information density with strong hierarchy; keyboard-first; split views over page hops; consistent record anatomy; nothing more than two clicks from Today or Cmd-K. | Default "comfortable" density (row height 40 px) with "compact" (32 px) per user; body 14 px; side panel peeks instead of navigation for quick looks; every list supports saved views, column choice, bulk actions; INP < 200 ms on lists up to 5,000 rows (virtualized). |
-| **Customer Portal** (client) | "Trustworthy and delightful." | The Company's brand, not ours; zero training; one clear next step; generous whitespace; photography-led; money handled with bank-grade clarity. | Mobile-first (most sessions start from SMS/email); 16 px minimum body; "Next step" card at top; Powered-by-Rootline mark is small and optional on higher tiers; payment flows use Stripe Elements and show the Company's legal name, amount, currency and what happens next; every page reachable with no password via magic link plus optional passkey. |
-| **Platform Admin console** (operator) | "A cockpit: powerful, auditable, unafraid of data." | Information-dense tables; global search across tenants; every write is audited and reason-coded; dangerous actions are visually distinct; impersonation is unmistakable. | Persistent Clay-band banner (`color.banner.impersonation`, deliberately not the Ember danger color) during impersonation with tenant name, timer and "End session"; reason code required for every mutating action ([19](19-platform-admin-portal.md) PA-003); two-person approval dialogs show the diff, reason and blast radius ("affects 412 tenants"); diff previews before bulk changes to the plant KB; a pinned tenant context bar whenever a tenant is selected; production vs staging shown in the top bar (staging uses a striped Marigold band); `compact` density by default; keyboard everywhere. |
+| **Customer Portal** (client) | "Trustworthy and delightful." | The Company's brand, not ours; zero training; one clear next step; generous whitespace; photography-led; money handled with bank-grade clarity. | Mobile-first (most sessions start from SMS/email); 16 px minimum body; "Next step" card at top; Powered-by-Rootline mark is small and removable on higher plans (OD-11); payment flows use Stripe Elements and show the Company's legal name, amount, currency and what happens next; every page reachable with no password via magic link plus optional passkey. |
+| **Platform Admin console** (operator) | "A cockpit: powerful, auditable, unafraid of data." | Information-dense tables; global search across tenants; every write is audited and reason-coded; dangerous actions are visually distinct; impersonation is unmistakable. | Persistent Clay-band banner (`color.banner.impersonation`, deliberately not the Ember danger color) during impersonation with tenant name, timer and "End session"; reason code required for every mutating action ([19](19-platform-admin-portal.md) PA-003); approval dialogs for agent requests waiting on the founder show the diff, reason and blast radius ("affects 412 tenants"), and the founder's own privileged actions ask for step-up authentication and a written reason; diff previews before bulk changes to the plant KB; a pinned tenant context bar whenever a tenant is selected; production vs staging shown in the top bar (staging uses a striped Marigold band); `compact` density by default; keyboard everywhere. |
 | **Public marketing site** | "Earthy, modern, confident." | Show real landscapes and real product; fast; SEO-first; honest pricing. | Lighthouse performance >= 90 on mobile; no autoplay audio; pricing page shows prices (no "contact us" except Enterprise). |
 | **Homeowner AI design funnel** | "Magic in two minutes, with no strings." | Value before the ask; respect for privacy; clear hand-off to a real local pro. | Mockup visible before contact info is requested (contact required only to save, refine or request a quote); explicit consent copy for SMS/email (TCPA); clear "AI concept, not a final design" labeling. |
 
@@ -185,19 +184,20 @@ Full persona definitions, journeys and RBAC live in [02 - Personas, roles and pe
 
 ### 5.1 Surface inventory
 
-| Surface | Users | Platform | Host / URL pattern | Auth | Priority |
-|---|---|---|---|---|---|
-| Company web app | Tenant staff roles | Next.js web, desktop-first, tablet-capable | `app.rootline.com/{company-slug}/...` | SSO-capable login, passkeys, MFA (see [02](02-personas-roles-permissions.md)) | |
-| Crew mobile app ("Rootline Crew") | `crew_lead`, `technician`, `subcontractor` | React Native (Expo), iOS + Android, offline-first | App stores; deep links `rootline://visit/{id}` | Phone + PIN or passkey, device binding; kiosk crew-tablet mode | |
-| Manager mode (same native app) | `owner`, `ops_manager`, `estimator`, `office_manager` | React Native | Same app, role-switched home | Same as above | |
-| Shop kiosk (crew app device mode) | Field staff at the yard | Enrolled wall tablet running the crew app | Same app, kiosk mode | PIN per punch, optional punch photo ([05](05-field-crew-mobile-app.md)) | |
-| Subcontractor lite | `subcontractor` | Magic-link responsive web; crew app with limited tabs if installed | `app.rootline.com/{company-slug}/sub/...` | Magic link + SMS OTP; no password | web, in-app |
-| Customer Portal | `client_residential`, `client_commercial`, additional contacts | Responsive PWA; native shell | `portal.{company-domain}` (custom domain) or the default `{company-slug}.rootline.app` (final domain per [06](06-customer-portal.md) and [20](20-architecture-security.md)) | Magic link, passkey, optional password; commercial SSO on the top tier ([06](06-customer-portal.md)) | |
-| Platform Admin console | `platform_*` roles | Next.js web, desktop; mobile-responsive for Home, Incidents, Approvals and the Tenant 360 summary | `console.rootline.app` (separate origin, never on a tenant domain; IP allow-list at MVP, identity-aware proxy at V1, per [19](19-platform-admin-portal.md)) | Staff SSO + WebAuthn security keys; step-up for sensitive actions | |
-| Partner portal | `partner_admin`, `partner_member` (accountants, resellers) | Next.js web | `partners.rootline.app` ([19](19-platform-admin-portal.md)) | Partner SSO / passkey | |
-| Public marketing site | Prospects, homeowners, partners | Next.js static/ISR | `rootline.com` | None (trial sign-up) | |
-| Homeowner AI design funnel | Homeowners | Responsive web, embeddable widget | `rootline.com/design` (platform-hosted, the web face of the free Rootline Home app in [11](11-ai-design-mockups.md) and [22](22-business-model-pricing-gtm.md)) and `{company-site}/design` (white-label embed) | Anonymous, then email/phone OTP to save | embeddable "Dream Yard Visualizer" widget ([11](11-ai-design-mockups.md) AIM-AUD-01); full measure-and-quiz flow and platform-hosted Rootline Home with Rootline Match |
-| Tenant website (builder) | Company's prospects | Generated by Rootline site builder | Company custom domain or default `{company-slug}.rootline.site` | None | (spec in [16](16-marketing-growth-communications.md)) |
+| Surface | Users | Platform | Host / URL pattern | Auth |
+|---|---|---|---|---|
+| Company web app | Tenant staff roles | Next.js web, desktop-first, tablet-capable | `app.rootline.com/{company-slug}/...` | SSO-capable login, passkeys, MFA (see [02](02-personas-roles-permissions.md)) |
+| Crew mobile app ("Rootline Crew") | `crew_lead`, `technician`, `subcontractor` | React Native (Expo), iOS + Android, offline-first | App stores; deep links `rootline://visit/{id}` | Phone + PIN or passkey, device binding; kiosk crew-tablet mode |
+| Manager mode (same native app) | `owner`, `ops_manager`, `office_manager` | React Native | Same app, role-switched home | Same as above |
+| Sales mode (same native app) | `estimator`, `designer` | React Native, offline-first | Same app, role-switched home ([05](05-field-crew-mobile-app.md) 4.0, [03](03-crm-sales-estimating-proposals.md) SALES-01) | Same as above |
+| Shop kiosk (crew app device mode) | Field staff at the yard | Enrolled wall tablet running the crew app | Same app, kiosk mode | PIN per punch, optional punch photo ([05](05-field-crew-mobile-app.md)) |
+| Subcontractor lite | `subcontractor` | Magic-link responsive web; crew app with limited tabs if installed | `app.rootline.com/{company-slug}/sub/...` | Magic link + SMS OTP; no password |
+| Customer Portal | `client_residential`, `client_commercial`, additional contacts | Responsive PWA and native portal shell | `portal.{company-domain}` (custom domain) or the default `{company-slug}.rootline.app` (final domain per [06](06-customer-portal.md) and [20](20-architecture-security.md)) | Magic link, passkey, optional password; commercial SSO on the top tier ([06](06-customer-portal.md)) |
+| Platform Admin console | `platform_*` roles | Next.js web, desktop; mobile-responsive for Home, Incidents, Approvals and the Tenant 360 summary | `console.rootline.app` (separate origin, never on a tenant domain; reachable only through an identity-aware proxy with a device posture check, per [19](19-platform-admin-portal.md)) | Founder SSO + WebAuthn security keys; operator agents through the agent runtime ([19](19-platform-admin-portal.md)); step-up for sensitive actions |
+| Partner portal | `partner_admin`, `partner_member` (accountants, resellers) | Next.js web | `partners.rootline.app` ([19](19-platform-admin-portal.md)) | Partner SSO / passkey |
+| Public marketing site | Prospects, homeowners, partners | Next.js static/ISR | `rootline.com` | None (trial sign-up) |
+| Homeowner AI design funnel | Homeowners | Responsive web: the embeddable "Dream Yard Visualizer" widget ([11](11-ai-design-mockups.md) AIM-AUD-01), the portal-hosted visualizer ([06](06-customer-portal.md) 4.17) and platform-hosted Rootline Home with Rootline Match, with the full locate, measure and quiz flow on all three (R24-14) | `rootline.com/design` (platform-hosted, the web face of the free Rootline Home app in [11](11-ai-design-mockups.md) and [22](22-business-model-pricing-gtm.md)), `portal.{company-domain}/visualize` (portal-hosted) and `{company-site}/design` (white-label embed) | Anonymous, then email/phone OTP to save |
+| Tenant website (builder) | Company's prospects | Generated by Rootline site builder (spec in [16](16-marketing-growth-communications.md)) | Company custom domain or default `{company-slug}.rootline.site` | None |
 
 Domain rule: `rootline.com` hosts Rootline-branded surfaces (marketing, the office app, the API). `rootline.app` hosts the console, tenant portals, mail and partner surfaces. `rootline.site` hosts tenant websites. Tenant-branded portal and website pages never load from `rootline.com`, so a client never sees our brand in the address bar unless the Company leaves the default domain in place.
 
@@ -244,7 +244,7 @@ flowchart LR
 Full sitemap with routes (`:id` are opaque IDs; human-readable numbers such as `J-1042` are shown in UI and resolvable in search):
 
 - **Today** `/today` - role-aware home (see [6.3](#63-the-today-home-mvp))
-- **Inbox** `/inbox` - unified SMS, email, portal messages, web-form leads, AI receptionist call summaries; assignment, snooze, templates (spec in [16](16-marketing-growth-communications.md)) email+SMS, calls
+- **Inbox** `/inbox` - unified SMS, email, portal messages, web-form leads, AI receptionist call summaries; assignment, snooze, templates (spec in [16](16-marketing-growth-communications.md))
 - **Clients** `/clients`
   - Client list (saved views: Active residential, Commercial accounts, Past due, Agreement renewal due, No visit in 60 days)
   - Client record `/clients/:id` - tabs: Overview, Properties, Work (jobs, visits, agreements), Sales (opportunities, estimates, proposals), Designs, Money (invoices, payments, statements, credits), Communications, Files and photos, Notes; persistent activity timeline
@@ -281,7 +281,7 @@ Full sitemap with routes (`:id` are opaque IDs; human-readable numbers such as `
   - Payments `/money/payments`, Deposits, Credit memos, Statements
   - Receivables and collections `/money/ar` (aging, reminders, payment plans)
   - Stripe payouts and disputes `/money/stripe` (read-through to the Company's connected Stripe account; spec in [08](08-payments-stripe.md))
-- **Books** `/books` core ledger, advanced (spec in [09](09-accounting-ledger-integrations.md))
+- **Books** `/books`: the core ledger and advanced accounting (spec in [09](09-accounting-ledger-integrations.md))
   - Overview (cash, P&L snapshot, close checklist)
   - Chart of accounts `/books/accounts`; Journal `/books/journal` and Journal entry `/books/journal/:id`
   - Bills and vendors (AP) `/books/bills`; Bank feeds and reconciliation `/books/banking`
@@ -292,7 +292,7 @@ Full sitemap with routes (`:id` are opaque IDs; human-readable numbers such as `
   - **Team** `/team`: people, crews, timesheets and approvals, payroll export, certifications and licenses (pesticide applicator), training, safety incidents, hiring (spec in [15](15-team-hr-payroll.md))
   - **Marketing** `/marketing`: website, online booking, campaigns, reviews, referrals, AI receptionist (spec in [16](16-marketing-growth-communications.md))
   - **Reports** `/reports`: dashboards, KPI library, report builder, peer benchmarks, 13-week forecasts, scenario planner (spec in [18](18-reporting-analytics.md))
-  - **Automations** `/automations`: rule list, builder, run history; recipe library and AI steps grow through- (spec in [17](17-ai-copilot-automation.md))
+  - **Automations** `/automations`: rule list, builder, run history, recipe library and AI steps (spec in [17](17-ai-copilot-automation.md))
   - **Settings** `/settings`: Company profile and locations; users, roles and permissions; service lines and modules; price book and production rates; taxes; payments (Stripe connection); accounting setup (chart-of-accounts template, sync); portal and branding; notifications and message templates; terminology and language; regions and plant preferences; integrations; data import/export; sample data sandbox; Rootline subscription and AI credits; security and audit log
 - **Global (top bar):** Company switcher (bookkeepers and multi-entity owners), Search / Command palette (Cmd-K / Ctrl-K), Create (+), Copilot panel, Notifications, Help (docs, chat, "what's new"), Profile (language, units, theme, density, shortcuts)
 
@@ -339,7 +339,7 @@ flowchart TB
   - Plant ID and KB lookup (photo -> plant suggestion; care notes)
   - Sync and settings: language, units, text size, field-sun theme, offline maps, pending changes queue
 
-**Manager mode** replaces the tab bar for `owner`, `ops_manager`, `estimator`, `office_manager` on phone: Today (approvals, alerts, KPIs), Schedule (read + quick reassign), Clients (lookup, call/text, create lead), Capture (site assessment with photos and measurements for estimators), More.
+**Three modes in one app** (OD-38, R25-C3; [05](05-field-crew-mobile-app.md) 4.0). The tab bar above is **crew mode**. **Manager mode** replaces it for `owner`, `ops_manager` and `office_manager` on phone: Today (approvals, alerts, KPIs), Schedule (read + quick reassign), Clients (lookup, call/text, create lead), Capture (photos and notes), More. **Sales mode** replaces it for `estimator` and `designer`: Today (appointments, tasks, hot proposals), Map, Capture (offline site assessments, Quick Quote with turf measurement, Field Design Mode capture), Messages, More, with proposal preview and kitchen-table signing ([03](03-crm-sales-estimating-proposals.md) SALES-01). The mode follows the user's role; a user with more than one role switches modes from More.
 
 **Subcontractor lite** (`subcontractor`) is three screens with no tab bar on the web. Native users get Today, Messages and More only.
 - **My work orders** `/sub/work-orders`: assigned work orders with site address, access notes for the visit window only, scope, due date and status (Accepted, Scheduled, In progress, Complete, Invoiced).
@@ -450,7 +450,7 @@ flowchart LR
 - **Analytics** `/analytics`: churn, cohorts, activation funnel, feature adoption, NPS, unit economics, UX friction radar ([27](#27-beyond-the-brief-extra-ideas))
 - **System health** `/health`: services, queues, integrations, scheduled jobs, incidents and status page, the Integrity center (ledger, Stripe webhook and sync integrity; [20](20-architecture-security.md) 6.5), fleet and cell placement
 - **Partners** `/partners`: directory, commissions, payouts
-- **Staff and audit** `/staff`: staff, roles, access reviews, approvals inbox (two-person requests), platform audit log, Admin API tokens
+- **Staff and audit** `/staff`: operator agents and their roles, access reviews, approvals inbox (agent requests waiting for the founder), platform audit log, Admin API tokens
 - **Settings** `/settings`: security, regions and data residency, Rootline-owned integration keys
 
 **Console navigation by platform role** (default; full matrix in [19](19-platform-admin-portal.md) section 9). "F" = full, "R" = read, "-" = hidden. `platform_owner` sees everything.
@@ -476,7 +476,7 @@ flowchart LR
 | Staff and audit | F | - | - | - | R (audit only) |
 | Settings | F | - | - | - | R |
 
-The Home view is role-aware in the same way as the tenant Today ([6.3](#63-the-today-home-mvp)). A `platform_curator` lands on curation queue depth, publish velocity and plant-quality flags; a `platform_finance` user lands on MRR movement, dunning and refunds awaiting approval.
+The Home view is role-aware in the same way as the tenant Today ([6.3](#63-the-today-home-mvp)). The plant curator agent (`platform_curator`) lands on curation queue depth, publish velocity and plant-quality flags; the finance agent (`platform_finance`) lands on MRR movement, dunning and refunds awaiting approval.
 
 ### 5.6 Public marketing site sitemap
 
@@ -506,18 +506,19 @@ flowchart LR
 - **Design my yard** `/design` - homeowner AI design funnel entry (see 5.7)
 - **Plant Finder** `/plants` - public, SEO-indexed subset of the KB: "What grows here" by ZIP, and "Best shrubs for Zone 6 clay soil in Central Ohio" landing pages generated from curated palettes ([12](12-plant-knowledge-base.md), [22](22-business-model-pricing-gtm.md)). Each page ends in "Design my yard with these plants" and "Find a pro near you"
 - **Compare** `/compare/jobber`, `/compare/lmn`, `/compare/aspire`, `/compare/service-autopilot` - factual, dated comparison pages with a "last verified" stamp and a link to the vendor's own pricing page
-- **Switch** `/switch` - migration guides and importers (Jobber, LMN, QuickBooks client lists, CSV), with what moves automatically and what does not
+- **Switch** `/switch` - migration guides and switch kits (Jobber, LMN, SingleOps, Service Autopilot, Real Green, QuickBooks client lists and CSV, R24-15), with what moves automatically and what does not
 - **Customers** `/customers` - case studies; **Resources** `/resources` - blog, guides, free calculators (mulch and soil cubic yards, paver patio materials, fertilizer rate per 1,000 sq ft, snow route pricing), templates
 - **Partners** `/partners` - accountants, nurseries, suppliers, associations; **Trust** `/trust` - security, privacy, accessibility statement and ACR, status page, subprocessors
-- **Company** `/about`, `/careers`, `/contact`; **Auth** `/login`, `/start` (trial), `/demo`
-- Locales: `/es/...`, `/fr-ca/...` with hreflang
+- **Company** `/about`, `/contact`; **Auth** `/login`, `/start` (trial), `/demo` (talk to the founder)
+- Locales: `/es/...`, `/fr-ca/...` with hreflang. French pages publish for Quebec after the founder's French-language check (OD-70)
 
 ### 5.7 Homeowner AI design funnel
 
-Two deployments of one flow:
+Three deployments of one flow, all on by default for every Company with AI mockups (R24-14, OD-33):
 
-1. **White-label embed** on a Company's website (builder block or script tag). Leads go to that Company only. Branding is the Company's. The photo-based "Dream Yard Visualizer" widget ships at ([11](11-ai-design-mockups.md) AIM-AUD-01); the full locate, measure and quiz flow below is.
-2. **Platform-hosted** `rootline.com/design`, the web face of Rootline Home. The homeowner gets a concept and is matched with participating local Rootline Companies by service area, specialty and capacity (Rootline Match qualification, routing rules and fees in [22](22-business-model-pricing-gtm.md) section 5.3; messaging consent in [16](16-marketing-growth-communications.md)).
+1. **White-label embed** on a Company's website (builder block or script tag): the "Dream Yard Visualizer" widget ([11](11-ai-design-mockups.md) AIM-AUD-01) with the full locate, measure and quiz flow below. Leads go to that Company only. Branding is the Company's.
+2. **Portal-hosted** on the Company's portal domain (`/visualize`, [06](06-customer-portal.md) 4.17). Same flow, same lead routing, the Company's brand.
+3. **Platform-hosted** `rootline.com/design`, the web face of Rootline Home. The homeowner gets a concept and is matched with participating local Rootline Companies by service area, specialty and capacity. Rootline Home and Match follow OD-06: only Companies that opt in are matched, the client of record's Company gets the first look, and the flow is co-branded "Powered by Rootline" (Rootline Match qualification, routing rules and fees in [22](22-business-model-pricing-gtm.md) section 5.3; messaging consent in [16](16-marketing-growth-communications.md)).
 
 ```mermaid
 flowchart LR
@@ -542,7 +543,7 @@ Funnel pages and rules:
 - **Quiz** - style (cottage, modern, native/pollinator, xeriscape, formal), maintenance appetite (low/medium/high), sun exposure per area, kids/pets, deer pressure, budget band. Five screens max, each skippable.
 - **Generate** - three concepts, each built only from plants in the Region's curated palette rated "recommended" for that site's conditions; generation progress shows what the AI is doing ("Choosing deer-resistant shrubs for Zone 6b...").
 - **Refine** - tap a plant to swap among KB alternatives; change mulch color, edging, patio material.
-- **Plant list and budget** - plant list with quantities and mature sizes; installed-cost range from the Company's price book (embed) or regional benchmarks labeled as estimates (platform-hosted).
+- **Plant list and budget** - plant list with quantities and mature sizes; installed-cost range from the Company's price book (embed and portal-hosted) or regional benchmarks labeled as estimates (platform-hosted).
 - **Save / Quote** - contact capture with explicit consent checkboxes (unchecked by default) for SMS and marketing email.
 - **Hand-off** - creates Lead + Opportunity + Property + Design draft + Mockups in the Company's CRM, with the homeowner's measurements and quiz answers in the assessment notes ([03](03-crm-sales-estimating-proposals.md)).
 
@@ -607,14 +608,14 @@ Rules:
 - Left rail: 64 px collapsed (icons + tooltips), 232 px expanded; state remembered per user. Users can pin up to 3 items from "More" into the main rail.
 - Top bar: 56 px. The Create button opens a menu of the 8 most common creates for the user's role (Client, Lead, Estimate, Job, Visit, Invoice, Expense, Design), each with a shortcut.
 - Side panel: one at a time; content types are peek (read-only quick look of a linked record), details (filters, properties), Copilot, comments. Opening a second panel replaces the first with a back arrow to return.
-- A tenant-visible **environment banner** appears in sandbox mode ("Sample data - nothing here is real") and during platform-staff impersonation (Clay band, see 6.11).
+- A tenant-visible **environment banner** appears in sandbox mode ("Sample data - nothing here is real") and during impersonation by the support agent or the founder (Clay band, see 6.11).
 
 ### 6.2 Global search and command palette
 
 One input does three jobs: **find** records, **do** actions, **ask** Copilot. Invoked with Ctrl/Cmd-K, the `/` key on any list, or by clicking the search field.
 
 **Behaviors**
-- **Find:** federated search over clients, contacts, properties (by address fragments, "1420 Maple"), jobs, visits, estimates, proposals, invoices (by number or amount, "$4,812"), designs, plants (by botanical or common name, "PJM rhodo"), price book items, people, settings pages and help articles. Postgres FTS with trigram for typos at MVP; OpenSearch when index size requires it ([20](20-architecture-security.md)).
+- **Find:** federated search over clients, contacts, properties (by address fragments, "1420 Maple"), jobs, visits, estimates, proposals, invoices (by number or amount, "$4,812"), designs, plants (by botanical or common name, "PJM rhodo"), price book items, people, settings pages and help articles. Postgres FTS with trigram for typos; OpenSearch when index size requires it ([20](20-architecture-security.md)).
 - **Ranking:** exact ID match > recent items (last 30 viewed by this user) > records the user owns/assigned > text relevance > recency of record activity. Results grouped by type, max 5 per group, "See all 23 clients" opens a filtered list.
 - **Do:** verbs with fuzzy match - "new invoice for Henderson", "reschedule tomorrow's Ridgeview visits to Thursday", "go to dispatch", "toggle dark mode", "clock in crew 2" (manager), "open chart of accounts". Each action shows its keyboard shortcut and required permission; unavailable actions are omitted, not disabled.
 - **Ask:** if the input reads as a question ("which clients haven't paid since September?", "how many yards of mulch did we sell last spring?"), the bottom row offers "Ask Copilot" with the query prefilled; answers render in the Copilot panel with citations and a "show as report" option ([17](17-ai-copilot-automation.md), [18](18-reporting-analytics.md)).
@@ -740,7 +741,7 @@ Single-key shortcuts are off when focus is in a text field and can be disabled p
 ### 6.11 Company switcher, multi-entity and impersonation
 
 - **Company switcher** in the top-left for users with access to multiple tenants (external CPA `bookkeeper` serving 12 Companies; owners with two legal entities). Each Company shows its logo and a color chip so the active tenant is never ambiguous; switching reloads into that tenant's Today.
-- **Impersonation (platform staff)**: only with tenant consent or break-glass reason ([19](19-platform-admin-portal.md)). UI shows a persistent Clay (terracotta-orange) band, token `color.banner.impersonation` (8.3), so it reads as "someone else is here" rather than as an error: "Viewing as Maria Lopez (office_manager) at Acme Landscapes - read-only - ends in 28:41 - End session". Write actions require separate elevated consent and are labeled in the tenant's audit log as "performed by Rootline Support on behalf of...".
+- **Impersonation (support agent or founder)**: only with tenant consent or break-glass reason ([19](19-platform-admin-portal.md)). UI shows a persistent Clay (terracotta-orange) band, token `color.banner.impersonation` (8.3), so it reads as "someone else is here" rather than as an error: "Viewing as Maria Lopez (office_manager) at Acme Landscapes - read-only - ends in 28:41 - End session". Write actions require separate elevated consent and are labeled in the tenant's audit log as "performed by Rootline Support on behalf of...", naming the acting agent or the founder.
 
 ### 6.12 Presence and collaboration
 
@@ -763,7 +764,7 @@ Single-key shortcuts are off when focus is in a text field and can be disabled p
 | Warm | Friendly microcopy, human photography, celebrating finished work | Cutesy, emoji-heavy, mascot-led |
 | Modern | Generous space, crisp type, purposeful motion | Trend-chasing gradients, glassmorphism everywhere |
 
-**Logo direction**: a wordmark set in a soft, slightly wonky display serif (see Fraunces below) whose lowercase "l" or "R" leg extends below the baseline as a single root line; a compact symbol made of a horizontal grade line with three short roots beneath it, usable at 16 px (favicon, app icon) and as a loading motif (the roots "grow" while loading). Final identity work by a brand studio in the MVP design budget (see [22](22-business-model-pricing-gtm.md)).
+**Logo direction**: a wordmark set in a soft, slightly wonky display serif (see Fraunces below) whose lowercase "l" or "R" leg extends below the baseline as a single root line; a compact symbol made of a horizontal grade line with three short roots beneath it, usable at 16 px (favicon, app icon) and as a loading motif (the roots "grow" while loading). The build agent produces the final identity from this direction, and the founder approves it once the trademark is cleared (OD-65).
 
 ### 7.2 Color palette (primitives)
 
@@ -902,7 +903,7 @@ Tenants customize within guardrails; the system guarantees accessibility regardl
 | Corner style | Square (2 px), Soft (8 px), Round (16 px) | Applies to cards and buttons |
 | Hero image | Upload or choose from the Company's best job photos | Auto-crop with focal point; text never overlays the photo without a scrim |
 | Custom domain | `portal.acmelandscapes.com` | Automated TLS; DNS checker wizard |
-| "Powered by Rootline" | Shown at MVP on all tiers; removable on Pro and Enterprise from V1 (per [06](06-customer-portal.md) 4.1.6 and [22](22-business-model-pricing-gtm.md)) | Small portal footer mark only; never inside client emails or SMS |
+| "Powered by Rootline" | Shown by default on all plans; removable on Pro and Enterprise (OD-11; per [06](06-customer-portal.md) 4.1.6 and [22](22-business-model-pricing-gtm.md)) | Small portal footer mark only; never inside client emails or SMS |
 
 A live preview shows portal home, a proposal, an invoice email and an SMS on phone and desktop side by side, with a contrast report ("Your green #6DBE45 was adjusted to #3E7A22 for buttons so white text stays readable").
 
@@ -978,101 +979,101 @@ Money is never encoded by red/green alone: negative amounts always show a minus 
 
 ### 9.1 Foundations and primitives
 
-| Component | Notes | Surfaces | Priority |
-|---|---|---|---|
-| Button (primary, secondary, ghost, danger, AI) | Loading state keeps width; AI variant uses Iris and seedling-spark | All | |
-| IconButton | Requires `aria-label`; tooltip on hover/focus | All | |
-| Link | Underlined in body text; external-link icon for new tabs | All | |
-| Text input, Textarea (with voice dictation on native) | Prefix/suffix (units, currency), character counter | All | |
-| Number / Money input | Locale-aware parsing, currency code chip when multi-currency | All | |
-| Quantity-with-unit input | Accepts mixed units ("12' 6\""), unit dropdown, normalized echo | Web, native | |
-| Select, Combobox (async search), Multi-select with chips | Keyboard type-ahead; create-new inline | All | |
-| Checkbox, Radio, Switch | Native app switch at 56 px hit area | All | |
-| Date picker, Date range presets, Time picker, Recurrence builder | Recurrence: "Every week on Tue from Apr 7 to Nov 24, skip holidays" with plain-language echo | Web, native | |
-| Address input with map preview | Autocomplete + manual + pin drop | All | |
-| File upload / Dropzone, Photo capture | Drag and also click to browse (2.5.7); progress; offline queue | All | |
-| Signature pad | Typed-name alternative for accessibility | Portal, native | |
-| Tooltip, Popover, Dropdown menu, Context menu | Context menu always mirrored in a visible overflow button | Web | |
-| Dialog, Sheet (side/bottom), Drawer, Alert dialog | Focus trap; return focus | All | |
-| Toast with undo | Polite live region; pauses on hover/focus | All | |
-| Tabs, Segmented control, Accordion, Stepper | Stepper used in wizard and funnel | All | |
-| Avatar, Avatar group, Presence dot | Initials fallback; crew color ring | All | |
-| Badge, Status pill, Tag | Status pill = icon + label + color token | All | |
-| Skeleton, Spinner, Progress bar, Progress ring | Skeletons for > 300 ms loads | All | |
-| Empty state, Error state, Offline state, Permission state | Standard anatomy (section 15) | All | |
+| Component | Notes | Surfaces |
+|---|---|---|
+| Button (primary, secondary, ghost, danger, AI) | Loading state keeps width; AI variant uses Iris and seedling-spark | All |
+| IconButton | Requires `aria-label`; tooltip on hover/focus | All |
+| Link | Underlined in body text; external-link icon for new tabs | All |
+| Text input, Textarea (with voice dictation on native) | Prefix/suffix (units, currency), character counter | All |
+| Number / Money input | Locale-aware parsing, currency code chip when multi-currency | All |
+| Quantity-with-unit input | Accepts mixed units ("12' 6\""), unit dropdown, normalized echo | Web, native |
+| Select, Combobox (async search), Multi-select with chips | Keyboard type-ahead; create-new inline | All |
+| Checkbox, Radio, Switch | Native app switch at 56 px hit area | All |
+| Date picker, Date range presets, Time picker, Recurrence builder | Recurrence: "Every week on Tue from Apr 7 to Nov 24, skip holidays" with plain-language echo | Web, native |
+| Address input with map preview | Autocomplete + manual + pin drop | All |
+| File upload / Dropzone, Photo capture | Drag and also click to browse (2.5.7); progress; offline queue | All |
+| Signature pad | Typed-name alternative for accessibility | Portal, native |
+| Tooltip, Popover, Dropdown menu, Context menu | Context menu always mirrored in a visible overflow button | Web |
+| Dialog, Sheet (side/bottom), Drawer, Alert dialog | Focus trap; return focus | All |
+| Toast with undo | Polite live region; pauses on hover/focus | All |
+| Tabs, Segmented control, Accordion, Stepper | Stepper used in wizard and funnel | All |
+| Avatar, Avatar group, Presence dot | Initials fallback; crew color ring | All |
+| Badge, Status pill, Tag | Status pill = icon + label + color token | All |
+| Skeleton, Spinner, Progress bar, Progress ring | Skeletons for > 300 ms loads | All |
+| Empty state, Error state, Offline state, Permission state | Standard anatomy (section 15) | All |
 
 ### 9.2 Layout and navigation
 
-| Component | Notes | Priority |
-|---|---|---|
-| App shell (rail, top bar, side panel host) | Responsive collapse rules | |
-| Command palette | Section 6.2 | |
-| Breadcrumbs, Page header, Key facts strip | Record anatomy | |
-| Record layout (tabs + right rail) | Section 6.4 | |
-| Split view list/detail | Arrow-key navigation | |
-| Bottom tab bar (native), Header with sync chip | Crew app | |
-| Wizard/Setup checklist | Persistent progress | |
-| Company switcher, Impersonation banner | Section 6.11 | |
+| Component | Notes |
+|---|---|
+| App shell (rail, top bar, side panel host) | Responsive collapse rules |
+| Command palette | Section 6.2 |
+| Breadcrumbs, Page header, Key facts strip | Record anatomy |
+| Record layout (tabs + right rail) | Section 6.4 |
+| Split view list/detail | Arrow-key navigation |
+| Bottom tab bar (native), Header with sync chip | Crew app |
+| Wizard/Setup checklist | Persistent progress |
+| Company switcher, Impersonation banner | Section 6.11 |
 
 ### 9.3 Data display
 
-| Component | Notes | Priority |
-|---|---|---|
-| DataTable | Virtualized, column picker, sticky header/first column, inline edit, row selection, totals row, CSV export | |
-| Saved view bar and filter builder | URL-encoded state | |
-| Kanban board | Pipeline, project phases; keyboard move menu as drag alternative | |
-| Activity timeline | Section 6.5 | |
-| Description list / property grid | Inline editing | |
-| KPI tile, Stat with delta, Sparkline | Section 10 | |
-| Charts (bar, line, area, stacked bar, donut-limited, heatmap, Gantt, funnel) | Section 10 | basic, full |
-| Calendar (month/week/day/agenda) | Estimator appointments | |
-| Map (pins, clusters, route polylines, polygons, heat) | Mapbox/Google; list alternative always present | |
-| Photo grid, Before/after slider, Lightbox with markup | Before/after also as side-by-side (no-drag alternative) | |
-| Comment thread | Mentions, resolve | |
+| Component | Notes |
+|---|---|
+| DataTable | Virtualized, column picker, sticky header/first column, inline edit, row selection, totals row, CSV export |
+| Saved view bar and filter builder | URL-encoded state |
+| Kanban board | Pipeline, project phases; keyboard move menu as drag alternative |
+| Activity timeline | Section 6.5 |
+| Description list / property grid | Inline editing |
+| KPI tile, Stat with delta, Sparkline | Section 10 |
+| Charts (bar, line, area, stacked bar, donut-limited, heatmap, Gantt, funnel) | Section 10 |
+| Calendar (month/week/day/agenda) | Estimator appointments |
+| Map (pins, clusters, route polylines, polygons, heat) | Mapbox/Google; list alternative always present |
+| Photo grid, Before/after slider, Lightbox with markup | Before/after also as side-by-side (no-drag alternative) |
+| Comment thread | Mentions, resolve |
 
 ### 9.4 Domain components (landscape-specific)
 
-| Component | Description | Surfaces | Priority |
-|---|---|---|---|
-| ClientCard / PropertyCard | Identity, address with satellite thumbnail, lot size, tags, balance | Web, native | |
-| VisitCard | Time window, service icons, duration, crew chip, status, flags (gate code, dog, chemicals) | Dispatch, crew app | |
-| CrewChip | Crew name, color ring, truck number, member count | All | |
-| RouteList / RouteStop | Numbered stops, drive time between, status | Crew app, dispatch | |
-| SyncStatusChip | States: synced, syncing n, offline n pending, conflict, error | Crew app, Studio | |
-| WeatherChip / WeatherStrip | Precip probability, wind, temp, snow inches, spray-window indicator | Dispatch, Today, crew | |
-| EstimateLineEditor | Item, qty + unit, production rate, labor hours, material cost, markup, price, margin; "why" drawer | Web | |
-| OptionTierCards | Good/Better/Best proposal options with deltas and recommended badge | Portal, proposal editor | |
-| ProposalSignatureBlock | Legal text, signature, initials, deposit pay | Portal | |
-| PlantCard / PlantRow | Thumbnail, botanical + common name, size, region rating badge, sun/water icons, deer-resistance, native badge, availability | Web, portal, crew | |
-| RegionRatingBadge | Curated performance rating for the Company's Region (e.g., "Recommended - Central Ohio 6b"), tooltip with curator notes | All | |
-| PlantSymbol | Renders the plan symbol family with style params at scale | Studio, PDFs, portal | |
-| DesignViewer | Pan/zoom 2D plan with layer toggles, plant schedule, measure tool; read-only for clients | Portal, web, crew | |
-| MockupCompare | Before/after/options with "AI concept" label | Portal, web | |
-| TakeoffTable | Quantities from design grouped by material/plant with "push to estimate" | Web | |
-| ChemicalApplicationForm | Product (EPA reg. no.), rate, area, target pest, wind/temp, applicator license, REI | Crew app | for lawn/PHC |
-| TimeClockButton / CrewClockSheet | Large stateful clock button; crew lead clocks multiple people | Crew app | |
-| PaymentCollector | Card on file / Tap to Pay / send link; shows Company legal name | Crew app, web | |
-| MoneyCell / LedgerAmount | Tabular, currency, debit/credit columns or signed mode | Web | |
-| JournalEntryGrid | Account, memo, debit, credit, class/job, running balance check | Web | |
-| AccountPicker | Chart-of-accounts tree search with type badges | Web | |
-| ApprovalBar | Approve/Reject/Request change with threshold info | Web, portal | |
-| AIInlineSuggestion / AIDraftBlock | Iris border, seedling-spark, sources, Accept/Edit/Dismiss | All | |
-| CopilotPanel | Context chip, conversation, actions with previews | Web, native | |
-| UsageMeter (AI credits) | Remaining credits, projected run-out | Web, admin | |
-| TenantHealthCard | Admin console tenant score | Admin | |
-| CurationDiff | Side-by-side field diff with accept/reject per field | Admin | |
-| PressAndHoldButton | Full-width primary action that commits after an 800 ms hold, with a visible fill, haptic tick at commit and a screen-reader "double-tap to confirm" equivalent. Default for irreversible crew actions | Crew app, kiosk | |
-| ReconciliationMatchPanel | Bank line vs suggested match, with payout unpacking (gross, fees, net) and the resulting posting preview | Web | |
-| ApprovalQueue / VoteTally | Commercial approvals list with per-approver limit, chain status and a tally that hides individual votes until close | Portal | |
-| BudgetBurnBar | Client budget bucket with approved, pending and "would leave" projection; text values always shown | Portal, web | |
-| IntegrationHealthStrip | Status dots per external dependency (Stripe, bank feed, accounting sync, SMS, maps) with plain-language degradation banners | Web shell | |
-| ScopeGate | Wrapper that removes, rather than disables, UI the current contact scope or role cannot use, and renders the permission state from 15.1 for deep links | Portal, web | |
+| Component | Description | Surfaces |
+|---|---|---|
+| ClientCard / PropertyCard | Identity, address with satellite thumbnail, lot size, tags, balance | Web, native |
+| VisitCard | Time window, service icons, duration, crew chip, status, flags (gate code, dog, chemicals) | Dispatch, crew app |
+| CrewChip | Crew name, color ring, truck number, member count | All |
+| RouteList / RouteStop | Numbered stops, drive time between, status | Crew app, dispatch |
+| SyncStatusChip | States: synced, syncing n, offline n pending, conflict, error | Crew app, Studio |
+| WeatherChip / WeatherStrip | Precip probability, wind, temp, snow inches, spray-window indicator | Dispatch, Today, crew |
+| EstimateLineEditor | Item, qty + unit, production rate, labor hours, material cost, markup, price, margin; "why" drawer | Web |
+| OptionTierCards | Good/Better/Best proposal options with deltas and recommended badge | Portal, proposal editor |
+| ProposalSignatureBlock | Legal text, signature, initials, deposit pay | Portal |
+| PlantCard / PlantRow | Thumbnail, botanical + common name, size, region rating badge, sun/water icons, deer-resistance, native badge, availability | Web, portal, crew |
+| RegionRatingBadge | Curated performance rating for the Company's Region (e.g., "Recommended - Central Ohio 6b"), tooltip with curator notes | All |
+| PlantSymbol | Renders the plan symbol family with style params at scale | Studio, PDFs, portal |
+| DesignViewer | Pan/zoom 2D plan with layer toggles, plant schedule, measure tool; read-only for clients | Portal, web, crew |
+| MockupCompare | Before/after/options with "AI concept" label | Portal, web |
+| TakeoffTable | Quantities from design grouped by material/plant with "push to estimate" | Web |
+| ChemicalApplicationForm | Product (EPA reg. no.), rate, area, target pest, wind/temp, applicator license, REI | Crew app (lawn care and PHC) |
+| TimeClockButton / CrewClockSheet | Large stateful clock button; crew lead clocks multiple people | Crew app |
+| PaymentCollector | Card on file / Tap to Pay / send link; shows Company legal name | Crew app, web |
+| MoneyCell / LedgerAmount | Tabular, currency, debit/credit columns or signed mode | Web |
+| JournalEntryGrid | Account, memo, debit, credit, class/job, running balance check | Web |
+| AccountPicker | Chart-of-accounts tree search with type badges | Web |
+| ApprovalBar | Approve/Reject/Request change with threshold info | Web, portal |
+| AIInlineSuggestion / AIDraftBlock | Iris border, seedling-spark, sources, Accept/Edit/Dismiss | All |
+| CopilotPanel | Context chip, conversation, actions with previews | Web, native |
+| UsageMeter (AI credits) | Remaining credits, projected run-out | Web, admin |
+| TenantHealthCard | Admin console tenant score | Admin |
+| CurationDiff | Side-by-side field diff with accept/reject per field | Admin |
+| PressAndHoldButton | Full-width primary action that commits after an 800 ms hold, with a visible fill, haptic tick at commit and a screen-reader "double-tap to confirm" equivalent. Default for irreversible crew actions | Crew app, kiosk |
+| ReconciliationMatchPanel | Bank line vs suggested match, with payout unpacking (gross, fees, net) and the resulting posting preview | Web |
+| ApprovalQueue / VoteTally | Commercial approvals list with per-approver limit, chain status and a tally that hides individual votes until close | Portal |
+| BudgetBurnBar | Client budget bucket with approved, pending and "would leave" projection; text values always shown | Portal, web |
+| IntegrationHealthStrip | Status dots per external dependency (Stripe, bank feed, accounting sync, SMS, maps) with plain-language degradation banners | Web shell |
+| ScopeGate | Wrapper that removes, rather than disables, UI the current contact scope or role cannot use, and renders the permission state from 15.1 for deep links | Portal, web |
 
 ### 9.5 Governance
 
-- Documentation site `design.rootline.com` (internal at first): principles, tokens, components, patterns, content guidelines, accessibility notes, changelog.
+- Documentation site `design.rootline.com` (internal): principles, tokens, components, patterns, content guidelines, accessibility notes, changelog.
 - Versioning: semantic versions for `@rootline/tokens`, `@rootline/ui`, `@rootline/ui-native`; breaking changes need a codemod or migration note.
-- Contribution: proposal -> design review -> a11y review -> build in Storybook -> visual regression -> docs -> release. Target lead time < 2 sprints.
+- Contribution: proposal -> design review -> a11y review -> build in Storybook -> visual regression -> docs -> release. The build agent runs the pipeline; changes to design principles or brand go to the founder for approval.
 - Lint rules: ban raw hex in app code; ban direct Radix imports outside `@rootline/ui`; require `aria-label` on IconButton.
 
 ---
@@ -1090,7 +1091,7 @@ Charts follow a computable method: pick the form for the question, then assign c
 | Change over time (weekly revenue, visits per week Apr-Nov) | Line or column | One y-axis only, never dual-axis |
 | Part-to-whole with few parts (<= 4) | Stacked bar; donut only for 2-3 parts | Never pie with > 4 slices |
 | Budget vs actual (job costing) | Bullet chart or paired bars with variance column | Diverging color for variance |
-| Distribution (job margins) | Histogram or dot plot | |
+| Distribution (job margins) | Histogram or dot plot | Mark the median and the target margin |
 | Capacity over time (crew hours sold vs available by week) | Heatmap (weeks x crews) or stacked area | Sequential single hue |
 | Project schedule | Gantt with dependencies and weather-delay markers | Today line |
 | Geography (revenue density, route coverage) | Map with sequential choropleth or hex bins; route polylines | Max 3 categorical colors on maps |
@@ -1159,8 +1160,8 @@ Validation results: light mode worst adjacent CVD separation dE 11.0 (target >= 
 Rules:
 - **Content reflows at 320 CSS px** without two-dimensional scrolling (WCAG 1.4.10), except for inherently 2-D content (dispatch grid, Design Studio canvas, maps, large tables), which provide a list alternative.
 - **Touch vs pointer** is detected via `pointer: coarse`; touch layouts enlarge controls to the `touch` density.
-- **Performance budgets** (release gates): office app INP p75 < 200 ms, LCP p75 < 2.5 s on a mid-range laptop over 4G-equivalent; portal LCP p75 < 2.0 s on a mid-range Android over 4G; crew app cold start < 2.5 s on a 3-year-old mid-range Android; Today route list render < 300 ms from local DB.
-- **Low-end Android first** for the crew app: test matrix includes devices with 3-4 GB RAM and older Android versions still common among BYOD crews (exact matrix maintained by QA, see [05](05-field-crew-mobile-app.md)).
+- **Performance budgets** (enforced in CI): office app INP p75 < 200 ms, LCP p75 < 2.5 s on a mid-range laptop over 4G-equivalent; portal LCP p75 < 2.0 s on a mid-range Android over 4G; crew app cold start < 2.5 s on a 3-year-old mid-range Android; Today route list render < 300 ms from local DB.
+- **Low-end Android first** for the crew app: test matrix includes devices with 3-4 GB RAM and older Android versions still common among BYOD crews (exact matrix maintained by the build agent, see [05](05-field-crew-mobile-app.md)).
 
 ### 11.3 Native platform conventions (crew app)
 
@@ -1222,7 +1223,7 @@ Platform guidance sets 44 x 44 pt (Apple) and 48 x 48 dp (Material) minimum touc
 | Text | Body >= 17 pt; never thin weights (< 500 in field-sun); numbers that matter (time, stop count, gate code) >= 22 pt |
 | Contrast | field-sun theme targets >= 7:1 for body text, no shadows or gradients behind text |
 | Feedback | Haptic + sound (optional) + visual state change for clock-in/out, visit complete, photo captured |
-| Error tolerance | Destructive or irreversible actions (Complete visit, Submit timesheet, Save chemical application) use press-and-hold (800 ms, visible fill) with a 5-second undo instead of a modal. Swipe-to-confirm ([05](05-field-crew-mobile-app.md)) is only offered alongside press-and-hold. Primary buttons commit on release, and spurious multi-touch from rain is ignored while a hold is in progress |
+| Error tolerance | Destructive or irreversible actions (Complete visit, Submit timesheet, Save chemical application) use press-and-hold (800 ms, visible fill) with a 5-second undo instead of a modal. There is no swipe-to-confirm (OD-39). Primary buttons commit on release, and spurious multi-touch from rain is ignored while a hold is in progress |
 | Input | Voice dictation on all text; photo-first reporting ("Snap the problem"); pickers instead of typing; big numeric keypads |
 | Cognitive load | One primary action per screen; consistent placement in the bottom thumb zone; progress always visible ("Stop 7 of 18") |
 | Language | Per-user language independent of Company default; icons paired with words, never icon-only for key actions |
@@ -1233,13 +1234,13 @@ Platform guidance sets 44 x 44 pt (Apple) and 48 x 48 dp (Material) minimum touc
 
 ### 13.1 Locales and rollout
 
-| Locale | Surfaces | Priority | Notes |
-|---|---|---|---|
-| `en-US` | All | | Source language |
-| `en-CA` | All | | Spelling (colour, cheque) in client-facing documents; Canadian tax labels; metric-friendly defaults |
-| `es-US` (Latin American Spanish, US usage) | Crew app, Customer Portal, client messages, proposals/invoices | | Office web app Spanish; workforce driver: ~44.5% of US landscaping and groundskeeping workers were Hispanic in 2024 ([Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers)) |
-| `fr-CA` | Portal, client documents, crew app, then office app | portal and documents, full | Quebec French terminology. For Clients with Quebec Properties, French versions of contracts and the portal are offered by default ([06](06-customer-portal.md)), and this is a launch gate for Quebec-based Companies. Legal review of the [Charter of the French Language](https://www.legisquebec.gouv.qc.ca/en/document/cs/C-11) (as amended by Bill 96) is required before selling into Quebec (verify current requirements) |
-| RTL locales | None at launch | | RTL-ready architecture only |
+| Locale | Surfaces | Notes |
+|---|---|---|
+| `en-US` | All | Source language |
+| `en-CA` | All | Spelling (colour, cheque) in client-facing documents; Canadian tax labels; metric-friendly defaults |
+| `es-US` (Latin American Spanish, US usage) | All: crew app, Customer Portal, office web app, client messages, proposals and invoices | Workforce driver: ~44.5% of US landscaping and groundskeeping workers were Hispanic in 2024 ([Data USA](https://datausa.io/profile/soc/landscaping-and-groundskeeping-workers)) |
+| `fr-CA` | All: portal, client documents, crew app and office app, including plant common names (OD-70) | Quebec French terminology. For Clients with Quebec Properties, French versions of contracts and the portal are offered by default ([06](06-customer-portal.md)), and Quebec-based Companies get French as their default. Marketing to Quebec waits for the founder's French-language check with counsel against the [Charter of the French Language](https://www.legisquebec.gouv.qc.ca/en/document/cs/C-11) (as amended by Bill 96) (OD-70, verify current requirements) |
+| RTL locales | None | RTL-ready architecture only |
 
 ### 13.2 Three independent language settings
 
@@ -1247,7 +1248,7 @@ Platform guidance sets 44 x 44 pt (Apple) and 48 x 48 dp (Material) minimum touc
 2. **Company default language** (for new users and templates).
 3. **Client communication language** per Client/Contact (proposals, invoices, SMS, emails, portal default). A Spanish-speaking homeowner gets a Spanish proposal even if the office works in English.
 
-**Quebec jurisdiction rule**: when a Property is in Quebec, the proposal and e-sign flow shows the French version first. The client gets a clearly labeled "Read and sign in English" choice only after the French version was presented, and the choice is stored with the signature evidence. This follows our reading of the Charter's French-first rule for standard-form (adhesion) contracts, which counsel must confirm before launch ([28](#28-open-questions)). Payment pages, receipts and the portal shell for those clients default to `fr-CA`.
+**Quebec jurisdiction rule**: when a Property is in Quebec, the proposal and e-sign flow shows the French version first. The client gets a clearly labeled "Read and sign in English" choice only after the French version was presented, and the choice is stored with the signature evidence. This follows our reading of the Charter's French-first rule for standard-form (adhesion) contracts. It ships as the conservative default, and the founder confirms it with counsel as part of the French-language check (OD-70, [24](24-product-scope-decisions-catalog.md) section 1.7; [28](#28-open-questions)). Payment pages, receipts and the portal shell for those clients default to `fr-CA`.
 
 Templates (proposal, invoice, SMS, email) are maintained per language; when a translation is missing the editor shows a warning and offers an AI draft translation for human review. Client-facing AI translations are never sent without review unless the Company explicitly enables auto-send for low-risk messages (reminders, "on the way").
 
@@ -1300,15 +1301,15 @@ A controlled glossary (maintained by the content designer with field-validated t
 | Snow push | Push | Empuje / despeje de nieve | Déneigement | |
 | Email | Email | Correo electrónico | Courriel | Quebec usage |
 
-- **Spanish register:** crew app uses informal "tú" (direct, short commands like "Toma la foto de antes"); client-facing Spanish uses formal "usted". Validated in testing (open question 28.4).
+- **Spanish register:** crew app uses informal "tú" (direct, short commands like "Toma la foto de antes"); client-facing Spanish uses formal "usted" (decided in 28.4).
 - **Botanical names** stay in Latin and italics across locales; common names come from the KB per locale ([12](12-plant-knowledge-base.md)).
 - **Terminology overrides** per Company (e.g., "Visit" -> "Service", "Crew" -> "Team", "Proposal" -> "Quote") apply in every locale with per-locale values.
 
 ### 13.7 Translation workflow
 
-- Strings extracted at build; managed in a translation management system (Lokalise, Phrase or Crowdin - choose in MVP; open question) with the glossary and screenshots for context.
-- Professional translators for UI and legal text; native-speaker review by bilingual crew members from the Field Council (section 24); AI pre-translation allowed for first drafts only.
-- Release gate: crew app and portal strings 100% translated and reviewed for `es-US`; office app may ship with English fallback for new strings for up to one release, flagged in-app.
+- Strings extracted at build; managed in a translation management system (Lokalise, Phrase or Crowdin; the build agent picks one and records it in an ADR, see 28.6) with the glossary and screenshots for context.
+- The build agent translates UI strings against the glossary; legal text (contracts, consent, terms) goes to professional translators the founder arranges. Crews and clients report wording problems in-app (`feedback.submitted`), and the build agent fixes them in the next release.
+- Every release ships with all strings translated and reviewed in `es-US` and `fr-CA`. If a new office string misses its translation, it shows in English with an in-app flag until the translation lands.
 - **In-product content translation**: crew notes written in Spanish show a "Translated from Spanish" toggle for office users, and vice versa, using the AI Gateway ([17](17-ai-copilot-automation.md)); original text always preserved.
 
 ---
@@ -1318,7 +1319,7 @@ A controlled glossary (maintained by the content designer with field-validated t
 ### 14.1 Design goals
 
 - **Value before configuration.** The wizard asks only what it needs to make the first useful thing, then personalizes the rest from answers (service lines, region, size, current tools).
-- **Opinionated defaults with escape hatches.** Starter price books, production rates, chart-of-accounts templates and message templates are pre-built per service line and region by the platform team ([19](19-platform-admin-portal.md)); every default is editable later.
+- **Opinionated defaults with escape hatches.** Starter price books, production rates, chart-of-accounts templates and message templates are pre-built per service line and region by the operator agents ([19](19-platform-admin-portal.md)); every default is editable later.
 - **Skippable, resumable, visible.** Every step can be skipped ("Set up later"); progress persists as a **Setup checklist** on Today until complete or dismissed.
 - **Time targets:** core setup (company, services, clients, team) under 30 minutes for a 50-client company; full setup including Stripe, accounting and branding under 2 hours.
 
@@ -1329,7 +1330,7 @@ A controlled glossary (maintained by the content designer with field-validated t
 | 0 | Sign up | Email or Google/Microsoft sign-in; name, company name, mobile, country (US/CA), service lines (multi-select: lawn and PHC, maintenance, design-build, hardscape, irrigation, lighting, snow, tree care), crew size, current tools | Creates tenant in trial; sets plan recommendation; personalizes the rest of the wizard | No |
 | 1 | Company basics | Confirm logo (auto-fetched from website URL if given), address, time zone, units, currency, languages, season dates | Geocodes address -> assigns default **Region** (hardiness zone, ecoregion) and regional plant palette; suggests season (e.g., "Mowing Apr 1 - Nov 15") from region climate data | Partly |
 | 2 | Services and price book | Pick starter kits per service line; answer 5 calibration questions ("How many cubic yards of mulch can a 3-person crew install per hour?", "Your loaded labor cost per hour?", "Target gross margin?") | Builds price book items, kits/assemblies and production rates; shows illustrative sample prices computed from the answers (e.g., "Weekly mowing, 8,000 sq ft lot: $52/visit") for a sanity check ([03](03-crm-sales-estimating-proposals.md)) | Yes (defaults applied) |
-| 3 | Import clients | Upload CSV/Excel, or connect QuickBooks Online / Jobber export / Google Contacts; LMN and Service Autopilot exports | AI-assisted column mapping with confidence; address validation and geocoding; duplicate detection (name + address + phone); preview of 10 rows; background import with a report; creates Properties; optional import of recurring services and open balances (as opening AR in the ledger) | Yes |
+| 3 | Import clients | Upload CSV/Excel, use a switch kit (Jobber, LMN, SingleOps, Service Autopilot, Real Green, QuickBooks Online; R24-15) or connect Google Contacts | AI-assisted column mapping with confidence; address validation and geocoding; duplicate detection (name + address + phone); preview of 10 rows; background import with a report; creates Properties; optional import of recurring services and open balances (as opening AR in the ledger) | Yes |
 | 4 | Connect Stripe | "Connect your Stripe account": connect an existing account (Stripe Connect OAuth) or create one through Stripe-hosted onboarding (Account Links), per [08](08-payments-stripe.md); choose payment methods (card, ACH, wallets; Canadian PAD for CA Companies) and payout schedule in Stripe. Companies that insist on restricted API keys use the "Advanced" link, which is hidden behind a disclosure, owner-only and explained | Explains in plain words that client money goes directly to the Company's Stripe account and that Rootline never holds it; verifies capabilities; sets statement descriptor; flags incomplete Stripe onboarding on the checklist ([08](08-payments-stripe.md)) | Yes ("Invoices can show check/ACH instructions until then") |
 | 4a | Turn on texting | US numbers use A2P 10DLC; Canadian Companies follow the path in [16](16-marketing-growth-communications.md). Confirm the business legal name, EIN or BN, address, website and sample messages for the carrier registration form. Most of it is prefilled from steps 0-1, and the user reviews it in plain language ("Carriers need to know who is texting your clients") | Submits A2P 10DLC brand and campaign registration on the Company's Twilio subaccount ([16](16-marketing-growth-communications.md), [20](20-architecture-security.md)). Carrier review takes days, so the checklist row shows "In review", with the submitted date and what to expect. Email and push work immediately; client SMS turns on when approved; rejections come back with the carrier's reason and a fix-it form | Yes (SMS stays off until done) |
 | 5 | Accounting setup | Choose: **Rootline Ledger as your books** (the built-in double-entry Ledger, shown in the nav as "Books") or **Sync to QuickBooks Online / Xero**; pick chart-of-accounts template (Design-build, Lawn and maintenance, Snow-heavy, General; US or Canada variants with GST/HST/PST/QST accounts); set books start date | Creates accounts, tax codes, default item -> income account mappings; for sync mode, runs OAuth and mapping wizard ([09](09-accounting-ledger-integrations.md)) | Yes |
@@ -1371,13 +1372,13 @@ flowchart TD
 - Mapping screen shows source columns on the left with 3 sample values each, target fields on the right with AI-suggested matches and a confidence badge; unmapped columns can be kept as custom fields or notes.
 - Address fixes: rows whose address does not geocode are listed with suggestions; users can accept all high-confidence fixes in one click.
 - Duplicates: grouped with a merge preview (which values win per field).
-- Undo: an import can be rolled back within 7 days if no dependent records (jobs, invoices) were created from it; after that, records are archived individually.
+- Undo: an import can be rolled back for 7 days or until the first financial posting against imported records, whichever comes first (R24-22); after that, records are archived individually.
 - Large imports (> 5,000 rows) run in the background; the user can keep working; completion notification with a downloadable error report.
 
 ### 14.5 White-glove and assisted onboarding
 
-- Platform support (`platform_support`) can see a tenant's setup progress in the admin console, schedule an onboarding call, and (with consent) complete steps in an impersonated session that is fully audited.
-- **Concierge migration** for Companies with 25+ field staff: Rootline imports clients, properties, price book, recurring schedules and open AR from the prior system using vendor exports, then hosts a parallel-run week ([22](22-business-model-pricing-gtm.md)).
+- The support agent (`platform_support`) can see a tenant's setup progress in the admin console, share an onboarding plan, answer questions in chat, and (with consent) complete steps in an impersonated session that is fully audited.
+- **Concierge migration** for Companies with 25+ field staff: the support agent imports clients, properties, price book, recurring schedules and open AR from the prior system using the switch kits, and the Company can turn on shadow mode so crews keep their old system in parallel (OD-72, [22](22-business-model-pricing-gtm.md)).
 
 ---
 
@@ -1416,7 +1417,7 @@ Every list, board and panel has a designed empty state with: (1) a small line il
 - **"Greenleaf Grounds Co."**, a fictional mid-size landscape company seeded in Columbus, Ohio (Central Ohio Region), ships as a sample dataset (the same seed as the trial demo company in [22](22-business-model-pricing-gtm.md) 4.6 and the `standard` demo tenant in [19](19-platform-admin-portal.md) PA-019): 120 clients (102 residential, 18 commercial including an HOA with 3 properties), about 140 properties, 3 crews, a full 2026 season of weekly mowing rounds, a 5-step fertilizer program, a 600 sq ft paver patio project with change order, fall cleanups, one snow event with 2-inch trigger pushes, proposals in each state, invoices (paid, open, overdue), a month of ledger entries and a bank feed to reconcile.
 - **Region-localized**: plants, weather, season dates and prices adapt to the tenant's Region, so a Phoenix company sees desert palettes and no snow; an Ottawa company sees Zone 5a palettes, metric toggles and HST.
 - **Isolation**: sample data lives in a linked **sandbox workspace**, never mixed with real records; a persistent banner says "Sample data - nothing here is real"; no real SMS, email or Stripe charges can be sent from the sandbox (test mode only).
-- **Uses**: exploration during trial, training new staff (sandbox reset per user), sales demos (`platform_support` can spin up demo tenants), screenshots for docs.
+- **Uses**: exploration during trial, training new staff (sandbox reset per user), demos (the support agent, as `platform_support`, can spin up demo tenants), screenshots for docs.
 - **Reset and remove**: one click; removal never touches real data.
 
 ### 15.4 First-run guidance
@@ -1477,7 +1478,7 @@ Routing rules:
 ### 16.5 Client-facing notifications
 
 Spec and templates in [06](06-customer-portal.md) and [16](16-marketing-growth-communications.md); UX rules:
-- Transactional messages (visit reminder, "on the way" with an ETA window and live link (the live truck map behind the link is, per [06](06-customer-portal.md) 4.7.3 and [04](04-scheduling-dispatch-routing.md) 4.10.5), visit complete with photo, proposal ready, invoice, receipt, payment failed) are branded with the Company's name and sent in the Contact's language.
+- Transactional messages (visit reminder, "on the way" with an ETA window and live link (the live truck map behind the link follows [06](06-customer-portal.md) 4.7.3 and [04](04-scheduling-dispatch-routing.md) 4.10.5), visit complete with photo, proposal ready, invoice, receipt, payment failed) are branded with the Company's name and sent in the Contact's language.
 - SMS requires recorded consent and honors STOP/HELP keywords (TCPA and 10DLC registration managed per Company in [16](16-marketing-growth-communications.md)); marketing messages are separate consent from transactional ones.
 - **Opt-out by any reasonable means:** the FCC's revocation rules, in effect since April 11, 2025, require honoring opt-outs made by any reasonable means within 10 business days. A 2026 FCC order adjusts the "revoke all" scope, and sources report different effective dates (as of Nov 2026, verify) ([Nixon Peabody](https://www.nixonpeabody.com/insights/alerts/2025/04/11/fcc-partially-delays-new-tcpa-consent-revocation-rules); [Mac Murray and Shuster](https://mslawgroup.com/delayed-again-fcc-pushes-back-tcpas-revoke-all-rule-to-january-31-2027/); [FCC 26-67](https://docs.fcc.gov/public/attachments/FCC-26-67A1.pdf)). UX consequences: a free-text reply such as "please stop texting me" or "ya no me manden mensajes" is treated as an opt-out, immediately in practice. The office sees a Marigold "Opted out of texts on Nov 3 (replied 'please stop')" chip on the Contact and in the composer, which disables SMS with an explanation and offers email instead. Re-subscribing is something the client does, never a staff toggle ([16](16-marketing-growth-communications.md), [06](06-customer-portal.md)).
 - **Cancel as easily as you enrolled:** service agreements and programs with autopay that a client enrolled in online get a visible "Cancel or change plan" path in the portal, with no more steps than enrolling took, as California's amended automatic renewal law requires from July 1, 2025 ([Cal. Bus. and Prof. Code 17600 et seq.](https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml?lawCode=BPC&division=7.&title=&part=3.&chapter=1.&article=9.); verify). Renewal notices are sent in the window the jurisdiction requires ([06](06-customer-portal.md), [07](07-invoicing-billing-contracts.md)). The cancel flow may offer one retention option ("Pause until spring") but never hides the cancel button, and it never asks "Are you sure you want to lose your beautiful lawn?" (see 1.2 Non-goals).
@@ -1557,27 +1558,27 @@ Rootline sounds like **an experienced crew lead who is also great with numbers**
 
 ### 18.1 Screen inventory (hero and high-traffic screens)
 
-| # | Screen | Surface | Primary personas | Detailed spec | Priority |
-|---|---|---|---|---|---|
-| 18.2 | Owner Today dashboard | Web | owner | This doc, [18](18-reporting-analytics.md) | |
-| 18.3 | Client record | Web | office_manager, estimator, owner | [03](03-crm-sales-estimating-proposals.md) | |
-| 18.4 | Dispatch board | Web | office_manager, ops_manager | [04](04-scheduling-dispatch-routing.md) | |
-| 18.5 | Estimate builder | Web, tablet | estimator | [03](03-crm-sales-estimating-proposals.md) | |
-| 18.6 | Proposal (client view) | Portal | client_residential, client_commercial | [06](06-customer-portal.md) | |
-| 18.7 | Design Studio | Web, tablet | designer, estimator | [10](10-design-studio.md) | |
-| 18.8 | AI mockup flow | Web, tablet | designer, estimator | [11](11-ai-design-mockups.md) | |
-| 18.9 | Crew app: route + visit | Native | crew_lead, technician | [05](05-field-crew-mobile-app.md) | |
-| 18.10 | Client portal home | Portal | client_residential | [06](06-customer-portal.md) | |
-| 18.11 | Plant KB curator workbench | Admin | platform_curator | [12](12-plant-knowledge-base.md) | |
-| 18.12 | Ledger: journal entry | Web | bookkeeper, owner | [09](09-accounting-ledger-integrations.md) | |
-| 18.13 | Platform admin: Tenant 360 | Admin | platform_owner, platform_support | [19](19-platform-admin-portal.md) | |
-| 18.14 | Setup checklist and wizard step | Web | owner | Section 14 | |
-| 18.15 | Command palette | Web | all office roles | Section 6.2 | |
-| 18.16 | Homeowner funnel: measure step | Public web | homeowner | Section 5.7, [11](11-ai-design-mockups.md) | |
-| 18.17 | Commercial portal: approvals workspace | Portal | client_commercial | [06](06-customer-portal.md) | |
-| 18.18 | Ledger: bank reconciliation | Web | bookkeeper, owner | [09](09-accounting-ledger-integrations.md) | |
-| 18.19 | Crew app: chemical application log | Native | technician, crew_lead | [05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md) | |
-| - | Pipeline board, Invoice editor, Timesheet approvals, Portal invoice pay, Notification center, Report builder, Automation builder | Various | Various | Module docs |- |
+| # | Screen | Surface | Primary personas | Detailed spec |
+|---|---|---|---|---|
+| 18.2 | Owner Today dashboard | Web | owner | This doc, [18](18-reporting-analytics.md) |
+| 18.3 | Client record | Web | office_manager, estimator, owner | [03](03-crm-sales-estimating-proposals.md) |
+| 18.4 | Dispatch board | Web | office_manager, ops_manager | [04](04-scheduling-dispatch-routing.md) |
+| 18.5 | Estimate builder | Web, tablet | estimator | [03](03-crm-sales-estimating-proposals.md) |
+| 18.6 | Proposal (client view) | Portal | client_residential, client_commercial | [06](06-customer-portal.md) |
+| 18.7 | Design Studio | Web, tablet | designer, estimator | [10](10-design-studio.md) |
+| 18.8 | AI mockup flow | Web, tablet | designer, estimator | [11](11-ai-design-mockups.md) |
+| 18.9 | Crew app: route + visit | Native | crew_lead, technician | [05](05-field-crew-mobile-app.md) |
+| 18.10 | Client portal home | Portal | client_residential | [06](06-customer-portal.md) |
+| 18.11 | Plant KB curator workbench | Admin | platform_curator | [12](12-plant-knowledge-base.md) |
+| 18.12 | Ledger: journal entry | Web | bookkeeper, owner | [09](09-accounting-ledger-integrations.md) |
+| 18.13 | Platform admin: Tenant 360 | Admin | platform_owner, platform_support | [19](19-platform-admin-portal.md) |
+| 18.14 | Setup checklist and wizard step | Web | owner | Section 14 |
+| 18.15 | Command palette | Web | all office roles | Section 6.2 |
+| 18.16 | Homeowner funnel: measure step | Public web | homeowner | Section 5.7, [11](11-ai-design-mockups.md) |
+| 18.17 | Commercial portal: approvals workspace | Portal | client_commercial | [06](06-customer-portal.md) |
+| 18.18 | Ledger: bank reconciliation | Web | bookkeeper, owner | [09](09-accounting-ledger-integrations.md) |
+| 18.19 | Crew app: chemical application log | Native | technician, crew_lead | [05](05-field-crew-mobile-app.md), [14](14-service-line-modules.md) |
+| - | Pipeline board, Invoice editor, Timesheet approvals, Portal invoice pay, Notification center, Report builder, Automation builder | Various | Various | Module docs |
 
 ### 18.2 Owner Today dashboard
 
@@ -1949,7 +1950,7 @@ Key behaviors: debits and credits must balance before Post; posted entries are i
 |  Next invoice Dec 1   Card on file, current                 |                                        |
 | Accounting: Rootline Ledger + QuickBooks sync (one-way)     |----------------------------------------|
 |  Last sync 2 h ago  Errors 1 [View]                         | Impersonation log                      |
-|                                                             |  Oct 12 J. Park (support) 14 min, RO   |
+|                                                             |  Oct 12 Support agent 14 min, RO       |
 +-------------------------------------------------------------+----------------------------------------+
 ```
 
@@ -2456,7 +2457,7 @@ Rules and validations:
 - `RECENT_ITEM` keeps the last 30 per user per tenant (ring buffer). Entries for records the user later loses access to are filtered at read time, never shown as titles.
 - `TENANT_THEME.brand_button_hex` is computed server-side from `brand_hex` and must pass 4.5:1 against its foreground; writes failing the check are rejected with a suggested value.
 - `NOTIFICATION` rows are retained 90 days (configurable), then summarized; P1 notifications are retained per audit policy.
-- `IMPORT_JOB.rollback_until` = completion + 7 days; rollback blocked if dependent records exist.
+- `IMPORT_JOB.rollback_until` = completion + 7 days, ended early by the first financial posting against imported records, whichever comes first (R24-22).
 - `SANDBOX_WORKSPACE.sandbox_tenant_id` points to a separate tenant with `is_sandbox = true`; outbound comms and live Stripe keys are disabled for sandbox tenants at the gateway.
 - Platform-level tables (design token versions, sample dataset definitions, global templates, symbol family mapping) live in the platform schema managed through the admin console ([19](19-platform-admin-portal.md)).
 
@@ -2466,26 +2467,26 @@ Rules and validations:
 
 ### 21.1 External services and tools
 
-| Service | Use | Notes | Priority |
-|---|---|---|---|
-| Figma (variables + libraries) | Design source; tokens synced via a tokens plugin to the `@rootline/tokens` repo | Bidirectional sync with PR review | |
-| Storybook + visual regression service (e.g., Chromatic) | Component catalog, visual diffs per theme and locale | Gate on PRs touching `@rootline/ui` | |
-| axe-core / Playwright | Automated accessibility and E2E checks | Runs per PR on key flows | |
-| Translation management system (Lokalise, Phrase or Crowdin) | Strings, glossary, screenshots, translator workflow | Decide in MVP planning | |
-| Mapbox or Google Maps | Basemaps, satellite, geocoding UI | Per [20](20-architecture-security.md) | |
-| Stripe Elements (Appearance API) | Payment UI inside the portal styled with tenant brand tokens (colors, radius, font) | Card data stays in Stripe's iframe (PCI SAQ-A); verify current Appearance variables | |
-| Product analytics (e.g., PostHog) | Funnels, feature adoption, session replay with PII masking | Masking of client names, addresses, amounts by default; opt-out per tenant | analytics, replay |
-| Error and performance monitoring (e.g., Sentry) | Web vitals, crash reporting for native | Release health gates | |
-| Email rendering (React Email or MJML) | Branded transactional emails from tokens | Dark-mode-safe | |
-| PDF rendering (headless Chromium) | Proposals, invoices, plan sheets, install sheets using `print` theme | Fonts embedded | |
-| Self-hosted fonts | Inter, Fraunces, JetBrains Mono, curated tenant pairs | No third-party font CDN (privacy, performance) | |
+| Service | Use | Notes |
+|---|---|---|
+| Figma (variables + libraries) | Design source; tokens synced via a tokens plugin to the `@rootline/tokens` repo | Bidirectional sync with PR review |
+| Storybook + visual regression service (e.g., Chromatic) | Component catalog, visual diffs per theme and locale | Gate on PRs touching `@rootline/ui` |
+| axe-core / Playwright | Automated accessibility and E2E checks | Runs per PR on key flows |
+| Translation management system (Lokalise, Phrase or Crowdin) | Strings, glossary, screenshots, translator workflow | The build agent picks one and records it in an ADR (28.6) |
+| Mapbox or Google Maps | Basemaps, satellite, geocoding UI | Per [20](20-architecture-security.md) |
+| Stripe Elements (Appearance API) | Payment UI inside the portal styled with tenant brand tokens (colors, radius, font) | Card data stays in Stripe's iframe (PCI SAQ-A); verify current Appearance variables |
+| Product analytics (e.g., PostHog) | Funnels, feature adoption, session replay with PII masking | Masking of client names, addresses, amounts by default; opt-out per tenant |
+| Error and performance monitoring (e.g., Sentry) | Web vitals, crash reporting for native | Release health gates |
+| Email rendering (React Email or MJML) | Branded transactional emails from tokens | Dark-mode-safe |
+| PDF rendering (headless Chromium) | Proposals, invoices, plan sheets, install sheets using `print` theme | Fonts embedded |
+| Self-hosted fonts | Inter, Fraunces, JetBrains Mono, curated tenant pairs | No third-party font CDN (privacy, performance) |
 
 ### 21.2 Domain events emitted by UX-owned modules
 
 | Event | Payload highlights | Consumers |
 |---|---|---|
 | `onboarding.step_completed` | tenant_id, step_key, duration_s | Admin activation funnel, lifecycle emails |
-| `onboarding.completed` | tenant_id, days_to_complete | Admin, sales |
+| `onboarding.completed` | tenant_id, days_to_complete | Admin, lifecycle emails |
 | `import.completed` / `import.failed` | job_id, rows, errors | Notifications, admin support |
 | `theme.updated` | tenant_id, changed_fields | Portal cache purge, email template rebuild |
 | `notification.created` / `.delivered` / `.read` / `.actioned` | notification_id, channel, latency | Analytics, escalation engine |
@@ -2504,7 +2505,7 @@ The activity timeline and notification engine consume domain events from all mod
 
 - `GET/PUT /v1/me/preferences`, `GET/POST /v1/saved-views`, `GET /v1/notifications`, `POST /v1/notifications/{id}/read`
 - `GET/PUT /v1/branding` (tenant theme; validates contrast)
-- Portal embed SDK for the homeowner funnel widget: `<script src="https://embed.rootline.com/design.js" data-company="acme">` with postMessage events (`rootline:design_started`, `rootline:lead_submitted`) for the tenant's own analytics (widget embed per [11](11-ai-design-mockups.md) AIM-AUD-01; full-funnel events)
+- Portal embed SDK for the homeowner funnel widget: `<script src="https://embed.rootline.com/design.js" data-company="acme">` with postMessage events (`rootline:design_started`, `rootline:lead_submitted`) for the tenant's own analytics (widget embed per [11](11-ai-design-mockups.md) AIM-AUD-01; the same events cover the full locate, measure and quiz flow)
 
 ---
 
@@ -2564,19 +2565,19 @@ Clients: `client_residential` and `client_commercial` contacts can set their own
 
 ### 23.2 AI opportunities in UX itself
 
-| Opportunity | Description | Priority |
-|---|---|---|
-| Natural-language search and actions | Palette understands "move Crew 2's afternoon to tomorrow" and previews the change | |
-| Copilot daily brief | Role-specific morning summary with linked records | |
-| AI-assisted import mapping | Column matching, address cleanup, duplicate detection | |
-| Smart empty states | Empty states suggest the next best action based on Company data ("You have 38 clients without a fall cleanup this year - create a campaign?") | |
-| Auto alt text and captions | For mockups, visit photos (client-facing reports) and training videos | |
-| Live translation | Crew notes and client messages translated with originals preserved | |
-| Voice-first crew actions | "Start next stop", "Add note: sprinkler head broken by the mailbox" in English or Spanish | |
-| Adaptive Today | Widget order learns from what each user acts on, within role guardrails | |
-| Microcopy linting | AI checks new UI strings against the voice guide and glossary in PRs | |
-| Design QA assistant | Screenshot diff review flags token misuse, contrast issues, truncation in Spanish | |
-| Accessibility helper | Generates the text summary for every chart and the outline labels for Studio objects | |
+| Opportunity | Description |
+|---|---|
+| Natural-language search and actions | Palette understands "move Crew 2's afternoon to tomorrow" and previews the change |
+| Copilot daily brief | Role-specific morning summary with linked records |
+| AI-assisted import mapping | Column matching, address cleanup, duplicate detection |
+| Smart empty states | Empty states suggest the next best action based on Company data ("You have 38 clients without a fall cleanup this year - create a campaign?") |
+| Auto alt text and captions | For mockups, visit photos (client-facing reports) and training videos |
+| Live translation | Crew notes and client messages translated with originals preserved |
+| Voice-first crew actions | "Start next stop", "Add note: sprinkler head broken by the mailbox" in English or Spanish |
+| Adaptive Today | Widget order learns from what each user acts on, within role guardrails |
+| Microcopy linting | AI checks new UI strings against the voice guide and glossary in PRs |
+| Design QA assistant | Screenshot diff review flags token misuse, contrast issues, truncation in Spanish |
+| Accessibility helper | Generates the text summary for every chart and the outline labels for Studio objects |
 
 ---
 
@@ -2584,35 +2585,39 @@ Clients: `client_residential` and `client_commercial` contacts can set their own
 
 ### 24.1 Research program overview
 
-| Phase | Stage | Methods | Participants | Output |
-|---|---|---|---|---|
-| Discovery | Before MVP design | Ride-alongs (2 days each with 10 Companies across 4 regions and 3 sizes), contextual inquiry in offices, diary study with 8 crew leads, competitive teardown of Jobber, LMN, Aspire, Service Autopilot, SingleOps, Real Green, Housecall Pro, ServiceTitan | 10 Companies, ~60 people | Journey maps, JTBD, opportunity backlog, teardown report (fills gaps flagged in section 2) |
-| Concept | MVP design | Paper and clickable prototypes; card sorting and tree testing for the web app IA (target >= 80% correct first click on 12 top tasks) | 30 office users, 20 field users | Validated IA, nav labels |
-| Prototype usability | MVP design | Moderated task tests in English and Spanish; glove and sun protocols (24.2); 5-second tests for proposal and portal | 5-8 per persona per round, 3 rounds | Fixes, benchmark baseline |
-| Beta | Before MVP release | **Field Council** of 25 design-partner Companies; in-app feedback; weekly calls; telemetry review | 25 Companies | Release readiness, top issues |
-| Post-launch continuous | After MVP release, ongoing | Quarterly benchmark study; monthly unmoderated tests; NPS/CSAT; support ticket mining; session replay sampling (masked) | Rolling panel of 200+ users | Trend lines, roadmap input |
+These are test methods the build agent and the operator agents run. None of them is a gate on building or selling.
 
-Participant recruitment includes Spanish-dominant technicians (interviewed by bilingual researchers, not through interpreters where possible), owners of solo operations and multi-branch firms, an external CPA serving multiple landscape clients, commercial property managers and HOA board members, and users with disabilities (screen reader users, low vision, color-vision deficiency, motor impairments) at least once per quarter. Incentives: $75-$150 per session for office/client participants and paid time for crews arranged with their employer (estimates, verify with research ops).
+| Method | When it runs | What it does | Data source | Output |
+|---|---|---|---|---|
+| Competitive teardown | Before a comparison page or competitive claim is published | Hands-on teardown of Jobber, LMN, Aspire, Service Autopilot, SingleOps, Real Green, Housecall Pro and ServiceTitan by the marketing agent, using public trials, help centers and reviews | Vendor trials and documentation | Teardown report that confirms or corrects section 2; each fact verified against a primary source (OD-07) |
+| IA and first-click tests | On every change to navigation or labels | Scripted tree tests and first-click tests of the web app IA against the 12 top tasks, run by the build agent with a task model per role (target >= 80% correct first click) | Role definitions ([02](02-personas-roles-permissions.md)), task scripts | Nav labels and IA changes |
+| Benchmark task scripts | On every build that touches a benchmarked flow | The 24.3 tasks run end to end in English, Spanish and French in browser and device automation; step counts, input counts and timings are compared with the targets | The Greenleaf Grounds Co. sandbox | Benchmark baseline and regressions |
+| Field protocols | On every crew-app build | Glove, sun, offline and truck protocols (24.2) run by the build agent with device automation and models | Device farm: a current iPhone, a 3-year-old mid-range Android, a rugged Android | Pass or fail per protocol, mis-tap and legibility reports |
+| Live product signals | Continuously | In-app SEQ and SUS micro-surveys, NPS and CSAT, `feedback.submitted`, `ui.friction_signal`, support ticket mining by the support agent, and masked session replay sampling | Customers using the product | Trend lines and backlog input |
+
+Live signals are segmented so no group's experience hides in an average: Spanish-dominant and French-speaking crews, solo operators and multi-branch firms, external CPAs serving several Companies, commercial property managers and HOA board members, and people using assistive technology (screen readers, zoom, forced colors). The support agent reviews these segments each month and files the worst friction points.
 
 ### 24.2 Field test protocols
 
+The build agent runs these protocols on every crew-app build. The scripts are published, so any Company can repeat them outdoors with its own crews.
+
 **Glove test**
-- Gloves: thin nitrile, leather work gloves, insulated winter gloves (snow crews), wet leather.
+- Gloves, modeled in device automation as contact radius, touch offset and lost multi-touch precision: thin nitrile, leather work gloves, insulated winter gloves (snow crews), wet leather.
 - Devices: a current iPhone, a 3-year-old mid-range Android, a rugged Android.
-- Tasks (10): clock in crew, start next stop, check off 4 tasks, take 2 after photos, add voice note, report issue with photo, log a chemical application (18.19), complete visit, switch language, view offline queue. "Complete visit" runs twice in counterbalanced order, once with press-and-hold and once with swipe-to-confirm, to settle open question 28.11.
+- Tasks (10): clock in crew, start next stop, check off 4 tasks, take 2 after photos, add voice note, report issue with photo, log a chemical application (18.19), complete visit, switch language, view offline queue. "Complete visit" uses press-and-hold (OD-39).
 - Pass criteria: task success >= 95%, mis-tap rate < 3% of taps, no task requires glove removal.
 
 **Sun test**
-- Outdoors at midday in direct summer sun, with and without polarized sunglasses, at screen brightness auto and 70%.
-- Measures: ability to read stop list, gate code, timer and sync chip at arm's length; error rate on reading numbers.
-- Pass criteria: 100% of critical information legible in field-sun theme for all participants.
+- Every crew screen rendered on the device farm and measured under a direct-sun glare model, with and without a polarized-sunglasses filter, at screen brightness auto and 70%.
+- Measures: effective contrast of the stop list, gate code, timer and sync chip at arm's-length size; OCR read errors on numbers.
+- Pass criteria: 100% of critical information legible in the field-sun theme on every test device.
 
 **Offline test**
-- Airplane mode for 3 hours through a 12-stop route, then reconnect; injected office edits to create conflicts.
-- Pass criteria: zero data loss; conflicts resolved by participants without help >= 90%.
+- Device offline through a scripted 12-stop route, then reconnected; office edits injected to create conflicts.
+- Pass criteria: zero data loss; >= 90% of injected conflicts reach the conflict screen with a one-tap resolution.
 
 **Truck test**
-- One-handed use while seated in a parked truck cab, phone in a dash mount; noise at ~85 dBA (blower nearby) to test reliance on audio cues.
+- One-hand reach model for a phone held in one hand and for a dash mount: every primary action sits in the thumb zone. Audio is muted for the whole run, so no task may depend on an audio cue (crews work at ~85 dBA next to a blower).
 
 ### 24.3 Office and client benchmark tasks
 
@@ -2631,32 +2636,34 @@ Participant recruitment includes Spanish-dominant technicians (interviewed by bi
 | subcontractor | Accept a work order, upload 4 completion photos and submit an invoice from a magic link | < 4 min |
 | bookkeeper (external CPA) | Switch between 3 client Companies and find each one's unreconciled bank lines | < 90 s, 0 wrong-tenant actions |
 
-Standard measures per round: task success, time on task, error count, SEQ (single ease question) per task, SUS per persona (target >= 80 office, >= 85 portal), and for crews a simplified, translated SUS read aloud.
+Standard measures: task success, step count and time on task from the benchmark scripts; time on task, error count and SEQ (single ease question) from live use; SUS per persona from in-app surveys (target >= 80 office, >= 85 portal), and for crews a simplified, translated SUS read aloud by the app.
 
 <a id="244-design-ops-team-and-rituals"></a>
 ### 24.4 Design ops: roles and rituals
 
-**Design roles and the review gates they own** (responsibilities, not headcount):
+**Who does design work.** The founder decides; agents do the work.
 
-| Role | Focus | Main artifacts | Review gates owned |
+| Role | Focus | Main artifacts | Reviews |
 |---|---|---|---|
-| Head of Design | Design direction and quality across all five surfaces | Design principles, critique agenda, UX benchmark readout | Problem and solution reviews for cross-pod epics |
-| Product designers (embedded in pods: Sales/Design, Field/Schedule, Money/Books, Portal/Growth, Platform/Admin) | End-to-end flows for their pod's modules | Flows, tested prototypes, all-states specs | Solution review, build review, design QA sign-off |
-| Design systems (designers and engineers) | Tokens, components, themes and Storybook | `@rootline/tokens`, `@rootline/ui`, `@rootline/ui-native`, docs site | Component contribution pipeline in 9.5 (proposal -> design review -> a11y review -> release) |
-| UX research and research ops | Research program (24.1), field protocols (24.2), panels and incentives | Journey maps, benchmark rounds, participant panel | Evidence for problem review; benchmark targets (24.3) |
-| Content design (EN/ES) and localization | Voice, glossary, microcopy and translation quality | Glossary in the TMS, string reviews | Microcopy and Spanish review in design QA |
-| Brand and illustration (contract or in-house) | Brand system, illustrations, empty states | Illustration library, brand kit | Brand review for marketing site and onboarding |
-| Design technologist (Studio canvas, maps, motion) | Feasibility and high-fidelity interaction | Coded prototypes, motion specs | Feasibility input at solution review |
+| The founder (`platform_owner`) | Design direction, brand and the design principles | Approved principles and brand, UX readout | Approves changes to principles, brand and identity |
+| Build agent: product design | End-to-end flows for every module and surface | Flows, all-states specs, coded prototypes | Solution review, build review, design QA |
+| Build agent: design system | Tokens, components, themes and Storybook | `@rootline/tokens`, `@rootline/ui`, `@rootline/ui-native`, docs site | Component contribution pipeline in 9.5 (proposal -> design review -> a11y review -> release) |
+| Build agent: test methods | Test methods (24.1), field protocols (24.2), benchmark tasks (24.3) | Test scripts, benchmark results | Benchmark targets (24.3) |
+| Build agent: content and localization | Voice, glossary, microcopy and translation quality (EN, ES, FR-CA) | Glossary in the TMS, string reviews | Microcopy and translation review in design QA |
+| Build agent: brand, illustration and motion | Brand system, illustrations, empty states, Studio canvas and map interactions, motion | Illustration library, brand kit, motion specs | Brand review for the marketing site and onboarding, approved by the founder |
+| Support agent | Feedback and ticket mining, live-signal segments (24.1) | Monthly top-friction list | Evidence for problem review |
+| Marketing agent | Competitive teardown and verification of research facts (OD-07) | Teardown report | Fact checks before public use |
+| Plant curator agent | Plant symbol family mapping and plant imagery | Symbol mapping in the Plant KB | Symbol review before release |
 
 **Rituals:**
-- Weekly design critique (cross-pod), biweekly accessibility office hours, monthly "field day" where designers ride along with a crew.
-- Review gates per epic: problem review (JTBD, data) -> solution review (flows, prototypes tested) -> build review (in staging, all states) -> design QA sign-off.
-- Quarterly UX benchmark readout to the founder and leadership with trend lines.
-- Design debt register with severity; 15% of each pod's capacity reserved for UX debt and polish.
+- Review steps per epic, run by the build agent: problem review (JTBD, data) -> solution review (flows, prototypes tested) -> build review (in staging, all states) -> design QA sign-off.
+- Accessibility checks on every change (axe, keyboard scripts, screen reader scripts on VoiceOver and NVDA).
+- A monthly UX readout to the founder with trend lines from the benchmark scripts, live signals and the friction radar (27.16).
+- Design debt register with severity; the build agent works it alongside feature work.
 
 ### 24.5 Tooling and pipeline
 
-Figma (libraries per surface on top of a shared foundations library) -> tokens plugin -> `@rootline/tokens` repo -> Style Dictionary build -> `@rootline/ui` (web) and `@rootline/ui-native` -> Storybook with visual regression across themes (light, dark, field-sun, portal-brand sample) and locales (en, es, pseudo) -> docs site. Content: string files with glossary in the TMS; microcopy reviewed by content design.
+Figma (libraries per surface on top of a shared foundations library) -> tokens plugin -> `@rootline/tokens` repo -> Style Dictionary build -> `@rootline/ui` (web) and `@rootline/ui-native` -> Storybook with visual regression across themes (light, dark, field-sun, field-night, portal-brand sample) and locales (en, es, fr-CA, pseudo) -> docs site. Content: string files with glossary in the TMS; microcopy checked by the build agent against the voice guide and glossary.
 
 ### 24.6 Definition of done for any UI story
 
@@ -2689,15 +2696,15 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 | Accessibility | Maps and dispatch grid | List equivalents for every map and grid |
 | AI | Mockup shows plants not in the plan or unsuitable for the region | Constrain generation to plan/palette; post-generation plant check; label "AI concept" and keep plan as source of truth ([11](11-ai-design-mockups.md)) |
 | AI | Copilot brief includes data the user cannot access | Copilot runs with the user's permissions only; retrieval filtered by RLS |
-| Impersonation | Support staff sees sensitive client data | PII masked by default; unmask requires reason and is logged; tenant sees impersonation log |
+| Impersonation | The support agent sees sensitive client data while impersonating | PII masked by default; unmask requires reason and is logged; tenant sees impersonation log |
 | Privacy | Session replay captures client addresses or card info | Masking by default for inputs and marked fields; never record Stripe iframes; tenant opt-out; region-specific consent banners on marketing site |
 | Dark patterns | Pressure to add urgency timers on proposals | Allowed only as factual "valid until" dates; no fake countdowns |
 | Consent | SMS consent ambiguity in funnel | Unchecked boxes, separate transactional vs marketing consent, stored with timestamp, IP and copy version ([16](16-marketing-growth-communications.md)) |
-| Legal | Quebec French-language obligations for software and client documents | Legal review before marketing in Quebec; fr-CA documents and portal first ([13.1](#131-locales-and-rollout)) |
-| Performance | Dispatch board with 6 crews x 3 days x 60 visits on an older laptop | Virtualization, canvas rendering of grid with accessible list mirror, performance budget gate |
-| Org risk | Design system bottleneck slows feature teams | Federated contribution model, clear ownership, 2-sprint SLA, "experimental" component tier |
-| Org risk | Over-customization fragments the product (custom fields, terminology, layouts) | Guardrails: company layouts per role, limits on custom fields per object (e.g., 50), terminology only for whitelisted terms |
-| Crew app | Swipe-to-confirm ([05](05-field-crew-mobile-app.md)) fails with wet or insulated gloves and is a single-gesture-only action | Press-and-hold button (800 ms, visible fill) is always offered next to the swipe. The glove test (24.2) measures both, and if press-and-hold wins we drop the swipe |
+| Legal | Quebec French-language obligations for software and client documents | fr-CA interface, documents and portal ship with French-first defaults; marketing to Quebec waits for the founder's French-language check (OD-70, [13.1](#131-locales-and-rollout)) |
+| Performance | Dispatch board with 6 crews x 3 days x 60 visits on an older laptop | Virtualization, canvas rendering of grid with accessible list mirror, performance budgets enforced in CI |
+| Design system | Feature work outruns the design system and one-off components appear | Every component goes through the 9.5 pipeline; lint bans raw hex and direct Radix imports; new components can ship with "experimental" status |
+| Product | Over-customization fragments the product (custom fields, terminology, layouts) | Guardrails: company layouts per role, limits on custom fields per object (e.g., 50), terminology only for whitelisted terms |
+| Crew app | Swipe gestures fail with wet or insulated gloves | Irreversible actions use press-and-hold (800 ms, visible fill) only, never swipe-to-confirm (OD-39); the glove test (24.2) checks every hold target |
 | Crew app | Translucent OS chrome (iOS 26 and later) lowers contrast of text drawn over it in direct sun | Opaque surfaces under all text; opaque own bars in Outdoor mode; honor Reduce Transparency; re-run the sun test on each major OS release (11.3) |
 | Crew app | Worker declines notification permission and misses a route change | Persistent Today banner explaining what is missed; P1 and "tomorrow changed" fall back to SMS (staff consent captured at hire, [15](15-team-hr-payroll.md)); crew lead sees "Marco: notifications off" on the crew roster |
 | Locale | `es-US` numeric dates are day-first while `en-US` are month-first (CLDR) | Month-name dates everywhere in the crew app; numeric inputs echo the month name before saving (13.4) |
@@ -2710,29 +2717,29 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 
 ## 26. Metrics and KPIs
 
-| Metric | Definition | Target | Priority |
-|---|---|---|---|
-| Time to first value | Median hours from sign-up to first sent proposal, scheduled recurring visit or sent invoice | < 24 h | |
-| Setup completion | % of trials completing core checklist (basics, services, clients, team) within 7 days | >= 60% | |
-| Crew task success (glove test) | % of 10 core crew tasks completed without help, gloved | >= 95% | |
-| Crew app weekly active | Field users active weekly / field users invited | >= 85% | |
-| Offline resilience | % of offline sessions with zero data loss | 100% | |
-| SUS by persona | Benchmark study | Office >= 80, portal >= 85, crew (translated) >= 80 | |
-| Command palette adoption | % of weekly active office users using palette weekly | >= 40% by V1 | |
-| Proposal approval experience | Median time from proposal first view to signature; portal CSAT | Improve vs tenant baseline; CSAT >= 4.6/5 | |
-| Portal payment completion | % of payment flows started that succeed | >= 90% | |
-| "How do I" support tickets | Tickets tagged usability per 100 active tenants per month | Downward trend quarter over quarter | |
-| Accessibility defects | Open AA defects older than one sprint | 0 | |
-| Translation coverage | % strings translated and reviewed in es-US (crew + portal) | 100% at release | |
-| Performance | INP p75 office; LCP p75 portal; crew cold start | < 200 ms; < 2.0 s; < 2.5 s | |
-| Design system coverage | % of UI components from `@rootline/ui` (static analysis) | >= 90% | |
-| AI acceptance | % AI suggestions accepted or edited-then-accepted, per feature | Tracked; investigate < 30% | |
-| Notification health | % P2 notifications actioned within 2 business hours; mute rate per category | >= 70%; mute rate < 10% | |
-| Stripe connected | % of trials with charges enabled on their connected account by day 7 | >= 50% | |
-| Texting live | Median days from 10DLC submission to approval; % of trials with SMS live by day 10 | Track and improve; >= 60% by day 10 (estimate, carrier-dependent) | |
-| Crew first-run time | Median time from SMS invite tap to first clock-in (19.6) | < 3 min | |
-| Spanish parity | Task success and time-on-task for `es-US` crew participants vs `en-US` in each benchmark round | Within 5 percentage points and 10% time | |
-| Portal scope errors | Support tickets where a contact saw, or could not see, something because of their scope (5.4) | Downward trend; 0 data-exposure incidents | |
+| Metric | Definition | Target |
+|---|---|---|
+| Time to first value | Median hours from sign-up to first sent proposal, scheduled recurring visit or sent invoice | < 24 h |
+| Setup completion | % of trials completing core checklist (basics, services, clients, team) within 7 days | >= 60% |
+| Crew task success (glove test) | % of 10 core crew tasks completed without help, gloved | >= 95% |
+| Crew app weekly active | Field users active weekly / field users invited | >= 85% |
+| Offline resilience | % of offline sessions with zero data loss | 100% |
+| SUS by persona | In-app SUS surveys | Office >= 80, portal >= 85, crew (translated) >= 80 |
+| Command palette adoption | % of weekly active office users using palette weekly | >= 40% |
+| Proposal approval experience | Median time from proposal first view to signature; portal CSAT | Improve vs tenant baseline; CSAT >= 4.6/5 |
+| Portal payment completion | % of payment flows started that succeed | >= 90% |
+| "How do I" support tickets | Tickets tagged usability per 100 active tenants per month | Downward trend quarter over quarter |
+| Accessibility defects | Open AA defects older than 14 days | 0 |
+| Translation coverage | % strings translated and reviewed in es-US and fr-CA, every surface | 100% at release |
+| Performance | INP p75 office; LCP p75 portal; crew cold start | < 200 ms; < 2.0 s; < 2.5 s |
+| Design system coverage | % of UI components from `@rootline/ui` (static analysis) | >= 90% |
+| AI acceptance | % AI suggestions accepted or edited-then-accepted, per feature | Tracked; investigate < 30% |
+| Notification health | % P2 notifications actioned within 2 business hours; mute rate per category | >= 70%; mute rate < 10% |
+| Stripe connected | % of trials with charges enabled on their connected account by day 7 | >= 50% |
+| Texting live | Median days from 10DLC submission to approval; % of trials with SMS live by day 10 | Track and improve; >= 60% by day 10 (estimate, carrier-dependent) |
+| Crew first-run time | Median time from SMS invite tap to first clock-in (19.6) | < 3 min |
+| Spanish parity | Task success and time on task for `es-US` crew users vs `en-US`, from benchmark scripts and live use | Within 5 percentage points and 10% time |
+| Portal scope errors | Support tickets where a contact saw, or could not see, something because of their scope (5.4) | Downward trend; 0 data-exposure incidents |
 
 ---
 
@@ -2753,29 +2760,29 @@ Figma (libraries per surface on top of a shared foundations library) -> tokens p
 13. **Color-blind safe crew colors**: crew identity colors on maps and boards come from the validated categorical palette plus a crew letter/number marker, so dispatchers with color-vision deficiency never rely on color alone.
 14. **Living style guide for tenants**: each Company gets an auto-generated brand page (logo usage, colors, fonts, photo style) they can share with sign makers and truck-wrap vendors.
 15. **Brand from your website in one click**: in wizard steps 1 and 7, the owner pastes the Company's website URL, or snaps a photo of a truck wrap. Rootline extracts the logo, brand colors and closest curated font pair, applies the contrast auto-correction (7.7), and shows the portal, an invoice email and a proposal cover already branded. Branding takes 30 seconds instead of a designer's afternoon, and it is the first "wow" of the trial.
-16. **UX friction radar for the founder**: the admin console aggregates privacy-safe interaction signals across tenants: undo rate per action, error-message frequency by message key, validation failures per field, rage-clicks, abandoned wizard steps and "Explain this screen" requests. Each Monday it ranks the 10 worst friction points with the screens and tenant counts involved, so the founder and design leads fix what hurts most, not what is reported loudest. No client PII and no free text are used (21.2 `ui.*` events).
+16. **UX friction radar for the founder**: the admin console aggregates privacy-safe interaction signals across tenants: undo rate per action, error-message frequency by message key, validation failures per field, rage-clicks, abandoned wizard steps and "Explain this screen" requests. Each Monday it ranks the 10 worst friction points with the screens and tenant counts involved, so the founder and the build agent fix what hurts most, not what is reported loudest. No client PII and no free text are used (21.2 `ui.*` events).
 17. **Integration health strip**: the app shell's status area (bottom of the left rail, where "Sync ok" sits) shows a quiet dot per external dependency: Stripe, bank feed, QuickBooks/Xero sync, SMS carrier, maps. When one degrades, a one-line banner names the effect, not the vendor error ("Card payments are delayed. Stripe is having issues. Payments will retry automatically."), and links to the status page. Office staff stop filing tickets for outages that are not ours, and nobody wonders why the bank feed is stale.
 18. **Reply-to-confirm for clients**: visit reminders accept one-character replies in either language ("1 = confirm, 2 = reschedule", "1 = confirmar, 2 = cambiar"). The reply updates the visit and the dispatch board without a portal login. That suits older homeowners and flip phones, it is the most accessible confirmation channel there is, and it cuts the "call to confirm" load on the office in April.
 19. **"Show me how" micro-videos in the user's language**: every crew checklist item and every wizard step can carry a 10-20 s captioned clip recorded by the Company itself (an owner showing how they want beds edged) or by Rootline. Tribal knowledge becomes onboarding content, and Spanish-first crews get the standard shown rather than written.
 
 ---
 
-## 28. Open questions
+## 28. Decisions on former open questions
 
-1. **Brand name and identity:** is "Rootline" final? Trademark search and domain availability must be cleared before the brand studio engagement.
-2. **Typeface licensing for tenant pairs:** keep tenant fonts to a curated OFL list only, or allow tenant-uploaded licensed fonts on higher tiers (font licensing and rendering in PDFs/emails)?
-3. **Dark mode at MVP?** Recommendation is V1 for web; crew app ships field-sun at MVP and field-night at V1. Confirm with the Field Council.
-4. **Spanish register:** informal "tú" in the crew app vs. formal "usted"; validate first with bilingual crews in the Great Lakes launch Regions (Chicagoland and Ohio), then with one Southwest panel before national rollout, and freeze the glossary only after both.
-5. **Single native app vs. two apps:** one "Rootline" app with crew and manager modes, or a separate "Rootline Office" app? One app simplifies distribution; two apps reduce cognitive load and permission prompts.
-6. **Translation management vendor:** Lokalise vs. Phrase vs. Crowdin, decided on glossary features, RN support and cost.
-7. **Platform-hosted homeowner funnel:** brand presence of Rootline vs. the matched Company in the platform-hosted flow, and how lead-routing fairness is explained to homeowners.
-8. **Compliance scope for accessibility:** which ACRs to publish first (office app vs. portal) and whether to target any AAA criteria for the crew app (e.g., 2.5.5 target size enhanced is already exceeded).
-9. **Competitive teardown gaps:** several vendors' current UIs are not yet verified first-hand. The Discovery-phase teardown must confirm or correct section 2 claims, especially for LMN, SingleOps, Real Green, Arborgold, Copilot CRM and SynkedUP.
-10. **Quebec requirements:** confirm with counsel the current French-language obligations for software, contracts, invoices and portal content before marketing in Quebec.
-11. **Swipe vs hold for irreversible crew actions:** [05](05-field-crew-mobile-app.md) specifies swipe-to-confirm, and this doc requires a press-and-hold equivalent. Decide the default from glove-test data in the first prototype round, and update both docs to the winner.
-12. **Native system chrome:** adopt the OS's translucent tab bar and toolbars (more native, lower contrast in sun) or ship opaque custom bars in all themes (more consistent, slightly less native)? Recommendation: opaque in Outdoor mode, native elsewhere. Confirm with the sun test.
-13. **Commercial approval confirmation threshold:** what dollar amount should require step-up confirmation (SMS or passkey) for `approver` contacts? The default proposed in 18.17 is $5,000; validate with HOA treasurers and property managers.
-14. **Accessibility obligations of tenants' public-sector clients:** do municipal clients expect the tenant-branded portal and PDFs to meet WCAG 2.1 AA under the ADA Title II rule? If so, we should publish a tenant-facing ACR template for Companies to hand over in bids.
+1. **Brand name and identity:** "Rootline" is the working name; the founder clears the trademark before public launch, then the build agent finalizes the identity from section 7 for the founder's approval (OD-65).
+2. **Typeface licensing for tenant pairs:** tenants choose from the curated OFL list only; no tenant-uploaded fonts.
+3. **Dark mode:** light, dark, field-sun and field-night themes all ship (OD-40).
+4. **Spanish register:** informal "tú" in the crew app and formal "usted" for clients, as in 13.6; the glossary is edited from in-app feedback, not frozen.
+5. **Single native app vs. two apps:** one app with crew, manager and sales modes (OD-38, R25-C3).
+6. **Translation management vendor:** the build agent picks Lokalise, Phrase or Crowdin on glossary features, React Native support and cost, and records the choice in an ADR.
+7. **Platform-hosted homeowner funnel:** co-branded "Powered by Rootline" with the matched Company named on every screen; only opted-in Companies are matched, and the client of record's Company gets the first look (OD-06). The homeowner sees a plain explanation of how Companies are matched ([22](22-business-model-pricing-gtm.md) section 5.3).
+8. **Compliance scope for accessibility:** ACRs for the office app and the portal both publish; AAA criteria are met where 12.2 says so (target size, accessible authentication), with no wider AAA target.
+9. **Competitive teardown gaps:** the marketing agent confirms or corrects section 2 claims against primary sources before any public use, starting with LMN, SingleOps, Real Green, Arborgold, Copilot CRM and SynkedUP (OD-07). The build does not wait on it.
+10. **Quebec requirements:** fr-CA ships with French-first defaults; marketing to Quebec waits for the founder's French-language check with counsel (OD-70, [24](24-product-scope-decisions-catalog.md) section 1.7).
+11. **Swipe vs hold for irreversible crew actions:** press-and-hold, with no swipe-to-confirm (OD-39).
+12. **Native system chrome:** opaque bars in Outdoor mode, native chrome elsewhere, and the sun test (24.2) re-runs on each major OS release.
+13. **Commercial approval confirmation threshold:** $5,000 by default, configurable per Company (18.17).
+14. **Accessibility obligations of tenants' public-sector clients:** Rootline publishes a tenant-facing ACR template that Companies can hand over in bids.
 
 ---
 

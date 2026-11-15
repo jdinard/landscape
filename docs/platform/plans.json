@@ -22,7 +22,7 @@
       "ai_credits": 300,
       "sms": 500,
       "storage_gb": 50,
-      "support": "Help center, chat (business hours)",
+      "support": "Help center, chat with the support agent",
       "migration": "Self-serve import tools",
       "segments": [
         "S1"
@@ -48,7 +48,7 @@
       "ai_credits": 2000,
       "sms": 2500,
       "storage_gb": 250,
-      "support": "Chat + phone, onboarding webinar series",
+      "support": "Chat + phone with the support agent, onboarding webinar series",
       "migration": "Free on annual (one source system)",
       "segments": [
         "S2",
@@ -76,7 +76,7 @@
       "ai_credits": 6000,
       "sms": 8000,
       "storage_gb": 1000,
-      "support": "Named onboarding specialist, priority phone",
+      "support": "Priority chat and phone, a guided onboarding plan run by the support agent",
       "migration": "Free (up to 3 source systems)",
       "segments": [
         "S2",
@@ -103,7 +103,7 @@
       "sms": null,
       "sms_note": "Pooled, negotiated",
       "storage_gb": null,
-      "support": "CSM, SLA, sandbox, SSO",
+      "support": "SLA, sandbox, SSO, a direct line to the founder",
       "migration": "Included, scoped project",
       "segments": [
         "S4",
@@ -1838,7 +1838,7 @@
       "code": "payroll",
       "name": "Payroll (embedded)",
       "price": "$39/mo + $6 per paid employee per month (estimate; depends on the embedded payroll partner's wholesale cost)",
-      "available_on": "US; Canada where the embedded payroll partner supports it (15 EMB-03)",
+      "available_on": "US and Canada, where the payroll partner supports the Company (24 section 1.4)",
       "includes": "Full-service payroll, tax filings, direct deposit, piece-rate and overtime from Rootline timesheets",
       "why": "Partner cost per employee"
     },
@@ -1847,7 +1847,7 @@
       "name": "Ledger Plus",
       "price": "$49/mo",
       "available_on": "Starter",
-      "includes": "AP, unlimited bank feeds, bank reconciliation, budgets",
+      "includes": "AP, unlimited bank feeds with reconciliation, budgets",
       "why": "Bank-feed aggregator cost and support"
     },
     {
@@ -1869,7 +1869,7 @@
     {
       "code": "snow_ice",
       "name": "Snow & Ice module",
-      "price": "$99/mo billed Nov-Mar only ($495 per season); $79/mo in season on annual plans ($395 per season)",
+      "price": "**$99/mo billed Nov-Mar only** ($495 per season); $79/mo in season on annual plans ($395 per season)",
       "available_on": "All",
       "includes": "Storm events, trigger depths (e.g., 2-inch push trigger), per-push / per-event / seasonal billing, salt and ice-melt logs, timestamped photo proof for slip-and-fall defense, weather feeds. Builds on Snow Lite, which every tier includes at no charge (rule below)",
       "why": "Regional",
@@ -1926,7 +1926,7 @@
       "name": "Dedicated database",
       "price": "From $1,000/mo",
       "available_on": "Ent.",
-      "includes": "Isolated Postgres per tenant (see Architecture)",
+      "includes": "Isolated Postgres per tenant (see [Architecture](20-architecture-security.md))",
       "why": "Infra cost"
     },
     {
@@ -1934,8 +1934,8 @@
       "name": "Premium Success",
       "price": "10% of annual contract value (minimum $3,000/yr)",
       "available_on": "Pro",
-      "includes": "Named CSM, quarterly business reviews with benchmark pack, custom report builds",
-      "why": "Human cost"
+      "includes": "Priority support-agent queue, a quarterly business review prepared by the agents and held with the founder, benchmark pack, custom report builds",
+      "why": "Founder time and custom work"
     },
     {
       "code": "match_territory",

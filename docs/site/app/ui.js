@@ -27,7 +27,6 @@ const h = RL.h = {
     return `<button type="button" class="${cls}"${attr({ 'data-act': o.act, 'data-go': o.go, 'data-x': o.x, 'data-ui': o.ui, 'data-val': o.val, 'data-modal': o.modal, 'data-set': o.set, disabled: o.disabled, title: o.title, 'aria-pressed': o.pressed })}>${o.icon ? icon(o.icon) : ''}${label}</button>`;
   },
   link(label, go, x) { return `<a href="#" data-go="${esc(go)}"${x ? ` data-x="${esc(x)}"` : ''}>${label}</a>`; },
-  tag() { return ''; }, // TEMP shim until screens drop tier tags
   pill(text, tone, ic) { return `<span class="pill${tone ? ' ' + tone : ''}">${ic ? icon(ic) : ''}${text}</span>`; },
   
   chip(v) { const k = v === '-' ? 'N' : String(v)[0]; return `<span class="chip ${k}">${esc(v)}</span>`; },

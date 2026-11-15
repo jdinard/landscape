@@ -226,7 +226,6 @@ function ctx() {
   c.fcGrant = fcKey => fieldClass(fcKey, o.role);
   c.seesFully = fcKey => { const v = fieldClass(fcKey, o.role); return !isDash(v) && /^RW?(\s|\(|$)/.test(v) && !/in window|billing|own orders/.test(v); };
   c.vis = (surface, nav) => navVis(surface, nav, o.role, o.scope);
-  c.inLens = () => true; // TEMP shim until screens drop tier gates
   c.tr = (en, es) => (s.lang === 'es' && es != null) ? es : en;
   c.access = id => access(ROUTES[id], s);
   c.today = s.season === 'winter' ? { label: 'Tue Jan 12, 2027', short: 'Jan 12', month: 'January', dow: 'Tuesday' } : { label: 'Tue May 11, 2027', short: 'May 11', month: 'May', dow: 'Tuesday' };
