@@ -6,7 +6,7 @@
 
 - **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, and a clickable walkthrough prototype of the AI design flow.
 - **Decided:** bring-your-own Stripe, a built-in double-entry ledger, the Great Lakes launch region, Snow Lite in the MVP, pricing tiers, the region-aware Plant Knowledge Base, and "humans approve AI actions by default".
-- **Remains:** founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the other workflows, technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
+- **Remains:** founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the other workflows (the biggest gap: small and recurring jobs such as weekly grass cutting), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
 
 ## 1. What's done
 
@@ -112,7 +112,20 @@ No step below carries a time or effort estimate. The order within each list is a
 
 ### 2.4 More clickable prototypes
 
-The AI design flow is clickable. The other workflows exist as static concept screens and would benefit from clickable walkthroughs too:
+The AI design flow is clickable. The other workflows exist as static concept screens and would benefit from clickable walkthroughs too.
+
+**The biggest gap: small and recurring jobs.** The clickable walkthrough covers the large design-build proposal, but most landscape work is small and repeats: weekly grass cutting, mulch, cleanups, aeration, lawn programs, irrigation start-ups. The specification already covers this loop end to end, but no walkthrough shows it yet:
+
+| Step | Specified in |
+|---|---|
+| Quick Quote on a phone in under 2 minutes, with turf area from AI aerial measurement and auto-generated tiers [MVP] | [03](03-crm-sales-estimating-proposals.md) EST-11, INTEL-03 |
+| Recurring pricing from a visit model (for example 9,000 sq ft of turf at $73 a visit, $2,190 a season) [MVP] | [03](03-crm-sales-estimating-proposals.md) EST-12 |
+| Homeowner instant quote and online booking with a route day and card on file [V1] | [16](16-marketing-growth-communications.md) sections 4.3 and 5.1 |
+| Service agreement, generated season of visits, route insertion, "on the way" texts; rain-day reshuffles by the scheduling agent [V1] | [04](04-scheduling-dispatch-routing.md), [07](07-invoicing-billing-contracts.md) section 4.3, [17](17-ai-copilot-automation.md) A7 |
+| Crew route and visit run sheet, photos, Spot-it upsells and Spanish voice notes turned into add-on quotes [MVP] | [05](05-field-crew-mobile-app.md), [17](17-ai-copilot-automation.md) A4 |
+| Per-visit or level monthly billing, autopay on the Company's own Stripe account, ledger posting, collections reminders [MVP] | [07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md), [17](17-ai-copilot-automation.md) A5 |
+
+The other workflows that would benefit from clickable walkthroughs:
 
 - office lead-to-cash: dispatch board, visit completion, invoicing and payment
 - a crew member's day in the crew app, including offline sync and Snow Lite
