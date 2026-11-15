@@ -453,7 +453,7 @@ const jobsInScope = c => {
 };
 const jMargin = j => Math.round(100 * (j.value - j.cost) / j.value);
 // data.js draws phases from one list for every job type; show a phase that fits the type.
-const dPhase = j => ({ Maintenance: 'Recurring visits', 'Lawn program': 'Round 2 of 5', Irrigation: 'Service visit', Snow: 'Seasonal', Lighting: j.phase === 'Recurring' ? 'Install' : j.phase })[j.type] || (j.phase === 'Recurring' ? 'Install' : j.phase);
+const dPhase = j => j.status === 'Scheduled' ? 'Not started' : ({ Maintenance: 'Recurring visits', 'Lawn program': 'Round 2 of 5', Irrigation: 'Service visit', Snow: 'Seasonal', Lighting: j.phase === 'Recurring' ? 'Install' : j.phase })[j.type] || (j.phase === 'Recurring' ? 'Install' : j.phase);
 const burn = j => {
   const p = j.actualHrs / j.budgetHrs, tone = p > 1 ? 'danger' : p > .9 ? 'warn' : '';
   return `<div style="min-width:120px"><div class="flex nw tiny" style="justify-content:space-between"><span class="num">${j.actualHrs} / ${j.budgetHrs} h</span><span class="num ${tone ? '' : 't3'}" style="${tone === 'danger' ? 'color:var(--danger-text);font-weight:700' : ''}">${Math.round(p * 100)}%</span></div>${h.progress(j.actualHrs, j.budgetHrs, tone)}</div>`;
@@ -577,7 +577,7 @@ RL.screen('web.job', (c) => {
   const tabs = [['overview', 'Overview'], ['visits', 'Visits', visits.length], ['phases', 'Phases', ph.length], ['materials', 'Materials', mats.length], ['costs', crewMode ? 'Hours vs budget' : 'Costs vs budget'], ['cos', 'Change orders', 3], ['photos', 'Photos', 6], ['docs', 'Documents', 6], ['timeline', 'Timeline']];
   let body = '';
   if (tab === 'overview') {
-    body = h.kpis(crewMode ? [{ label: 'Hours used', value: `${j.actualHrs} h`, delta: `of ${j.budgetHrs} h budget`, tone: j.actualHrs > j.budgetHrs ? 'danger' : '' }, { label: 'Percent complete', value: pct + '%' }, { label: 'Current phase', value: esc(j.phase) }]
+    body = h.kpis(crewMode ? [{ label: 'Hours used', value: `${j.actualHrs} h`, delta: `of ${j.budgetHrs} h budget`, tone: j.actualHrs > j.budgetHrs ? 'danger' : '' }, { label: 'Percent complete', value: pct + '%' }, { label: 'Current phase', value: esc(dPhase(j)) }]
       : [{ label: 'Contract', value: P(c, j.value), delta: '1 change order signed' }, { label: 'Billed to date', value: P(c, billed), delta: `deposit ${P(c, deposit)} applied` }, { label: 'Hours', value: `${j.actualHrs} / ${j.budgetHrs} h`, tone: j.actualHrs > j.budgetHrs ? 'danger' : '', delta: j.actualHrs > j.budgetHrs ? 'over budget' : 'inside budget' }, { label: 'Projected margin', value: Mg(c, projMargin + '%'), delta: c.sees('margin') ? `sold ${jMargin(j)}%` : '', tone: projMargin < jMargin(j) - 2 ? 'warn' : 'ok' }])
       + h.cols('2', [h.card({ title: 'Details', body: h.kv([['Client', crewMode ? esc(j.client) : h.link(esc(j.client), 'web.client', j.clientId)], ['Type', esc(j.type)], ['Crew', `${esc(j.crew)}${crew ? ' · lead ' + esc(crew.lead) : ''}`], ['Start', esc(j.start)], ['Status', st(j.status)], ['Proposal', crewMode ? 'Signed' : h.link('PR-2290 (signed)', 'web.proposal', 'PR-2290')], !crewMode && ['Internal note', h.mask(c, 'internal_note', 'Client prefers texts; side gate sticks.')], ['Crew note', c.tr('Park on the street; neighbor\'s drive is shared.', 'Estacionar en la calle; la entrada es compartida.')]]) }),
         h.card({ title: 'Progress by phase', body: h.bars(ph.map(p => ({ label: esc(p.n), value: p.pct, max: 100, tone: p.cur ? 'info' : p.pct === 100 ? '' : 'accent', right: p.pct + '%' }))) })]);
@@ -607,7 +607,7 @@ RL.screen('web.job', (c) => {
   }
   const canInv = c.can('invoice').includes('W');
   const actions = crewMode ? h.btn('Draft change order', { icon: 'pen', act: 'job-co' }) : (c.allowed('visit.dispatch') ? h.btn('Schedule visit', { icon: 'calendar', go: 'web.board' }) : '') + (c.allowed('change_order') ? h.btn('Change order', { icon: 'pen', act: 'job-co' }) : '') + (canInv ? h.btn('Progress invoice', { kind: 'primary', icon: 'receipt', act: 'job-inv' }) : '');
-  return h.page({ crumbs: [['Jobs', 'web.jobs'], [esc(j.id)]], title: `${esc(j.id)} · ${esc(j.title)}`, sub: `${esc(j.client)} · ${esc(j.type)} · ${esc(j.crew)}`, tags: st(j.status) + h.pill(`Phase: ${esc(j.phase)}`, 'info') + (j.actualHrs > j.budgetHrs ? h.pill('Over hours budget', 'danger') : ''), actions })
+  return h.page({ crumbs: [['Jobs', 'web.jobs'], [esc(j.id)]], title: `${esc(j.id)} · ${esc(j.title)}`, sub: `${esc(j.client)} · ${esc(j.type)} · ${esc(j.crew)}`, tags: st(j.status) + h.pill(`Phase: ${esc(dPhase(j))}`, 'info') + (j.actualHrs > j.budgetHrs ? h.pill('Over hours budget', 'danger') : ''), actions })
     + h.tabs('job.tab', tabs, 'overview') + body;
 });
 RL.act('job-co', toast('Change order drafted with photos; the client signs in the portal (mock).'));

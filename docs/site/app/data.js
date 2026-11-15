@@ -129,7 +129,23 @@ function build(t) {
 
   // ---- work ----
   const jobType = s => /mow|cleanup|prun|edging|Mulch/i.test(s) ? 'Maintenance' : /Round|Grub|aeration|Overseed/i.test(s) ? 'Lawn program' : /Irrigation|Backflow|Controller|Winter/i.test(s) ? 'Irrigation' : /Snow|Salt/i.test(s) ? 'Snow' : /Light/i.test(s) ? 'Lighting' : /Design|Planting plan|Concept/i.test(s) ? 'Design' : 'Install';
-  D.jobs = Array.from({ length: 14 }, (_, i) => { const c = D.clients[(i * 2 + 1) % D.clients.length]; const title = i === 0 && D.res.project ? D.res.project : pick(servicePool); const v = i === 0 && D.res.projectValue ? D.res.projectValue : val(); const bh = Math.max(4, Math.round(v / 95)); const ah = Math.round(bh * (0.55 + R() * .6)); return { id: 'J-' + (1042 + i), client: i === 0 ? D.res.client : c.name, clientId: i === 0 ? D.res.clientId : c.id, title, type: jobType(title), status: pick(['Scheduled', 'In progress', 'In progress', 'Complete', 'On hold']), value: v, cost: Math.round(v * (.48 + R() * .2)), budgetHrs: bh, actualHrs: ah, phase: pick(['Layout', 'Excavation', 'Base', 'Install', 'Planting', 'Punch list', 'Recurring']), crew: D.crews.length ? D.crews[i % D.crews.length].name : '-', start: pick(['May 3', 'May 10', 'May 12', 'May 17', 'Apr 26']) }; });
+  const OFF_PEAK = /Winterization|Fall cleanup|Snow|Salt|Holiday/;
+  const crewFor = type => { const want = { Install: ['install', 'enhancement'], Maintenance: ['maintenance', 'enhancement'], 'Lawn program': ['lawn', 'maintenance'], Irrigation: ['irrigation', 'maintenance'], Lighting: ['lighting', 'irrigation', 'install'], Design: [] }[type] || []; for (const w of want) { const cr = D.crews.find(x => x.type === w); if (cr) return cr.name; } return D.crews.length && type !== 'Design' ? D.crews[0].name : '-'; };
+  const PHASES = ['Layout', 'Excavation', 'Base', 'Install', 'Planting', 'Punch list'];
+  const jobPool = servicePool.filter(x => !OFF_PEAK.test(x));
+  D.jobs = Array.from({ length: 14 }, (_, i) => {
+    const c = D.clients[(i * 2 + 1) % D.clients.length];
+    const title = i === 0 && D.res.project ? D.res.project : pick(jobPool.length ? jobPool : servicePool);
+    const type = jobType(title), project = type === 'Install' || type === 'Lighting' || type === 'Design';
+    const v = i === 0 && D.res.projectValue ? D.res.projectValue : project ? val() : round(int(18, 90) * 100, 50);
+    const bh = Math.max(4, Math.round(v / 95));
+    const status = i === 0 ? 'In progress' : project ? pick(['Scheduled', 'In progress', 'In progress', 'Complete', 'On hold']) : pick(['In progress', 'In progress', 'Scheduled']);
+    const pi = i === 0 ? 2 : int(1, 4);
+    const phase = type === 'Design' ? (status === 'Complete' ? 'Delivered' : status === 'Scheduled' ? 'Site visit' : 'Concept') : !project ? 'Recurring' : status === 'Scheduled' ? 'Not started' : status === 'Complete' ? 'Complete' : status === 'On hold' ? PHASES[1] : PHASES[pi];
+    const progress = status === 'Scheduled' ? 0 : status === 'Complete' ? 1 : status === 'On hold' ? .2 : !project ? .35 : (pi + .5) / PHASES.length;
+    const ah = status === 'Scheduled' ? 0 : Math.round(bh * progress * (status === 'Complete' ? .9 + R() * .25 : .85 + R() * .35));
+    return { id: 'J-' + (1042 + i), client: i === 0 ? D.res.client : c.name, clientId: i === 0 ? D.res.clientId : c.id, title, type, status, value: v, cost: Math.round(v * (.48 + R() * .2)), budgetHrs: bh, actualHrs: ah, phase, crew: crewFor(type), start: status === 'Scheduled' ? pick(['May 17', 'May 24', 'Jun 1']) : project ? pick(['Apr 19', 'Apr 26', 'May 3']) : 'Apr 5' };
+  });
   D.visits = [];
   D.crews.forEach((cr, ci) => {
     const n = cr.type === 'install' ? 1 : cr.type === 'lawn' ? 14 : cr.type === 'irrigation' ? 9 : 11;
@@ -138,15 +154,24 @@ function build(t) {
       const c = D.clients[(ci * 7 + k * 3) % D.clients.length];
       const svc = cr.type === 'install' ? (D.jobs.find(j => j.type === 'Install') || D.jobs[0]).title : cr.type === 'lawn' ? pick(SERVICES.lawn_programs) : cr.type === 'irrigation' ? pick(SERVICES.irrigation) : pick(SERVICES.maintenance.slice(0, 2));
       const dur = cr.type === 'install' ? 480 : cr.type === 'lawn' ? 25 : cr.type === 'irrigation' ? 45 : int(25, 55);
-      const status = k < 3 ? 'Done' : k === 3 ? 'In progress' : k === 4 ? 'En route' : 'Scheduled';
-      D.visits.push({ id: 'V-' + (58813 + ci * 40 + k), stop: k + 1, crew: cr.name, crewId: cr.id, client: c.name, clientId: c.id, address: c.address, service: svc, start: `${Math.floor(tmin / 60)}:${String(tmin % 60).padStart(2, '0')}`, dur, budgetHrs: Math.round(dur / 60 * 10) / 10 * (cr.members.length + 1), status, x: 30 + ((ci * 53 + k * 37) % 340), y: 24 + ((ci * 31 + k * 47) % 200), gate: (D.properties.find(p => p.client === c.id) || {}).gate, dog: (D.properties.find(p => p.client === c.id) || {}).dog });
+      const NOW = 10 * 60 + 40, prevEnd = D.visits.length && D.visits[D.visits.length - 1].crewId === cr.id ? D.visits[D.visits.length - 1]._end : 0;
+      const status = tmin + dur <= NOW ? 'Done' : tmin <= NOW ? 'In progress' : prevEnd && prevEnd <= NOW && !D.visits.some(v => v.crewId === cr.id && v.status === 'En route') ? 'En route' : 'Scheduled';
+      D.visits.push({ id: 'V-' + (58813 + ci * 40 + k), stop: k + 1, crew: cr.name, crewId: cr.id, client: c.name, clientId: c.id, address: c.address, service: svc, start: `${Math.floor(tmin / 60)}:${String(tmin % 60).padStart(2, '0')}`, dur, budgetHrs: Math.round(dur / 60 * 10) / 10 * (cr.members.length + 1), status, x: 30 + ((ci * 53 + k * 37) % 340), y: 24 + ((ci * 31 + k * 47) % 200), gate: (D.properties.find(p => p.client === c.id) || {}).gate, dog: (D.properties.find(p => p.client === c.id) || {}).dog, _end: tmin + dur });
       tmin += dur + int(6, 18);
     }
   });
   D.agreements = D.clients.filter(c => c.type !== 'residential' || c.autopay).slice(0, 12).map((c, i) => ({ id: 'AG-' + (310 + i), client: c.name, clientId: c.id, name: c.type === 'residential' ? 'Weekly mowing, Apr-Nov' : 'Commercial maintenance + snow', billing: c.type === 'residential' ? pick(['Level billing (8 installments)', 'Per visit', 'Prepaid season']) : 'Monthly fixed + per push', value: c.type === 'residential' ? round(int(14, 40) * 100, 10) : round(int(18, 90) * 1000, 100), visits: c.type === 'residential' ? 30 : 34, renews: pick(['Nov 30', 'Dec 31', 'Mar 31']), escalator: pick(['4% fixed', 'CPI, cap 6%', '5% fixed']), autopay: c.autopay }));
 
   // ---- money ----
-  D.invoices = Array.from({ length: 18 }, (_, i) => { const c = D.clients[(i * 5) % D.clients.length]; const amt = c.type === 'residential' ? round(int(4, 60) * 25, 5) : round(int(8, 120) * 100, 10); const st = ['Paid', 'Paid', 'Sent', 'Overdue', 'Draft', 'Paid', 'Sent', 'Paid', 'Overdue', 'Paid'][i % 10]; return { id: 'INV-' + (3307 + i), client: c.name, clientId: c.id, date: pick(['May 10', 'May 7', 'May 3', 'Apr 30', 'Apr 15', 'Apr 1']), due: pick(['May 25', 'May 17', 'May 1', 'Apr 15']), amount: amt, balance: st === 'Paid' ? 0 : amt, status: st, po: c.type !== 'residential' ? 'PO-' + int(40000, 49999) : '', autopay: c.autopay }; });
+  const MDAYS = { Mar: 31, Apr: 30, May: 31, Jun: 30 }, MON = ['Mar', 'Apr', 'May', 'Jun'];
+  const addDays = (d, n) => { let [m, day] = d.split(' '); day = +day + n; while (day > MDAYS[m]) { day -= MDAYS[m]; m = MON[MON.indexOf(m) + 1]; } return m + ' ' + day; };
+  D.invoices = Array.from({ length: 18 }, (_, i) => {
+    const c = D.clients[(i * 5) % D.clients.length], com = c.type !== 'residential', terms = com ? 30 : 15;
+    const amt = com ? round(int(8, 120) * 100, 10) : round(int(4, 60) * 25, 5);
+    const st = ['Paid', 'Paid', 'Sent', 'Overdue', 'Draft', 'Paid', 'Sent', 'Paid', 'Overdue', 'Paid'][i % 10];
+    const date = st === 'Draft' ? 'May 10' : st === 'Sent' ? pick(com ? ['May 3', 'Apr 30', 'Apr 15'] : ['May 10', 'May 7', 'May 3']) : st === 'Overdue' ? pick(com ? ['Apr 1', 'Mar 31', 'Apr 8'] : ['Apr 15', 'Apr 1', 'Apr 20']) : pick(['May 7', 'May 3', 'Apr 30', 'Apr 15', 'Apr 1']);
+    return { id: 'INV-' + (3307 + i), client: c.name, clientId: c.id, date, due: addDays(date, terms), terms: 'Net ' + terms, amount: amt, balance: st === 'Paid' ? 0 : amt, status: st, po: com ? 'PO-' + int(40000, 49999) : '', autopay: c.autopay };
+  });
   D.payments = D.invoices.filter(i => i.status === 'Paid').map((i, k) => ({ id: 'PY-' + (7710 + k), client: i.client, invoice: i.id, amount: i.amount, date: i.date, method: i.autopay ? 'Card on file (autopay)' : pick(['ACH', 'Card', 'Check', 'Apple Pay']), fee: i.autopay ? Math.round(i.amount * .029 * 100 + 30) / 100 : 0, payout: 'po_' + (1000 + k * 7) }));
   const ar = D.invoices.filter(i => i.balance);
   const arBase = Math.round(t.people_peak * (t.segment === 'S6' ? 140000 : 72000) * (t.segment === 'S4' ? .12 : .085));

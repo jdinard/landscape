@@ -106,6 +106,16 @@ function estOf(c, e) {
   const D = c.D, p = D.proposals.find(x => x.estimate === e.id);
   return Object.assign({}, e, p ? { title: p.title, client: p.client, clientId: p.clientId } : {});
 }
+// Derived view of an opportunity: when a proposal exists for the same client and value, title and stage follow it.
+function oppsOf(c) {
+  const D = c.D;
+  return D.opps.map(o => {
+    const p = D.proposals.find(x => x.clientId === o.clientId && x.value === o.value);
+    if (!p) return o;
+    const stage = p.status === 'Signed' ? 'Won' : /Viewed|Sent/.test(p.status) ? 'Proposal sent' : o.stage;
+    return Object.assign({}, o, { title: p.title, stage, next: p.status === 'Viewed' ? 'Viewed, nudge today' : p.status === 'Sent' ? 'Awaiting first view' : stage === 'Won' ? 'Deposit paid' : o.next });
+  });
+}
 const findEst = (c, id) => { const D = c.D; const e = D.estimates.find(x => x.id === id) || D.estimates[0]; return estOf(c, e); };
 // The hero design's plant count follows the Studio takeoff (data.js carries a rounder number).
 const dPl = (c, d) => d === c.D.designs[0] ? 62 : d.plants;
@@ -252,7 +262,7 @@ function pipelineCard(c) {
   const won = D.proposals.filter(p => p.status === 'Signed');
   const stages = ['New', 'Qualified', 'Site visit', 'Designing', 'Proposal sent'];
   return h.card({ title: W ? 'Spring pipeline' : 'Pipeline and proposals out', sub: W ? 'Planning and sales season: book installs before crews return' : 'This week', body: `${grid('repeat(4,minmax(0,1fr))', [['New leads', D.leads.filter(l => l.status === 'New').length + (W ? 9 : 0)], ['Proposals out', out.length], ['Out value', kmoney(sum(out, p => p.value))], [W ? 'Signed since Dec 1' : 'Won this month', kmoney(sum(won, p => p.value))]].map(([l, v]) => `<div><div class="tiny t3">${l}</div><b class="num" style="font-size:1.05rem">${v}</b></div>`), 8)}
-    ${h.bars(stages.map(s => { const os = D.opps.filter(o => o.stage === s); return { label: s, value: sum(os, o => o.value * o.prob / 100), right: `${os.length} · ${kmoney(sum(os, o => o.value))}` }; }))}
+    ${h.bars(stages.map(s => { const os = oppsOf(c).filter(o => o.stage === s); return { label: s, value: sum(os, o => o.value * o.prob / 100), right: `${os.length} · ${kmoney(sum(os, o => o.value))}` }; }))}
     ${row('Win rate (90 days)', D.kpi.closeRate + '%')}`, actions: h.btn('Pipeline', { sm: true, go: 'web.pipeline' }) });
 }
 function designQueue(c, o) {
@@ -428,7 +438,7 @@ function officeToday(c) {
 }
 function estimatorToday(c) {
   const D = c.D, me = c.who, W = c.winter;
-  const mine = D.opps.filter(o => o.owner === me);
+  const mine = oppsOf(c).filter(o => o.owner === me);
   const myP = D.proposals.filter(p => { const e = D.estimates.find(x => x.id === p.estimate); return e && e.by === me && ['Sent', 'Viewed'].includes(p.status); });
   const appts = [['8:30', 'Site visit', D.leads[2]], ['10:15', 'Design review', { name: D.res.client, address: D.res.property }], ['1:00', 'Site visit', D.leads[5]], ['3:30', W ? 'Renewal walk-through' : 'Measure for patio', D.leads[7]]];
   const wins = D.proposals.filter(p => p.status === 'Signed');
@@ -678,7 +688,7 @@ RL.screen('web.client', (c) => {
   const D = c.D, cl = pickClient(c);
   const props = propsOf(c, cl), ag = agreementOf(c, cl);
   const jobs = D.jobs.filter(j => j.clientId === cl.id), vis = D.visits.filter(v => v.clientId === cl.id);
-  const ests = D.estimates.map(e => estOf(c, e)).filter(e => e.clientId === cl.id), props2 = D.proposals.filter(p => p.clientId === cl.id), opps = D.opps.filter(o => o.clientId === cl.id);
+  const ests = D.estimates.map(e => estOf(c, e)).filter(e => e.clientId === cl.id), props2 = D.proposals.filter(p => p.clientId === cl.id), opps = oppsOf(c).filter(o => o.clientId === cl.id);
   const des = D.designs.filter(d => d.clientId === cl.id), invs = D.invoices.filter(i => i.clientId === cl.id), pays = D.payments.filter(p => p.client === cl.name);
   const tabs = visibleTabsFor(c);
   const labels = { overview: ['Overview'], properties: ['Properties', props.length], work: ['Work', jobs.length + vis.length || null], sales: ['Sales', ests.length + props2.length || null], designs: ['Designs', des.length || null], money: ['Money'], comms: ['Communications'], files: ['Files'], notes: ['Notes'] };
@@ -764,11 +774,8 @@ RL.screen('web.contacts', (c) => {
     + h.card({ flush: true, body: h.table([
       { k: 'name', label: 'Contact', fmt: (n, x) => `<div class="flex nw">${h.avatar(n)}<div><div class="b small">${esc(n)}</div><div class="tiny t3">${contactVal(c, x.email, { billing: x.billing || x.scope === 'Primary' })} · ${contactVal(c, x.phone, { billing: x.billing || x.scope === 'Primary' })}</div></div></div>` },
       { k: 'scope', label: 'Role', fmt: (s, x) => `${h.pill(esc(s), scopeTone(s))}<div class="tiny t3">${esc(x.roles)}${x.term ? ' · ' + esc(x.term) : ''}</div>` },
-      { k: 'portal', label: 'Portal', fmt: v => h.pill(esc(v), /Active/.test(v) ? 'ok' : 'info') },
-      { k: 'sms', label: 'SMS consent', fmt: v => `<span class="small">${esc(v)}</span>` },
-      { k: 'email', label: 'Email', fmt: (v, x) => `<span class="small">${esc(x.email ? 'On' : 'Off')}</span>` },
-      { k: 'lang', label: 'Lang' },
-      { k: 'last', label: 'Last portal visit' },
+      { k: 'portal', label: 'Portal', fmt: (v, x) => `${h.pill(esc(v), /Active/.test(v) ? 'ok' : 'info')}<div class="tiny t3">${x.last && x.last !== '-' ? 'Last visit ' + esc(x.last) : 'Not visited yet'}</div>` },
+      { k: 'sms', label: 'Consent and language', fmt: (v, x) => `<div class="small">SMS: ${esc(v.replace(/^Service on/, 'service on'))}</div><div class="tiny t3">Email ${x.email ? 'on' : 'off'} · ${esc(x.lang)}</div>` },
       { k: 'scope', label: '', fmt: (s, x) => editable(x) ? h.btn('Edit', { sm: true, act: 'ct-act', val: 'Edit contact ' + x.name }) : '<span class="tiny t3">Read only</span>' },
     ], list) })
     + grid('1fr 1fr', [
@@ -807,7 +814,7 @@ const STAGES = ['New', 'Qualified', 'Site visit', 'Designing', 'Proposal sent', 
 RL.screen('web.pipeline', (c) => {
   const D = c.D, r = c.role;
   const scope = r === 'estimator' ? 'mine' : r === 'designer' ? 'design' : U('pi-scope', 'all');
-  const opps = D.opps.filter(o => scope === 'mine' ? o.owner === c.who : scope === 'design' ? o.stage === 'Designing' : true);
+  const opps = oppsOf(c).filter(o => scope === 'mine' ? o.owner === c.who : scope === 'design' ? o.stage === 'Designing' : true);
   const view = U('pi-view', 'board');
   const stale = o => parseInt(o.age, 10) > 21 && o.stage !== 'Won';
   const weighted = sum(opps.filter(o => o.stage !== 'Won'), o => o.value * o.prob / 100);
@@ -815,7 +822,7 @@ RL.screen('web.pipeline', (c) => {
   const kp = h.kpis([{ label: 'Open pipeline', value: h.mask(c, 'price', kmoney(sum(opps.filter(o => o.stage !== 'Won'), o => o.value))) }, { label: 'Weighted', value: h.mask(c, 'price', kmoney(weighted)) }, { label: 'Stale over 21 days', value: opps.filter(stale).length, tone: 'warn', delta: 'Nudge or close' }, { label: 'Win rate (90 d)', value: D.kpi.closeRate + '%' }, { label: c.winter ? 'Spring backlog' : 'Backlog', value: D.kpi.backlogWeeks + ' wk' }]);
   const scopeBar = r === 'estimator' ? h.note('Your pipeline (opportunity RWX/o).') : r === 'designer' ? h.note('Designer: opportunities in the Designing stage, read only.') : `<div class="flex">${seg('pi-scope', [['all', 'Everyone'], ['mine', 'Mine']], 'all')}<span class="tiny t3">Forecast ${h.tag('V1')} uses stage probability x value.</span></div>`;
   const body = view === 'table' ? h.card({ flush: true, body: h.table([{ k: 'id', label: 'Opp', m: true }, { k: 'client', label: 'Client', fmt: (v, o) => `<div class="b small">${esc(v)}</div><div class="tiny t3">${esc(o.title)}</div>` }, { k: 'stage', label: 'Stage', fmt: s => stPill(s) }, { k: 'value', label: 'Value', n: true, fmt: v => h.mask(c, 'price', money(v)) }, { k: 'prob', label: 'Prob.', n: true, fmt: v => v + '%' }, { k: 'owner', label: 'Owner' }, { k: 'next', label: 'Next step' }, { k: 'age', label: 'Age', fmt: (v, o) => stale(o) ? h.pill(v + ' stale', 'warn') : esc(v) }], opps, { go: 'web.client', x: o => o.clientId }) })
-    : h.board(STAGES.map(s => { const os = opps.filter(o => o.stage === s); return { title: s, sub: `${os.length} · ${c.sees('price') ? kmoney(sum(os, o => o.value)) : ''}`, cards: os.map(o => ({ title: esc(o.client), sub: `${esc(o.title)} · ${h.mask(c, 'price', money(o.value))}`, meta: `${h.avatar(o.owner)}<span class="tiny t3">${esc(o.next)}</span>${stale(o) ? h.pill(o.age, 'warn') : ''}${/AI/.test(o.next) ? h.pill('AI draft', 'ai') : ''}`, go: 'web.client', x: o.clientId, tone: /AI/.test(o.next) ? 'ai' : '' })) }; }));
+    : h.board(STAGES.filter(s => s !== 'Won').map(s => { const os = opps.filter(o => o.stage === s); return { title: s, sub: `${os.length} · ${c.sees('price') ? kmoney(sum(os, o => o.value)) : ''}`, cards: os.map(o => ({ title: esc(o.client), sub: `${esc(o.title)} · ${h.mask(c, 'price', money(o.value))}`, meta: `${h.avatar(o.owner)}<span class="tiny t3">${esc(o.next)}</span>${stale(o) ? h.pill(o.age, 'warn') : ''}${/AI/.test(o.next) ? h.pill('AI draft', 'ai') : ''}`, go: 'web.client', x: o.clientId, tone: /AI/.test(o.next) ? 'ai' : '' })) }; })).replace('class="board"', 'class="board" style="grid-auto-columns:minmax(150px,1fr)"') + `<div class="tiny t3">Won this season: ${opps.filter(o => o.stage === 'Won').length} · ${h.mask(c, 'price', kmoney(sum(opps.filter(o => o.stage === 'Won'), o => o.value)))}. Won deals move to Jobs.</div>`;
   return head + kp + scopeBar + body;
 });
 
@@ -827,13 +834,17 @@ RL.screen('web.assessments', (c) => {
   const D = c.D, list = assessments(c), sel = list.find(a => a.id === U('as-sel', '')) || list[1];
   const own = sel.by === c.who || c.role === 'owner' || c.role === 'office_manager' || c.role === 'ops_manager';
   const head = h.page({ title: 'Site assessments', sub: 'Captured offline on iPad or phone, synced with photos, measurements and voice notes', tags: h.tag('V1'), actions: /W/.test(c.can('site_assessment')) ? h.btn('Schedule assessment', { kind: 'primary', icon: 'plus', act: 'ld-act', val: 'Site visit scheduled' }) : '' });
-  const tbl = h.card({ flush: true, body: `<div class="li">${list.map(a => `<div class="li-i go" role="button" tabindex="0" data-ui="as-sel" data-val="${a.id}" style="${a.id === sel.id ? 'background:var(--primary-soft)' : ''}"><span class="ico ${a.status === 'Draft estimate ready' ? 'ai' : a.status === 'Scheduled' ? '' : 'ok'}">${icon('clipboard')}</span><div style="min-width:0"><div class="tt">${esc(a.id)} ${esc(a.who)}</div><div class="ss">${esc(a.service)} · ${esc(a.when)} · ${esc(first(a.by))}</div></div><div class="flex nw gap4">${a.photos ? h.pill(icon('camera', 's') + a.photos) : ''}${h.pill(esc(a.status), a.status === 'Draft estimate ready' ? 'ai' : a.status === 'Scheduled' ? 'info' : 'ok')}</div></div>`).join('')}</div>` });
+  const tbl = h.card({ flush: true, body: `<div class="li">${list.map(a => `<div class="li-i go" role="button" tabindex="0" data-ui="as-sel" data-val="${a.id}" style="${a.id === sel.id ? 'background:var(--primary-soft)' : ''}"><span class="ico ${a.status === 'Draft estimate ready' ? 'ai' : a.status === 'Scheduled' ? '' : 'ok'}">${icon('clipboard')}</span><div style="min-width:0"><div class="tt">${esc(a.id)} ${esc(a.who)}</div><div class="ss">${esc(a.service)} · ${esc(a.when)} · ${esc(first(a.by))}</div><div class="flex gap4" style="margin-top:3px">${h.pill(esc(a.status), a.status === 'Draft estimate ready' ? 'ai' : a.status === 'Scheduled' ? 'info' : 'ok')}${a.photos ? h.pill(icon('camera', 's') + a.photos) : ''}</div></div><span></span></div>`).join('')}</div>` });
   const ai = U('as-ai', '');
+  const hero = sel.who === D.res.client;
+  const K = hero ? { meas: [['Patio area', '320 sq ft', 'Laser, on site'], ['Back border', '1,180 sq ft', 'Aerial AI, verified'], ['Bed edge', '229 lin ft', 'Walked wheel']], voice: 'Client wants the patio off the kitchen door, about 16 by 20, fire pit later. Deer every night, so nothing they browse. Existing burning bush on the fence line should come out.', soil: 'Heavy clay (x1.20)', deer: 'High (client reported)', lines: 9, draft: 'Paver patio kit 320 sq ft (herringbone, clay x1.20) · seat wall 18 lin ft · bed prep 1,574 sq ft · mulch 15 cu yd · 62 plants from the regional palette, deer-resistant filter on · burning bush removal.' }
+    : sel.id === 'SA-302' ? { meas: [['Foundation bed', '410 sq ft', 'Laser, on site'], ['Bed edge', '96 lin ft', 'Walked wheel'], ['Turf to remove', '220 sq ft', 'Aerial AI, verified']], voice: 'Pull the six overgrown yews along the front. Keep everything under 4 ft below the windows. She likes white flowers and wants it to look good in winter too.', soil: 'Loam, some clay at the downspout', deer: 'Moderate', lines: 6, draft: 'Yew removal x6 with stump grind · sod removal 220 sq ft · bed prep 410 sq ft · mulch 4 cu yd · 18 plants under 4 ft (white bloom, evergreen backbone) · steel edging 96 lin ft.' }
+    : { meas: [['Patio area', '280 sq ft', 'Laser, on site'], ['Walkway', '60 sq ft', 'Laser, on site'], ['Downspouts', '2', 'Photo 6']], voice: 'Paver patio off the back slider, about 14 by 20, plus a short walk to the gate. Both downspouts dump right where the patio goes, so we need to pipe them out.', soil: 'Heavy clay (x1.20)', deer: 'Low', lines: 5, draft: 'Paver patio kit 280 sq ft · walkway 60 sq ft · 2 downspout extensions, 40 lin ft · base excavation in clay x1.20 · haul-away 6 cu yd.' };
   const detail = h.card({ title: `${esc(sel.id)} · ${esc(sel.who)}`, sub: `${esc(sel.address)} · ${esc(sel.when)} · by ${esc(sel.by)}`, body: sel.status === 'Scheduled' ? h.empty('Scheduled. The checklist, property measurements and last season\'s notes are cached for offline use.') : `${grid('repeat(3,minmax(0,1fr))', [h.photo('before', { label: 'Back yard', badge: 'Photo 1 of ' + sel.photos }), h.photo('bed', { label: 'Foundation bed', badge: 'Annotated' }), h.photo('lawn', { label: 'Side yard' })], 8)}
-    ${h.table([{ k: 0, label: 'Checklist item' }, { k: 1, label: 'Answer' }], [['Access', 'Gate 42 in: machine fits (x1.10)'], ['Haul distance', '50-150 ft from drop point (x1.10)'], ['Soil', 'Heavy clay (x1.20)'], ['Slope', 'Under 10%'], ['Utilities', 'Called in, flags expected Thu'], ['Deer pressure', 'High (client reported)']], { dense: true })}
-    ${h.table([{ k: 0, label: 'Measurement' }, { k: 1, label: 'Value', n: true }, { k: 2, label: 'Source' }], [['Patio area', '320 sq ft', 'Laser, on site'], ['Back border', '1,180 sq ft', 'Aerial AI, verified'], ['Bed edge', '229 lin ft', 'Walked wheel']], { dense: true })}
-    <div class="small" style="background:var(--surface-2);border-radius:8px;padding:8px 10px">${icon('mic', 's')} <b>Voice note ${sel.voice} min</b> ${h.tag('V1')} · "Client wants the patio off the kitchen door, about 16 by 20, fire pit later. Deer every night, so nothing they browse. Existing burning bush on the fence line should come out."</div>
-    ${c.has('agents_mvp') ? (ai ? h.aiCard({ agent: 'Estimating from notes (A6)', level: 'L2', credits: 8, title: 'Draft estimate created: 9 lines mapped to your price book', body: '<div class="small">Paver patio kit 320 sq ft (herringbone, clay x1.20) · seat wall 18 lin ft · bed prep 1,574 sq ft · mulch 15 cu yd · 62 plants from the regional palette, deer-resistant filter on · burning bush removal.</div>', why: 'Quantities come from the measurements above; prices come only from the estimating engine. 2 lines flagged low confidence.', actions: h.btn('Open draft estimate', { sm: true, kind: 'ai', go: 'web.estimate', x: D.estimates[0].id }) }) : `<div class="flex">${h.btn('Draft estimate from notes (8 cr)', { kind: 'ai', icon: 'spark', ui: 'as-ai', val: '1' })}<span class="tiny t3">${creditLine(c, 8)}</span></div>`) : lockPill(c, 'agents_mvp', 'A6')}` , actions: own ? '' : h.pill('Read only') });
+    ${h.table([{ k: 0, label: 'Checklist item' }, { k: 1, label: 'Answer' }], [['Access', 'Gate 42 in: machine fits (x1.10)'], ['Haul distance', '50-150 ft from drop point (x1.10)'], ['Soil', K.soil], ['Slope', 'Under 10%'], ['Utilities', 'Called in, flags expected Thu'], ['Deer pressure', K.deer]], { dense: true })}
+    ${h.table([{ k: 0, label: 'Measurement' }, { k: 1, label: 'Value', n: true }, { k: 2, label: 'Source' }], K.meas, { dense: true })}
+    <div class="small" style="background:var(--surface-2);border-radius:8px;padding:8px 10px">${icon('mic', 's')} <b>Voice note ${sel.voice} min</b> ${h.tag('V1')} · "${esc(K.voice)}"</div>
+    ${hero && !ai ? `<div class="flex">${h.pill('Estimate created', 'ok')}<span class="small">${h.link(esc(D.estimates[0].id), 'web.estimate', D.estimates[0].id)} was drafted from these notes (A6) and approved May 8.</span></div>` : c.has('agents_mvp') ? (ai ? h.aiCard({ agent: 'Estimating from notes (A6)', level: 'L2', credits: 8, title: `Draft estimate created: ${K.lines} lines mapped to your price book`, body: `<div class="small">${esc(K.draft)}</div>`, why: 'Quantities come from the measurements above; prices come only from the estimating engine. 2 lines flagged low confidence.', actions: hero ? h.btn('Open estimate', { sm: true, kind: 'ai', go: 'web.estimate', x: D.estimates[0].id }) : h.btn('Open draft estimate', { sm: true, kind: 'ai', act: 'es-act', val: 'Draft estimate opened with ' + K.lines + ' lines' }) }) : `<div class="flex">${h.btn('Draft estimate from notes (8 cr)', { kind: 'ai', icon: 'spark', ui: 'as-ai', val: '1' })}<span class="tiny t3">${creditLine(c, 8)}</span></div>`) : lockPill(c, 'agents_mvp', 'A6')}` , actions: own ? '' : h.pill('Read only') });
   return head + grid('minmax(0,0.85fr) minmax(0,1.4fr)', [tbl, detail]);
 });
 
@@ -854,10 +865,8 @@ RL.screen('web.estimates', (c, a) => {
     + h.card({ flush: true, body: h.table([
       { k: 'id', label: 'Estimate', m: true, fmt: (v, m) => esc(m.e.id) },
       { k: 'client', label: 'Client and title', fmt: (v, m) => `<div class="b small">${esc(m.e.client)}</div><div class="tiny t3">${esc(m.e.title)}</div>` },
-      { k: 'by', label: 'By', fmt: (v, m) => `<span class="small">${esc(m.e.by)}</span>` },
-      { k: 'date', label: 'Date', fmt: (v, m) => esc(m.e.date) },
+      { k: 'by', label: 'By', fmt: (v, m) => `<span class="small nowrap">${esc(first(m.e.by))}</span><div class="tiny t3 nowrap">${esc(m.e.date)}</div>` },
       { k: 'status', label: 'Status', fmt: (v, m) => stPill(m.e.status) + (m.e.value > 15000 && m.e.status === 'In review' ? ' ' + h.pill('Needs approval', 'warn') : '') },
-      { k: 'opts', label: 'Options', n: true, fmt: () => '3' },
       { k: 'price', label: 'Price', n: true, fmt: (v, m) => h.mask(c, 'price', money(m.e.value)) },
       { k: 'cost', label: 'Cost', n: true, fmt: (v, m) => fcOwn(c, 'cost', m.own, money(Math.round(m.T.better.direct))) },
       { k: 'gm', label: 'Margin', fmt: (v, m) => marginCell(c, m.gm, m.netAct, m.own) },
@@ -1033,7 +1042,7 @@ RL.screen('web.sales_templates', (c, a) => {
   const lim = a && a.state === 'limit' ? `<div class="cd"><div class="cd-b">${h.meter('Price book items (Starter: 1 price book, 200 items)', 164, 200)}</div></div>` : '';
   const tabs = h.tabs('tp-tab', [['kits', 'Kits', kits.length], ['qq', 'Quick Quote templates', QQT.length], ['est', 'Estimate templates', 5], ['prop', 'Proposal templates', 4]], 'kits');
   let body = '';
-  if (tab === 'kits') body = grid('minmax(0,1fr) minmax(0,1.25fr)', [h.card({ flush: true, body: h.table([{ k: 0, label: 'Kit' }, { k: 1, label: 'Version' }, { k: 2, label: 'Inputs', n: true }, { k: 3, label: 'Components', n: true }, { k: 4, label: 'Used on', n: true }], kits, { dense: true }) }),
+  if (tab === 'kits') body = grid('minmax(0,1fr) minmax(0,1.25fr)', [h.card({ flush: true, body: h.table([{ k: 0, label: 'Kit', fmt: (v, r) => `<div class="b small">${esc(v)}</div><div class="tiny t3">${esc(r[1])} · ${r[2]} inputs · ${r[3]} components</div>` }, { k: 4, label: 'Used on', n: true, fmt: v => `${v} <span class="tiny t3">est.</span>` }], kits, { dense: true }) }),
     h.card({ title: 'Paver patio per sq ft v3', sub: 'Pinned on 23 estimates · new version shows a diff before upgrade', body: `${h.table([{ k: 0, label: 'Input' }, { k: 1, label: 'Type' }, { k: 2, label: 'Default' }], [['area_sqft', 'number > 0', 'required'], ['perimeter_lf', 'number', 'from design'], ['edge_against_structure_lf', 'number', '0'], ['base_depth_in', 'number 4-12', '6'], ['pattern', 'running bond, herringbone, basket weave', 'running bond'], ['paver_product', 'price book: Pavers', 'Dublin Cobble 60 mm'], ['access', 'difficulty', 'drive-up']], { dense: true })}
       ${h.table([{ k: 0, label: 'Component' }, { k: 1, label: 'Formula', m: true }], [['Base gravel (t)', 'base_area * 0.5 / 27 * 1.15 * 1.4'], ['Bedding sand (t)', 'area / 12 / 27 * 1.10 * 1.35'], ['Pavers (sq ft)', 'area * if(pattern == herringbone, 1.10, 1.05)'], ['Edge restraint (pcs)', 'ceil((perimeter - house_edge) / 8)'], ['Lay pavers (mh)', '0.090 * area * pattern_mult']], { dense: true })}${canW ? '' : h.note('Read only for your role. The owner and office manager maintain kits.')}` })]);
   if (tab === 'qq') body = h.card({ flush: true, body: h.table([{ k: 0, label: 'Service' }, { k: 1, label: 'Visible inputs (prefill)' }, { k: 2, label: 'Engine binding' }, { k: 3, label: 'Default tiers' }], QQT) }) + h.note('Quick Quote is a presentation mode of the same engine: at most 5 visible inputs, 3 condition taps and price nudges within +/-10% (03 EST-11).');
@@ -1268,7 +1277,7 @@ RL.screen('web.plants', (c) => {
     <div class="flex">${ratingPill(sel)}${NATIVE.test(sel.common) ? h.pill('Native to Ohio', 'info') : ''}${r.k === 'inv' ? h.pill('Hidden from picker, blocked for AI', 'danger') : ''}</div>
     ${h.kv([['Region', `${esc(c.t.region)} ${zoneOf(c)}${r.why ? ' · reason: ' + esc(r.why) : ''}`], ['Zones', esc(sel.zones)], ['Sun', esc(sel.sun)], ['Deer', `${esc(sel.deer)} resistance`], ['Client note', esc(PCARE[sel.common] || 'Reliable with normal care in this Region.')], ['Provenance', 'Inherited from Great Lakes and Ohio Valley, reviewed Mar 2027'], ['Price book', `${plantSize(sel)} ${h.mask(c, 'price', money(plantPrice(sel)) + ' installed')}`]])}
     ${nurs}<div class="flex">${canW && r.n >= 2 ? h.btn('Add to Company palette', { sm: true, kind: 'primary', act: 'pl-act', val: sel.common + ' added to the Company palette' }) : ''}${h.btn(favs.includes(sel.common) ? 'Favorited' : 'Favorite', { sm: true, icon: 'star', act: 'pl-act', val: 'Saved to your favorites' })}</div>` });
-  return head + filters + h.note(`Region-filtered: ${vis.length} shown. ${showHidden ? 'Showing hidden plants for reference.' : hiddenN + ' hidden: not recommended or invasive here.'} Rating scale 1-5 plus do-not-use (12 KB-PRP-01).`) + grid('minmax(0,1.35fr) minmax(0,1fr)', [tbl, detail]);
+  return head + filters + h.note(`Region-filtered: ${vis.length} shown. ${showHidden ? 'Showing hidden plants for reference.' : hiddenN + ' hidden: not recommended or invasive here.'} Rating scale 1-5 plus do-not-use (12 KB-PRP-01).`) + grid('minmax(0,1.7fr) minmax(0,1fr)', [tbl, detail]);
 });
 RL.act('pl-act', (el) => { RL.toast(esc(el.dataset.val) + ' (mock)'); return false; });
 

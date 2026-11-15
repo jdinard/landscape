@@ -82,8 +82,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .mx-tb { display: inline-flex; gap: 5px; align-items: center; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: .78rem; font-weight: 620; cursor: pointer; white-space: nowrap; color: var(--text); }
 .mx-tb.ai { background: var(--ai-bg); color: var(--ai-text); border-color: color-mix(in srgb, var(--ai-solid) 50%, transparent); }
 .mx-av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: .72rem; font-weight: 750; background: var(--accent-soft); color: var(--accent); flex: none; }
-.mx-subnav { display: flex; gap: 2px; padding: 0 14px; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; }
-.mx-subnav button { border: 0; background: none; padding: 9px 10px; font-size: .8rem; font-weight: 600; color: var(--text-2); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; display: inline-flex; gap: 5px; align-items: center; }
+.mx-subnav { display: flex; flex-wrap: wrap; gap: 0 2px; padding: 0 14px; border-bottom: 1px solid var(--border); background: var(--surface); }
+.mx-subnav button { border: 0; background: none; padding: 9px 8px; font-size: .8rem; font-weight: 600; color: var(--text-2); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; display: inline-flex; gap: 5px; align-items: center; }
 .mx-subnav button[aria-current="page"] { color: var(--text); border-bottom-color: var(--primary); }
 .mx-subnav button.locked { color: var(--text-3); }
 .mx-content { padding: 16px 18px 28px; min-width: 0; display: grid; gap: 14px; align-content: start; }

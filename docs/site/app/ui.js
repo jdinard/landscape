@@ -135,13 +135,13 @@ const h = RL.h = {
     let s = `<div class="mapbox"><svg viewBox="0 0 400 ${o.h || 240}" role="img" aria-label="${esc(o.label || 'Map')}"><rect class="mp-bg" width="400" height="${o.h || 240}"/>`;
     s += `<path class="mp-wt" d="M${300 + seed % 40},0 C${320 + seed % 30},60 ${360},90 400,${110 + seed % 30} L400,0 Z"/><rect class="mp-pk" x="${40 + seed % 60}" y="150" width="70" height="46" rx="8"/>`;
     for (let i = 0; i < 6; i++) s += `<path class="mp-rd" d="M0,${30 + i * 40 + (seed * i) % 12} L400,${20 + i * 42 + (seed * (i + 2)) % 18}"/><path class="mp-rd2" d="M${40 + i * 66 + (seed * i) % 20},0 L${30 + i * 70},${o.h || 240}"/>`;
-    if (o.route) (Array.isArray(o.route[0][0]) ? o.route : [o.route]).forEach((rt, j) => { s += `<path class="mp-rt" stroke="${['var(--primary)', 'var(--sky-500)', 'var(--clay-500)', 'var(--marigold-600)', 'var(--iris-500)'][j % 5]}" d="M${rt.map(p => p.join(',')).join(' L')}"/>`; });
-    (o.pins || []).forEach(p => { s += `<g class="mp-pin"><circle cx="${p.x}" cy="${p.y}" r="9" fill="${tones[p.tone] || 'var(--primary)'}"/><text x="${p.x}" y="${p.y}">${esc(p.n != null ? p.n : '')}</text>${p.label ? `<title>${esc(p.label)}</title>` : ''}</g>`; });
+    if (o.route) (Array.isArray(o.route[0][0]) ? o.route : [o.route]).forEach((rt, j) => { s += `<path class="mp-rt" stroke="${(o.colors && o.colors[j]) || ['var(--primary)', 'var(--sky-500)', 'var(--clay-500)', 'var(--marigold-600)', 'var(--iris-500)'][j % 5]}" d="M${rt.map(p => p.join(',')).join(' L')}"/>`; });
+    (o.pins || []).forEach(p => { s += `<g class="mp-pin"><circle cx="${p.x}" cy="${p.y}" r="9" fill="${p.color || tones[p.tone] || 'var(--primary)'}"/><text x="${p.x}" y="${p.y}">${esc(p.n != null ? p.n : '')}</text>${p.label ? `<title>${esc(p.label)}</title>` : ''}</g>`; });
     return s + '</svg></div>';
   },
   /* Yard photo placeholder. kind: before|after|mockup|lawn|snow|patio|bed|night ; o: { label } */
   photo(kind, o) {
-    o = o || {}; const id = 'g' + hash(kind + (o.label || '') + Math.random()).toString(36);
+    o = o || {}; const id = 'g' + hash(kind + (o.label || '')).toString(36);
     const sky = kind === 'night' ? '#1d2440' : kind === 'snow' ? '#dfe6ec' : '#cfe3f1';
     const lawn = kind === 'snow' ? '#f4f6f8' : kind === 'before' ? '#a9b46a' : '#6fa34f';
     let s = `<span class="photo"><svg viewBox="0 0 320 200" role="img" aria-label="${esc(o.label || kind + ' photo')}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky}"/><stop offset="1" stop-color="${kind === 'night' ? '#2c3a5a' : '#eef4f8'}"/></linearGradient></defs><rect width="320" height="200" fill="url(#${id})"/>`;
