@@ -1,0 +1,452 @@
+{
+  "_about": "Sample tenants for the Platform Explorer, one or more per segment. Reyes and Summit come from 02; Greenleaf is the sample dataset (21 §15.3, 22 §4.6); the rest are illustrative.",
+  "tenants": [
+    {
+      "id": "brookside",
+      "name": "Brookside Lawn Co.",
+      "segment": "S1",
+      "plan": "starter",
+      "city": "Toledo, OH",
+      "region": "Southeast Michigan and Toledo",
+      "people_peak": 3,
+      "people_winter": 1,
+      "crews": 1,
+      "clients": 86,
+      "branches": [
+        "Toledo"
+      ],
+      "revenue_mix": {
+        "maintenance": 85,
+        "snow": 15
+      },
+      "addons": [],
+      "modules": [
+        "maintenance",
+        "snow_lite"
+      ],
+      "books": "rootline",
+      "brand": {
+        "color": "#2F6428",
+        "portal": "brookside.rootline.app",
+        "logo": "BL"
+      },
+      "cast": {
+        "owner": "Nate Brooks",
+        "technician": "Cody Brooks"
+      },
+      "hero_clients": [
+        {
+          "name": "Marjorie Klein",
+          "type": "residential",
+          "property": "4410 Sylvania Ave",
+          "service": "Weekly mowing",
+          "autopay": true
+        },
+        {
+          "name": "Oak Lane Dental",
+          "type": "commercial",
+          "property": "2201 Oak Ln",
+          "service": "Biweekly mowing + snow",
+          "autopay": false
+        }
+      ],
+      "illustrative": true
+    },
+    {
+      "id": "greenleaf",
+      "name": "Greenleaf Grounds Co.",
+      "segment": "S2",
+      "plan": "pro",
+      "city": "Columbus, OH",
+      "region": "Central Ohio",
+      "people_peak": 28,
+      "people_winter": 11,
+      "crews": 6,
+      "clients": 412,
+      "branches": [
+        "Columbus"
+      ],
+      "revenue_mix": {
+        "installs": 52,
+        "maintenance": 38,
+        "enhancements": 10
+      },
+      "addons": [
+        "snow_ice"
+      ],
+      "modules": [
+        "maintenance",
+        "design_build",
+        "hardscape",
+        "irrigation",
+        "lawn_programs",
+        "snow_lite"
+      ],
+      "books": "rootline",
+      "brand": {
+        "color": "#2F6428",
+        "portal": "portal.greenleafgrounds.example",
+        "logo": "GG"
+      },
+      "cast": {
+        "owner": "Erin Castillo",
+        "office_manager": "Tasha Greene",
+        "estimator": "Sam Kowalski",
+        "designer": "Jess Morales",
+        "ops_manager": "Luis Ortega",
+        "crew_lead": "Andrés Vega",
+        "technician": "Javier Ruiz",
+        "bookkeeper": "Priya Shah",
+        "subcontractor": "Big Blue Hardscapes"
+      },
+      "hero_clients": [
+        {
+          "name": "Dana and Mark Henderson",
+          "type": "residential",
+          "property": "1847 Wyandotte Rd, Upper Arlington",
+          "service": "Backyard patio + planting design",
+          "autopay": true
+        },
+        {
+          "name": "Ada Lindqvist",
+          "type": "residential",
+          "property": "2248 Northam Rd, Upper Arlington",
+          "service": "Weekly mowing, level billing",
+          "autopay": true
+        },
+        {
+          "name": "Tom Brennan",
+          "type": "residential",
+          "property": "2251 Northam Rd",
+          "service": "Weekly mowing (booked online)",
+          "autopay": true
+        },
+        {
+          "name": "Clintonville Commons HOA",
+          "type": "hoa",
+          "property": "Clintonville Commons (64 homes)",
+          "service": "Common-area maintenance",
+          "autopay": false
+        }
+      ],
+      "note": "The sample dataset every trial can toggle (22 §4.6, 21 §15.3) and the cast of the other Rootline walkthroughs."
+    },
+    {
+      "id": "reyes",
+      "name": "Reyes Outdoor Living",
+      "segment": "S2",
+      "plan": "grow",
+      "city": "Naperville, IL",
+      "region": "Chicagoland and Northwest Indiana",
+      "people_peak": 22,
+      "people_winter": 9,
+      "crews": 4,
+      "clients": 310,
+      "branches": [
+        "Naperville"
+      ],
+      "revenue_mix": {
+        "installs": 55,
+        "maintenance": 35,
+        "enhancements": 10
+      },
+      "addons": [],
+      "modules": [
+        "maintenance",
+        "design_build",
+        "hardscape",
+        "snow_lite"
+      ],
+      "books": "rootline",
+      "brand": {
+        "color": "#96441F",
+        "portal": "portal.reyesoutdoor.example",
+        "logo": "RO"
+      },
+      "cast": {
+        "owner": "Dana Reyes",
+        "office_manager": "Linda Kowalski",
+        "estimator": "Jake Turner",
+        "designer": "Sofia Martinez",
+        "ops_manager": "Chris Novak",
+        "crew_lead": "Miguel Hernández",
+        "technician": "Tyler Grant",
+        "bookkeeper": "Karen Liu, CPA",
+        "subcontractor": "Big Blue Hardscapes"
+      },
+      "hero_clients": [
+        {
+          "name": "Jennifer and Mark Thompson",
+          "type": "residential",
+          "property": "1190 Hobson Rd, Naperville",
+          "service": "Paver patio + fire pit + foundation beds ($28,000); weekly mowing",
+          "autopay": true
+        },
+        {
+          "name": "Henderson rental (Alvarez family, residents)",
+          "type": "residential",
+          "property": "22 Lakeview Ct",
+          "service": "Weekly mowing",
+          "autopay": true
+        }
+      ],
+      "note": "Reference Company in 02 (personas Dana, Linda, Jake, Sofia, Miguel, Tyler, Karen; client Jennifer Thompson)."
+    },
+    {
+      "id": "maplehollow",
+      "name": "Maple Hollow Lawn & Shrub",
+      "segment": "S3",
+      "plan": "grow",
+      "city": "Waukesha, WI",
+      "region": "Southeast Wisconsin",
+      "people_peak": 14,
+      "people_winter": 5,
+      "crews": 4,
+      "clients": 1180,
+      "branches": [
+        "Waukesha"
+      ],
+      "revenue_mix": {
+        "lawn_programs": 48,
+        "maintenance": 42,
+        "snow": 10
+      },
+      "addons": [],
+      "modules": [
+        "maintenance",
+        "lawn_programs",
+        "snow_lite"
+      ],
+      "books": "rootline",
+      "brand": {
+        "color": "#246690",
+        "portal": "portal.maplehollowlawn.example",
+        "logo": "MH"
+      },
+      "cast": {
+        "owner": "Gina Moretti",
+        "office_manager": "Becca Lund",
+        "estimator": "Gina Moretti",
+        "ops_manager": "Ruben Ortiz",
+        "crew_lead": "Hector Salinas",
+        "technician": "Kyle Ahn",
+        "bookkeeper": "Joan Fischer"
+      },
+      "hero_clients": [
+        {
+          "name": "The Novak household",
+          "type": "residential",
+          "property": "S41 Pebble Creek Dr",
+          "service": "5-step program + weekly mowing",
+          "autopay": true
+        }
+      ],
+      "illustrative": true
+    },
+    {
+      "id": "summit",
+      "name": "Summit Grounds Group",
+      "segment": "S4",
+      "plan": "pro",
+      "city": "Columbus, OH",
+      "region": "Central Ohio",
+      "people_peak": 140,
+      "people_winter": 45,
+      "crews": 22,
+      "clients": 260,
+      "branches": [
+        "Columbus",
+        "Dayton",
+        "Cincinnati"
+      ],
+      "revenue_mix": {
+        "commercial_maintenance": 62,
+        "snow": 24,
+        "irrigation": 9,
+        "enhancements": 5
+      },
+      "addons": [
+        "snow_ice"
+      ],
+      "modules": [
+        "maintenance",
+        "commercial",
+        "irrigation",
+        "snow_lite",
+        "snow_ice"
+      ],
+      "books": "rootline",
+      "brand": {
+        "color": "#1B4F70",
+        "portal": "portal.summitgrounds.example",
+        "logo": "SG"
+      },
+      "cast": {
+        "owner": "Marcus Bell",
+        "office_manager": "Rosa Delgado",
+        "estimator": "Kevin Shaw",
+        "ops_manager": "Andre Williams",
+        "crew_lead": "Hector Ruiz",
+        "technician": "Luis Ramírez",
+        "bookkeeper": "Summit controller (Alan Price)",
+        "subcontractor": "Dobbs Irrigation (Ray Dobbs)"
+      },
+      "hero_clients": [
+        {
+          "name": "Crossroads Property Management",
+          "type": "commercial",
+          "property": "9 retail centers incl. Westgate Plaza",
+          "service": "Maintenance + snow, PO required",
+          "autopay": false
+        },
+        {
+          "name": "Willow Creek HOA",
+          "type": "hoa",
+          "property": "Willow Creek (412 homes)",
+          "service": "Common areas + enhancements, 2-of-5 board vote over $5,000",
+          "autopay": false
+        }
+      ],
+      "note": "Reference Company in 02 (Marcus, Andre, Luis, Ray; clients Patricia, Bob, Denise, Jorge)."
+    },
+    {
+      "id": "beacon",
+      "name": "Beacon Irrigation & Lighting",
+      "segment": "S5",
+      "plan": "grow",
+      "city": "Grand Rapids, MI",
+      "region": "West Michigan",
+      "people_peak": 18,
+      "people_winter": 6,
+      "crews": 5,
+      "clients": 2150,
+      "branches": [
+        "Grand Rapids"
+      ],
+      "revenue_mix": {
+        "irrigation": 64,
+        "lighting": 26,
+        "maintenance": 10
+      },
+      "addons": [],
+      "modules": [
+        "irrigation",
+        "lighting",
+        "maintenance",
+        "snow_lite"
+      ],
+      "books": "rootline",
+      "brand": {
+        "color": "#A87410",
+        "portal": "portal.beaconirrigation.example",
+        "logo": "BI"
+      },
+      "cast": {
+        "owner": "Owen Pike",
+        "office_manager": "Lori Vos",
+        "estimator": "Ben DeWitt",
+        "ops_manager": "Dan Kuiper",
+        "crew_lead": "Mateo Cruz",
+        "technician": "Eli Brandt",
+        "bookkeeper": "Sue Visser"
+      },
+      "hero_clients": [
+        {
+          "name": "The DeVries home",
+          "type": "residential",
+          "property": "3310 Cascade Rd SE",
+          "service": "Start-up, winterization, lighting upgrade",
+          "autopay": true
+        }
+      ],
+      "illustrative": true
+    },
+    {
+      "id": "fernwood",
+      "name": "Fernwood Garden Design",
+      "segment": "S6",
+      "plan": "design_solo",
+      "city": "Evanston, IL",
+      "region": "Chicagoland and Northwest Indiana",
+      "people_peak": 1,
+      "people_winter": 1,
+      "crews": 0,
+      "clients": 64,
+      "branches": [
+        "Evanston"
+      ],
+      "revenue_mix": {
+        "design_fees": 80,
+        "install_coordination": 20
+      },
+      "addons": [],
+      "modules": [
+        "design_only"
+      ],
+      "books": "qbo_system",
+      "brand": {
+        "color": "#463A9A",
+        "portal": "fernwood.rootline.app",
+        "logo": "FG"
+      },
+      "cast": {
+        "owner": "Claire Whitfield"
+      },
+      "hero_clients": [
+        {
+          "name": "The Abernathy family",
+          "type": "residential",
+          "property": "2715 Lincoln St, Evanston",
+          "service": "Front garden redesign (design fee)",
+          "autopay": false
+        }
+      ],
+      "illustrative": true
+    },
+    {
+      "id": "kestrel",
+      "name": "Kestrel Lawn franchise system",
+      "segment": "S7",
+      "plan": "enterprise",
+      "city": "Indianapolis, IN (HQ)",
+      "region": "Great Lakes + Wave 2",
+      "people_peak": 640,
+      "people_winter": 260,
+      "crews": 96,
+      "clients": 38000,
+      "branches": [
+        "38 locations"
+      ],
+      "revenue_mix": {
+        "lawn_programs": 58,
+        "maintenance": 30,
+        "commercial": 12
+      },
+      "addons": [
+        "sandbox",
+        "dedicated_db"
+      ],
+      "modules": [
+        "maintenance",
+        "lawn_programs",
+        "commercial",
+        "snow_lite"
+      ],
+      "books": "rootline",
+      "brand": {
+        "color": "#245F3A",
+        "portal": "portal.kestrellawn.example",
+        "logo": "KL"
+      },
+      "cast": {
+        "owner": "Renée Callahan",
+        "office_manager": "Franchise support desk",
+        "ops_manager": "Regional ops director",
+        "bookkeeper": "Franchise finance"
+      },
+      "hero_clients": [],
+      "illustrative": true,
+      "scope": "V2"
+    }
+  ]
+}

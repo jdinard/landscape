@@ -1,0 +1,530 @@
+{
+  "_about": "Target markets S1-S7 from 22 §6.1 with plan fit, modules, sample tenant, draft messaging (to be tested per 22 §6.10), objections, channels and what each segment sees first.",
+  "icp_scorecard": [
+    {
+      "attribute": "5-40 employees (peak season)",
+      "points": 20
+    },
+    {
+      "attribute": "≥ 30% of revenue from design/build or enhancements",
+      "points": 20
+    },
+    {
+      "attribute": "Located in a launch Region (the six Wave 1 Great Lakes Regions at MVP; Wave 2 Regions once they open, 6.2)",
+      "points": 15
+    },
+    {
+      "attribute": "Uses ≥ 3 separate tools (FSM + accounting + design + other)",
+      "points": 10
+    },
+    {
+      "attribute": "Has an office manager or admin",
+      "points": 10
+    },
+    {
+      "attribute": "Residential-heavy (≥ 60% residential)",
+      "points": 10
+    },
+    {
+      "attribute": "Growth intent (hiring, new trucks, expanding service area)",
+      "points": 10
+    },
+    {
+      "attribute": "Bilingual crews (Spanish UI valued)",
+      "points": 5
+    }
+  ],
+  "positioning": {
+    "statement": "For owner-led landscape companies with 5-40 people who design, install and maintain residential landscapes, Rootline is the landscape business operating system that takes every job from first photo to to-scale design to signed proposal to crew schedule to paid invoice to closed books, with a regional horticulturist's plant knowledge built in. Unlike generalist home-service apps (Jobber, Housecall Pro), estimating-first landscape tools (LMN, SynkedUP, SingleOps) or enterprise platforms (Aspire, Real Green), Rootline designs, sells, runs and accounts for the work in one system, at a published price, with zero payment markup.",
+    "taglines": [
+      "From first sketch to closed books.",
+      "Design it. Sell it. Grow it.",
+      "The whole landscape business, rooted in one place."
+    ]
+  },
+  "segments": [
+    {
+      "id": "S1",
+      "name": "Solo / micro mow-and-maintain",
+      "size": "1-3",
+      "revenue": "< $250k",
+      "service_mix": "Weekly mowing Apr-Nov, cleanups",
+      "current_stack": "Free apps, Yardbook, paper, QuickBooks",
+      "fit": "Low ARPA, high churn",
+      "plan": "Starter",
+      "motion": "Self-serve only",
+      "gtm_focus": "Secondary, self-serve [MVP]",
+      "scope": "MVP",
+      "sample_tenant": "brookside",
+      "default_plans": [
+        "starter"
+      ],
+      "modules_on": [
+        "maintenance",
+        "snow_lite"
+      ],
+      "pains": [
+        "Invoices at night",
+        "Chasing checks",
+        "Paying all year for a seasonal business",
+        "Paper route sheets"
+      ],
+      "message": {
+        "headline": "Your route, your invoices and your money, in your pocket.",
+        "subhead": "Starter runs a mow-and-maintain business from one phone: today's route, invoices from the truck and card or autopay on your own Stripe. $69 a month on annual.",
+        "status": "draft copy, test per 22 §6.10"
+      },
+      "pillars": [
+        "Fair and transparent",
+        "Run the whole business in one place",
+        "Crews love it"
+      ],
+      "proof_points_to_verify": [
+        "Published price, no payment markup (22 §6.3)",
+        "Active field seats: pay for winter helpers only when they work (22 §4.3)",
+        "Snow Lite included in every plan (22 §4.5)"
+      ],
+      "offer": "Free 14-day trial (30 days Nov-Feb), no card required",
+      "objections": [
+        [
+          "I only have a few clients",
+          "Starter is priced for 1-6 people and Snow Lite is included, so winter plowing is covered too."
+        ],
+        [
+          "I already use a free app",
+          "Free apps stop at the schedule. Starter adds autopay on your own Stripe and a real ledger, so tax time is one export."
+        ]
+      ],
+      "channels": [
+        "Content and SEO (free calculators)",
+        "Facebook groups and communities",
+        "YouTube and creators",
+        "Customer referrals"
+      ],
+      "today_widgets": [
+        "Route and stops",
+        "Unpaid invoices",
+        "Autopay coverage",
+        "Quick Quote"
+      ],
+      "hidden_by_default": [
+        "Books > Bills (Ledger Plus add-on)",
+        "Design Studio edit (add-on)",
+        "Multi-crew routing",
+        "Report builder"
+      ],
+      "motion_note": "Self-serve only; no sales touch (22 §7.6)."
+    },
+    {
+      "id": "S2",
+      "name": "Residential design-build-maintain",
+      "size": "5-40",
+      "revenue": "$750k-$6M",
+      "service_mix": "Installs (beds, plantings, paver patios, walls, lighting, irrigation) + maintenance programs",
+      "current_stack": "Jobber/LMN/SingleOps/SynkedUP + QuickBooks + separate design or CAD tool + spreadsheets",
+      "fit": "Highest: every differentiator matters",
+      "plan": "Grow / Pro",
+      "motion": "Trial + inside sales",
+      "gtm_focus": "Primary [MVP]",
+      "scope": "MVP",
+      "sample_tenant": "greenleaf",
+      "default_plans": [
+        "grow",
+        "pro"
+      ],
+      "modules_on": [
+        "maintenance",
+        "design_build",
+        "hardscape",
+        "irrigation",
+        "snow_lite"
+      ],
+      "pains": [
+        "Five to ten tools that do not talk",
+        "Designs redrawn in three tools",
+        "Crews see prices",
+        "Books re-keyed into QuickBooks",
+        "Not knowing real margin per job"
+      ],
+      "message": {
+        "headline": "From first sketch to closed books.",
+        "subhead": "Rootline designs, sells, runs and accounts for every residential job in one system: to-scale designs and AI mockups of the client's own yard, proposals they sign on a phone, a Spanish crew app, and a real ledger.",
+        "status": "draft copy, test per 22 §6.10"
+      },
+      "pillars": [
+        "Sell bigger jobs with designs clients can see",
+        "Run the whole business in one place",
+        "Know your numbers",
+        "Fair and transparent",
+        "Crews love it"
+      ],
+      "proof_points_to_verify": [
+        "AI mockups of the client's own yard in minutes, plants constrained to the Region palette (11, 22 §6.3)",
+        "Takeoffs feed the estimate live (10)",
+        "Built-in double-entry ledger; QuickBooks optional (09)",
+        "Zero payment markup on your own Stripe (08)"
+      ],
+      "offer": "Free trial on Grow; migration concierge free on annual; Founding Customer 25% off for the first 100 Great Lakes Companies; Spring-Ready Guarantee [V1]",
+      "objections": [
+        [
+          "Switching risk in spring",
+          "Migration concierge with the Spring-Ready Guarantee: sign by Feb 15, live by Mar 31 or the first 3 months are free [V1]."
+        ],
+        [
+          "My crews won't use it",
+          "Offline-first crew app in Spanish with big buttons; pilot it with one crew first."
+        ],
+        [
+          "My CAD tool is more powerful",
+          "Rootline is the designer's power tool for residential work: takeoffs price live and mockups sell the job."
+        ]
+      ],
+      "channels": [
+        "Trade shows (Mid-Am, CENTS, Great Lakes Trade Expo, iLandscape)",
+        "Switching campaigns + migration concierge",
+        "Content and SEO (Plant Finder)",
+        "Partners (associations, CPAs)",
+        "Customer referrals"
+      ],
+      "today_widgets": [
+        "Daily Owner Briefing",
+        "Pipeline and proposals out",
+        "Design queue",
+        "Crews on the map",
+        "Cash, deposits and margin by job"
+      ],
+      "hidden_by_default": [
+        "Branches (Pro)",
+        "SSO (Enterprise)"
+      ],
+      "icp": true,
+      "beachhead": true
+    },
+    {
+      "id": "S3",
+      "name": "Residential maintenance + lawn/PHC programs",
+      "size": "5-30",
+      "revenue": "$500k-$4M",
+      "service_mix": "Mowing, 5-step fertilizer and weed-control programs, aeration/overseeding, cleanups",
+      "current_stack": "Jobber, Service Autopilot, Real Green",
+      "fit": "Medium-high (routing, programs, chemical logs, portal)",
+      "plan": "Grow",
+      "motion": "Trial + inside sales",
+      "gtm_focus": "Primary follow-on [MVP]",
+      "scope": "MVP",
+      "sample_tenant": "maplehollow",
+      "default_plans": [
+        "grow"
+      ],
+      "modules_on": [
+        "maintenance",
+        "lawn_programs",
+        "snow_lite"
+      ],
+      "pains": [
+        "Program rounds that slip out of their windows",
+        "Chemical records on paper",
+        "Babysitting automations",
+        "\"When are you coming?\" calls"
+      ],
+      "message": {
+        "headline": "Every round in its window, every application on the record.",
+        "subhead": "Rootline schedules 5-step programs inside their windows, gates applications on label limits and wind, sends re-entry notices, and keeps state-format records your inspector can read.",
+        "status": "draft copy, test per 22 §6.10"
+      },
+      "pillars": [
+        "Run the whole business in one place",
+        "Crews love it",
+        "Fair and transparent"
+      ],
+      "proof_points_to_verify": [
+        "Lawn program rounds with label library and wind gate (14, E3 in 24)",
+        "Portal visit reports with re-entry intervals (06)",
+        "Route density on recurring work (04)"
+      ],
+      "offer": "Free trial on Grow; import from Service Autopilot or Real Green with a card re-collection kit",
+      "objections": [
+        [
+          "My current tool already automates programs",
+          "Rootline ships programs as a service line, not a pile of rules to maintain."
+        ],
+        [
+          "Re-collecting cards is painful",
+          "The switch kit includes a portal link campaign with an autopay incentive template."
+        ]
+      ],
+      "channels": [
+        "Switching campaigns",
+        "Content and SEO",
+        "YouTube and creators",
+        "Customer referrals"
+      ],
+      "today_widgets": [
+        "Program round progress",
+        "Weather and wind gate",
+        "Visits today",
+        "Renewals and autopay"
+      ],
+      "hidden_by_default": [
+        "Design Studio (not used by default)"
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "Commercial maintenance",
+      "size": "40-200",
+      "revenue": "$3M-$25M",
+      "service_mix": "HOA, commercial properties, snow",
+      "current_stack": "Aspire, LMN, Service Autopilot",
+      "fit": "High value, longer cycle, needs job costing and commercial portal",
+      "plan": "Pro / Enterprise",
+      "motion": "Sales-led",
+      "gtm_focus": "Expansion [V1]",
+      "scope": "V1",
+      "sample_tenant": "summit",
+      "default_plans": [
+        "pro",
+        "enterprise"
+      ],
+      "modules_on": [
+        "maintenance",
+        "commercial",
+        "snow_lite",
+        "snow_ice",
+        "irrigation"
+      ],
+      "pains": [
+        "Each branch runs differently",
+        "Snow in spreadsheets",
+        "No proof of service for slip-and-fall claims",
+        "Approvals by email",
+        "Budget vs actual only at month end"
+      ],
+      "message": {
+        "headline": "Branch-comparable numbers and storm-proof records.",
+        "subhead": "Rootline gives commercial maintenance firms one definition of every KPI across branches, a commercial portal with approvals and POs, and timestamped proof of every push.",
+        "status": "draft copy, test per 22 §6.10"
+      },
+      "pillars": [
+        "Know your numbers",
+        "Run the whole business in one place",
+        "Fair and transparent"
+      ],
+      "proof_points_to_verify": [
+        "Commercial portal with approval policies and PO enforcement (06) [V1]",
+        "Snow & Ice with sealed proof packets (14) [V1]",
+        "Branch-level P&L and labor efficiency (18)"
+      ],
+      "offer": "Sales-led evaluation with a sandbox [V1]; Premium Success option",
+      "objections": [
+        [
+          "Implementation takes months",
+          "Time-to-value in days with a scoped migration project and a sandbox."
+        ],
+        [
+          "We need SSO and audit trails",
+          "Enterprise includes SSO; every privileged action is in the audit log; support access is owner-granted and visible."
+        ]
+      ],
+      "channels": [
+        "Outbound (email-first, compliant)",
+        "Partners",
+        "Trade shows"
+      ],
+      "today_widgets": [
+        "Branch dashboards",
+        "Labor efficiency by crew",
+        "Storm readiness",
+        "Renewals due",
+        "Approvals over limit"
+      ],
+      "hidden_by_default": [],
+      "expansion": true
+    },
+    {
+      "id": "S5",
+      "name": "Specialty: irrigation, lighting, tree care, snow",
+      "size": "5-50",
+      "revenue": "varies",
+      "service_mix": "Service-line specific",
+      "current_stack": "Mixed",
+      "fit": "Medium (needs modules)",
+      "plan": "Grow / Pro + modules",
+      "motion": "Trial + inside sales",
+      "gtm_focus": "Expansion [V1]-[V2]",
+      "scope": "V1",
+      "sample_tenant": "beacon",
+      "default_plans": [
+        "grow",
+        "pro"
+      ],
+      "modules_on": [
+        "irrigation",
+        "lighting",
+        "maintenance",
+        "snow_lite"
+      ],
+      "pains": [
+        "Seasonal waves of start-ups and winterizations",
+        "No zone or controller data in generic tools",
+        "Backflow test deadlines"
+      ],
+      "message": {
+        "headline": "Built for the spring sprint and the fall wave.",
+        "subhead": "Irrigation and lighting specialists get controller and zone data on every property, seasonal service waves routed by zone count, and lighting proposals with night renders.",
+        "status": "draft copy, test per 22 §6.10"
+      },
+      "pillars": [
+        "Run the whole business in one place",
+        "Sell bigger jobs with designs clients can see"
+      ],
+      "proof_points_to_verify": [
+        "Irrigation inventory and seasonal services (14)",
+        "Night mood renders for lighting [V1] (11)"
+      ],
+      "offer": "Free trial on Grow; module trials for Tree Care or Snow & Ice once per Company",
+      "objections": [
+        [
+          "We need service-line depth",
+          "Irrigation is a native service line with zones, controllers and repair tickets."
+        ]
+      ],
+      "channels": [
+        "Trade shows",
+        "Content and SEO",
+        "Partners (distributors)"
+      ],
+      "today_widgets": [
+        "Seasonal wave progress",
+        "Backflow tests due",
+        "Repair tickets",
+        "Lighting proposals"
+      ],
+      "hidden_by_default": [
+        "Design Studio 3D",
+        "Lawn programs"
+      ]
+    },
+    {
+      "id": "S6",
+      "name": "Independent landscape designers (no crews)",
+      "size": "1-3",
+      "revenue": "< $500k",
+      "service_mix": "Design fees, install coordination",
+      "current_stack": "CAD tools, Canva, spreadsheets",
+      "fit": "Medium (Design Studio, proposals, plant KB)",
+      "plan": "Design Solo plan (section 16)",
+      "motion": "Self-serve",
+      "gtm_focus": "Wedge [V1]",
+      "scope": "V1",
+      "sample_tenant": "fernwood",
+      "default_plans": [
+        "design_solo"
+      ],
+      "modules_on": [
+        "design_only"
+      ],
+      "pains": [
+        "CAD plus Canva plus spreadsheets",
+        "Design fees chased by email",
+        "Plant lists that ignore the site"
+      ],
+      "message": {
+        "headline": "Design that sells, plants that thrive.",
+        "subhead": "Design Solo gives independent designers to-scale plans, AI mockups of the client's own yard, Region-proven plant palettes, proposals and deposits in one place.",
+        "status": "draft copy, test per 22 §6.10"
+      },
+      "pillars": [
+        "Sell bigger jobs with designs clients can see",
+        "Fair and transparent"
+      ],
+      "proof_points_to_verify": [
+        "Region-aware Plant KB palettes (12)",
+        "AI mockups constrained to the palette (11)"
+      ],
+      "offer": "Design Solo at about $49/mo [V1]",
+      "objections": [
+        [
+          "I only need design",
+          "Design Solo leaves out crews, routing and payroll on purpose."
+        ]
+      ],
+      "channels": [
+        "Content and SEO (Plant Finder)",
+        "Schools",
+        "YouTube and creators"
+      ],
+      "today_widgets": [
+        "Design queue",
+        "Client comments",
+        "Deposits due",
+        "AI credits"
+      ],
+      "hidden_by_default": [
+        "Schedule",
+        "Jobs crews",
+        "Team",
+        "Books (beyond invoices)"
+      ]
+    },
+    {
+      "id": "S7",
+      "name": "Enterprise and franchise",
+      "size": "200+ / multi-location",
+      "revenue": "$25M+",
+      "service_mix": "All",
+      "current_stack": "Aspire, ServiceTitan, custom",
+      "fit": "High value, high demands",
+      "plan": "Enterprise",
+      "motion": "Field + partner",
+      "gtm_focus": "Expansion [V2]",
+      "scope": "V2",
+      "sample_tenant": "kestrel",
+      "default_plans": [
+        "enterprise"
+      ],
+      "modules_on": [
+        "maintenance",
+        "lawn_programs",
+        "commercial",
+        "snow_lite"
+      ],
+      "pains": [
+        "Every location on different software",
+        "Royalties reconciled by spreadsheet",
+        "No standard definitions"
+      ],
+      "message": {
+        "headline": "Every location on one standard.",
+        "subhead": "Enterprise and franchise systems get standardized price books and templates, roll-up KPIs and royalty reporting, SSO and dedicated infrastructure options.",
+        "status": "draft copy, test per 22 §6.10"
+      },
+      "pillars": [
+        "Know your numbers",
+        "Run the whole business in one place"
+      ],
+      "proof_points_to_verify": [
+        "Franchise rollup console and royalty reporting [V2] (22 §5.4)",
+        "SSO [V1], SCIM [V2]"
+      ],
+      "offer": "Enterprise contract; per-location pricing at volume",
+      "objections": [
+        [
+          "We need dedicated infrastructure",
+          "Dedicated database option [V2] on Enterprise."
+        ]
+      ],
+      "channels": [
+        "Field + partner sales",
+        "Franchise associations"
+      ],
+      "today_widgets": [
+        "Locations league table",
+        "Royalty base",
+        "Adoption by location"
+      ],
+      "hidden_by_default": [],
+      "expansion": true
+    }
+  ]
+}

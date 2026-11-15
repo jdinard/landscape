@@ -1,0 +1,2820 @@
+{
+  "_about": "Every role in Rootline: tenant role templates, client roles and contact scopes, platform staff, partners and public visitors. Matrices are parsed verbatim from the specs named in each block.",
+  "_legend": {
+    "grants": "R read; W create/update; D delete/void/archive; X special action. Scope after '/': a all, b branch, c crew (visibility window), o own/assigned. '-' none; 'cfg' off by default, Company can enable; '<=lim' subject to approval limits (02 §5.6).",
+    "nav": "F full, R read-mostly, '-' hidden, C Company-configurable (default in brackets)."
+  },
+  "roles": [
+    {
+      "key": "owner",
+      "kind": "tenant",
+      "name": "Business Owner",
+      "summary": "Everything, plus owner-only permissions (Stripe connection, bank accounts, roles, subscription, data export).",
+      "surfaces": [
+        "web",
+        "crew_manager"
+      ],
+      "seat": "office",
+      "mfa": "required",
+      "login": "Passkey, or password + MFA",
+      "landing": "web.today",
+      "spec": "02 §3.3.1, §5.7",
+      "device": "Phone first, laptop at night",
+      "tech": "2-4",
+      "language": "EN (ES common)",
+      "count": "1-3"
+    },
+    {
+      "key": "office_manager",
+      "kind": "tenant",
+      "name": "Office / Admin Manager",
+      "summary": "Front office: CRM, scheduling, invoicing, collections, team admin (no role editing); no Ledger P&L by default.",
+      "surfaces": [
+        "web",
+        "crew_manager"
+      ],
+      "seat": "office",
+      "mfa": "required",
+      "login": "Passkey or password + MFA",
+      "landing": "web.today",
+      "spec": "02 §3.3.2, §5.7",
+      "device": "Desktop, two monitors",
+      "tech": "3-4",
+      "language": "EN/ES",
+      "count": "1-6"
+    },
+    {
+      "key": "estimator",
+      "kind": "tenant",
+      "name": "Sales Rep / Estimator",
+      "summary": "Own pipeline, Estimates and Proposals; cost and margin on own Estimates; branch lead pool.",
+      "surfaces": [
+        "web",
+        "crew_manager"
+      ],
+      "seat": "office",
+      "mfa": "required",
+      "login": "Passkey or password + MFA",
+      "landing": "web.today",
+      "spec": "02 §3.3.3, §5.7",
+      "device": "iPad + phone",
+      "tech": "3-4",
+      "language": "EN",
+      "count": "1-8"
+    },
+    {
+      "key": "designer",
+      "kind": "tenant",
+      "name": "Landscape Designer",
+      "summary": "Design Studio, Mockups, Plant KB, prices (no cost or margin by default).",
+      "surfaces": [
+        "web"
+      ],
+      "seat": "office + designer",
+      "mfa": "required",
+      "login": "Passkey or password + MFA",
+      "landing": "web.today",
+      "spec": "02 §3.3.4, §5.7",
+      "device": "Desktop + pen tablet, iPad",
+      "tech": "4-5",
+      "language": "EN",
+      "count": "0-4"
+    },
+    {
+      "key": "ops_manager",
+      "kind": "tenant",
+      "name": "Operations / Account Manager",
+      "summary": "Branch operations: Jobs, Visits, dispatch, Crews, equipment, timesheet approval, job cost (margin per setting), as-built publishing.",
+      "surfaces": [
+        "web",
+        "crew_manager"
+      ],
+      "seat": "office",
+      "mfa": "required",
+      "login": "Passkey or password + MFA",
+      "landing": "web.today",
+      "spec": "02 §3.3.5, §5.7",
+      "device": "Laptop in truck + phone",
+      "tech": "3-4",
+      "language": "EN/ES",
+      "count": "1-10"
+    },
+    {
+      "key": "crew_lead",
+      "kind": "tenant",
+      "name": "Crew Lead / Foreman",
+      "summary": "Crew app: crew Visits, crew time edits, checklists, chemical logs, field change-order drafts, optional field payments.",
+      "surfaces": [
+        "crew",
+        "kiosk"
+      ],
+      "seat": "field (billed only when active)",
+      "mfa": "app PIN or biometrics",
+      "login": "Phone OTP + app PIN / biometrics",
+      "landing": "crew.today",
+      "spec": "02 §3.3.6, §5.7",
+      "device": "Company phone or truck tablet",
+      "tech": "2-3",
+      "language": "ES/EN",
+      "count": "3-25"
+    },
+    {
+      "key": "technician",
+      "kind": "tenant",
+      "name": "Field Technician / Crew Member",
+      "summary": "Crew app: own time, crew Visits (limited), photos, checklists. No prices, no client phone numbers by default.",
+      "surfaces": [
+        "crew",
+        "kiosk"
+      ],
+      "seat": "field (billed only when active)",
+      "mfa": "kiosk PIN or app PIN",
+      "login": "Kiosk PIN or phone OTP",
+      "landing": "crew.today",
+      "spec": "02 §3.3.7, §5.7",
+      "device": "Personal Android or shared tablet",
+      "tech": "1-3",
+      "language": "ES (often ES-only)",
+      "count": "5-120"
+    },
+    {
+      "key": "bookkeeper",
+      "kind": "tenant",
+      "name": "Bookkeeper / Accountant",
+      "summary": "Ledger, AR/AP, bank rec, reports, payroll export, read-only ops drill-down (billing fields only).",
+      "surfaces": [
+        "web",
+        "partner"
+      ],
+      "seat": "free (1 per Company; more via Accountant Partner)",
+      "mfa": "required",
+      "login": "Accountant identity + MFA",
+      "landing": "web.today",
+      "spec": "02 §3.3.8, §5.7, §5.10",
+      "device": "Desktop, two monitors",
+      "tech": "4-5",
+      "language": "EN",
+      "count": "1 internal and/or 1 external firm"
+    },
+    {
+      "key": "subcontractor",
+      "kind": "tenant",
+      "name": "Subcontractor",
+      "summary": "Assigned subcontract orders only; bills to the Company. Never sees client pricing or other subs.",
+      "surfaces": [
+        "sub"
+      ],
+      "seat": "free, unlimited",
+      "mfa": "required for the full sub portal; single-order links need none",
+      "login": "Magic link + SMS OTP; passkey for bills and banking",
+      "landing": "sub.orders",
+      "spec": "02 §3.3.9, §5.12",
+      "device": "Phone",
+      "tech": "2-3",
+      "language": "EN/ES",
+      "count": "0-30 vendor orgs"
+    },
+    {
+      "key": "observer",
+      "kind": "tenant",
+      "name": "Observer (starter custom role)",
+      "summary": "Read-only investor, silent partner or family member: dashboards and margin, no PII, no client-list exports.",
+      "surfaces": [
+        "web"
+      ],
+      "seat": "free (up to 3 per Company)",
+      "mfa": "required",
+      "login": "Passkey or password + MFA",
+      "landing": "web.today",
+      "spec": "02 §5.7 (gallery, V1); 22 §4.3",
+      "scope": "V1"
+    },
+    {
+      "key": "client_residential",
+      "kind": "client",
+      "name": "Residential Homeowner",
+      "summary": "Single-property, story-like portal: next step, proposals with mockups, schedule, pay, requests, visit reports.",
+      "surfaces": [
+        "portal"
+      ],
+      "seat": "free, unlimited",
+      "mfa": "none (magic link)",
+      "login": "Magic link; passkey optional",
+      "landing": "portal.home",
+      "spec": "02 §3.4.1; 06"
+    },
+    {
+      "key": "client_commercial",
+      "kind": "client",
+      "name": "Commercial PM / HOA / Facilities",
+      "summary": "Multi-property workspace with approvals, POs, documents and proof-of-service reports.",
+      "surfaces": [
+        "portal"
+      ],
+      "seat": "free, unlimited",
+      "mfa": "passkey recommended",
+      "login": "Magic link + passkey; SSO for large PM firms [V2]",
+      "landing": "portal.home",
+      "spec": "02 §3.4.2-3.4.3; 06"
+    },
+    {
+      "key": "primary",
+      "kind": "contact_scope",
+      "name": "Primary contact",
+      "summary": "Full rights on the Client account. Exactly one per Client.",
+      "surfaces": [
+        "portal"
+      ],
+      "seat": "free",
+      "mfa": "none (magic link)",
+      "login": "Magic link",
+      "landing": "portal.home",
+      "spec": "02 §3.4.4, §5.11; 21 §5.4"
+    },
+    {
+      "key": "co_owner",
+      "kind": "contact_scope",
+      "name": "Co-owner",
+      "summary": "View everything, approve Proposals, pay; payment methods configurable (default off).",
+      "surfaces": [
+        "portal"
+      ],
+      "seat": "free",
+      "mfa": "none (magic link)",
+      "login": "Magic link",
+      "landing": "portal.home",
+      "spec": "02 §3.4.4, §5.11; 21 §5.4"
+    },
+    {
+      "key": "approver",
+      "kind": "contact_scope",
+      "name": "Approver",
+      "summary": "Review and vote on Proposals and change orders within an approval policy; rights lapse at term end.",
+      "surfaces": [
+        "portal"
+      ],
+      "seat": "free",
+      "mfa": "none (magic link)",
+      "login": "Magic link",
+      "landing": "portal.home",
+      "spec": "02 §3.4.4, §5.11; 21 §5.4"
+    },
+    {
+      "key": "billing",
+      "kind": "contact_scope",
+      "name": "Billing contact",
+      "summary": "Invoices, statements, payments and tax certificates only.",
+      "surfaces": [
+        "portal"
+      ],
+      "seat": "free",
+      "mfa": "none (magic link)",
+      "login": "Magic link",
+      "landing": "portal.home",
+      "spec": "02 §3.4.4, §5.11; 21 §5.4"
+    },
+    {
+      "key": "property_contact",
+      "kind": "contact_scope",
+      "name": "Property / site contact",
+      "summary": "Schedule, visit notices, requests and photos for assigned Properties only; never prices or invoices.",
+      "surfaces": [
+        "portal"
+      ],
+      "seat": "free",
+      "mfa": "none (magic link)",
+      "login": "Magic link",
+      "landing": "portal.home",
+      "spec": "02 §3.4.4, §5.11; 21 §5.4"
+    },
+    {
+      "key": "viewer",
+      "kind": "contact_scope",
+      "name": "Viewer",
+      "summary": "Read-only on shared Designs and Proposals (consultant, landscape architect, family member).",
+      "surfaces": [
+        "portal"
+      ],
+      "seat": "free",
+      "mfa": "none (magic link)",
+      "login": "Magic link",
+      "landing": "portal.home",
+      "spec": "02 §3.4.4, §5.11; 21 §5.4"
+    },
+    {
+      "key": "platform_owner",
+      "kind": "platform",
+      "name": "Platform Operator / Super Admin (the founder)",
+      "summary": "Final authority on tenants, pricing, Plant KB policy, AI spend and security exceptions. Sees everything; never touches customer data without consent.",
+      "surfaces": [
+        "console"
+      ],
+      "seat": "staff",
+      "mfa": "hardware key or passkey + step-up",
+      "login": "Platform SSO + WebAuthn security key",
+      "landing": "console.home",
+      "spec": "02 §3.2, §10.4; 19 §9"
+    },
+    {
+      "key": "platform_support",
+      "kind": "platform",
+      "name": "Platform Support",
+      "summary": "Onboarding, migrations, consented read-only View as user, goodwill credits within limits, dunning recovery.",
+      "surfaces": [
+        "console"
+      ],
+      "seat": "staff",
+      "mfa": "hardware key or passkey + step-up",
+      "login": "Platform SSO + WebAuthn security key",
+      "landing": "console.home",
+      "spec": "02 §3.2, §10.4; 19 §9"
+    },
+    {
+      "key": "platform_curator",
+      "kind": "platform",
+      "name": "Platform Curator (horticulturist)",
+      "summary": "Full write to the Plant KB and Regions; zero tenant business data.",
+      "surfaces": [
+        "console"
+      ],
+      "seat": "staff",
+      "mfa": "hardware key or passkey + step-up",
+      "login": "Platform SSO + WebAuthn security key",
+      "landing": "console.kb.queue",
+      "spec": "02 §3.2, §10.4; 19 §9"
+    },
+    {
+      "key": "platform_finance",
+      "kind": "platform",
+      "name": "Platform Finance",
+      "summary": "Rootline's own SaaS billing, catalog drafts, refunds and credits, revenue recognition. No access to tenants' client payments by design.",
+      "surfaces": [
+        "console"
+      ],
+      "seat": "staff",
+      "mfa": "hardware key or passkey + step-up",
+      "login": "Platform SSO + WebAuthn security key",
+      "landing": "console.home",
+      "spec": "02 §3.2, §10.4; 19 §9"
+    },
+    {
+      "key": "platform_engineer",
+      "kind": "platform",
+      "name": "Platform Engineer",
+      "summary": "Infrastructure, flags, queues, logs with PII redaction. Production data only through just-in-time, approved break-glass.",
+      "surfaces": [
+        "console"
+      ],
+      "seat": "staff",
+      "mfa": "hardware key or passkey + step-up",
+      "login": "Platform SSO + WebAuthn security key",
+      "landing": "console.health",
+      "spec": "02 §3.2, §10.4; 19 §9"
+    },
+    {
+      "key": "partner_admin",
+      "kind": "partner",
+      "name": "Partner admin (accountant firm, reseller, association)",
+      "summary": "Runs the partner firm: client list, referrals, commissions, certification, staff.",
+      "surfaces": [
+        "partner"
+      ],
+      "seat": "free",
+      "mfa": "required",
+      "login": "Partner SSO / passkey",
+      "landing": "partner.clients",
+      "spec": "19 §6.1 #42; 22 §5.4; 02 §5.10",
+      "scope": "V1"
+    },
+    {
+      "key": "partner_member",
+      "kind": "partner",
+      "name": "Partner member (staff accountant)",
+      "summary": "Works client books through delegated access; no partner commissions.",
+      "surfaces": [
+        "partner"
+      ],
+      "seat": "free",
+      "mfa": "required",
+      "login": "Partner SSO / passkey",
+      "landing": "partner.clients",
+      "spec": "19 §6.1 #42; 02 §5.10",
+      "scope": "V1"
+    },
+    {
+      "key": "prospect",
+      "kind": "public",
+      "name": "Prospect (landscape business owner)",
+      "summary": "Evaluates Rootline on the marketing site: tours, pricing, switch guides, trial and demo.",
+      "surfaces": [
+        "www"
+      ],
+      "seat": "n/a",
+      "mfa": "none",
+      "login": "None until trial sign-up",
+      "landing": "www.home",
+      "spec": "21 §5.6; 22 §6"
+    },
+    {
+      "key": "homeowner",
+      "kind": "public",
+      "name": "Homeowner (Rootline Home)",
+      "summary": "Anonymous until they save: address or photo to concepts, plant list and budget, then a matched pro.",
+      "surfaces": [
+        "home"
+      ],
+      "seat": "n/a",
+      "mfa": "none",
+      "login": "Anonymous, then email/phone one-time code",
+      "landing": "home.start",
+      "spec": "21 §5.7; 11; 22 §5.3"
+    }
+  ],
+  "tenant_permission_matrix": {
+    "source": "02 §10.1",
+    "roles": [
+      "owner",
+      "office_manager",
+      "estimator",
+      "designer",
+      "ops_manager",
+      "crew_lead",
+      "technician",
+      "bookkeeper",
+      "subcontractor"
+    ],
+    "footnotes": [
+      "Anti-escalation applies: users can assign only roles whose grants are less than or equal to their own; ops_manager can assign field roles in their branch.",
+      "Excludes security events concerning owners.",
+      "Requires a valid applicator certification on record for the state and category; otherwise blocked, or allowed as \"under supervision\" where state rules permit."
+    ],
+    "groups": [
+      {
+        "group": "Company administration",
+        "rows": [
+          {
+            "cap": "company.settings",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RW/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "R/a",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a (fiscal, tax)",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "user",
+            "note": "invite, edit, hibernate, deactivate",
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWDX/a (1)",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "RWX/b field roles (1)",
+              "crew_lead": "X/c PIN reset",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "role",
+            "note": "custom roles",
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "R/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "R/a",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "user.assign_role",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a (1)",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "X/b (1)",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "org_unit / legal_entity",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "R/a",
+              "estimator": "R/a",
+              "designer": "R/a",
+              "ops_manager": "R/a",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "security_policy",
+            "note": "MFA, SSO, sessions",
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "R/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "support_access.grant",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a view-only",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "stripe_connection",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a owner-only",
+              "office_manager": "R/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "integration",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RW/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RW/a accounting",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "api_key",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "automation",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWDX/a",
+              "estimator": "R/o",
+              "designer": "-",
+              "ops_manager": "RWX/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RW/a finance",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "audit_log",
+            "note": null,
+            "grants": {
+              "owner": "R/a",
+              "office_manager": "R/a (2)",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "R/b (2)",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a financial",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "data_export.run",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a dual control over 1,000 Clients",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a financial",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "rootline_subscription",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "R/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "device",
+            "note": "enroll kiosk, revoke",
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWDX/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "RWDX/b",
+              "crew_lead": "R/c",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          }
+        ]
+      },
+      {
+        "group": "CRM and sales",
+        "rows": [
+          {
+            "cap": "lead",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWDX/a",
+              "estimator": "RWX/o + R/b pool",
+              "designer": "R/o",
+              "ops_manager": "RW/b",
+              "crew_lead": "W/o submit",
+              "technician": "W/o submit tip",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "opportunity",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWDX/a",
+              "estimator": "RWX/o",
+              "designer": "R/o",
+              "ops_manager": "RW/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "client / property",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "RW/b",
+              "designer": "R/o",
+              "ops_manager": "RW/b",
+              "crew_lead": "R/c via Visits",
+              "technician": "R/c via Visits, limited",
+              "bookkeeper": "R/a billing fields",
+              "subcontractor": "R/o via orders"
+            }
+          },
+          {
+            "cap": "client.merge",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "client.contact",
+            "note": "contacts, consents",
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "RW/o",
+              "designer": "-",
+              "ops_manager": "RW/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RW/a billing contacts",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "site_assessment",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "RWD/o",
+              "designer": "RW/o",
+              "ops_manager": "RW/b",
+              "crew_lead": "W/c",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "inbox.conversation",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RWX/a",
+              "estimator": "RWX/o",
+              "designer": "RWX/o",
+              "ops_manager": "RWX/b",
+              "crew_lead": "RWX/c masked",
+              "technician": "-",
+              "bookkeeper": "R/a billing; RWX/o assigned billing threads",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "estimate",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "RWD/o + R/b",
+              "designer": "R/o",
+              "ops_manager": "RW/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "proposal.send",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "X/o",
+              "designer": "X/o cfg",
+              "ops_manager": "X/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "proposal.approve_internal",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a <=lim",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "X/b <=lim",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "proposal.record_offline_acceptance",
+            "note": "paper or verbal, with upload and reason",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "X/o",
+              "designer": "-",
+              "ops_manager": "X/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "change_order",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWX/a",
+              "estimator": "RWX/o",
+              "designer": "R/o",
+              "ops_manager": "RWX/b",
+              "crew_lead": "W/c draft, no price",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "W/o request"
+            }
+          },
+          {
+            "cap": "service_agreement",
+            "note": "incl. renew",
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWDX/a",
+              "estimator": "RWX/o",
+              "designer": "-",
+              "ops_manager": "R/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "service_agreement.cancel",
+            "note": "cancellation terms per Invoicing",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "W/b request",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "price_book",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "R/a",
+              "designer": "R/a",
+              "ops_manager": "R/a",
+              "crew_lead": "R/a names only",
+              "technician": "R/a names only",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "production_rate",
+            "note": null,
+            "grants": {
+              "owner": "RW/a",
+              "office_manager": "R/a",
+              "estimator": "R/a",
+              "designer": "-",
+              "ops_manager": "RW/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          }
+        ]
+      },
+      {
+        "group": "Design",
+        "rows": [
+          {
+            "cap": "design",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "R/a",
+              "estimator": "RW/o + R/b",
+              "designer": "RWD/o + R/a",
+              "ops_manager": "R/b",
+              "crew_lead": "R/c plan sheets",
+              "technician": "R/c plan sheets",
+              "bookkeeper": "-",
+              "subcontractor": "R/o shared sheets"
+            }
+          },
+          {
+            "cap": "mockup.generate",
+            "note": "spends AI credits",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "X/o",
+              "designer": "X/o",
+              "ops_manager": "X/b cfg (account managers who sell enhancements)",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "design.as_built",
+            "note": "record as-built changes",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "X/o",
+              "ops_manager": "X/b",
+              "crew_lead": "X/c",
+              "technician": "W/c photos and notes",
+              "bookkeeper": "-",
+              "subcontractor": "X/o own trade layer"
+            }
+          },
+          {
+            "cap": "design.as_built_publish",
+            "note": "publish the as-built version",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "X/o",
+              "ops_manager": "X/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "tenant_palette",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "R/a",
+              "estimator": "R/a",
+              "designer": "RWD/a",
+              "ops_manager": "R/a",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "ai_budget",
+            "note": "credit caps",
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "R/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          }
+        ]
+      },
+      {
+        "group": "Operations",
+        "rows": [
+          {
+            "cap": "job",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "R/o",
+              "designer": "R/o",
+              "ops_manager": "RWD/b",
+              "crew_lead": "R/c",
+              "technician": "R/c",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "visit",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "R/o",
+              "designer": "R/o",
+              "ops_manager": "RWD/b",
+              "crew_lead": "RW/c",
+              "technician": "R/c",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "visit.dispatch",
+            "note": "assign, move",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "X/b",
+              "crew_lead": "X/c reorder same day",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "route.optimize",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "X/b",
+              "crew_lead": "X/c",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "visit.complete",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "X/b",
+              "crew_lead": "X/c",
+              "technician": "X/c",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "checklist / photo",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "RW/o",
+              "designer": "RW/o",
+              "ops_manager": "RWD/b",
+              "crew_lead": "RW/c",
+              "technician": "RW/c",
+              "bookkeeper": "R/a",
+              "subcontractor": "RW/o"
+            }
+          },
+          {
+            "cap": "chemical_application",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "RWD/b",
+              "crew_lead": "RW/c (3)",
+              "technician": "RW/c (3)",
+              "bookkeeper": "R/a",
+              "subcontractor": "RW/o (3)"
+            }
+          },
+          {
+            "cap": "incident",
+            "note": "safety",
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "W/o",
+              "designer": "W/o",
+              "ops_manager": "RWX/b",
+              "crew_lead": "RW/c",
+              "technician": "W/o",
+              "bookkeeper": "R/a",
+              "subcontractor": "W/o"
+            }
+          },
+          {
+            "cap": "crew",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "R/b",
+              "designer": "-",
+              "ops_manager": "RWD/b",
+              "crew_lead": "R/c",
+              "technician": "R/c",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "equipment",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "R/b",
+              "designer": "-",
+              "ops_manager": "RWD/b",
+              "crew_lead": "RW/c inspections, hours",
+              "technician": "W/c inspections",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "inventory",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "R/b",
+              "designer": "R/b",
+              "ops_manager": "RW/b",
+              "crew_lead": "W/c load-out, usage",
+              "technician": "W/c usage",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "purchase_order",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWX/a <=lim",
+              "estimator": "R/o",
+              "designer": "-",
+              "ops_manager": "RWX/b <=lim",
+              "crew_lead": "W/c field purchase <=lim",
+              "technician": "-",
+              "bookkeeper": "RW/a",
+              "subcontractor": "R/o own POs"
+            }
+          },
+          {
+            "cap": "vendor",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "R/a",
+              "designer": "R/a",
+              "ops_manager": "R/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RW/a",
+              "subcontractor": "R/o own org"
+            }
+          },
+          {
+            "cap": "subcontract_order",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWX/a",
+              "estimator": "R/o",
+              "designer": "-",
+              "ops_manager": "RWX/b",
+              "crew_lead": "R/c",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "RWX/o accept, complete"
+            }
+          }
+        ]
+      },
+      {
+        "group": "Time and people",
+        "rows": [
+          {
+            "cap": "time_entry",
+            "note": "own punches",
+            "grants": {
+              "owner": "RW/o",
+              "office_manager": "RW/o",
+              "estimator": "RW/o",
+              "designer": "RW/o",
+              "ops_manager": "RW/o",
+              "crew_lead": "RW/o",
+              "technician": "W/o + R/o",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "time_entry",
+            "note": "others",
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "RWD/b",
+              "crew_lead": "RW/c <=lim",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "timesheet.approve",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "X/b",
+              "crew_lead": "X/c first level, cfg",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "employee",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "R/b",
+              "crew_lead": "R/c roster, emergency contacts",
+              "technician": "R/o",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "certification / training",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RWD/a",
+              "estimator": "R/o",
+              "designer": "R/o",
+              "ops_manager": "RW/b",
+              "crew_lead": "R/c",
+              "technician": "RW/o upload own",
+              "bookkeeper": "R/a",
+              "subcontractor": "RW/o COI, licenses"
+            }
+          },
+          {
+            "cap": "payroll_export.run",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "expense",
+            "note": "receipts",
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWX/a",
+              "estimator": "W/o",
+              "designer": "W/o",
+              "ops_manager": "RWX/b",
+              "crew_lead": "W/c",
+              "technician": "W/o",
+              "bookkeeper": "RWX/a",
+              "subcontractor": "-"
+            }
+          }
+        ]
+      },
+      {
+        "group": "Billing and payments",
+        "rows": [
+          {
+            "cap": "invoice",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWDX/a",
+              "estimator": "R/o",
+              "designer": "-",
+              "ops_manager": "RW/b draft",
+              "crew_lead": "- (cfg field invoice)",
+              "technician": "-",
+              "bookkeeper": "RWDX/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "invoice.send",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "X/b cfg",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "invoice.void",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a <=lim",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "billing_run / billing_run.post",
+            "note": "prepare and review) and  (issue the batch",
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RWX/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWX/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "payment.collect",
+            "note": "field, through Company Stripe",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "X/o",
+              "designer": "-",
+              "ops_manager": "X/b",
+              "crew_lead": "X/c cfg <=lim",
+              "technician": "X/c cfg <=lim",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "payment.record",
+            "note": "manual check, cash",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "X/c cfg",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "payment.refund",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a <=lim",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a <=lim",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "credit_memo",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RWX/a <=lim",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "RW/b <=lim",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWX/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "collections_case.write_off",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a <=lim",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a <=lim",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "statement",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RWX/a",
+              "estimator": "R/o",
+              "designer": "-",
+              "ops_manager": "R/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWX/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "bill",
+            "note": "vendor and sub bills",
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "RW/b code to Jobs",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWD/a",
+              "subcontractor": "W/o submit own"
+            }
+          },
+          {
+            "cap": "bill_payment.approve",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a <=lim",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "dispute.respond",
+            "note": "evidence to the Company's own Stripe",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a cfg",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "payout",
+            "note": "Stripe payouts and balance, read-only mirror",
+            "grants": {
+              "owner": "R/a",
+              "office_manager": "R/a cfg",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          }
+        ]
+      },
+      {
+        "group": "Ledger",
+        "rows": [
+          {
+            "cap": "ledger.account",
+            "note": "Chart of Accounts",
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWD/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "ledger.journal_entry",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWDX/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "ledger.period.lock / unlock",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "ledger.control_account.adjust",
+            "note": "rule L13 in Ledger; step-up",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "ledger.posting_rule.manage",
+            "note": "posting-rule overrides; step-up",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "wip.post",
+            "note": "post the WIP schedule",
+            "grants": {
+              "owner": "X/a approve",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "info_return.manage",
+            "note": "1099 and T5018 workspace and filing",
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RW/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWX/a",
+              "subcontractor": "R/o own forms"
+            }
+          },
+          {
+            "cap": "bank_account / bank_reconciliation",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWX/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "bank_account.update",
+            "note": "Ledger and bill-pay accounts; Stripe payout banks change only in the Company's Stripe dashboard",
+            "grants": {
+              "owner": "X/a dual control",
+              "office_manager": "-",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "financial_report",
+            "note": "P&L, balance sheet, cash flow",
+            "grants": {
+              "owner": "R/a",
+              "office_manager": "- cfg",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "R/b cfg branch P&L",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "job_cost_report",
+            "note": null,
+            "grants": {
+              "owner": "R/a",
+              "office_manager": "R/a",
+              "estimator": "R/o",
+              "designer": "-",
+              "ops_manager": "R/b",
+              "crew_lead": "hours-only scorecard",
+              "technician": "-",
+              "bookkeeper": "R/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "tax_setting",
+            "note": null,
+            "grants": {
+              "owner": "RW/a",
+              "office_manager": "R/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RW/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "accounting_sync",
+            "note": "QuickBooks, Xero",
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "R/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RWX/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "accounting_sync.resolve",
+            "note": "resolve sync errors",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "- cfg",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          }
+        ]
+      },
+      {
+        "group": "Marketing, reporting and AI",
+        "rows": [
+          {
+            "cap": "campaign",
+            "note": null,
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWDX/a",
+              "estimator": "RW/o cfg",
+              "designer": "RW/a drafts, no send",
+              "ops_manager": "RWX/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "review.respond",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "X/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "website / booking_page",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RWX/a",
+              "estimator": "R/a booking rules",
+              "designer": "RW/a content and gallery, no publish",
+              "ops_manager": "R/a",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "-",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "referral",
+            "note": "program and reward approval",
+            "grants": {
+              "owner": "RWDX/a",
+              "office_manager": "RWX/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "-",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "R/a; X/a reward approval",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "dashboard",
+            "note": null,
+            "grants": {
+              "owner": "RWD/a",
+              "office_manager": "RW/a",
+              "estimator": "R/o",
+              "designer": "R/o",
+              "ops_manager": "RW/b",
+              "crew_lead": "R/c crew scorecard",
+              "technician": "R/o own scorecard",
+              "bookkeeper": "RW/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "report.export",
+            "note": null,
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "X/o",
+              "designer": "-",
+              "ops_manager": "X/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "copilot.use",
+            "note": "answers limited to caller's grants",
+            "grants": {
+              "owner": "X/a",
+              "office_manager": "X/a",
+              "estimator": "X/o",
+              "designer": "X/o",
+              "ops_manager": "X/b",
+              "crew_lead": "X/c",
+              "technician": "X/c",
+              "bookkeeper": "X/a",
+              "subcontractor": "-"
+            }
+          },
+          {
+            "cap": "ai_agent.configure",
+            "note": null,
+            "grants": {
+              "owner": "RWX/a",
+              "office_manager": "RW/a",
+              "estimator": "-",
+              "designer": "-",
+              "ops_manager": "RW/b",
+              "crew_lead": "-",
+              "technician": "-",
+              "bookkeeper": "RW/a finance agents",
+              "subcontractor": "-"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "field_class_defaults": {
+    "source": "02 §10.2",
+    "roles": [
+      "owner",
+      "office_manager",
+      "estimator",
+      "designer",
+      "ops_manager",
+      "crew_lead",
+      "technician",
+      "bookkeeper",
+      "subcontractor"
+    ],
+    "rows": [
+      {
+        "field_class": "price",
+        "grants": {
+          "owner": "RW",
+          "office_manager": "RW",
+          "estimator": "RW (own)",
+          "designer": "R",
+          "ops_manager": "R",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "own PO amount only"
+        }
+      },
+      {
+        "field_class": "cost",
+        "grants": {
+          "owner": "RW",
+          "office_manager": "R",
+          "estimator": "RW (own)",
+          "designer": "- cfg",
+          "ops_manager": "R",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        }
+      },
+      {
+        "field_class": "margin",
+        "grants": {
+          "owner": "R",
+          "office_manager": "- cfg",
+          "estimator": "R (own)",
+          "designer": "-",
+          "ops_manager": "- cfg (indicator)",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        }
+      },
+      {
+        "field_class": "budget_hours",
+        "grants": {
+          "owner": "RW",
+          "office_manager": "RW",
+          "estimator": "RW",
+          "designer": "R",
+          "ops_manager": "RW",
+          "crew_lead": "R",
+          "technician": "R",
+          "bookkeeper": "R",
+          "subcontractor": "R own orders cfg"
+        }
+      },
+      {
+        "field_class": "pay_rate",
+        "grants": {
+          "owner": "RW",
+          "office_manager": "RW (Company can remove)",
+          "estimator": "self",
+          "designer": "self",
+          "ops_manager": "- cfg",
+          "crew_lead": "self",
+          "technician": "self",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        }
+      },
+      {
+        "field_class": "employee_pii",
+        "grants": {
+          "owner": "RW step-up",
+          "office_manager": "RW step-up",
+          "estimator": "self",
+          "designer": "self",
+          "ops_manager": "-",
+          "crew_lead": "crew emergency contacts",
+          "technician": "self",
+          "bookkeeper": "R step-up (payroll)",
+          "subcontractor": "-"
+        }
+      },
+      {
+        "field_class": "client_contact",
+        "grants": {
+          "owner": "RW",
+          "office_manager": "RW",
+          "estimator": "RW (own)",
+          "designer": "R (own)",
+          "ops_manager": "RW (branch)",
+          "crew_lead": "masked actions",
+          "technician": "masked actions",
+          "bookkeeper": "R billing",
+          "subcontractor": "masked actions"
+        }
+      },
+      {
+        "field_class": "client_financial",
+        "grants": {
+          "owner": "R",
+          "office_manager": "RW",
+          "estimator": "status chip",
+          "designer": "-",
+          "ops_manager": "status chip",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "RW",
+          "subcontractor": "-"
+        }
+      },
+      {
+        "field_class": "access_secret",
+        "grants": {
+          "owner": "RW",
+          "office_manager": "RW",
+          "estimator": "R (own)",
+          "designer": "-",
+          "ops_manager": "RW (branch)",
+          "crew_lead": "R in window",
+          "technician": "R in window",
+          "bookkeeper": "-",
+          "subcontractor": "R in window"
+        }
+      },
+      {
+        "field_class": "internal_note",
+        "grants": {
+          "owner": "RW",
+          "office_manager": "RW",
+          "estimator": "RW (own)",
+          "designer": "R (own)",
+          "ops_manager": "RW (branch)",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        }
+      },
+      {
+        "field_class": "commission",
+        "grants": {
+          "owner": "RW",
+          "office_manager": "R cfg",
+          "estimator": "self",
+          "designer": "-",
+          "ops_manager": "-",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        }
+      },
+      {
+        "field_class": "vendor_banking",
+        "grants": {
+          "owner": "RW dual control",
+          "office_manager": "-",
+          "estimator": "-",
+          "designer": "-",
+          "ops_manager": "-",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "RW dual control",
+          "subcontractor": "own org only"
+        }
+      }
+    ]
+  },
+  "platform_permission_matrix": {
+    "source": "02 §10.4",
+    "roles": [
+      "platform_owner",
+      "platform_support",
+      "platform_curator",
+      "platform_finance",
+      "platform_engineer"
+    ],
+    "rows": [
+      {
+        "cap": "Tenant directory and metadata (plan, usage, health)",
+        "grants": {
+          "platform_owner": "RW",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "R",
+          "platform_engineer": "R"
+        }
+      },
+      {
+        "cap": "Tenant lifecycle: create, suspend, reactivate",
+        "grants": {
+          "platform_owner": "X",
+          "platform_support": "X suspend for abuse, with reason",
+          "platform_curator": "-",
+          "platform_finance": "X suspend for non-payment",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "Tenant deletion (after retention)",
+        "grants": {
+          "platform_owner": "X dual control",
+          "platform_support": "-",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "X execution only"
+        }
+      },
+      {
+        "cap": "Tenant data: view as user (consented, `read_only` scope)",
+        "grants": {
+          "platform_owner": "X",
+          "platform_support": "X",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "X with ticket"
+        }
+      },
+      {
+        "cap": "Tenant data: act as user (consented, `read_write` scope)",
+        "grants": {
+          "platform_owner": "X",
+          "platform_support": "X owner-approved grant",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "X owner-approved grant"
+        }
+      },
+      {
+        "cap": "Break-glass production data access",
+        "grants": {
+          "platform_owner": "approve",
+          "platform_support": "-",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "request"
+        }
+      },
+      {
+        "cap": "Tenants' Client payments and payouts",
+        "grants": {
+          "platform_owner": "impossible by design (held in each Company's Stripe; metadata only: connection status)",
+          "platform_support": "metadata",
+          "platform_curator": "-",
+          "platform_finance": "metadata",
+          "platform_engineer": "metadata"
+        }
+      },
+      {
+        "cap": "Rootline SaaS billing: invoices, credits, refunds",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "RWX (refunds over $1,000 dual control)",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "Plan and price catalog",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "-",
+          "platform_curator": "-",
+          "platform_finance": "RW draft",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "Plant KB: plants, Plant Region Profiles, palettes",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "R",
+          "platform_curator": "RW draft",
+          "platform_finance": "-",
+          "platform_engineer": "R"
+        }
+      },
+      {
+        "cap": "Plant KB release publish",
+        "grants": {
+          "platform_owner": "X",
+          "platform_support": "-",
+          "platform_curator": "X senior curator",
+          "platform_finance": "-",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "Region definitions",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "-",
+          "platform_curator": "RW",
+          "platform_finance": "-",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "Content: templates, gallery roles, help articles",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "RW",
+          "platform_curator": "RW plant content",
+          "platform_finance": "-",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "AI ops: model routing, prompts, safety settings",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "R cost",
+          "platform_engineer": "RW staging; X prod with approval"
+        }
+      },
+      {
+        "cap": "AI credit pricing",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "-",
+          "platform_curator": "-",
+          "platform_finance": "RW",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "Feature flags",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "RWX non-prod; X prod with approval"
+        }
+      },
+      {
+        "cap": "Infrastructure and deploys",
+        "grants": {
+          "platform_owner": "R",
+          "platform_support": "-",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "RWX"
+        }
+      },
+      {
+        "cap": "Platform audit log",
+        "grants": {
+          "platform_owner": "R",
+          "platform_support": "R own actions",
+          "platform_curator": "R own actions",
+          "platform_finance": "R billing events",
+          "platform_engineer": "R infra events"
+        }
+      },
+      {
+        "cap": "Platform staff and roles",
+        "grants": {
+          "platform_owner": "RWDX",
+          "platform_support": "-",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "Compliance requests (DSAR, legal hold)",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "RW intake",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "X execution"
+        }
+      },
+      {
+        "cap": "Security incidents",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "RWX"
+        }
+      },
+      {
+        "cap": "Tenant announcements and in-app messages",
+        "grants": {
+          "platform_owner": "RWX",
+          "platform_support": "RW",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "-"
+        }
+      },
+      {
+        "cap": "Anonymized aggregate analytics and benchmarks",
+        "grants": {
+          "platform_owner": "R",
+          "platform_support": "R",
+          "platform_curator": "R plant usage",
+          "platform_finance": "R",
+          "platform_engineer": "R"
+        }
+      },
+      {
+        "cap": "Market intelligence: claims, battlecards, price observations, win/loss (01 section 12.7)",
+        "grants": {
+          "platform_owner": "RWX (publishes externally)",
+          "platform_support": "RW with the market-intel set",
+          "platform_curator": "RW plant and Region claims only",
+          "platform_finance": "RW prices and sizing workbook",
+          "platform_engineer": "R; RW switch kits"
+        }
+      }
+    ]
+  },
+  "client_contact_rights": {
+    "source": "02 §5.11",
+    "rows": [
+      {
+        "scope": "primary",
+        "rights": {
+          "View schedule and photos": "All Properties",
+          "Request service": "Yes",
+          "View Proposals and Designs": "Yes",
+          "Approve / sign": "Yes (unlimited unless policy)",
+          "View invoices and Statements": "Yes",
+          "Pay": "Yes",
+          "Manage payment methods": "Yes",
+          "Manage contacts": "Yes",
+          "Notes": "One per Client; transfer requires both parties or Company action"
+        }
+      },
+      {
+        "scope": "co_owner",
+        "rights": {
+          "View schedule and photos": "All",
+          "Request service": "Yes",
+          "View Proposals and Designs": "Yes",
+          "Approve / sign": "Yes",
+          "View invoices and Statements": "Yes",
+          "Pay": "Yes",
+          "Manage payment methods": "Configurable (default no)",
+          "Manage contacts": "No",
+          "Notes": "Spouse, business partner"
+        }
+      },
+      {
+        "scope": "billing",
+        "rights": {
+          "View schedule and photos": "No",
+          "Request service": "No",
+          "View Proposals and Designs": "No",
+          "Approve / sign": "No",
+          "View invoices and Statements": "Yes (assigned Properties)",
+          "Pay": "Yes",
+          "Manage payment methods": "Yes",
+          "Manage contacts": "No",
+          "Notes": "AP clerk; receives invoices and Statements only"
+        }
+      },
+      {
+        "scope": "property_contact",
+        "rights": {
+          "View schedule and photos": "Assigned Properties",
+          "Request service": "Yes",
+          "View Proposals and Designs": "View only (if Company shares)",
+          "Approve / sign": "No",
+          "View invoices and Statements": "No",
+          "Pay": "No",
+          "Manage payment methods": "No",
+          "Manage contacts": "No",
+          "Notes": "Site or facilities contact, resident tenant"
+        }
+      },
+      {
+        "scope": "approver",
+        "rights": {
+          "View schedule and photos": "Assigned Properties",
+          "Request service": "Yes",
+          "View Proposals and Designs": "Yes",
+          "Approve / sign": "Within approval policy",
+          "View invoices and Statements": "Optional",
+          "Pay": "No",
+          "Manage payment methods": "No",
+          "Manage contacts": "No",
+          "Notes": "HOA board member, regional VP"
+        }
+      },
+      {
+        "scope": "viewer",
+        "rights": {
+          "View schedule and photos": "Assigned Properties",
+          "Request service": "No",
+          "View Proposals and Designs": "Yes (shared items)",
+          "Approve / sign": "No",
+          "View invoices and Statements": "Optional",
+          "Pay": "No",
+          "Manage payment methods": "No",
+          "Manage contacts": "No",
+          "Notes": "Consultant, landscape architect, family member"
+        }
+      }
+    ]
+  },
+  "nav_visibility": {
+    "web": {
+      "source": "21 §5.9",
+      "note": "Crew leads, technicians and subcontractors are expected to use the native app; their web access is limited by default. A subcontractor on the web gets Subcontractor lite, not this rail. Bookkeeper 'Clients R' shows billing fields only; crew_lead 'Clients R' shows only clients on the crew's routes in the next 14 days.",
+      "items": {
+        "Today": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "F",
+          "designer": "F",
+          "ops_manager": "F",
+          "crew_lead": "F",
+          "technician": "F",
+          "bookkeeper": "F",
+          "subcontractor": "F"
+        },
+        "Inbox": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "F",
+          "designer": "R",
+          "ops_manager": "F",
+          "crew_lead": "R",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        },
+        "Clients": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "F",
+          "designer": "R",
+          "ops_manager": "F",
+          "crew_lead": "R",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        },
+        "Sales": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "F",
+          "designer": "R",
+          "ops_manager": "R",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        },
+        "Design": {
+          "owner": "F",
+          "office_manager": "R",
+          "estimator": "F",
+          "designer": "F",
+          "ops_manager": "R",
+          "crew_lead": "R",
+          "technician": "-",
+          "bookkeeper": "-",
+          "subcontractor": "-"
+        },
+        "Schedule": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "R",
+          "designer": "R",
+          "ops_manager": "F",
+          "crew_lead": "R",
+          "technician": "R",
+          "bookkeeper": "-",
+          "subcontractor": "R"
+        },
+        "Jobs": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "R",
+          "designer": "R",
+          "ops_manager": "F",
+          "crew_lead": "R",
+          "technician": "R",
+          "bookkeeper": "R",
+          "subcontractor": "R"
+        },
+        "Money": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "R",
+          "designer": "-",
+          "ops_manager": "R",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "F",
+          "subcontractor": "-"
+        },
+        "Books": {
+          "owner": "F",
+          "office_manager": "R",
+          "estimator": "-",
+          "designer": "-",
+          "ops_manager": "-",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "F",
+          "subcontractor": "-"
+        },
+        "Operations": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "R",
+          "designer": "R",
+          "ops_manager": "F",
+          "crew_lead": "R",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        },
+        "Team": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "-",
+          "designer": "-",
+          "ops_manager": "F",
+          "crew_lead": "R",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        },
+        "Marketing": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "R",
+          "designer": "R",
+          "ops_manager": "-",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "-",
+          "subcontractor": "-"
+        },
+        "Reports": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "R",
+          "designer": "R",
+          "ops_manager": "F",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "F",
+          "subcontractor": "-"
+        },
+        "Automations": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "-",
+          "designer": "-",
+          "ops_manager": "R",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "-",
+          "subcontractor": "-"
+        },
+        "Settings": {
+          "owner": "F",
+          "office_manager": "F",
+          "estimator": "-",
+          "designer": "-",
+          "ops_manager": "R",
+          "crew_lead": "-",
+          "technician": "-",
+          "bookkeeper": "R",
+          "subcontractor": "-"
+        }
+      }
+    },
+    "console": {
+      "source": "21 §5.5",
+      "note": "platform_owner sees everything. Home is role-aware.",
+      "items": {
+        "Home": {
+          "platform_owner": "F",
+          "platform_support": "F (support view)",
+          "platform_curator": "F (KB view)",
+          "platform_finance": "F (finance view)",
+          "platform_engineer": "F (health view)"
+        },
+        "Tenants / Tenant 360": {
+          "platform_owner": "F",
+          "platform_support": "F (PII masked)",
+          "platform_curator": "-",
+          "platform_finance": "R (billing fields)",
+          "platform_engineer": "R (technical fields)"
+        },
+        "Migrations": {
+          "platform_owner": "F",
+          "platform_support": "F",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "R"
+        },
+        "Billing": {
+          "platform_owner": "F",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "F",
+          "platform_engineer": "-"
+        },
+        "Entitlements and flags": {
+          "platform_owner": "F",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "R",
+          "platform_engineer": "F"
+        },
+        "Support": {
+          "platform_owner": "F",
+          "platform_support": "F",
+          "platform_curator": "-",
+          "platform_finance": "R",
+          "platform_engineer": "F"
+        },
+        "Plant KB": {
+          "platform_owner": "F",
+          "platform_support": "R",
+          "platform_curator": "F",
+          "platform_finance": "-",
+          "platform_engineer": "R"
+        },
+        "Content": {
+          "platform_owner": "F",
+          "platform_support": "F (help, announcements)",
+          "platform_curator": "F (palettes, symbols, starter data)",
+          "platform_finance": "R",
+          "platform_engineer": "R"
+        },
+        "AI Ops": {
+          "platform_owner": "F",
+          "platform_support": "R",
+          "platform_curator": "R (plant-related evals)",
+          "platform_finance": "R (cost)",
+          "platform_engineer": "F"
+        },
+        "Comms": {
+          "platform_owner": "F",
+          "platform_support": "F",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "F"
+        },
+        "Payments oversight": {
+          "platform_owner": "F",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "F",
+          "platform_engineer": "F"
+        },
+        "Risk and trust": {
+          "platform_owner": "F",
+          "platform_support": "F",
+          "platform_curator": "-",
+          "platform_finance": "R",
+          "platform_engineer": "R"
+        },
+        "Compliance": {
+          "platform_owner": "F",
+          "platform_support": "R (DSAR queue)",
+          "platform_curator": "-",
+          "platform_finance": "F",
+          "platform_engineer": "R"
+        },
+        "Analytics": {
+          "platform_owner": "F",
+          "platform_support": "R",
+          "platform_curator": "R (KB metrics)",
+          "platform_finance": "F",
+          "platform_engineer": "R"
+        },
+        "System health": {
+          "platform_owner": "F",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "F"
+        },
+        "Partners": {
+          "platform_owner": "F",
+          "platform_support": "R",
+          "platform_curator": "-",
+          "platform_finance": "F",
+          "platform_engineer": "-"
+        },
+        "Staff and audit": {
+          "platform_owner": "F",
+          "platform_support": "-",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "R (audit only)"
+        },
+        "Settings": {
+          "platform_owner": "F",
+          "platform_support": "-",
+          "platform_curator": "-",
+          "platform_finance": "-",
+          "platform_engineer": "R"
+        }
+      }
+    },
+    "portal": {
+      "source": "21 §5.4",
+      "note": "Hidden destinations are removed, not greyed out.",
+      "items": {
+        "Home / Next step": {
+          "primary": "F",
+          "co_owner": "F",
+          "approver": "F (approvals only)",
+          "billing": "F (money only)",
+          "property_contact": "F (visits and requests only)",
+          "viewer": "R"
+        },
+        "Proposals and designs": {
+          "primary": "F (sign, pay deposit)",
+          "co_owner": "F (sign, pay deposit)",
+          "approver": "F (approve within dollar limit, no payment)",
+          "billing": "C [-]",
+          "property_contact": "-",
+          "viewer": "R"
+        },
+        "Schedule": {
+          "primary": "F",
+          "co_owner": "F",
+          "approver": "R",
+          "billing": "-",
+          "property_contact": "F (assigned Properties)",
+          "viewer": "R"
+        },
+        "Invoices and payments": {
+          "primary": "F",
+          "co_owner": "F (payment methods and autopay: C [off])",
+          "approver": "C [-]",
+          "billing": "F",
+          "property_contact": "-",
+          "viewer": "C [-]"
+        },
+        "Requests": {
+          "primary": "F",
+          "co_owner": "F",
+          "approver": "F",
+          "billing": "-",
+          "property_contact": "F",
+          "viewer": "-"
+        },
+        "Service history and visit reports": {
+          "primary": "F",
+          "co_owner": "F",
+          "approver": "R",
+          "billing": "-",
+          "property_contact": "F (assigned Properties)",
+          "viewer": "R"
+        },
+        "Plants and property": {
+          "primary": "F",
+          "co_owner": "F",
+          "approver": "R",
+          "billing": "-",
+          "property_contact": "R",
+          "viewer": "R"
+        },
+        "Messages": {
+          "primary": "F",
+          "co_owner": "F",
+          "approver": "F",
+          "billing": "F (billing threads)",
+          "property_contact": "F",
+          "viewer": "-"
+        },
+        "Account: manage contacts and scopes": {
+          "primary": "F",
+          "co_owner": "-",
+          "approver": "-",
+          "billing": "-",
+          "property_contact": "-",
+          "viewer": "-"
+        },
+        "Account: own language, notifications, consent, passkeys": {
+          "primary": "F",
+          "co_owner": "F",
+          "approver": "F",
+          "billing": "F",
+          "property_contact": "F",
+          "viewer": "F"
+        }
+      }
+    }
+  }
+}
