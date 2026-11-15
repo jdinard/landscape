@@ -2282,7 +2282,7 @@ Legend: F full, R read, W write (draft), A approve, X execute, - none.
 | KB analytics (aggregated, k of 10 or more) | R | R | R | R | R | - | R |
 | Tenant business data | Per [02](02-personas-roles-permissions.md) consented access only | - | - | - | Per [02](02-personas-roles-permissions.md) | - | Per [02](02-personas-roles-permissions.md) |
 
-The plant curator agent holds the `curator` level in every scope. The senior column's approvals (critical traits, legal listings, releases, Regions, rule packs, media licenses, merges) are exercised by the founder as `platform_owner` on the agent's request, and the founder's own privileged actions need step-up authentication, a written reason and the audit log. A person hired later could hold any level without a product change.
+The plant curator agent holds the `curator` level in every scope. The senior column's approvals (critical traits, legal listings, releases, Regions, rule packs, media licenses, merges) are exercised by the founder as `platform_owner` on the agent's request, and the founder's own privileged actions need step-up authentication, a written reason and the audit log. A hired person could hold any level without a product change.
 
 `platform_curator` holders, including the plant curator agent, never see tenant business data (Clients, invoices); failure reports and search logs reach them de-identified ([02](02-personas-roles-permissions.md)).
 
@@ -2464,7 +2464,7 @@ AI makes curation at scale possible. In the KB, drafting models **draft and assi
 12. **French-Canadian scope:** fr-CA common names and interface are in v1 (OD-70); marketing to Quebec waits for the founder's French-language check (R26-10).
 13. **Plant ID provider:** the built model (KB photos plus a BioCLIP-class model) is primary; the optional commercial fallback provider identifies out-of-KB plants through the AI Gateway (8.1).
 14. **"Sale" in supply-and-install work:** the KB-RGN-10 rule stands, and a Client-supplied plant installed by the Company gets the same error (the conservative reading). The founder confirms the reading with counsel per jurisdiction, starting with Ohio, Michigan, Indiana, Illinois, Wisconsin and Ontario ([24](24-product-scope-decisions-catalog.md) section 1.7).
-15. **Rule-pack scope:** every rule-pack kind (water, turf, fire, HOA law, street-tree, parkway and stormwater) is in v1. The plant curator agent maintains packs from licensed sources and the founder approves each before it publishes (OD-60). Great Lakes municipal packs lead the curation queue, and California's water and fire packs are part of the v1 jurisdiction set (R24-18).
+15. **Rule-pack scope:** every rule-pack kind (water, turf, fire, HOA law, street-tree, parkway and stormwater) is in v1. The plant curator agent maintains packs from licensed sources and the founder approves each before it publishes (OD-60). Great Lakes municipal packs come first in the curation queue, and California's water and fire packs are part of the v1 jurisdiction set (R24-18).
 16. **Open plant-product code:** published under an open license with a free lookup endpoint (section 13 idea 22); the ratings, availability and workflow built on it stay Rootline's.
 17. **Regional program partnerships:** Great Lakes trial gardens and arboreta first (for example Chicago Botanic Garden plant evaluations); programs elsewhere, such as Plant Select, PHS Gold Medal or Great Plant Picks, as their Regions are curated. The founder approves each partnership, and co-branding credits evidence, never placement (KB-CUR-13).
 
