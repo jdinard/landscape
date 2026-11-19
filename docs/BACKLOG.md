@@ -1,0 +1,59 @@
+# Backlog: work that continues after the proposal
+
+> The working queue for follow-up sessions. It was salvaged from the review agents' notes in the workflow runs that produced this proposal (121 "remaining concerns" across docs 01-23) and checked against the current docs. Items that later passes already resolved were dropped. Founder decisions are not here: they live in [STATUS.md](STATUS.md) section 2.1 and in [24](24-roadmap-feature-catalog.md) section 8.
+
+## How a follow-up session uses this file
+
+1. Take the next unticked items, in order: section A, then section B.
+2. Do the work in the docs, citing sources inline and in each doc's Sources section.
+3. Run the checks in [tools/docs-check](../tools/docs-check/README.md): 0 broken links and 0 Mermaid failures.
+4. Commit and push to the working branch, then tick the item here with a one-line result and the commit.
+
+Ground rules carried over from the founder's direction:
+
+- Describe scope by tier ([MVP], [V1], [V2], [V3]). Add no dates, timelines, team sizes or effort estimates.
+- Don't decide section C items; they are listed for the founder.
+- Don't build new prototypes. The small and recurring jobs walkthrough is logged as a gap in [STATUS.md](STATUS.md) section 2.4, not as work.
+
+## A. Verification pass
+
+Facts marked "verify" exist because live research was limited while the docs were written. Web search works in follow-up sessions. Direct page fetches to vendor and regulator sites (for example docs.stripe.com, developer.intuit.com, ecfr.gov) are blocked by the session's network policy until the founder allows those hosts. Until then, verify from search results, cite what was found, and write "confirmed via search results; primary page not opened" where that applies.
+
+Ordered so that facts behind product decisions come first:
+
+- [ ] **A1 Stripe Connect configuration.** Accounts v2 versus controller properties for full-dashboard merchants, and whether OAuth linking works the same under v2 ([08](08-payments-stripe.md) open question 1, OD-17).
+- [ ] **A2 Stripe Tax on connected accounts.** Can Stripe Tax calculate and track liability for direct charges on Standard-style connected accounts ([07](07-invoicing-billing-contracts.md) open question 1, OD-31)?
+- [ ] **A3 Stripe fees.** Cards, ACH Direct Debit (the docs use 0.8% capped at $5), Financial Connections, Tap to Pay and Terminal; Stripe Billing fees for Rootline's own subscriptions ([08](08-payments-stripe.md), [22](22-business-model-pricing-gtm.md)).
+- [ ] **A4 Accounting APIs.** QuickBooks Online rate limits, change-data-capture lookback, App Partner Program tiers and metering; QuickBooks Desktop Web Connector status; Xero developer tiers and limits ([09](09-accounting-ledger-integrations.md)).
+- [ ] **A5 Launch-state labor rules.** Illinois meal period (One Day Rest in Seven Act) and Paid Leave for All Workers Act, Chicago and Cook County ordinances, Michigan Earned Sick Time Act, Wisconsin meal rules, current minimum wages in Ohio, Michigan, Illinois, Indiana and Wisconsin ([05](05-field-crew-mobile-app.md), [15](15-team-hr-payroll.md)).
+- [ ] **A6 Launch-state pesticide rules.** Applicator recordkeeping, posting and notification-registry rules in Ohio, Michigan, Illinois, Indiana and Wisconsin ([14](14-service-line-modules.md), [05](05-field-crew-mobile-app.md)).
+- [ ] **A7 Competitor pricing and features.** Jobber, Housecall Pro, LMN (Granum), Aspire, SingleOps, Service Autopilot, Real Green, Copilot CRM, Yardbook and SynkedUP ([01](01-market-landscape.md), [22](22-business-model-pricing-gtm.md), [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md)). A first search (November 2026) put Jobber at Core $49, Connect $139, Grow $199 and Plus $499 a month on monthly billing, with sources disagreeing on Plus.
+- [ ] **A8 Messaging rules and fees.** Twilio 10DLC brand and campaign fees; status of the FCC TCPA consent-revocation rule ([16](16-marketing-growth-communications.md), [19](19-platform-admin-portal.md), [20](20-architecture-security.md)).
+- [ ] **A9 Surcharging.** Card-network rules and the rules in the launch states ([08](08-payments-stripe.md)).
+- [ ] **A10 Contract and billing law.** Auto-renewal notice and late-fee limits in the launch states ([07](07-invoicing-billing-contracts.md)).
+- [ ] **A11 Plant data licenses.** USDA PLANTS, Missouri Botanical Garden Plant Finder, NC State Extension Plant Toolbox, Calscape, Lady Bird Johnson Wildflower Center, POWO and WFO, GBIF, Trefle and Perenual terms for commercial reuse ([12](12-plant-knowledge-base.md), [R3](research/R3-design-ai-plant-data.md)). Facts first; counsel still signs off (OD-67).
+- [ ] **A12 AI image models.** Current licenses and prices for the image-editing models named in [11](11-ai-design-mockups.md) and [R3](research/R3-design-ai-plant-data.md).
+- [ ] **A13 Industry numbers.** Market size, firm counts and size distribution for US and Canadian landscaping ([01](01-market-landscape.md), [R4](research/R4-industry-payments-accounting.md)).
+- [ ] **A14 Remaining "verify" markers**, doc by doc: 01-23, then R1-R4.
+
+## B. Evidence gaps
+
+- [ ] **B1 Owner quotes.** Reddit (r/landscaping, r/lawncare) and LawnSite quotations behind the ranked pain points ([01](01-market-landscape.md) item E15, [13](13-operations-inventory-equipment.md), [15](15-team-hr-payroll.md), [22](22-business-model-pricing-gtm.md)).
+- [ ] **B2 Competitor matrix.** About 29% of competitor cells in [01](01-market-landscape.md) section 4 are still "?".
+- [ ] **B3 Competitor capability gaps** flagged by reviewers: payments ([08](08-payments-stripe.md): ServiceTitan, SingleOps, Arborgold, Yardbook, Copilot CRM, SynkedUP), inventory ([13](13-operations-inventory-equipment.md)), HR and payroll ([15](15-team-hr-payroll.md)), marketing ([16](16-marketing-growth-communications.md)), UX claims such as command palettes and Spanish crew UI ([21](21-ux-design-system-sitemaps.md)).
+
+## C. Product questions reviewers raised (for the founder)
+
+- **C1 Pay-as-you-grow fee on ACH.** The opt-in plan charges 0.5% capped at $10 per payment ([22](22-business-model-pricing-gtm.md) section 5.1.2; [08](08-payments-stripe.md) option B), so a $2,000 ACH payment pays Rootline $10 while Stripe's own ACH fee caps at $5. A lower ACH cap is one option ([22](22-business-model-pricing-gtm.md) open question 2).
+- **C2 Gross-margin floor.** The 35% default may be too strict for maintenance and budget-priced work ([03](03-crm-sales-estimating-proposals.md) open question 13).
+- **C3 Payroll integration order.** Gusto API at MVP, or file exports first as [R4](research/R4-industry-payments-accounting.md) suggests ([15](15-team-hr-payroll.md) PAY-03).
+- **C4 Onboarding cost.** Count it as acquisition cost or cost of revenue ([22](22-business-model-pricing-gtm.md) open question 20).
+- **C5 Design assistant for homeowners.** The walkthrough shows the design assistant inside the homeowner visualizer as a [V2] proposal; the spec gives the assistant to designers only ([11](11-ai-design-mockups.md)).
+- **C6 Doc length.** Module docs run 30,000-45,000 words. An optional editorial pass could split each into a core spec and appendices.
+
+## D. Done in the salvage pass
+
+- [x] The doc checks and the walkthrough's source moved from the session scratchpad into [tools/](../tools/), so they survive the session.
+- [x] [05](05-field-crew-mobile-app.md) now uses press-and-hold for irreversible crew actions, matching [21](21-ux-design-system-sitemaps.md) and OD-39.
+- [x] The estimator is Sam Kowalski on every concept screen (the office screens said Jose Ramirez).
+- [x] Dropped as already resolved: links to docs that didn't exist yet, cross-doc conflicts fixed in the consistency passes, crew and office app-lock timing (consistent: 30 and 15 minutes), and `invoice.issued` (event) versus `invoice.send` (permission).

@@ -1,0 +1,12 @@
+{
+  "name": "rootline-docs-check",
+  "private": true,
+  "description": "Checks for the Rootline design docs: relative links and anchors, and Mermaid diagram syntax",
+  "scripts": {
+    "links": "node check-links.js ../../docs",
+    "mermaid": "node check-mermaid.js ../../docs"
+  },
+  "dependencies": {
+    "mermaid": "11.4.1"
+  }
+}

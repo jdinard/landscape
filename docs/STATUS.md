@@ -6,7 +6,7 @@
 
 - **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, and a clickable walkthrough prototype of the AI design flow.
 - **Decided:** bring-your-own Stripe, a built-in double-entry ledger, the Great Lakes launch region, Snow Lite in the MVP, pricing tiers, the region-aware Plant Knowledge Base, and "humans approve AI actions by default".
-- **Remains:** founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the other workflows (the biggest gap: small and recurring jobs such as weekly grass cutting), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
+- **Remains** (the working queue is [BACKLOG.md](BACKLOG.md)): founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the other workflows (the biggest gap: small and recurring jobs such as weekly grass cutting), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
 
 ## 1. What's done
 
@@ -54,9 +54,9 @@ All pages live in [site/](site/) as static HTML that runs in any browser, and ar
 | [site/screens-design.html](site/screens-design.html) | Static concepts: Design Studio, AI mockup flow, AI layout options, plant search, plant curator console |
 | [site/screens-field-client-admin.html](site/screens-field-client-admin.html) | Static concepts: crew app, homeowner and HOA portal, payment drawer, operator console |
 
-### 1.5 Quality passes
+### 1.5 Quality passes and tools
 
-Each module doc was written by one agent and then reviewed and deepened by another. Seven consistency reviews and two rounds of fixes reconciled more than 120 contradictions between docs: names, states, events, account codes, permissions and scope tags. All 339 Mermaid diagrams parse and there are no broken links between documents.
+Each module doc was written by one agent and then reviewed and deepened by another. Seven consistency reviews and two rounds of fixes reconciled more than 120 contradictions between docs: names, states, events, account codes, permissions and scope tags. All 339 Mermaid diagrams parse and there are no broken links between documents. The checks that prove it are in [tools/docs-check](../tools/docs-check/README.md), and the walkthrough's source is in [tools/prototype-src](../tools/prototype-src/README.md).
 
 ### 1.6 By the numbers
 

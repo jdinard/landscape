@@ -112,7 +112,7 @@
 | Constraint | Design implication |
 |---|---|
 | Direct sun, polarized sunglasses | Outdoor Mode theme with 7:1 contrast, no thin fonts, no light-gray text; avoid relying on color alone |
-| Work gloves, wet or muddy hands | 56 dp minimum targets, 64 dp primary actions, generous spacing (8 dp min), swipe-to-confirm instead of small confirm dialogs, no long-press-only actions |
+| Work gloves, wet or muddy hands | 56 dp minimum targets, 64 dp primary actions, generous spacing (8 dp min), press-and-hold to confirm (800 ms, visible fill, per [21](21-ux-design-system-sitemaps.md)) instead of small confirm dialogs; swipe-to-confirm is only offered alongside it (24 OD-39); every gesture also has a visible button |
 | One hand busy (holding a trimmer, a hose or a clipboard) | Primary actions in bottom 40% of the screen; bottom navigation; large floating "next step" button |
 | Loud equipment (mowers ~90+ dBA, estimate) | Haptics plus visual alerts; never rely on sound alone |
 | 4:00 a.m. snow pushes, dusk installs | Dark theme with the same contrast rules; auto-switch by sunrise/sunset at the device location |
@@ -712,7 +712,7 @@ Design system details live in [21](21-ux-design-system-sitemaps.md); field-speci
 
 | Rule | Spec | Priority |
 |---|---|---|
-| Touch targets | Minimum 56 x 56 dp; primary actions 64 dp high and full width; at least 8 dp between targets; destructive or irreversible actions use swipe-to-confirm (long horizontal swipe), not small "OK" dialogs | [MVP] |
+| Touch targets | Minimum 56 x 56 dp; primary actions 64 dp high and full width; at least 8 dp between targets; destructive or irreversible actions use press-and-hold (800 ms, visible fill) with a 5-second undo, not small "OK" dialogs, per [21](21-ux-design-system-sitemaps.md); swipe-to-confirm is only offered alongside press-and-hold, and glove tests settle the default (24 OD-39) | [MVP] |
 | Glove mode | Toggle (default on for field roles): increases touch slop, debounces accidental double taps (300 ms), disables gestures that need precision (small pinch on lists), larger keypad | [MVP] |
 | Contrast and type | Outdoor theme: text contrast >= 7:1 (WCAG AAA), body >= 17 pt, key numbers >= 22 pt bold, no gray-on-white secondary text; status uses icon + label + color | [MVP] |
 | Thumb zone | Bottom sticky action bar; bottom tabs; key actions never in the top third on phones | [MVP] |
@@ -1318,7 +1318,7 @@ flowchart TD
 +-------------------------------------------------+
 | ! Meal must start by 11:45 for Maria, Javier    |
 +-------------------------------------------------+
-| [       >>> SWIPE TO CLOCK OUT SELECTED >>>   ] |
+| [   ((( HOLD TO CLOCK OUT SELECTED )))        ] |
 +-------------------------------------------------+
 ```
 
