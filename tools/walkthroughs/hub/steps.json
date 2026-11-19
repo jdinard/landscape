@@ -212,7 +212,109 @@
   ],
   "errors": []
  },
- "wt-crew-day.html": null,
+ "wt-crew-day.html": {
+  "acts": [
+   {
+    "head": "ACT 1Morning at the yard",
+    "steps": [
+     {
+      "id": "c01-punch",
+      "short": "Crew punch",
+      "title": "Sign in on the truck tablet and punch in the crew",
+      "ai": false
+     },
+     {
+      "id": "c02-safety",
+      "short": "Safety checks",
+      "title": "Pre-trip inspection and the morning tailgate talk",
+      "ai": false
+     },
+     {
+      "id": "c03-loadout",
+      "short": "Load-out",
+      "title": "Load-out sheet, tool checkout and hour meters",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2On the route",
+    "steps": [
+     {
+      "id": "c04-route",
+      "short": "Today's route",
+      "title": "Today's route, gate codes and \"on the way\" texts",
+      "ai": false
+     },
+     {
+      "id": "c05-mow",
+      "short": "Mowing visit",
+      "title": "A mowing visit, with a photo check before leaving",
+      "ai": true
+     },
+     {
+      "id": "c06-apply",
+      "short": "Lawn program",
+      "title": "A fertilizer round and the wind gate",
+      "ai": false
+     },
+     {
+      "id": "c07-offline",
+      "short": "Dead zone",
+      "title": "Working offline, then a sync conflict",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Install crew",
+    "steps": [
+     {
+      "id": "c08-install",
+      "short": "Install",
+      "title": "Crew 1 plants the Okafors' design",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 4Issues, money and close-out",
+    "steps": [
+     {
+      "id": "c09-issues",
+      "short": "Voice note and safety",
+      "title": "A Spanish voice note, a heat check and a small incident",
+      "ai": true
+     },
+     {
+      "id": "c10-pay",
+      "short": "Field payment",
+      "title": "Getting paid in the field",
+      "ai": false
+     },
+     {
+      "id": "c11-closeout",
+      "short": "Close-out",
+      "title": "End-of-day report, time approval and clock-out",
+      "ai": true
+     },
+     {
+      "id": "c12-snow",
+      "short": "Snow Lite",
+      "title": "Winter: a storm night with Snow Lite",
+      "ai": false
+     },
+     {
+      "id": "c13-recap",
+      "short": "Recap",
+      "title": "Recap: what the app captured and where it went",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-money.html": null,
  "wt-commercial.html": null,
  "wt-owner-ai.html": null,
