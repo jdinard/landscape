@@ -1,0 +1,16 @@
+.ds-canvas { position: relative; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #e9efe3; }
+.ds-tools { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+.ds-tools .t { font-size: .68rem; padding: 3px 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text-2); }
+.ds-tools .t.on { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-soft-text); font-weight: 700; }
+.val-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 6px; align-items: start; font-size: .74rem; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.val-row:last-child { border-bottom: 0; }
+.sheet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.sheet { border: 1px solid var(--border-strong); border-radius: 4px; background: #fff; color: #222; position: relative; padding: 6px; font-size: .58rem; display: flex; flex-direction: column; }
+.sheet .tb { margin-top: auto; border-top: 1px solid #999; padding-top: 3px; display: flex; justify-content: space-between; font-weight: 700; }
+.sheet svg { width: 100%; height: 150px; }
+.price-panel { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 10px; font-size: .78rem; }
+.price-panel span:nth-child(even) { text-align: right; font-variant-numeric: tabular-nums; }
+.price-panel .t { font-weight: 700; border-top: 2px solid var(--border-strong); padding-top: 4px; }
+@media (max-width: 760px) { .sheet-grid { grid-template-columns: minmax(0, 1fr); } }
+.wt-cols.wide-left { grid-template-columns: minmax(0, 1fr); }
+.wt-cols.wide-left > .wt-stack { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items: start; }

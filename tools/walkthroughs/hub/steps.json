@@ -973,7 +973,109 @@
   ],
   "errors": []
  },
- "wt-design-studio.html": null,
+ "wt-design-studio.html": {
+  "acts": [
+   {
+    "head": "ACT 1Site",
+    "steps": [
+     {
+      "id": "ds01-site",
+      "short": "Site model",
+      "title": "An address becomes a to-scale site model",
+      "ai": false
+     },
+     {
+      "id": "ds02-ipad",
+      "short": "On site",
+      "title": "An offline site visit on the iPad",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Design",
+    "steps": [
+     {
+      "id": "ds03-hardscape",
+      "short": "Beds and walk",
+      "title": "Beds and a flagstone walk, drawn to scale",
+      "ai": false
+     },
+     {
+      "id": "ds04-plants",
+      "short": "Plants",
+      "title": "Plants from the regional KB, checked live",
+      "ai": false
+     },
+     {
+      "id": "ds05-sun3d",
+      "short": "Sun and 3D",
+      "title": "Sun study, then 3D with growth and seasons",
+      "ai": false
+     },
+     {
+      "id": "ds06-layers",
+      "short": "Lighting and irrigation",
+      "title": "Lighting and drip irrigation layers",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Sell",
+    "steps": [
+     {
+      "id": "ds07-takeoff",
+      "short": "Takeoff",
+      "title": "The design is the estimate",
+      "ai": false
+     },
+     {
+      "id": "ds08-options",
+      "short": "Options",
+      "title": "Options, versions and a photo of the plan",
+      "ai": true
+     },
+     {
+      "id": "ds09-markup",
+      "short": "Client markup",
+      "title": "The Harmons mark up the plan in the portal",
+      "ai": false
+     },
+     {
+      "id": "ds10-planset",
+      "short": "Plan set",
+      "title": "A plan set for the client and the crew",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 4Build",
+    "steps": [
+     {
+      "id": "ds11-change",
+      "short": "Change order",
+      "title": "A change after the sale",
+      "ai": false
+     },
+     {
+      "id": "ds12-asbuilt",
+      "short": "As-built",
+      "title": "As-built: the plan becomes the property record",
+      "ai": false
+     },
+     {
+      "id": "ds13-recap",
+      "short": "Recap",
+      "title": "Recap: one record from address to as-built",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-getting-found.html": null,
  "wt-future.html": null
 }
