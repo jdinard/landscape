@@ -876,7 +876,103 @@
   ],
   "errors": []
  },
- "wt-service-lines.html": null,
+ "wt-service-lines.html": {
+  "acts": [
+   {
+    "head": "ACT 1Service lines",
+    "steps": [
+     {
+      "id": "sl01-lines",
+      "short": "Service lines",
+      "title": "Turning service lines on, and the year at a glance",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Irrigation",
+    "steps": [
+     {
+      "id": "sl02-wave",
+      "short": "Start-up wave",
+      "title": "The spring start-up wave waits for the last freeze",
+      "ai": false
+     },
+     {
+      "id": "sl03-startup",
+      "short": "Start-up visit",
+      "title": "A start-up visit with a pre-authorized repair",
+      "ai": false
+     },
+     {
+      "id": "sl04-backflow",
+      "short": "Backflow test",
+      "title": "A backflow test, recorded and filed",
+      "ai": false
+     },
+     {
+      "id": "sl05-smart",
+      "short": "Leak alert",
+      "title": "A smart-controller leak alert becomes a repair visit",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Installs and warranties",
+    "steps": [
+     {
+      "id": "sl06-dig",
+      "short": "811 gate",
+      "title": "No digging without a clear 811 ticket",
+      "ai": false
+     },
+     {
+      "id": "sl07-warranty",
+      "short": "Warranty",
+      "title": "Closeout, then a plant warranty claim",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 4More lines",
+    "steps": [
+     {
+      "id": "sl08-lighting",
+      "short": "Lighting plan",
+      "title": "A lighting service visit after dusk",
+      "ai": true
+     },
+     {
+      "id": "sl09-holiday",
+      "short": "Holiday lights",
+      "title": "Holiday lighting sold from a concept image",
+      "ai": true
+     },
+     {
+      "id": "sl10-mosquito",
+      "short": "Mosquito",
+      "title": "A mosquito program with no-spray zones",
+      "ai": false
+     },
+     {
+      "id": "sl11-tree",
+      "short": "Tree care",
+      "title": "Tree care, a later module",
+      "ai": false
+     },
+     {
+      "id": "sl12-recap",
+      "short": "Recap",
+      "title": "Recap: one platform for every line",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-design-studio.html": null,
  "wt-getting-found.html": null,
  "wt-future.html": null

@@ -1,0 +1,19 @@
+.mod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+.mod { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--surface); display: grid; gap: 4px; font-size: .76rem; }
+.mod.on { border-color: var(--primary); background: var(--primary-soft); }
+.mod .hd { display: flex; gap: 6px; align-items: center; justify-content: space-between; }
+.mod b { font-size: .8rem; }
+.cal { display: grid; grid-template-columns: 90px repeat(12, minmax(0, 1fr)); gap: 2px; font-size: .62rem; }
+.cal span { padding: 3px 2px; text-align: center; border-radius: 3px; }
+.cal .lb { text-align: left; font-weight: 700; color: var(--text-2); }
+.cal .m { color: var(--text-3); font-weight: 700; }
+.cal .x { background: var(--moss-200); } .cal .x2 { background: var(--sky-100); } .cal .x3 { background: var(--marigold-100); } .cal .x4 { background: var(--ai-bg); }
+.zone-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 6px; align-items: center; font-size: .76rem; padding: 5px 0; border-bottom: 1px dashed var(--border); }
+.zone-row .zn { font-weight: 700; font-family: var(--font-mono); }
+.fix-map { position: relative; height: 150px; border-radius: 10px; border: 1px solid var(--border); background: linear-gradient(180deg, #1d2633, #2a3442); overflow: hidden; }
+.fix-map i { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #ffd27a; box-shadow: 0 0 10px 4px rgba(255, 210, 122, .45); }
+.fix-map i.low { background: #c98a3a; box-shadow: 0 0 6px 2px rgba(201, 138, 58, .35); }
+.fix-map i.out { background: #555; box-shadow: none; }
+.fix-map .house { position: absolute; left: 34%; top: 18%; width: 32%; height: 42%; border: 1.5px solid #6b7a8f; border-radius: 4px; }
+.fix-map .tx { position: absolute; left: 31%; top: 52%; width: 12px; height: 12px; background: #8fa3bf; border-radius: 2px; }
+.fix-map .lbl { position: absolute; font-size: .6rem; color: #c7d2e0; }
