@@ -4,7 +4,7 @@
 
 ## How a follow-up session uses this file
 
-1. Take the next unticked items, in order: section A, then section B.
+1. Take the next unticked items, in order: section E (the prototype), then section A, then section B.
 2. Do the work in the docs, citing sources inline and in each doc's Sources section.
 3. Run the checks in [tools/docs-check](../tools/docs-check/README.md): 0 broken links and 0 Mermaid failures.
 4. Commit and push to the working branch, then tick the item here with a one-line result and the commit.
@@ -13,7 +13,21 @@ Ground rules carried over from the founder's direction:
 
 - Describe scope by tier ([MVP], [V1], [V2], [V3]). Add no dates, timelines, team sizes or effort estimates.
 - Don't decide section C items; they are listed for the founder.
-- Don't build new prototypes. The small and recurring jobs walkthrough is logged as a gap in [STATUS.md](STATUS.md) section 2.4, not as work.
+- The founder asked to make the clickable prototype as complete as possible, so prototype work comes first. New walkthroughs follow [tools/walkthroughs/README.md](../tools/walkthroughs/README.md) and are added to the hub (`docs/site/walkthroughs.html`, rebuilt with `tools/walkthroughs/hub/`).
+
+## E. Prototype: clickable walkthroughs
+
+The hub is [site/walkthroughs.html](site/walkthroughs.html). Each walkthrough follows [tools/walkthroughs/README.md](../tools/walkthroughs/README.md).
+
+- [x] **E0 AI design to a signed project** ([site/prototype.html](site/prototype.html)).
+- [ ] **E1 Six more walkthroughs:** small and recurring jobs, a crew's day, invoicing and the books, commercial and HOA, the owner's day with AI agents, getting started and the operator console (being built).
+- [ ] **E2 Cross-walkthrough pass:** same names, numbers and plants across walkthroughs; deep links from the hub; accessibility and phone-width checks.
+- [ ] **E3 Hiring and seasonal crews:** job posts in Spanish, mobile apply, onboarding, credentials enforced at dispatch, the H-2B workspace ([V1]) ([15](15-team-hr-payroll.md)).
+- [ ] **E4 Operations depth:** purchasing workbench and consolidated POs, inventory modes and counts, fleet preventive maintenance, subcontractor compliance gate and portal ([13](13-operations-inventory-equipment.md)).
+- [ ] **E5 Other service lines:** irrigation start-up, backflow test and winterization; tree care inventory ([V2]); landscape and holiday lighting; mosquito programs ([14](14-service-line-modules.md)).
+- [ ] **E6 Design Studio depth:** 3D view, sun study, options and versions, plan-set PDF export, iPad sketch mode ([10](10-design-studio.md)).
+- [ ] **E7 Getting found:** the website builder, public instant quote and booking, review and referral loops, AI receptionist ([V1]) ([16](16-marketing-growth-communications.md)).
+- [ ] **E8 Moonshots, clearly labeled [V2] and [V3]:** property digital twin, AR on site, robotic mower fleet, the homeowner's lifetime property record ([23](23-innovation-moonshots.md)).
 
 ## A. Verification pass
 

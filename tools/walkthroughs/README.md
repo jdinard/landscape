@@ -13,6 +13,12 @@ Rootline's clickable prototype is a set of guided walkthroughs, one per part of 
 | `wt-commercial.html` | Commercial and HOA accounts | `h01`... | property manager, HOA board, ops manager, estimator |
 | `wt-owner-ai.html` | The owner's day with AI agents | `a01`... | owner, office manager |
 | `wt-onboarding-operator.html` | A new company gets started, and the platform operator's console | `o01`... | new company owner, platform owner, plant curator, support |
+| `wt-hiring.html` | Hiring and seasonal crews | `hr01`... | owner, office manager, applicant, crew lead |
+| `wt-operations.html` | Purchasing, inventory, fleet and subcontractors | `op01`... | ops manager, office manager, subcontractor, crew lead |
+| `wt-service-lines.html` | Irrigation, lighting, holiday lighting, mosquito and tree care | `sl01`... | ops manager, technician, homeowner, office manager |
+| `wt-design-studio.html` | Design Studio in depth | `ds01`... | designer, estimator, homeowner |
+| `wt-getting-found.html` | Getting found: website, instant quotes, reviews, referrals, AI receptionist | `gf01`... | owner, office manager, homeowner |
+| `wt-future.html` | The future: moonshots, clearly labeled V2 and V3 | `fx01`... | owner, homeowner, ops manager |
 | `walkthroughs.html` | Hub: all walkthroughs, the whole-business map, coverage of the spec | none | all |
 
 ## Frame (copy it from the reference)
