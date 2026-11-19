@@ -1168,5 +1168,107 @@
   ],
   "errors": []
  },
- "wt-future.html": null
+ "wt-future.html": {
+  "acts": [
+   {
+    "head": "ACT 1The property's living record",
+    "steps": [
+     {
+      "id": "fx01-twin",
+      "short": "Digital twin",
+      "title": "The Okafor property, a living record",
+      "ai": true
+     },
+     {
+      "id": "fx02-passport",
+      "short": "Landscape Passport",
+      "title": "A Landscape Passport transfers at the home sale",
+      "ai": false
+     },
+     {
+      "id": "fx03-ar",
+      "short": "AR in the yard",
+      "title": "Seeing year 5 in the yard with AR",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Autonomy and sensing",
+    "steps": [
+     {
+      "id": "fx04-robots",
+      "short": "Robot mowers",
+      "title": "A robotic mower fleet at Maple Ridge",
+      "ai": false
+     },
+     {
+      "id": "fx05-irrigation",
+      "short": "Closed-loop water",
+      "title": "Soil sensors close the irrigation loop",
+      "ai": false
+     },
+     {
+      "id": "fx06-plant-health",
+      "short": "Plant health AI",
+      "title": "A crew photo, a diagnosis and a prescription",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Money and markets",
+    "steps": [
+     {
+      "id": "fx07-pricing",
+      "short": "Predictive pricing",
+      "title": "Price against Greenleaf's own win history",
+      "ai": true
+     },
+     {
+      "id": "fx08-capital",
+      "short": "Spring Ramp",
+      "title": "Partner-funded working capital for spring",
+      "ai": false
+     },
+     {
+      "id": "fx09-esg",
+      "short": "Sustainability",
+      "title": "A sustainability report for the HOA board",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 4The self-driving back office",
+    "steps": [
+     {
+      "id": "fx10-autopilot",
+      "short": "Autopilot",
+      "title": "Autopilot: policies, not prompts",
+      "ai": true
+     },
+     {
+      "id": "fx11-voice",
+      "short": "Oye Rootline",
+      "title": "A Spanish voice assistant on the crew's phone",
+      "ai": true
+     },
+     {
+      "id": "fx12-mcp",
+      "short": "Your own AI",
+      "title": "The owner's own AI assistant, connected safely",
+      "ai": true
+     },
+     {
+      "id": "fx13-recap",
+      "short": "Recap",
+      "title": "Recap: rails now, bets on evidence",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ }
 }
