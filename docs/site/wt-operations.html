@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rootline walkthrough: purchasing, inventory, fleet and subcontractors</title>
+<meta name="description" content="A clickable walkthrough of the back of the house at a Columbus landscape company: a sold patio becomes a buy list and consolidated purchase orders, vendors confirm deliveries, the crew receives on site, the holding yard and bunkers are tracked, equipment is costed per hour and repaired, and a subcontractor is blocked until its insurance is current, then paid with a lien waiver.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/rootline.css">
+<style>
+/* ---------- shell ---------- */
+html { scroll-padding-top: 64px; }
+body { overflow-x: hidden; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 12px; top: -40px; z-index: 60; background: var(--surface); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); }
+.skip:focus { top: 8px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ic { width: 15px; height: 15px; flex: none; display: inline-block; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ic.s { width: 12px; height: 12px; vertical-align: -2px; }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); }
+.pt-shell { display: grid; grid-template-columns: 206px minmax(0, 1fr); align-items: start; }
+.pt-rail { position: sticky; top: 53px; max-height: calc(100vh - 53px); overflow-y: auto; border-right: 1px solid var(--border); background: var(--surface-2); padding: 12px 10px 18px; font-size: .84rem; }
+.pt-rail .rstart { display: flex; gap: 8px; align-items: center; padding: 7px 9px; border-radius: 8px; color: var(--text); text-decoration: none; font-weight: 650; }
+.pt-rail .rall { display: flex; gap: 6px; align-items: center; padding: 4px 9px 8px; margin-bottom: 4px; border-bottom: 1px solid var(--border); color: var(--text-2); text-decoration: none; font-size: .78rem; font-weight: 600; }
+.pt-rail .rall:hover { color: var(--text); }
+.pt-rail .rall svg { width: 14px; height: 14px; }
+.pt-rail .act { margin-top: 9px; }
+.pt-rail .act-h { font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); padding: 0 9px 4px; line-height: 1.35; }
+.pt-rail .act-h b { display: block; color: var(--accent); font-family: var(--font-mono); letter-spacing: .04em; }
+.pt-rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.pt-rail a.st { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 4px 8px; border-radius: 7px; color: var(--text-2); text-decoration: none; line-height: 1.3; }
+.pt-rail a.st:hover, .pt-rail .rstart:hover { background: var(--surface-3); color: var(--text); }
+.pt-rail a.st .n { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); }
+.pt-rail a.st.done .n { background: var(--primary-soft); border-color: var(--primary); color: var(--primary-soft-text); }
+.pt-rail a.st[aria-current="step"], .pt-rail .rstart[aria-current="step"] { background: var(--primary-soft); color: var(--primary-soft-text); font-weight: 650; }
+.pt-rail a.st[aria-current="step"] .n { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.pt-rail .ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ai-solid); }
+.pt-rail .rfoot { margin-top: 10px; padding: 8px 9px 0; border-top: 1px solid var(--border); color: var(--text-2); font-size: .76rem; }
+.pt-rail .rfoot b { color: var(--ai-text); font-family: var(--font-mono); }
+.meter { height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; margin-top: 6px; }
+.meter i { display: block; height: 100%; background: var(--ai-solid); border-radius: 4px; }
+.meter.ok i { background: var(--ok-solid); }
+.pt-main { min-width: 0; padding: 12px 18px 48px; }
+.pt-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 6px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.pt-bar .where { min-width: 0; flex: 1 1 320px; }
+.pt-bar .where .eyebrow { display: block; }
+.pt-bar h1 { font-size: clamp(1.25rem, 2.1vw, 1.6rem); margin: 2px 0 0; }
+.pt-bar h1:focus { outline: none; }
+.pt-bar .ctrls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.prog { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--text-2); }
+.prog .track { width: 120px; height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.prog .track i { display: block; height: 100%; background: var(--primary); border-radius: 4px; transition: width .3s; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.btn.xs { padding: 2px 8px; font-size: .74rem; }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--surface-3); }
+.pt-body { display: grid; grid-template-columns: minmax(0, 1fr) 334px; gap: 18px; align-items: start; }
+.pt-screen { min-width: 0; }
+.pt-bts { position: sticky; top: 66px; max-height: calc(100vh - 78px); overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface); box-shadow: var(--shadow-1); }
+.pt-bts.collapsed .bts-body { display: none; }
+.bts-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--surface-2); position: sticky; top: 0; z-index: 2; }
+.bts-head h2 { font-family: var(--font-body); font-size: .9rem; font-weight: 700; margin: 0; flex: 1; }
+.bts-body { padding: 4px 12px 14px; font-size: .82rem; }
+.bts-sec { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.bts-sec:last-child { border-bottom: 0; }
+.bts-sec > h3 { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); margin: 0 0 6px; display: flex; gap: 6px; align-items: center; }
+.bts-sec p { color: var(--text-2); }
+.agent { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 7px; }
+.agent .badge { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--ai-bg); color: var(--ai-text); flex: none; border: 1px solid var(--ai-solid); }
+.agent .badge.det { background: var(--surface-3); color: var(--text-2); border-color: var(--border-strong); }
+.agent b { display: block; font-size: .83rem; }
+.agent small { color: var(--text-3); font-size: .74rem; }
+ol.trace { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; counter-reset: tr; }
+ol.trace li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 6px; align-items: start; padding: 5px 6px; border-radius: 6px; background: var(--surface-2); border: 1px solid transparent; }
+ol.trace li .i { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); padding-top: 2px; }
+ol.trace li code { font-family: var(--font-mono); font-size: .72rem; font-weight: 600; color: var(--ai-text); word-break: break-word; }
+ol.trace li code.det { color: var(--text); }
+ol.trace li .res { display: block; color: var(--text-2); font-size: .74rem; line-height: 1.4; margin-top: 1px; }
+ol.trace li .ms { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); white-space: nowrap; padding-top: 2px; }
+ol.trace li.pending { opacity: .45; }
+ol.trace li.pending .res { visibility: hidden; }
+ol.trace li.running { border-color: var(--ai-solid); background: var(--ai-bg); }
+ol.trace li.human { background: var(--primary-soft); }
+ol.trace li.human code { color: var(--primary-soft-text); }
+.hitl { display: grid; gap: 6px; }
+.hitl div { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; color: var(--text-2); }
+.hitl .ic { color: var(--primary); margin-top: 2px; }
+.hitl b { color: var(--text); font-weight: 600; }
+.lvl { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.cred { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; align-items: baseline; }
+.cred .big { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600; color: var(--ai-text); }
+.cred small { color: var(--text-3); font-size: .74rem; grid-column: 1 / -1; }
+.specs { font-family: var(--font-mono); font-size: .7rem; color: var(--text-2); line-height: 1.6; }
+.tagrow { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.tagrow .note { font-size: .74rem; color: var(--text-2); }
+.pill .ic { width: 11px; height: 11px; }
+.ai-mark .ic { color: var(--ai-solid); }
+
+/* ---------- device frames ---------- */
+.dev-row { display: flex; gap: 22px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+.phone.pt-phone { width: 352px; flex: none; }
+.phone .status .bat { display: inline-flex; gap: 4px; align-items: center; }
+.phone .body.pt-pbody { max-height: 680px; overflow-y: auto; overscroll-behavior: contain; gap: 10px; padding: 0 0 14px; position: relative; }
+.pbody-pad { padding: 0 12px; display: flex; flex-direction: column; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 3; }
+.brand .logo { width: 26px; height: 26px; border-radius: 7px; background: var(--moss-700); color: var(--stone-0); display: grid; place-items: center; }
+.brand .logo .ic { stroke: var(--stone-0); }
+.brand b { font-size: .84rem; display: block; line-height: 1.1; }
+.brand small { font-size: .68rem; color: var(--text-3); }
+.brand .sp { flex: 1; }
+.ptitle { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.15; margin: 4px 0 0; }
+.psub { color: var(--text-2); font-size: .84rem; }
+.pcard { border: 1px solid var(--border); border-radius: 12px; padding: 10px 11px; background: var(--surface); }
+.pcard.soft { background: var(--surface-2); }
+.pcard h4 { margin: 0 0 4px; font-size: .84rem; }
+.pfoot { font-size: .66rem; color: var(--text-3); text-align: center; padding: 4px 12px 0; }
+.fld { display: grid; gap: 4px; font-size: .78rem; font-weight: 600; color: var(--text-2); }
+.fld .hint { font-weight: 500; color: var(--text-3); font-size: .72rem; }
+.inp { width: 100%; border: 1px solid var(--border-strong); border-radius: 8px; padding: 7px 9px; background: var(--surface); font-size: .86rem; font-weight: 500; color: var(--text); }
+.inp.sm { padding: 5px 7px; font-size: .8rem; }
+.inp[readonly] { background: var(--surface-2); }
+.inrow { display: flex; gap: 6px; align-items: center; }
+.inrow .inp { flex: 1; min-width: 0; }
+.unit { position: relative; }
+.unit .inp { padding-right: 30px; }
+.unit span { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-size: .74rem; color: var(--text-3); pointer-events: none; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; background: var(--surface); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 5px 10px; font-size: .76rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); font-size: .76rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.chip[aria-pressed="true"], .chip[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-soft-text); }
+.chip.ai { border-color: var(--ai-solid); background: var(--ai-bg); color: var(--ai-text); }
+.chip.ai[disabled] { opacity: .55; cursor: default; }
+.check { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 7px; align-items: start; font-size: .74rem; color: var(--text-2); font-weight: 500; }
+.check input { margin: 2px 0 0; width: 15px; height: 15px; accent-color: var(--primary); }
+.okline { display: flex; gap: 6px; align-items: center; color: var(--ok-text); font-weight: 600; font-size: .78rem; }
+.okline .ic { color: var(--ok-solid); }
+.warnline { display: flex; gap: 6px; align-items: flex-start; color: var(--warn-text); font-weight: 600; font-size: .78rem; }
+.kv { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 3px 10px; margin: 0; font-size: .78rem; }
+.kv dt { color: var(--text-3); }
+.kv dd { margin: 0; font-weight: 600; }
+.loading { display: flex; gap: 8px; align-items: center; color: var(--text-2); font-size: .8rem; }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--primary); animation: spin .8s linear infinite; }
+.runitem .spin, .thumb .spin, ol.trace .spin { border-top-color: var(--ai-solid); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .35s ease both; }
+
+/* desktop frame */
+.frame-scroll { overflow-x: auto; padding: 2px 2px 10px; -webkit-overflow-scrolling: touch; }
+.frame-scroll > .browser { min-width: 760px; }
+.pt-app { display: grid; grid-template-columns: 146px minmax(0, 1fr); min-height: 600px; font-size: .82rem; }
+.pt-app .app-side { flex-direction: column; overflow: visible; border-right: 1px solid var(--border); border-bottom: 0; padding: 10px 7px; gap: 1px; font-size: .8rem; }
+.pt-app .app-side .item { padding: 5px 8px; white-space: nowrap; gap: 7px; }
+.pt-app .app-side .item .badge { margin-left: auto; font-size: .64rem; font-weight: 700; background: var(--accent); color: var(--stone-0); border-radius: 999px; padding: 0 6px; }
+.pt-app .app-side .co { display: flex; gap: 7px; align-items: center; padding: 2px 4px 10px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
+.pt-app .app-side .co .logo { width: 24px; height: 24px; border-radius: 6px; background: var(--moss-700); display: grid; place-items: center; flex: none; }
+.pt-app .app-side .co .logo .ic { stroke: var(--stone-0); width: 14px; height: 14px; }
+.pt-app .app-side .co b { font-size: .74rem; line-height: 1.15; display: block; }
+.pt-app .app-side .co small { font-size: .64rem; color: var(--text-3); }
+.pt-app .app-side .sidefoot { margin-top: auto; padding: 10px 6px 2px; font-size: .68rem; color: var(--text-2); border-top: 1px solid var(--border); }
+.pt-app .app-side .sidefoot b { color: var(--ai-text); font-family: var(--font-mono); }
+.pt-app .app-main { padding: 12px 14px; }
+.apphead { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-bottom: 10px; }
+.apphead h3 { font-size: 1rem; margin: 0; }
+.apphead .crumb { font-size: .74rem; color: var(--text-3); width: 100%; }
+.apphead .sp { flex: 1; }
+.av { width: 24px; height: 24px; border-radius: 50%; display: inline-grid; place-items: center; font-size: .62rem; font-weight: 700; color: var(--on-primary); background: var(--primary); border: 2px solid var(--surface); flex: none; }
+.av.b { background: var(--accent); color: var(--stone-0); }
+.av.c { background: var(--sky-600); color: var(--stone-0); }
+.av.ai { background: var(--ai-solid); color: var(--stone-0); }
+.panel { border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface); padding: 10px 12px; }
+.panel.soft { background: var(--surface-2); }
+.panel h4 { margin: 0 0 6px; font-size: .82rem; display: flex; gap: 6px; align-items: center; }
+.ph { font-size: .66rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+.ai-box { border: 1px solid var(--ai-solid); background: var(--ai-bg); border-radius: var(--radius-m); padding: 10px 12px; }
+.ai-box .ai-h { display: flex; align-items: center; gap: 6px; color: var(--ai-text); font-weight: 700; font-size: .8rem; margin-bottom: 4px; }
+.ai-box ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; font-size: .78rem; color: var(--text); }
+.cost { font-family: var(--font-mono); font-size: .72rem; color: var(--ai-text); font-weight: 600; white-space: nowrap; }
+table.data.tight td, table.data.tight th { padding: 5px 7px; }
+table.data td .sub { display: block; color: var(--text-3); font-size: .72rem; }
+.stat { display: inline-flex; gap: 5px; align-items: center; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--border-strong); }
+.dot.ok { background: var(--ok-solid); } .dot.warn { background: var(--warn-solid); } .dot.ai { background: var(--ai-solid); } .dot.info { background: var(--info-solid); }
+.flex { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.grow { flex: 1; }
+.muted { color: var(--text-2); }
+.faint { color: var(--text-3); }
+.tiny { font-size: .72rem; }
+.mt6 { margin-top: 6px; } .mt10 { margin-top: 10px; } .mt14 { margin-top: 14px; }
+.toast { display: flex; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; background: var(--ok-bg); color: var(--ok-text); font-weight: 600; font-size: .8rem; }
+.toast.ai { background: var(--ai-bg); color: var(--ai-text); }
+.event { font-family: var(--font-mono); font-size: .7rem; padding: 1px 7px; border-radius: 4px; background: var(--surface-3); color: var(--text); border: 1px solid var(--border); }
+
+/* ---------- photo scenes ---------- */
+.scene { position: relative; aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-3); }
+.scene > svg, .ba-after > svg, .scene .lay > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ba { --pos: 50%; }
+.ba-after { position: absolute; inset: 0; clip-path: inset(0 0 0 var(--pos)); }
+.ba-line { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--stone-0); box-shadow: 0 0 0 1px color-mix(in srgb, var(--stone-900) 30%, transparent); pointer-events: none; z-index: 3; }
+.ba-knob { position: absolute; top: 50%; left: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: var(--stone-0); color: var(--stone-900); display: grid; place-items: center; font-size: .62rem; font-weight: 800; box-shadow: var(--shadow-2); }
+.ba-tag { position: absolute; top: 8px; padding: 2px 8px; border-radius: 999px; font-size: .66rem; font-weight: 700; background: color-mix(in srgb, var(--stone-900) 82%, transparent); color: var(--stone-0); pointer-events: none; z-index: 4; }
+.ba-tag.l { left: 8px; } .ba-tag.r { right: 8px; }
+.ba-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; z-index: 5; }
+.ba:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ai-badge { position: absolute; left: 8px; bottom: 8px; z-index: 6; display: inline-flex; gap: 5px; align-items: center; padding: 3px 9px; border-radius: 999px; font-size: .66rem; font-weight: 700; background: color-mix(in srgb, var(--stone-900) 84%, transparent); color: var(--stone-0); pointer-events: none; }
+.ai-badge .ic { stroke: var(--iris-50); width: 11px; height: 11px; }
+.plabel { position: absolute; z-index: 7; transform: translate(-50%, -100%); width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--stone-0); background: var(--stone-900); color: var(--stone-0); font-size: .68rem; font-weight: 800; display: grid; place-items: center; cursor: pointer; padding: 0; box-shadow: 0 1px 4px rgba(0,0,0,.35); transition: opacity .15s; }
+.plabel:hover, .plabel.on { background: var(--primary); color: var(--on-primary); }
+.plabel.hide { opacity: 0; pointer-events: none; }
+.scene .stale { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 6; }
+.thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.thumb { border: 2px solid var(--border); border-radius: 9px; padding: 0; background: var(--surface); cursor: pointer; overflow: hidden; text-align: left; display: grid; }
+.thumb .scene { border: 0; border-radius: 0; aspect-ratio: 16/11; }
+.thumb span { display: block; padding: 3px 5px 4px; font-size: .64rem; font-weight: 650; line-height: 1.2; color: var(--text-2); }
+.thumb[aria-pressed="true"] { border-color: var(--primary); }
+.thumb[aria-pressed="true"] span { color: var(--primary-soft-text); background: var(--primary-soft); }
+.plist { display: grid; gap: 4px; }
+.prow { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 7px; align-items: center; border: 1px solid var(--border); border-radius: 8px; padding: 5px 7px; background: var(--surface); cursor: pointer; text-align: left; width: 100%; font-size: .76rem; }
+.prow:hover { border-color: var(--border-strong); }
+.prow .pn { width: 20px; height: 20px; border-radius: 50%; background: var(--stone-900); color: var(--stone-0); display: grid; place-items: center; font-size: .64rem; font-weight: 800; }
+.prow em { font-style: italic; }
+.prow small { display: block; color: var(--text-3); font-size: .68rem; }
+.rating { display: inline-flex; align-items: center; gap: 4px; font-size: .68rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+.r5, .r4 { background: var(--ok-bg); color: var(--ok-text); }
+.r3 { background: var(--info-bg); color: var(--info-text); }
+.dA, .dB { background: var(--ok-bg); color: var(--ok-text); }
+.dC, .dD { background: var(--warn-bg); color: var(--warn-text); }
+.disclaim { font-size: .68rem; color: var(--text-3); line-height: 1.4; }
+.sheet-wrap { position: absolute; inset: 0; z-index: 20; background: color-mix(in srgb, var(--stone-900) 45%, transparent); display: flex; align-items: flex-end; }
+.sheet { background: var(--surface); width: 100%; border-radius: 16px 16px 0 0; padding: 12px 14px 16px; max-height: 92%; overflow-y: auto; box-shadow: var(--shadow-2); animation: rise .25s ease both; }
+.sheet .kb-pic { width: 100%; height: auto; border-radius: 9px; display: block; border: 1px solid var(--border); }
+.sheet h3 { font-size: 1rem; margin: 8px 0 0; }
+.sheet h3 em { font-style: italic; }
+.sheet .facts { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
+.sheet ul { margin: 4px 0 0; padding-left: 18px; font-size: .78rem; display: grid; gap: 3px; }
+.big-view { flex: 1 1 340px; min-width: 300px; max-width: 520px; display: grid; gap: 10px; align-content: start; }
+.big-view .cap { font-size: .72rem; color: var(--text-3); display: flex; gap: 6px; align-items: center; }
+
+/* chat */
+.chat { display: grid; gap: 8px; }
+.msg { max-width: 88%; padding: 7px 10px; border-radius: 12px; font-size: .78rem; line-height: 1.45; }
+.msg.me { justify-self: end; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 4px; }
+.msg.ai { justify-self: start; background: var(--ai-bg); color: var(--text); border: 1px solid color-mix(in srgb, var(--ai-solid) 45%, transparent); border-bottom-left-radius: 4px; }
+.msg.ai .who { display: flex; gap: 5px; align-items: center; font-size: .66rem; font-weight: 700; color: var(--ai-text); margin-bottom: 2px; }
+.diff { margin-top: 6px; border: 1px solid var(--ai-solid); border-radius: 8px; background: var(--surface); padding: 6px 8px; font-size: .72rem; }
+.diff .dh { display: flex; justify-content: space-between; gap: 6px; font-weight: 700; color: var(--ai-text); font-size: .66rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.diff ul { margin: 0; padding-left: 15px; display: grid; gap: 1px; }
+.diff .val { color: var(--ok-text); font-weight: 600; display: flex; gap: 4px; align-items: center; margin-top: 3px; }
+.typing { display: inline-flex; gap: 3px; } .typing i { width: 5px; height: 5px; border-radius: 50%; background: var(--ai-solid); animation: pulse 1s infinite; } .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+
+/* plan svg */
+.plan-wrap { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.plan-wrap svg { display: block; width: 100%; height: auto; }
+.pl-bg { fill: var(--surface); }
+.pl-turf { fill: color-mix(in srgb, var(--turf) 30%, var(--surface)); }
+.pl-grid { fill: none; stroke: color-mix(in srgb, var(--turf-dark) 22%, transparent); stroke-width: .05; }
+.pl-house { stroke: var(--stone-600); stroke-width: .12; }
+.pl-hatch { stroke: var(--stone-450); stroke-width: .12; }
+.pl-ac { fill: var(--stone-300); stroke: var(--stone-600); stroke-width: .1; }
+.pl-patio { stroke: var(--stone-600); stroke-width: .12; }
+.pl-paver { fill: var(--paver); } .pl-joint { fill: none; stroke: var(--stone-450); stroke-width: .05; }
+.pl-flag { fill: color-mix(in srgb, var(--paver) 70%, var(--clay-300)); stroke: var(--stone-600); stroke-width: .1; stroke-dasharray: .4 .2; }
+.pl-lot { fill: none; stroke: var(--text-2); stroke-width: .14; stroke-dasharray: .9 .5; }
+.pl-mulch { fill: color-mix(in srgb, var(--mulch) 40%, var(--surface)); } .pl-mdot { fill: color-mix(in srgb, var(--mulch) 70%, var(--surface)); }
+.pl-bed { stroke: none; }
+.pl-edge { fill: none; stroke: var(--stone-800); stroke-width: .18; }
+.pl-hl { fill: none; stroke: var(--ai-solid); stroke-width: .35; stroke-dasharray: .8 .45; animation: pulse 1.2s ease 3; }
+.pl-step { fill: var(--stone-200); stroke: var(--stone-500); stroke-width: .08; }
+.pl-boulder { fill: var(--stone-300); stroke: var(--stone-600); stroke-width: .1; }
+.pl-light { fill: var(--marigold-400); } .pl-lightr { fill: none; stroke: var(--marigold-400); stroke-width: .08; stroke-dasharray: .3 .2; }
+.pl-shade { fill: color-mix(in srgb, var(--sky-600) 18%, transparent); stroke: var(--sky-600); stroke-width: .1; stroke-dasharray: .5 .3; }
+.pl-nbtree { fill: none; stroke: var(--moss-700); stroke-width: .12; stroke-dasharray: .6 .4; }
+.pl-gas { fill: none; stroke: var(--marigold-600); stroke-width: .22; stroke-dasharray: .9 .4; }
+.pl-gasbuf { fill: none; stroke: color-mix(in srgb, var(--marigold-400) 26%, transparent); stroke-width: 10; stroke-linecap: round; }
+.pl-wet { fill: color-mix(in srgb, var(--water) 45%, transparent); stroke: var(--sky-600); stroke-width: .08; stroke-dasharray: .3 .2; }
+.pl-dim { fill: none; stroke: var(--text-3); stroke-width: .08; }
+.pl-dim.a { stroke: var(--accent); }
+.pl-t { font-family: var(--font-body); font-size: 1.05px; fill: var(--text-2); font-weight: 600; }
+.pl-t.s { font-size: .9px; }
+.pl-t.d { font-family: var(--font-mono); font-size: 1px; fill: var(--text); }
+.pl-t.a { fill: var(--accent); }
+.pl-t.gas { fill: var(--marigold-600); }
+.pl-t.sunt { fill: var(--sky-700); }
+.pl-nc { fill: var(--surface); stroke: var(--text-2); stroke-width: .1; } .pl-n { fill: var(--text); }
+.pl-sb1 { fill: var(--text); } .pl-sb2 { fill: var(--surface); stroke: var(--text); stroke-width: .06; }
+.pc { stroke-width: .1; fill-opacity: .9; transition: r .3s; }
+.pc.can { fill-opacity: .18; stroke-dasharray: .7 .35; stroke-width: .14; }
+.pc.hot { stroke: var(--ai-solid); stroke-width: .3; }
+.pc-trunk { fill: var(--stone-700); }
+.pc-x { stroke: color-mix(in srgb, var(--stone-0) 70%, transparent); stroke-width: .08; }
+.pc-warn { fill: none; stroke: var(--warn-solid); stroke-width: .25; }
+.pl-warnb circle { fill: var(--warn-solid); stroke: var(--surface); stroke-width: .15; } .pl-warnb text { font-size: 1.6px; font-weight: 800; fill: var(--stone-900); font-family: var(--font-body); }
+.pl-num circle { fill: var(--stone-900); stroke: var(--stone-0); stroke-width: .18; } .pl-num text { font-size: 1.2px; font-weight: 800; fill: var(--stone-0); font-family: var(--font-body); }
+.pl-code rect { fill: color-mix(in srgb, var(--surface) 92%, transparent); stroke: var(--stone-500); stroke-width: .06; } .pl-code text { font-family: var(--font-mono); font-size: .95px; font-weight: 600; fill: var(--text); }
+.pc-cer { fill: var(--clay-300); stroke: var(--clay-600); }
+.pc-jun { fill: color-mix(in srgb, var(--moss-800) 80%, var(--sky-700)); stroke: var(--moss-900); fill-opacity: .95; }
+.pc-ile { fill: var(--moss-700); stroke: var(--moss-900); }
+.pc-gem { fill: var(--moss-600); stroke: var(--moss-900); }
+.pc-ite { fill: var(--moss-400); stroke: var(--moss-700); }
+.pc-pan { fill: var(--moss-200); stroke: var(--moss-600); }
+.pc-cal { fill: var(--marigold-300); stroke: var(--marigold-600); }
+.pc-ams { fill: var(--moss-100); stroke: var(--moss-500); }
+.pc-sch { fill: color-mix(in srgb, var(--sky-500) 35%, var(--moss-200)); stroke: var(--sky-700); }
+.pc-spo { fill: var(--moss-100); stroke: var(--moss-600); }
+.pc-mon { fill: color-mix(in srgb, color-mix(in srgb, var(--sky-500) 50%, var(--ember-500)) 55%, var(--stone-0)); stroke: color-mix(in srgb, var(--sky-700) 50%, var(--ember-600)); }
+.pc-phl { fill: color-mix(in srgb, var(--ember-500) 40%, var(--stone-0)); stroke: var(--ember-600); }
+.pc-ech { fill: color-mix(in srgb, var(--ember-500) 70%, var(--stone-0)); stroke: var(--ember-700); }
+.pc-rud { fill: var(--marigold-400); stroke: var(--marigold-800); }
+.pc-nep { fill: color-mix(in srgb, var(--sky-500) 45%, var(--stone-100)); stroke: var(--sky-700); }
+.pc-sal { fill: color-mix(in srgb, var(--sky-700) 55%, var(--ember-600)); stroke: var(--stone-900); }
+.pc-all { fill: color-mix(in srgb, var(--sky-600) 45%, var(--ember-500)); stroke: var(--stone-900); }
+.pc-jhz { fill: color-mix(in srgb, var(--moss-600) 55%, var(--sky-600)); stroke: var(--moss-900); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 4px; border: 1px solid var(--stone-600); }
+
+/* photo palette (raw palette so a photo stays a photo in both themes) */
+.sky-a { stop-color: var(--sky-100); } .sky-b { stop-color: var(--sky-50); }
+.bgt1 { fill: var(--moss-600); } .bgt2 { fill: var(--moss-700); }
+.nb-wall { fill: var(--stone-200); } .nb-roof { fill: var(--stone-600); } .nb-win { fill: var(--sky-100); stroke: var(--stone-0); stroke-width: 2; }
+.ph-roof { fill: var(--stone-700); } .ph-eave { stroke: var(--stone-800); stroke-width: 3; }
+.siding { fill: var(--stone-50); } .siding-line { stroke: var(--stone-200); stroke-width: 1; }
+.ph-found { fill: var(--stone-300); }
+.ph-win { fill: var(--sky-100); stroke: var(--stone-0); stroke-width: 2.5; }
+.ph-mull { stroke: var(--stone-0); stroke-width: 1.6; }
+.ph-sill { fill: var(--stone-200); }
+.ph-door { fill: var(--stone-0); } .ph-glass { fill: var(--sky-100); }
+.ph-down { fill: var(--stone-200); stroke: var(--stone-300); stroke-width: .5; }
+.ph-ac { fill: var(--stone-300); stroke: var(--stone-500); } .ph-acg { stroke: var(--stone-500); }
+.ph-fence { fill: var(--clay-300); } .ph-fence-l { stroke: var(--clay-500); stroke-width: 1; }
+.ph-lawn { fill: var(--moss-300); } .ph-stripe { fill: var(--moss-400); opacity: .35; }
+.ph-lawn-tired { fill: color-mix(in srgb, var(--moss-300) 74%, var(--marigold-300)); }
+.ph-patch { fill: var(--marigold-300); opacity: .6; } .ph-dirt { fill: var(--clay-600); opacity: .45; }
+.ph-soil { fill: var(--clay-600); opacity: .85; } .ph-weed { stroke: var(--moss-500); stroke-width: 1.3; fill: none; }
+.ph-paver { fill: var(--stone-200); } .ph-joint { fill: none; stroke: var(--stone-450); stroke-width: .7; }
+.ph-patio-edge { fill: var(--stone-450); }
+.ph-flag { fill: color-mix(in srgb, var(--stone-200) 70%, var(--clay-300)); stroke: var(--stone-450); stroke-width: 1; }
+.ph-card { fill: var(--stone-0); stroke: var(--stone-450); } .ph-card-m { fill: var(--stone-900); }
+.ph-mulch { fill: var(--clay-600); } .ph-mulch.dark { fill: var(--stone-800); }
+.ph-stone0 { fill: var(--stone-300); stroke: var(--stone-500); stroke-width: .6; } .ph-stone1 { fill: var(--stone-200); stroke: var(--stone-500); stroke-width: .6; }
+.ph-brick { fill: none; stroke: var(--clay-500); stroke-width: 4; stroke-dasharray: 7 1.5; }
+.ph-steel { fill: none; stroke: var(--stone-900); stroke-width: 2.4; }
+.ph-spade { fill: none; stroke: var(--clay-600); stroke-width: 2; }
+.ph-boulder { fill: var(--stone-300); stroke: var(--stone-500); }
+.ph-hose { fill: none; stroke: var(--moss-600); stroke-width: 3; }
+.ph-hl { fill: none; stroke: var(--iris-50); stroke-width: 3; stroke-dasharray: 8 5; animation: pulse 1.1s ease 3; }
+.win-frame { fill: var(--stone-100); } .win-mull { stroke: var(--stone-100); stroke-width: 14; }
+.trunk { fill: none; stroke: var(--stone-800); stroke-width: 4; stroke-linecap: round; }
+.gl .can1 { fill: var(--moss-500); } .gl .can2 { fill: var(--moss-600); } .gl .leafhl { fill: var(--moss-300); opacity: .8; }
+.gl .col { fill: color-mix(in srgb, var(--moss-800) 80%, var(--sky-700)); } .gl .colhl { stroke: var(--moss-500); stroke-width: 1.2; }
+.gl .m { fill: var(--moss-600); } .gl .hl { fill: var(--moss-400); }
+.g-ile .m { fill: var(--moss-800); } .g-ile .hl { fill: var(--moss-600); }
+.g-gem .m { fill: var(--moss-700); } .g-gem .hl { fill: var(--moss-500); }
+.g-ite .m { fill: var(--moss-500); } .g-ite .fl { fill: none; stroke: var(--stone-25); stroke-width: 2.2; stroke-linecap: round; }
+.g-ams .m { fill: var(--moss-300); } .g-ams .fine { fill: none; stroke: var(--moss-200); stroke-width: .9; }
+.g-nep .m { fill: color-mix(in srgb, var(--moss-400) 70%, var(--sky-500)); } .g-nep .fine { fill: none; stroke: var(--moss-300); stroke-width: .8; } .g-nep .fl { fill: color-mix(in srgb, var(--sky-500) 55%, var(--stone-100)); }
+.g-jhz .m { fill: color-mix(in srgb, var(--moss-600) 55%, var(--sky-600)); } .g-jhz .hl { fill: var(--moss-300); }
+.gl .bl { fill: none; stroke: var(--moss-500); stroke-width: 1.3; stroke-linecap: round; }
+.g-sch .bl { stroke: color-mix(in srgb, var(--sky-600) 45%, var(--moss-600)); }
+.g-pan .bl { stroke: var(--moss-400); } .g-pan .haze { fill: var(--moss-200); opacity: .45; }
+.g-cal .bl { stroke: var(--moss-500); } .g-cal .plume { stroke: var(--marigold-300); stroke-width: 2; stroke-linecap: round; }
+.g-spo .bl { stroke: var(--moss-400); stroke-width: .9; }
+.gl .base { fill: var(--moss-600); } .gl .stem { stroke: var(--moss-700); stroke-width: 1; }
+.g-ech .fl { fill: color-mix(in srgb, var(--ember-500) 72%, var(--stone-0)); } .g-ech .ctr { fill: var(--clay-600); }
+.g-rud .fl { fill: var(--marigold-400); } .g-rud .ctr { fill: var(--stone-900); }
+.g-mon .fl { fill: color-mix(in srgb, color-mix(in srgb, var(--sky-500) 50%, var(--ember-500)) 60%, var(--stone-0)); }
+.g-phl .fl { fill: color-mix(in srgb, var(--ember-500) 45%, var(--stone-0)); }
+.g-all .fl { fill: color-mix(in srgb, var(--sky-600) 45%, var(--ember-500)); }
+.g-sal .spike { stroke: color-mix(in srgb, var(--sky-700) 55%, var(--ember-600)); stroke-linecap: round; }
+.gl.hot .m, .gl.hot .base { stroke: var(--iris-50); stroke-width: 1.5; }
+.sgm { stroke-width: 1.4; fill-opacity: .36; }
+.sgm-sky { fill: var(--sky-500); stroke: var(--sky-600); } .sgm-roof { fill: var(--stone-800); stroke: var(--stone-900); }
+.sgm-house { fill: var(--stone-450); stroke: var(--stone-700); }
+.sgm-protect { fill: var(--stone-900); fill-opacity: .45; stroke: var(--stone-0); stroke-dasharray: 3 2; }
+.sgm-fence { fill: var(--clay-500); stroke: var(--clay-600); }
+.sgm-util { fill: var(--stone-900); fill-opacity: .5; stroke: var(--stone-0); stroke-dasharray: 3 2; }
+.sgm-bed { fill: var(--clay-600); fill-opacity: .6; stroke: var(--clay-600); }
+.sgm-lawn { fill: var(--moss-400); stroke: var(--moss-600); fill-opacity: .3; }
+.sgm-patio { fill: var(--marigold-400); stroke: var(--marigold-600); }
+.sgm-chip rect { fill: var(--stone-0); fill-opacity: .94; stroke: var(--iris-500); } .sgm-chip text { font: 600 9.5px var(--font-mono); fill: var(--iris-700); }
+.cal-line { stroke: var(--stone-0); stroke-width: 2; fill: none; }
+.cal-pin circle { fill: var(--sky-500); stroke: var(--stone-0); stroke-width: 2; } .cal-pin text { fill: var(--stone-0); font: 700 8px var(--font-body); }
+.cal-tag rect { fill: var(--stone-900); fill-opacity: .85; } .cal-tag text { fill: var(--stone-0); font: 600 9px var(--font-mono); }
+.kb-bg { fill: var(--sky-50); } .kb-mulch { fill: var(--clay-600); opacity: .8; }
+/* aerial */
+.ae-ground { fill: color-mix(in srgb, var(--turf) 55%, var(--surface)); } .ae-lot { fill: color-mix(in srgb, var(--turf) 65%, var(--surface)); stroke: var(--surface); stroke-width: .8; }
+.ae-roof2 { fill: var(--stone-300); } .ae-roof { fill: var(--stone-500); } .ae-tree { fill: var(--moss-600); opacity: .85; }
+.ae-street { fill: var(--stone-450); } .ae-drive { fill: var(--stone-300); }
+.ae-parcel { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 4 2; }
+.ae-back { fill: color-mix(in srgb, var(--primary) 22%, transparent); stroke: var(--primary); stroke-width: 1; }
+.ae-patio { fill: var(--paver); stroke: var(--stone-600); stroke-width: .5; }
+.ae-t { font: 600 7px var(--font-body); fill: var(--stone-900); } .ae-t.b { fill: var(--moss-900); font-weight: 700; } .ae-t.w { fill: var(--stone-0); }
+.ae-hatch { stroke: var(--stone-450); stroke-width: .5; } .ae-nc { fill: var(--stone-0); stroke: var(--stone-600); } .ae-n { fill: var(--stone-900); }
+
+/* ---------- overview ---------- */
+.ov-hero { padding: 6px 0 16px; }
+.ov-hero h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); max-width: 22ch; }
+.ov-hero .lede { margin-top: 10px; }
+.ov-hero .flex { margin-top: 14px; }
+.jm { display: grid; gap: 10px; margin-top: 6px; }
+.jm-act { border: 1px solid var(--border); border-radius: var(--radius-l); background: var(--surface); padding: 10px 12px 12px; }
+.jm-act .jh { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; }
+.jm-act .jh b { font-family: var(--font-mono); font-size: .72rem; color: var(--accent); letter-spacing: .05em; }
+.jm-act .jh span { font-weight: 650; font-size: .9rem; }
+.jm-act .jh small { color: var(--text-3); font-size: .76rem; }
+.jm-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 14px; align-items: stretch; }
+.jm-node { position: relative; display: grid; gap: 3px; align-content: start; min-width: 0; padding: 7px 7px 8px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); color: var(--text); text-decoration: none; font-size: .72rem; line-height: 1.28; }
+.jm-node::after { content: ""; position: absolute; right: -12px; top: 50%; width: 9px; height: 2px; background: var(--border-strong); }
+.jm-node::before { content: ""; position: absolute; right: -13px; top: calc(50% - 3px); border: 4px solid transparent; border-left-color: var(--border-strong); border-right: 0; }
+.jm-node.last::after, .jm-node.last::before { display: none; }
+.jm-node:hover { border-color: var(--primary); background: var(--primary-soft); }
+.jm-node .k { display: flex; gap: 5px; align-items: center; font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); font-weight: 600; }
+.jm-node .k .ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ai-solid); }
+.jm-node b { font-size: .76rem; }
+.jm-node .who { color: var(--text-3); font-size: .64rem; }
+.jm-node .tag { justify-self: start; }
+.cast { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.cast .card { padding: 12px; }
+.cast .card h3 { font-size: .9rem; display: flex; gap: 7px; align-items: center; }
+.cast ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: .78rem; color: var(--text-2); }
+.cast li b { color: var(--text); font-weight: 600; }
+.prop { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 14px; align-items: center; }
+.prop svg { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); display: block; }
+.sec-t { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; margin: 18px 0 8px; }
+
+/* ---------- step-specific ---------- */
+.capview { position: relative; }
+.capview .chipo { position: absolute; z-index: 4; padding: 2px 8px; border-radius: 999px; font-size: .64rem; font-weight: 700; background: color-mix(in srgb, var(--stone-900) 78%, transparent); color: var(--stone-0); }
+.capview .guide { position: absolute; inset: 13% 18% 22% 18%; border: 2px dashed var(--stone-0); border-radius: 6px; z-index: 3; pointer-events: none; }
+.capview .level { position: absolute; left: 0; right: 0; top: 56%; border-top: 2px dotted var(--moss-200); z-index: 3; pointer-events: none; }
+.shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.shot { border: 1px solid var(--border); border-radius: 9px; padding: 4px; background: var(--surface); font-size: .66rem; line-height: 1.25; display: grid; gap: 3px; color: var(--text-2); cursor: pointer; text-align: left; }
+.shot .scene { aspect-ratio: 4/3; border-radius: 6px; }
+.shot .ph0 { aspect-ratio: 4/3; border-radius: 6px; border: 1px dashed var(--border-strong); display: grid; place-items: center; color: var(--text-3); font-weight: 700; font-size: .9rem; background: var(--surface-2); }
+.shot b { color: var(--text); font-size: .68rem; }
+.shot[aria-pressed="true"] { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.qbar { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: .74rem; }
+.qbar .track { height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; } .qbar .track i { display: block; height: 100%; background: var(--ok-solid); }
+.qgrid { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: .7rem; color: var(--text-2); }
+.minimap svg { width: 100%; height: auto; display: block; }
+.runlist { display: grid; gap: 6px; }
+.runitem { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: .78rem; }
+.runitem .st { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--border-strong); background: var(--surface); }
+.runitem.done .st { background: var(--ok-solid); border-color: var(--ok-solid); color: var(--stone-0); }
+.runitem.done .st .ic { stroke: var(--stone-0); width: 11px; height: 11px; }
+.runitem.run .st { border-color: var(--ai-solid); }
+.runitem.wait { opacity: .45; }
+.runitem b { display: block; font-size: .8rem; }
+.runitem small { color: var(--text-2); font-size: .72rem; }
+.codebox { display: flex; gap: 5px; }
+.codebox span { width: 30px; height: 36px; border: 1px solid var(--border-strong); border-radius: 7px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 1rem; font-weight: 600; background: var(--surface); }
+.legend-sm { display: flex; flex-wrap: wrap; gap: 4px 9px; font-size: .66rem; color: var(--text-2); }
+.legend-sm i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; opacity: .8; }
+.vthumbs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.inbox { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 10px; }
+.icard { border: 1px solid var(--border); border-radius: 9px; padding: 8px 9px; background: var(--surface); display: grid; gap: 3px; font-size: .74rem; text-align: left; cursor: pointer; width: 100%; }
+.icard[aria-pressed="true"] { border-color: var(--ai-solid); box-shadow: 0 0 0 1px var(--ai-solid); }
+.icard .t { display: flex; gap: 5px; align-items: center; font-weight: 700; font-size: .72rem; color: var(--ai-text); }
+.icard .t .tm { margin-left: auto; color: var(--text-3); font-weight: 500; }
+.icard b { font-size: .78rem; color: var(--text); }
+.icard.done { opacity: .7; }
+.sms { border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); padding: 10px; display: grid; gap: 6px; }
+.sms .bub { max-width: 92%; padding: 7px 10px; border-radius: 12px; font-size: .78rem; line-height: 1.45; }
+.sms .bub.out { justify-self: end; background: var(--moss-600); color: var(--stone-0); border-bottom-right-radius: 3px; }
+.sms .bub.out.draft { background: var(--ai-bg); color: var(--text); border: 1px dashed var(--ai-solid); }
+.sms .bub.in { justify-self: start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 3px; }
+.sms .meta { font-size: .64rem; color: var(--text-3); }
+.sms .meta.r { justify-self: end; }
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.slot { border: 1px solid var(--border); border-radius: 8px; padding: 6px 7px; font-size: .72rem; background: var(--surface); }
+.slot b { display: block; font-size: .78rem; }
+.slot.on { border-color: var(--primary); background: var(--primary-soft); }
+.lt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.lt .scene { aspect-ratio: 4/3; border-radius: 6px; }
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.opt { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 7px; display: grid; gap: 5px; text-align: left; cursor: pointer; font-size: .72rem; align-content: start; }
+.opt[aria-pressed="true"] { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.opt .oh { display: flex; justify-content: space-between; gap: 4px; align-items: baseline; }
+.opt .oh b { font-size: .8rem; }
+.opt .price { font-family: var(--font-mono); font-weight: 600; font-size: .8rem; }
+.opt table { width: 100%; border-collapse: collapse; }
+.opt td { padding: 1px 0; color: var(--text-2); }
+.opt td + td { text-align: right; color: var(--text); font-variant-numeric: tabular-nums; font-weight: 600; }
+.mtr { display: inline-block; width: 34px; height: 4px; border-radius: 3px; background: var(--surface-3); vertical-align: middle; margin-right: 4px; overflow: hidden; }
+.mtr i { display: block; height: 100%; background: var(--primary); }
+.cons { display: grid; grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)); gap: 6px 12px; font-size: .74rem; }
+.cons .c { display: grid; gap: 1px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.cons .c:last-child { border-bottom: 0; grid-column: 1 / -1; }
+.cons .c > span:first-child { font-size: .64rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 700; }
+.cons .pin { display: inline-flex; gap: 4px; align-items: center; font-weight: 600; }
+.studio { display: grid; grid-template-columns: 38px minmax(0, 1fr) 214px; gap: 0; border-top: 1px solid var(--border); }
+.st-rail { background: var(--surface-2); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0; }
+.st-rail span { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 7px; color: var(--text-2); }
+.st-rail span.on { background: var(--primary-soft); color: var(--primary-soft-text); }
+.st-rail span.ai { color: var(--ai-solid); }
+.st-canvas { padding: 8px; min-width: 0; display: grid; gap: 8px; align-content: start; }
+.cv-bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: .7rem; color: var(--text-2); }
+.cv-bar .sp { flex: 1; }
+.st-side { border-left: 1px solid var(--border); padding: 9px; display: grid; gap: 10px; align-content: start; font-size: .74rem; background: var(--surface); }
+.layer { display: flex; gap: 6px; align-items: center; padding: 2px 0; }
+.layer button { width: 22px; height: 22px; border-radius: 5px; border: 1px solid var(--border-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--text-2); }
+.layer button[aria-pressed="true"] { background: var(--primary-soft); color: var(--primary-soft-text); border-color: var(--primary); }
+.layer .nm { flex: 1; }
+.layer .ct { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); }
+.vitem { border: 1px solid var(--warn-solid); background: var(--warn-bg); color: var(--warn-text); border-radius: 8px; padding: 7px 8px; font-size: .72rem; }
+.vitem b { display: flex; gap: 5px; align-items: center; }
+.vitem .acts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.vitem .btn { color: var(--text); }
+.vok { display: grid; gap: 3px; font-size: .7rem; color: var(--text-2); }
+.vok div { display: flex; gap: 5px; align-items: flex-start; }
+.vok .ic { color: var(--ok-solid); width: 12px; height: 12px; margin-top: 2px; }
+.yrs { display: grid; grid-template-columns: repeat(4, 1fr); font-size: .62rem; color: var(--text-3); text-align: center; margin-top: 2px; }
+.yrs b { color: var(--text); }
+input[type="range"].rng { width: 100%; accent-color: var(--primary); }
+.takeoff { display: flex; flex-wrap: wrap; gap: 4px 0; align-items: stretch; border-top: 1px solid var(--border); background: var(--surface-2); font-size: .7rem; }
+.takeoff > div { padding: 6px 9px; border-right: 1px solid var(--border); display: grid; gap: 1px; }
+.takeoff > div b { font-family: var(--font-mono); font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text); }
+.takeoff > div span { color: var(--text-3); font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+.takeoff .price { margin-left: auto; border-right: 0; background: var(--primary-soft); }
+.takeoff .price b { font-size: 1rem; color: var(--primary-soft-text); }
+.delta { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; }
+.delta.up { color: var(--warn-text); } .delta.dn { color: var(--ok-text); }
+.est { display: grid; grid-template-columns: minmax(0, 1fr) 222px; gap: 10px; }
+table.est td { font-size: .74rem; }
+table.est tr.phase td { background: var(--surface-2); font-weight: 700; font-size: .72rem; }
+table.est td .math { display: block; color: var(--text-3); font-family: var(--font-mono); font-size: .64rem; line-height: 1.4; margin-top: 1px; }
+table.est tr.flag td { background: color-mix(in srgb, var(--ai-bg) 70%, transparent); }
+.conf { display: inline-flex; gap: 4px; align-items: center; font-size: .64rem; font-weight: 700; padding: 0 6px; border-radius: 999px; }
+.conf.med { background: var(--warn-bg); color: var(--warn-text); } .conf.low { background: var(--danger-bg); color: var(--danger-text); } .conf.fixed { background: var(--ok-bg); color: var(--ok-text); }
+.flagnote { margin-top: 4px; border-left: 3px solid var(--ai-solid); padding: 4px 7px; background: var(--surface); font-size: .7rem; color: var(--text); border-radius: 0 6px 6px 0; }
+.flagnote .acts { display: flex; gap: 5px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+.rowx { display: flex; justify-content: space-between; gap: 6px; padding: 3px 0; font-size: .74rem; border-bottom: 1px dashed var(--border); }
+.rowx span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+.rowx small { display: block; color: var(--text-3); font-size: .66rem; }
+.rowx.tot { font-weight: 700; border-bottom: 1px solid var(--border-strong); }
+.rowx.big span:last-child { font-size: 1.05rem; color: var(--primary-soft-text); }
+.eq { font-family: var(--font-mono); font-size: .66rem; background: var(--surface-2); border-radius: 6px; padding: 6px 7px; margin: 6px 0; line-height: 1.5; }
+.gm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align: center; margin: 6px 0; }
+.gm div { border: 1px solid var(--border); border-radius: 6px; padding: 4px; font-size: .62rem; color: var(--text-3); }
+.gm b { display: block; font-size: .86rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.tiers { display: flex; gap: 4px; flex-wrap: wrap; }
+.tiers .t { border: 1px solid var(--border); border-radius: 7px; padding: 3px 9px; font-size: .72rem; font-weight: 600; background: var(--surface); color: var(--text-2); }
+.tiers .t.on { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-soft-text); }
+.tiers .t small { display: block; font-family: var(--font-mono); font-weight: 600; color: var(--text); }
+.approval { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; border: 1px solid var(--ai-solid); background: var(--ai-bg); border-radius: 10px; padding: 8px 10px; font-size: .76rem; }
+.approval .grow b { display: block; }
+.prop-doc { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 10px; }
+.doc { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 12px 14px; display: grid; gap: 10px; font-size: .76rem; }
+.doc h4 { font-family: var(--font-display); font-size: 1.1rem; margin: 0; }
+.doc .lab { font-size: .62rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); font-weight: 700; }
+.aidraft { border: 1px dashed var(--ai-solid); border-radius: 8px; padding: 8px 9px; background: color-mix(in srgb, var(--ai-bg) 55%, var(--surface)); }
+.aidraft .tagai { display: flex; justify-content: space-between; gap: 6px; font-size: .64rem; font-weight: 700; color: var(--ai-text); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.aidraft.ok { border-style: solid; border-color: var(--ok-solid); background: var(--surface); }
+.aidraft.ok .tagai { color: var(--ok-text); }
+textarea.inp { min-height: 88px; resize: vertical; line-height: 1.45; font-size: .76rem; }
+.tl { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; counter-reset: tl; }
+.tl li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; align-items: start; }
+.tl li::before { counter-increment: tl; content: counter(tl); width: 18px; height: 18px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-soft-text); font-size: .62rem; font-weight: 800; display: grid; place-items: center; }
+table.tiert { width: 100%; border-collapse: collapse; font-size: .72rem; }
+table.tiert th, table.tiert td { border: 1px solid var(--border); padding: 4px 6px; text-align: left; vertical-align: top; }
+table.tiert th { background: var(--surface-2); font-size: .66rem; }
+table.tiert td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+table.tiert .rec { background: var(--primary-soft); }
+.ptier { display: grid; gap: 6px; }
+.ptier label { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; align-items: center; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font-size: .78rem; cursor: pointer; background: var(--surface); }
+.ptier label.on { border-color: var(--primary); background: var(--primary-soft); }
+.ptier input { accent-color: var(--primary); margin: 0; }
+.ptier small { display: block; color: var(--text-3); font-size: .68rem; }
+.ptier .pr { font-family: var(--font-mono); font-weight: 600; font-size: .8rem; }
+.sums { display: grid; gap: 3px; font-size: .76rem; }
+.sums div { display: flex; justify-content: space-between; gap: 6px; }
+.sums div span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+.sums .due { font-weight: 700; border-top: 1px solid var(--border); padding-top: 4px; font-size: .84rem; }
+.stripe { border: 1px solid var(--border-strong); border-radius: 9px; padding: 8px 9px; display: grid; gap: 6px; background: var(--surface); }
+.stripe .sl { font-size: .62rem; color: var(--text-3); display: flex; justify-content: space-between; }
+.sig { font-family: "Brush Script MT", "Segoe Script", cursive; font-size: 1.3rem; color: var(--sky-700); border-bottom: 1px solid var(--border-strong); padding: 2px 4px; min-height: 34px; }
+.cards3 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dcard { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 9px 10px; display: grid; gap: 6px; font-size: .74rem; align-content: start; }
+.dcard.ai { border-color: var(--ai-solid); }
+.dcard .dh { display: flex; gap: 6px; align-items: center; font-weight: 700; font-size: .8rem; }
+.dcard .dh .sp { flex: 1; }
+.dcard table { width: 100%; border-collapse: collapse; font-size: .7rem; }
+.dcard td { padding: 2px 0; border-bottom: 1px dashed var(--border); }
+.dcard td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.phases { display: grid; gap: 3px; }
+.phases div { display: flex; gap: 6px; align-items: center; font-size: .72rem; }
+.phases div .grow { color: var(--text-2); }
+.recap table.data td { font-size: .76rem; }
+.principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 12px; }
+.principles .card { padding: 11px 12px; font-size: .78rem; color: var(--text-2); }
+.principles .card b { color: var(--text); display: block; margin-bottom: 3px; font-size: .84rem; }
+.bars { display: grid; gap: 5px; font-size: .74rem; }
+.bars div { display: grid; grid-template-columns: 86px minmax(0, 1fr) 36px; gap: 6px; align-items: center; }
+.bars .b { height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; } .bars .b i { display: block; height: 100%; background: var(--ai-solid); }
+.bars span:last-child { text-align: right; font-family: var(--font-mono); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .pt-shell { grid-template-columns: minmax(0, 1fr); }
+  .pt-rail { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--border); display: flex; gap: 6px 14px; overflow-x: auto; padding: 8px 12px; align-items: flex-start; }
+  .pt-rail .act { margin-top: 0; flex: none; }
+  .pt-rail ol { display: flex; gap: 2px; }
+  .pt-rail a.st { grid-template-columns: 22px auto; white-space: nowrap; }
+  .pt-rail a.st .ai-dot { display: none; }
+  .pt-rail a.st .t { max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+  .pt-rail .rfoot { display: none; }
+  .pt-rail .rstart { flex: none; margin-top: 14px; }
+}
+@media (max-width: 900px) {
+  .jm-row { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); }
+  .jm-node::after, .jm-node::before { display: none; }
+}
+@media (max-width: 1100px) {
+  .pt-body { grid-template-columns: minmax(0, 1fr); }
+  .pt-bts { position: static; max-height: none; }
+}
+@media (max-width: 700px) {
+  .pt-main { padding: 10px 10px 40px; }
+  .phone.pt-phone { width: 100%; max-width: 352px; border-width: 8px; }
+  .big-view { min-width: 0; flex-basis: 100%; }
+  .prop { grid-template-columns: 1fr; }
+  .pt-rail a.st .t { display: none; }
+  .prog .track { width: 70px; }
+}
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+@media print { .pt-rail, .pt-bar .ctrls { display: none; } }
+
+/* ---------- shared walkthrough additions ---------- */
+/* Generic components shared by the engine-built walkthroughs (tokens from rootline.css). */
+.wt-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.wt-cols.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.wt-cols.wide-left { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+.wt-stack { display: grid; gap: 10px; }
+.wt-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 8px; }
+.wt-kpi { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--surface); }
+.wt-kpi .l { font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+.wt-kpi .v { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.wt-kpi .d { font-size: .72rem; font-weight: 600; color: var(--text-2); }
+.wt-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.wt-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 9px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); font-size: .8rem; }
+.wt-row.soft { background: var(--surface-2); }
+.wt-row.sel { border-color: var(--primary); background: var(--primary-soft); }
+.wt-row .sub { display: block; color: var(--text-3); font-size: .72rem; }
+.wt-row.ai { border-color: var(--ai-solid); background: var(--ai-bg); }
+.wt-ic { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-3); color: var(--text-2); flex: none; }
+.wt-ic.ok { background: var(--ok-bg); color: var(--ok-text); } .wt-ic.warn { background: var(--warn-bg); color: var(--warn-text); } .wt-ic.ai { background: var(--ai-bg); color: var(--ai-text); } .wt-ic.info { background: var(--info-bg); color: var(--info-text); } .wt-ic.danger { background: var(--danger-bg); color: var(--danger-text); }
+.wt-bubble { max-width: 86%; padding: 8px 10px; border-radius: 14px; font-size: .8rem; line-height: 1.45; background: var(--surface-3); }
+.wt-bubble.me { margin-left: auto; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 4px; }
+.wt-bubble.them { border-bottom-left-radius: 4px; }
+.wt-bubble.ai { background: var(--ai-bg); color: var(--text); border: 1px solid var(--ai-solid); }
+.wt-bubble small { display: block; opacity: .75; font-size: .66rem; margin-top: 3px; }
+.wt-thread { display: grid; gap: 6px; }
+.wt-steps { display: flex; gap: 0; align-items: center; flex-wrap: wrap; font-size: .72rem; }
+.wt-steps span { padding: 3px 9px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-3); font-weight: 600; }
+.wt-steps span:first-child { border-radius: 999px 0 0 999px; } .wt-steps span:last-child { border-radius: 0 999px 999px 0; }
+.wt-steps span.on { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.wt-steps span.done { background: var(--primary-soft); color: var(--primary-soft-text); }
+.wt-gantt { display: grid; gap: 4px; font-size: .72rem; }
+.wt-gantt .g-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; align-items: center; }
+.wt-gantt .g-track { position: relative; height: 24px; background: var(--surface-2); border-radius: 6px; border: 1px solid var(--border); }
+.wt-gantt .g-blk { position: absolute; top: 2px; bottom: 2px; border-radius: 4px; background: var(--moss-200); color: var(--moss-900); padding: 0 5px; overflow: hidden; white-space: nowrap; font-weight: 600; display: flex; align-items: center; font-size: .66rem; }
+.wt-gantt .g-blk.alt { background: var(--sky-100); color: var(--sky-700); } .wt-gantt .g-blk.warn { background: var(--marigold-100); color: var(--marigold-800); } .wt-gantt .g-blk.ai { background: var(--ai-bg); color: var(--ai-text); outline: 1.5px dashed var(--ai-solid); }
+.wt-svg { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); }
+.wt-svg text { font-family: var(--font-body); }
+.wt-note { font-size: .74rem; color: var(--text-3); }
+.wt-callout { border-left: 3px solid var(--primary); background: var(--primary-soft); padding: 8px 10px; border-radius: 0 8px 8px 0; font-size: .78rem; }
+.wt-callout.warn { border-color: var(--warn-solid); background: var(--warn-bg); }
+.wt-callout.ai { border-color: var(--ai-solid); background: var(--ai-bg); }
+.wt-callout.danger { border-color: var(--danger-solid); background: var(--danger-bg); }
+.wt-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; cursor: pointer; }
+.wt-toggle input { width: 30px; height: 17px; appearance: none; -webkit-appearance: none; background: var(--border-strong); border-radius: 999px; position: relative; cursor: pointer; margin: 0; }
+.wt-toggle input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--surface); transition: left .15s; }
+.wt-toggle input:checked { background: var(--primary); }
+.wt-toggle input:checked::after { left: 15px; }
+.wt-diff { font-family: var(--font-mono); font-size: .72rem; display: grid; gap: 2px; }
+.wt-diff .add { color: var(--ok-text); background: var(--ok-bg); padding: 1px 5px; border-radius: 4px; }
+.wt-diff .del { color: var(--danger-text); background: var(--danger-bg); padding: 1px 5px; border-radius: 4px; text-decoration: line-through; }
+.wt-je { font-family: var(--font-mono); font-size: .74rem; width: 100%; border-collapse: collapse; }
+.wt-je th, .wt-je td { padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; }
+.wt-je td.n, .wt-je th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.wt-je tr.tot td { font-weight: 700; border-top: 2px solid var(--border-strong); }
+.wt-sms { background: var(--surface-2); border-radius: 12px; padding: 10px; display: grid; gap: 6px; }
+.wt-hide { display: none !important; }
+@media (max-width: 760px) { .wt-cols, .wt-cols.c3, .wt-cols.wide-left { grid-template-columns: minmax(0, 1fr); } .wt-gantt .g-row { grid-template-columns: 84px minmax(0, 1fr); } }
+
+/* ---------- this walkthrough ---------- */
+.po-card { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--surface); display: grid; gap: 4px; font-size: .76rem; }
+.po-card .hd { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.po-card .hd b { font-size: .82rem; }
+.po-card .ln { display: flex; justify-content: space-between; gap: 8px; color: var(--text-2); }
+.rate-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 10px; font-size: .78rem; }
+.rate-grid .t { font-weight: 700; border-top: 2px solid var(--border-strong); padding-top: 4px; }
+.rate-grid span:nth-child(even) { text-align: right; font-variant-numeric: tabular-nums; }
+.bunker { position: relative; height: 70px; border: 2px solid var(--stone-500, #8a8174); border-top: none; border-radius: 0 0 8px 8px; background: var(--surface-2); overflow: hidden; }
+.bunker i { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, #8b5e3c, #5c3b22); }
+.bunker .par { position: absolute; left: 0; right: 0; border-top: 2px dashed var(--warn-solid); font-size: .62rem; color: var(--warn-text); padding-left: 4px; }
+.jc-bar { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px; align-items: center; font-size: .74rem; margin-bottom: 6px; }
+.jc-bar .tr { position: relative; height: 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; }
+.jc-bar .tr i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 4px; }
+.jc-bar .tr i.c { background: var(--sky-100); } .jc-bar .tr i.a { background: var(--moss-200); top: 4px; bottom: 4px; } .jc-bar .tr i.e { background: transparent; border-right: 2px solid var(--text); }
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the walkthrough</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8.5 5.5-13.5 15-14-.4 9.5-5.5 14.5-14 14"/><path d="M5 19l8-8"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="8" width="17" height="9" rx="2"/><path d="M22 11v3"/><path d="M5 11h9v3H5z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></symbol>
+<symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+<symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-2.7 3.4M6.3 7.6A16 16 0 0 0 2 12s3.5 6 10 6a9.6 9.6 0 0 0 4.2-.9"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.7-3.2 3-5 6-5s5.3 1.8 6 5"/><path d="M16 5.2a3 3 0 0 1 0 5.6M18 14.4c1.6.7 2.6 2.2 3 4.6"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-7z"/><path d="M11 13l9-9"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h1M4 12h1M4 18h1"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.8 3.5-6 7-6s6.2 2.2 7 6"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L5 13h6l-1 8 8-10h-6z"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+<symbol id="i-approve" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l3 3 5-6"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13l2-8h12l2 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></symbol>
+<symbol id="i-today" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+<symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M16.5 7.5c-.8-1.3-2.4-2-4.5-2-2.6 0-4.3 1.3-4.3 3.2 0 4.6 9 2.4 9 7 0 2-1.9 3.3-4.7 3.3-2.2 0-3.9-.8-4.7-2.3"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6-6-6-11a6 6 0 0 1 12 0c0 5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></symbol>
+<symbol id="i-cursor" viewBox="0 0 24 24"><path d="M5 3l13 8-6 1.5L9 19z"/></symbol>
+<symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3 16L16 3l5 5L8 21z"/><path d="M7 12l2 2M10 9l2 2M13 6l2 2"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h11v10H2zM13 10h4l3 3v3h-7z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></symbol>
+<symbol id="i-rain" viewBox="0 0 24 24"><path d="M7 15a4.5 4.5 0 1 1 1.2-8.8A6 6 0 0 1 19 9a3.5 3.5 0 0 1-1 6.8"/><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"/></symbol>
+<symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.5 5.5a4 4 0 0 0 5 5L12 18a2.1 2.1 0 0 1-3-3z"/><path d="M14.5 5.5L17 3l1.5 3.5L22 8l-2.5 2.5"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 4-2.4M19 13a10 10 0 0 0-2.2-1.6M2 9.5a15 15 0 0 1 5-3M12 20h.01"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></symbol>
+<symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5"/></symbol>
+<symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12.5" rx="2"/><path d="M3 10.5h18M7 15h4"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5L12 12l9-4.5M12 12v9"/></symbol>
+<symbol id="i-qr" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="6" height="6"/><rect x="14.5" y="3.5" width="6" height="6"/><rect x="3.5" y="14.5" width="6" height="6"/><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2zM14.5 18.5h2M18.5 14.5h2"/></symbol>
+<symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H18v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M8 8h6"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5l8-2v18M12 8h8v13M7 8h2M7 12h2M7 16h2M15 12h2M15 16h2"/></symbol>
+<symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11c0-4-3-6-7-6 0 4 3 6 7 6zM12 13c0-4 3-6 7-6 0 4-3 6-7 6z"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.3 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.3-3.5-8.5s1-5.9 3.5-8.5z"/></symbol>
+
+</svg>
+<header class="site-nav"><div class="inner"><a class="wordmark" href="index.html">Rootline</a><nav aria-label="Proposal"><a href="index.html">Vision</a><a href="walkthroughs.html" aria-current="page">Walkthroughs</a><a href="screens-office.html">Office app</a><a href="screens-design.html">Design and AI</a><a href="screens-field-client-admin.html">Crew, client and admin</a></nav></div></header>
+<div class="pt-shell">
+  <nav class="pt-rail" id="rail" aria-label="Walkthrough steps"></nav>
+  <main class="pt-main" id="main">
+    <div class="pt-bar" id="bar"></div>
+    <div class="pt-body">
+      <section class="pt-screen" id="screen" aria-labelledby="step-h"></section>
+      <aside class="pt-bts" id="bts" aria-label="Behind the scenes"></aside>
+    </div>
+  </main>
+</div>
+<noscript><p style="padding:20px">This walkthrough needs JavaScript to run.</p></noscript>
+<script>
+/* Walkthrough: purchasing, inventory, fleet and subcontractors (doc 13, with 03, 04, 05, 09, 12, 17).
+   Ledger accounts from doc 09: 2000 AP, 2020 GRNI, 1230 Vendor Claims, 1320 Plants inventory, 5210 Hardscape materials, 5410 Subcontractors. */
+
+function je(rows, note) {
+  var d = 0, c = 0;
+  var body = rows.map(function (r) { d += r[1] || 0; c += r[2] || 0; return '<tr><td>' + esc(r[0]) + '</td><td class="n">' + (r[1] ? money(r[1], true) : '') + '</td><td class="n">' + (r[2] ? money(r[2], true) : '') + '</td></tr>'; }).join('');
+  return '<table class="wt-je"><thead><tr><th>Account</th><th class="n">Debit</th><th class="n">Credit</th></tr></thead><tbody>' + body + '<tr class="tot"><td>' + (note || (Math.abs(d - c) < 0.005 ? 'Balanced' : 'NOT BALANCED')) + '</td><td class="n">' + money(d, true) + '</td><td class="n">' + money(c, true) + '</td></tr></tbody></table>';
+}
+var OPS_NAV = [['today', 'Today'], ['approve', 'Approvals'], ['clipboard', 'Jobs'], ['box', 'Purchasing'], ['layers', 'Inventory'], ['truck', 'Equipment'], ['building', 'Vendors and subs'], ['bank', 'Money'], ['calendar', 'Schedule'], ['cog', 'Settings']];
+function opsShell(active, main, counts) { return appShell(active, main, { nav: OPS_NAV, counts: counts, navLabel: 'Operations navigation (concept)' }); }
+
+/* Delgado patio J-2417 materials (estimate budget $5,042.00). */
+var BUY = [
+  ['Pavers, tumbled 60 mm, Harvest blend', '640 sq ft + 5% waste', '6 pallets (112 sq ft each)', 'Buy · Buckeye Hardscape Supply', 3427.20, 3500],
+  ['#57 stone (base)', '9 tons', '9 t', 'Buy · Scioto Aggregates', 342.00, 360],
+  ['Bedding sand', '4 tons', '4 t', 'Buy · Scioto Aggregates', 136.00, 140],
+  ['Polymeric sand, tan', '12 bags', '12 bags', 'Buy · Buckeye Hardscape Supply', 384.00, 400],
+  ['Paver edge restraint', '110 ft', '11 × 10 ft', 'Buy · Buckeye Hardscape Supply', 104.50, 110],
+  ['Hydrangea \'Bobo\' #3', '6', '6', 'Buy · nursery (availability check)', 195.00, 196],
+  ['Ilex glabra \'Gem Box\' #3', '8', '8', 'Buy · Maple Hill Nursery', 212.00, 224],
+  ['Double-shredded hardwood mulch', '4 yd³', '4 yd³', 'Pull from yard · bunker B2', 112.00, 112]
+];
+
+var WT = {
+  title: 'Rootline walkthrough: purchasing, inventory, fleet and subcontractors',
+  short: 'Purchasing, inventory, fleet and subs',
+  ovTitle: 'Purchasing, inventory, fleet and subcontractors',
+  startLeft: 4262,
+  acts: [
+    { n: 'Act 1', t: 'Buy', sub: 'Buy list, workbench, vendor confirmation' },
+    { n: 'Act 2', t: 'Receive and store', sub: 'On-site receiving, holding yard, bunkers' },
+    { n: 'Act 3', t: 'Equipment and fleet', sub: 'Cost per hour, repairs and service' },
+    { n: 'Act 4', t: 'Subs and job cost', sub: 'Compliance gate, sub invoice, the job\'s numbers' }
+  ],
+  steps: [
+    { id: 'op01-buylist', act: 0, short: 'Buy list', title: 'A signed patio becomes a buy list', who: 'Luis Ortega', tags: ['mvp'] },
+    { id: 'op02-workbench', act: 0, short: 'Workbench', title: 'The Monday purchasing workbench', who: 'Luis, Procurement agent', ai: true, tags: ['mvp', 'v1'] },
+    { id: 'op03-vendor', act: 0, short: 'Vendor confirms', title: 'The vendor confirms the delivery from a link', who: 'Kelly Shaw (vendor), Elena Delgado', tags: ['mvp', 'v1'] },
+    { id: 'op04-receive', act: 1, short: 'Receive on site', title: 'Receiving on site with a scale ticket', who: 'Andrés Vega', ai: true, tags: ['mvp'] },
+    { id: 'op05-yard', act: 1, short: 'Yard and bunkers', title: 'Plants as living inventory, and the mulch bunker', who: 'Tomás Reyes, Luis', tags: ['mvp', 'v1'] },
+    { id: 'op06-rate', act: 2, short: 'Cost per hour', title: 'What a mower really costs per hour', who: 'Erin Castillo, Luis', tags: ['mvp', 'v1'] },
+    { id: 'op07-shop', act: 2, short: 'Repairs and service', title: 'A trailer defect is repaired and certified; a mower is due', who: 'Ray Dunn (mechanic)', tags: ['mvp', 'v1'] },
+    { id: 'op08-subgate', act: 3, short: 'Sub compliance', title: 'A subcontractor is blocked until its insurance is current', who: 'Tasha Greene, Greg Patterson (sub)', ai: true, tags: ['mvp', 'v1'] },
+    { id: 'op09-subpay', act: 3, short: 'Sub invoice', title: 'The sub invoices from the portal with a lien waiver', who: 'Greg, Priya Shah', tags: ['v1'] },
+    { id: 'op10-jobcost', act: 3, short: 'Job cost', title: 'Estimate vs committed vs actual for the patio', who: 'Erin, Luis', tags: ['mvp'] },
+    { id: 'op11-recap', act: 3, short: 'Recap', title: 'Recap: from design to dump truck', who: 'Everyone', tags: [] }
+  ],
+  credits: { 'op02-workbench': 14, 'op04-receive': 2, 'op08-subgate': 2 },
+  state: { src: {}, built: false, split: '', approved: false, sent: false, ack: false, win: false, ticket: false, damage: false, received: false, water: false, loss: false, count: false, release: false, hours: 800, published: false, cert: false, pm: false, coi: 0, swo: false, inv: false, waiver: false, billOk: false },
+  ov: {
+    eyebrow: 'Clickable walkthrough · back of the house',
+    h: 'The estimate is the demand signal. Every pallet, plant, machine and sub is tracked from the sale to the job\'s profit.',
+    lede: 'Greenleaf just sold Elena Delgado a 640 sq ft paver patio. Follow it from the signed proposal to a buy list, consolidated purchase orders on Monday, a vendor confirming a 7 a.m. drop from a link, the crew receiving stone on site with a scale ticket, plants in the holding yard, a mulch bunker count, a mower\'s real cost per hour, a trailer repair, a tree subcontractor blocked by an expired insurance certificate, and the patio\'s estimate vs committed vs actual cost.',
+    cast: [
+      { h: 'Greenleaf', icon: 'building', items: [['Luis Ortega', 'ops manager, buys and runs the yard'], ['Tasha Greene', 'office manager, PO approvals to $5,000'], ['Andrés Vega', 'Crew 1 lead, installs'], ['Tomás Reyes', 'yard and holding-yard care'], ['Ray Dunn', 'mechanic'], ['Priya Shah', 'bookkeeper'], ['Erin Castillo', 'owner']] },
+      { h: 'Outside', icon: 'users', items: [['Elena Delgado', 'client, Upper Arlington'], ['Kelly Shaw', 'Buckeye Hardscape Supply (fictional)'], ['Greg Patterson', 'Tall Oaks Tree Service, subcontractor (fictional)'], ['Maple Hill Nursery', 'plant supplier (fictional)']] },
+      { h: 'Agents', icon: 'spark', items: [['Procurement (A21)', 'groups buy lines into draft POs [V1]'], ['Document reading', 'scale tickets and insurance certificates'], ['Rules', 'budget-fit approval, compliance gate, PM triggers']] }
+    ],
+    extra: '<p class="wt-note mt14">Spring 2027, week of April 19. Prices are illustrative. Vendor and client money never moves through Rootline.</p>'
+  },
+  screens: {}, bts: {}, actions: {}, inputs: {}, ensure: {}
+};
+
+/* op01 */
+WT.screens['op01-buylist'] = function (S) {
+  var main = '<div class="apphead"><span class="crumb">Jobs › J-2417</span><h3>Delgado patio · buy list</h3>' + pill('ok', 'Proposal signed · deposit paid') + '</div>' +
+    '<div class="panel"><table class="data tight"><thead><tr><th>Item (from the estimate)</th><th>Needed</th><th>Buy as</th><th>Sourcing</th><th class="num">Est. cost</th></tr></thead><tbody>' + BUY.map(function (b) { return '<tr><td>' + b[0] + '</td><td>' + b[1] + '</td><td class="tiny">' + b[2] + '</td><td class="tiny">' + (/Pull/.test(b[3]) ? pill('ok', b[3]) : b[3]) + '</td><td class="num">' + money(b[4], true) + '</td></tr>'; }).join('') + '</tbody></table>' +
+    '<div class="wt-note mt6">Units convert automatically: square feet to pallets, cubic yards to tons at each material\'s density, plants by container size. Special-order pavers waited for the signed proposal.</div>' +
+    (S.built ? '<div class="okline mt6">' + ic('check') + '7 lines sent to Monday\'s workbench; 4 yd³ of mulch reserved in bunker B2</div>' : '<button type="button" class="btn sm primary mt10" data-act="built" data-k="built">Send to the purchasing workbench</button>') + '</div>';
+  return browser('app.rootline.com/jobs/J-2417/buy-list', opsShell('Jobs', main), 'Job buy list');
+};
+WT.actions.built = function (el, S) { S.built = true; };
+WT.ensure['op01-buylist'] = function (S) { S.built = true; };
+WT.bts['op01-buylist'] = function (S) {
+  return {
+    what: 'When the proposal is signed, Rootline turns the estimate\'s material and plant lines (which came from the design takeoff) into a buy list with need-by dates from the schedule. Each line gets a sourcing decision: pull from yard stock, release against a blanket PO, or buy from the preferred vendor at the current price list. Non-refundable special orders wait for the signature.',
+    agents: [['Buy list (4.8.1)', 'Estimate lines to purchase units and sourcing', 1]],
+    trace: [{ c: 'proposal.executed(P-1231)', r: 'job J-2417 created, install week of Apr 19', ms: '—', det: true }, { c: 'buylist.generate(J-2417)', r: '8 lines', ms: '300 ms', det: true }, { c: 'uom.convert(sq ft→pallets, yd³→tons)', r: '640 sq ft + 5% → 6 pallets', ms: '20 ms', det: true }, { c: 'inventory.reserve(mulch, B2, 4 yd³)', r: S.built ? 'reserved' : 'proposed', ms: '40 ms', det: true }],
+    hitl: [['Luis', 'can change any sourcing decision before buying.']],
+    tags: [['mvp', 'item master and units, buy lists from estimates and takeoffs, reservations, sourcing rules']],
+    specs: 'Spec: 13 §4.1.2, §4.8.1, §5.1 · 03 (estimate lines) · 10 (takeoff)'
+  };
+};
+
+/* op02 */
+WT.screens['op02-workbench'] = function (S) {
+  var pos = [
+    ['COL-PO-004213', 'Scioto Aggregates', 'Tue 7:00 · 2 drops (Delgado, Hendricks)', [['#57 stone 9 t · bedding sand 4 t (Delgado)', 478.00], ['River rock 3 t (Hendricks)', 171.00]], 'auto'],
+    ['COL-PO-004214', 'Buckeye Hardscape Supply', 'Tue 7:30 · Delgado driveway', [['Pavers 6 pallets', 3427.20], ['Polymeric sand 12 bags', 384.00], ['Edge restraint 11 × 10 ft', 104.50]], 'approve'],
+    ['COL-PO-004215', 'Maple Hill Nursery', 'Mon · holding yard', [['Delgado: 8 Ilex \'Gem Box\', ' + (S.split === 'split' ? '4' : '6') + ' Hydrangea \'Bobo\'', S.split === 'split' ? 340.00 : 404.00], ['Hendricks: 22 shrubs and perennials', 611.50]], 'auto']
+  ];
+  if (S.split === 'split') pos.push(['COL-PO-004216', 'Oakwood Nursery', 'Mon · holding yard', [['Delgado: 2 Hydrangea \'Bobo\' #3', 67.00]], 'auto']);
+  var cards = pos.map(function (p) {
+    var tot = p[3].reduce(function (t, l) { return t + l[1]; }, 0);
+    var st = p[4] === 'auto' ? pill('ok', 'Auto-approved: budget fit') : (S.approved ? pill('ok', 'Approved by Tasha') : pill('warn', 'Over $2,500: needs Tasha'));
+    return '<div class="po-card"><div class="hd"><b>' + p[0] + '</b><span>' + p[1] + '</span><span class="sp" style="flex:1"></span>' + st + '</div><div class="tiny muted">' + p[2] + '</div>' + p[3].map(function (l) { return '<div class="ln"><span>' + l[0] + '</span><span class="num">' + money(l[1], true) + '</span></div>'; }).join('') + '<div class="ln"><b>Total</b><b class="num">' + money(tot, true) + '</b></div></div>';
+  }).join('');
+  var avail = S.split ? '<div class="okline">' + ic('check') + (S.split === 'split' ? 'Split: 4 from Maple Hill, 2 from Oakwood Nursery (in stock, $33.50 each)' : 'Kept 6 on Maple Hill for Thursday delivery') + '</div>' :
+    '<div class="wt-callout warn"><b>Availability:</b> Maple Hill has 4 of 6 Hydrangea \'Bobo\' #3 this week. Oakwood Nursery lists 9 at $33.50.<div class="flex mt6"><button type="button" class="btn xs primary" data-act="split" data-v="split" data-k="split">Split the order</button><button type="button" class="btn xs" data-act="split" data-v="wait" data-k="wait">Wait for Thursday</button></div></div>';
+  var main = '<div class="apphead"><span class="crumb">Purchasing › Workbench</span><h3>Week of April 19 · 3 jobs, 1 mulch round</h3>' + aiChip('Drafted by Procurement agent') + '</div>' +
+    '<div class="wt-cols wide-left"><div class="wt-stack">' + cards + '</div><div class="wt-stack">' + avail +
+    '<div class="panel"><h4>Approvals</h4><div class="tiny">POs from a job\'s buy list approve themselves when every line fits the estimate budget (+10%) and the PO is under $2,500. Luis can approve up to $2,500; PO-004214 goes to Tasha ($5,000 limit).</div>' + (S.approved ? '' : '<button type="button" class="btn sm mt6" data-act="approved" data-k="approved">Approve PO-004214 as Tasha</button>') + '</div>' +
+    '<div class="panel">' + (S.sent ? '<div class="okline">' + ic('check') + 'POs sent by email and text with confirmation links</div>' : '<button type="button" class="btn sm primary" data-act="sent" data-k="sent"' + (S.approved && S.split ? '' : ' disabled') + '>Send all POs</button><div class="wt-note mt6">Resolve availability and approval first.</div>') + '</div></div></div>';
+  return browser('app.rootline.com/purchasing/workbench', opsShell('Purchasing', main, { Approvals: S.approved ? 0 : 1 }), 'Purchasing workbench');
+};
+WT.actions.split = function (el, S) { S.split = el.getAttribute('data-v'); };
+WT.actions.approved = function (el, S) { S.approved = true; };
+WT.actions.sent = function (el, S) { S.sent = true; };
+WT.ensure['op02-workbench'] = function (S) { S.split = 'split'; S.approved = true; S.sent = true; };
+WT.bts['op02-workbench'] = function (S) {
+  return {
+    what: 'On Monday the Procurement agent groups every open buy line for the week (three installs and a spring mulch round) into draft purchase orders by vendor and delivery date: one multi-drop stone order, one paver order and one nursery order to the holding yard. The mulch round draws from the yard bunker. It checks nursery availability and suggests a split when a size is short. POs that fit the sold budget approve themselves; the rest follow each person\'s approval limit.',
+    agents: [['Procurement (A21)', 'Groups lines into draft POs, checks availability [V1]', 0], ['PO approval rules', 'Budget fit and role limits [MVP]', 1]],
+    trace: [{ c: 'agent.A21.compile(week of Apr 19)', r: '31 buy lines from 3 jobs; mulch round reserved from bunker B2', ms: '7 s' }, { c: 'nursery.availability(Maple Hill, Oakwood)', r: 'Hydrangea \'Bobo\' #3: 4 of 6 at Maple Hill', ms: '1.2 s' }, { c: 'po.draft(by vendor, delivery date)', r: S.split === 'split' ? '4 POs' : '3 POs', ms: '400 ms' }, { c: 'approval.route', r: S.approved ? 'PO-004214 approved by Tasha; others budget fit' : 'PO-004214 waiting for Tasha ($3,915.70)', ms: '—', det: true, human: !S.approved }, { c: 'po.send(email + SMS links)', r: S.sent ? 'sent' : 'waiting', ms: S.sent ? '1.4 s' : '', det: true, pending: !S.sent }],
+    hitl: [['Luis', 'decides on the split; sending a PO is always a person\'s action (T3).'], ['Tasha', 'approves the PO above Luis\'s limit.']],
+    creditNote: 'An agent task run is quoted before it starts: 14 credits for this week\'s workbench.',
+    tags: [['mvp', 'POs with budget-fit auto-approval and role limits, PO links'], ['v1', 'purchasing workbench, Procurement agent, nursery availability, blanket POs and releases']],
+    specs: 'Spec: 13 §4.8.2, §4.8.3, §4.9.4, §5.1 · 17 A21 · 02 (purchase_order.approve_max)'
+  };
+};
+
+/* op03 */
+WT.screens['op03-vendor'] = function (S) {
+  var body = '<p class="ptitle" style="font-size:1rem">PO COL-PO-004214</p><p class="psub">From Greenleaf Grounds Co. · no login needed</p><div class="pcard tiny"><dl class="kv"><dt>Deliver to</dt><dd>1932 Lytham Rd, Upper Arlington (Delgado)</dd><dt>Drop</dt><dd>Left side of the driveway on plywood; keep the neighbor\'s drive clear</dd><dt>Lines</dt><dd>6 pallets pavers · 12 bags poly sand · 11 edge restraint</dd><dt>Requested</dt><dd>Tue Apr 20, 7:00-8:00</dd></dl></div>' +
+    (S.ack ? '<div class="okline">' + ic('check') + 'Acknowledged · Kelly Shaw</div>' : '<button type="button" class="btn primary" style="justify-content:center" data-act="ack" data-k="ack">Acknowledge PO</button>') +
+    (S.ack ? (S.win ? '<div class="okline">' + ic('check') + 'Confirmed Tue 7:00-8:00 · boom truck, needs 12 ft clearance</div>' : '<button type="button" class="btn" style="justify-content:center" data-act="win" data-k="win">Confirm the window</button>') : '') +
+    '<p class="tiny muted mt6">Out of stock or a different date? Flag it here; Greenleaf sees it right away.</p>';
+  var client = '<div class="wt-sms"><div class="wt-bubble them">Hi Elena, Greenleaf here. Your pavers arrive tomorrow (Tue) between 7 and 8 AM on the left side of the driveway. The crew starts Wednesday. Reply with any questions.<small>' + (S.win ? 'Scheduled for Mon 4:00 PM' : 'Waiting for the vendor to confirm') + '</small></div></div>';
+  var gantt = '<div class="panel mt10"><h4>Dispatch board · Tue Apr 20</h4><div class="wt-gantt"><div class="g-row"><span>Deliveries</span><div class="g-track"><span class="g-blk alt" style="left:0%;width:16%">Scioto 7:00</span><span class="g-blk ' + (S.win ? 'alt' : 'warn') + '" style="left:8%;width:16%">Buckeye 7:30' + (S.win ? '' : '?') + '</span></div></div><div class="g-row"><span>Crew 1</span><div class="g-track"><span class="g-blk" style="left:2%;width:40%">Tree removal prep</span><span class="g-blk" style="left:46%;width:44%">Hendricks beds</span></div></div></div></div>';
+  return withPhone(browser('app.rootline.com/schedule/2027-04-20', opsShell('Schedule', '<div class="apphead"><h3>Delivery and the client</h3></div><div class="wt-cols"><div class="panel"><h4>Client text (automatic, day before)</h4>' + client + '</div><div class="panel"><h4>PO status</h4><dl class="kv"><dt>COL-PO-004213</dt><dd>' + pill('ok', 'Confirmed 7:00') + '</dd><dt>COL-PO-004214</dt><dd>' + (S.win ? pill('ok', 'Confirmed 7:30') : S.ack ? pill('info', 'Acknowledged') : pill('', 'Sent')) + '</dd><dt>COL-PO-004215</dt><dd>' + pill('ok', 'Confirmed Mon') + '</dd></dl></div></div>' + gantt), 'Dispatch board with deliveries'),
+    phone(body, { brand: 'Greenleaf Grounds Co.', sub: 'Purchase order link', label: 'Vendor phone: PO confirmation link', k: 've' }));
+};
+WT.actions.ack = function (el, S) { S.ack = true; };
+WT.actions.win = function (el, S) { S.win = true; };
+WT.ensure['op03-vendor'] = function (S) { S.ack = true; S.win = true; };
+WT.bts['op03-vendor'] = function (S) {
+  return {
+    what: 'Each PO goes out as a PDF with a secure confirmation link, by email or text. The vendor acknowledges, confirms or proposes a delivery window and flags substitutions, with no login. Confirmed deliveries appear on the dispatch board next to the crews, and the client gets a text the day before with where the pallets will land.',
+    agents: [['PO confirmation link [MVP]', 'Acknowledge, confirm windows, flag lines', 1], ['Delivery scheduling [V1]', 'Deliveries on the dispatch board, client notice', 1]],
+    trace: [{ c: 'po.link.open(004214)', r: 'opened by Kelly Shaw', ms: '—', det: true }, { c: 'po.acknowledge', r: S.ack ? 'acknowledged' : 'waiting', ms: S.ack ? '—' : '', det: true, pending: !S.ack }, { c: 'delivery.confirm(Tue 7:00-8:00)', r: S.win ? 'on the dispatch board' : '', ms: S.win ? '200 ms' : '', det: true, pending: !S.win }, { c: 'sms.schedule(client, day before)', r: S.win ? 'Mon 4:00 PM' : '', ms: '', det: true, pending: !S.win }],
+    hitl: [['Kelly (vendor)', 'confirms from the link.'], ['Luis', 'sees any change before it surprises the crew.']],
+    tags: [['mvp', 'PO email and SMS links with acknowledgment and revisions'], ['v1', 'delivery windows on the dispatch board, client delivery notices']],
+    specs: 'Spec: 13 §4.8.3 (sending), §4.10 · 04 (dispatch board) · 16 (client texts)'
+  };
+};
+
+/* op04 */
+WT.screens['op04-receive'] = function (S) {
+  var body = '<p class="ptitle" style="font-size:1rem">Receive · Delgado patio</p><p class="psub">Scioto PO-004213 · Buckeye PO-004214</p>' +
+    '<div class="pcard tiny">' + (S.ticket ? '<div class="flex">' + ic('file') + '<b>Scale ticket #44817</b></div><dl class="kv mt6"><dt>#57 stone</dt><dd>9.18 t (ordered 9, within 5%)</dd><dt>Bedding sand</dt><dd>4.06 t (ordered 4)</dd></dl>' : '<button type="button" class="btn sm" data-act="ticket" data-k="ticket">' + ic('camera') + 'Photo of the scale ticket</button>') + '</div>' +
+    '<div class="pcard tiny"><dl class="kv"><dt>Pavers</dt><dd>6 of 6 pallets</dd><dt>Poly sand</dt><dd>12 of 12</dd><dt>Edge</dt><dd>11 of 11</dd></dl>' + (S.damage ? '<div class="wt-callout warn mt6">About 20 sq ft broken on pallet 4 · photo attached · credit requested</div>' : '<button type="button" class="btn xs mt6" data-act="damage" data-k="damage">' + ic('warn') + 'Note damage</button>') + '</div>' +
+    (S.received ? '<div class="okline">' + ic('check') + 'Received · RC-802 · 7:41 AM</div>' : '<button type="button" class="btn primary" style="justify-content:center" data-act="received" data-k="received"' + (S.ticket ? '' : ' disabled') + '>Confirm receipt</button>');
+  var right = '<div class="wt-stack" style="flex:1 1 340px;min-width:0"><div class="panel"><h4>Posted to the job (job-direct receipt)</h4>' + (S.received ? je([['5210 Materials - Hardscape (J-2417)', 4402.58, 0], ['2020 Goods Received Not Invoiced', 0, 4402.58]]) + '<div class="wt-note mt6">Stone and sand at the weighed tons: 9.18 t × $38.00 and 4.06 t × $34.00. The bills will match against this receipt.</div>' : '<p class="tiny muted">Nothing posts until the crew lead confirms.</p>') + '</div>' +
+    (S.damage ? '<div class="panel"><h4>Vendor credit request</h4><div class="tiny">20 sq ft × $5.10 = <b>$102.00</b> on PO-004214, with the photo. The bill match will expect the credit.</div></div>' : '') + '</div>';
+  return devRow(phone(body, { brand: 'Rootline Crew', sub: 'Andrés Vega · Crew 1', logo: 'truck', label: 'Crew app: receiving', k: 'rc' }), right);
+};
+WT.actions.ticket = function (el, S) { S.ticket = true; };
+WT.actions.damage = function (el, S) { S.damage = true; };
+WT.actions.received = function (el, S) { S.received = true; };
+WT.ensure['op04-receive'] = function (S) { S.ticket = true; S.damage = true; S.received = true; };
+WT.bts['op04-receive'] = function (S) {
+  return {
+    what: 'The crew lead receives deliveries on site from the crew app, even offline. A photo of the scale ticket is read so bulk materials are received at the weighed tons, not the ordered tons; damage is noted with a photo and becomes a credit request. Confirming posts the cost straight to the job (job-direct) against goods received not invoiced, ready for the vendor\'s bill.',
+    agents: [['Receiving (4.4.1)', 'Receive against PO, quantities and damage', 1], ['Document reading', 'Reads the scale ticket', 0]],
+    trace: [{ c: 'doc.read(scale ticket photo)', r: S.ticket ? '#57 9.18 t · sand 4.06 t · ticket 44817' : 'waiting for the photo', ms: S.ticket ? '2.6 s' : '', pending: !S.ticket }, { c: 'tolerance.check(±5% bulk)', r: S.ticket ? 'within tolerance' : '', ms: '10 ms', det: true, pending: !S.ticket }, { c: 'receipt.post(RC-802) → inventory.IN1 job-direct', r: S.received ? 'Dr 5210 / Cr 2020 $4,402.58' : '', ms: S.received ? '90 ms' : '', det: true, pending: !S.received }],
+    hitl: [['Andrés', 'counts, photographs and confirms; nothing posts without him.']],
+    creditNote: 'Reading the one-page scale ticket is 2 credits.',
+    tags: [['mvp', 'receive against PO in the crew app, field receipts, job-direct posting'], ['v1', 'returns to vendor and credit tracking']],
+    specs: 'Spec: 13 §4.4.1, §4.4.4, §4.8.5 · 09 inventory.IN1, 2020 GRNI · 05 (offline capture)'
+  };
+};
+
+/* op05 */
+WT.screens['op05-yard'] = function (S) {
+  var level = S.release ? 82 : 31;
+  var main = '<div class="apphead"><span class="crumb">Inventory › Columbus yard</span><h3>Holding yard and bunkers</h3>' + pill('info', 'Standard mode') + '</div>' +
+    '<div class="wt-cols"><div class="panel"><h4>Holding batch HB-0419 · 36 plants</h4><dl class="kv"><dt>Received</dt><dd>Mon Apr 19 from Maple Hill and Oakwood</dd><dt>For</dt><dd>Delgado (14) · Hendricks (22)</dd><dt>Nursery guarantee</dt><dd>30 days from delivery</dd></dl>' +
+    '<div class="wt-callout ' + (S.water ? '' : 'warn') + ' mt6">' + (S.water ? ic('check') + ' Watering set: daily at 7:00 through Friday, assigned to Tomás' : '<b>Heat and no rain:</b> 86°F Wednesday, no rain for 5 days. Containers this size dry out in a day.<div class="mt6"><button type="button" class="btn xs primary" data-act="water" data-k="water">Create daily watering tasks</button></div>') + '</div>' +
+    '<div class="mt6">' + (S.loss ? '<div class="okline">' + ic('check') + '1 Ilex \'Gem Box\' recorded as a loss; claim sent to Maple Hill under the guarantee</div>' : '<div class="tiny">Tomás\'s health check photo: 1 Ilex \'Gem Box\' with root rot.</div><button type="button" class="btn xs mt6" data-act="loss" data-k="loss">Record loss and claim the guarantee</button>') + '</div>' +
+    (S.loss ? '<div class="mt6">' + je([['1230 Vendor Claims (Maple Hill)', 26.50, 0], ['1320 Inventory - Plants (Holding Yard)', 0, 26.50]]) + '</div>' : '') + '</div>' +
+    '<div class="panel"><h4>Bunker B2 · double-shredded hardwood</h4><div class="bunker" aria-label="Bunker fill level"><i style="height:' + level + '%"></i><span class="par" style="bottom:42%">reorder at 50 yd³</span></div>' +
+    '<dl class="kv mt6"><dt>Count</dt><dd>' + (S.count ? '18 × 12 ft × 4.75 ft avg = 38.0 yd³ (±10%)' : 'last count 3 weeks ago') + '</dd><dt>Reserved</dt><dd>4 yd³ Delgado · 46 yd³ mulch round</dd><dt>Blanket PO</dt><dd>1,200 yd³ at $28.00 · 412 used</dd></dl>' +
+    (S.count ? '' : '<button type="button" class="btn xs mt6" data-act="count" data-k="count">Count the bunker</button>') + (S.count && !S.release ? '<button type="button" class="btn xs primary mt6" data-act="release" data-k="release">Release 60 yd³ against the blanket PO</button>' : '') + (S.release ? '<div class="okline mt6">' + ic('check') + 'REL-07: 60 yd³ Thursday · blanket 472 of 1,200 used</div>' : '') + '</div></div>';
+  return browser('app.rootline.com/inventory/columbus-yard', opsShell('Inventory', main), 'Holding yard and bunkers');
+};
+WT.actions.water = function (el, S) { S.water = true; };
+WT.actions.loss = function (el, S) { S.loss = true; };
+WT.actions.count = function (el, S) { S.count = true; };
+WT.actions.release = function (el, S) { S.release = true; };
+WT.ensure['op05-yard'] = function (S) { S.water = true; S.loss = true; S.count = true; S.release = true; };
+WT.bts['op05-yard'] = function (S) {
+  return {
+    what: 'Plants are living inventory. A holding batch records where each plant is going and starts the nursery guarantee clock; the weather forecast creates watering tasks; a health check records a dead plant as a loss and, inside the guarantee, books it as a claim against the nursery instead of an expense. Bulk bunkers are counted as an estimated volume from their dimensions, and falling below the reorder point releases mulch against the season\'s blanket PO.',
+    agents: [['Holding yard (4.7)', 'Batches, weather-driven care, losses and claims [V1]', 1], ['Bunker counts and reorder (4.5, 4.6)', 'Volume estimate, par levels, blanket releases', 1]],
+    trace: [{ c: 'weather.forecast(Columbus, 5 days)', r: '86°F Wed, 0 in rain', ms: '300 ms', det: true }, { c: 'care.tasks(HB-0419)', r: S.water ? 'daily watering ×5 → Tomás' : 'suggested', ms: '', det: true, pending: !S.water }, { c: 'plant_loss → inventory.IN6 (under guarantee)', r: S.loss ? 'Dr 1230 / Cr 1320 $26.50' : '', ms: '', det: true, pending: !S.loss }, { c: 'bunker.count(B2)', r: S.count ? '38.0 yd³; 50 reserved → reorder' : '', ms: '', det: true, pending: !S.count }, { c: 'blanket.release(REL-07, 60 yd³)', r: S.release ? 'sent' : '', ms: '', det: true, pending: !S.release }],
+    hitl: [['Tomás', 'waters, checks and photographs plants.'], ['Luis', 'releases the mulch.']],
+    tags: [['mvp', 'Light inventory mode, full counts, reservations'], ['v1', 'Standard mode with ledger posting, holding batches, weather care tasks, plant losses and nursery claims, blanket POs, reorder points']],
+    specs: 'Spec: 13 §4.1.6, §4.5, §4.6, §4.7 · 09 inventory.IN6, 1230, 1320 · 12 (plant care data)'
+  };
+};
+
+/* op06 */
+WT.screens['op06-rate'] = function (S) {
+  var h = S.hours;
+  var c2 = function (v) { return Math.round(v * 100) / 100; };
+  var dep = c2(2750 / h), coc = c2(595 / h), ins = c2(300 / h), fuel = 4.32, rep = 2.00, wear = 0.50, tot = c2(dep + coc + ins + fuel + rep + wear);
+  var r2 = function (v) { return money(v, true); };
+  var main = '<div class="apphead"><span class="crumb">Equipment › MW-07</span><h3>60 in commercial zero-turn · rate card</h3>' + pill('', 'Crew 2') + '</div>' +
+    '<div class="wt-cols"><div class="panel"><h4>Calculator</h4><div class="seg mt6">' + [800, 600].map(function (v) { return '<button type="button" data-act="hours" data-v="' + v + '" data-k="h' + v + '" aria-pressed="' + (h === v) + '">' + v + ' h a year</button>'; }).join('') + '</div>' +
+    '<div class="rate-grid mt10"><span>Depreciation ($14,000 − $3,000 over 4 seasons)</span><span>' + r2(dep) + '</span><span>Cost of capital (7% on $8,500)</span><span>' + r2(coc) + '</span><span>Insurance and storage</span><span>' + r2(ins) + '</span><span>Fuel (1.2 gal/h × $3.60)</span><span>' + r2(fuel) + '</span><span>Maintenance and repairs</span><span>' + r2(rep) + '</span><span>Blades and tires</span><span>' + r2(wear) + '</span><span class="t">Cost per hour</span><span class="t">' + r2(tot) + '</span></div>' +
+    (S.published ? '<div class="okline mt10">' + ic('check') + 'Published to Estimating: $11.38/h (800 h)</div>' : '<button type="button" class="btn sm primary mt10" data-act="publish" data-k="publish">Publish $11.38/h to Estimating</button>') + '</div>' +
+    '<div class="panel"><h4>Actuals, trailing 12 months ' + tag('v1') + '</h4><dl class="kv"><dt>Hours (telematics)</dt><dd>702</dd><dt>Fuel (fuel card)</dt><dd>1.3 gal/h</dd><dt>Repairs (work orders)</dt><dd>$2.40/h</dd><dt>Actual cost</dt><dd><b>$12.78/h</b></dd><dt>Recovered in bids</dt><dd>$11.38/h</dd><dt>Under-recovered</dt><dd style="color:var(--danger-text)"><b>$983</b> this season</dd></dl><div class="wt-note mt6">Fewer hours than planned is the biggest driver: the same mower costs about 13% more per hour at 600 h than at 800 h.</div></div></div>';
+  return browser('app.rootline.com/equipment/MW-07/rate', opsShell('Equipment', main), 'Equipment rate card');
+};
+WT.actions.hours = function (el, S) { S.hours = +el.getAttribute('data-v'); };
+WT.actions.publish = function (el, S) { S.published = true; S.hours = 800; };
+WT.ensure['op06-rate'] = function (S) { S.published = true; };
+WT.bts['op06-rate'] = function (S) {
+  return {
+    what: 'Equipment is a costed asset. The rate card adds ownership cost spread over expected hours to operating cost per hour, and the result is the only mower rate Estimating can use, so nobody guesses. From V1 the same card is recomputed from real data (telematics hours, fuel cards, work orders, depreciation in the ledger) and shows whether this season\'s bids actually paid for the machine.',
+    agents: [['Rate card (4.14.7)', 'Calculator [MVP], trailing-12-month actuals [V1]', 1]],
+    trace: [{ c: 'rate.compute(MW-07, ' + S.hours + ' h)', r: (S.hours === 800 ? '$11.38' : '$12.89') + '/h', ms: '10 ms', det: true }, { c: 'rate.publish(Estimating)', r: S.published ? '$11.38/h' : 'not yet', ms: '', det: true, pending: !S.published }, { c: 'actuals.trailing12(telematics, fuel, WOs, ledger)', r: '$12.78/h · under-recovered $983', ms: '1.1 s', det: true }],
+    hitl: [['Erin', 'decides whether to raise the published rate or plan more hours for the machine.']],
+    tags: [['mvp', 'asset registry, manual meters, rate calculator published to Estimating'], ['v1', 'actuals from telematics, fuel cards and work orders; over/under-recovery']],
+    specs: 'Spec: 13 §4.14.1, §4.14.2, §4.14.7-4.14.9 · 03 (equipment rates) · 18 (equipment_cost_per_hour)'
+  };
+};
+
+/* op07 */
+WT.screens['op07-shop'] = function (S) {
+  var main = '<div class="apphead"><span class="crumb">Equipment › Shop</span><h3>Defects and service</h3></div><div class="wt-cols">' +
+    '<div class="panel"><h4>' + ic('warn') + ' TR-4 · right tail light out</h4><dl class="kv"><dt>Reported</dt><dd>Marco Ruiz, pre-trip DVIR, with photo</dd><dt>Status</dt><dd>' + (S.cert ? pill('ok', 'In service') : pill('danger', 'Out of service (lights)')) + '</dd><dt>Work</dt><dd>LED lamp $38.50 from parts stock · 0.4 h</dd></dl>' +
+    (S.cert ? '<div class="okline mt6">' + ic('check') + 'Repair certified by Ray Dunn · next pre-trip shows the certification</div>' : '<button type="button" class="btn sm primary mt10" data-act="cert" data-k="cert">Certify the repair (Ray Dunn)</button>') + '</div>' +
+    '<div class="panel"><h4>' + ic('wrench') + ' MW-07 · 500-hour service due</h4><dl class="kv"><dt>Hour meter</dt><dd>496.4 h (telematics)</dd><dt>Due</dt><dd>500 h: oil, filters, blades, belt check</dd><dt>Crew 2 week</dt><dd>~38 mower hours scheduled</dd></dl>' +
+    (S.pm ? '<div class="okline mt6">' + ic('check') + 'WO-0314 Saturday 7:00 · spare mower MW-11 assigned to Crew 2 Monday if needed</div>' : '<button type="button" class="btn sm mt10" data-act="pm" data-k="pm">Schedule for Saturday</button>') + '</div></div>';
+  return browser('app.rootline.com/equipment/shop', opsShell('Equipment', main, { Equipment: (S.cert ? 0 : 1) + (S.pm ? 0 : 1) }), 'Equipment shop');
+};
+WT.actions.cert = function (el, S) { S.cert = true; };
+WT.actions.pm = function (el, S) { S.pm = true; };
+WT.ensure['op07-shop'] = function (S) { S.cert = true; S.pm = true; };
+WT.bts['op07-shop'] = function (S) {
+  return {
+    what: 'The defect Marco found in the crew walkthrough\'s DVIR set the trailer to out of service, so no crew could hitch it. The mechanic fixes it and signs a repair certification, which the next driver sees before starting the route. Preventive maintenance runs on hour meters: as the mower nears 500 hours a work order is created for a day the crew isn\'t using it.',
+    agents: [['DVIR and defect records [MVP]', 'Out-of-service rules, repair certification', 1], ['PM schedules and work orders [V1]', 'Meter-based service, parts, mechanic time', 1]],
+    trace: [{ c: 'dvir.defect(TR-4, lights)', r: 'asset down; rigs with TR-4 blocked', ms: '—', det: true }, { c: 'repair.certify(Ray Dunn)', r: S.cert ? 'certified; TR-4 in service' : 'waiting', ms: S.cert ? '—' : '', det: true, pending: !S.cert, human: !S.cert }, { c: 'pm.trigger(MW-07, 500 h)', r: '496.4 h; due this week', ms: '20 ms', det: true }, { c: 'wo.schedule(WO-0314)', r: S.pm ? 'Saturday 7:00' : '', ms: '', det: true, pending: !S.pm }],
+    hitl: [['Ray', 'certifies the repair; the system won\'t clear a safety defect without his name.']],
+    tags: [['mvp', 'DVIR, defect records, repair certification, registration reminders'], ['v1', 'PM schedules, work orders, parts inventory, mechanic time']],
+    specs: 'Spec: 13 §4.14.3, §4.14.4, §4.14.10 · 05 (DVIR in the crew app) · 15 (mechanic time)'
+  };
+};
+
+/* op08 */
+WT.screens['op08-subgate'] = function (S) {
+  var ok = S.coi >= 2;
+  var main = '<div class="apphead"><span class="crumb">Vendors and subs › Tall Oaks Tree Service</span><h3>Assign: remove a dead ash at the Delgado job</h3></div>' +
+    (ok ? '<div class="wt-callout">' + ic('check') + ' Compliance cleared. ' + (S.swo ? 'Sub work order SWO-118 sent: $1,450, Wed Apr 21.' : '<button type="button" class="btn xs primary" data-act="swo" data-k="swo">Send sub work order SWO-118 ($1,450)</button>') + '</div>' : '<div class="wt-callout danger"><b>Blocked:</b> general liability certificate expired Mar 31. Tall Oaks can\'t be assigned, start work or be paid until it\'s current. Only the owner can override, with a reason.</div>') +
+    '<div class="wt-cols mt10"><div class="panel"><h4>Compliance file</h4><dl class="kv"><dt>W-9</dt><dd>' + pill('ok', 'On file') + '</dd><dt>General liability</dt><dd>' + (ok ? pill('ok', '$1M / $2M, to Mar 2028') : pill('danger', 'Expired Mar 31')) + '</dd><dt>Auto</dt><dd>' + (ok ? pill('ok', '$1M') : pill('', 'on the old certificate')) + '</dd><dt>Workers\' comp</dt><dd>' + (ok ? pill('ok', 'Ohio BWC certificate') : pill('', 'on the old certificate')) + '</dd><dt>Additional insured</dt><dd>' + (ok ? pill('ok', 'Greenleaf named') : '—') + '</dd><dt>Arborist</dt><dd>' + pill('ok', 'ISA certified on staff') + '</dd></dl></div>' +
+    '<div class="panel"><h4>Upload request</h4>' + (S.coi === 0 ? '<button type="button" class="btn sm primary" data-act="coi" data-k="coi0">Text Greg an upload link</button><div class="wt-note mt6">Automatic reminders went out at 30, 14 and 3 days.</div>' : S.coi === 1 ? '<div class="tiny"><b>New certificate uploaded (ACORD 25).</b> Read by AI:</div><dl class="kv mt6"><dt>GL</dt><dd>$1M per occurrence / $2M aggregate</dd><dt>Auto</dt><dd>$1M combined single limit</dd><dt>Additional insured</dt><dd>Greenleaf Grounds Co. ✓</dd><dt>Expires</dt><dd>Mar 31, 2028</dd></dl><button type="button" class="btn sm primary mt6" data-act="coi" data-k="coi1">Confirm and clear the hold</button>' : '<div class="okline">' + ic('check') + 'Confirmed by Tasha</div>') + '</div></div>';
+  var sub = '<p class="ptitle" style="font-size:1rem">Greenleaf needs a current certificate</p><div class="pcard tiny">Your general liability certificate expired Mar 31. Upload the new one to keep getting work.</div>' + (S.coi >= 1 ? '<div class="okline">' + ic('check') + 'Uploaded · COI_TallOaks_2027.pdf</div>' : '<button type="button" class="btn" style="justify-content:center">' + ic('upload') + 'Upload certificate</button>') + (S.swo ? '<div class="pcard tiny mt6"><b>New work order SWO-118</b><br>Remove dead ash, Delgado · Wed Apr 21 · $1,450<div class="flex mt6"><span class="pill ok">Accepted</span></div></div>' : '');
+  return withPhone(browser('app.rootline.com/subs/tall-oaks', opsShell('Vendors and subs', main), 'Subcontractor compliance'), phone(sub, { brand: 'Rootline sub portal', sub: 'Tall Oaks Tree Service', logo: 'building', label: 'Subcontractor phone: sub portal', k: 'sb' }));
+};
+WT.actions.coi = function (el, S) { S.coi = Math.min(2, S.coi + 1); };
+WT.actions.swo = function (el, S) { S.swo = true; };
+WT.ensure['op08-subgate'] = function (S) { S.coi = 2; S.swo = true; };
+WT.bts['op08-subgate'] = function (S) {
+  return {
+    what: 'Subcontractor compliance actually blocks. With the gate set to block, a sub with an expired required document can\'t be assigned, can\'t start work in the portal and is left out of payment runs. The sub uploads a new insurance certificate from a link; AI reads the ACORD 25 form (limits, dates, additional insured) and the office confirms before the hold clears.',
+    agents: [['Compliance gate [MVP]', 'Block or warn per Company setting', 1], ['COI reading [V1]', 'Extracts limits, dates and additional insured wording', 0]],
+    trace: [{ c: 'compliance.check(Tall Oaks)', r: ok2(S) ? 'all current' : 'GL expired Mar 31 → block', ms: '30 ms', det: true }, { c: 'sms.upload_link(Greg)', r: S.coi >= 1 ? 'uploaded' : 'waiting', ms: '', det: true, pending: S.coi < 1 }, { c: 'doc.read(ACORD 25)', r: S.coi >= 1 ? 'GL $1M/$2M, auto $1M, AI: Greenleaf, exp 2028-03-31' : '', ms: S.coi >= 1 ? '4 s' : '', pending: S.coi < 1 }, { c: 'compliance.confirm(Tasha)', r: S.coi >= 2 ? 'hold cleared' : '', ms: '', det: true, pending: S.coi < 2, human: S.coi === 1 }, { c: 'sub_work_order.send(SWO-118)', r: S.swo ? 'accepted in the portal' : '', ms: '', det: true, pending: !S.swo }],
+    hitl: [['Tasha', 'confirms what the AI read.'], ['Erin', 'is the only one who can override the block, with a reason.']],
+    creditNote: 'Reading the one-page certificate is 2 credits.',
+    tags: [['mvp', 'sub onboarding basics, W-9 and COI tracking, expiry reminders, compliance gate'], ['v1', 'AI COI reading, sub portal, sub work orders']],
+    specs: 'Spec: 13 §4.13.1-4.13.3 · 02 (subcontractor role) · 22 §4.4.1 (document understanding)'
+  };
+};
+function ok2(S) { return S.coi >= 2; }
+
+/* op09 */
+WT.screens['op09-subpay'] = function (S) {
+  var sub = '<p class="ptitle" style="font-size:1rem">SWO-118 · invoice</p><div class="pcard tiny"><dl class="kv"><dt>Work</dt><dd>Dead ash removed, stump ground, chips hauled</dd><dt>Photos</dt><dd>4 (before and after)</dd><dt>Amount</dt><dd>$1,450.00</dd></dl></div>' +
+    (S.inv ? '<div class="okline">' + ic('check') + 'Invoice submitted</div>' : '<button type="button" class="btn primary" style="justify-content:center" data-act="inv" data-k="inv">Submit invoice</button>') +
+    (S.inv ? (S.waiver ? '<div class="okline">' + ic('check') + 'Conditional waiver signed</div>' : '<div class="pcard tiny">Sign a conditional lien waiver for this payment (Greenleaf\'s template)</div><button type="button" class="btn" style="justify-content:center" data-act="waiver" data-k="waiver">Sign waiver</button>') : '');
+  var main = '<div class="apphead"><span class="crumb">Money › Bills</span><h3>Tall Oaks Tree Service · SWO-118</h3>' + (S.billOk ? pill('ok', 'Approved for the Friday payment run') : pill('info', S.inv ? 'In review' : 'Waiting for the sub')) + '</div>' +
+    '<div class="panel"><dl class="kv"><dt>Matched to</dt><dd>SWO-118 ($1,450.00) · completion photos · Andrés confirmed on site</dd><dt>Compliance</dt><dd>' + pill('ok', 'Current') + '</dd><dt>Lien waiver</dt><dd>' + (S.waiver ? pill('ok', 'Conditional on file; unconditional requested after payment clears') : pill('warn', 'Not yet signed')) + '</dd><dt>Retainage</dt><dd>none on this job</dd></dl>' +
+    (S.billOk ? '<div class="mt10">' + je([['5410 Subcontractors (J-2417)', 1450, 0], ['2000 Accounts Payable', 0, 1450]]) + '</div>' : '<button type="button" class="btn sm primary mt10" data-act="billOk" data-k="billOk"' + (S.waiver ? '' : ' disabled') + '>Approve bill (Priya)</button>') + '</div>';
+  return withPhone(browser('app.rootline.com/money/bills/tall-oaks-swo-118', opsShell('Money', main), 'Subcontractor bill'), phone(sub, { brand: 'Rootline sub portal', sub: 'Tall Oaks Tree Service', logo: 'building', label: 'Subcontractor phone: invoice and waiver', k: 'sp' }));
+};
+WT.actions.inv = function (el, S) { S.inv = true; };
+WT.actions.waiver = function (el, S) { S.waiver = true; };
+WT.actions.billOk = function (el, S) { S.billOk = true; };
+WT.ensure['op09-subpay'] = function (S) { S.inv = true; S.waiver = true; S.billOk = true; };
+WT.bts['op09-subpay'] = function (S) {
+  return {
+    what: 'The sub invoices against the work order from the portal, with photos, and signs a conditional lien waiver for this payment. The bill matches the work order and the crew lead\'s confirmation, posts to the job\'s subcontractor cost and joins the next payment run. Payment itself goes from Greenleaf\'s bank, not through Rootline; the unconditional waiver is requested once it clears.',
+    agents: [['Sub invoices and lien waivers [V1]', 'Portal invoice, waiver e-sign, payment-run inclusion', 1]],
+    trace: [{ c: 'portal.invoice(SWO-118)', r: S.inv ? '$1,450.00 with 4 photos' : 'waiting', ms: '', det: true, pending: !S.inv }, { c: 'lien_waiver.sign(conditional)', r: S.waiver ? 'signed, hash stored' : '', ms: '', det: true, pending: !S.waiver }, { c: 'bill.approve → ap.AP1', r: S.billOk ? 'Dr 5410 / Cr 2000 $1,450.00' : '', ms: S.billOk ? '80 ms' : '', det: true, pending: !S.billOk, human: S.waiver && !S.billOk }],
+    hitl: [['Greg', 'invoices and signs.'], ['Priya', 'approves the bill and runs payments.']],
+    tags: [['v1', 'sub portal invoices, lien waivers, retainage, payment-run holds']],
+    specs: 'Spec: 13 §4.13.4, §4.13.5 · 09 ap.AP1, ap.AP4, 5410 (verify state waiver rules)'
+  };
+};
+
+/* op10 */
+WT.screens['op10-jobcost'] = function (S) {
+  var rows = [['Materials', 5042.00, 4912.70, 4402.58], ['Subcontractor', 1500.00, 1450.00, 1450.00], ['Equipment', 280.00, 0, 267.80], ['Labor', 3960.00, 0, 2312.00]];
+  var max = 5200;
+  var bars = rows.map(function (r) { return '<div class="jc-bar"><span>' + r[0] + '</span><div class="tr"><i class="c" style="width:' + (Math.max(r[2], r[3]) / max * 100).toFixed(1) + '%"></i><i class="a" style="width:' + (r[3] / max * 100).toFixed(1) + '%"></i><i class="e" style="width:' + (r[1] / max * 100).toFixed(1) + '%"></i></div></div>'; }).join('');
+  var main = '<div class="apphead"><span class="crumb">Jobs › J-2417</span><h3>Delgado patio · job cost</h3>' + pill('info', 'Install day 2 of 4') + '</div>' +
+    '<div class="panel"><table class="data tight"><thead><tr><th>Cost type</th><th class="num">Estimate</th><th class="num">Committed</th><th class="num">Actual</th></tr></thead><tbody>' + rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td class="num">' + money(r[1], true) + '</td><td class="num">' + (r[2] ? money(r[2], true) : '—') + '</td><td class="num">' + money(r[3], true) + '</td></tr>'; }).join('') + '</tbody></table>' +
+    '<div class="mt10">' + bars + '</div><div class="wt-note">Line: estimate. Blue: committed. Green: actual so far.</div></div>' +
+    '<div class="wt-cols mt10"><div class="panel"><h4>Where each number comes from</h4><ul style="margin:0;padding-left:18px;font-size:.76rem;color:var(--text-2);display:grid;gap:3px"><li>Committed: the POs and SWO-118, plus 4 yd³ of reserved mulch</li><li>Materials actual: receipt RC-802 (plants and mulch not issued yet)</li><li>Equipment: mini skid steer 6.5 h at its published $41.20/h</li><li>Labor: approved hours at base rate plus burden</li></ul></div>' +
+    '<div class="panel"><h4>Forecast</h4><dl class="kv"><dt>Materials</dt><dd>$130 under budget, before the $102 paver credit</dd><dt>Gross margin</dt><dd>on track for 44% vs 42% estimated</dd></dl></div></div>';
+  return browser('app.rootline.com/jobs/J-2417/cost', opsShell('Jobs', main), 'Job cost');
+};
+WT.bts['op10-jobcost'] = function (S) {
+  return {
+    what: 'Because purchasing, receiving, equipment and subs all post to the job, the patio\'s cost is live while the crew is still on site: estimate, committed (what\'s on order) and actual (what has arrived or been worked). Commitments warn about overruns before the bills arrive, not a month later.',
+    agents: [['Job costing', 'Estimate vs committed vs actual by cost type', 1]],
+    trace: [{ c: 'commitments(J-2417)', r: 'POs $4,800.70 + reserved $112.00 + SWO $1,450.00', ms: '120 ms', det: true }, { c: 'actuals(J-2417)', r: 'receipts, sub bill, equipment usage, approved time', ms: '200 ms', det: true }, { c: 'forecast.margin', r: '44% vs 42% estimated', ms: '30 ms', det: true }],
+    hitl: [['Erin and Luis', 'read it; nothing here needs approval.']],
+    tags: [['mvp', 'commitments, job-direct receipts, job cost by cost type']],
+    specs: 'Spec: 13 §4.8.8, §5.1 · 09 (job costing, WIP) · 18 (job profitability)'
+  };
+};
+
+/* op11 */
+WT.screens['op11-recap'] = function (S) {
+  var rows = [['Buy list from the signed estimate', 'Rules', 'MVP'], ['Workbench: grouped POs, availability split', 'Procurement agent (A21)', 'V1'], ['PO approval by budget fit and limits', 'Rules', 'MVP'], ['Vendor confirmation link, deliveries on the board', 'Rules', 'MVP and V1'], ['On-site receiving with a scale ticket', 'Document reading', 'MVP'], ['Holding yard care, loss and nursery claim', 'Rules', 'V1'], ['Bunker count and blanket release', 'Rules', 'V1'], ['Mower cost per hour, actuals', 'Rules', 'MVP and V1'], ['Defect repair certified; PM scheduled', 'Rules', 'MVP and V1'], ['Sub blocked until insurance is current', 'Gate and document reading', 'MVP and V1'], ['Sub invoice and lien waiver', 'Portal', 'V1'], ['Live job cost', 'Ledger', 'MVP']];
+  return '<div class="panel"><table class="data tight"><thead><tr><th>Step</th><th>Automation</th><th>Scope</th></tr></thead><tbody>' + rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>'; }).join('') + '</tbody></table><p class="tiny muted mt10">18 AI credits in total: the workbench run and two document reads. Every PO, receipt, certification and approval was a person\'s decision.</p></div>' +
+    '<div class="flex mt14"><a class="btn" href="#overview">' + ic('arrow-l') + 'Back to start</a><a class="btn" href="wt-money.html">Invoicing, payments and the books</a><a class="btn primary" href="walkthroughs.html">All walkthroughs ' + ic('arrow-r') + '</a></div>';
+};
+WT.bts['op11-recap'] = function (S) {
+  return {
+    what: 'The design-to-dump-truck chain: the estimate creates demand, purchasing groups it, vendors confirm from a link, the crew receives on site, the yard keeps plants alive and bunkers stocked, equipment is costed from real data, subs are paid only when compliant, and every movement lands on the job\'s cost.',
+    hitl: [['Luis, Tasha, Andrés, Tomás, Ray, Priya and Erin', 'made every decision the agents prepared.']],
+    tags: [['mvp', 'buy lists, POs, receiving, Light inventory, DVIR, rate calculator, sub compliance gate, job cost'], ['v1', 'workbench and A21, Standard inventory, holding yard, PM work orders, actuals, sub portal and waivers'], ['v2', 'distributor punchout and EDI, predictive maintenance']],
+    specs: 'Spec: 13 (whole module) · 03, 04, 05, 09, 12, 17'
+  };
+};
+
+/* Rootline walkthrough engine.
+   Renders the shared frame (rail, bar, screen, behind-the-scenes panel) for a walkthrough
+   defined in a global WT object (see tools/walkthroughs/README.md). Vanilla JS, no globals
+   beyond the helpers below and WT. */
+'use strict';
+var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+var money = function (n, cents) { var v = Math.abs(n); var s = v.toLocaleString('en-US', { minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: cents ? 2 : 0 }); return (n < 0 ? '-$' : '$') + s; };
+var num = function (n, d) { return Number(n).toLocaleString('en-US', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
+function ic(n, c) { return '<svg class="ic' + (c ? ' ' + c : '') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
+function tag(t) { return '<span class="tag ' + t + '">' + ({ mvp: 'MVP', v1: 'V1', v2: 'V2', v3: 'V3' }[t] || t) + '</span>'; }
+function pill(cls, text, icon) { return '<span class="pill ' + (cls || '') + '">' + (icon ? ic(icon) : '') + esc(text) + '</span>'; }
+function aiChip(text) { return '<span class="pill ai">' + ic('spark') + esc(text) + '</span>'; }
+function cost(n) { return '<span class="cost">' + n + ' credit' + (n === 1 ? '' : 's') + '</span>'; }
+/* ---------- device frames ---------- */
+function phone(inner, opt) {
+  opt = opt || {};
+  var brand = opt.noBrand ? '' : '<div class="brand"><span class="logo">' + ic(opt.logo || 'leaf') + '</span><span><b>' + esc(opt.brand || 'Greenleaf Grounds Co.') + '</b><small>' + esc(opt.sub || '') + '</small></span><span class="sp"></span>' + (opt.right || '<span class="faint">' + ic('menu') + '</span>') + '</div>';
+  return '<div class="phone pt-phone" style="position:relative" role="group" aria-label="' + esc(opt.label || 'Phone screen') + '"><div class="status"><span>' + esc(opt.time || '9:41') + '</span><span class="bat">' + (opt.offline ? ic('wifi-off', 's') + ' Offline ' : '5G ') + ic('battery', 's') + '</span></div><div class="body pt-pbody" data-keep="pbody' + (opt.k || '') + '">' + brand + '<div class="pbody-pad">' + inner + '</div>' + (opt.foot ? '<div class="pfoot">' + esc(opt.foot) + '</div>' : '') + '</div></div>';
+}
+function browser(url, inner, label) {
+  return '<div class="frame-scroll"><div class="browser" role="group" aria-label="' + esc(label || 'Desktop screen') + '"><div class="browser-bar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="url">' + esc(url) + '</div></div>' + inner + '</div></div>';
+}
+var APP_NAV = [['today', 'Today'], ['inbox', 'Inbox'], ['approve', 'Approvals'], ['users', 'Clients'], ['dollar', 'Sales'], ['pen', 'Design'], ['calendar', 'Schedule'], ['clipboard', 'Jobs'], ['bank', 'Money'], ['chart', 'Reports'], ['cog', 'Settings']];
+function appShell(active, main, opt) {
+  opt = opt || {};
+  var counts = opt.counts || {};
+  var nav = (opt.nav || APP_NAV).map(function (n) { var on = n[1] === active; var b = counts[n[1]] ? '<span class="badge">' + counts[n[1]] + '</span>' : ''; return '<span class="item' + (on ? ' active' : '') + '"' + (on ? ' aria-current="page"' : '') + '>' + ic(n[0]) + n[1] + b + '</span>'; }).join('');
+  var left = START_LEFT - creditsThrough(stepIndex(current));
+  var foot = opt.foot != null ? opt.foot : 'AI credits <b>' + num(left) + '</b> of ' + num(ALLOW) + ' left<div class="meter"><i style="width:' + (left / ALLOW * 100).toFixed(1) + '%"></i></div>';
+  return '<div class="app pt-app"><nav class="app-side" aria-label="' + esc(opt.navLabel || 'Company app navigation (concept)') + '"><div class="co"><span class="logo">' + ic(opt.logo || 'leaf') + '</span><span><b>' + esc(opt.co || 'Greenleaf Grounds Co.') + '</b><small>' + esc(opt.coSub || 'Columbus, OH · Pro') + '</small></span></div>' + nav + (foot ? '<div class="sidefoot">' + foot + '</div>' : '') + '</nav><div class="app-main">' + main + '</div></div>';
+}
+function withPhone(desk, ph) { return desk + '<div class="mt14">' + devRow(ph) + '</div>'; }
+function ctxCard(title, items, extra) {
+  return '<aside class="big-view" aria-label="About this screen"><div class="card"><h3 style="font-size:.95rem">' + esc(title) + '</h3><ul style="margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:.82rem;color:var(--text-2)">' + items.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul></div>' + (extra || '') + '</aside>';
+}
+function devRow() { return '<div class="dev-row">' + Array.prototype.slice.call(arguments).join('') + '</div>'; }
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+var S = WT.state || {};
+var STEPS = [{ id: 'overview', act: -1, short: 'Start here', title: WT.ovTitle || WT.short }].concat(WT.steps);
+var current = 'overview', navSource = 'load', btsOpen = true, timers = [], visited = {};
+var CREDITS = WT.credits || {};
+var ALLOW = WT.allowance || 6000, START_LEFT = WT.startLeft != null ? WT.startLeft : 6000;
+
+function stepIndex(id) { for (var i = 0; i < STEPS.length; i++) if (STEPS[i].id === id) return i; return 0; }
+function creditsThrough(idx) { var t = 0; for (var i = 1; i <= idx; i++) t += CREDITS[STEPS[i].id] || 0; return t; }
+var TOTAL_CREDITS = creditsThrough(STEPS.length - 1);
+function clearTimers() { timers.forEach(function (t) { clearTimeout(t); }); timers = []; }
+function later(fn, ms) { var t = setTimeout(function () { timers = timers.filter(function (x) { return x !== t; }); fn(); update(); }, RM ? 0 : ms); timers.push(t); return t; }
+
+/* ---------- rail ---------- */
+function renderRail() {
+  var idx = stepIndex(current);
+  var h = '<a class="rall" href="walkthroughs.html">' + ic('arrow-l') + 'All walkthroughs</a>';
+  h += '<a class="rstart" href="#overview"' + (current === 'overview' ? ' aria-current="step"' : '') + '>' + ic('play') + 'Start here</a>';
+  WT.acts.forEach(function (a, ai) {
+    h += '<div class="act"><div class="act-h"><b>' + esc(a.n.toUpperCase()) + '</b>' + esc(a.t) + '</div><ol>';
+    STEPS.forEach(function (s, i) {
+      if (s.act !== ai) return;
+      var cls = 'st' + (visited[s.id] && s.id !== current ? ' done' : '');
+      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
+    });
+    h += '</ol></div>';
+  });
+  if (TOTAL_CREDITS > 0) {
+    var used = creditsThrough(idx);
+    h += '<div class="rfoot">AI credits so far <b>' + used + '</b> of ' + TOTAL_CREDITS + '<div class="meter"><i style="width:' + (used / TOTAL_CREDITS * 100).toFixed(1) + '%"></i></div><div class="mt6">' + esc(WT.creditOwner || 'Greenleaf') + ' left this month: <b>' + num(START_LEFT - used) + '</b></div></div>';
+  }
+  $('#rail').innerHTML = h;
+}
+
+/* ---------- bar ---------- */
+var THEMES = ['auto', 'light', 'dark'], theme = 'auto';
+try { theme = localStorage.getItem('rootline-proto-theme') || 'auto'; } catch (e) { theme = 'auto'; }
+function applyTheme() { if (theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', theme); }
+applyTheme();
+function renderBar() {
+  var idx = stepIndex(current), s = STEPS[idx], n = STEPS.length - 1;
+  var where = idx === 0 ? 'Overview' : WT.acts[s.act].n + ' · ' + WT.acts[s.act].t + ' · step ' + idx + ' of ' + n;
+  $('#bar').innerHTML = '<div class="where"><span class="eyebrow">' + esc(where) + '</span><h1 id="step-h" tabindex="-1">' + esc(s.title) + '</h1></div><div class="ctrls"><div class="prog"><span class="track" role="progressbar" aria-valuemin="0" aria-valuemax="' + n + '" aria-valuenow="' + idx + '" aria-label="Walkthrough progress"><i style="width:' + (idx / n * 100).toFixed(1) + '%"></i></span><span class="num">' + idx + ' / ' + n + '</span></div>' +
+    '<button type="button" class="btn sm" data-act="prev" data-k="prev"' + (idx === 0 ? ' disabled' : '') + '>' + ic('arrow-l') + 'Back</button><button type="button" class="btn sm primary" data-act="next" data-k="next"' + (idx === n ? ' disabled' : '') + '>' + (idx === 0 ? 'Start' : 'Next') + ic('arrow-r') + '</button><button type="button" class="btn sm ghost" data-act="theme" data-k="theme" aria-label="Theme: ' + theme + '. Change theme">' + ic(theme === 'dark' ? 'moon' : 'sun') + '<span class="tiny">' + theme + '</span></button></div>';
+}
+
+/* ---------- behind the scenes ---------- */
+function btsHTML() {
+  var f = WT.bts[current]; var b = f ? f(S) : null; if (!b) return '';
+  var idx = stepIndex(current), h = '';
+  h += '<div class="bts-sec"><h3>What\'s happening</h3><p>' + b.what + '</p></div>';
+  if (b.agents || b.trace) {
+    h += '<div class="bts-sec"><h3>' + ic('spark', 's') + (b.traceTitle || 'Agent and automation trace') + '</h3>' + (b.agents || []).map(function (a) { return '<div class="agent"><span class="badge' + (a[2] ? ' det' : '') + '">' + ic(a[2] ? 'cog' : 'spark') + '</span><span><b>' + esc(a[0]) + '</b><small>' + esc(a[1]) + '</small></span></div>'; }).join('');
+    if (b.trace) h += '<ol class="trace">' + b.trace.map(function (t, i) { var st = t.pending ? 'pending' : (t.running ? 'running' : ''); if (t.human) st += ' human'; return '<li class="' + st.trim() + '"><span class="i">' + (i + 1) + '</span><span><code class="' + (t.det ? 'det' : '') + '">' + esc(t.c) + '</code><span class="res">' + esc(t.r || '') + '</span></span><span class="ms">' + (t.pending ? '' : (t.running ? '…' : esc(t.ms || ''))) + '</span></li>'; }).join('') + '</ol>';
+    h += '</div>';
+  }
+  if (b.hitl) h += '<div class="bts-sec"><h3>' + ic('user', 's') + 'Human in the loop</h3><div class="hitl">' + b.hitl.map(function (x) { return '<div>' + ic('check') + '<span><b>' + esc(x[0]) + '</b> ' + esc(x[1]) + '</span></div>'; }).join('') + '</div><div class="lvl">' + (b.levels || []).map(function (l) { return '<span class="pill info">' + esc(l) + '</span>'; }).join('') + '</div></div>';
+  var n = CREDITS[current] || 0;
+  if (TOTAL_CREDITS === 0 && b.creditNote) h += '<div class="bts-sec"><h3>' + ic('bolt', 's') + 'AI credits</h3><p class="tiny muted" style="margin:0">' + esc(b.creditNote) + '</p></div>';
+  else if (TOTAL_CREDITS > 0 || b.creditNote) {
+    var run = creditsThrough(idx);
+    h += '<div class="bts-sec"><h3>' + ic('bolt', 's') + 'AI credits</h3><div class="cred"><span>This step</span><span class="big">' + n + '</span><span>Running total</span><span class="mono" style="font-weight:600">' + run + ' of ' + TOTAL_CREDITS + '</span><small>' + esc(b.creditNote || (n ? '' : 'No AI runs here; deterministic automation is free.')) + '</small></div>' +
+      (TOTAL_CREDITS > 0 ? '<div class="meter" title="Monthly allowance"><i style="width:' + ((ALLOW - START_LEFT + run) / ALLOW * 100).toFixed(1) + '%"></i></div><small class="tiny faint">' + esc(WT.creditOwner || 'Greenleaf') + ' (' + esc(WT.plan || 'Pro') + '): ' + num(START_LEFT - run) + ' of ' + num(ALLOW) + ' credits left this month</small>' : '') + '</div>';
+  }
+  if (b.tags) h += '<div class="bts-sec"><h3>Scope</h3><div style="display:grid;gap:5px">' + b.tags.map(function (t) { return '<div class="tagrow">' + tag(t[0]) + '<span class="note">' + esc(t[1]) + '</span></div>'; }).join('') + '</div></div>';
+  if (b.specs) h += '<div class="bts-sec"><h3>Spec references</h3><div class="specs">' + esc(b.specs) + '</div></div>';
+  return h;
+}
+function renderBTS() {
+  var el = $('#bts');
+  el.classList.toggle('collapsed', !btsOpen);
+  el.innerHTML = '<div class="bts-head"><span class="ai-mark">' + ic('spark') + '</span><h2>Behind the scenes</h2><button type="button" class="btn xs" data-act="bts" data-k="bts" aria-expanded="' + btsOpen + '" aria-controls="bts-body">' + (btsOpen ? 'Hide' : 'Show') + '</button></div><div class="bts-body" id="bts-body">' + btsHTML() + '</div>';
+}
+
+/* ---------- overview ---------- */
+function overviewHTML() {
+  var o = WT.ov;
+  var jm = WT.acts.map(function (a, ai) {
+    var steps = STEPS.filter(function (s) { return s.act === ai; });
+    var nodes = steps.map(function (s, j) {
+      var i = stepIndex(s.id);
+      return '<a class="jm-node' + (j === steps.length - 1 ? ' last' : '') + '" href="#' + s.id + '"><span class="k">' + (i < 10 ? '0' + i : i) + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '') + '</span><b>' + esc(s.short) + '</b><span class="who">' + esc(s.who || '') + '</span>' + (s.tags || []).map(tag).join(' ') + '</a>';
+    }).join('');
+    return '<div class="jm-act"><div class="jh"><b>' + esc(a.n.toUpperCase()) + '</b><span>' + esc(a.t) + '</span><small>' + esc(a.sub || '') + '</small></div><div class="jm-row">' + nodes + '</div></div>';
+  }).join('');
+  var cast = (o.cast || []).map(function (c) { return '<div class="card"><h3>' + ic(c.icon || 'user') + esc(c.h) + '</h3><ul>' + c.items.map(function (x) { return '<li><b>' + esc(x[0]) + '</b> ' + esc(x[1]) + '</li>'; }).join('') + '</ul></div>'; }).join('');
+  return '<div class="ov-hero"><p class="eyebrow">' + esc(o.eyebrow) + '</p><h2>' + esc(o.h) + '</h2><p class="lede">' + o.lede + '</p><div class="flex"><a class="btn primary" href="#' + STEPS[1].id + '" data-k="ov-start">Start walkthrough ' + ic('arrow-r') + '</a><span class="muted small">' + (STEPS.length - 1) + ' steps · use the ← → keys</span></div></div>' +
+    '<h3 class="sec-t">The journey</h3><div class="jm">' + jm + '</div>' +
+    (cast ? '<h3 class="sec-t">The cast</h3><div class="cast">' + cast + '</div>' : '') + (o.extra || '');
+}
+
+/* ---------- screen and routing ---------- */
+function renderScreen() {
+  var el = $('#screen'), keep = {};
+  $$('[data-keep]', el).forEach(function (n) { keep[n.getAttribute('data-keep')] = n.scrollTop; });
+  el.innerHTML = current === 'overview' ? (WT.overview ? WT.overview(S) : overviewHTML()) : (WT.screens[current] ? WT.screens[current](S) : '');
+  $$('[data-keep]', el).forEach(function (n) { var k = n.getAttribute('data-keep'); if (keep[k] != null) n.scrollTop = keep[k]; });
+}
+function update() {
+  var a = document.activeElement, k = a && a.getAttribute ? a.getAttribute('data-k') : null;
+  var sel = a && typeof a.selectionStart === 'number' ? [a.selectionStart, a.selectionEnd] : null;
+  renderScreen(); renderBTS(); renderRail(); renderBar();
+  if (k) { var n = document.querySelector('[data-k="' + k + '"]'); if (n && !n.disabled) { try { n.focus({ preventScroll: true }); } catch (e) { n.focus(); } if (sel && n.setSelectionRange) { try { n.setSelectionRange(sel[0], sel[1]); } catch (e) {} } } }
+}
+function go(id, src) { navSource = src || 'link'; if (location.hash.slice(1) === id) route(); else location.hash = id; }
+function route() {
+  var id = (location.hash || '').replace(/^#/, '');
+  if (id !== 'overview' && !WT.screens[id]) id = 'overview';
+  var changed = id !== current;
+  if (changed) clearTimers();
+  var idx = stepIndex(id);
+  if (WT.ensure) for (var i = 1; i < idx; i++) { var f = WT.ensure[STEPS[i].id]; if (f) f(S); }
+  visited[id] = true; current = id;
+  renderScreen(); renderBTS(); renderRail(); renderBar();
+  document.title = (id === 'overview' ? '' : STEPS[idx].short + ' · ') + WT.title;
+  if (changed) {
+    var top = $('#main'); if (top && window.scrollY > top.offsetTop - 60) window.scrollTo(0, Math.max(0, top.offsetTop - 60));
+    if (navSource === 'button') { var b = document.querySelector('[data-k="next"]'); if (b && !b.disabled) b.focus({ preventScroll: true }); }
+    else if (navSource !== 'load') { var hh = $('#step-h'); if (hh) hh.focus({ preventScroll: true }); }
+    if (WT.enter && WT.enter[id]) WT.enter[id](S);
+  }
+  navSource = 'link';
+}
+function nav(d) { var i = stepIndex(current) + d; if (i < 0 || i >= STEPS.length) return; go(STEPS[i].id, 'button'); }
+
+/* ---------- events ---------- */
+document.addEventListener('click', function (e) {
+  var t = e.target.closest ? e.target.closest('[data-act],[data-go]') : null; if (!t) return;
+  if (t.hasAttribute('data-go')) { e.preventDefault(); go(t.getAttribute('data-go'), 'link'); return; }
+  var a = t.getAttribute('data-act');
+  if (a === 'prev') return nav(-1);
+  if (a === 'next') return nav(1);
+  if (a === 'bts') { btsOpen = !btsOpen; renderBTS(); var bb = document.querySelector('[data-k="bts"]'); if (bb) bb.focus(); return; }
+  if (a === 'theme') { theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length]; try { localStorage.setItem('rootline-proto-theme', theme); } catch (er) {} applyTheme(); renderBar(); var tb = document.querySelector('[data-k="theme"]'); if (tb) tb.focus(); return; }
+  if (WT.actions && WT.actions[a]) { e.preventDefault(); var r = WT.actions[a](t, S, e); if (r !== false) update(); }
+});
+function onInput(e) {
+  var t = e.target; if (!t.getAttribute) return; var k = t.getAttribute('data-in'); if (!k || !WT.inputs || !WT.inputs[k]) return;
+  var live = t.type === 'range' || t.type === 'checkbox' || t.type === 'radio' || t.tagName === 'SELECT';
+  if (e.type === 'input' && !live && t.getAttribute('data-live') == null) return;
+  var r = WT.inputs[k](t, S, e); if (r !== false) update();
+}
+document.addEventListener('input', onInput);
+document.addEventListener('change', onInput);
+document.addEventListener('submit', function (e) { e.preventDefault(); var f = e.target.getAttribute('data-submit'); if (f && WT.actions && WT.actions[f]) { WT.actions[f](e.target, S, e); update(); } });
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  var t = e.target, tn = t && t.tagName;
+  if (tn === 'INPUT' || tn === 'TEXTAREA' || tn === 'SELECT' || (t && t.isContentEditable) || (t && t.getAttribute && t.getAttribute('role') === 'slider')) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); nav(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); nav(-1); }
+});
+window.addEventListener('hashchange', route);
+route();
+
+</script>
+</body>
+</html>

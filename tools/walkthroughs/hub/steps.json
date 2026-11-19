@@ -785,7 +785,97 @@
   ],
   "errors": []
  },
- "wt-operations.html": null,
+ "wt-operations.html": {
+  "acts": [
+   {
+    "head": "ACT 1Buy",
+    "steps": [
+     {
+      "id": "op01-buylist",
+      "short": "Buy list",
+      "title": "A signed patio becomes a buy list",
+      "ai": false
+     },
+     {
+      "id": "op02-workbench",
+      "short": "Workbench",
+      "title": "The Monday purchasing workbench",
+      "ai": true
+     },
+     {
+      "id": "op03-vendor",
+      "short": "Vendor confirms",
+      "title": "The vendor confirms the delivery from a link",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Receive and store",
+    "steps": [
+     {
+      "id": "op04-receive",
+      "short": "Receive on site",
+      "title": "Receiving on site with a scale ticket",
+      "ai": true
+     },
+     {
+      "id": "op05-yard",
+      "short": "Yard and bunkers",
+      "title": "Plants as living inventory, and the mulch bunker",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Equipment and fleet",
+    "steps": [
+     {
+      "id": "op06-rate",
+      "short": "Cost per hour",
+      "title": "What a mower really costs per hour",
+      "ai": false
+     },
+     {
+      "id": "op07-shop",
+      "short": "Repairs and service",
+      "title": "A trailer defect is repaired and certified; a mower is due",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 4Subs and job cost",
+    "steps": [
+     {
+      "id": "op08-subgate",
+      "short": "Sub compliance",
+      "title": "A subcontractor is blocked until its insurance is current",
+      "ai": true
+     },
+     {
+      "id": "op09-subpay",
+      "short": "Sub invoice",
+      "title": "The sub invoices from the portal with a lien waiver",
+      "ai": false
+     },
+     {
+      "id": "op10-jobcost",
+      "short": "Job cost",
+      "title": "Estimate vs committed vs actual for the patio",
+      "ai": false
+     },
+     {
+      "id": "op11-recap",
+      "short": "Recap",
+      "title": "Recap: from design to dump truck",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-service-lines.html": null,
  "wt-design-studio.html": null,
  "wt-getting-found.html": null,
