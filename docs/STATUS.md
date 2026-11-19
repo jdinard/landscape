@@ -4,7 +4,7 @@
 
 ## At a glance
 
-- **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, and a clickable walkthrough prototype of the AI design flow.
+- **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, and a clickable prototype of 13 guided walkthroughs (162 steps) covering every persona, from the AI design flow to weekly mowing, the crew's day, the books, hiring, operations, service lines, marketing and the operator console.
 - **Decided:** bring-your-own Stripe, a built-in double-entry ledger, the Great Lakes launch region, Snow Lite in the MVP, pricing tiers, the region-aware Plant Knowledge Base, and "humans approve AI actions by default".
 - **Remains** (the working queue is [BACKLOG.md](BACKLOG.md)): founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the other workflows (the biggest gap: small and recurring jobs such as weekly grass cutting), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
 
@@ -48,6 +48,9 @@ All pages live in [site/](site/) as static HTML that runs in any browser, and ar
 
 | Page | What it shows |
 |---|---|
+| [site/walkthroughs.html](site/walkthroughs.html) | **Hub for the clickable prototype**: 13 walkthroughs and 162 steps, filterable by persona, with deep links to every step and coverage matrices by persona and by spec module |
+| [site/wt-recurring.html](site/wt-recurring.html), [site/wt-crew-day.html](site/wt-crew-day.html), [site/wt-money.html](site/wt-money.html), [site/wt-commercial.html](site/wt-commercial.html), [site/wt-owner-ai.html](site/wt-owner-ai.html), [site/wt-onboarding-operator.html](site/wt-onboarding-operator.html) | Walkthroughs: small and recurring jobs; a crew's day; invoicing, payments and the books; commercial and HOA accounts; the owner's day with AI agents; getting started and the operator console |
+| [site/wt-hiring.html](site/wt-hiring.html), [site/wt-operations.html](site/wt-operations.html), [site/wt-service-lines.html](site/wt-service-lines.html), [site/wt-design-studio.html](site/wt-design-studio.html), [site/wt-getting-found.html](site/wt-getting-found.html), [site/wt-future.html](site/wt-future.html) | Walkthroughs: hiring and seasonal crews; purchasing, inventory, fleet and subcontractors; irrigation, lighting and other service lines; Design Studio in depth; getting found (website, AI receptionist, campaigns, reviews); clearly labeled V2 and V3 moonshots |
 | [site/prototype.html](site/prototype.html) | **Clickable walkthrough of the agentic AI design flow**, from a homeowner's photos and measurements through AI mockups, design-assistant edits, a to-scale plan in the Design Studio, the estimating agent's draft, the proposal, client approval with deposit, and the agents that act afterwards. Each step shows what the agents did, who approved it and the AI credits used |
 | [site/index.html](site/index.html) | The vision site: problem, big bets, personas, lead-to-ledger flow, module atlas, competitive landscape, business model, product scope and architecture |
 | [site/screens-office.html](site/screens-office.html) | Static concepts: owner dashboard, client record, dispatch board, estimate builder, client proposal, job costing and ledger |
@@ -56,7 +59,7 @@ All pages live in [site/](site/) as static HTML that runs in any browser, and ar
 
 ### 1.5 Quality passes and tools
 
-Each module doc was written by one agent and then reviewed and deepened by another. Seven consistency reviews and two rounds of fixes reconciled more than 120 contradictions between docs: names, states, events, account codes, permissions and scope tags. All 339 Mermaid diagrams parse and there are no broken links between documents. The checks that prove it are in [tools/docs-check](../tools/docs-check/README.md), and the walkthrough's source is in [tools/prototype-src](../tools/prototype-src/README.md).
+Each module doc was written by one agent and then reviewed and deepened by another. Seven consistency reviews and two rounds of fixes reconciled more than 120 contradictions between docs: names, states, events, account codes, permissions and scope tags. All 339 Mermaid diagrams parse and there are no broken links between documents. The checks that prove it are in [tools/docs-check](../tools/docs-check/README.md). The AI design walkthrough's source is in [tools/prototype-src](../tools/prototype-src/README.md); the other twelve are built on a shared engine described in [tools/walkthroughs](../tools/walkthroughs/README.md). Every walkthrough step is checked in a browser at desktop and phone widths, and axe finds no WCAG 2.1 AA issues on any page in light or dark themes.
 
 ### 1.6 By the numbers
 
@@ -106,32 +109,17 @@ No step below carries a time or effort estimate. The order within each list is a
 ### 2.3 Validation with real users
 
 - Interviews with landscape companies in the six Wave 1 Regions, recruited as design partners ([22](22-business-model-pricing-gtm.md) section 6.10).
-- Usability tests of the clickable AI design prototype with homeowners and with designers and estimators.
+- Usability tests of the 13 clickable walkthroughs: the AI design flow with homeowners, designers and estimators; the others with owners, office managers, bookkeepers and crew leads.
 - Glove, sun, offline and in-truck tests of the crew app concepts using the protocols in [21](21-ux-design-system-sitemaps.md).
 - Pricing validation from [22](22-business-model-pricing-gtm.md) section 6.10.
 
-### 2.4 More clickable prototypes
+### 2.4 Clickable prototype: what's left
 
-The AI design flow is clickable. The other workflows exist as static concept screens and would benefit from clickable walkthroughs too.
+All planned walkthroughs are built, including the small and recurring jobs that were the biggest gap ([site/wt-recurring.html](site/wt-recurring.html)). What remains needs people, not pages:
 
-**The biggest gap: small and recurring jobs.** The clickable walkthrough covers the large design-build proposal, but most landscape work is small and repeats: weekly grass cutting, mulch, cleanups, aeration, lawn programs, irrigation start-ups. The specification already covers this loop end to end, but no walkthrough shows it yet:
-
-| Step | Specified in |
-|---|---|
-| Quick Quote on a phone in under 2 minutes, with turf area from AI aerial measurement and auto-generated tiers [MVP] | [03](03-crm-sales-estimating-proposals.md) EST-11, INTEL-03 |
-| Recurring pricing from a visit model (for example 9,000 sq ft of turf at $73 a visit, $2,190 a season) [MVP] | [03](03-crm-sales-estimating-proposals.md) EST-12 |
-| Homeowner instant quote and online booking with a route day and card on file [V1] | [16](16-marketing-growth-communications.md) sections 4.3 and 5.1 |
-| Service agreement, generated season of visits, route insertion, "on the way" texts; rain-day reshuffles by the scheduling agent [V1] | [04](04-scheduling-dispatch-routing.md), [07](07-invoicing-billing-contracts.md) section 4.3, [17](17-ai-copilot-automation.md) A7 |
-| Crew route and visit run sheet, photos, Spot-it upsells and Spanish voice notes turned into add-on quotes [MVP] | [05](05-field-crew-mobile-app.md), [17](17-ai-copilot-automation.md) A4 |
-| Per-visit or level monthly billing, autopay on the Company's own Stripe account, ledger posting, collections reminders [MVP] | [07](07-invoicing-billing-contracts.md), [08](08-payments-stripe.md), [09](09-accounting-ledger-integrations.md), [17](17-ai-copilot-automation.md) A5 |
-
-The other workflows that would benefit from clickable walkthroughs:
-
-- office lead-to-cash: dispatch board, visit completion, invoicing and payment
-- a crew member's day in the crew app, including offline sync and Snow Lite
-- the bookkeeper's month-end close in the ledger
-- the operator console and the plant curator's workflow
-- commercial and HOA approvals in the portal
+- Usability tests of the walkthroughs with homeowners, owners, office managers and crew leads in the Wave 1 Regions (see 2.3), then fixes to whatever confuses them.
+- A Spanish pass on the crew-facing screens by native speakers (the crew app screens offer an English and Spanish toggle; the copy has not been reviewed by a translator).
+- Real photography and plant imagery once licenses are settled (OD-67); the walkthroughs use drawn illustrations on purpose.
 
 ### 2.5 Technical proofs of the riskiest ideas
 

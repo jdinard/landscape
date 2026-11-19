@@ -17,10 +17,10 @@ Rootline launches in one region, the **Great Lakes**: six Wave 1 Regions at MVP 
 ## Start here
 
 - **[Status: what's done and what remains](docs/STATUS.md)**: a one-page summary of the proposal so far and the next steps.
-- **[Clickable AI design walkthrough](docs/site/prototype.html)**: step through the agentic design flow, from a homeowner's photos and measurements to AI mockups, a to-scale plan, an estimate, a proposal and client approval.
+- **[Clickable prototype: 13 walkthroughs](docs/site/walkthroughs.html)**: step through the whole business, from the agentic AI design flow (a homeowner's photos to AI mockups, a to-scale plan, a proposal and approval) to weekly mowing, a crew's day, the books, commercial accounts, the owner's AI agents, onboarding and the operator console, hiring, operations, service lines, the Design Studio, marketing and clearly labeled moonshots.
 - **[Product design proposal](docs/README.md)**: the front door. It has the executive summary, the 10 big bets, personas, the surface map, the lead-to-cash-to-books flow, a map of every module doc, product scope at a glance, the business model, reading paths and the glossary.
 - **[Product scope and feature catalog](docs/24-roadmap-feature-catalog.md)**: what is in each scope tier, MVP, V1, V2 and V3, and all 747 cataloged features, 442 of them in the MVP. It is the authority on priority tags.
-- **[UI concept screens](docs/site/)**: the vision site (`index.html`), the clickable AI design walkthrough (`prototype.html`) and static screen mockups (`screens-*.html`). Open them in any browser, with no build step.
+- **[UI concept screens](docs/site/)**: the vision site (`index.html`), the walkthrough hub (`walkthroughs.html`) with 13 clickable walkthroughs (`prototype.html` and `wt-*.html`), and static screen mockups (`screens-*.html`). Open them in any browser, with no build step.
 
 ## What is in `docs/`
 

@@ -20,14 +20,15 @@ Ground rules carried over from the founder's direction:
 The hub is [site/walkthroughs.html](site/walkthroughs.html). Each walkthrough follows [tools/walkthroughs/README.md](../tools/walkthroughs/README.md).
 
 - [x] **E0 AI design to a signed project** ([site/prototype.html](site/prototype.html)).
-- [ ] **E1 Six more walkthroughs:** small and recurring jobs, a crew's day, invoicing and the books, commercial and HOA, the owner's day with AI agents, getting started and the operator console (being built).
-- [ ] **E2 Cross-walkthrough pass:** same names, numbers and plants across walkthroughs; deep links from the hub; accessibility and phone-width checks.
-- [ ] **E3 Hiring and seasonal crews:** job posts in Spanish, mobile apply, onboarding, credentials enforced at dispatch, the H-2B workspace ([V1]) ([15](15-team-hr-payroll.md)).
-- [ ] **E4 Operations depth:** purchasing workbench and consolidated POs, inventory modes and counts, fleet preventive maintenance, subcontractor compliance gate and portal ([13](13-operations-inventory-equipment.md)).
-- [ ] **E5 Other service lines:** irrigation start-up, backflow test and winterization; tree care inventory ([V2]); landscape and holiday lighting; mosquito programs ([14](14-service-line-modules.md)).
-- [ ] **E6 Design Studio depth:** 3D view, sun study, options and versions, plan-set PDF export, iPad sketch mode ([10](10-design-studio.md)).
-- [ ] **E7 Getting found:** the website builder, public instant quote and booking, review and referral loops, AI receptionist ([V1]) ([16](16-marketing-growth-communications.md)).
-- [ ] **E8 Moonshots, clearly labeled [V2] and [V3]:** property digital twin, AR on site, robotic mower fleet, the homeowner's lifetime property record ([23](23-innovation-moonshots.md)).
+- [x] **E1 Six more walkthroughs:** small and recurring jobs (6ad0ad7), a crew's day (9ae2fd2), invoicing and the books (f3349d4), commercial and HOA (b9d7864), the owner's day with AI agents (2bd5ad4), getting started and the operator console (67c349b).
+- [x] **E2 Cross-walkthrough pass** (6f090a9): near-duplicate names renamed, the Okafors placed in Upper Arlington everywhere, all 162 hub deep links resolve, no overflow at 1366 or 400 px, and axe finds 0 WCAG 2.1 AA issues on every page in light and dark themes.
+- [x] **E3 Hiring and seasonal crews** (42f2f0a): [site/wt-hiring.html](site/wt-hiring.html).
+- [x] **E4 Operations depth** (efef01d): [site/wt-operations.html](site/wt-operations.html).
+- [x] **E5 Other service lines** (9b75767): [site/wt-service-lines.html](site/wt-service-lines.html).
+- [x] **E6 Design Studio depth** (f6f7e5c): [site/wt-design-studio.html](site/wt-design-studio.html).
+- [x] **E7 Getting found** (4b0c0e3): [site/wt-getting-found.html](site/wt-getting-found.html).
+- [x] **E8 Moonshots, clearly labeled** (4d8cc4e): [site/wt-future.html](site/wt-future.html).
+- [ ] **E9 Usability tests of the walkthroughs** with Great Lakes design partners (homeowners, owners, office managers, crew leads); record what confused people and fix the screens. Needs real participants, so it waits for the founder.
 
 ## A. Verification pass
 

@@ -38,7 +38,19 @@ Read `tools/prototype-src/` (head.html styles, body.html shell, app.js shell log
 
 ## Source and build
 
-Put each walkthrough's source parts in `tools/walkthroughs/<page-name-without-.html>/` with a `build.sh` that writes `docs/site/<page>.html`, like `tools/prototype-src/build.sh`. The built page is one self-contained file: no external requests except the Google Fonts stylesheet the other pages use and `assets/rootline.css`; no images (inline SVG and CSS only); no external scripts.
+`prototype.html` has its own source in `tools/prototype-src/` (`sh tools/prototype-src/build.sh`). Every other walkthrough is data plus screen functions on a shared engine:
+
+| File | What it holds |
+|---|---|
+| `tools/walkthroughs/engine/engine.js` | The shell: rail, top bar, overview with journey map, behind-the-scenes panel, hash routing, keyboard, theme toggle. Helpers: `phone()`, `browser()`, `withPhone()` (desktop frame above a phone), `appShell()`, `ctxCard()`, `devRow()`, `pill()`, `tag()`, `ic()`, `money()`, `num()`, `later()`. |
+| `tools/walkthroughs/engine/extra.css`, `icons.svg` | Shared components (`wt-cols`, `wt-kpis`, `wt-row`, `wt-bubble`, `wt-gantt`, `wt-je`, `wt-callout`...) and extra icons. |
+| `tools/walkthroughs/<name>/wt.js` | One global `WT`: `title`, `acts`, `steps` (`id`, `act`, `short`, `title`, `who`, `ai`, `tags`), `credits` per step, `state`, `ov` (overview copy and cast), and per-step `screens`, `bts` (behind the scenes), `actions` (`data-act` clicks), `inputs` (`data-in`) and `ensure` (state a later step can assume). |
+| `tools/walkthroughs/<name>/page.json`, `wt.css` | Title and description; page-specific styles. |
+| `tools/walkthroughs/engine/build.py` | `python3 tools/walkthroughs/engine/build.py <name>` inlines the base styles, icons, `wt.css`, `wt.js` and the engine into `docs/site/<name>.html`. |
+| `tools/walkthroughs/engine/check.js` | `SHOTS=<dir> NODE_PATH=$(npm root -g) node tools/walkthroughs/engine/check.js <name>.html` visits every step at 1366 and 400 px, clicks every `data-act` and reports errors and overflow. The only expected error is the blocked Google Fonts request. |
+| `tools/walkthroughs/hub/` | `meta.json` (titles, personas, modules), `scrape.js` (reads each built page's rail into `steps.json`) and `build_hub.py` (writes `docs/site/walkthroughs.html`). Run `NODE_PATH=$(npm root -g) node tools/walkthroughs/hub/scrape.js && python3 tools/walkthroughs/hub/build_hub.py` after any change to steps. |
+
+Built pages are self-contained: no external requests except the Google Fonts stylesheet and `assets/rootline.css`; inline SVG and CSS only; no external scripts.
 
 ## Company and cast (use these everywhere)
 
@@ -48,6 +60,11 @@ Put each walkthrough's source parts in `tools/walkthroughs/<page-name-without-.h
 - Commercial client: **Maple Ridge HOA** (as in `screens-field-client-admin.html`), plus a property manager company if needed.
 - Platform side: the founder as **platform owner** (`platform_owner`, shown as "You"), plant curator **Maria Ortiz** (`platform_curator`, senior curator for Great Lakes and Ohio Valley), support agent as needed (`platform_support`).
 - Plants: real plants suited to Central Ohio. Claims about deer resistance and natives must be accurate.
+- More Greenleaf people used by later walkthroughs: **Rafael Gómez** (crew member hired in `wt-hiring`, Crew 2), **Devon Price** (irrigation and lighting technician, certified backflow tester), **Tomás Herrera** (yard and holding-yard care), **Ray Dunn** (mechanic).
+- More clients: **Rachel and Tom Brennan**, 612 Evening St, Worthington (weekly mowing, 8,960 sq ft at $73 a visit; irrigation; mosquito); **the Patels** (6,240 sq ft); **Kevin Mills** (7,200 sq ft); **Kate and Ben Harmon**, 77 Kenyonbrook Dr, Worthington (Design Studio); **Elena Delgado**, 1932 Lytham Rd, Upper Arlington (paver patio J-2417); **the Hendersons**, 4128 Brookside Dr, Upper Arlington (static screens); the **Abbott** front beds (J-2421).
+- Outside companies (fictional): Maple Hill Nursery, Oakwood Nursery, Scioto Aggregates, Buckeye Hardscape Supply, Tall Oaks Tree Service (sub), Lakeshore Seasonal Visa Services (H-2B agent). A second tenant: **Riverbend Lawn & Landscape**, Grand Rapids (owner Dan Mercer), in `wt-onboarding-operator`.
+- Prices that recur: aeration and overseed is $95 plus $24.50 per 1,000 sq ft; Greenleaf's AI credits start each walkthrough between 4,150 and 4,320 of 6,000 left.
+
 
 ## Content rules
 
@@ -68,4 +85,8 @@ Put each walkthrough's source parts in `tools/walkthroughs/<page-name-without-.h
 
 ## Checks before handing back
 
-Load the page in Playwright (Chromium, 1366 x 900): visit every step by hash, assert no page or console errors and no horizontal overflow of the body at 1366 and 400 px, click every main interaction, and take at most three screenshots to look at. Fix what's visibly broken once.
+1. `check.js` on the page: no errors other than the blocked font request, no body overflow at 1366 or 400 px.
+2. Accessibility: run axe-core (WCAG 2.1 A and AA tags) on every step in light and dark themes; the set currently has 0 violations. Pending trace rows use a dashed outline, not opacity; text on tinted backgrounds uses `--text-2`, `--text-3` or `--accent-text`.
+3. Look at a few screenshots at 1366 px; a desktop frame next to a phone must not be clipped (use `withPhone()` to stack them).
+4. Rebuild the hub and confirm every deep link resolves to a step.
+5. Check names, addresses and numbers against this file and the other walkthroughs.
