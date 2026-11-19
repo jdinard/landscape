@@ -53,7 +53,7 @@ for i, w in enumerate(walks, 1):
         label, title = split_act(a["head"])
         items = "".join(
             f'<li><a href="{E(w["page"])}#{E(s["id"])}">{E(s["short"])}</a>'
-            + (' <span class="ai-dot" title="AI step" aria-label="AI step"></span>' if s.get("ai") else "")
+            + (' <span class="ai-dot" role="img" title="AI step" aria-label="AI step"></span>' if s.get("ai") else "")
             + "</li>"
             for s in a["steps"]
         )
@@ -87,7 +87,7 @@ def matrix(rows, key, caption):
         for w in walks:
             on = rk in w[key]
             hits += on
-            cells.append('<td class="c"><span class="dot on" aria-label="covered"></span></td>' if on else '<td class="c"><span class="dot" aria-label="not covered"></span></td>')
+            cells.append('<td class="c"><span class="dot on" role="img" aria-label="covered"></span></td>' if on else '<td class="c"><span class="dot" role="img" aria-label="not covered"></span></td>')
         label = f'<span class="mono tiny muted">{E(rk)}</span> {E(rn)}' if key == "modules" else E(rn)
         body.append(f'<tr{" class=\"gap\"" if hits == 0 else ""}><th scope="row">{label}</th>{"".join(cells)}</tr>')
     return f'<div class="table-scroll"><table class="data cov"><caption>{E(caption)}</caption><thead><tr><th scope="col"></th>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div>'

@@ -17,7 +17,7 @@ function renderRail() {
     STEPS.forEach(function (s, i) {
       if (s.act !== ai) return;
       var cls = 'st' + (visited[s.id] && s.id !== current ? ' done' : '');
-      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
+      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" role="img" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
     });
     h += '</ol></div>';
   });

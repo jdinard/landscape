@@ -19,7 +19,7 @@ function phone(inner, opt) {
   return '<div class="phone pt-phone" style="position:relative" role="group" aria-label="' + esc(opt.label || 'Phone screen') + '"><div class="status"><span>' + esc(opt.time || '9:41') + '</span><span class="bat">' + (opt.offline ? ic('wifi-off', 's') + ' Offline ' : '5G ') + ic('battery', 's') + '</span></div><div class="body pt-pbody" data-keep="pbody' + (opt.k || '') + '">' + brand + '<div class="pbody-pad">' + inner + '</div>' + (opt.foot ? '<div class="pfoot">' + esc(opt.foot) + '</div>' : '') + '</div></div>';
 }
 function browser(url, inner, label) {
-  return '<div class="frame-scroll"><div class="browser" role="group" aria-label="' + esc(label || 'Desktop screen') + '"><div class="browser-bar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="url">' + esc(url) + '</div></div>' + inner + '</div></div>';
+  return '<div class="frame-scroll" tabindex="0" role="region" aria-label="' + esc((label || 'Desktop screen') + ' (scrollable)') + '"><div class="browser" role="group" aria-label="' + esc(label || 'Desktop screen') + '"><div class="browser-bar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="url">' + esc(url) + '</div></div>' + inner + '</div></div>';
 }
 var APP_NAV = [['today', 'Today'], ['inbox', 'Inbox'], ['approve', 'Approvals'], ['users', 'Clients'], ['dollar', 'Sales'], ['pen', 'Design'], ['calendar', 'Schedule'], ['clipboard', 'Jobs'], ['bank', 'Money'], ['chart', 'Reports'], ['cog', 'Settings']];
 function appShell(active, main, opt) {
@@ -60,7 +60,7 @@ function renderRail() {
     STEPS.forEach(function (s, i) {
       if (s.act !== ai) return;
       var cls = 'st' + (visited[s.id] && s.id !== current ? ' done' : '');
-      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
+      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" role="img" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
     });
     h += '</ol></div>';
   });
@@ -118,7 +118,7 @@ function overviewHTML() {
     var steps = STEPS.filter(function (s) { return s.act === ai; });
     var nodes = steps.map(function (s, j) {
       var i = stepIndex(s.id);
-      return '<a class="jm-node' + (j === steps.length - 1 ? ' last' : '') + '" href="#' + s.id + '"><span class="k">' + (i < 10 ? '0' + i : i) + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '') + '</span><b>' + esc(s.short) + '</b><span class="who">' + esc(s.who || '') + '</span>' + (s.tags || []).map(tag).join(' ') + '</a>';
+      return '<a class="jm-node' + (j === steps.length - 1 ? ' last' : '') + '" href="#' + s.id + '"><span class="k">' + (i < 10 ? '0' + i : i) + (s.ai ? '<span class="ai-dot" role="img" aria-label="AI step"></span>' : '') + '</span><b>' + esc(s.short) + '</b><span class="who">' + esc(s.who || '') + '</span>' + (s.tags || []).map(tag).join(' ') + '</a>';
     }).join('');
     return '<div class="jm-act"><div class="jh"><b>' + esc(a.n.toUpperCase()) + '</b><span>' + esc(a.t) + '</span><small>' + esc(a.sub || '') + '</small></div><div class="jm-row">' + nodes + '</div></div>';
   }).join('');

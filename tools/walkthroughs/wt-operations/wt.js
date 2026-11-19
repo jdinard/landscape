@@ -37,7 +37,7 @@ var WT = {
     { id: 'op02-workbench', act: 0, short: 'Workbench', title: 'The Monday purchasing workbench', who: 'Luis, Procurement agent', ai: true, tags: ['mvp', 'v1'] },
     { id: 'op03-vendor', act: 0, short: 'Vendor confirms', title: 'The vendor confirms the delivery from a link', who: 'Kelly Shaw (vendor), Elena Delgado', tags: ['mvp', 'v1'] },
     { id: 'op04-receive', act: 1, short: 'Receive on site', title: 'Receiving on site with a scale ticket', who: 'Andrés Vega', ai: true, tags: ['mvp'] },
-    { id: 'op05-yard', act: 1, short: 'Yard and bunkers', title: 'Plants as living inventory, and the mulch bunker', who: 'Tomás Reyes, Luis', tags: ['mvp', 'v1'] },
+    { id: 'op05-yard', act: 1, short: 'Yard and bunkers', title: 'Plants as living inventory, and the mulch bunker', who: 'Tomás Herrera, Luis', tags: ['mvp', 'v1'] },
     { id: 'op06-rate', act: 2, short: 'Cost per hour', title: 'What a mower really costs per hour', who: 'Erin Castillo, Luis', tags: ['mvp', 'v1'] },
     { id: 'op07-shop', act: 2, short: 'Repairs and service', title: 'A trailer defect is repaired and certified; a mower is due', who: 'Ray Dunn (mechanic)', tags: ['mvp', 'v1'] },
     { id: 'op08-subgate', act: 3, short: 'Sub compliance', title: 'A subcontractor is blocked until its insurance is current', who: 'Tasha Greene, Greg Patterson (sub)', ai: true, tags: ['mvp', 'v1'] },
@@ -52,7 +52,7 @@ var WT = {
     h: 'The estimate is the demand signal. Every pallet, plant, machine and sub is tracked from the sale to the job\'s profit.',
     lede: 'Greenleaf just sold Elena Delgado a 640 sq ft paver patio. Follow it from the signed proposal to a buy list, consolidated purchase orders on Monday, a vendor confirming a 7 a.m. drop from a link, the crew receiving stone on site with a scale ticket, plants in the holding yard, a mulch bunker count, a mower\'s real cost per hour, a trailer repair, a tree subcontractor blocked by an expired insurance certificate, and the patio\'s estimate vs committed vs actual cost.',
     cast: [
-      { h: 'Greenleaf', icon: 'building', items: [['Luis Ortega', 'ops manager, buys and runs the yard'], ['Tasha Greene', 'office manager, PO approvals to $5,000'], ['Andrés Vega', 'Crew 1 lead, installs'], ['Tomás Reyes', 'yard and holding-yard care'], ['Ray Dunn', 'mechanic'], ['Priya Shah', 'bookkeeper'], ['Erin Castillo', 'owner']] },
+      { h: 'Greenleaf', icon: 'building', items: [['Luis Ortega', 'ops manager, buys and runs the yard'], ['Tasha Greene', 'office manager, PO approvals to $5,000'], ['Andrés Vega', 'Crew 1 lead, installs'], ['Tomás Herrera', 'yard and holding-yard care'], ['Ray Dunn', 'mechanic'], ['Priya Shah', 'bookkeeper'], ['Erin Castillo', 'owner']] },
       { h: 'Outside', icon: 'users', items: [['Elena Delgado', 'client, Upper Arlington'], ['Kelly Shaw', 'Buckeye Hardscape Supply (fictional)'], ['Greg Patterson', 'Tall Oaks Tree Service, subcontractor (fictional)'], ['Maple Hill Nursery', 'plant supplier (fictional)']] },
       { h: 'Agents', icon: 'spark', items: [['Procurement (A21)', 'groups buy lines into draft POs [V1]'], ['Document reading', 'scale tickets and insurance certificates'], ['Rules', 'budget-fit approval, compliance gate, PM triggers']] }
     ],
@@ -85,9 +85,9 @@ WT.bts['op01-buylist'] = function (S) {
 /* op02 */
 WT.screens['op02-workbench'] = function (S) {
   var pos = [
-    ['COL-PO-004213', 'Scioto Aggregates', 'Tue 7:00 · 2 drops (Delgado, Hendricks)', [['#57 stone 9 t · bedding sand 4 t (Delgado)', 478.00], ['River rock 3 t (Hendricks)', 171.00]], 'auto'],
+    ['COL-PO-004213', 'Scioto Aggregates', 'Tue 7:00 · 2 drops (Delgado, Abbott)', [['#57 stone 9 t · bedding sand 4 t (Delgado)', 478.00], ['River rock 3 t (Abbott)', 171.00]], 'auto'],
     ['COL-PO-004214', 'Buckeye Hardscape Supply', 'Tue 7:30 · Delgado driveway', [['Pavers 6 pallets', 3427.20], ['Polymeric sand 12 bags', 384.00], ['Edge restraint 11 × 10 ft', 104.50]], 'approve'],
-    ['COL-PO-004215', 'Maple Hill Nursery', 'Mon · holding yard', [['Delgado: 8 Ilex \'Gem Box\', ' + (S.split === 'split' ? '4' : '6') + ' Hydrangea \'Bobo\'', S.split === 'split' ? 340.00 : 404.00], ['Hendricks: 22 shrubs and perennials', 611.50]], 'auto']
+    ['COL-PO-004215', 'Maple Hill Nursery', 'Mon · holding yard', [['Delgado: 8 Ilex \'Gem Box\', ' + (S.split === 'split' ? '4' : '6') + ' Hydrangea \'Bobo\'', S.split === 'split' ? 340.00 : 404.00], ['Abbott: 22 shrubs and perennials', 611.50]], 'auto']
   ];
   if (S.split === 'split') pos.push(['COL-PO-004216', 'Oakwood Nursery', 'Mon · holding yard', [['Delgado: 2 Hydrangea \'Bobo\' #3', 67.00]], 'auto']);
   var cards = pos.map(function (p) {
@@ -126,7 +126,7 @@ WT.screens['op03-vendor'] = function (S) {
     (S.ack ? (S.win ? '<div class="okline">' + ic('check') + 'Confirmed Tue 7:00-8:00 · boom truck, needs 12 ft clearance</div>' : '<button type="button" class="btn" style="justify-content:center" data-act="win" data-k="win">Confirm the window</button>') : '') +
     '<p class="tiny muted mt6">Out of stock or a different date? Flag it here; Greenleaf sees it right away.</p>';
   var client = '<div class="wt-sms"><div class="wt-bubble them">Hi Elena, Greenleaf here. Your pavers arrive tomorrow (Tue) between 7 and 8 AM on the left side of the driveway. The crew starts Wednesday. Reply with any questions.<small>' + (S.win ? 'Scheduled for Mon 4:00 PM' : 'Waiting for the vendor to confirm') + '</small></div></div>';
-  var gantt = '<div class="panel mt10"><h4>Dispatch board · Tue Apr 20</h4><div class="wt-gantt"><div class="g-row"><span>Deliveries</span><div class="g-track"><span class="g-blk alt" style="left:0%;width:16%">Scioto 7:00</span><span class="g-blk ' + (S.win ? 'alt' : 'warn') + '" style="left:8%;width:16%">Buckeye 7:30' + (S.win ? '' : '?') + '</span></div></div><div class="g-row"><span>Crew 1</span><div class="g-track"><span class="g-blk" style="left:2%;width:40%">Tree removal prep</span><span class="g-blk" style="left:46%;width:44%">Hendricks beds</span></div></div></div></div>';
+  var gantt = '<div class="panel mt10"><h4>Dispatch board · Tue Apr 20</h4><div class="wt-gantt"><div class="g-row"><span>Deliveries</span><div class="g-track"><span class="g-blk alt" style="left:0%;width:16%">Scioto 7:00</span><span class="g-blk ' + (S.win ? 'alt' : 'warn') + '" style="left:8%;width:16%">Buckeye 7:30' + (S.win ? '' : '?') + '</span></div></div><div class="g-row"><span>Crew 1</span><div class="g-track"><span class="g-blk" style="left:2%;width:40%">Tree removal prep</span><span class="g-blk" style="left:46%;width:44%">Abbott beds</span></div></div></div></div>';
   return withPhone(browser('app.rootline.com/schedule/2027-04-20', opsShell('Schedule', '<div class="apphead"><h3>Delivery and the client</h3></div><div class="wt-cols"><div class="panel"><h4>Client text (automatic, day before)</h4>' + client + '</div><div class="panel"><h4>PO status</h4><dl class="kv"><dt>COL-PO-004213</dt><dd>' + pill('ok', 'Confirmed 7:00') + '</dd><dt>COL-PO-004214</dt><dd>' + (S.win ? pill('ok', 'Confirmed 7:30') : S.ack ? pill('info', 'Acknowledged') : pill('', 'Sent')) + '</dd><dt>COL-PO-004215</dt><dd>' + pill('ok', 'Confirmed Mon') + '</dd></dl></div></div>' + gantt), 'Dispatch board with deliveries'),
     phone(body, { brand: 'Greenleaf Grounds Co.', sub: 'Purchase order link', label: 'Vendor phone: PO confirmation link', k: 've' }));
 };
@@ -174,7 +174,7 @@ WT.bts['op04-receive'] = function (S) {
 WT.screens['op05-yard'] = function (S) {
   var level = S.release ? 82 : 31;
   var main = '<div class="apphead"><span class="crumb">Inventory › Columbus yard</span><h3>Holding yard and bunkers</h3>' + pill('info', 'Standard mode') + '</div>' +
-    '<div class="wt-cols"><div class="panel"><h4>Holding batch HB-0419 · 36 plants</h4><dl class="kv"><dt>Received</dt><dd>Mon Apr 19 from Maple Hill and Oakwood</dd><dt>For</dt><dd>Delgado (14) · Hendricks (22)</dd><dt>Nursery guarantee</dt><dd>30 days from delivery</dd></dl>' +
+    '<div class="wt-cols"><div class="panel"><h4>Holding batch HB-0419 · 36 plants</h4><dl class="kv"><dt>Received</dt><dd>Mon Apr 19 from Maple Hill and Oakwood</dd><dt>For</dt><dd>Delgado (14) · Abbott (22)</dd><dt>Nursery guarantee</dt><dd>30 days from delivery</dd></dl>' +
     '<div class="wt-callout ' + (S.water ? '' : 'warn') + ' mt6">' + (S.water ? ic('check') + ' Watering set: daily at 7:00 through Friday, assigned to Tomás' : '<b>Heat and no rain:</b> 86°F Wednesday, no rain for 5 days. Containers this size dry out in a day.<div class="mt6"><button type="button" class="btn xs primary" data-act="water" data-k="water">Create daily watering tasks</button></div>') + '</div>' +
     '<div class="mt6">' + (S.loss ? '<div class="okline">' + ic('check') + '1 Ilex \'Gem Box\' recorded as a loss; claim sent to Maple Hill under the guarantee</div>' : '<div class="tiny">Tomás\'s health check photo: 1 Ilex \'Gem Box\' with root rot.</div><button type="button" class="btn xs mt6" data-act="loss" data-k="loss">Record loss and claim the guarantee</button>') + '</div>' +
     (S.loss ? '<div class="mt6">' + je([['1230 Vendor Claims (Maple Hill)', 26.50, 0], ['1320 Inventory - Plants (Holding Yard)', 0, 26.50]]) + '</div>' : '') + '</div>' +

@@ -54,3 +54,5 @@
 .wt-sms { background: var(--surface-2); border-radius: 12px; padding: 10px; display: grid; gap: 6px; }
 .wt-hide { display: none !important; }
 @media (max-width: 760px) { .wt-cols, .wt-cols.c3, .wt-cols.wide-left { grid-template-columns: minmax(0, 1fr); } .wt-gantt .g-row { grid-template-columns: 84px minmax(0, 1fr); } }
+
+.ai-box .faint, .wt-callout.ai .faint, .wt-row.ai .faint { color: var(--text-2); }

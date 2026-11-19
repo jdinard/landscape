@@ -24,7 +24,7 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 44px; align-items: end; }
 .hero h1 { font-size: clamp(3rem, 8vw, 5.4rem); font-weight: 700; letter-spacing: -0.03em; line-height: .95; margin: 14px 0 16px; color: var(--primary); }
 .promise { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.4rem, 2.7vw, 2.05rem); line-height: 1.2; letter-spacing: -0.01em; color: var(--text); max-width: 25ch; text-wrap: balance; }
-.promise em { font-style: italic; color: var(--accent); }
+.promise em { font-style: italic; color: var(--accent-text); }
 .hero .lede { margin-top: 18px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
 .chip { display: inline-flex; gap: 8px; align-items: center; padding: 6px 13px 6px 6px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); font-size: .86rem; font-weight: 600; box-shadow: var(--shadow-1); }
@@ -49,12 +49,12 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 .toc h2 { font-family: var(--font-body); font-size: .78rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
 .toc ol { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0 22px; }
 .toc a { display: flex; gap: 12px; align-items: baseline; padding: 8px 2px; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text); font-weight: 600; font-size: .93rem; }
-.toc a span { font-family: var(--font-mono); font-size: .74rem; color: var(--accent); font-weight: 600; }
+.toc a span { font-family: var(--font-mono); font-size: .74rem; color: var(--accent-text); font-weight: 600; }
 .toc a:hover { color: var(--link); background: var(--surface-2); }
 
 /* Section heads */
 .sec-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 12px 56px; align-items: end; margin-bottom: 30px; }
-.sec-head .num { font-family: var(--font-mono); font-size: .8rem; color: var(--accent); font-weight: 600; letter-spacing: .06em; }
+.sec-head .num { font-family: var(--font-mono); font-size: .8rem; color: var(--accent-text); font-weight: 600; letter-spacing: .06em; }
 .sec-head h2 { margin-top: 6px; font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
 .sec-head p { color: var(--text-2); font-size: 1.02rem; }
 .section h3.sub { font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; margin-bottom: 4px; }
@@ -89,7 +89,7 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 .season-bill td:last-child { color: var(--text-2); font-size: .8rem; }
 .pains { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
 .pain { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); }
-.pain .rk { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; color: var(--accent); line-height: 1; }
+.pain .rk { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; color: var(--accent-text); line-height: 1; }
 .pain h4 { font-size: .98rem; margin: 0 0 3px; display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; }
 .pain .score { font-family: var(--font-mono); font-size: .68rem; font-weight: 600; color: var(--text-3); }
 .pain p { font-size: .84rem; color: var(--text-2); line-height: 1.45; }
@@ -157,7 +157,7 @@ section[id], nav[id] { scroll-margin-top: 64px; }
 .sig:first-of-type { border-top: 0; padding-top: 6px; }
 .sig.flip { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); }
 .sig.flip .sig-text { order: 2; }
-.sig .kicker { font-family: var(--font-mono); font-size: .74rem; font-weight: 600; color: var(--accent); letter-spacing: .04em; }
+.sig .kicker { font-family: var(--font-mono); font-size: .74rem; font-weight: 600; color: var(--accent-text); letter-spacing: .04em; }
 .sig h3 { font-family: var(--font-display); font-size: clamp(1.35rem, 2.3vw, 1.7rem); font-weight: 600; margin: 6px 0 10px; line-height: 1.2; }
 .sig-text > p { color: var(--text-2); }
 .points { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: .9rem; }
@@ -309,7 +309,7 @@ table.matrix tfoot th[scope="row"] { font-family: var(--font-body); }
 .funnel > div:last-child { border-right: 0; background: var(--primary-soft); }
 .funnel h4 { font-size: .92rem; margin: 4px 0 4px; }
 .funnel p { font-size: .8rem; color: var(--text-2); }
-.funnel .step { font-family: var(--font-mono); font-size: .7rem; color: var(--accent); font-weight: 600; }
+.funnel .step { font-family: var(--font-mono); font-size: .7rem; color: var(--accent-text); font-weight: 600; }
 .econ { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
 
 /* 09 Product scope */
@@ -325,13 +325,13 @@ table.matrix tfoot th[scope="row"] { font-family: var(--font-body); }
 .days > div { padding: 14px 16px; border-right: 1px solid var(--border); }
 .days > div:last-child { border-right: 0; }
 .days h4 { font-size: .95rem; margin: 2px 0 8px; }
-.days .d { font-family: var(--font-mono); font-size: .72rem; color: var(--accent); font-weight: 600; }
+.days .d { font-family: var(--font-mono); font-size: .72rem; color: var(--accent-text); font-weight: 600; }
 .days ul { margin: 0; padding-left: 17px; font-size: .82rem; color: var(--text-2); display: grid; gap: 4px; }
 
 /* 10 Moonshots */
 .moons { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
 .moon { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 14px; display: flex; flex-direction: column; gap: 7px; }
-.moon .mid { font-family: var(--font-mono); font-size: .72rem; color: var(--accent); font-weight: 600; }
+.moon .mid { font-family: var(--font-mono); font-size: .72rem; color: var(--accent-text); font-weight: 600; }
 .moon h3 { font-size: .98rem; }
 .moon p { font-size: .82rem; color: var(--text-2); }
 .moon blockquote { margin: 2px 0 0; padding: 8px 10px; font-size: .78rem; line-height: 1.45; color: var(--text-2); background: var(--surface-2); border-radius: var(--radius-s); border-left: 3px solid var(--clay-300); font-style: italic; }

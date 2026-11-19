@@ -184,7 +184,7 @@ WT.bts['sl05-smart'] = function (S) {
 /* sl06 */
 WT.screens['sl06-dig'] = function (S) {
   var clear = S.resp;
-  var body = '<p class="ptitle" style="font-size:1rem">Hendricks front beds</p><p class="psub">Plant 22 shrubs and perennials · Crew 1</p>' +
+  var body = '<p class="ptitle" style="font-size:1rem">Abbott front beds</p><p class="psub">Plant 22 shrubs and perennials · Crew 1</p>' +
     '<div class="pcard tiny"><dl class="kv"><dt>811 ticket</dt><dd>A7102-4418</dd><dt>Legal start</dt><dd>Thu 7:00</dd><dt>Utilities</dt><dd>' + (clear ? '5 of 5 responded' : '4 of 5 · gas pending') + '</dd></dl></div>' +
     (clear ? (S.started ? '<div class="okline">' + ic('check') + 'Excavation started 7:12 AM</div>' : '<button type="button" class="btn primary" style="justify-content:center" data-act="started" data-k="started">Start planting</button>') : '<div class="wt-callout danger">' + ic('lock') + ' Can\'t start: tree and shrub planting is excavation and needs a clear ticket. No override.</div>') +
     '<div class="pcard tiny mt6"><b>Private lines (not marked by 811)</b><br>Greenleaf\'s own as-built: irrigation lateral 3 ft from the walk, lighting cable along the bed edge.</div>';

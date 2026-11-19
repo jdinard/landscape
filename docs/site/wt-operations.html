@@ -29,7 +29,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .pt-rail .rall svg { width: 14px; height: 14px; }
 .pt-rail .act { margin-top: 9px; }
 .pt-rail .act-h { font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); padding: 0 9px 4px; line-height: 1.35; }
-.pt-rail .act-h b { display: block; color: var(--accent); font-family: var(--font-mono); letter-spacing: .04em; }
+.pt-rail .act-h b { display: block; color: var(--clay-600); font-family: var(--font-mono); letter-spacing: .04em; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pt-rail .act-h b { color: var(--clay-300); } }
+:root[data-theme="dark"] .pt-rail .act-h b { color: var(--clay-300); }
 .pt-rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
 .pt-rail a.st { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 4px 8px; border-radius: 7px; color: var(--text-2); text-decoration: none; line-height: 1.3; }
 .pt-rail a.st:hover, .pt-rail .rstart:hover { background: var(--surface-3); color: var(--text); }
@@ -80,7 +82,8 @@ ol.trace li code { font-family: var(--font-mono); font-size: .72rem; font-weight
 ol.trace li code.det { color: var(--text); }
 ol.trace li .res { display: block; color: var(--text-2); font-size: .74rem; line-height: 1.4; margin-top: 1px; }
 ol.trace li .ms { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); white-space: nowrap; padding-top: 2px; }
-ol.trace li.pending { opacity: .45; }
+ol.trace li.pending { background: transparent; border: 1px dashed var(--border-strong); }
+ol.trace li.pending code, ol.trace li.pending code.det { color: var(--text-2); font-weight: 500; }
 ol.trace li.pending .res { visibility: hidden; }
 ol.trace li.running { border-color: var(--ai-solid); background: var(--ai-bg); }
 ol.trace li.human { background: var(--primary-soft); }
@@ -160,7 +163,7 @@ ol.trace li.human code { color: var(--primary-soft-text); }
 .pt-app { display: grid; grid-template-columns: 146px minmax(0, 1fr); min-height: 600px; font-size: .82rem; }
 .pt-app .app-side { flex-direction: column; overflow: visible; border-right: 1px solid var(--border); border-bottom: 0; padding: 10px 7px; gap: 1px; font-size: .8rem; }
 .pt-app .app-side .item { padding: 5px 8px; white-space: nowrap; gap: 7px; }
-.pt-app .app-side .item .badge { margin-left: auto; font-size: .64rem; font-weight: 700; background: var(--accent); color: var(--stone-0); border-radius: 999px; padding: 0 6px; }
+.pt-app .app-side .item .badge { margin-left: auto; font-size: .64rem; font-weight: 700; background: var(--clay-600); color: var(--stone-0); border-radius: 999px; padding: 0 6px; }
 .pt-app .app-side .co { display: flex; gap: 7px; align-items: center; padding: 2px 4px 10px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
 .pt-app .app-side .co .logo { width: 24px; height: 24px; border-radius: 6px; background: var(--moss-700); display: grid; place-items: center; flex: none; }
 .pt-app .app-side .co .logo .ic { stroke: var(--stone-0); width: 14px; height: 14px; }
@@ -174,7 +177,7 @@ ol.trace li.human code { color: var(--primary-soft-text); }
 .apphead .crumb { font-size: .74rem; color: var(--text-3); width: 100%; }
 .apphead .sp { flex: 1; }
 .av { width: 24px; height: 24px; border-radius: 50%; display: inline-grid; place-items: center; font-size: .62rem; font-weight: 700; color: var(--on-primary); background: var(--primary); border: 2px solid var(--surface); flex: none; }
-.av.b { background: var(--accent); color: var(--stone-0); }
+.av.b { background: var(--clay-600); color: var(--stone-0); }
 .av.c { background: var(--sky-600); color: var(--stone-0); }
 .av.ai { background: var(--ai-solid); color: var(--stone-0); }
 .panel { border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface); padding: 10px 12px; }
@@ -451,7 +454,8 @@ table.data td .sub { display: block; color: var(--text-3); font-size: .72rem; }
 .runitem.done .st { background: var(--ok-solid); border-color: var(--ok-solid); color: var(--stone-0); }
 .runitem.done .st .ic { stroke: var(--stone-0); width: 11px; height: 11px; }
 .runitem.run .st { border-color: var(--ai-solid); }
-.runitem.wait { opacity: .45; }
+.runitem.wait { border-style: dashed; background: transparent; }
+.runitem.wait b, .runitem.wait small { color: var(--text-2); }
 .runitem b { display: block; font-size: .8rem; }
 .runitem small { color: var(--text-2); font-size: .72rem; }
 .codebox { display: flex; gap: 5px; }
@@ -690,6 +694,8 @@ table.tiert .rec { background: var(--primary-soft); }
 .wt-hide { display: none !important; }
 @media (max-width: 760px) { .wt-cols, .wt-cols.c3, .wt-cols.wide-left { grid-template-columns: minmax(0, 1fr); } .wt-gantt .g-row { grid-template-columns: 84px minmax(0, 1fr); } }
 
+.ai-box .faint, .wt-callout.ai .faint, .wt-row.ai .faint { color: var(--text-2); }
+
 /* ---------- this walkthrough ---------- */
 .po-card { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--surface); display: grid; gap: 4px; font-size: .76rem; }
 .po-card .hd { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
@@ -831,7 +837,7 @@ var WT = {
     { id: 'op02-workbench', act: 0, short: 'Workbench', title: 'The Monday purchasing workbench', who: 'Luis, Procurement agent', ai: true, tags: ['mvp', 'v1'] },
     { id: 'op03-vendor', act: 0, short: 'Vendor confirms', title: 'The vendor confirms the delivery from a link', who: 'Kelly Shaw (vendor), Elena Delgado', tags: ['mvp', 'v1'] },
     { id: 'op04-receive', act: 1, short: 'Receive on site', title: 'Receiving on site with a scale ticket', who: 'Andrés Vega', ai: true, tags: ['mvp'] },
-    { id: 'op05-yard', act: 1, short: 'Yard and bunkers', title: 'Plants as living inventory, and the mulch bunker', who: 'Tomás Reyes, Luis', tags: ['mvp', 'v1'] },
+    { id: 'op05-yard', act: 1, short: 'Yard and bunkers', title: 'Plants as living inventory, and the mulch bunker', who: 'Tomás Herrera, Luis', tags: ['mvp', 'v1'] },
     { id: 'op06-rate', act: 2, short: 'Cost per hour', title: 'What a mower really costs per hour', who: 'Erin Castillo, Luis', tags: ['mvp', 'v1'] },
     { id: 'op07-shop', act: 2, short: 'Repairs and service', title: 'A trailer defect is repaired and certified; a mower is due', who: 'Ray Dunn (mechanic)', tags: ['mvp', 'v1'] },
     { id: 'op08-subgate', act: 3, short: 'Sub compliance', title: 'A subcontractor is blocked until its insurance is current', who: 'Tasha Greene, Greg Patterson (sub)', ai: true, tags: ['mvp', 'v1'] },
@@ -846,7 +852,7 @@ var WT = {
     h: 'The estimate is the demand signal. Every pallet, plant, machine and sub is tracked from the sale to the job\'s profit.',
     lede: 'Greenleaf just sold Elena Delgado a 640 sq ft paver patio. Follow it from the signed proposal to a buy list, consolidated purchase orders on Monday, a vendor confirming a 7 a.m. drop from a link, the crew receiving stone on site with a scale ticket, plants in the holding yard, a mulch bunker count, a mower\'s real cost per hour, a trailer repair, a tree subcontractor blocked by an expired insurance certificate, and the patio\'s estimate vs committed vs actual cost.',
     cast: [
-      { h: 'Greenleaf', icon: 'building', items: [['Luis Ortega', 'ops manager, buys and runs the yard'], ['Tasha Greene', 'office manager, PO approvals to $5,000'], ['Andrés Vega', 'Crew 1 lead, installs'], ['Tomás Reyes', 'yard and holding-yard care'], ['Ray Dunn', 'mechanic'], ['Priya Shah', 'bookkeeper'], ['Erin Castillo', 'owner']] },
+      { h: 'Greenleaf', icon: 'building', items: [['Luis Ortega', 'ops manager, buys and runs the yard'], ['Tasha Greene', 'office manager, PO approvals to $5,000'], ['Andrés Vega', 'Crew 1 lead, installs'], ['Tomás Herrera', 'yard and holding-yard care'], ['Ray Dunn', 'mechanic'], ['Priya Shah', 'bookkeeper'], ['Erin Castillo', 'owner']] },
       { h: 'Outside', icon: 'users', items: [['Elena Delgado', 'client, Upper Arlington'], ['Kelly Shaw', 'Buckeye Hardscape Supply (fictional)'], ['Greg Patterson', 'Tall Oaks Tree Service, subcontractor (fictional)'], ['Maple Hill Nursery', 'plant supplier (fictional)']] },
       { h: 'Agents', icon: 'spark', items: [['Procurement (A21)', 'groups buy lines into draft POs [V1]'], ['Document reading', 'scale tickets and insurance certificates'], ['Rules', 'budget-fit approval, compliance gate, PM triggers']] }
     ],
@@ -879,9 +885,9 @@ WT.bts['op01-buylist'] = function (S) {
 /* op02 */
 WT.screens['op02-workbench'] = function (S) {
   var pos = [
-    ['COL-PO-004213', 'Scioto Aggregates', 'Tue 7:00 · 2 drops (Delgado, Hendricks)', [['#57 stone 9 t · bedding sand 4 t (Delgado)', 478.00], ['River rock 3 t (Hendricks)', 171.00]], 'auto'],
+    ['COL-PO-004213', 'Scioto Aggregates', 'Tue 7:00 · 2 drops (Delgado, Abbott)', [['#57 stone 9 t · bedding sand 4 t (Delgado)', 478.00], ['River rock 3 t (Abbott)', 171.00]], 'auto'],
     ['COL-PO-004214', 'Buckeye Hardscape Supply', 'Tue 7:30 · Delgado driveway', [['Pavers 6 pallets', 3427.20], ['Polymeric sand 12 bags', 384.00], ['Edge restraint 11 × 10 ft', 104.50]], 'approve'],
-    ['COL-PO-004215', 'Maple Hill Nursery', 'Mon · holding yard', [['Delgado: 8 Ilex \'Gem Box\', ' + (S.split === 'split' ? '4' : '6') + ' Hydrangea \'Bobo\'', S.split === 'split' ? 340.00 : 404.00], ['Hendricks: 22 shrubs and perennials', 611.50]], 'auto']
+    ['COL-PO-004215', 'Maple Hill Nursery', 'Mon · holding yard', [['Delgado: 8 Ilex \'Gem Box\', ' + (S.split === 'split' ? '4' : '6') + ' Hydrangea \'Bobo\'', S.split === 'split' ? 340.00 : 404.00], ['Abbott: 22 shrubs and perennials', 611.50]], 'auto']
   ];
   if (S.split === 'split') pos.push(['COL-PO-004216', 'Oakwood Nursery', 'Mon · holding yard', [['Delgado: 2 Hydrangea \'Bobo\' #3', 67.00]], 'auto']);
   var cards = pos.map(function (p) {
@@ -920,7 +926,7 @@ WT.screens['op03-vendor'] = function (S) {
     (S.ack ? (S.win ? '<div class="okline">' + ic('check') + 'Confirmed Tue 7:00-8:00 · boom truck, needs 12 ft clearance</div>' : '<button type="button" class="btn" style="justify-content:center" data-act="win" data-k="win">Confirm the window</button>') : '') +
     '<p class="tiny muted mt6">Out of stock or a different date? Flag it here; Greenleaf sees it right away.</p>';
   var client = '<div class="wt-sms"><div class="wt-bubble them">Hi Elena, Greenleaf here. Your pavers arrive tomorrow (Tue) between 7 and 8 AM on the left side of the driveway. The crew starts Wednesday. Reply with any questions.<small>' + (S.win ? 'Scheduled for Mon 4:00 PM' : 'Waiting for the vendor to confirm') + '</small></div></div>';
-  var gantt = '<div class="panel mt10"><h4>Dispatch board · Tue Apr 20</h4><div class="wt-gantt"><div class="g-row"><span>Deliveries</span><div class="g-track"><span class="g-blk alt" style="left:0%;width:16%">Scioto 7:00</span><span class="g-blk ' + (S.win ? 'alt' : 'warn') + '" style="left:8%;width:16%">Buckeye 7:30' + (S.win ? '' : '?') + '</span></div></div><div class="g-row"><span>Crew 1</span><div class="g-track"><span class="g-blk" style="left:2%;width:40%">Tree removal prep</span><span class="g-blk" style="left:46%;width:44%">Hendricks beds</span></div></div></div></div>';
+  var gantt = '<div class="panel mt10"><h4>Dispatch board · Tue Apr 20</h4><div class="wt-gantt"><div class="g-row"><span>Deliveries</span><div class="g-track"><span class="g-blk alt" style="left:0%;width:16%">Scioto 7:00</span><span class="g-blk ' + (S.win ? 'alt' : 'warn') + '" style="left:8%;width:16%">Buckeye 7:30' + (S.win ? '' : '?') + '</span></div></div><div class="g-row"><span>Crew 1</span><div class="g-track"><span class="g-blk" style="left:2%;width:40%">Tree removal prep</span><span class="g-blk" style="left:46%;width:44%">Abbott beds</span></div></div></div></div>';
   return withPhone(browser('app.rootline.com/schedule/2027-04-20', opsShell('Schedule', '<div class="apphead"><h3>Delivery and the client</h3></div><div class="wt-cols"><div class="panel"><h4>Client text (automatic, day before)</h4>' + client + '</div><div class="panel"><h4>PO status</h4><dl class="kv"><dt>COL-PO-004213</dt><dd>' + pill('ok', 'Confirmed 7:00') + '</dd><dt>COL-PO-004214</dt><dd>' + (S.win ? pill('ok', 'Confirmed 7:30') : S.ack ? pill('info', 'Acknowledged') : pill('', 'Sent')) + '</dd><dt>COL-PO-004215</dt><dd>' + pill('ok', 'Confirmed Mon') + '</dd></dl></div></div>' + gantt), 'Dispatch board with deliveries'),
     phone(body, { brand: 'Greenleaf Grounds Co.', sub: 'Purchase order link', label: 'Vendor phone: PO confirmation link', k: 've' }));
 };
@@ -968,7 +974,7 @@ WT.bts['op04-receive'] = function (S) {
 WT.screens['op05-yard'] = function (S) {
   var level = S.release ? 82 : 31;
   var main = '<div class="apphead"><span class="crumb">Inventory › Columbus yard</span><h3>Holding yard and bunkers</h3>' + pill('info', 'Standard mode') + '</div>' +
-    '<div class="wt-cols"><div class="panel"><h4>Holding batch HB-0419 · 36 plants</h4><dl class="kv"><dt>Received</dt><dd>Mon Apr 19 from Maple Hill and Oakwood</dd><dt>For</dt><dd>Delgado (14) · Hendricks (22)</dd><dt>Nursery guarantee</dt><dd>30 days from delivery</dd></dl>' +
+    '<div class="wt-cols"><div class="panel"><h4>Holding batch HB-0419 · 36 plants</h4><dl class="kv"><dt>Received</dt><dd>Mon Apr 19 from Maple Hill and Oakwood</dd><dt>For</dt><dd>Delgado (14) · Abbott (22)</dd><dt>Nursery guarantee</dt><dd>30 days from delivery</dd></dl>' +
     '<div class="wt-callout ' + (S.water ? '' : 'warn') + ' mt6">' + (S.water ? ic('check') + ' Watering set: daily at 7:00 through Friday, assigned to Tomás' : '<b>Heat and no rain:</b> 86°F Wednesday, no rain for 5 days. Containers this size dry out in a day.<div class="mt6"><button type="button" class="btn xs primary" data-act="water" data-k="water">Create daily watering tasks</button></div>') + '</div>' +
     '<div class="mt6">' + (S.loss ? '<div class="okline">' + ic('check') + '1 Ilex \'Gem Box\' recorded as a loss; claim sent to Maple Hill under the guarantee</div>' : '<div class="tiny">Tomás\'s health check photo: 1 Ilex \'Gem Box\' with root rot.</div><button type="button" class="btn xs mt6" data-act="loss" data-k="loss">Record loss and claim the guarantee</button>') + '</div>' +
     (S.loss ? '<div class="mt6">' + je([['1230 Vendor Claims (Maple Hill)', 26.50, 0], ['1320 Inventory - Plants (Holding Yard)', 0, 26.50]]) + '</div>' : '') + '</div>' +
@@ -1153,7 +1159,7 @@ function phone(inner, opt) {
   return '<div class="phone pt-phone" style="position:relative" role="group" aria-label="' + esc(opt.label || 'Phone screen') + '"><div class="status"><span>' + esc(opt.time || '9:41') + '</span><span class="bat">' + (opt.offline ? ic('wifi-off', 's') + ' Offline ' : '5G ') + ic('battery', 's') + '</span></div><div class="body pt-pbody" data-keep="pbody' + (opt.k || '') + '">' + brand + '<div class="pbody-pad">' + inner + '</div>' + (opt.foot ? '<div class="pfoot">' + esc(opt.foot) + '</div>' : '') + '</div></div>';
 }
 function browser(url, inner, label) {
-  return '<div class="frame-scroll"><div class="browser" role="group" aria-label="' + esc(label || 'Desktop screen') + '"><div class="browser-bar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="url">' + esc(url) + '</div></div>' + inner + '</div></div>';
+  return '<div class="frame-scroll" tabindex="0" role="region" aria-label="' + esc((label || 'Desktop screen') + ' (scrollable)') + '"><div class="browser" role="group" aria-label="' + esc(label || 'Desktop screen') + '"><div class="browser-bar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="url">' + esc(url) + '</div></div>' + inner + '</div></div>';
 }
 var APP_NAV = [['today', 'Today'], ['inbox', 'Inbox'], ['approve', 'Approvals'], ['users', 'Clients'], ['dollar', 'Sales'], ['pen', 'Design'], ['calendar', 'Schedule'], ['clipboard', 'Jobs'], ['bank', 'Money'], ['chart', 'Reports'], ['cog', 'Settings']];
 function appShell(active, main, opt) {
@@ -1194,7 +1200,7 @@ function renderRail() {
     STEPS.forEach(function (s, i) {
       if (s.act !== ai) return;
       var cls = 'st' + (visited[s.id] && s.id !== current ? ' done' : '');
-      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
+      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" role="img" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
     });
     h += '</ol></div>';
   });
@@ -1252,7 +1258,7 @@ function overviewHTML() {
     var steps = STEPS.filter(function (s) { return s.act === ai; });
     var nodes = steps.map(function (s, j) {
       var i = stepIndex(s.id);
-      return '<a class="jm-node' + (j === steps.length - 1 ? ' last' : '') + '" href="#' + s.id + '"><span class="k">' + (i < 10 ? '0' + i : i) + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '') + '</span><b>' + esc(s.short) + '</b><span class="who">' + esc(s.who || '') + '</span>' + (s.tags || []).map(tag).join(' ') + '</a>';
+      return '<a class="jm-node' + (j === steps.length - 1 ? ' last' : '') + '" href="#' + s.id + '"><span class="k">' + (i < 10 ? '0' + i : i) + (s.ai ? '<span class="ai-dot" role="img" aria-label="AI step"></span>' : '') + '</span><b>' + esc(s.short) + '</b><span class="who">' + esc(s.who || '') + '</span>' + (s.tags || []).map(tag).join(' ') + '</a>';
     }).join('');
     return '<div class="jm-act"><div class="jh"><b>' + esc(a.n.toUpperCase()) + '</b><span>' + esc(a.t) + '</span><small>' + esc(a.sub || '') + '</small></div><div class="jm-row">' + nodes + '</div></div>';
   }).join('');
