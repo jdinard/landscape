@@ -424,7 +424,92 @@
   ],
   "errors": []
  },
- "wt-commercial.html": null,
+ "wt-commercial.html": {
+  "acts": [
+   {
+    "head": "ACT 1Win the contract",
+    "steps": [
+     {
+      "id": "h01-rfp",
+      "short": "RFP",
+      "title": "The HOA's RFP, parsed into a scope matrix",
+      "ai": true
+     },
+     {
+      "id": "h02-estimate",
+      "short": "Estimate",
+      "title": "A per-month commercial estimate across 5 properties",
+      "ai": false
+     },
+     {
+      "id": "h03-approval",
+      "short": "Board approval",
+      "title": "The board approves by quorum in the portal",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Run the sites",
+    "steps": [
+     {
+      "id": "h04-sitemap",
+      "short": "Site map",
+      "title": "Site maps, service specs and contacts",
+      "ai": false
+     },
+     {
+      "id": "h05-inspection",
+      "short": "Inspection",
+      "title": "A scored quality inspection at Pond Commons",
+      "ai": false
+     },
+     {
+      "id": "h06-enhancement",
+      "short": "Enhancement",
+      "title": "An enhancement proposal against the HOA's budget",
+      "ai": false
+     },
+     {
+      "id": "h07-snow",
+      "short": "Storm night",
+      "title": "A storm night across the HOA's sites",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Bill, report and renew",
+    "steps": [
+     {
+      "id": "h08-billing",
+      "short": "Consolidated billing",
+      "title": "Consolidated billing for a management company",
+      "ai": false
+     },
+     {
+      "id": "h09-portfolio",
+      "short": "Portfolio",
+      "title": "The property manager's portfolio and monthly report",
+      "ai": true
+     },
+     {
+      "id": "h10-renewal",
+      "short": "Renewal",
+      "title": "Renewal with an escalator, back to the board",
+      "ai": true
+     },
+     {
+      "id": "h11-recap",
+      "short": "Recap",
+      "title": "Recap: approvals, agents and scope",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-owner-ai.html": null,
  "wt-onboarding-operator.html": null,
  "wt-hiring.html": null,

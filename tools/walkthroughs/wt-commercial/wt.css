@@ -1,0 +1,12 @@
+.zone-turf { fill: var(--turf); fill-opacity: .6; stroke: var(--moss-600); stroke-width: 1.2; }
+.zone-bed { fill: var(--mulch); fill-opacity: .55; stroke: var(--clay-600); stroke-width: 1; }
+.zone-hard { fill: var(--paver); }
+.zone-bldg { fill: var(--stone-450); }
+.zone-water { fill: var(--water); stroke: var(--sky-600); stroke-width: 1; }
+.zone-lbl { font-size: 8.5px; font-weight: 700; fill: var(--text); }
+.vote { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 8px; border: 1px solid var(--border); border-radius: 9px; font-size: .78rem; background: var(--surface); }
+.vote.yes { border-color: var(--ok-solid); background: var(--ok-bg); }
+.vote.block { border-color: var(--border-strong); background: var(--surface-3); color: var(--text-3); }
+.score { font-family: var(--font-mono); font-weight: 700; font-size: 1.05rem; }
+.score.mid { color: var(--warn-text); }
+.cite { font-family: var(--font-mono); font-size: .66rem; color: var(--ai-text); background: var(--ai-bg); border-radius: 4px; padding: 0 4px; }
