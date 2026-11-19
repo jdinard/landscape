@@ -1,0 +1,23 @@
+.map-route { stroke: var(--primary); stroke-width: 3; fill: none; stroke-linejoin: round; }
+.map-route.old { stroke: var(--border-strong); stroke-dasharray: 5 4; stroke-width: 2; }
+.map-st { fill: var(--surface); stroke: var(--primary); stroke-width: 2; }
+.map-st.new { fill: var(--accent); stroke: var(--accent); }
+.map-st.moved { fill: var(--warn-bg); stroke: var(--warn-solid); }
+.map-yard { fill: var(--stone-700); }
+.map-street { stroke: var(--surface-3); stroke-width: 7; stroke-linecap: round; }
+.map-label { font-size: 9px; fill: var(--text-2); font-weight: 600; }
+.map-num { font-size: 8px; fill: var(--text); font-weight: 700; text-anchor: middle; }
+.lawn-poly { fill: var(--turf); fill-opacity: .55; stroke: var(--moss-600); stroke-width: 1.5; }
+.lawn-poly.off { fill: var(--surface-3); fill-opacity: .7; stroke: var(--border-strong); stroke-dasharray: 3 3; }
+.aer-bg { fill: var(--surface-3); }
+.aer-house { fill: var(--stone-450); }
+.aer-drive { fill: var(--paver); }
+.aer-tree { fill: var(--moss-600); fill-opacity: .55; }
+.mo-bars { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; align-items: end; height: 92px; }
+.mo-bars div { display: grid; gap: 2px; justify-items: center; font-size: .64rem; color: var(--text-3); }
+.mo-bars i { display: block; width: 100%; background: var(--moss-300); border-radius: 4px 4px 0 0; }
+.mo-bars i.alt { background: var(--sky-500); opacity: .7; }
+.ba2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ba2 svg { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); display: block; }
+.ba2 .cap { font-size: .64rem; color: var(--text-3); text-align: center; }
+.rec-table td:first-child { white-space: nowrap; }

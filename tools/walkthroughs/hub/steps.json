@@ -109,10 +109,118 @@
   ],
   "errors": []
  },
- "wt-recurring.html": null,
+ "wt-recurring.html": {
+  "acts": [
+   {
+    "head": "ACT 1Win the job",
+    "steps": [
+     {
+      "id": "r01-quote",
+      "short": "Instant quote",
+      "title": "An instant mowing quote on Greenleaf's website",
+      "ai": false
+     },
+     {
+      "id": "r02-book",
+      "short": "Book and sign",
+      "title": "Pick a route day, sign and save a card",
+      "ai": false
+     },
+     {
+      "id": "r03-call",
+      "short": "Missed call",
+      "title": "A missed call gets an answer in minutes",
+      "ai": true
+     },
+     {
+      "id": "r04-quick-quote",
+      "short": "Quick Quote",
+      "title": "Quick Quote in the driveway, sent in under 2 minutes",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Schedule it",
+    "steps": [
+     {
+      "id": "r05-agreement",
+      "short": "Agreement",
+      "title": "The service agreement and its season of visits",
+      "ai": false
+     },
+     {
+      "id": "r06-route",
+      "short": "Route day",
+      "title": "Insert the new client into Crew 2's Tuesday route",
+      "ai": false
+     },
+     {
+      "id": "r07-rain",
+      "short": "Rain day",
+      "title": "A rain day, replanned by the scheduling agent",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Do the work",
+    "steps": [
+     {
+      "id": "r08-visit",
+      "short": "The visit",
+      "title": "Crew 2 mows the Brennans' lawn",
+      "ai": false
+     },
+     {
+      "id": "r09-spot-it",
+      "short": "Spot it",
+      "title": "A Spanish voice note becomes an aeration sale",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 4Get paid and keep the client",
+    "steps": [
+     {
+      "id": "r10-pay",
+      "short": "Invoice and autopay",
+      "title": "Invoice, autopay and a declined card",
+      "ai": true
+     },
+     {
+      "id": "r11-renewal",
+      "short": "Renewal",
+      "title": "Next season's renewal, drafted by the renewal agent",
+      "ai": true
+     },
+     {
+      "id": "r12-owner",
+      "short": "Owner view",
+      "title": "How the maintenance business is doing",
+      "ai": false
+     },
+     {
+      "id": "r13-recap",
+      "short": "Recap",
+      "title": "Recap: what ran, who approved, what it cost",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-crew-day.html": null,
  "wt-money.html": null,
  "wt-commercial.html": null,
  "wt-owner-ai.html": null,
- "wt-onboarding-operator.html": null
+ "wt-onboarding-operator.html": null,
+ "wt-hiring.html": null,
+ "wt-operations.html": null,
+ "wt-service-lines.html": null,
+ "wt-design-studio.html": null,
+ "wt-getting-found.html": null,
+ "wt-future.html": null
 }

@@ -1,0 +1,56 @@
+/* Generic components shared by the engine-built walkthroughs (tokens from rootline.css). */
+.wt-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.wt-cols.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.wt-cols.wide-left { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+.wt-stack { display: grid; gap: 10px; }
+.wt-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 8px; }
+.wt-kpi { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--surface); }
+.wt-kpi .l { font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+.wt-kpi .v { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.wt-kpi .d { font-size: .72rem; font-weight: 600; color: var(--text-2); }
+.wt-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.wt-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 9px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); font-size: .8rem; }
+.wt-row.soft { background: var(--surface-2); }
+.wt-row.sel { border-color: var(--primary); background: var(--primary-soft); }
+.wt-row .sub { display: block; color: var(--text-3); font-size: .72rem; }
+.wt-row.ai { border-color: var(--ai-solid); background: var(--ai-bg); }
+.wt-ic { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-3); color: var(--text-2); flex: none; }
+.wt-ic.ok { background: var(--ok-bg); color: var(--ok-text); } .wt-ic.warn { background: var(--warn-bg); color: var(--warn-text); } .wt-ic.ai { background: var(--ai-bg); color: var(--ai-text); } .wt-ic.info { background: var(--info-bg); color: var(--info-text); } .wt-ic.danger { background: var(--danger-bg); color: var(--danger-text); }
+.wt-bubble { max-width: 86%; padding: 8px 10px; border-radius: 14px; font-size: .8rem; line-height: 1.45; background: var(--surface-3); }
+.wt-bubble.me { margin-left: auto; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 4px; }
+.wt-bubble.them { border-bottom-left-radius: 4px; }
+.wt-bubble.ai { background: var(--ai-bg); color: var(--text); border: 1px solid var(--ai-solid); }
+.wt-bubble small { display: block; opacity: .75; font-size: .66rem; margin-top: 3px; }
+.wt-thread { display: grid; gap: 6px; }
+.wt-steps { display: flex; gap: 0; align-items: center; flex-wrap: wrap; font-size: .72rem; }
+.wt-steps span { padding: 3px 9px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-3); font-weight: 600; }
+.wt-steps span:first-child { border-radius: 999px 0 0 999px; } .wt-steps span:last-child { border-radius: 0 999px 999px 0; }
+.wt-steps span.on { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.wt-steps span.done { background: var(--primary-soft); color: var(--primary-soft-text); }
+.wt-gantt { display: grid; gap: 4px; font-size: .72rem; }
+.wt-gantt .g-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; align-items: center; }
+.wt-gantt .g-track { position: relative; height: 24px; background: var(--surface-2); border-radius: 6px; border: 1px solid var(--border); }
+.wt-gantt .g-blk { position: absolute; top: 2px; bottom: 2px; border-radius: 4px; background: var(--moss-200); color: var(--moss-900); padding: 0 5px; overflow: hidden; white-space: nowrap; font-weight: 600; display: flex; align-items: center; font-size: .66rem; }
+.wt-gantt .g-blk.alt { background: var(--sky-100); color: var(--sky-700); } .wt-gantt .g-blk.warn { background: var(--marigold-100); color: var(--marigold-800); } .wt-gantt .g-blk.ai { background: var(--ai-bg); color: var(--ai-text); outline: 1.5px dashed var(--ai-solid); }
+.wt-svg { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); }
+.wt-svg text { font-family: var(--font-body); }
+.wt-note { font-size: .74rem; color: var(--text-3); }
+.wt-callout { border-left: 3px solid var(--primary); background: var(--primary-soft); padding: 8px 10px; border-radius: 0 8px 8px 0; font-size: .78rem; }
+.wt-callout.warn { border-color: var(--warn-solid); background: var(--warn-bg); }
+.wt-callout.ai { border-color: var(--ai-solid); background: var(--ai-bg); }
+.wt-callout.danger { border-color: var(--danger-solid); background: var(--danger-bg); }
+.wt-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; cursor: pointer; }
+.wt-toggle input { width: 30px; height: 17px; appearance: none; -webkit-appearance: none; background: var(--border-strong); border-radius: 999px; position: relative; cursor: pointer; margin: 0; }
+.wt-toggle input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--surface); transition: left .15s; }
+.wt-toggle input:checked { background: var(--primary); }
+.wt-toggle input:checked::after { left: 15px; }
+.wt-diff { font-family: var(--font-mono); font-size: .72rem; display: grid; gap: 2px; }
+.wt-diff .add { color: var(--ok-text); background: var(--ok-bg); padding: 1px 5px; border-radius: 4px; }
+.wt-diff .del { color: var(--danger-text); background: var(--danger-bg); padding: 1px 5px; border-radius: 4px; text-decoration: line-through; }
+.wt-je { font-family: var(--font-mono); font-size: .74rem; width: 100%; border-collapse: collapse; }
+.wt-je th, .wt-je td { padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; }
+.wt-je td.n, .wt-je th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.wt-je tr.tot td { font-weight: 700; border-top: 2px solid var(--border-strong); }
+.wt-sms { background: var(--surface-2); border-radius: 12px; padding: 10px; display: grid; gap: 6px; }
+.wt-hide { display: none !important; }
+@media (max-width: 760px) { .wt-cols, .wt-cols.c3, .wt-cols.wide-left { grid-template-columns: minmax(0, 1fr); } .wt-gantt .g-row { grid-template-columns: 84px minmax(0, 1fr); } }
