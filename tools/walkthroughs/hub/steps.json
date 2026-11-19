@@ -590,7 +590,103 @@
   ],
   "errors": []
  },
- "wt-onboarding-operator.html": null,
+ "wt-onboarding-operator.html": {
+  "acts": [
+   {
+    "head": "ACT 1Sign up and set up",
+    "steps": [
+     {
+      "id": "o01-signup",
+      "short": "Sign up",
+      "title": "Pick a plan and start a trial",
+      "ai": false
+     },
+     {
+      "id": "o02-setup",
+      "short": "Setup",
+      "title": "Setup: Region, service lines and the chart of accounts",
+      "ai": false
+     },
+     {
+      "id": "o03-stripe",
+      "short": "Connect Stripe",
+      "title": "Connect Riverbend's own Stripe account",
+      "ai": false
+     },
+     {
+      "id": "o04-migrate",
+      "short": "Import",
+      "title": "Import from Jobber and QuickBooks, reconciled to the cent",
+      "ai": true
+     },
+     {
+      "id": "o05-crew",
+      "short": "Price book and crew",
+      "title": "A starter price book, Quick Quote templates and the crew",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2First win",
+    "steps": [
+     {
+      "id": "o06-firstwin",
+      "short": "First quote",
+      "title": "The first quote goes out",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Operator console",
+    "steps": [
+     {
+      "id": "o07-tenant",
+      "short": "Tenant 360",
+      "title": "The platform owner's view of the new tenant",
+      "ai": false
+     },
+     {
+      "id": "o08-support",
+      "short": "Support access",
+      "title": "Support with the tenant's consent",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 4Plant KB, AI and billing",
+    "steps": [
+     {
+      "id": "o09-kb",
+      "short": "Plant KB",
+      "title": "Curating the Plant Knowledge Base for the Great Lakes",
+      "ai": true
+     },
+     {
+      "id": "o10-aiops",
+      "short": "AI operations",
+      "title": "AI operations: routing, evals, cost and a kill switch",
+      "ai": false
+     },
+     {
+      "id": "o11-billing",
+      "short": "SaaS billing",
+      "title": "Rootline's own billing: plans, credit packs, Winter Mode",
+      "ai": false
+     },
+     {
+      "id": "o12-recap",
+      "short": "Recap",
+      "title": "Recap: both sides of the platform",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-hiring.html": null,
  "wt-operations.html": null,
  "wt-service-lines.html": null,

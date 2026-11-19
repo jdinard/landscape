@@ -1261,7 +1261,8 @@ function btsHTML() {
   }
   if (b.hitl) h += '<div class="bts-sec"><h3>' + ic('user', 's') + 'Human in the loop</h3><div class="hitl">' + b.hitl.map(function (x) { return '<div>' + ic('check') + '<span><b>' + esc(x[0]) + '</b> ' + esc(x[1]) + '</span></div>'; }).join('') + '</div><div class="lvl">' + (b.levels || []).map(function (l) { return '<span class="pill info">' + esc(l) + '</span>'; }).join('') + '</div></div>';
   var n = CREDITS[current] || 0;
-  if (TOTAL_CREDITS > 0 || b.creditNote) {
+  if (TOTAL_CREDITS === 0 && b.creditNote) h += '<div class="bts-sec"><h3>' + ic('bolt', 's') + 'AI credits</h3><p class="tiny muted" style="margin:0">' + esc(b.creditNote) + '</p></div>';
+  else if (TOTAL_CREDITS > 0 || b.creditNote) {
     var run = creditsThrough(idx);
     h += '<div class="bts-sec"><h3>' + ic('bolt', 's') + 'AI credits</h3><div class="cred"><span>This step</span><span class="big">' + n + '</span><span>Running total</span><span class="mono" style="font-weight:600">' + run + ' of ' + TOTAL_CREDITS + '</span><small>' + esc(b.creditNote || (n ? '' : 'No AI runs here; deterministic automation is free.')) + '</small></div>' +
       (TOTAL_CREDITS > 0 ? '<div class="meter" title="Monthly allowance"><i style="width:' + ((ALLOW - START_LEFT + run) / ALLOW * 100).toFixed(1) + '%"></i></div><small class="tiny faint">' + esc(WT.creditOwner || 'Greenleaf') + ' (' + esc(WT.plan || 'Pro') + '): ' + num(START_LEFT - run) + ' of ' + num(ALLOW) + ' credits left this month</small>' : '') + '</div>';

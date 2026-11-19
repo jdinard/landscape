@@ -1,0 +1,11 @@
+.tier { border: 1px solid var(--border); border-radius: 12px; padding: 10px; background: var(--surface); display: grid; gap: 4px; font-size: .78rem; cursor: pointer; text-align: left; font: inherit; color: inherit; }
+.tier.sel { border-color: var(--primary); background: var(--primary-soft); }
+.tier .p { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tiers3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.console-top { display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: var(--stone-900); color: var(--stone-0); font-size: .76rem; }
+.console-top .pill { background: rgba(255,255,255,.12); color: var(--stone-0); }
+.imp-banner { background: var(--clay-500); color: var(--stone-0); padding: 6px 10px; font-size: .76rem; font-weight: 700; border-radius: 8px; display: flex; gap: 8px; align-items: center; }
+.map-row { display: grid; grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr) auto; gap: 6px; align-items: center; font-size: .76rem; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.field-diff .old { color: var(--danger-text); text-decoration: line-through; }
+.field-diff .new { color: var(--ok-text); font-weight: 600; }
+@media (max-width: 760px) { .tiers3 { grid-template-columns: minmax(0, 1fr); } }
