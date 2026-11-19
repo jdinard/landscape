@@ -510,7 +510,86 @@
   ],
   "errors": []
  },
- "wt-owner-ai.html": null,
+ "wt-owner-ai.html": {
+  "acts": [
+   {
+    "head": "ACT 1Morning",
+    "steps": [
+     {
+      "id": "a01-briefing",
+      "short": "Daily briefing",
+      "title": "The 6:00 AM owner briefing",
+      "ai": true
+     },
+     {
+      "id": "a02-approvals",
+      "short": "Approval Inbox",
+      "title": "One Approval Inbox for every agent",
+      "ai": true
+     },
+     {
+      "id": "a03-inbox",
+      "short": "Inbox triage",
+      "title": "Overnight messages, triaged, with one quarantined",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Ask and act",
+    "steps": [
+     {
+      "id": "a04-ask",
+      "short": "Ask Copilot",
+      "title": "Ask a question, get grounded numbers",
+      "ai": true
+     },
+     {
+      "id": "a05-act",
+      "short": "Copilot actions",
+      "title": "Tell Copilot to do something, then confirm",
+      "ai": true
+     },
+     {
+      "id": "a06-automation",
+      "short": "Automation",
+      "title": "Build an automation from one sentence",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Grow and steer",
+    "steps": [
+     {
+      "id": "a07-marketing",
+      "short": "Marketing",
+      "title": "Reviews, referrals and a neighborhood campaign",
+      "ai": true
+     },
+     {
+      "id": "a08-reports",
+      "short": "Reports",
+      "title": "The owner dashboard and peer benchmarks",
+      "ai": false
+     },
+     {
+      "id": "a09-control",
+      "short": "AI controls",
+      "title": "AI credits, budgets, privacy and the audit log",
+      "ai": false
+     },
+     {
+      "id": "a10-recap",
+      "short": "Recap",
+      "title": "Recap: every agent action today",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-onboarding-operator.html": null,
  "wt-hiring.html": null,
  "wt-operations.html": null,

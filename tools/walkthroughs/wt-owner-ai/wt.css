@@ -1,0 +1,16 @@
+.brief { border: 1px solid var(--ai-solid); background: var(--ai-bg); border-radius: 14px; padding: 12px 14px; }
+.brief h4 { margin: 0 0 6px; display: flex; gap: 6px; align-items: center; color: var(--ai-text); }
+.brief ol { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: .8rem; }
+.dec { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-size: .8rem; }
+.dec.done { background: var(--ok-bg); border-color: var(--ok-solid); }
+.ap-item { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font-size: .78rem; }
+.ap-item.done { opacity: .6; }
+.ap-item .who { font-size: .68rem; color: var(--ai-text); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.ap-item .body { color: var(--text-2); margin-top: 2px; }
+.recipe { display: grid; gap: 6px; }
+.recipe .rs { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 8px; align-items: center; padding: 7px 9px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); font-size: .78rem; }
+.recipe .rs b { font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); }
+.recipe .rs.ai { border-color: var(--ai-solid); background: var(--ai-bg); }
+.bench td.n { text-align: right; font-variant-numeric: tabular-nums; }
+.bench .you { font-weight: 700; color: var(--primary-soft-text); }
+.mini-bar { display: inline-block; height: 8px; border-radius: 4px; background: var(--ai-solid); vertical-align: middle; }
