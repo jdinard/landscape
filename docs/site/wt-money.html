@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rootline walkthrough: invoicing, payments and the books</title>
+<meta name="description" content="A clickable walkthrough of how money flows in Rootline: a month-end billing run, client payments into the Company&#x27;s own Stripe account, collections and a dispute, payout reconciliation, bank feeds, bills, job costing, deferred revenue, sales tax and close, statements and optional QuickBooks sync.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/rootline.css">
+<style>
+/* ---------- shell ---------- */
+html { scroll-padding-top: 64px; }
+body { overflow-x: hidden; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 12px; top: -40px; z-index: 60; background: var(--surface); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); }
+.skip:focus { top: 8px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ic { width: 15px; height: 15px; flex: none; display: inline-block; vertical-align: -3px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ic.s { width: 12px; height: 12px; vertical-align: -2px; }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); }
+.pt-shell { display: grid; grid-template-columns: 206px minmax(0, 1fr); align-items: start; }
+.pt-rail { position: sticky; top: 53px; max-height: calc(100vh - 53px); overflow-y: auto; border-right: 1px solid var(--border); background: var(--surface-2); padding: 12px 10px 18px; font-size: .84rem; }
+.pt-rail .rstart { display: flex; gap: 8px; align-items: center; padding: 7px 9px; border-radius: 8px; color: var(--text); text-decoration: none; font-weight: 650; }
+.pt-rail .rall { display: flex; gap: 6px; align-items: center; padding: 4px 9px 8px; margin-bottom: 4px; border-bottom: 1px solid var(--border); color: var(--text-2); text-decoration: none; font-size: .78rem; font-weight: 600; }
+.pt-rail .rall:hover { color: var(--text); }
+.pt-rail .rall svg { width: 14px; height: 14px; }
+.pt-rail .act { margin-top: 9px; }
+.pt-rail .act-h { font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); padding: 0 9px 4px; line-height: 1.35; }
+.pt-rail .act-h b { display: block; color: var(--accent); font-family: var(--font-mono); letter-spacing: .04em; }
+.pt-rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.pt-rail a.st { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 4px 8px; border-radius: 7px; color: var(--text-2); text-decoration: none; line-height: 1.3; }
+.pt-rail a.st:hover, .pt-rail .rstart:hover { background: var(--surface-3); color: var(--text); }
+.pt-rail a.st .n { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); }
+.pt-rail a.st.done .n { background: var(--primary-soft); border-color: var(--primary); color: var(--primary-soft-text); }
+.pt-rail a.st[aria-current="step"], .pt-rail .rstart[aria-current="step"] { background: var(--primary-soft); color: var(--primary-soft-text); font-weight: 650; }
+.pt-rail a.st[aria-current="step"] .n { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.pt-rail .ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ai-solid); }
+.pt-rail .rfoot { margin-top: 10px; padding: 8px 9px 0; border-top: 1px solid var(--border); color: var(--text-2); font-size: .76rem; }
+.pt-rail .rfoot b { color: var(--ai-text); font-family: var(--font-mono); }
+.meter { height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; margin-top: 6px; }
+.meter i { display: block; height: 100%; background: var(--ai-solid); border-radius: 4px; }
+.meter.ok i { background: var(--ok-solid); }
+.pt-main { min-width: 0; padding: 12px 18px 48px; }
+.pt-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; padding: 6px 0 12px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.pt-bar .where { min-width: 0; flex: 1 1 320px; }
+.pt-bar .where .eyebrow { display: block; }
+.pt-bar h1 { font-size: clamp(1.25rem, 2.1vw, 1.6rem); margin: 2px 0 0; }
+.pt-bar h1:focus { outline: none; }
+.pt-bar .ctrls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.prog { display: flex; align-items: center; gap: 8px; font-size: .78rem; color: var(--text-2); }
+.prog .track { width: 120px; height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.prog .track i { display: block; height: 100%; background: var(--primary); border-radius: 4px; transition: width .3s; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.btn.xs { padding: 2px 8px; font-size: .74rem; }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--surface-3); }
+.pt-body { display: grid; grid-template-columns: minmax(0, 1fr) 334px; gap: 18px; align-items: start; }
+.pt-screen { min-width: 0; }
+.pt-bts { position: sticky; top: 66px; max-height: calc(100vh - 78px); overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface); box-shadow: var(--shadow-1); }
+.pt-bts.collapsed .bts-body { display: none; }
+.bts-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--surface-2); position: sticky; top: 0; z-index: 2; }
+.bts-head h2 { font-family: var(--font-body); font-size: .9rem; font-weight: 700; margin: 0; flex: 1; }
+.bts-body { padding: 4px 12px 14px; font-size: .82rem; }
+.bts-sec { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.bts-sec:last-child { border-bottom: 0; }
+.bts-sec > h3 { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); margin: 0 0 6px; display: flex; gap: 6px; align-items: center; }
+.bts-sec p { color: var(--text-2); }
+.agent { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 7px; }
+.agent .badge { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--ai-bg); color: var(--ai-text); flex: none; border: 1px solid var(--ai-solid); }
+.agent .badge.det { background: var(--surface-3); color: var(--text-2); border-color: var(--border-strong); }
+.agent b { display: block; font-size: .83rem; }
+.agent small { color: var(--text-3); font-size: .74rem; }
+ol.trace { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; counter-reset: tr; }
+ol.trace li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 6px; align-items: start; padding: 5px 6px; border-radius: 6px; background: var(--surface-2); border: 1px solid transparent; }
+ol.trace li .i { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); padding-top: 2px; }
+ol.trace li code { font-family: var(--font-mono); font-size: .72rem; font-weight: 600; color: var(--ai-text); word-break: break-word; }
+ol.trace li code.det { color: var(--text); }
+ol.trace li .res { display: block; color: var(--text-2); font-size: .74rem; line-height: 1.4; margin-top: 1px; }
+ol.trace li .ms { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); white-space: nowrap; padding-top: 2px; }
+ol.trace li.pending { opacity: .45; }
+ol.trace li.pending .res { visibility: hidden; }
+ol.trace li.running { border-color: var(--ai-solid); background: var(--ai-bg); }
+ol.trace li.human { background: var(--primary-soft); }
+ol.trace li.human code { color: var(--primary-soft-text); }
+.hitl { display: grid; gap: 6px; }
+.hitl div { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 6px; color: var(--text-2); }
+.hitl .ic { color: var(--primary); margin-top: 2px; }
+.hitl b { color: var(--text); font-weight: 600; }
+.lvl { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.cred { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; align-items: baseline; }
+.cred .big { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600; color: var(--ai-text); }
+.cred small { color: var(--text-3); font-size: .74rem; grid-column: 1 / -1; }
+.specs { font-family: var(--font-mono); font-size: .7rem; color: var(--text-2); line-height: 1.6; }
+.tagrow { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.tagrow .note { font-size: .74rem; color: var(--text-2); }
+.pill .ic { width: 11px; height: 11px; }
+.ai-mark .ic { color: var(--ai-solid); }
+
+/* ---------- device frames ---------- */
+.dev-row { display: flex; gap: 22px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+.phone.pt-phone { width: 352px; flex: none; }
+.phone .status .bat { display: inline-flex; gap: 4px; align-items: center; }
+.phone .body.pt-pbody { max-height: 680px; overflow-y: auto; overscroll-behavior: contain; gap: 10px; padding: 0 0 14px; position: relative; }
+.pbody-pad { padding: 0 12px; display: flex; flex-direction: column; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 3; }
+.brand .logo { width: 26px; height: 26px; border-radius: 7px; background: var(--moss-700); color: var(--stone-0); display: grid; place-items: center; }
+.brand .logo .ic { stroke: var(--stone-0); }
+.brand b { font-size: .84rem; display: block; line-height: 1.1; }
+.brand small { font-size: .68rem; color: var(--text-3); }
+.brand .sp { flex: 1; }
+.ptitle { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; line-height: 1.15; margin: 4px 0 0; }
+.psub { color: var(--text-2); font-size: .84rem; }
+.pcard { border: 1px solid var(--border); border-radius: 12px; padding: 10px 11px; background: var(--surface); }
+.pcard.soft { background: var(--surface-2); }
+.pcard h4 { margin: 0 0 4px; font-size: .84rem; }
+.pfoot { font-size: .66rem; color: var(--text-3); text-align: center; padding: 4px 12px 0; }
+.fld { display: grid; gap: 4px; font-size: .78rem; font-weight: 600; color: var(--text-2); }
+.fld .hint { font-weight: 500; color: var(--text-3); font-size: .72rem; }
+.inp { width: 100%; border: 1px solid var(--border-strong); border-radius: 8px; padding: 7px 9px; background: var(--surface); font-size: .86rem; font-weight: 500; color: var(--text); }
+.inp.sm { padding: 5px 7px; font-size: .8rem; }
+.inp[readonly] { background: var(--surface-2); }
+.inrow { display: flex; gap: 6px; align-items: center; }
+.inrow .inp { flex: 1; min-width: 0; }
+.unit { position: relative; }
+.unit .inp { padding-right: 30px; }
+.unit span { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-size: .74rem; color: var(--text-3); pointer-events: none; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; background: var(--surface); flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 5px 10px; font-size: .76rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); font-size: .76rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
+.chip[aria-pressed="true"], .chip[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-soft-text); }
+.chip.ai { border-color: var(--ai-solid); background: var(--ai-bg); color: var(--ai-text); }
+.chip.ai[disabled] { opacity: .55; cursor: default; }
+.check { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 7px; align-items: start; font-size: .74rem; color: var(--text-2); font-weight: 500; }
+.check input { margin: 2px 0 0; width: 15px; height: 15px; accent-color: var(--primary); }
+.okline { display: flex; gap: 6px; align-items: center; color: var(--ok-text); font-weight: 600; font-size: .78rem; }
+.okline .ic { color: var(--ok-solid); }
+.warnline { display: flex; gap: 6px; align-items: flex-start; color: var(--warn-text); font-weight: 600; font-size: .78rem; }
+.kv { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 3px 10px; margin: 0; font-size: .78rem; }
+.kv dt { color: var(--text-3); }
+.kv dd { margin: 0; font-weight: 600; }
+.loading { display: flex; gap: 8px; align-items: center; color: var(--text-2); font-size: .8rem; }
+.spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--primary); animation: spin .8s linear infinite; }
+.runitem .spin, .thumb .spin, ol.trace .spin { border-top-color: var(--ai-solid); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .35s ease both; }
+
+/* desktop frame */
+.frame-scroll { overflow-x: auto; padding: 2px 2px 10px; -webkit-overflow-scrolling: touch; }
+.frame-scroll > .browser { min-width: 760px; }
+.pt-app { display: grid; grid-template-columns: 146px minmax(0, 1fr); min-height: 600px; font-size: .82rem; }
+.pt-app .app-side { flex-direction: column; overflow: visible; border-right: 1px solid var(--border); border-bottom: 0; padding: 10px 7px; gap: 1px; font-size: .8rem; }
+.pt-app .app-side .item { padding: 5px 8px; white-space: nowrap; gap: 7px; }
+.pt-app .app-side .item .badge { margin-left: auto; font-size: .64rem; font-weight: 700; background: var(--accent); color: var(--stone-0); border-radius: 999px; padding: 0 6px; }
+.pt-app .app-side .co { display: flex; gap: 7px; align-items: center; padding: 2px 4px 10px; margin-bottom: 4px; border-bottom: 1px solid var(--border); }
+.pt-app .app-side .co .logo { width: 24px; height: 24px; border-radius: 6px; background: var(--moss-700); display: grid; place-items: center; flex: none; }
+.pt-app .app-side .co .logo .ic { stroke: var(--stone-0); width: 14px; height: 14px; }
+.pt-app .app-side .co b { font-size: .74rem; line-height: 1.15; display: block; }
+.pt-app .app-side .co small { font-size: .64rem; color: var(--text-3); }
+.pt-app .app-side .sidefoot { margin-top: auto; padding: 10px 6px 2px; font-size: .68rem; color: var(--text-2); border-top: 1px solid var(--border); }
+.pt-app .app-side .sidefoot b { color: var(--ai-text); font-family: var(--font-mono); }
+.pt-app .app-main { padding: 12px 14px; }
+.apphead { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-bottom: 10px; }
+.apphead h3 { font-size: 1rem; margin: 0; }
+.apphead .crumb { font-size: .74rem; color: var(--text-3); width: 100%; }
+.apphead .sp { flex: 1; }
+.av { width: 24px; height: 24px; border-radius: 50%; display: inline-grid; place-items: center; font-size: .62rem; font-weight: 700; color: var(--on-primary); background: var(--primary); border: 2px solid var(--surface); flex: none; }
+.av.b { background: var(--accent); color: var(--stone-0); }
+.av.c { background: var(--sky-600); color: var(--stone-0); }
+.av.ai { background: var(--ai-solid); color: var(--stone-0); }
+.panel { border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface); padding: 10px 12px; }
+.panel.soft { background: var(--surface-2); }
+.panel h4 { margin: 0 0 6px; font-size: .82rem; display: flex; gap: 6px; align-items: center; }
+.ph { font-size: .66rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--text-3); display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+.ai-box { border: 1px solid var(--ai-solid); background: var(--ai-bg); border-radius: var(--radius-m); padding: 10px 12px; }
+.ai-box .ai-h { display: flex; align-items: center; gap: 6px; color: var(--ai-text); font-weight: 700; font-size: .8rem; margin-bottom: 4px; }
+.ai-box ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; font-size: .78rem; color: var(--text); }
+.cost { font-family: var(--font-mono); font-size: .72rem; color: var(--ai-text); font-weight: 600; white-space: nowrap; }
+table.data.tight td, table.data.tight th { padding: 5px 7px; }
+table.data td .sub { display: block; color: var(--text-3); font-size: .72rem; }
+.stat { display: inline-flex; gap: 5px; align-items: center; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--border-strong); }
+.dot.ok { background: var(--ok-solid); } .dot.warn { background: var(--warn-solid); } .dot.ai { background: var(--ai-solid); } .dot.info { background: var(--info-solid); }
+.flex { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.grow { flex: 1; }
+.muted { color: var(--text-2); }
+.faint { color: var(--text-3); }
+.tiny { font-size: .72rem; }
+.mt6 { margin-top: 6px; } .mt10 { margin-top: 10px; } .mt14 { margin-top: 14px; }
+.toast { display: flex; gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; background: var(--ok-bg); color: var(--ok-text); font-weight: 600; font-size: .8rem; }
+.toast.ai { background: var(--ai-bg); color: var(--ai-text); }
+.event { font-family: var(--font-mono); font-size: .7rem; padding: 1px 7px; border-radius: 4px; background: var(--surface-3); color: var(--text); border: 1px solid var(--border); }
+
+/* ---------- photo scenes ---------- */
+.scene { position: relative; aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-3); }
+.scene > svg, .ba-after > svg, .scene .lay > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ba { --pos: 50%; }
+.ba-after { position: absolute; inset: 0; clip-path: inset(0 0 0 var(--pos)); }
+.ba-line { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--stone-0); box-shadow: 0 0 0 1px color-mix(in srgb, var(--stone-900) 30%, transparent); pointer-events: none; z-index: 3; }
+.ba-knob { position: absolute; top: 50%; left: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: var(--stone-0); color: var(--stone-900); display: grid; place-items: center; font-size: .62rem; font-weight: 800; box-shadow: var(--shadow-2); }
+.ba-tag { position: absolute; top: 8px; padding: 2px 8px; border-radius: 999px; font-size: .66rem; font-weight: 700; background: color-mix(in srgb, var(--stone-900) 82%, transparent); color: var(--stone-0); pointer-events: none; z-index: 4; }
+.ba-tag.l { left: 8px; } .ba-tag.r { right: 8px; }
+.ba-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; z-index: 5; }
+.ba:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ai-badge { position: absolute; left: 8px; bottom: 8px; z-index: 6; display: inline-flex; gap: 5px; align-items: center; padding: 3px 9px; border-radius: 999px; font-size: .66rem; font-weight: 700; background: color-mix(in srgb, var(--stone-900) 84%, transparent); color: var(--stone-0); pointer-events: none; }
+.ai-badge .ic { stroke: var(--iris-50); width: 11px; height: 11px; }
+.plabel { position: absolute; z-index: 7; transform: translate(-50%, -100%); width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--stone-0); background: var(--stone-900); color: var(--stone-0); font-size: .68rem; font-weight: 800; display: grid; place-items: center; cursor: pointer; padding: 0; box-shadow: 0 1px 4px rgba(0,0,0,.35); transition: opacity .15s; }
+.plabel:hover, .plabel.on { background: var(--primary); color: var(--on-primary); }
+.plabel.hide { opacity: 0; pointer-events: none; }
+.scene .stale { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 6; }
+.thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.thumb { border: 2px solid var(--border); border-radius: 9px; padding: 0; background: var(--surface); cursor: pointer; overflow: hidden; text-align: left; display: grid; }
+.thumb .scene { border: 0; border-radius: 0; aspect-ratio: 16/11; }
+.thumb span { display: block; padding: 3px 5px 4px; font-size: .64rem; font-weight: 650; line-height: 1.2; color: var(--text-2); }
+.thumb[aria-pressed="true"] { border-color: var(--primary); }
+.thumb[aria-pressed="true"] span { color: var(--primary-soft-text); background: var(--primary-soft); }
+.plist { display: grid; gap: 4px; }
+.prow { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 7px; align-items: center; border: 1px solid var(--border); border-radius: 8px; padding: 5px 7px; background: var(--surface); cursor: pointer; text-align: left; width: 100%; font-size: .76rem; }
+.prow:hover { border-color: var(--border-strong); }
+.prow .pn { width: 20px; height: 20px; border-radius: 50%; background: var(--stone-900); color: var(--stone-0); display: grid; place-items: center; font-size: .64rem; font-weight: 800; }
+.prow em { font-style: italic; }
+.prow small { display: block; color: var(--text-3); font-size: .68rem; }
+.rating { display: inline-flex; align-items: center; gap: 4px; font-size: .68rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+.r5, .r4 { background: var(--ok-bg); color: var(--ok-text); }
+.r3 { background: var(--info-bg); color: var(--info-text); }
+.dA, .dB { background: var(--ok-bg); color: var(--ok-text); }
+.dC, .dD { background: var(--warn-bg); color: var(--warn-text); }
+.disclaim { font-size: .68rem; color: var(--text-3); line-height: 1.4; }
+.sheet-wrap { position: absolute; inset: 0; z-index: 20; background: color-mix(in srgb, var(--stone-900) 45%, transparent); display: flex; align-items: flex-end; }
+.sheet { background: var(--surface); width: 100%; border-radius: 16px 16px 0 0; padding: 12px 14px 16px; max-height: 92%; overflow-y: auto; box-shadow: var(--shadow-2); animation: rise .25s ease both; }
+.sheet .kb-pic { width: 100%; height: auto; border-radius: 9px; display: block; border: 1px solid var(--border); }
+.sheet h3 { font-size: 1rem; margin: 8px 0 0; }
+.sheet h3 em { font-style: italic; }
+.sheet .facts { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
+.sheet ul { margin: 4px 0 0; padding-left: 18px; font-size: .78rem; display: grid; gap: 3px; }
+.big-view { flex: 1 1 340px; min-width: 300px; max-width: 520px; display: grid; gap: 10px; align-content: start; }
+.big-view .cap { font-size: .72rem; color: var(--text-3); display: flex; gap: 6px; align-items: center; }
+
+/* chat */
+.chat { display: grid; gap: 8px; }
+.msg { max-width: 88%; padding: 7px 10px; border-radius: 12px; font-size: .78rem; line-height: 1.45; }
+.msg.me { justify-self: end; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 4px; }
+.msg.ai { justify-self: start; background: var(--ai-bg); color: var(--text); border: 1px solid color-mix(in srgb, var(--ai-solid) 45%, transparent); border-bottom-left-radius: 4px; }
+.msg.ai .who { display: flex; gap: 5px; align-items: center; font-size: .66rem; font-weight: 700; color: var(--ai-text); margin-bottom: 2px; }
+.diff { margin-top: 6px; border: 1px solid var(--ai-solid); border-radius: 8px; background: var(--surface); padding: 6px 8px; font-size: .72rem; }
+.diff .dh { display: flex; justify-content: space-between; gap: 6px; font-weight: 700; color: var(--ai-text); font-size: .66rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.diff ul { margin: 0; padding-left: 15px; display: grid; gap: 1px; }
+.diff .val { color: var(--ok-text); font-weight: 600; display: flex; gap: 4px; align-items: center; margin-top: 3px; }
+.typing { display: inline-flex; gap: 3px; } .typing i { width: 5px; height: 5px; border-radius: 50%; background: var(--ai-solid); animation: pulse 1s infinite; } .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+
+/* plan svg */
+.plan-wrap { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.plan-wrap svg { display: block; width: 100%; height: auto; }
+.pl-bg { fill: var(--surface); }
+.pl-turf { fill: color-mix(in srgb, var(--turf) 30%, var(--surface)); }
+.pl-grid { fill: none; stroke: color-mix(in srgb, var(--turf-dark) 22%, transparent); stroke-width: .05; }
+.pl-house { stroke: var(--stone-600); stroke-width: .12; }
+.pl-hatch { stroke: var(--stone-450); stroke-width: .12; }
+.pl-ac { fill: var(--stone-300); stroke: var(--stone-600); stroke-width: .1; }
+.pl-patio { stroke: var(--stone-600); stroke-width: .12; }
+.pl-paver { fill: var(--paver); } .pl-joint { fill: none; stroke: var(--stone-450); stroke-width: .05; }
+.pl-flag { fill: color-mix(in srgb, var(--paver) 70%, var(--clay-300)); stroke: var(--stone-600); stroke-width: .1; stroke-dasharray: .4 .2; }
+.pl-lot { fill: none; stroke: var(--text-2); stroke-width: .14; stroke-dasharray: .9 .5; }
+.pl-mulch { fill: color-mix(in srgb, var(--mulch) 40%, var(--surface)); } .pl-mdot { fill: color-mix(in srgb, var(--mulch) 70%, var(--surface)); }
+.pl-bed { stroke: none; }
+.pl-edge { fill: none; stroke: var(--stone-800); stroke-width: .18; }
+.pl-hl { fill: none; stroke: var(--ai-solid); stroke-width: .35; stroke-dasharray: .8 .45; animation: pulse 1.2s ease 3; }
+.pl-step { fill: var(--stone-200); stroke: var(--stone-500); stroke-width: .08; }
+.pl-boulder { fill: var(--stone-300); stroke: var(--stone-600); stroke-width: .1; }
+.pl-light { fill: var(--marigold-400); } .pl-lightr { fill: none; stroke: var(--marigold-400); stroke-width: .08; stroke-dasharray: .3 .2; }
+.pl-shade { fill: color-mix(in srgb, var(--sky-600) 18%, transparent); stroke: var(--sky-600); stroke-width: .1; stroke-dasharray: .5 .3; }
+.pl-nbtree { fill: none; stroke: var(--moss-700); stroke-width: .12; stroke-dasharray: .6 .4; }
+.pl-gas { fill: none; stroke: var(--marigold-600); stroke-width: .22; stroke-dasharray: .9 .4; }
+.pl-gasbuf { fill: none; stroke: color-mix(in srgb, var(--marigold-400) 26%, transparent); stroke-width: 10; stroke-linecap: round; }
+.pl-wet { fill: color-mix(in srgb, var(--water) 45%, transparent); stroke: var(--sky-600); stroke-width: .08; stroke-dasharray: .3 .2; }
+.pl-dim { fill: none; stroke: var(--text-3); stroke-width: .08; }
+.pl-dim.a { stroke: var(--accent); }
+.pl-t { font-family: var(--font-body); font-size: 1.05px; fill: var(--text-2); font-weight: 600; }
+.pl-t.s { font-size: .9px; }
+.pl-t.d { font-family: var(--font-mono); font-size: 1px; fill: var(--text); }
+.pl-t.a { fill: var(--accent); }
+.pl-t.gas { fill: var(--marigold-600); }
+.pl-t.sunt { fill: var(--sky-700); }
+.pl-nc { fill: var(--surface); stroke: var(--text-2); stroke-width: .1; } .pl-n { fill: var(--text); }
+.pl-sb1 { fill: var(--text); } .pl-sb2 { fill: var(--surface); stroke: var(--text); stroke-width: .06; }
+.pc { stroke-width: .1; fill-opacity: .9; transition: r .3s; }
+.pc.can { fill-opacity: .18; stroke-dasharray: .7 .35; stroke-width: .14; }
+.pc.hot { stroke: var(--ai-solid); stroke-width: .3; }
+.pc-trunk { fill: var(--stone-700); }
+.pc-x { stroke: color-mix(in srgb, var(--stone-0) 70%, transparent); stroke-width: .08; }
+.pc-warn { fill: none; stroke: var(--warn-solid); stroke-width: .25; }
+.pl-warnb circle { fill: var(--warn-solid); stroke: var(--surface); stroke-width: .15; } .pl-warnb text { font-size: 1.6px; font-weight: 800; fill: var(--stone-900); font-family: var(--font-body); }
+.pl-num circle { fill: var(--stone-900); stroke: var(--stone-0); stroke-width: .18; } .pl-num text { font-size: 1.2px; font-weight: 800; fill: var(--stone-0); font-family: var(--font-body); }
+.pl-code rect { fill: color-mix(in srgb, var(--surface) 92%, transparent); stroke: var(--stone-500); stroke-width: .06; } .pl-code text { font-family: var(--font-mono); font-size: .95px; font-weight: 600; fill: var(--text); }
+.pc-cer { fill: var(--clay-300); stroke: var(--clay-600); }
+.pc-jun { fill: color-mix(in srgb, var(--moss-800) 80%, var(--sky-700)); stroke: var(--moss-900); fill-opacity: .95; }
+.pc-ile { fill: var(--moss-700); stroke: var(--moss-900); }
+.pc-gem { fill: var(--moss-600); stroke: var(--moss-900); }
+.pc-ite { fill: var(--moss-400); stroke: var(--moss-700); }
+.pc-pan { fill: var(--moss-200); stroke: var(--moss-600); }
+.pc-cal { fill: var(--marigold-300); stroke: var(--marigold-600); }
+.pc-ams { fill: var(--moss-100); stroke: var(--moss-500); }
+.pc-sch { fill: color-mix(in srgb, var(--sky-500) 35%, var(--moss-200)); stroke: var(--sky-700); }
+.pc-spo { fill: var(--moss-100); stroke: var(--moss-600); }
+.pc-mon { fill: color-mix(in srgb, color-mix(in srgb, var(--sky-500) 50%, var(--ember-500)) 55%, var(--stone-0)); stroke: color-mix(in srgb, var(--sky-700) 50%, var(--ember-600)); }
+.pc-phl { fill: color-mix(in srgb, var(--ember-500) 40%, var(--stone-0)); stroke: var(--ember-600); }
+.pc-ech { fill: color-mix(in srgb, var(--ember-500) 70%, var(--stone-0)); stroke: var(--ember-700); }
+.pc-rud { fill: var(--marigold-400); stroke: var(--marigold-800); }
+.pc-nep { fill: color-mix(in srgb, var(--sky-500) 45%, var(--stone-100)); stroke: var(--sky-700); }
+.pc-sal { fill: color-mix(in srgb, var(--sky-700) 55%, var(--ember-600)); stroke: var(--stone-900); }
+.pc-all { fill: color-mix(in srgb, var(--sky-600) 45%, var(--ember-500)); stroke: var(--stone-900); }
+.pc-jhz { fill: color-mix(in srgb, var(--moss-600) 55%, var(--sky-600)); stroke: var(--moss-900); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 4px; border: 1px solid var(--stone-600); }
+
+/* photo palette (raw palette so a photo stays a photo in both themes) */
+.sky-a { stop-color: var(--sky-100); } .sky-b { stop-color: var(--sky-50); }
+.bgt1 { fill: var(--moss-600); } .bgt2 { fill: var(--moss-700); }
+.nb-wall { fill: var(--stone-200); } .nb-roof { fill: var(--stone-600); } .nb-win { fill: var(--sky-100); stroke: var(--stone-0); stroke-width: 2; }
+.ph-roof { fill: var(--stone-700); } .ph-eave { stroke: var(--stone-800); stroke-width: 3; }
+.siding { fill: var(--stone-50); } .siding-line { stroke: var(--stone-200); stroke-width: 1; }
+.ph-found { fill: var(--stone-300); }
+.ph-win { fill: var(--sky-100); stroke: var(--stone-0); stroke-width: 2.5; }
+.ph-mull { stroke: var(--stone-0); stroke-width: 1.6; }
+.ph-sill { fill: var(--stone-200); }
+.ph-door { fill: var(--stone-0); } .ph-glass { fill: var(--sky-100); }
+.ph-down { fill: var(--stone-200); stroke: var(--stone-300); stroke-width: .5; }
+.ph-ac { fill: var(--stone-300); stroke: var(--stone-500); } .ph-acg { stroke: var(--stone-500); }
+.ph-fence { fill: var(--clay-300); } .ph-fence-l { stroke: var(--clay-500); stroke-width: 1; }
+.ph-lawn { fill: var(--moss-300); } .ph-stripe { fill: var(--moss-400); opacity: .35; }
+.ph-lawn-tired { fill: color-mix(in srgb, var(--moss-300) 74%, var(--marigold-300)); }
+.ph-patch { fill: var(--marigold-300); opacity: .6; } .ph-dirt { fill: var(--clay-600); opacity: .45; }
+.ph-soil { fill: var(--clay-600); opacity: .85; } .ph-weed { stroke: var(--moss-500); stroke-width: 1.3; fill: none; }
+.ph-paver { fill: var(--stone-200); } .ph-joint { fill: none; stroke: var(--stone-450); stroke-width: .7; }
+.ph-patio-edge { fill: var(--stone-450); }
+.ph-flag { fill: color-mix(in srgb, var(--stone-200) 70%, var(--clay-300)); stroke: var(--stone-450); stroke-width: 1; }
+.ph-card { fill: var(--stone-0); stroke: var(--stone-450); } .ph-card-m { fill: var(--stone-900); }
+.ph-mulch { fill: var(--clay-600); } .ph-mulch.dark { fill: var(--stone-800); }
+.ph-stone0 { fill: var(--stone-300); stroke: var(--stone-500); stroke-width: .6; } .ph-stone1 { fill: var(--stone-200); stroke: var(--stone-500); stroke-width: .6; }
+.ph-brick { fill: none; stroke: var(--clay-500); stroke-width: 4; stroke-dasharray: 7 1.5; }
+.ph-steel { fill: none; stroke: var(--stone-900); stroke-width: 2.4; }
+.ph-spade { fill: none; stroke: var(--clay-600); stroke-width: 2; }
+.ph-boulder { fill: var(--stone-300); stroke: var(--stone-500); }
+.ph-hose { fill: none; stroke: var(--moss-600); stroke-width: 3; }
+.ph-hl { fill: none; stroke: var(--iris-50); stroke-width: 3; stroke-dasharray: 8 5; animation: pulse 1.1s ease 3; }
+.win-frame { fill: var(--stone-100); } .win-mull { stroke: var(--stone-100); stroke-width: 14; }
+.trunk { fill: none; stroke: var(--stone-800); stroke-width: 4; stroke-linecap: round; }
+.gl .can1 { fill: var(--moss-500); } .gl .can2 { fill: var(--moss-600); } .gl .leafhl { fill: var(--moss-300); opacity: .8; }
+.gl .col { fill: color-mix(in srgb, var(--moss-800) 80%, var(--sky-700)); } .gl .colhl { stroke: var(--moss-500); stroke-width: 1.2; }
+.gl .m { fill: var(--moss-600); } .gl .hl { fill: var(--moss-400); }
+.g-ile .m { fill: var(--moss-800); } .g-ile .hl { fill: var(--moss-600); }
+.g-gem .m { fill: var(--moss-700); } .g-gem .hl { fill: var(--moss-500); }
+.g-ite .m { fill: var(--moss-500); } .g-ite .fl { fill: none; stroke: var(--stone-25); stroke-width: 2.2; stroke-linecap: round; }
+.g-ams .m { fill: var(--moss-300); } .g-ams .fine { fill: none; stroke: var(--moss-200); stroke-width: .9; }
+.g-nep .m { fill: color-mix(in srgb, var(--moss-400) 70%, var(--sky-500)); } .g-nep .fine { fill: none; stroke: var(--moss-300); stroke-width: .8; } .g-nep .fl { fill: color-mix(in srgb, var(--sky-500) 55%, var(--stone-100)); }
+.g-jhz .m { fill: color-mix(in srgb, var(--moss-600) 55%, var(--sky-600)); } .g-jhz .hl { fill: var(--moss-300); }
+.gl .bl { fill: none; stroke: var(--moss-500); stroke-width: 1.3; stroke-linecap: round; }
+.g-sch .bl { stroke: color-mix(in srgb, var(--sky-600) 45%, var(--moss-600)); }
+.g-pan .bl { stroke: var(--moss-400); } .g-pan .haze { fill: var(--moss-200); opacity: .45; }
+.g-cal .bl { stroke: var(--moss-500); } .g-cal .plume { stroke: var(--marigold-300); stroke-width: 2; stroke-linecap: round; }
+.g-spo .bl { stroke: var(--moss-400); stroke-width: .9; }
+.gl .base { fill: var(--moss-600); } .gl .stem { stroke: var(--moss-700); stroke-width: 1; }
+.g-ech .fl { fill: color-mix(in srgb, var(--ember-500) 72%, var(--stone-0)); } .g-ech .ctr { fill: var(--clay-600); }
+.g-rud .fl { fill: var(--marigold-400); } .g-rud .ctr { fill: var(--stone-900); }
+.g-mon .fl { fill: color-mix(in srgb, color-mix(in srgb, var(--sky-500) 50%, var(--ember-500)) 60%, var(--stone-0)); }
+.g-phl .fl { fill: color-mix(in srgb, var(--ember-500) 45%, var(--stone-0)); }
+.g-all .fl { fill: color-mix(in srgb, var(--sky-600) 45%, var(--ember-500)); }
+.g-sal .spike { stroke: color-mix(in srgb, var(--sky-700) 55%, var(--ember-600)); stroke-linecap: round; }
+.gl.hot .m, .gl.hot .base { stroke: var(--iris-50); stroke-width: 1.5; }
+.sgm { stroke-width: 1.4; fill-opacity: .36; }
+.sgm-sky { fill: var(--sky-500); stroke: var(--sky-600); } .sgm-roof { fill: var(--stone-800); stroke: var(--stone-900); }
+.sgm-house { fill: var(--stone-450); stroke: var(--stone-700); }
+.sgm-protect { fill: var(--stone-900); fill-opacity: .45; stroke: var(--stone-0); stroke-dasharray: 3 2; }
+.sgm-fence { fill: var(--clay-500); stroke: var(--clay-600); }
+.sgm-util { fill: var(--stone-900); fill-opacity: .5; stroke: var(--stone-0); stroke-dasharray: 3 2; }
+.sgm-bed { fill: var(--clay-600); fill-opacity: .6; stroke: var(--clay-600); }
+.sgm-lawn { fill: var(--moss-400); stroke: var(--moss-600); fill-opacity: .3; }
+.sgm-patio { fill: var(--marigold-400); stroke: var(--marigold-600); }
+.sgm-chip rect { fill: var(--stone-0); fill-opacity: .94; stroke: var(--iris-500); } .sgm-chip text { font: 600 9.5px var(--font-mono); fill: var(--iris-700); }
+.cal-line { stroke: var(--stone-0); stroke-width: 2; fill: none; }
+.cal-pin circle { fill: var(--sky-500); stroke: var(--stone-0); stroke-width: 2; } .cal-pin text { fill: var(--stone-0); font: 700 8px var(--font-body); }
+.cal-tag rect { fill: var(--stone-900); fill-opacity: .85; } .cal-tag text { fill: var(--stone-0); font: 600 9px var(--font-mono); }
+.kb-bg { fill: var(--sky-50); } .kb-mulch { fill: var(--clay-600); opacity: .8; }
+/* aerial */
+.ae-ground { fill: color-mix(in srgb, var(--turf) 55%, var(--surface)); } .ae-lot { fill: color-mix(in srgb, var(--turf) 65%, var(--surface)); stroke: var(--surface); stroke-width: .8; }
+.ae-roof2 { fill: var(--stone-300); } .ae-roof { fill: var(--stone-500); } .ae-tree { fill: var(--moss-600); opacity: .85; }
+.ae-street { fill: var(--stone-450); } .ae-drive { fill: var(--stone-300); }
+.ae-parcel { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 4 2; }
+.ae-back { fill: color-mix(in srgb, var(--primary) 22%, transparent); stroke: var(--primary); stroke-width: 1; }
+.ae-patio { fill: var(--paver); stroke: var(--stone-600); stroke-width: .5; }
+.ae-t { font: 600 7px var(--font-body); fill: var(--stone-900); } .ae-t.b { fill: var(--moss-900); font-weight: 700; } .ae-t.w { fill: var(--stone-0); }
+.ae-hatch { stroke: var(--stone-450); stroke-width: .5; } .ae-nc { fill: var(--stone-0); stroke: var(--stone-600); } .ae-n { fill: var(--stone-900); }
+
+/* ---------- overview ---------- */
+.ov-hero { padding: 6px 0 16px; }
+.ov-hero h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); max-width: 22ch; }
+.ov-hero .lede { margin-top: 10px; }
+.ov-hero .flex { margin-top: 14px; }
+.jm { display: grid; gap: 10px; margin-top: 6px; }
+.jm-act { border: 1px solid var(--border); border-radius: var(--radius-l); background: var(--surface); padding: 10px 12px 12px; }
+.jm-act .jh { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; }
+.jm-act .jh b { font-family: var(--font-mono); font-size: .72rem; color: var(--accent); letter-spacing: .05em; }
+.jm-act .jh span { font-weight: 650; font-size: .9rem; }
+.jm-act .jh small { color: var(--text-3); font-size: .76rem; }
+.jm-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px 14px; align-items: stretch; }
+.jm-node { position: relative; display: grid; gap: 3px; align-content: start; min-width: 0; padding: 7px 7px 8px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); color: var(--text); text-decoration: none; font-size: .72rem; line-height: 1.28; }
+.jm-node::after { content: ""; position: absolute; right: -12px; top: 50%; width: 9px; height: 2px; background: var(--border-strong); }
+.jm-node::before { content: ""; position: absolute; right: -13px; top: calc(50% - 3px); border: 4px solid transparent; border-left-color: var(--border-strong); border-right: 0; }
+.jm-node.last::after, .jm-node.last::before { display: none; }
+.jm-node:hover { border-color: var(--primary); background: var(--primary-soft); }
+.jm-node .k { display: flex; gap: 5px; align-items: center; font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); font-weight: 600; }
+.jm-node .k .ai-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ai-solid); }
+.jm-node b { font-size: .76rem; }
+.jm-node .who { color: var(--text-3); font-size: .64rem; }
+.jm-node .tag { justify-self: start; }
+.cast { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.cast .card { padding: 12px; }
+.cast .card h3 { font-size: .9rem; display: flex; gap: 7px; align-items: center; }
+.cast ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: .78rem; color: var(--text-2); }
+.cast li b { color: var(--text); font-weight: 600; }
+.prop { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 14px; align-items: center; }
+.prop svg { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); display: block; }
+.sec-t { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; margin: 18px 0 8px; }
+
+/* ---------- step-specific ---------- */
+.capview { position: relative; }
+.capview .chipo { position: absolute; z-index: 4; padding: 2px 8px; border-radius: 999px; font-size: .64rem; font-weight: 700; background: color-mix(in srgb, var(--stone-900) 78%, transparent); color: var(--stone-0); }
+.capview .guide { position: absolute; inset: 13% 18% 22% 18%; border: 2px dashed var(--stone-0); border-radius: 6px; z-index: 3; pointer-events: none; }
+.capview .level { position: absolute; left: 0; right: 0; top: 56%; border-top: 2px dotted var(--moss-200); z-index: 3; pointer-events: none; }
+.shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.shot { border: 1px solid var(--border); border-radius: 9px; padding: 4px; background: var(--surface); font-size: .66rem; line-height: 1.25; display: grid; gap: 3px; color: var(--text-2); cursor: pointer; text-align: left; }
+.shot .scene { aspect-ratio: 4/3; border-radius: 6px; }
+.shot .ph0 { aspect-ratio: 4/3; border-radius: 6px; border: 1px dashed var(--border-strong); display: grid; place-items: center; color: var(--text-3); font-weight: 700; font-size: .9rem; background: var(--surface-2); }
+.shot b { color: var(--text); font-size: .68rem; }
+.shot[aria-pressed="true"] { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.qbar { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: .74rem; }
+.qbar .track { height: 6px; border-radius: 4px; background: var(--surface-3); overflow: hidden; } .qbar .track i { display: block; height: 100%; background: var(--ok-solid); }
+.qgrid { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: .7rem; color: var(--text-2); }
+.minimap svg { width: 100%; height: auto; display: block; }
+.runlist { display: grid; gap: 6px; }
+.runitem { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: start; font-size: .78rem; }
+.runitem .st { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--border-strong); background: var(--surface); }
+.runitem.done .st { background: var(--ok-solid); border-color: var(--ok-solid); color: var(--stone-0); }
+.runitem.done .st .ic { stroke: var(--stone-0); width: 11px; height: 11px; }
+.runitem.run .st { border-color: var(--ai-solid); }
+.runitem.wait { opacity: .45; }
+.runitem b { display: block; font-size: .8rem; }
+.runitem small { color: var(--text-2); font-size: .72rem; }
+.codebox { display: flex; gap: 5px; }
+.codebox span { width: 30px; height: 36px; border: 1px solid var(--border-strong); border-radius: 7px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 1rem; font-weight: 600; background: var(--surface); }
+.legend-sm { display: flex; flex-wrap: wrap; gap: 4px 9px; font-size: .66rem; color: var(--text-2); }
+.legend-sm i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; opacity: .8; }
+.vthumbs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.inbox { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 10px; }
+.icard { border: 1px solid var(--border); border-radius: 9px; padding: 8px 9px; background: var(--surface); display: grid; gap: 3px; font-size: .74rem; text-align: left; cursor: pointer; width: 100%; }
+.icard[aria-pressed="true"] { border-color: var(--ai-solid); box-shadow: 0 0 0 1px var(--ai-solid); }
+.icard .t { display: flex; gap: 5px; align-items: center; font-weight: 700; font-size: .72rem; color: var(--ai-text); }
+.icard .t .tm { margin-left: auto; color: var(--text-3); font-weight: 500; }
+.icard b { font-size: .78rem; color: var(--text); }
+.icard.done { opacity: .7; }
+.sms { border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); padding: 10px; display: grid; gap: 6px; }
+.sms .bub { max-width: 92%; padding: 7px 10px; border-radius: 12px; font-size: .78rem; line-height: 1.45; }
+.sms .bub.out { justify-self: end; background: var(--moss-600); color: var(--stone-0); border-bottom-right-radius: 3px; }
+.sms .bub.out.draft { background: var(--ai-bg); color: var(--text); border: 1px dashed var(--ai-solid); }
+.sms .bub.in { justify-self: start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 3px; }
+.sms .meta { font-size: .64rem; color: var(--text-3); }
+.sms .meta.r { justify-self: end; }
+.slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.slot { border: 1px solid var(--border); border-radius: 8px; padding: 6px 7px; font-size: .72rem; background: var(--surface); }
+.slot b { display: block; font-size: .78rem; }
+.slot.on { border-color: var(--primary); background: var(--primary-soft); }
+.lt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.lt .scene { aspect-ratio: 4/3; border-radius: 6px; }
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.opt { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 7px; display: grid; gap: 5px; text-align: left; cursor: pointer; font-size: .72rem; align-content: start; }
+.opt[aria-pressed="true"] { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.opt .oh { display: flex; justify-content: space-between; gap: 4px; align-items: baseline; }
+.opt .oh b { font-size: .8rem; }
+.opt .price { font-family: var(--font-mono); font-weight: 600; font-size: .8rem; }
+.opt table { width: 100%; border-collapse: collapse; }
+.opt td { padding: 1px 0; color: var(--text-2); }
+.opt td + td { text-align: right; color: var(--text); font-variant-numeric: tabular-nums; font-weight: 600; }
+.mtr { display: inline-block; width: 34px; height: 4px; border-radius: 3px; background: var(--surface-3); vertical-align: middle; margin-right: 4px; overflow: hidden; }
+.mtr i { display: block; height: 100%; background: var(--primary); }
+.cons { display: grid; grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)); gap: 6px 12px; font-size: .74rem; }
+.cons .c { display: grid; gap: 1px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.cons .c:last-child { border-bottom: 0; grid-column: 1 / -1; }
+.cons .c > span:first-child { font-size: .64rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); font-weight: 700; }
+.cons .pin { display: inline-flex; gap: 4px; align-items: center; font-weight: 600; }
+.studio { display: grid; grid-template-columns: 38px minmax(0, 1fr) 214px; gap: 0; border-top: 1px solid var(--border); }
+.st-rail { background: var(--surface-2); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0; }
+.st-rail span { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 7px; color: var(--text-2); }
+.st-rail span.on { background: var(--primary-soft); color: var(--primary-soft-text); }
+.st-rail span.ai { color: var(--ai-solid); }
+.st-canvas { padding: 8px; min-width: 0; display: grid; gap: 8px; align-content: start; }
+.cv-bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: .7rem; color: var(--text-2); }
+.cv-bar .sp { flex: 1; }
+.st-side { border-left: 1px solid var(--border); padding: 9px; display: grid; gap: 10px; align-content: start; font-size: .74rem; background: var(--surface); }
+.layer { display: flex; gap: 6px; align-items: center; padding: 2px 0; }
+.layer button { width: 22px; height: 22px; border-radius: 5px; border: 1px solid var(--border-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--text-2); }
+.layer button[aria-pressed="true"] { background: var(--primary-soft); color: var(--primary-soft-text); border-color: var(--primary); }
+.layer .nm { flex: 1; }
+.layer .ct { font-family: var(--font-mono); font-size: .66rem; color: var(--text-3); }
+.vitem { border: 1px solid var(--warn-solid); background: var(--warn-bg); color: var(--warn-text); border-radius: 8px; padding: 7px 8px; font-size: .72rem; }
+.vitem b { display: flex; gap: 5px; align-items: center; }
+.vitem .acts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.vitem .btn { color: var(--text); }
+.vok { display: grid; gap: 3px; font-size: .7rem; color: var(--text-2); }
+.vok div { display: flex; gap: 5px; align-items: flex-start; }
+.vok .ic { color: var(--ok-solid); width: 12px; height: 12px; margin-top: 2px; }
+.yrs { display: grid; grid-template-columns: repeat(4, 1fr); font-size: .62rem; color: var(--text-3); text-align: center; margin-top: 2px; }
+.yrs b { color: var(--text); }
+input[type="range"].rng { width: 100%; accent-color: var(--primary); }
+.takeoff { display: flex; flex-wrap: wrap; gap: 4px 0; align-items: stretch; border-top: 1px solid var(--border); background: var(--surface-2); font-size: .7rem; }
+.takeoff > div { padding: 6px 9px; border-right: 1px solid var(--border); display: grid; gap: 1px; }
+.takeoff > div b { font-family: var(--font-mono); font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text); }
+.takeoff > div span { color: var(--text-3); font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+.takeoff .price { margin-left: auto; border-right: 0; background: var(--primary-soft); }
+.takeoff .price b { font-size: 1rem; color: var(--primary-soft-text); }
+.delta { font-family: var(--font-mono); font-size: .7rem; font-weight: 600; }
+.delta.up { color: var(--warn-text); } .delta.dn { color: var(--ok-text); }
+.est { display: grid; grid-template-columns: minmax(0, 1fr) 222px; gap: 10px; }
+table.est td { font-size: .74rem; }
+table.est tr.phase td { background: var(--surface-2); font-weight: 700; font-size: .72rem; }
+table.est td .math { display: block; color: var(--text-3); font-family: var(--font-mono); font-size: .64rem; line-height: 1.4; margin-top: 1px; }
+table.est tr.flag td { background: color-mix(in srgb, var(--ai-bg) 70%, transparent); }
+.conf { display: inline-flex; gap: 4px; align-items: center; font-size: .64rem; font-weight: 700; padding: 0 6px; border-radius: 999px; }
+.conf.med { background: var(--warn-bg); color: var(--warn-text); } .conf.low { background: var(--danger-bg); color: var(--danger-text); } .conf.fixed { background: var(--ok-bg); color: var(--ok-text); }
+.flagnote { margin-top: 4px; border-left: 3px solid var(--ai-solid); padding: 4px 7px; background: var(--surface); font-size: .7rem; color: var(--text); border-radius: 0 6px 6px 0; }
+.flagnote .acts { display: flex; gap: 5px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+.rowx { display: flex; justify-content: space-between; gap: 6px; padding: 3px 0; font-size: .74rem; border-bottom: 1px dashed var(--border); }
+.rowx span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+.rowx small { display: block; color: var(--text-3); font-size: .66rem; }
+.rowx.tot { font-weight: 700; border-bottom: 1px solid var(--border-strong); }
+.rowx.big span:last-child { font-size: 1.05rem; color: var(--primary-soft-text); }
+.eq { font-family: var(--font-mono); font-size: .66rem; background: var(--surface-2); border-radius: 6px; padding: 6px 7px; margin: 6px 0; line-height: 1.5; }
+.gm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align: center; margin: 6px 0; }
+.gm div { border: 1px solid var(--border); border-radius: 6px; padding: 4px; font-size: .62rem; color: var(--text-3); }
+.gm b { display: block; font-size: .86rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.tiers { display: flex; gap: 4px; flex-wrap: wrap; }
+.tiers .t { border: 1px solid var(--border); border-radius: 7px; padding: 3px 9px; font-size: .72rem; font-weight: 600; background: var(--surface); color: var(--text-2); }
+.tiers .t.on { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-soft-text); }
+.tiers .t small { display: block; font-family: var(--font-mono); font-weight: 600; color: var(--text); }
+.approval { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; border: 1px solid var(--ai-solid); background: var(--ai-bg); border-radius: 10px; padding: 8px 10px; font-size: .76rem; }
+.approval .grow b { display: block; }
+.prop-doc { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 10px; }
+.doc { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 12px 14px; display: grid; gap: 10px; font-size: .76rem; }
+.doc h4 { font-family: var(--font-display); font-size: 1.1rem; margin: 0; }
+.doc .lab { font-size: .62rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); font-weight: 700; }
+.aidraft { border: 1px dashed var(--ai-solid); border-radius: 8px; padding: 8px 9px; background: color-mix(in srgb, var(--ai-bg) 55%, var(--surface)); }
+.aidraft .tagai { display: flex; justify-content: space-between; gap: 6px; font-size: .64rem; font-weight: 700; color: var(--ai-text); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.aidraft.ok { border-style: solid; border-color: var(--ok-solid); background: var(--surface); }
+.aidraft.ok .tagai { color: var(--ok-text); }
+textarea.inp { min-height: 88px; resize: vertical; line-height: 1.45; font-size: .76rem; }
+.tl { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; counter-reset: tl; }
+.tl li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; align-items: start; }
+.tl li::before { counter-increment: tl; content: counter(tl); width: 18px; height: 18px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-soft-text); font-size: .62rem; font-weight: 800; display: grid; place-items: center; }
+table.tiert { width: 100%; border-collapse: collapse; font-size: .72rem; }
+table.tiert th, table.tiert td { border: 1px solid var(--border); padding: 4px 6px; text-align: left; vertical-align: top; }
+table.tiert th { background: var(--surface-2); font-size: .66rem; }
+table.tiert td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+table.tiert .rec { background: var(--primary-soft); }
+.ptier { display: grid; gap: 6px; }
+.ptier label { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; align-items: center; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font-size: .78rem; cursor: pointer; background: var(--surface); }
+.ptier label.on { border-color: var(--primary); background: var(--primary-soft); }
+.ptier input { accent-color: var(--primary); margin: 0; }
+.ptier small { display: block; color: var(--text-3); font-size: .68rem; }
+.ptier .pr { font-family: var(--font-mono); font-weight: 600; font-size: .8rem; }
+.sums { display: grid; gap: 3px; font-size: .76rem; }
+.sums div { display: flex; justify-content: space-between; gap: 6px; }
+.sums div span:last-child { font-variant-numeric: tabular-nums; font-weight: 600; }
+.sums .due { font-weight: 700; border-top: 1px solid var(--border); padding-top: 4px; font-size: .84rem; }
+.stripe { border: 1px solid var(--border-strong); border-radius: 9px; padding: 8px 9px; display: grid; gap: 6px; background: var(--surface); }
+.stripe .sl { font-size: .62rem; color: var(--text-3); display: flex; justify-content: space-between; }
+.sig { font-family: "Brush Script MT", "Segoe Script", cursive; font-size: 1.3rem; color: var(--sky-700); border-bottom: 1px solid var(--border-strong); padding: 2px 4px; min-height: 34px; }
+.cards3 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.dcard { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 9px 10px; display: grid; gap: 6px; font-size: .74rem; align-content: start; }
+.dcard.ai { border-color: var(--ai-solid); }
+.dcard .dh { display: flex; gap: 6px; align-items: center; font-weight: 700; font-size: .8rem; }
+.dcard .dh .sp { flex: 1; }
+.dcard table { width: 100%; border-collapse: collapse; font-size: .7rem; }
+.dcard td { padding: 2px 0; border-bottom: 1px dashed var(--border); }
+.dcard td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.phases { display: grid; gap: 3px; }
+.phases div { display: flex; gap: 6px; align-items: center; font-size: .72rem; }
+.phases div .grow { color: var(--text-2); }
+.recap table.data td { font-size: .76rem; }
+.principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-top: 12px; }
+.principles .card { padding: 11px 12px; font-size: .78rem; color: var(--text-2); }
+.principles .card b { color: var(--text); display: block; margin-bottom: 3px; font-size: .84rem; }
+.bars { display: grid; gap: 5px; font-size: .74rem; }
+.bars div { display: grid; grid-template-columns: 86px minmax(0, 1fr) 36px; gap: 6px; align-items: center; }
+.bars .b { height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; } .bars .b i { display: block; height: 100%; background: var(--ai-solid); }
+.bars span:last-child { text-align: right; font-family: var(--font-mono); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1180px) {
+  .pt-shell { grid-template-columns: minmax(0, 1fr); }
+  .pt-rail { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--border); display: flex; gap: 6px 14px; overflow-x: auto; padding: 8px 12px; align-items: flex-start; }
+  .pt-rail .act { margin-top: 0; flex: none; }
+  .pt-rail ol { display: flex; gap: 2px; }
+  .pt-rail a.st { grid-template-columns: 22px auto; white-space: nowrap; }
+  .pt-rail a.st .ai-dot { display: none; }
+  .pt-rail a.st .t { max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+  .pt-rail .rfoot { display: none; }
+  .pt-rail .rstart { flex: none; margin-top: 14px; }
+}
+@media (max-width: 900px) {
+  .jm-row { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); }
+  .jm-node::after, .jm-node::before { display: none; }
+}
+@media (max-width: 1100px) {
+  .pt-body { grid-template-columns: minmax(0, 1fr); }
+  .pt-bts { position: static; max-height: none; }
+}
+@media (max-width: 700px) {
+  .pt-main { padding: 10px 10px 40px; }
+  .phone.pt-phone { width: 100%; max-width: 352px; border-width: 8px; }
+  .big-view { min-width: 0; flex-basis: 100%; }
+  .prop { grid-template-columns: 1fr; }
+  .pt-rail a.st .t { display: none; }
+  .prog .track { width: 70px; }
+}
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+@media print { .pt-rail, .pt-bar .ctrls { display: none; } }
+
+/* ---------- shared walkthrough additions ---------- */
+/* Generic components shared by the engine-built walkthroughs (tokens from rootline.css). */
+.wt-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.wt-cols.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.wt-cols.wide-left { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+.wt-stack { display: grid; gap: 10px; }
+.wt-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 8px; }
+.wt-kpi { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--surface); }
+.wt-kpi .l { font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+.wt-kpi .v { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.wt-kpi .d { font-size: .72rem; font-weight: 600; color: var(--text-2); }
+.wt-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.wt-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 9px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); font-size: .8rem; }
+.wt-row.soft { background: var(--surface-2); }
+.wt-row.sel { border-color: var(--primary); background: var(--primary-soft); }
+.wt-row .sub { display: block; color: var(--text-3); font-size: .72rem; }
+.wt-row.ai { border-color: var(--ai-solid); background: var(--ai-bg); }
+.wt-ic { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--surface-3); color: var(--text-2); flex: none; }
+.wt-ic.ok { background: var(--ok-bg); color: var(--ok-text); } .wt-ic.warn { background: var(--warn-bg); color: var(--warn-text); } .wt-ic.ai { background: var(--ai-bg); color: var(--ai-text); } .wt-ic.info { background: var(--info-bg); color: var(--info-text); } .wt-ic.danger { background: var(--danger-bg); color: var(--danger-text); }
+.wt-bubble { max-width: 86%; padding: 8px 10px; border-radius: 14px; font-size: .8rem; line-height: 1.45; background: var(--surface-3); }
+.wt-bubble.me { margin-left: auto; background: var(--primary); color: var(--on-primary); border-bottom-right-radius: 4px; }
+.wt-bubble.them { border-bottom-left-radius: 4px; }
+.wt-bubble.ai { background: var(--ai-bg); color: var(--text); border: 1px solid var(--ai-solid); }
+.wt-bubble small { display: block; opacity: .75; font-size: .66rem; margin-top: 3px; }
+.wt-thread { display: grid; gap: 6px; }
+.wt-steps { display: flex; gap: 0; align-items: center; flex-wrap: wrap; font-size: .72rem; }
+.wt-steps span { padding: 3px 9px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-3); font-weight: 600; }
+.wt-steps span:first-child { border-radius: 999px 0 0 999px; } .wt-steps span:last-child { border-radius: 0 999px 999px 0; }
+.wt-steps span.on { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.wt-steps span.done { background: var(--primary-soft); color: var(--primary-soft-text); }
+.wt-gantt { display: grid; gap: 4px; font-size: .72rem; }
+.wt-gantt .g-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; align-items: center; }
+.wt-gantt .g-track { position: relative; height: 24px; background: var(--surface-2); border-radius: 6px; border: 1px solid var(--border); }
+.wt-gantt .g-blk { position: absolute; top: 2px; bottom: 2px; border-radius: 4px; background: var(--moss-200); color: var(--moss-900); padding: 0 5px; overflow: hidden; white-space: nowrap; font-weight: 600; display: flex; align-items: center; font-size: .66rem; }
+.wt-gantt .g-blk.alt { background: var(--sky-100); color: var(--sky-700); } .wt-gantt .g-blk.warn { background: var(--marigold-100); color: var(--marigold-800); } .wt-gantt .g-blk.ai { background: var(--ai-bg); color: var(--ai-text); outline: 1.5px dashed var(--ai-solid); }
+.wt-svg { width: 100%; height: auto; display: block; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); }
+.wt-svg text { font-family: var(--font-body); }
+.wt-note { font-size: .74rem; color: var(--text-3); }
+.wt-callout { border-left: 3px solid var(--primary); background: var(--primary-soft); padding: 8px 10px; border-radius: 0 8px 8px 0; font-size: .78rem; }
+.wt-callout.warn { border-color: var(--warn-solid); background: var(--warn-bg); }
+.wt-callout.ai { border-color: var(--ai-solid); background: var(--ai-bg); }
+.wt-callout.danger { border-color: var(--danger-solid); background: var(--danger-bg); }
+.wt-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; cursor: pointer; }
+.wt-toggle input { width: 30px; height: 17px; appearance: none; -webkit-appearance: none; background: var(--border-strong); border-radius: 999px; position: relative; cursor: pointer; margin: 0; }
+.wt-toggle input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--surface); transition: left .15s; }
+.wt-toggle input:checked { background: var(--primary); }
+.wt-toggle input:checked::after { left: 15px; }
+.wt-diff { font-family: var(--font-mono); font-size: .72rem; display: grid; gap: 2px; }
+.wt-diff .add { color: var(--ok-text); background: var(--ok-bg); padding: 1px 5px; border-radius: 4px; }
+.wt-diff .del { color: var(--danger-text); background: var(--danger-bg); padding: 1px 5px; border-radius: 4px; text-decoration: line-through; }
+.wt-je { font-family: var(--font-mono); font-size: .74rem; width: 100%; border-collapse: collapse; }
+.wt-je th, .wt-je td { padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; }
+.wt-je td.n, .wt-je th.n { text-align: right; font-variant-numeric: tabular-nums; }
+.wt-je tr.tot td { font-weight: 700; border-top: 2px solid var(--border-strong); }
+.wt-sms { background: var(--surface-2); border-radius: 12px; padding: 10px; display: grid; gap: 6px; }
+.wt-hide { display: none !important; }
+@media (max-width: 760px) { .wt-cols, .wt-cols.c3, .wt-cols.wide-left { grid-template-columns: minmax(0, 1fr); } .wt-gantt .g-row { grid-template-columns: 84px minmax(0, 1fr); } }
+
+/* ---------- this walkthrough ---------- */
+.inv-doc { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 14px; font-size: .8rem; }
+.inv-doc .hd { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; }
+.inv-doc .hd b { font-family: var(--font-display); font-size: 1.05rem; }
+.aging { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.aging div { border: 1px solid var(--border); border-radius: 9px; padding: 6px 8px; background: var(--surface); }
+.aging .l { font-size: .62rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); font-weight: 700; }
+.aging .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.aging .warn { border-color: var(--warn-solid); background: var(--warn-bg); }
+.aging .bad { border-color: var(--danger-solid); background: var(--danger-bg); }
+.cost-bars { display: grid; gap: 6px; font-size: .74rem; }
+.cost-bars .cb { display: grid; grid-template-columns: 92px minmax(0, 1fr) 150px; gap: 8px; align-items: center; }
+.cost-bars .tr { position: relative; height: 14px; background: var(--surface-3); border-radius: 4px; }
+.cost-bars .tr i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 4px; background: var(--moss-300); }
+.cost-bars .tr b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); }
+.cost-bars .tr i.over { background: var(--marigold-400); }
+.close-list li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: .8rem; }
+.close-list { list-style: none; margin: 0; padding: 0; }
+.pl td.n { text-align: right; font-variant-numeric: tabular-nums; }
+.pl tr.h td { font-weight: 700; background: var(--surface-2); }
+.pl tr.t td { font-weight: 700; border-top: 2px solid var(--border-strong); }
+@media (max-width: 760px) { .aging { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cost-bars .cb { grid-template-columns: 70px minmax(0, 1fr); } .cost-bars .cb span:last-child { grid-column: 1 / -1; } }
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the walkthrough</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8.5 5.5-13.5 15-14-.4 9.5-5.5 14.5-14 14"/><path d="M5 19l8-8"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="8" width="17" height="9" rx="2"/><path d="M22 11v3"/><path d="M5 11h9v3H5z"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></symbol>
+<symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+<symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+<symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 6.1A10 10 0 0 1 12 6c6.5 0 10 6 10 6a16 16 0 0 1-2.7 3.4M6.3 7.6A16 16 0 0 0 2 12s3.5 6 10 6a9.6 9.6 0 0 0 4.2-.9"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.7-3.2 3-5 6-5s5.3 1.8 6 5"/><path d="M16 5.2a3 3 0 0 1 0 5.6M18 14.4c1.6.7 2.6 2.2 3 4.6"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-7z"/><path d="M11 13l9-9"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h1M4 12h1M4 18h1"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c.8-3.8 3.5-6 7-6s6.2 2.2 7 6"/></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L5 13h6l-1 8 8-10h-6z"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.3"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></symbol>
+<symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol>
+<symbol id="i-approve" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l3 3 5-6"/></symbol>
+<symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13l2-8h12l2 8v6H4z"/><path d="M4 13h5l1 2h4l1-2h5"/></symbol>
+<symbol id="i-today" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M5 19l1.4-1.4M17.6 6.4L19 5"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+<symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M16.5 7.5c-.8-1.3-2.4-2-4.5-2-2.6 0-4.3 1.3-4.3 3.2 0 4.6 9 2.4 9 7 0 2-1.9 3.3-4.7 3.3-2.2 0-3.9-.8-4.7-2.3"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></symbol>
+<symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6-6-6-11a6 6 0 0 1 12 0c0 5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></symbol>
+<symbol id="i-cursor" viewBox="0 0 24 24"><path d="M5 3l13 8-6 1.5L9 19z"/></symbol>
+<symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3 16L16 3l5 5L8 21z"/><path d="M7 12l2 2M10 9l2 2M13 6l2 2"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.5h2"/></symbol>
+<symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></symbol>
+<symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h11v10H2zM13 10h4l3 3v3h-7z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></symbol>
+<symbol id="i-rain" viewBox="0 0 24 24"><path d="M7 15a4.5 4.5 0 1 1 1.2-8.8A6 6 0 0 1 19 9a3.5 3.5 0 0 1-1 6.8"/><path d="M8 18l-1 2.5M12 18l-1 2.5M16 18l-1 2.5"/></symbol>
+<symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.5 5.5a4 4 0 0 0 5 5L12 18a2.1 2.1 0 0 1-3-3z"/><path d="M14.5 5.5L17 3l1.5 3.5L22 8l-2.5 2.5"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 4-2.4M19 13a10 10 0 0 0-2.2-1.6M2 9.5a15 15 0 0 1 5-3M12 20h.01"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></symbol>
+<symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5"/></symbol>
+<symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12.5" rx="2"/><path d="M3 10.5h18M7 15h4"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5L12 12l9-4.5M12 12v9"/></symbol>
+<symbol id="i-qr" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="6" height="6"/><rect x="14.5" y="3.5" width="6" height="6"/><rect x="3.5" y="14.5" width="6" height="6"/><path d="M14.5 14.5h2v2h-2zM18.5 18.5h2v2h-2zM14.5 18.5h2M18.5 14.5h2"/></symbol>
+<symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H18v15H5.5A1.5 1.5 0 0 0 4 20.5z"/><path d="M8 8h6"/></symbol>
+<symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5l8-2v18M12 8h8v13M7 8h2M7 12h2M7 16h2M15 12h2M15 16h2"/></symbol>
+<symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11c0-4-3-6-7-6 0 4 3 6 7 6zM12 13c0-4 3-6 7-6 0 4-3 6-7 6z"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.3 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.3-3.5-8.5s1-5.9 3.5-8.5z"/></symbol>
+
+</svg>
+<header class="site-nav"><div class="inner"><a class="wordmark" href="index.html">Rootline</a><nav aria-label="Proposal"><a href="index.html">Vision</a><a href="walkthroughs.html" aria-current="page">Walkthroughs</a><a href="screens-office.html">Office app</a><a href="screens-design.html">Design and AI</a><a href="screens-field-client-admin.html">Crew, client and admin</a></nav></div></header>
+<div class="pt-shell">
+  <nav class="pt-rail" id="rail" aria-label="Walkthrough steps"></nav>
+  <main class="pt-main" id="main">
+    <div class="pt-bar" id="bar"></div>
+    <div class="pt-body">
+      <section class="pt-screen" id="screen" aria-labelledby="step-h"></section>
+      <aside class="pt-bts" id="bts" aria-label="Behind the scenes"></aside>
+    </div>
+  </main>
+</div>
+<noscript><p style="padding:20px">This walkthrough needs JavaScript to run.</p></noscript>
+<script>
+/* Walkthrough: invoicing, payments and the books (docs 07, 08, 09). Account codes from doc 09 §4.2. */
+
+function je(rows, note) {
+  var d = 0, c = 0;
+  var body = rows.map(function (r) { d += r[1] || 0; c += r[2] || 0; return '<tr><td>' + esc(r[0]) + '</td><td class="n">' + (r[1] ? money(r[1], true) : '') + '</td><td class="n">' + (r[2] ? money(r[2], true) : '') + '</td></tr>'; }).join('');
+  return '<table class="wt-je"><thead><tr><th>Account</th><th class="n">Debit</th><th class="n">Credit</th></tr></thead><tbody>' + body + '<tr class="tot"><td>' + (note || (Math.abs(d - c) < 0.005 ? 'Balanced' : 'NOT BALANCED')) + '</td><td class="n">' + money(d, true) + '</td><td class="n">' + money(c, true) + '</td></tr></tbody></table>';
+}
+var MONEY_NAV = [['today', 'Today'], ['approve', 'Approvals'], ['users', 'Clients'], ['clipboard', 'Jobs'], ['dollar', 'Invoices'], ['card', 'Payments'], ['bank', 'Banking'], ['book', 'Ledger'], ['chart', 'Reports'], ['cog', 'Settings']];
+function shell(active, main, counts) { return appShell(active, main, { nav: MONEY_NAV, counts: counts }); }
+
+var WT = {
+  title: 'Rootline walkthrough: invoicing, payments and the books',
+  short: 'Invoicing, payments and the books',
+  ovTitle: 'Invoicing, payments and the books',
+  startLeft: 4186,
+  acts: [
+    { n: 'Act 1', t: 'Bill the work', sub: 'The month-end run and the client\'s invoice' },
+    { n: 'Act 2', t: 'Get paid', sub: 'Payments, collections, a dispute' },
+    { n: 'Act 3', t: 'Keep the books', sub: 'Payouts, bank feeds, bills, job costing' },
+    { n: 'Act 4', t: 'Close and report', sub: 'Deferred revenue, tax, close, statements, QuickBooks' }
+  ],
+  steps: [
+    { id: 'm01-run', act: 0, short: 'Billing run', title: 'The month-end billing run', who: 'Tasha', tags: ['mvp'] },
+    { id: 'm02-invoice', act: 0, short: 'Client invoice', title: 'The Okafors\' milestone invoice, as they see it', who: 'The Okafors', tags: ['mvp'] },
+    { id: 'm03-pay', act: 1, short: 'Client pays', title: 'Paying by bank transfer into Greenleaf\'s Stripe account', who: 'The Okafors', tags: ['mvp'] },
+    { id: 'm04-collect', act: 1, short: 'Collections', title: 'AR aging and the collections agent', who: 'Tasha, collections agent', ai: true, tags: ['mvp', 'v1'] },
+    { id: 'm05-dispute', act: 1, short: 'Dispute', title: 'A card dispute, answered with evidence', who: 'Erin, dispute agent', ai: true, tags: ['mvp'] },
+    { id: 'm06-payout', act: 2, short: 'Payout', title: 'A Stripe payout, reconciled to the bank', who: 'Priya', tags: ['mvp'] },
+    { id: 'm07-bank', act: 2, short: 'Bank feed', title: 'Bank feed categorization with the bookkeeping agent', who: 'Priya, bookkeeping agent', ai: true, tags: ['mvp', 'v1'] },
+    { id: 'm08-bills', act: 2, short: 'Bills', title: 'A nursery bill, matched to the PO and receipt', who: 'Priya, AP agent', ai: true, tags: ['mvp', 'v1'] },
+    { id: 'm09-jobcost', act: 2, short: 'Job costing', title: 'Job costing for the Okafors\' install', who: 'Erin', tags: ['mvp'] },
+    { id: 'm10-deferred', act: 3, short: 'Deferred revenue', title: 'Level billing, deferred revenue and the season-end true-up', who: 'Priya', tags: ['mvp'] },
+    { id: 'm11-close', act: 3, short: 'Tax and close', title: 'Sales tax, the close checklist and the CPA\'s view', who: 'Priya, outside CPA', tags: ['mvp'] },
+    { id: 'm12-statements', act: 3, short: 'Statements', title: 'P&L by division, balance sheet and cash', who: 'Erin', tags: ['mvp'] },
+    { id: 'm13-qbo', act: 3, short: 'QuickBooks', title: 'Optional QuickBooks Online sync', who: 'Priya', tags: ['mvp'] },
+    { id: 'm14-recap', act: 3, short: 'Recap', title: 'Recap: from work done to closed books', who: 'Everyone', tags: [] }
+  ],
+  credits: { 'm04-collect': 4, 'm05-dispute': 1, 'm07-bank': 10, 'm08-bills': 4 },
+  state: { exc: { po: false, ver: false, cert: false }, sent: false, method: 'ach', paid: false, collect: false, plan: false, dispute: false, matched: false, bulk: false, rule: false, billOk: false, trueup: false, locked: false, div: 'all', conflict: '' },
+  ov: {
+    eyebrow: 'Clickable walkthrough · money and books',
+    h: 'From work done to closed books, in one system',
+    lede: 'Rootline bills the work, collects into each landscaper\'s own Stripe account and keeps a real double-entry ledger, so the books close themselves instead of being rebuilt in another app. Follow Greenleaf\'s month end: the billing run, the Okafors\' milestone invoice and bank payment, collections and a card dispute, a Stripe payout matched to the bank, bank-feed categorization, a nursery bill, job costing, deferred revenue, sales tax, the close, financial statements and an optional QuickBooks mirror.',
+    cast: [
+      { h: 'Greenleaf office', icon: 'leaf', items: [['Tasha Greene', 'office manager, runs billing and collections'], ['Priya Shah', 'bookkeeper, reconciles and closes'], ['Erin Castillo', 'owner, approves write-offs and disputes']] },
+      { h: 'Outside', icon: 'users', items: [['Ada and Chidi Okafor', 'design-build clients from the AI design walkthrough'], ['Dana Whitaker, CPA', 'Greenleaf\'s outside accountant, firm access'], ['Maple Hill Nursery', 'plant supplier (fictional)']] },
+      { h: 'Agents', icon: 'spark', items: [['Collections (A5)', 'reminders and payment-plan offers'], ['Dispute Evidence (A28)', 'assembles the evidence packet'], ['Bookkeeping (A8) and AP (A9)', 'bank categorization and bill capture [V1]']] }
+    ],
+    extra: '<p class="wt-note mt14">Account codes follow the chart of accounts in doc 09. Ohio sales tax on landscaping services is shown at 8.0% and marked "verify".</p>'
+  },
+  screens: {}, bts: {}, actions: {}, inputs: {}, ensure: {}
+};
+
+/* m01 */
+WT.screens['m01-run'] = function (S) {
+  var ex = [['po', 'Maple Ridge HOA: PO number required', 'Enter PO 4471 from the board\'s approval'], ['ver', 'Kovacs mulch enhancement: visit not verified', 'Marco verified it at 3:12 PM'], ['cert', 'Westbrook Church: tax exemption certificate expired', 'New certificate on file']];
+  var open = ex.filter(function (e) { return !S.exc[e[0]]; }).length;
+  var main = '<div class="apphead"><span class="crumb">Invoices › Billing runs</span><h3>September billing run</h3>' + (S.sent ? pill('ok', 'Sent') : pill('warn', open + ' exceptions')) + '<span class="sp"></span>' + (S.sent ? '' : '<button type="button" class="btn sm primary" data-act="send" data-k="send"' + (open ? ' disabled' : '') + '>Approve and send 214 invoices</button>') + '</div>' +
+    '<div class="wt-kpis"><div class="wt-kpi"><div class="l">Per visit</div><div class="v">128</div><div class="d">$41,206</div></div><div class="wt-kpi"><div class="l">Level installments</div><div class="v">61</div><div class="d">$17,940</div></div><div class="wt-kpi"><div class="l">T&amp;M enhancements</div><div class="v">14</div><div class="d">$9,385</div></div><div class="wt-kpi"><div class="l">Milestones</div><div class="v">3</div><div class="d">$19,820</div></div><div class="wt-kpi"><div class="l">Snow, commercial</div><div class="v">8</div><div class="d">$22,600</div></div><div class="wt-kpi"><div class="l">Total</div><div class="v">$110,951</div><div class="d">+ tax $8,428</div></div></div>' +
+    '<div class="panel mt10"><h4>Exceptions</h4><ul class="wt-list">' + ex.map(function (e) { var ok = S.exc[e[0]]; return '<li class="wt-row' + (ok ? ' soft' : '') + '"><span class="wt-ic ' + (ok ? 'ok' : 'warn') + '">' + ic(ok ? 'check' : 'warn') + '</span><span>' + e[1] + '<span class="sub">' + (ok ? e[2] : 'Held out of the run until fixed') + '</span></span>' + (ok ? '<span></span>' : '<button type="button" class="btn xs" data-act="exc" data-v="' + e[0] + '" data-k="exc' + e[0] + '">Fix</button>') + '</li>'; }).join('') + '</ul></div>' +
+    (S.sent ? '<div class="toast mt10">' + ic('check') + '214 invoices sent: 189 by email, 21 by text, 4 by mail. 61 autopay charges scheduled for Oct 1.</div>' : '');
+  return browser('app.rootline.com/t/greenleaf/invoices/runs/2026-09', shell('Invoices', main), 'Greenleaf office: billing run');
+};
+WT.actions.exc = function (el, S) { S.exc[el.getAttribute('data-v')] = true; };
+WT.actions.send = function (el, S) { S.sent = true; };
+WT.ensure['m01-run'] = function (S) { S.exc = { po: true, ver: true, cert: true }; S.sent = true; };
+WT.bts['m01-run'] = function (S) {
+  return {
+    what: 'Every billable event (a completed visit, a T&M ticket, a milestone, a snow push) becomes a billable item. The monthly run turns items into invoices according to each agreement\'s billing schedule, and holds anything that isn\'t ready in an exception queue, so nothing goes out wrong and nothing is forgotten.',
+    agents: [['Billing Engine', 'Billable items, schedules and runs', 1]],
+    trace: [{ c: 'billing_run.preview(Sep)', r: '214 invoices from 1,962 billable items', ms: '2.4 s', det: true }, { c: 'billing_run.exceptions', r: '3 held: PO missing, unverified visit, expired certificate', ms: '—', det: true }, { c: 'billing_run.post(Sep)', r: S.sent ? '214 issued; ledger postings P1-P13' : 'waiting for approval', ms: S.sent ? '6.1 s' : '', det: true, human: !S.sent }],
+    hitl: [['Tasha', 'fixes exceptions and approves the run; multi-level approval is available for larger companies [V1].']],
+    tags: [['mvp', 'billing engine, runs, exception queue, delivery by email, text and mail']],
+    specs: 'Spec: 07 §4.1-4.2 (billable items, billing runs), §4.4 (invoice states) · 09 (posting rules)'
+  };
+};
+
+/* m02 */
+WT.screens['m02-invoice'] = function (S) {
+  var doc = '<div class="inv-doc"><div class="hd"><div><b>Greenleaf Grounds Co.</b><div class="tiny faint">Columbus, Ohio · greenleafgrounds.com</div></div><div style="text-align:right"><b>Invoice INV-3121</b><div class="tiny faint">Project P-1203 · Okafor backyard</div></div></div>' +
+    '<table class="data tight"><tbody><tr><td>Contract (Better tier, signed)</td><td class="num">$17,590.00</td></tr><tr><td>Milestone 1: deposit at signing (30%), paid</td><td class="num">$5,277.00</td></tr><tr><td><b>Milestone 2: planting complete (40%)</b></td><td class="num"><b>$7,036.00</b></td></tr><tr><td>Remaining after this invoice (30%, at the final walkthrough)</td><td class="num">$5,277.00</td></tr></tbody></table>' +
+    '<div class="flex mt10"><span class="tiny">Proof of service:</span>' + pill('', '24 planting photos') + pill('', '70 plants registered for warranty') + pill('', 'As-built plan') + '</div>' +
+    '<div class="wt-note mt6">Sales tax is included in the contract price per Greenleaf\'s terms (Ohio taxability of landscaping: verify).</div>' +
+    '<div class="flex mt10"><a class="btn primary sm" href="#m03-pay">Pay $7,036.00</a><span class="tiny faint">Due on receipt · bank transfer has no fee</span></div></div>';
+  var right = ctxCard('Invoices that explain themselves', ['Milestone invoices show the contract, what\'s been paid and what\'s left, so there are no surprises at the end.', 'Proof of service travels with the invoice: photos, registered plants and the as-built plan, which also helps if a payment is ever disputed.', 'Clients pay from the email, a text link or the portal.']);
+  return devRow('<div style="flex:1 1 440px;min-width:0">' + browser('portal.greenleafgrounds.com/invoices/INV-3121', '<div style="padding:14px">' + doc + '</div>', 'Client portal: invoice') + '</div>', right);
+};
+WT.bts['m02-invoice'] = function (S) {
+  return {
+    what: 'The planting-complete milestone was reached in the crew app, so the 40% milestone invoice went out in the run. The deposit paid at signing was held as a customer deposit (a liability) until work started, and the invoice shows it.',
+    agents: [['Billing Engine', 'Milestone billing gated on phase completion', 1]],
+    trace: [{ c: 'phase.completed(P-1203, planting)', r: 'milestone 2 unlocked', ms: '—', det: true }, { c: 'invoice.issued(INV-3121, $7,036.00)', r: 'attachments: photos, plant registry, as-built', ms: '80 ms', det: true }, { c: 'ledger.post(P-milestone)', r: 'Dr 1200 AR $7,036.00 / Cr 4300 Design-Build Revenue $7,036.00', ms: '12 ms', det: true }],
+    hitl: [['Tasha', 'approved the run that included this invoice.']],
+    tags: [['mvp', 'milestone billing, deposits, proof-of-service attachments, portal invoices']],
+    specs: 'Spec: 07 §4.2.5-4.2.6 (deposits, milestones), §4.6 (templates, attachments) · 06 (portal invoices)'
+  };
+};
+
+/* m03 */
+WT.screens['m03-pay'] = function (S) {
+  var ach = S.method === 'ach';
+  var body = '<p class="ptitle">Pay INV-3121</p><p class="psub">Okafor backyard · planting complete</p><div class="pcard"><div class="flex"><b class="num" style="font-size:1.3rem">$7,036.00</b></div></div>' +
+    '<div class="wt-list"><button type="button" class="wt-row' + (ach ? ' sel' : '') + '" data-act="method" data-v="ach" data-k="mach"><span class="wt-ic ok">' + ic('bank') + '</span><span><b>Bank account (ACH)</b><span class="sub">Chase checking ••6621 · no fee</span></span>' + pill('ok', 'No fee') + '</button><button type="button" class="wt-row' + (!ach ? ' sel' : '') + '" data-act="method" data-v="card" data-k="mcard"><span class="wt-ic">' + ic('card') + '</span><span><b>Card</b><span class="sub">Visa ••4242</span></span><span></span></button></div>' +
+    (S.paid ? '<div class="toast">' + ic('check') + (ach ? 'Payment started. Bank transfers take up to 4 business days to clear.' : 'Paid by card.') + '</div>' : '<button type="button" class="btn primary bigbtn" data-act="pay" data-k="pay" style="justify-content:center;min-height:48px">Pay $7,036.00</button>') +
+    '<div class="wt-note">Paid to Greenleaf Grounds Co. through its own Stripe account. Rootline never holds your money.</div>';
+  var right = '<div class="wt-stack" style="flex:1 1 320px;min-width:0">' + ctxCard('Why bank transfer is the default for large invoices', ['ACH costs a fraction of a card fee (the docs assume 0.8% capped at $5, verify), so Greenleaf offers it first on big invoices.', 'An ACH payment over $5,000 is accepted when started, but the next phase is scheduled only after the money clears (OD-23).', 'Card surcharging is not offered at MVP; it comes with compliance gating at [V1].']) +
+    (S.paid ? '<div class="panel"><h4>Ledger when it clears</h4>' + je([['1050 Stripe Clearing - USD', 7036, 0], ['1200 Accounts Receivable', 0, 7036]]) + '<div class="wt-note mt6">The ' + (ach ? '$5.00 ACH fee' : 'card fee') + ' posts when Stripe pays out (next step).</div></div>' : '') + '</div>';
+  return devRow(phone(body, { sub: 'Client portal', label: 'Client phone: pay invoice' }), right);
+};
+WT.actions.method = function (el, S) { S.method = el.getAttribute('data-v'); S.paid = false; };
+WT.actions.pay = function (el, S) { S.paid = true; };
+WT.ensure['m03-pay'] = function (S) { S.paid = true; };
+WT.bts['m03-pay'] = function (S) {
+  return {
+    what: 'The client pays through the Payment Element on Greenleaf\'s connected Stripe account. Bank transfers use Financial Connections to verify the account instantly. The invoice is marked paid only when Stripe confirms; for ACH that is when it clears, and the next project phase waits for it on payments over $5,000.',
+    agents: [['Payments', 'Direct charge on the connected account; webhooks', 1]],
+    trace: [{ c: 'payment_intent.create(us_bank_account, $7,036.00)', r: 'on Greenleaf\'s connected account', ms: '600 ms', det: true }, { c: 'payments.payment.pending', r: S.paid ? 'ACH initiated; invoice "payment pending"' : 'waiting', ms: S.paid ? '—' : '', det: true, pending: !S.paid }, { c: 'payments.payment.succeeded (day 3)', r: S.paid ? 'invoice paid; Dr 1050 / Cr 1200' : '', ms: S.paid ? '—' : '', det: true, pending: !S.paid }, { c: 'project.gate(final phase)', r: 'scheduled after funds clear (over $5,000)', ms: '—', det: true }],
+    hitl: [['The Okafors', 'choose how to pay; no one at Greenleaf touches card data (PCI SAQ-A).']],
+    tags: [['mvp', 'card and ACH on the Company\'s own Stripe account, Financial Connections, webhooks'], ['v1', 'surcharging with compliance gating, Canadian PAD']],
+    specs: 'Spec: 08 §4.3-4.6 (methods, flows), §4.22 (webhooks) · 24 OD-19, OD-23'
+  };
+};
+
+/* m04 */
+WT.screens['m04-collect'] = function (S) {
+  var drafts = [['Hollins', '$199.80', '12 days', 'Friendly reminder with pay link'], ['Abel', '$412.00', '24 days', 'Second reminder; offers bank transfer'], ['Ferris', '$1,284.00', '41 days', 'Payment plan offer: 3 × $428 [V1]'], ['Northgate Dental', '$2,160.00', '63 days', 'Service hold suggested: needs Erin']];
+  var main = '<div class="apphead"><span class="crumb">Payments › Receivables</span><h3>Accounts receivable</h3><span class="sp"></span>' + pill('', 'DSO 31 days') + '</div>' +
+    '<div class="aging"><div><div class="l">Current</div><div class="v">$46,210</div></div><div><div class="l">1-30</div><div class="v">$8,904</div></div><div class="warn"><div class="l">31-60</div><div class="v">$3,118</div></div><div class="bad"><div class="l">61-90</div><div class="v">$2,160</div></div><div><div class="l">90+</div><div class="v">$0</div></div></div>' +
+    '<div class="panel mt10"><div class="ph">Collections agent (A5) · 4 drafts <span class="pill info">L2</span></div><ul class="wt-list">' + drafts.map(function (d, i) { return '<li class="wt-row ai"><span class="wt-ic ai">' + ic(i === 3 ? 'lock' : 'mail') + '</span><span><b>' + d[0] + ' · ' + d[1] + '</b><span class="sub">' + d[2] + ' overdue · ' + d[3] + '</span></span>' + (S.collect ? (i === 3 ? pill('warn', 'Waiting for Erin') : pill('ok', 'Sent')) : '') + '</li>'; }).join('') + '</ul>' +
+    '<div class="flex mt10">' + (S.collect ? '<span class="okline">' + ic('check') + '3 reminders sent by Tasha; the service hold went to Erin</span>' : '<button type="button" class="btn sm primary" data-act="collect" data-k="collect">' + ic('check') + 'Approve the 3 reminders</button><span class="cost">4 credits</span>') + '</div></div>' +
+    '<div class="wt-callout warn mt10">A service hold pauses non-safety work for a client who hasn\'t paid. It never stops irrigation shut-offs or snow on safety routes, and it needs the owner\'s approval.</div>';
+  return browser('app.rootline.com/t/greenleaf/payments/receivables', shell('Payments', main, { Approvals: S.collect ? 1 : 4 }), 'Greenleaf office: receivables');
+};
+WT.actions.collect = function (el, S) { S.collect = true; };
+WT.bts['m04-collect'] = function (S) {
+  return {
+    what: 'Aging buckets update as payments land. The Collections agent drafts the right next step for each overdue client from Greenleaf\'s dunning sequence: reminders, a payment plan, or a service hold suggestion that only the owner can approve. Late fees, if Greenleaf charges them, follow the state limits table.',
+    agents: [['Collections agent (A5)', 'Tiered follow-up, payment plans, hold suggestions', 0], ['Dunning rules', 'Sequences, late-fee limits, holds', 1]],
+    trace: [{ c: 'ar.aging(today)', r: '4 clients past due', ms: '120 ms', det: true }, { c: 'agent.A5.draft(×4)', r: '3 messages + 1 hold suggestion', ms: '4.8 s' }, { c: 'approval.decide(Tasha)', r: S.collect ? '3 approved and sent' : 'waiting', ms: S.collect ? 'human' : '', human: !S.collect }, { c: 'approval.route(service hold → owner)', r: 'Erin decides', ms: '—', det: true }],
+    hitl: [['Tasha', 'approves reminders.'], ['Erin', 'approves service holds and write-offs above Tasha\'s limit.']],
+    levels: ['A5 at L2 (the day-3 reminder may earn L3 later)', 'Risk tier T3: client messages'],
+    creditNote: '4 drafts at 1 credit each (Copilot drafting).',
+    tags: [['mvp', 'aging, dunning sequences, reminders, service holds with safety exemptions'], ['v1', 'full collections agent with payment plans']],
+    specs: 'Spec: 07 §4.8-4.10 (AR, late fees, dunning, holds) · 17 §4.5.6 (A5) · 18 (DSO)'
+  };
+};
+
+/* m05 */
+WT.screens['m05-dispute'] = function (S) {
+  var ev = [['file', 'Signed proposal and terms (e-signature audit trail)'], ['camera', '6 visit photos, GPS- and time-stamped at the property'], ['clock', 'Crew time on site: 2 h 40 m, 3 people'], ['mail', 'Completion notice opened by the client on Apr 19'], ['chat', 'Client\'s text: "Looks great, thanks!"']];
+  var main = '<div class="apphead"><span class="crumb">Payments › Disputes</span><h3>Dispute · Lindqvist · $485.00 spring cleanup</h3>' + (S.dispute ? pill('info', 'Evidence submitted') : pill('warn', 'Respond in 7 days')) + '</div>' +
+    '<div class="wt-cols"><div class="panel"><div class="ph">Dispute Evidence agent (A28)</div><p class="tiny muted">Reason given by the card issuer: "Product or service not provided".</p><ul class="wt-list mt6">' + ev.map(function (e) { return '<li class="wt-row soft"><span class="wt-ic ok">' + ic(e[0]) + '</span><span>' + e[1] + '</span><span>' + ic('check') + '</span></li>'; }).join('') + '</ul>' +
+    '<div class="wt-bubble ai mt10">Greenleaf completed the spring cleanup at 41 Rustic Pl on April 18 as agreed in the signed proposal of April 2. GPS-stamped photos show the beds cleared and the lawn edged; the client confirmed by text on April 19.</div>' +
+    '<div class="flex mt10">' + (S.dispute ? '<span class="okline">' + ic('check') + 'Submitted by Erin to Stripe</span>' : '<button type="button" class="btn sm primary" data-act="dispute" data-k="dispute">Submit evidence</button><span class="cost">1 credit</span>') + '</div></div>' +
+    '<div class="panel"><h4>Ledger when the dispute opened</h4>' + je([['1075 Disputed Payments Receivable', 485, 0], ['6155 Dispute Fees', 15, 0], ['1050 Stripe Clearing - USD', 0, 500]]) + '<div class="wt-note mt6">If Greenleaf wins, the funds return and 1075 clears; if it loses, 1075 moves to 6170 Bad Debt Expense. The $15 fee is illustrative.</div></div></div>';
+  return browser('app.rootline.com/t/greenleaf/payments/disputes/dp_1Q8', shell('Payments', main), 'Greenleaf office: dispute');
+};
+WT.actions.dispute = function (el, S) { S.dispute = true; };
+WT.bts['m05-dispute'] = function (S) {
+  return {
+    what: 'Disputes are won with evidence, and Rootline already has it: the signed proposal, GPS- and time-stamped visit photos, crew time and the client\'s own messages. The Dispute Evidence agent assembles the packet and drafts the narrative; Erin reviews and submits it to Stripe from Rootline. The ledger tracks the disputed amount separately until it\'s decided.',
+    agents: [['Dispute Evidence (A28)', 'Assembles evidence, drafts the narrative', 0], ['Payments', 'Dispute webhooks and submission', 1]],
+    trace: [{ c: 'payments.dispute.opened(dp_1Q8)', r: '$485.00 · not provided', ms: '—', det: true }, { c: 'ledger.post(dispute.opened)', r: 'Dr 1075, Dr 6155 / Cr 1050', ms: '12 ms', det: true }, { c: 'agent.A28.assemble', r: '5 evidence items + narrative', ms: '3.4 s' }, { c: 'stripe.dispute.submit_evidence', r: S.dispute ? 'submitted by Erin' : 'waiting', ms: S.dispute ? '900 ms' : '', det: true, human: !S.dispute }],
+    hitl: [['Erin', 'reviews and submits; disputes are never answered automatically.']],
+    levels: ['A28 at L2'],
+    creditNote: 'Narrative drafting: 1 credit; evidence assembly is deterministic.',
+    tags: [['mvp', 'dispute handling with automatic evidence assembly']],
+    specs: 'Spec: 08 §4.18-4.19 (disputes) · 17 (A28) · 09 (1075, 6155 postings)'
+  };
+};
+
+/* m06 */
+WT.screens['m06-payout'] = function (S) {
+  var main = '<div class="apphead"><span class="crumb">Banking › Stripe payouts</span><h3>Payout po_1Q9 · $12,174.27</h3>' + (S.matched ? pill('ok', 'Reconciled') : pill('info', 'Arrived in bank')) + '</div>' +
+    '<div class="wt-cols"><div class="panel"><h4>What\'s in it</h4><table class="data tight"><tbody><tr><td>38 card and ACH payments</td><td class="num">$12,512.30</td></tr><tr><td>1 refund (Ferris, duplicate charge)</td><td class="num">-$57.80</td></tr><tr><td>Stripe fees</td><td class="num">-$280.23</td></tr><tr><td><b>Paid to Operating Checking</b></td><td class="num"><b>$12,174.27</b></td></tr></tbody></table>' +
+    '<div class="panel soft mt10"><div class="ph">Bank feed · Chase Operating ••0418</div><div class="wt-row' + (S.matched ? ' sel' : '') + '"><span class="wt-ic">' + ic('bank') + '</span><span>STRIPE TRANSFER ST-Q9X2<span class="sub">Oct 2 · $12,174.27</span></span>' + (S.matched ? pill('ok', 'Matched') : '<button type="button" class="btn xs primary" data-act="match" data-k="match">Match</button>') + '</div></div></div>' +
+    '<div class="panel"><h4>Journal entry JE-10518 (posted automatically)</h4>' + je([['1010 Operating Checking', 12174.27, 0], ['6150 Merchant Processing Fees', 280.23, 0], ['1050 Stripe Clearing - USD', 0, 12454.50]]) + '<div class="wt-note mt6">Stripe Clearing nets the payments in ($12,512.30) and the refund out ($57.80) to $12,454.50, which leaves with the payout. The clearing account returns to zero for this payout.</div></div></div>';
+  return browser('app.rootline.com/t/greenleaf/banking/payouts/po_1Q9', shell('Banking', main), 'Greenleaf office: payout reconciliation');
+};
+WT.actions.match = function (el, S) { S.matched = true; };
+WT.ensure['m06-payout'] = function (S) { S.matched = true; };
+WT.bts['m06-payout'] = function (S) {
+  return {
+    what: 'Every Stripe payout is a bundle of payments, refunds and fees. Rootline reads the payout\'s balance transactions, posts the fees and the transfer automatically, and matches the deposit line in the bank feed, so the Stripe clearing account always ties out. This is the step most landscapers do by hand in QuickBooks today.',
+    agents: [['Payments reconciliation', 'Balance transactions to ledger', 1], ['Bank feeds', 'Plaid transactions, matching', 1]],
+    trace: [{ c: 'payout.paid(po_1Q9)', r: '40 balance transactions', ms: '—', det: true }, { c: 'ledger.post(JE-10518)', r: 'fees $280.23, transfer $12,174.27', ms: '20 ms', det: true }, { c: 'bank.match(ST-Q9X2 ↔ po_1Q9)', r: S.matched ? 'exact match on amount and reference' : 'suggested', ms: '30 ms', det: true }],
+    hitl: [['Priya', 'confirms suggested matches; exact matches can auto-confirm by rule.']],
+    tags: [['mvp', 'payout reconciliation, fee posting, Plaid bank feeds, matching']],
+    specs: 'Spec: 08 §4.17 (payouts and fee reconciliation, worked entries) · 09 §4.6 (banking)'
+  };
+};
+
+/* m07 */
+WT.screens['m07-bank'] = function (S) {
+  var tx = [['SHELL OIL 57442', '$86.40', '5330 Fuel (Truck 12)', 0.97], ['SITEONE LANDSCAPE SUP', '$1,212.18', '5230 Materials - Mulch, Soil and Compost · job J-1188', 0.92], ['HOME DEPOT #3817', '$64.12', '5280 Inventory Shrink? split suggested', 0.61], ['VERIZON WIRELESS', '$412.33', '6240 Telephone and Internet', 0.99], ['OHIO BWC', '$318.00', '6050 Payroll Taxes and Benefits - Admin', 0.88]];
+  var main = '<div class="apphead"><span class="crumb">Banking › Chase Operating</span><h3>To review · 38</h3><span class="sp"></span>' + (S.bulk ? pill('ok', '31 accepted') : '<button type="button" class="btn sm primary" data-act="bulk" data-k="bulk">Accept 31 with confidence ≥ 0.90</button>') + '</div>' +
+    '<div class="panel"><div class="ph">Bookkeeping agent (A8) suggestions <span class="pill info">V1 · L2</span></div><table class="data tight"><thead><tr><th>Bank line</th><th class="num">Amount</th><th>Suggested account</th><th class="num">Confidence</th></tr></thead><tbody>' + tx.map(function (t) { return '<tr><td>' + t[0] + '</td><td class="num">' + t[1] + '</td><td>' + t[2] + '</td><td class="num">' + (t[3] >= 0.9 ? pill('ok', t[3].toFixed(2)) : pill('warn', t[3].toFixed(2))) + '</td></tr>'; }).join('') + '<tr><td colspan="4" class="tiny faint">+ 33 more</td></tr></tbody></table>' +
+    '<div class="wt-callout mt10"><b>Home Depot</b> had two kinds of items on one receipt; the agent suggests splitting it between job materials and shop supplies, and asks for the receipt photo.</div>' +
+    '<div class="flex mt10">' + (S.rule ? '<span class="okline">' + ic('check') + 'Rule saved: SHELL OIL → 5330 Fuel, vehicle from the fuel card</span>' : '<button type="button" class="btn sm" data-act="rule" data-k="rule">Make a rule for Shell fuel</button>') + '<span class="cost">10 credits (quoted for 38 lines)</span></div></div>';
+  return browser('app.rootline.com/t/greenleaf/banking/review', shell('Banking', main), 'Greenleaf office: bank review');
+};
+WT.actions.bulk = function (el, S) { S.bulk = true; };
+WT.actions.rule = function (el, S) { S.rule = true; };
+WT.bts['m07-bank'] = function (S) {
+  return {
+    what: 'Bank and card lines arrive through Plaid. Rules handle the repeat ones at MVP; at V1 the Bookkeeping agent suggests an account, a job and a class for the rest, with a confidence score. Priya accepts the confident ones in bulk, fixes the odd one and turns patterns into rules, so next month needs less review.',
+    agents: [['Bank feed rules', 'Deterministic rules from past decisions [MVP]', 1], ['Bookkeeping agent (A8)', 'Account, job and class suggestions [V1]', 0]],
+    trace: [{ c: 'plaid.transactions.sync(Chase ••0418)', r: '38 new lines', ms: '1.9 s', det: true }, { c: 'agent.A8.categorize(38)', r: '31 ≥ 0.90, 6 between 0.6-0.9, 1 split', ms: '7.2 s' }, { c: 'bank.accept(31)', r: S.bulk ? 'posted' : 'waiting', ms: S.bulk ? '300 ms' : '', det: true, human: !S.bulk }, { c: 'rule.create(SHELL OIL → 5330)', r: S.rule ? 'saved' : 'not yet', ms: S.rule ? '20 ms' : '', det: true, pending: !S.rule }],
+    hitl: [['Priya', 'approves categorizations; the agent never posts on its own at L2.']],
+    levels: ['A8 at L2'],
+    creditNote: 'Agent task run, quoted before it ran: 10 credits for 38 lines.',
+    tags: [['mvp', 'Plaid feeds, rules, reconciliation UI'], ['v1', 'Bookkeeping agent suggestions']],
+    specs: 'Spec: 09 §4.6 (banking), BK-01-05 · 17 §4.5.9 (A8) · 22 §4.4.1'
+  };
+};
+
+/* m08 */
+WT.screens['m08-bills'] = function (S) {
+  var lines = [['Cercis canadensis 1.5" cal B&B', 1, 189.00, 189.00, 'ok'], ['Panicum \'Northwind\' #3', 7, 18.50, 18.90, 'var'], ['Amsonia hubrichtii #2', 8, 16.75, 16.75, 'ok'], ['Ilex glabra \'Shamrock\' #3', 4, 24.00, 24.00, 'ok'], ['Ilex glabra \'Gem Box\' #3 (substitution)', 2, 26.50, 26.50, 'ok']];
+  var main = '<div class="apphead"><span class="crumb">Bills › Inbox</span><h3>Maple Hill Nursery · invoice 88214</h3>' + (S.billOk ? pill('ok', 'Approved · pay Oct 15') : pill('info', 'Matched to PO-1188')) + '</div>' +
+    '<div class="wt-cols"><div class="panel"><div class="ph">AP agent (A9) extraction <span class="pill info">V1</span></div><table class="data tight"><thead><tr><th>Line</th><th class="num">Qty</th><th class="num">PO</th><th class="num">Bill</th></tr></thead><tbody>' + lines.map(function (l) { return '<tr><td>' + l[0] + '</td><td class="num">' + l[1] + '</td><td class="num">' + money(l[2], true) + '</td><td class="num">' + money(l[3], true) + (l[4] === 'var' ? ' ' + pill('warn', '+$0.40') : '') + '</td></tr>'; }).join('') + '<tr><td colspan="4" class="tiny faint">+ 6 more lines · bill total $2,946.40</td></tr></tbody></table>' +
+    '<div class="wt-note mt6">3-way match: bill ↔ PO-1188 ↔ receipt RC-771 (Andrés checked 70 plants in). One price is $0.40 a plant over the PO, inside the 2% tolerance.</div></div>' +
+    '<div class="panel"><h4>Ledger when approved</h4>' + je([['2020 Goods Received Not Invoiced', 2943.60, 0], ['5270 Purchase Price Variance', 2.80, 0], ['2000 Accounts Payable', 0, 2946.40]]) + '<div class="wt-note mt6">The plants were costed to job P-1203 (5220 Materials - Plants) when they were received.</div>' +
+    '<div class="flex mt10">' + (S.billOk ? '<span class="okline">' + ic('check') + 'Approved by Priya; scheduled for payment Oct 15</span>' : '<button type="button" class="btn sm primary" data-act="billOk" data-k="billOk">Approve bill</button><span class="cost">4 credits (2 pages)</span>') + '</div></div></div>';
+  return browser('app.rootline.com/t/greenleaf/bills/88214', shell('Approvals', main), 'Greenleaf office: vendor bill');
+};
+WT.actions.billOk = function (el, S) { S.billOk = true; };
+WT.bts['m08-bills'] = function (S) {
+  return {
+    what: 'A vendor emails a PDF invoice to Greenleaf\'s bills address. At MVP, rules-based OCR reads the header; at V1 the AP agent extracts every line and matches it three ways against the purchase order and the receiving record from the job site. Small variances inside tolerance post to purchase price variance; bigger ones stop for review. Bank-detail changes in vendor emails are never applied by AI.',
+    agents: [['AP agent (A9)', 'Line-item extraction and 3-way match [V1]', 0], ['AP rules', 'Tolerances, approvals, payment scheduling', 1]],
+    trace: [{ c: 'email.received(bills@)', r: '2-page PDF from Maple Hill Nursery', ms: '—', det: true }, { c: 'agent.A9.extract', r: '11 lines, total $2,946.40', ms: '5.6 s' }, { c: 'match.three_way(PO-1188, RC-771)', r: '1 variance +$0.40 within 2%', ms: '40 ms', det: true }, { c: 'approval.decide(Priya)', r: S.billOk ? 'approved; pay Oct 15' : 'waiting', ms: S.billOk ? 'human' : '', human: !S.billOk }],
+    hitl: [['Priya', 'approves bills; payments over her limit go to Erin.']],
+    levels: ['A9 at L2', 'Risk tier T4 for bank-detail changes: people only'],
+    creditNote: 'Document understanding: 2 credits a page × 2 pages.',
+    tags: [['mvp', 'bills, approvals, rules-based header OCR, 3-way match'], ['v1', 'AP agent line extraction']],
+    specs: 'Spec: 09 §4.5 (AP), AI2 · 13 §4.10 (3-way match) · 17 §4.5.10 (A9)'
+  };
+};
+
+/* m09 */
+WT.screens['m09-jobcost'] = function (S) {
+  var rows = [['Labor', 3920, 4240, '124 h vs 114.6 h budgeted'], ['Materials', 5212, 5318, 'substitution, 2 replacement plants'], ['Equipment', 640, 702, 'skid steer 0.6 h over'], ['Other', 430, 380, 'one dump trip instead of two']];
+  var est = rows.reduce(function (t, r) { return t + r[1]; }, 0), act = rows.reduce(function (t, r) { return t + r[2]; }, 0), price = 17590;
+  var main = '<div class="apphead"><span class="crumb">Jobs › P-1203</span><h3>Okafor backyard · job costing</h3>' + pill('info', 'Install complete') + '</div>' +
+    '<div class="wt-kpis"><div class="wt-kpi"><div class="l">Contract</div><div class="v">' + money(price) + '</div></div><div class="wt-kpi"><div class="l">Estimated cost</div><div class="v">' + money(est) + '</div><div class="d">sold at 42.0% gross margin</div></div><div class="wt-kpi"><div class="l">Actual cost</div><div class="v">' + money(act) + '</div><div class="d">' + ((price - act) / price * 100).toFixed(1) + '% gross margin</div></div><div class="wt-kpi"><div class="l">Billed</div><div class="v">70%</div><div class="d">$12,313 of $17,590</div></div></div>' +
+    '<div class="panel mt10"><h4>Estimate vs actual</h4><div class="cost-bars">' + rows.map(function (r) { var mx = 6000; return '<div class="cb"><span>' + r[0] + '</span><span class="tr"><i class="' + (r[2] > r[1] ? 'over' : '') + '" style="width:' + (r[2] / mx * 100).toFixed(1) + '%"></i><b style="left:' + (r[1] / mx * 100).toFixed(1) + '%"></b></span><span class="num tiny">' + money(r[2]) + ' vs ' + money(r[1]) + '<span class="sub" style="display:block;color:var(--text-3)">' + r[3] + '</span></span></div>'; }).join('') + '</div><div class="wt-note mt6">Bar = actual; black mark = estimate. Labor includes burden at Greenleaf\'s rate; equipment at its actual cost per hour.</div></div>' +
+    '<div class="wt-callout mt10">The labor overrun came from planting in heavy clay. The estimating engine learns from it: Greenleaf\'s actual production rate for #3 shrubs in clay feeds back into the next estimate.</div>';
+  return browser('app.rootline.com/t/greenleaf/jobs/P-1203/costing', shell('Jobs', main), 'Greenleaf office: job costing');
+};
+WT.bts['m09-jobcost'] = function (S) {
+  return {
+    what: 'Every hour, material, machine hour and dump fee lands on the job as it happens: crew time segments, receipts from the field, equipment cost per hour and bills. So job costing is live, not a month-end reconstruction. The owner sees where the margin went, and the real production rates feed back into estimating.',
+    agents: [['Job costing', 'Actuals from time, inventory, equipment and AP', 1]],
+    trace: [{ c: 'jobcost.rollup(P-1203)', r: 'labor 124 h, materials $5,318, equipment $702, other $380', ms: '90 ms', det: true }, { c: 'production_rate.actual(#3 shrubs, clay)', r: '0.52 h each vs 0.40 h budget', ms: '30 ms', det: true }],
+    hitl: [['Erin', 'reviews margin; Sam adjusts production rates for clay sites.']],
+    tags: [['mvp', 'job costing by cost type, estimate vs actual, production-rate feedback']],
+    specs: 'Spec: 09 §4.8 (job costing, WIP) · 18 §4.4 (production rates) · 03 (estimating)'
+  };
+};
+
+/* m10 */
+WT.screens['m10-deferred'] = function (S) {
+  var main = '<div class="apphead"><span class="crumb">Ledger › Deferred revenue</span><h3>Level-billed agreements · season to date</h3></div>' +
+    '<div class="wt-kpis"><div class="wt-kpi"><div class="l">Agreements</div><div class="v">61</div></div><div class="wt-kpi"><div class="l">Billed</div><div class="v">$107,640</div></div><div class="wt-kpi"><div class="l">Earned (visits done)</div><div class="v">$111,215</div></div><div class="wt-kpi"><div class="l">Unbilled earned</div><div class="v">$3,575</div><div class="d">billing behind the work</div></div></div>' +
+    '<div class="panel mt10"><h4>Season-end true-up · SA-0977 · Delgado</h4><dl class="kv"><dt>Planned</dt><dd>30 visits at $73</dd><dt>Done</dt><dd>25 visits (5 weather skips)</dd><dt>Allowance</dt><dd>3 weather skips without credit</dd><dt>Credit due</dt><dd class="num">2 × $73 = $146.00</dd><dt>Billed</dt><dd>8 × $273.75 = $2,190.00</dd></dl>' +
+    (S.trueup ? '<div class="mt10">' + je([['4100 Maintenance Revenue', 146, 0], ['2180 Customer Credits', 0, 146]]) + '<div class="okline mt6">' + ic('check') + 'Credit applied to next season\'s first installment; client notified</div></div>' : '<div class="flex mt10"><button type="button" class="btn sm primary" data-act="trueup" data-k="trueup">Post true-up</button><span class="tiny faint">or refund to the card</span></div>') + '</div>';
+  return browser('app.rootline.com/t/greenleaf/ledger/deferred', shell('Ledger', main), 'Greenleaf office: deferred revenue');
+};
+WT.actions.trueup = function (el, S) { S.trueup = true; };
+WT.bts['m10-deferred'] = function (S) {
+  return {
+    what: 'Level billing smooths cash for clients, but revenue is earned when visits happen. Rootline keeps an earned-value meter per agreement: installments billed ahead of the work sit in deferred revenue, work done ahead of billing shows as unbilled. At season end the true-up applies the skip policy automatically.',
+    agents: [['Billing Engine', 'Earned-value meter and true-up', 1]],
+    trace: [{ c: 'agreements.earned_value(61 level-billed)', r: 'billed $107,640 · earned $111,215', ms: '400 ms', det: true }, { c: 'trueup.compute(SA-0977)', r: '2 skips beyond allowance → $146 credit', ms: '15 ms', det: true }, { c: 'ledger.post(trueup)', r: S.trueup ? 'Dr 4100 / Cr 2180' : 'waiting', ms: S.trueup ? '12 ms' : '', det: true, pending: !S.trueup }],
+    hitl: [['Priya', 'posts true-ups; refunds instead of credits follow the refund approval limits.']],
+    tags: [['mvp', 'level billing with earned value, deferred revenue, automatic true-up']],
+    specs: 'Spec: 07 §4.2.3 (level billing), §4.3 (skip policy) · 09 (deferred revenue recognition)'
+  };
+};
+
+/* m11 */
+WT.screens['m11-close'] = function (S) {
+  var steps = [['All bank and card accounts reconciled', true], ['Stripe clearing ties to zero', true], ['AR and AP agings reviewed', true], ['Payroll journal imported (Gusto)', true], ['Deferred revenue and true-ups posted', true], ['Depreciation run', true], ['Sales tax liability reviewed', true]];
+  var main = '<div class="apphead"><span class="crumb">Ledger › Close</span><h3>September close</h3>' + (S.locked ? pill('ok', 'Locked') : pill('info', '7 of 7 done')) + '</div>' +
+    '<div class="wt-cols"><div class="panel"><h4>Checklist</h4><ul class="close-list">' + steps.map(function (s) { return '<li><span>' + ic('check') + '</span><span>' + s[0] + '</span><span class="tiny faint">Priya</span></li>'; }).join('') + '</ul><div class="flex mt10">' + (S.locked ? '<span class="okline">' + ic('lock') + 'September locked. Reopening needs an approved request and a second approver after 90 days.</span>' : '<button type="button" class="btn sm primary" data-act="lock" data-k="lock">' + ic('lock') + 'Lock September</button>') + '</div></div>' +
+    '<div class="wt-stack"><div class="panel"><h4>Sales tax · September (verify rates)</h4><table class="data tight"><thead><tr><th>Jurisdiction</th><th class="num">Taxable</th><th class="num">Tax</th></tr></thead><tbody><tr><td>Franklin County, OH (8.0%)</td><td class="num">$92,616</td><td class="num">$7,409.28</td></tr><tr><td>Delaware County, OH (7.25%)</td><td class="num">$14,055</td><td class="num">$1,018.99</td></tr><tr><td>Exempt (church, school)</td><td class="num">$4,280</td><td class="num">$0.00</td></tr></tbody></table><div class="wt-note mt6">Balance in 2101 Sales Tax Payable - Ohio matches. Filing through a partner is [V1].</div></div>' +
+    '<div class="panel soft"><h4>' + ic('users') + ' Accountant Hub</h4><p class="tiny muted">Dana Whitaker, CPA sees Greenleaf with firm access: trial balance, adjusting entries she can propose, the close status of all her clients. No extra seat cost.</p></div></div></div>';
+  return browser('app.rootline.com/t/greenleaf/ledger/close/2026-09', shell('Ledger', main), 'Greenleaf office: close');
+};
+WT.actions.lock = function (el, S) { S.locked = true; };
+WT.ensure['m11-close'] = function (S) { S.locked = true; };
+WT.bts['m11-close'] = function (S) {
+  return {
+    what: 'Because postings happen when events happen, month-end is a checklist, not a project. Priya confirms each step, reviews sales tax by jurisdiction and locks the period. Greenleaf\'s outside CPA works in the same books through the free Accountant Hub.',
+    agents: [['Ledger', 'Period close, locks, reports', 1]],
+    trace: [{ c: 'close.checklist(Sep)', r: '7 of 7 complete', ms: '—', det: true }, { c: 'report.sales_tax(Sep)', r: '$8,428.27 owed; ties to 2101', ms: '220 ms', det: true }, { c: 'period.lock(Sep)', r: S.locked ? 'locked by Priya' : 'open', ms: S.locked ? '15 ms' : '', det: true, human: !S.locked }],
+    hitl: [['Priya', 'locks the period.'], ['Erin, or Priya under Erin\'s policy', 'can reopen it; older periods need two approvers.']],
+    tags: [['mvp', 'close checklist, period locks, sales tax liability, Accountant Hub (basic)'], ['v1', 'automated sales tax filing']],
+    specs: 'Spec: 09 §4.1.5 (periods and locks), §4.12 (close), §4.16 (sales tax) · 07 §4.5 · 02 (Accountant Hub)'
+  };
+};
+
+/* m12 */
+WT.screens['m12-statements'] = function (S) {
+  var D = { maintenance: [62840, 38110], design: [41230, 25890], snow: [6880, 4120] };
+  var keys = S.div === 'all' ? ['maintenance', 'design', 'snow'] : [S.div];
+  var rev = keys.reduce(function (t, k) { return t + D[k][0]; }, 0), cogs = keys.reduce(function (t, k) { return t + D[k][1]; }, 0), opex = S.div === 'all' ? 24310 : Math.round(24310 * D[S.div][0] / 110950);
+  var main = '<div class="apphead"><span class="crumb">Reports › Financial statements</span><h3>Profit and loss · September</h3><span class="sp"></span><div class="seg" role="group" aria-label="Division">' + [['all', 'All'], ['maintenance', 'Maintenance'], ['design', 'Design-build'], ['snow', 'Snow']].map(function (d) { return '<button type="button" data-act="div" data-v="' + d[0] + '" data-k="d' + d[0] + '" aria-pressed="' + (S.div === d[0]) + '">' + d[1] + '</button>'; }).join('') + '</div></div>' +
+    '<div class="wt-cols wide-left"><div class="panel"><table class="data tight pl"><tbody><tr class="h"><td>Revenue</td><td class="n">' + money(rev) + '</td></tr><tr><td>Cost of revenue (labor, materials, equipment, subs)</td><td class="n">' + money(cogs) + '</td></tr><tr class="t"><td>Gross profit</td><td class="n">' + money(rev - cogs) + ' (' + ((rev - cogs) / rev * 100).toFixed(1) + '%)</td></tr><tr><td>Overhead' + (S.div === 'all' ? '' : ' (allocated by revenue)') + '</td><td class="n">' + money(opex) + '</td></tr><tr class="t"><td>Net operating income</td><td class="n">' + money(rev - cogs - opex) + '</td></tr></tbody></table><div class="wt-note mt6">Snow in September is pre-season salt and contracts billed early (illustrative).</div></div>' +
+    '<div class="wt-stack"><div class="panel"><h4>Balance sheet (Sep 30)</h4><dl class="kv"><dt>Cash</dt><dd class="num">$184,210</dd><dt>Receivables</dt><dd class="num">$60,392</dd><dt>Customer deposits</dt><dd class="num">$21,440</dd><dt>Deferred revenue</dt><dd class="num">$8,925</dd><dt>Equipment loans</dt><dd class="num">$96,300</dd></dl></div><div class="panel"><h4>Cash this month</h4><dl class="kv"><dt>Collected</dt><dd class="num">$118,604</dd><dt>Paid out</dt><dd class="num">$97,882</dd><dt>Net</dt><dd class="num">+$20,722</dd></dl></div></div></div>';
+  return browser('app.rootline.com/t/greenleaf/reports/pl/2026-09', shell('Reports', main), 'Greenleaf office: financial statements');
+};
+WT.actions.div = function (el, S) { S.div = el.getAttribute('data-v'); };
+WT.bts['m12-statements'] = function (S) {
+  return {
+    what: 'Statements come straight from the ledger with division and job dimensions on every line, so Erin can see maintenance, design-build and snow separately without spreadsheets. The numbers tie to the KPI dashboards because both read the same postings.',
+    agents: [['Reports', 'P&L, balance sheet, cash from the ledger', 1]],
+    trace: [{ c: 'report.pl(Sep, division=' + S.div + ')', r: 'from 6,212 journal lines', ms: '310 ms', det: true }, { c: 'report.balance_sheet(Sep 30)', r: 'balanced', ms: '180 ms', det: true }],
+    hitl: [['Erin and the CPA', 'read; the reports never change the books.']],
+    tags: [['mvp', 'P&L by division and class, balance sheet, cash summary, budget vs actual']],
+    specs: 'Spec: 09 §4.10 (financial statements) · 18 (KPI Dictionary)'
+  };
+};
+
+/* m13 */
+WT.screens['m13-qbo'] = function (S) {
+  var map = [['4100 Maintenance Revenue', 'Lawn Maintenance Income'], ['4300 Design-Build and Installation Revenue', 'Landscape Installs'], ['1050 Stripe Clearing - USD', 'Stripe (bank)'], ['6150 Merchant Processing Fees', 'Merchant Fees']];
+  var main = '<div class="apphead"><span class="crumb">Settings › Integrations</span><h3>QuickBooks Online</h3>' + pill('ok', 'Mirror mode') + '<span class="sp"></span>' + pill('', 'Last sync 2 min ago') + '</div>' +
+    '<div class="wt-cols"><div class="panel"><h4>Mode</h4><p class="tiny muted">Rootline\'s ledger is the book of record. QuickBooks receives a mirror of invoices, payments, fees, payouts and journal summaries for the CPA who still works there. Using QuickBooks is optional.</p><table class="data tight mt6"><thead><tr><th>Rootline account</th><th>QuickBooks account</th></tr></thead><tbody>' + map.map(function (m) { return '<tr><td>' + m[0] + '</td><td>' + m[1] + '</td></tr>'; }).join('') + '</tbody></table></div>' +
+    '<div class="panel"><h4>Sync issue</h4><div class="wt-callout warn">Invoice INV-3107 was edited in QuickBooks (line amount changed from $292.00 to $280.00).</div>' +
+    (S.conflict ? '<div class="okline mt6">' + ic('check') + (S.conflict === 'revert' ? 'QuickBooks copy restored from Rootline' : 'Credit memo CM-212 for $12.00 created in Rootline and synced') + '</div>' : '<div class="flex mt10"><button type="button" class="btn sm primary" data-act="conflict" data-v="revert" data-k="crev">Restore QuickBooks from Rootline</button><button type="button" class="btn sm" data-act="conflict" data-v="memo" data-k="cmemo">Issue a $12 credit memo instead</button></div>') +
+    '<div class="wt-note mt6">One failing record never blocks the rest of a client\'s sync; it waits here with the reason.</div></div></div>';
+  return browser('app.rootline.com/t/greenleaf/settings/integrations/quickbooks', shell('Settings', main), 'Greenleaf office: QuickBooks sync');
+};
+WT.actions.conflict = function (el, S) { S.conflict = el.getAttribute('data-v'); };
+WT.bts['m13-qbo'] = function (S) {
+  return {
+    what: 'Companies can keep QuickBooks Online for their CPA without it running their books. In mirror mode Rootline pushes the postings with an account map; edits made in QuickBooks show up as sync issues, and the fix is made where the book of record lives. One bad record is isolated instead of blocking a whole client.',
+    agents: [['Accounting sync', 'QuickBooks Online connector, mapping, conflicts', 1]],
+    trace: [{ c: 'qbo.sync(push, Sep)', r: '214 invoices, 196 payments, 1 payout journal', ms: '48 s', det: true }, { c: 'qbo.cdc(changes since last sync)', r: '1 edit to INV-3107 in QuickBooks', ms: '1.2 s', det: true }, { c: 'sync.resolve(INV-3107)', r: S.conflict ? (S.conflict === 'revert' ? 'QuickBooks restored' : 'credit memo CM-212') : 'waiting for Priya', ms: S.conflict ? '900 ms' : '', det: true, human: !S.conflict }],
+    hitl: [['Priya', 'resolves sync issues; nothing in Rootline changes because of an edit in QuickBooks unless she says so.']],
+    tags: [['mvp', 'QuickBooks Online connector, migration, mirror mode'], ['v1', 'Xero and QuickBooks Desktop']],
+    specs: 'Spec: 09 §4.13-4.15 (QuickBooks and Xero, modes A-C, conflicts) · 24 §4.6'
+  };
+};
+
+/* m14 */
+WT.screens['m14-recap'] = function (S) {
+  var rows = [['Billing run', 'Billing Engine', 'Rules', 'Tasha', '0'], ['Client payment', 'Stripe on Greenleaf\'s account', 'Rules', 'The Okafors', '0'], ['Collections', 'Collections agent (A5)', 'AI', 'Tasha, Erin', '4'], ['Dispute', 'Dispute Evidence agent (A28)', 'AI', 'Erin', '1'], ['Payout', 'Reconciliation and bank match', 'Rules', 'Priya', '0'], ['Bank feed', 'Bookkeeping agent (A8)', 'AI [V1]', 'Priya', '10'], ['Vendor bill', 'AP agent (A9) and 3-way match', 'AI [V1]', 'Priya', '4'], ['Job costing, deferred revenue, tax, close, statements, QuickBooks', 'Ledger', 'Rules', 'Priya, Erin', '0']];
+  return '<div class="wt-cols wide-left"><div class="panel"><h4>Everything that ran</h4><div class="table-scroll"><table class="data tight"><thead><tr><th>Step</th><th>What ran</th><th>Kind</th><th>Approved by</th><th class="num">Credits</th></tr></thead><tbody>' + rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + (/AI/.test(r[2]) ? pill('ai', r[2]) : pill('', r[2])) + '</td><td>' + r[3] + '</td><td class="num">' + r[4] + '</td></tr>'; }).join('') + '<tr><td colspan="4"><b>Total</b></td><td class="num"><b>19</b></td></tr></tbody></table></div></div>' +
+    '<div class="wt-stack"><div class="panel"><h4>Why this matters</h4><p class="tiny muted">Every posting in this walkthrough was balanced and made when the event happened: invoice, deposit, payment, fee, payout, dispute, bill, true-up. That is why the close is a checklist and why QuickBooks is optional.</p></div><div class="panel"><h4>Scope</h4><div style="display:grid;gap:5px"><div class="tagrow">' + tag('mvp') + '<span class="note">billing engine, payments, dunning, disputes, payout reconciliation, bank feeds and rules, bills and 3-way match, job costing, deferred revenue, close, statements, QuickBooks Online</span></div><div class="tagrow">' + tag('v1') + '<span class="note">Bookkeeping and AP agents, payment plans, surcharging, tax filing, Xero and QuickBooks Desktop</span></div></div></div>' +
+    '<div class="flex"><a class="btn" href="#overview">' + ic('arrow-l') + 'Back to start</a><a class="btn" href="prototype.html">AI design walkthrough</a><a class="btn primary" href="walkthroughs.html">All walkthroughs ' + ic('arrow-r') + '</a></div></div></div>';
+};
+WT.bts['m14-recap'] = function (S) {
+  return {
+    what: 'Money in Rootline is mostly rules: billing, payments, postings, reconciliation and reports. AI agents help where there is judgment or reading to do (collections messages, dispute narratives, categorizing bank lines, reading vendor bills), and a person approves each of them.',
+    hitl: [['People approved', 'the billing run, every collection message, the dispute, every categorization, the bill and the close.']],
+    creditNote: '19 credits for the month\'s money work.',
+    tags: [['mvp', 'most of the money loop'], ['v1', 'Bookkeeping and AP agents']],
+    specs: 'Spec: 07, 08, 09, 13, 17, 18, 24'
+  };
+};
+
+/* Rootline walkthrough engine.
+   Renders the shared frame (rail, bar, screen, behind-the-scenes panel) for a walkthrough
+   defined in a global WT object (see tools/walkthroughs/README.md). Vanilla JS, no globals
+   beyond the helpers below and WT. */
+'use strict';
+var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+var money = function (n, cents) { var v = Math.abs(n); var s = v.toLocaleString('en-US', { minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: cents ? 2 : 0 }); return (n < 0 ? '-$' : '$') + s; };
+var num = function (n, d) { return Number(n).toLocaleString('en-US', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); };
+function ic(n, c) { return '<svg class="ic' + (c ? ' ' + c : '') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
+function tag(t) { return '<span class="tag ' + t + '">' + ({ mvp: 'MVP', v1: 'V1', v2: 'V2', v3: 'V3' }[t] || t) + '</span>'; }
+function pill(cls, text, icon) { return '<span class="pill ' + (cls || '') + '">' + (icon ? ic(icon) : '') + esc(text) + '</span>'; }
+function aiChip(text) { return '<span class="pill ai">' + ic('spark') + esc(text) + '</span>'; }
+function cost(n) { return '<span class="cost">' + n + ' credit' + (n === 1 ? '' : 's') + '</span>'; }
+/* ---------- device frames ---------- */
+function phone(inner, opt) {
+  opt = opt || {};
+  var brand = opt.noBrand ? '' : '<div class="brand"><span class="logo">' + ic(opt.logo || 'leaf') + '</span><span><b>' + esc(opt.brand || 'Greenleaf Grounds Co.') + '</b><small>' + esc(opt.sub || '') + '</small></span><span class="sp"></span>' + (opt.right || '<span class="faint">' + ic('menu') + '</span>') + '</div>';
+  return '<div class="phone pt-phone" style="position:relative" role="group" aria-label="' + esc(opt.label || 'Phone screen') + '"><div class="status"><span>' + esc(opt.time || '9:41') + '</span><span class="bat">' + (opt.offline ? ic('wifi-off', 's') + ' Offline ' : '5G ') + ic('battery', 's') + '</span></div><div class="body pt-pbody" data-keep="pbody' + (opt.k || '') + '">' + brand + '<div class="pbody-pad">' + inner + '</div>' + (opt.foot ? '<div class="pfoot">' + esc(opt.foot) + '</div>' : '') + '</div></div>';
+}
+function browser(url, inner, label) {
+  return '<div class="frame-scroll"><div class="browser" role="group" aria-label="' + esc(label || 'Desktop screen') + '"><div class="browser-bar"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="url">' + esc(url) + '</div></div>' + inner + '</div></div>';
+}
+var APP_NAV = [['today', 'Today'], ['inbox', 'Inbox'], ['approve', 'Approvals'], ['users', 'Clients'], ['dollar', 'Sales'], ['pen', 'Design'], ['calendar', 'Schedule'], ['clipboard', 'Jobs'], ['bank', 'Money'], ['chart', 'Reports'], ['cog', 'Settings']];
+function appShell(active, main, opt) {
+  opt = opt || {};
+  var counts = opt.counts || {};
+  var nav = (opt.nav || APP_NAV).map(function (n) { var on = n[1] === active; var b = counts[n[1]] ? '<span class="badge">' + counts[n[1]] + '</span>' : ''; return '<span class="item' + (on ? ' active' : '') + '"' + (on ? ' aria-current="page"' : '') + '>' + ic(n[0]) + n[1] + b + '</span>'; }).join('');
+  var left = START_LEFT - creditsThrough(stepIndex(current));
+  var foot = opt.foot != null ? opt.foot : 'AI credits <b>' + num(left) + '</b> of ' + num(ALLOW) + ' left<div class="meter"><i style="width:' + (left / ALLOW * 100).toFixed(1) + '%"></i></div>';
+  return '<div class="app pt-app"><nav class="app-side" aria-label="' + esc(opt.navLabel || 'Company app navigation (concept)') + '"><div class="co"><span class="logo">' + ic(opt.logo || 'leaf') + '</span><span><b>' + esc(opt.co || 'Greenleaf Grounds Co.') + '</b><small>' + esc(opt.coSub || 'Columbus, OH · Pro') + '</small></span></div>' + nav + (foot ? '<div class="sidefoot">' + foot + '</div>' : '') + '</nav><div class="app-main">' + main + '</div></div>';
+}
+function ctxCard(title, items, extra) {
+  return '<aside class="big-view" aria-label="About this screen"><div class="card"><h3 style="font-size:.95rem">' + esc(title) + '</h3><ul style="margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:.82rem;color:var(--text-2)">' + items.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul></div>' + (extra || '') + '</aside>';
+}
+function devRow() { return '<div class="dev-row">' + Array.prototype.slice.call(arguments).join('') + '</div>'; }
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+var S = WT.state || {};
+var STEPS = [{ id: 'overview', act: -1, short: 'Start here', title: WT.ovTitle || WT.short }].concat(WT.steps);
+var current = 'overview', navSource = 'load', btsOpen = true, timers = [], visited = {};
+var CREDITS = WT.credits || {};
+var ALLOW = WT.allowance || 6000, START_LEFT = WT.startLeft != null ? WT.startLeft : 6000;
+
+function stepIndex(id) { for (var i = 0; i < STEPS.length; i++) if (STEPS[i].id === id) return i; return 0; }
+function creditsThrough(idx) { var t = 0; for (var i = 1; i <= idx; i++) t += CREDITS[STEPS[i].id] || 0; return t; }
+var TOTAL_CREDITS = creditsThrough(STEPS.length - 1);
+function clearTimers() { timers.forEach(function (t) { clearTimeout(t); }); timers = []; }
+function later(fn, ms) { var t = setTimeout(function () { timers = timers.filter(function (x) { return x !== t; }); fn(); update(); }, RM ? 0 : ms); timers.push(t); return t; }
+
+/* ---------- rail ---------- */
+function renderRail() {
+  var idx = stepIndex(current);
+  var h = '<a class="rall" href="walkthroughs.html">' + ic('arrow-l') + 'All walkthroughs</a>';
+  h += '<a class="rstart" href="#overview"' + (current === 'overview' ? ' aria-current="step"' : '') + '>' + ic('play') + 'Start here</a>';
+  WT.acts.forEach(function (a, ai) {
+    h += '<div class="act"><div class="act-h"><b>' + esc(a.n.toUpperCase()) + '</b>' + esc(a.t) + '</div><ol>';
+    STEPS.forEach(function (s, i) {
+      if (s.act !== ai) return;
+      var cls = 'st' + (visited[s.id] && s.id !== current ? ' done' : '');
+      h += '<li><a class="' + cls + '" href="#' + s.id + '"' + (s.id === current ? ' aria-current="step"' : '') + ' title="' + esc(s.title) + '"><span class="n">' + (i < 10 ? '0' + i : i) + '</span><span class="t">' + esc(s.short) + '</span>' + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '<span></span>') + '</a></li>';
+    });
+    h += '</ol></div>';
+  });
+  if (TOTAL_CREDITS > 0) {
+    var used = creditsThrough(idx);
+    h += '<div class="rfoot">AI credits so far <b>' + used + '</b> of ' + TOTAL_CREDITS + '<div class="meter"><i style="width:' + (used / TOTAL_CREDITS * 100).toFixed(1) + '%"></i></div><div class="mt6">' + esc(WT.creditOwner || 'Greenleaf') + ' left this month: <b>' + num(START_LEFT - used) + '</b></div></div>';
+  }
+  $('#rail').innerHTML = h;
+}
+
+/* ---------- bar ---------- */
+var THEMES = ['auto', 'light', 'dark'], theme = 'auto';
+try { theme = localStorage.getItem('rootline-proto-theme') || 'auto'; } catch (e) { theme = 'auto'; }
+function applyTheme() { if (theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', theme); }
+applyTheme();
+function renderBar() {
+  var idx = stepIndex(current), s = STEPS[idx], n = STEPS.length - 1;
+  var where = idx === 0 ? 'Overview' : WT.acts[s.act].n + ' · ' + WT.acts[s.act].t + ' · step ' + idx + ' of ' + n;
+  $('#bar').innerHTML = '<div class="where"><span class="eyebrow">' + esc(where) + '</span><h1 id="step-h" tabindex="-1">' + esc(s.title) + '</h1></div><div class="ctrls"><div class="prog"><span class="track" role="progressbar" aria-valuemin="0" aria-valuemax="' + n + '" aria-valuenow="' + idx + '" aria-label="Walkthrough progress"><i style="width:' + (idx / n * 100).toFixed(1) + '%"></i></span><span class="num">' + idx + ' / ' + n + '</span></div>' +
+    '<button type="button" class="btn sm" data-act="prev" data-k="prev"' + (idx === 0 ? ' disabled' : '') + '>' + ic('arrow-l') + 'Back</button><button type="button" class="btn sm primary" data-act="next" data-k="next"' + (idx === n ? ' disabled' : '') + '>' + (idx === 0 ? 'Start' : 'Next') + ic('arrow-r') + '</button><button type="button" class="btn sm ghost" data-act="theme" data-k="theme" aria-label="Theme: ' + theme + '. Change theme">' + ic(theme === 'dark' ? 'moon' : 'sun') + '<span class="tiny">' + theme + '</span></button></div>';
+}
+
+/* ---------- behind the scenes ---------- */
+function btsHTML() {
+  var f = WT.bts[current]; var b = f ? f(S) : null; if (!b) return '';
+  var idx = stepIndex(current), h = '';
+  h += '<div class="bts-sec"><h3>What\'s happening</h3><p>' + b.what + '</p></div>';
+  if (b.agents || b.trace) {
+    h += '<div class="bts-sec"><h3>' + ic('spark', 's') + (b.traceTitle || 'Agent and automation trace') + '</h3>' + (b.agents || []).map(function (a) { return '<div class="agent"><span class="badge' + (a[2] ? ' det' : '') + '">' + ic(a[2] ? 'cog' : 'spark') + '</span><span><b>' + esc(a[0]) + '</b><small>' + esc(a[1]) + '</small></span></div>'; }).join('');
+    if (b.trace) h += '<ol class="trace">' + b.trace.map(function (t, i) { var st = t.pending ? 'pending' : (t.running ? 'running' : ''); if (t.human) st += ' human'; return '<li class="' + st.trim() + '"><span class="i">' + (i + 1) + '</span><span><code class="' + (t.det ? 'det' : '') + '">' + esc(t.c) + '</code><span class="res">' + esc(t.r || '') + '</span></span><span class="ms">' + (t.pending ? '' : (t.running ? '…' : esc(t.ms || ''))) + '</span></li>'; }).join('') + '</ol>';
+    h += '</div>';
+  }
+  if (b.hitl) h += '<div class="bts-sec"><h3>' + ic('user', 's') + 'Human in the loop</h3><div class="hitl">' + b.hitl.map(function (x) { return '<div>' + ic('check') + '<span><b>' + esc(x[0]) + '</b> ' + esc(x[1]) + '</span></div>'; }).join('') + '</div><div class="lvl">' + (b.levels || []).map(function (l) { return '<span class="pill info">' + esc(l) + '</span>'; }).join('') + '</div></div>';
+  var n = CREDITS[current] || 0;
+  if (TOTAL_CREDITS > 0 || b.creditNote) {
+    var run = creditsThrough(idx);
+    h += '<div class="bts-sec"><h3>' + ic('bolt', 's') + 'AI credits</h3><div class="cred"><span>This step</span><span class="big">' + n + '</span><span>Running total</span><span class="mono" style="font-weight:600">' + run + ' of ' + TOTAL_CREDITS + '</span><small>' + esc(b.creditNote || (n ? '' : 'No AI runs here; deterministic automation is free.')) + '</small></div>' +
+      (TOTAL_CREDITS > 0 ? '<div class="meter" title="Monthly allowance"><i style="width:' + ((ALLOW - START_LEFT + run) / ALLOW * 100).toFixed(1) + '%"></i></div><small class="tiny faint">' + esc(WT.creditOwner || 'Greenleaf') + ' (' + esc(WT.plan || 'Pro') + '): ' + num(START_LEFT - run) + ' of ' + num(ALLOW) + ' credits left this month</small>' : '') + '</div>';
+  }
+  if (b.tags) h += '<div class="bts-sec"><h3>Scope</h3><div style="display:grid;gap:5px">' + b.tags.map(function (t) { return '<div class="tagrow">' + tag(t[0]) + '<span class="note">' + esc(t[1]) + '</span></div>'; }).join('') + '</div></div>';
+  if (b.specs) h += '<div class="bts-sec"><h3>Spec references</h3><div class="specs">' + esc(b.specs) + '</div></div>';
+  return h;
+}
+function renderBTS() {
+  var el = $('#bts');
+  el.classList.toggle('collapsed', !btsOpen);
+  el.innerHTML = '<div class="bts-head"><span class="ai-mark">' + ic('spark') + '</span><h2>Behind the scenes</h2><button type="button" class="btn xs" data-act="bts" data-k="bts" aria-expanded="' + btsOpen + '" aria-controls="bts-body">' + (btsOpen ? 'Hide' : 'Show') + '</button></div><div class="bts-body" id="bts-body">' + btsHTML() + '</div>';
+}
+
+/* ---------- overview ---------- */
+function overviewHTML() {
+  var o = WT.ov;
+  var jm = WT.acts.map(function (a, ai) {
+    var steps = STEPS.filter(function (s) { return s.act === ai; });
+    var nodes = steps.map(function (s, j) {
+      var i = stepIndex(s.id);
+      return '<a class="jm-node' + (j === steps.length - 1 ? ' last' : '') + '" href="#' + s.id + '"><span class="k">' + (i < 10 ? '0' + i : i) + (s.ai ? '<span class="ai-dot" aria-label="AI step"></span>' : '') + '</span><b>' + esc(s.short) + '</b><span class="who">' + esc(s.who || '') + '</span>' + (s.tags || []).map(tag).join(' ') + '</a>';
+    }).join('');
+    return '<div class="jm-act"><div class="jh"><b>' + esc(a.n.toUpperCase()) + '</b><span>' + esc(a.t) + '</span><small>' + esc(a.sub || '') + '</small></div><div class="jm-row">' + nodes + '</div></div>';
+  }).join('');
+  var cast = (o.cast || []).map(function (c) { return '<div class="card"><h3>' + ic(c.icon || 'user') + esc(c.h) + '</h3><ul>' + c.items.map(function (x) { return '<li><b>' + esc(x[0]) + '</b> ' + esc(x[1]) + '</li>'; }).join('') + '</ul></div>'; }).join('');
+  return '<div class="ov-hero"><p class="eyebrow">' + esc(o.eyebrow) + '</p><h2>' + esc(o.h) + '</h2><p class="lede">' + o.lede + '</p><div class="flex"><a class="btn primary" href="#' + STEPS[1].id + '" data-k="ov-start">Start walkthrough ' + ic('arrow-r') + '</a><span class="muted small">' + (STEPS.length - 1) + ' steps · use the ← → keys</span></div></div>' +
+    '<h3 class="sec-t">The journey</h3><div class="jm">' + jm + '</div>' +
+    (cast ? '<h3 class="sec-t">The cast</h3><div class="cast">' + cast + '</div>' : '') + (o.extra || '');
+}
+
+/* ---------- screen and routing ---------- */
+function renderScreen() {
+  var el = $('#screen'), keep = {};
+  $$('[data-keep]', el).forEach(function (n) { keep[n.getAttribute('data-keep')] = n.scrollTop; });
+  el.innerHTML = current === 'overview' ? (WT.overview ? WT.overview(S) : overviewHTML()) : (WT.screens[current] ? WT.screens[current](S) : '');
+  $$('[data-keep]', el).forEach(function (n) { var k = n.getAttribute('data-keep'); if (keep[k] != null) n.scrollTop = keep[k]; });
+}
+function update() {
+  var a = document.activeElement, k = a && a.getAttribute ? a.getAttribute('data-k') : null;
+  var sel = a && typeof a.selectionStart === 'number' ? [a.selectionStart, a.selectionEnd] : null;
+  renderScreen(); renderBTS(); renderRail(); renderBar();
+  if (k) { var n = document.querySelector('[data-k="' + k + '"]'); if (n && !n.disabled) { try { n.focus({ preventScroll: true }); } catch (e) { n.focus(); } if (sel && n.setSelectionRange) { try { n.setSelectionRange(sel[0], sel[1]); } catch (e) {} } } }
+}
+function go(id, src) { navSource = src || 'link'; if (location.hash.slice(1) === id) route(); else location.hash = id; }
+function route() {
+  var id = (location.hash || '').replace(/^#/, '');
+  if (id !== 'overview' && !WT.screens[id]) id = 'overview';
+  var changed = id !== current;
+  if (changed) clearTimers();
+  var idx = stepIndex(id);
+  if (WT.ensure) for (var i = 1; i < idx; i++) { var f = WT.ensure[STEPS[i].id]; if (f) f(S); }
+  visited[id] = true; current = id;
+  renderScreen(); renderBTS(); renderRail(); renderBar();
+  document.title = (id === 'overview' ? '' : STEPS[idx].short + ' · ') + WT.title;
+  if (changed) {
+    var top = $('#main'); if (top && window.scrollY > top.offsetTop - 60) window.scrollTo(0, Math.max(0, top.offsetTop - 60));
+    if (navSource === 'button') { var b = document.querySelector('[data-k="next"]'); if (b && !b.disabled) b.focus({ preventScroll: true }); }
+    else if (navSource !== 'load') { var hh = $('#step-h'); if (hh) hh.focus({ preventScroll: true }); }
+    if (WT.enter && WT.enter[id]) WT.enter[id](S);
+  }
+  navSource = 'link';
+}
+function nav(d) { var i = stepIndex(current) + d; if (i < 0 || i >= STEPS.length) return; go(STEPS[i].id, 'button'); }
+
+/* ---------- events ---------- */
+document.addEventListener('click', function (e) {
+  var t = e.target.closest ? e.target.closest('[data-act],[data-go]') : null; if (!t) return;
+  if (t.hasAttribute('data-go')) { e.preventDefault(); go(t.getAttribute('data-go'), 'link'); return; }
+  var a = t.getAttribute('data-act');
+  if (a === 'prev') return nav(-1);
+  if (a === 'next') return nav(1);
+  if (a === 'bts') { btsOpen = !btsOpen; renderBTS(); var bb = document.querySelector('[data-k="bts"]'); if (bb) bb.focus(); return; }
+  if (a === 'theme') { theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length]; try { localStorage.setItem('rootline-proto-theme', theme); } catch (er) {} applyTheme(); renderBar(); var tb = document.querySelector('[data-k="theme"]'); if (tb) tb.focus(); return; }
+  if (WT.actions && WT.actions[a]) { e.preventDefault(); var r = WT.actions[a](t, S, e); if (r !== false) update(); }
+});
+function onInput(e) {
+  var t = e.target; if (!t.getAttribute) return; var k = t.getAttribute('data-in'); if (!k || !WT.inputs || !WT.inputs[k]) return;
+  var live = t.type === 'range' || t.type === 'checkbox' || t.type === 'radio' || t.tagName === 'SELECT';
+  if (e.type === 'input' && !live && t.getAttribute('data-live') == null) return;
+  var r = WT.inputs[k](t, S, e); if (r !== false) update();
+}
+document.addEventListener('input', onInput);
+document.addEventListener('change', onInput);
+document.addEventListener('submit', function (e) { e.preventDefault(); var f = e.target.getAttribute('data-submit'); if (f && WT.actions && WT.actions[f]) { WT.actions[f](e.target, S, e); update(); } });
+document.addEventListener('keydown', function (e) {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  var t = e.target, tn = t && t.tagName;
+  if (tn === 'INPUT' || tn === 'TEXTAREA' || tn === 'SELECT' || (t && t.isContentEditable) || (t && t.getAttribute && t.getAttribute('role') === 'slider')) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); nav(1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); nav(-1); }
+});
+window.addEventListener('hashchange', route);
+route();
+
+</script>
+</body>
+</html>

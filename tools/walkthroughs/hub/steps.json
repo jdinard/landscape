@@ -315,7 +315,115 @@
   ],
   "errors": []
  },
- "wt-money.html": null,
+ "wt-money.html": {
+  "acts": [
+   {
+    "head": "ACT 1Bill the work",
+    "steps": [
+     {
+      "id": "m01-run",
+      "short": "Billing run",
+      "title": "The month-end billing run",
+      "ai": false
+     },
+     {
+      "id": "m02-invoice",
+      "short": "Client invoice",
+      "title": "The Okafors' milestone invoice, as they see it",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Get paid",
+    "steps": [
+     {
+      "id": "m03-pay",
+      "short": "Client pays",
+      "title": "Paying by bank transfer into Greenleaf's Stripe account",
+      "ai": false
+     },
+     {
+      "id": "m04-collect",
+      "short": "Collections",
+      "title": "AR aging and the collections agent",
+      "ai": true
+     },
+     {
+      "id": "m05-dispute",
+      "short": "Dispute",
+      "title": "A card dispute, answered with evidence",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Keep the books",
+    "steps": [
+     {
+      "id": "m06-payout",
+      "short": "Payout",
+      "title": "A Stripe payout, reconciled to the bank",
+      "ai": false
+     },
+     {
+      "id": "m07-bank",
+      "short": "Bank feed",
+      "title": "Bank feed categorization with the bookkeeping agent",
+      "ai": true
+     },
+     {
+      "id": "m08-bills",
+      "short": "Bills",
+      "title": "A nursery bill, matched to the PO and receipt",
+      "ai": true
+     },
+     {
+      "id": "m09-jobcost",
+      "short": "Job costing",
+      "title": "Job costing for the Okafors' install",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 4Close and report",
+    "steps": [
+     {
+      "id": "m10-deferred",
+      "short": "Deferred revenue",
+      "title": "Level billing, deferred revenue and the season-end true-up",
+      "ai": false
+     },
+     {
+      "id": "m11-close",
+      "short": "Tax and close",
+      "title": "Sales tax, the close checklist and the CPA's view",
+      "ai": false
+     },
+     {
+      "id": "m12-statements",
+      "short": "Statements",
+      "title": "P&L by division, balance sheet and cash",
+      "ai": false
+     },
+     {
+      "id": "m13-qbo",
+      "short": "QuickBooks",
+      "title": "Optional QuickBooks Online sync",
+      "ai": false
+     },
+     {
+      "id": "m14-recap",
+      "short": "Recap",
+      "title": "Recap: from work done to closed books",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-commercial.html": null,
  "wt-owner-ai.html": null,
  "wt-onboarding-operator.html": null,

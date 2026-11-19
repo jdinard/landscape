@@ -1,0 +1,21 @@
+.inv-doc { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 14px; font-size: .8rem; }
+.inv-doc .hd { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px; }
+.inv-doc .hd b { font-family: var(--font-display); font-size: 1.05rem; }
+.aging { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.aging div { border: 1px solid var(--border); border-radius: 9px; padding: 6px 8px; background: var(--surface); }
+.aging .l { font-size: .62rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); font-weight: 700; }
+.aging .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.aging .warn { border-color: var(--warn-solid); background: var(--warn-bg); }
+.aging .bad { border-color: var(--danger-solid); background: var(--danger-bg); }
+.cost-bars { display: grid; gap: 6px; font-size: .74rem; }
+.cost-bars .cb { display: grid; grid-template-columns: 92px minmax(0, 1fr) 150px; gap: 8px; align-items: center; }
+.cost-bars .tr { position: relative; height: 14px; background: var(--surface-3); border-radius: 4px; }
+.cost-bars .tr i { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 4px; background: var(--moss-300); }
+.cost-bars .tr b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); }
+.cost-bars .tr i.over { background: var(--marigold-400); }
+.close-list li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: .8rem; }
+.close-list { list-style: none; margin: 0; padding: 0; }
+.pl td.n { text-align: right; font-variant-numeric: tabular-nums; }
+.pl tr.h td { font-weight: 700; background: var(--surface-2); }
+.pl tr.t td { font-weight: 700; border-top: 2px solid var(--border-strong); }
+@media (max-width: 760px) { .aging { grid-template-columns: repeat(2, minmax(0, 1fr)); } .cost-bars .cb { grid-template-columns: 70px minmax(0, 1fr); } .cost-bars .cb span:last-child { grid-column: 1 / -1; } }
