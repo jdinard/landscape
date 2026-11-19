@@ -1,0 +1,27 @@
+{
+ "walkthroughs": [
+  {"page": "prototype.html", "key": "design", "title": "AI design to a signed project", "lede": "A homeowner's photos and real dimensions become AI mockups with real plants, a to-scale plan, an estimate, a Good/Better/Best proposal, a signed approval with deposit, and the agents' follow-up work.", "personas": ["client_residential", "designer", "estimator", "office_manager", "crew_lead"], "modules": ["03", "06", "08", "10", "11", "12", "13", "17"]},
+  {"page": "wt-recurring.html", "key": "recurring", "title": "Small and recurring jobs", "lede": "Weekly grass cutting from an instant quote or a 2-minute Quick Quote to a season of visits, a route, a rain day, the crew's visit, a Spot-it upsell, autopay, renewal and route profitability.", "personas": ["client_residential", "estimator", "office_manager", "ops_manager", "crew_lead", "technician", "owner"], "modules": ["03", "04", "05", "07", "08", "09", "16", "17", "18"]},
+  {"page": "wt-crew-day.html", "key": "crew", "title": "A crew's day in the field app", "lede": "Shared-tablet sign-in and crew punch, DVIR and tailgate talk, load-out, the route, mowing and fertilizer visits with the wind gate, a dead zone and sync, an install with plant records, field payments, close-out and a Snow Lite storm visit.", "personas": ["crew_lead", "technician", "ops_manager"], "modules": ["05", "10", "12", "13", "14", "15", "17"]},
+  {"page": "wt-money.html", "key": "money", "title": "Invoicing, payments and the books", "lede": "A month-end billing run, client payments into the Company's own Stripe account, a failed autopay and a dispute, payout reconciliation, bank feeds, bills, job costing, deferred revenue, close and statements, and optional QuickBooks sync.", "personas": ["office_manager", "bookkeeper", "owner", "client_residential"], "modules": ["06", "07", "08", "09", "13", "17", "18"]},
+  {"page": "wt-commercial.html", "key": "commercial", "title": "Commercial and HOA accounts", "lede": "An RFP parsed into a scope matrix, a per-month commercial estimate, board approvals by quorum, site maps and inspections, enhancements, snow, consolidated billing, portfolio reporting and renewal.", "personas": ["client_commercial", "estimator", "ops_manager", "owner", "crew_lead"], "modules": ["02", "03", "06", "07", "10", "14", "17", "18"]},
+  {"page": "wt-owner-ai.html", "key": "owner", "title": "The owner's day with AI agents", "lede": "The daily briefing, one Approval Inbox for every agent, inbox triage with prompt-injection defense, Copilot answers and actions, an automation built from a sentence, marketing, reports and benchmarks, and AI credit controls.", "personas": ["owner", "office_manager"], "modules": ["16", "17", "18", "21", "22"]},
+  {"page": "wt-onboarding-operator.html", "key": "operator", "title": "Getting started and the operator console", "lede": "A company switching from Jobber and QuickBooks signs up, connects its own Stripe account, imports its data and sends a first quote; then the platform owner runs tenants, consented support, plant curation, AI operations and SaaS billing.", "personas": ["owner", "platform_owner", "platform_curator", "platform_support"], "modules": ["02", "08", "09", "12", "16", "17", "19", "21", "22"]}
+ ],
+ "personas": [
+  ["owner", "Business owner"], ["office_manager", "Office manager"], ["estimator", "Estimator"], ["designer", "Designer"], ["ops_manager", "Operations manager"], ["crew_lead", "Crew lead"], ["technician", "Technician"], ["bookkeeper", "Bookkeeper"], ["client_residential", "Homeowner"], ["client_commercial", "Property manager / HOA board"], ["platform_owner", "Platform owner (you)"], ["platform_curator", "Plant curator"], ["platform_support", "Platform support"]
+ ],
+ "modules": [
+  ["02", "Personas, roles and permissions"], ["03", "CRM, estimating and proposals"], ["04", "Scheduling and routing"], ["05", "Crew mobile app"], ["06", "Customer portal"], ["07", "Invoicing and contracts"], ["08", "Payments (own Stripe)"], ["09", "Ledger and accounting"], ["10", "Design Studio"], ["11", "AI design and mockups"], ["12", "Plant Knowledge Base"], ["13", "Operations and equipment"], ["14", "Service lines and Snow Lite"], ["15", "Team, HR and payroll"], ["16", "Marketing and communications"], ["17", "AI copilot and agents"], ["18", "Reporting and analytics"], ["19", "Platform admin console"], ["20", "Architecture and security"], ["21", "UX and design system"], ["22", "Pricing and packaging"], ["23", "Moonshots"]
+ ],
+ "not_shown": [
+  "Hiring, onboarding and H-2B paperwork for seasonal crews (15)",
+  "Subcontractor portal and compliance gate (13)",
+  "Irrigation, tree care, lighting and holiday-lighting modules beyond mentions (14)",
+  "Inventory counts, purchasing workbench and fleet maintenance in depth (13)",
+  "Design Studio 3D, sun study and plan exports (10)",
+  "Website builder and public instant quotes beyond the homeowner steps (16)",
+  "Architecture and security internals (20), shown only through their effects",
+  "The moonshots in 23 (V2 and V3 bets)"
+ ]
+}

@@ -1,0 +1,118 @@
+{
+ "prototype.html": {
+  "acts": [
+   {
+    "head": "ACT 1Homeowner on Greenleaf's website",
+    "steps": [
+     {
+      "id": "s01-address",
+      "short": "Visualize your yard",
+      "title": "Visualize your yard: address and property",
+      "ai": false
+     },
+     {
+      "id": "s02-photos",
+      "short": "Guided photos",
+      "title": "Guided photo capture",
+      "ai": false
+     },
+     {
+      "id": "s03-dimensions",
+      "short": "Real dimensions",
+      "title": "Real dimensions and wishes",
+      "ai": false
+     },
+     {
+      "id": "s04-ai-working",
+      "short": "AI agents at work",
+      "title": "The agents read, measure and paint",
+      "ai": true
+     },
+     {
+      "id": "s05-mockups",
+      "short": "Photoreal mockups",
+      "title": "Four styles, labeled with real plants",
+      "ai": true
+     },
+     {
+      "id": "s06-assistant",
+      "short": "Design assistant",
+      "title": "Edit the design by asking",
+      "ai": true
+     },
+     {
+      "id": "s07-quote",
+      "short": "Get a quote",
+      "title": "Get a quote from Greenleaf",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Greenleaf Grounds Co. office",
+    "steps": [
+     {
+      "id": "s08-lead-agent",
+      "short": "Lead follow-up",
+      "title": "Lead Follow-up agent drafts, Sam approves",
+      "ai": true
+     },
+     {
+      "id": "s09-layout",
+      "short": "AI layouts to scale",
+      "title": "Three to-scale layouts from the site visit",
+      "ai": true
+     },
+     {
+      "id": "s10-studio",
+      "short": "Design Studio",
+      "title": "Design Studio: plan, validation, takeoff",
+      "ai": true
+     },
+     {
+      "id": "s11-estimate",
+      "short": "Estimating agent",
+      "title": "Estimating agent drafts, Sam adjusts and approves",
+      "ai": true
+     },
+     {
+      "id": "s12-proposal",
+      "short": "AI-drafted proposal",
+      "title": "Good / Better / Best proposal, reviewed and sent",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Client approval, then the agents",
+    "steps": [
+     {
+      "id": "s13-portal",
+      "short": "Client signs and pays",
+      "title": "Client portal: choose, sign, pay the deposit",
+      "ai": false
+     },
+     {
+      "id": "s14-downstream",
+      "short": "Agents take over",
+      "title": "After approval: jobs, POs, schedule, care",
+      "ai": true
+     },
+     {
+      "id": "s15-recap",
+      "short": "Recap",
+      "title": "Recap: every AI action, who approved, what it cost",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
+ "wt-recurring.html": null,
+ "wt-crew-day.html": null,
+ "wt-money.html": null,
+ "wt-commercial.html": null,
+ "wt-owner-ai.html": null,
+ "wt-onboarding-operator.html": null
+}

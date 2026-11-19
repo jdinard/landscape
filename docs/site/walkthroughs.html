@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rootline walkthroughs</title>
+<meta name="description" content="Clickable walkthroughs of the Rootline product for landscape businesses, one per part of the business.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/rootline.css">
+<style>
+/* Hub layout: a short hero, the walkthrough cards, then coverage. Uses rootline.css tokens only. */
+.hub-hero { padding: 44px 0 28px; border-bottom: 1px solid var(--border); }
+.hub-hero h1 { margin: 8px 0 12px; }
+.hub-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 22px; }
+.hub-stats div { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-m); padding: 12px 14px; }
+.hub-stats dt { font-family: var(--font-mono); font-size: 1.45rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.hub-stats dd { margin: 2px 0 0; color: var(--text-2); font-size: .84rem; }
+.how { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 18px; }
+.how .card p { font-size: .88rem; color: var(--text-2); }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 16px; }
+.fchip { font: inherit; font-size: .8rem; font-weight: 600; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-2); cursor: pointer; }
+.fchip[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.wgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 16px; }
+.wcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow-1); }
+.wcard[hidden] { display: none; }
+.wc-top { display: flex; justify-content: space-between; align-items: baseline; }
+.wc-n { font-family: var(--font-mono); font-weight: 600; color: var(--accent); }
+.wc-meta { font-size: .78rem; color: var(--text-3); }
+.wcard h3 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; }
+.wcard h3 a { color: var(--text); text-decoration: none; }
+.wcard h3 a:hover { text-decoration: underline; }
+.wc-lede { font-size: .9rem; color: var(--text-2); }
+.pchips { display: flex; flex-wrap: wrap; gap: 5px; }
+.pchip { font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--surface-3); color: var(--text-2); }
+.wcard details { border-top: 1px solid var(--border); padding-top: 8px; }
+.wcard summary { cursor: pointer; font-size: .84rem; font-weight: 600; color: var(--link); }
+.acts { display: grid; gap: 8px; margin-top: 8px; }
+.act-h { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); font-weight: 650; }
+.act-h b { color: var(--accent); font-family: var(--font-mono); }
+.acts ol { margin: 4px 0 0; padding-left: 20px; font-size: .84rem; display: grid; gap: 2px; }
+.ai-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--ai-solid); vertical-align: 1px; }
+.wc-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-top: 6px; }
+table.cov { min-width: 560px; }
+table.cov caption { text-align: left; font-weight: 650; padding: 0 0 8px; }
+table.cov th.c, table.cov td.c { text-align: center; width: 46px; }
+table.cov th.c a { font-family: var(--font-mono); text-decoration: none; }
+table.cov tbody th { font-weight: 500; font-size: .86rem; text-transform: none; letter-spacing: 0; color: var(--text); }
+table.cov tr.gap th { color: var(--text-3); }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--border-strong); }
+.dot.on { background: var(--primary); border-color: var(--primary); }
+.cov-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 24px; align-items: start; }
+.cov-grid > div, .wgrid > * { min-width: 0; }
+.legend-list { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 3px; font-size: .84rem; color: var(--text-2); }
+.gaps { margin: 8px 0 0; padding-left: 20px; color: var(--text-2); font-size: .9rem; display: grid; gap: 3px; }
+@media (max-width: 480px) { .wgrid { grid-template-columns: 1fr; } .cov-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main" style="position:absolute;left:-9999px">Skip to content</a>
+<header class="site-nav"><div class="inner"><a class="wordmark" href="index.html">Rootline</a><nav aria-label="Proposal"><a href="index.html">Vision</a><a href="walkthroughs.html" aria-current="page">Walkthroughs</a><a href="screens-office.html">Office app</a><a href="screens-design.html">Design and AI</a><a href="screens-field-client-admin.html">Crew, client and admin</a></nav></div></header>
+<main id="main">
+<section class="hub-hero"><div class="wrap">
+  <p class="eyebrow">Clickable prototype · Greenleaf Grounds Co., Columbus, Ohio</p>
+  <h1>Walk through the whole business</h1>
+  <p class="lede">1 guided walkthroughs show Rootline end to end, from a homeowner's first photo or a 2-minute mowing quote to a crew's day, a paid invoice, closed books and the platform owner's console. Every step pairs the product screen with what happens behind it: which agent or automation ran, who approved, the AI credits used and the scope tier.</p>
+  <dl class="hub-stats">
+    <div><dt>1</dt><dd>walkthroughs</dd></div>
+    <div><dt>15</dt><dd>clickable steps</dd></div>
+    <div><dt>9</dt><dd>steps where AI agents or models act</dd></div>
+    <div><dt>5</dt><dd>personas shown</dd></div>
+    <div><dt>8 of 22</dt><dd>spec modules shown</dd></div>
+  </dl>
+  <div class="how">
+    <div class="card"><h3>Product screen</h3><p>The real interface for that person: a phone for crews and homeowners, a browser for the office, the portal and the operator. Buttons, toggles and forms work.</p></div>
+    <div class="card"><h3>Behind the scenes</h3><p>The agent or automation trace, who approves and at what autonomy level, the AI credits for the step and the running total, and the spec section it comes from.</p></div>
+    <div class="card"><h3>Scope tiers</h3><p><span class="tag mvp">MVP</span> first sellable release · <span class="tag v1">V1</span> next wave · <span class="tag v2">V2</span> later wave · <span class="tag v3">V3</span> moonshot. Tiers describe scope, not dates.</p></div>
+  </div>
+</div></section>
+
+<section class="section" aria-labelledby="w-h"><div class="wrap">
+  <h2 id="w-h">The walkthroughs</h2>
+  <div class="filters" role="group" aria-label="Show walkthroughs for"><button type="button" class="fchip" aria-pressed="true" data-p="all">Everyone</button><button type="button" class="fchip" aria-pressed="false" data-p="office_manager">Office manager</button><button type="button" class="fchip" aria-pressed="false" data-p="estimator">Estimator</button><button type="button" class="fchip" aria-pressed="false" data-p="designer">Designer</button><button type="button" class="fchip" aria-pressed="false" data-p="crew_lead">Crew lead</button><button type="button" class="fchip" aria-pressed="false" data-p="client_residential">Homeowner</button></div>
+  <div class="wgrid" id="wgrid">
+<article class="wcard" id="w-design" data-personas="client_residential designer estimator office_manager crew_lead">
+  <div class="wc-top"><span class="wc-n">01</span><span class="wc-meta tabular">15 steps · 9 with AI</span></div>
+  <h3><a href="prototype.html">AI design to a signed project</a></h3>
+  <p class="wc-lede">A homeowner&#x27;s photos and real dimensions become AI mockups with real plants, a to-scale plan, an estimate, a Good/Better/Best proposal, a signed approval with deposit, and the agents&#x27; follow-up work.</p>
+  <div class="pchips" aria-label="Personas"><span class="pchip">Homeowner</span><span class="pchip">Designer</span><span class="pchip">Estimator</span><span class="pchip">Office manager</span><span class="pchip">Crew lead</span></div>
+  <details><summary>All 15 steps</summary><div class="acts"><div class="act"><div class="act-h"><b>ACT 1</b> Homeowner on Greenleaf&#x27;s website</div><ol><li><a href="prototype.html#s01-address">Visualize your yard</a></li><li><a href="prototype.html#s02-photos">Guided photos</a></li><li><a href="prototype.html#s03-dimensions">Real dimensions</a></li><li><a href="prototype.html#s04-ai-working">AI agents at work</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li><li><a href="prototype.html#s05-mockups">Photoreal mockups</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li><li><a href="prototype.html#s06-assistant">Design assistant</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li><li><a href="prototype.html#s07-quote">Get a quote</a></li></ol></div><div class="act"><div class="act-h"><b>ACT 2</b> Greenleaf Grounds Co. office</div><ol><li><a href="prototype.html#s08-lead-agent">Lead follow-up</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li><li><a href="prototype.html#s09-layout">AI layouts to scale</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li><li><a href="prototype.html#s10-studio">Design Studio</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li><li><a href="prototype.html#s11-estimate">Estimating agent</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li><li><a href="prototype.html#s12-proposal">AI-drafted proposal</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li></ol></div><div class="act"><div class="act-h"><b>ACT 3</b> Client approval, then the agents</div><ol><li><a href="prototype.html#s13-portal">Client signs and pays</a></li><li><a href="prototype.html#s14-downstream">Agents take over</a> <span class="ai-dot" title="AI step" aria-label="AI step"></span></li><li><a href="prototype.html#s15-recap">Recap</a></li></ol></div></div></details>
+  <div class="wc-foot"><span class="mono tiny muted">Spec: 03 · 06 · 08 · 10 · 11 · 12 · 13 · 17</span><a class="btn primary sm" href="prototype.html">Start <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+</article></div>
+</div></section>
+
+<section class="section" aria-labelledby="cov-h"><div class="wrap">
+  <h2 id="cov-h">What the walkthroughs cover</h2>
+  <p class="muted">Columns are the walkthroughs above. A filled dot means the persona or spec module appears in that walkthrough.</p>
+  <div class="cov-grid">
+    <div><div class="table-scroll"><table class="data cov"><caption>Personas</caption><thead><tr><th scope="col"></th><th scope="col" class="c"><a href="prototype.html">01</a></th></tr></thead><tbody><tr class="gap"><th scope="row">Business owner</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr><th scope="row">Office manager</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr><th scope="row">Estimator</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr><th scope="row">Designer</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr class="gap"><th scope="row">Operations manager</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr><th scope="row">Crew lead</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr class="gap"><th scope="row">Technician</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row">Bookkeeper</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr><th scope="row">Homeowner</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr class="gap"><th scope="row">Property manager / HOA board</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row">Platform owner (you)</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row">Plant curator</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row">Platform support</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr></tbody></table></div></div>
+    <div><div class="table-scroll"><table class="data cov"><caption>Spec modules</caption><thead><tr><th scope="col"></th><th scope="col" class="c"><a href="prototype.html">01</a></th></tr></thead><tbody><tr class="gap"><th scope="row"><span class="mono tiny muted">02</span> Personas, roles and permissions</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr><th scope="row"><span class="mono tiny muted">03</span> CRM, estimating and proposals</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">04</span> Scheduling and routing</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">05</span> Crew mobile app</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr><th scope="row"><span class="mono tiny muted">06</span> Customer portal</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">07</span> Invoicing and contracts</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr><th scope="row"><span class="mono tiny muted">08</span> Payments (own Stripe)</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">09</span> Ledger and accounting</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr><th scope="row"><span class="mono tiny muted">10</span> Design Studio</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr><th scope="row"><span class="mono tiny muted">11</span> AI design and mockups</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr><th scope="row"><span class="mono tiny muted">12</span> Plant Knowledge Base</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr><th scope="row"><span class="mono tiny muted">13</span> Operations and equipment</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">14</span> Service lines and Snow Lite</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">15</span> Team, HR and payroll</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">16</span> Marketing and communications</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr><th scope="row"><span class="mono tiny muted">17</span> AI copilot and agents</th><td class="c"><span class="dot on" aria-label="covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">18</span> Reporting and analytics</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">19</span> Platform admin console</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">20</span> Architecture and security</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">21</span> UX and design system</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">22</span> Pricing and packaging</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr><tr class="gap"><th scope="row"><span class="mono tiny muted">23</span> Moonshots</th><td class="c"><span class="dot" aria-label="not covered"></span></td></tr></tbody></table></div></div>
+  </div>
+  <ol class="legend-list"><li><span class="mono">01</span> AI design to a signed project</li></ol>
+  <h3 style="margin-top:22px">Not shown yet</h3>
+  <ul class="gaps"><li>Hiring, onboarding and H-2B paperwork for seasonal crews (15)</li><li>Subcontractor portal and compliance gate (13)</li><li>Irrigation, tree care, lighting and holiday-lighting modules beyond mentions (14)</li><li>Inventory counts, purchasing workbench and fleet maintenance in depth (13)</li><li>Design Studio 3D, sun study and plan exports (10)</li><li>Website builder and public instant quotes beyond the homeowner steps (16)</li><li>Architecture and security internals (20), shown only through their effects</li><li>The moonshots in 23 (V2 and V3 bets)</li></ul>
+</div></section>
+</main>
+<footer class="site-foot"><div class="wrap">Rootline (working name) · design proposal, November 2026 · sample company Greenleaf Grounds Co. Scope tiers come from doc 24; AI credit costs from doc 22 section 4.4.1.</div></footer>
+<script>
+(function () {
+  var chips = document.querySelectorAll('.fchip');
+  var cards = document.querySelectorAll('.wcard');
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      var p = c.getAttribute('data-p');
+      chips.forEach(function (x) { x.setAttribute('aria-pressed', x === c ? 'true' : 'false'); });
+      cards.forEach(function (card) {
+        var ps = card.getAttribute('data-personas').split(' ');
+        card.hidden = !(p === 'all' || ps.indexOf(p) !== -1);
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

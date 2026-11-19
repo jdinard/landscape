@@ -11,7 +11,7 @@ function later(fn, ms) { var t = setTimeout(function () { timers = timers.filter
 var visited = {};
 function renderRail() {
   var idx = stepIndex(current);
-  var h = '<a class="rstart" href="#overview"' + (current === 'overview' ? ' aria-current="step"' : '') + '>' + ic('play') + 'Start here</a>';
+  var h = '<a class="rall" href="walkthroughs.html">' + ic('arrow-l') + 'All walkthroughs</a><a class="rstart" href="#overview"' + (current === 'overview' ? ' aria-current="step"' : '') + '>' + ic('play') + 'Start here</a>';
   ACTS.forEach(function (a, ai) {
     h += '<div class="act"><div class="act-h"><b>' + a.n.toUpperCase() + '</b>' + esc(a.t) + '</div><ol>';
     STEPS.forEach(function (s, i) {
