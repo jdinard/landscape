@@ -1076,6 +1076,97 @@
   ],
   "errors": []
  },
- "wt-getting-found.html": null,
+ "wt-getting-found.html": {
+  "acts": [
+   {
+    "head": "ACT 1Be found",
+    "steps": [
+     {
+      "id": "gf01-website",
+      "short": "Website",
+      "title": "A website built from real jobs and local plants",
+      "ai": true
+     },
+     {
+      "id": "gf02-receptionist",
+      "short": "AI receptionist",
+      "title": "The AI receptionist answers at 7:40 PM",
+      "ai": true
+     },
+     {
+      "id": "gf03-leads",
+      "short": "Marketplace leads",
+      "title": "Marketplace leads in one inbox, without duplicates",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Market to clients",
+    "steps": [
+     {
+      "id": "gf04-consent",
+      "short": "Consent",
+      "title": "Consent, opt-outs and quiet hours",
+      "ai": false
+     },
+     {
+      "id": "gf05-campaign",
+      "short": "Campaign",
+      "title": "A fall campaign with a personal price for every client",
+      "ai": true
+     },
+     {
+      "id": "gf06-neighbors",
+      "short": "Neighbors",
+      "title": "Door hangers for the neighbors on Crew 2's route",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 3Grow from happy clients",
+    "steps": [
+     {
+      "id": "gf07-reviews",
+      "short": "Reviews",
+      "title": "Review requests without gating or incentives",
+      "ai": true
+     },
+     {
+      "id": "gf08-referrals",
+      "short": "Referrals",
+      "title": "A referral from the Okafors, rewarded correctly",
+      "ai": false
+     },
+     {
+      "id": "gf09-social",
+      "short": "Social and copilot",
+      "title": "Before-and-after posts and the growth copilot",
+      "ai": true
+     },
+     {
+      "id": "gf10-winback",
+      "short": "Win-back",
+      "title": "Winning back last season's cancellations",
+      "ai": true
+     },
+     {
+      "id": "gf11-roi",
+      "short": "ROI",
+      "title": "Which marketing actually paid, measured in the ledger",
+      "ai": false
+     },
+     {
+      "id": "gf12-recap",
+      "short": "Recap",
+      "title": "Recap: growth grounded in operations",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-future.html": null
 }
