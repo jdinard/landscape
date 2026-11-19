@@ -687,7 +687,104 @@
   ],
   "errors": []
  },
- "wt-hiring.html": null,
+ "wt-hiring.html": {
+  "acts": [
+   {
+    "head": "ACT 1Hire for spring",
+    "steps": [
+     {
+      "id": "hr01-plan",
+      "short": "Season plan",
+      "title": "The season plan shows the hiring gap",
+      "ai": false
+     },
+     {
+      "id": "hr02-post",
+      "short": "Job post",
+      "title": "A bilingual job post, checked before it goes out",
+      "ai": true
+     },
+     {
+      "id": "hr03-apply",
+      "short": "Apply by phone",
+      "title": "Applying in Spanish from a phone in 3 minutes",
+      "ai": true
+     },
+     {
+      "id": "hr04-pipeline",
+      "short": "Interview",
+      "title": "Pipeline, interview times by text and a structured interview",
+      "ai": true
+     }
+    ]
+   },
+   {
+    "head": "ACT 2Ready for day one",
+    "steps": [
+     {
+      "id": "hr05-offer",
+      "short": "Offer and onboarding",
+      "title": "Offer by text, onboarding through the payroll provider",
+      "ai": false
+     },
+     {
+      "id": "hr06-train",
+      "short": "Training",
+      "title": "Bilingual micro-lessons and a practical sign-off",
+      "ai": false
+     },
+     {
+      "id": "hr07-creds",
+      "short": "Credentials",
+      "title": "Credentials enforced at dispatch",
+      "ai": true
+     },
+     {
+      "id": "hr08-h2b",
+      "short": "H-2B season",
+      "title": "The H-2B season workspace",
+      "ai": false
+     }
+    ]
+   },
+   {
+    "head": "ACT 3In season",
+    "steps": [
+     {
+      "id": "hr09-timeoff",
+      "short": "Time off",
+      "title": "A time-off request with the schedule impact",
+      "ai": false
+     },
+     {
+      "id": "hr10-timesheets",
+      "short": "Timesheets",
+      "title": "Exception-first timesheet approval",
+      "ai": true
+     },
+     {
+      "id": "hr11-payroll",
+      "short": "Payroll close",
+      "title": "Closing the pay period and exporting to Gusto",
+      "ai": false
+     },
+     {
+      "id": "hr12-explain",
+      "short": "Pay explainer",
+      "title": "Rafael's pay, explained in Spanish",
+      "ai": true
+     },
+     {
+      "id": "hr13-recap",
+      "short": "Recap",
+      "title": "Recap: one people system for a seasonal crew",
+      "ai": false
+     }
+    ]
+   }
+  ],
+  "errors": []
+ },
  "wt-operations.html": null,
  "wt-service-lines.html": null,
  "wt-design-studio.html": null,

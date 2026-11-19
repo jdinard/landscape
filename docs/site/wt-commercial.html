@@ -1115,6 +1115,7 @@ function appShell(active, main, opt) {
   var foot = opt.foot != null ? opt.foot : 'AI credits <b>' + num(left) + '</b> of ' + num(ALLOW) + ' left<div class="meter"><i style="width:' + (left / ALLOW * 100).toFixed(1) + '%"></i></div>';
   return '<div class="app pt-app"><nav class="app-side" aria-label="' + esc(opt.navLabel || 'Company app navigation (concept)') + '"><div class="co"><span class="logo">' + ic(opt.logo || 'leaf') + '</span><span><b>' + esc(opt.co || 'Greenleaf Grounds Co.') + '</b><small>' + esc(opt.coSub || 'Columbus, OH · Pro') + '</small></span></div>' + nav + (foot ? '<div class="sidefoot">' + foot + '</div>' : '') + '</nav><div class="app-main">' + main + '</div></div>';
 }
+function withPhone(desk, ph) { return desk + '<div class="mt14">' + devRow(ph) + '</div>'; }
 function ctxCard(title, items, extra) {
   return '<aside class="big-view" aria-label="About this screen"><div class="card"><h3 style="font-size:.95rem">' + esc(title) + '</h3><ul style="margin:6px 0 0;padding-left:18px;display:grid;gap:5px;font-size:.82rem;color:var(--text-2)">' + items.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul></div>' + (extra || '') + '</aside>';
 }
