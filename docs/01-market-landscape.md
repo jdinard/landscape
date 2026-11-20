@@ -126,6 +126,14 @@ Prices and plan names change several times a year in this category. Every price 
 | Burdened direct labor, same population | About 43% of net revenue | [S] same | Labor is the largest controllable cost |
 | Net margin, typical firm | High single digits to low teens | [B] consultant and trade-press rule of thumb | A one-point gain in labor efficiency or price realization is worth more than the software bill |
 
+**Size check, November 2026 (confirmed via search results; Census tables not pulled directly):**
+
+- **Employer establishments:** two secondary sources citing the 2023 County Business Patterns give 117,969 employer establishments in NAICS 561730 with 802,899 employees, inside the 100,000-130,000 range above ([StartBusinessByState](https://startbusinessbystate.com/landscaping-industry-statistics/), [Vanta Insights](https://vantainsights.com/industry/561730-landscaping-services)). A secondary source citing 2023 Nonemployer Statistics reports 516,572 nonemployer landscaping businesses averaging about $36,000 in receipts. Pull both rows from data.census.gov before external use.
+- **Revenue:** IBISWorld's public summary puts 2026 US landscaping services at $176.7 billion (CAGR about 2% to $195 billion by 2031), 556,238 businesses and about 1.39 million workers; a LawnStarter summary attributed to IBISWorld cites $188.8 billion for 2025. Both sit inside the $150-$200 billion range ([IBISWorld](https://www.ibisworld.com/united-states/market-size/landscaping-services/1497/), [LawnStarter](https://www.lawnstarter.com/blog/statistics/lawn-care-and-landscaping-industry-statistics/)).
+- **Concentration:** the top 50 companies are reported at about 15% of revenue, consistent with the fragmented-market thesis.
+
+None of these change the TAM model in section 2.3, which already uses the employer-establishment range.
+
 > **Analyst note.** The top-line number matters less than the shape. Rootline's revenue depends on the count of employer firms with 5-49 peak-season employees in the US and Canada and on how much they already spend on software and payments. Both can be measured directly (CBP by employee band; stack audits in customer interviews).
 
 ### 2.2 Segmentation
