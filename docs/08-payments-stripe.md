@@ -391,6 +391,8 @@ Online client payments use Stripe's **Payment Element** (an iframe-hosted, PCI-s
 | Check capture (photo + OCR) | Manual + AI | US, CA | Bank deposit | None | Field check collection | [V1] |
 | Remote deposit capture | Banking partner | US | Next day | Partner fees | Companies with heavy check volume | [V2] |
 
+**Fee check, November 2026 (confirmed via search results; primary pricing page not opened).** Third-party 2026 fee guides agree with the figures above for US online cards (2.9% + $0.30), in-person cards (2.7% + $0.05) and ACH Direct Debit (0.8% capped at $5), and list $15 per dispute, +1.5% for international cards, +1% for currency conversion and 1.5% (minimum $0.50) for instant payouts ([Swipesum](https://www.swipesum.com/insights/guide-to-stripe-fees-rates-for-2025), [WeAudit](https://www.weaudit.com/ratings/stripe/stripe-fees/), [Checkoutpage](https://checkoutpage.com/blog/stripe-processing-fees)). Sources disagree on Tap to Pay: one reports an extra $0.10 per authorization on top of in-person pricing, another reports no separate fee ([PaymentReview](https://paymentreview.com/blog/tap-to-pay-phone-fees-processors/), [BizSwoop](https://www.bizswoop.com/hub/tap-to-pay-on-iphone-stripe-setup-guide-2/)), so the Tap to Pay row stays "verify". No result listed a separate fee for Financial Connections bank verification. All of these are paid by the Company to Stripe under the Standard-style model (4.1), so they affect the Company's costs and Rootline's fee-transparency screens, not Rootline's margin.
+
 **Per-context method rules (Company-configurable defaults):**
 
 | Context | Default methods shown | Rationale |
