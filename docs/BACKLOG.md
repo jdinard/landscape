@@ -54,7 +54,7 @@ Ordered so that facts behind product decisions come first:
 ## B. Evidence gaps
 
 - [ ] **B1 Owner quotes.** Reddit (r/landscaping, r/lawncare) and LawnSite quotations behind the ranked pain points ([01](01-market-landscape.md) item E15, [13](13-operations-inventory-equipment.md), [15](15-team-hr-payroll.md), [22](22-business-model-pricing-gtm.md)). **Progress:** web search does not surface Reddit or LawnSite threads; two owner quotes from the Jobber Community (QuickBooks sync) and one secondhand Aspire quote added under 01 section 6.2. Direct Reddit and LawnSite quotes need manual collection or API access.
-- [ ] **B2 Competitor matrix.** About 29% of competitor cells in [01](01-market-landscape.md) section 4 are still "?". **Progress:** Spanish crew interface confirmed for Jobber and Housecall Pro (row 22, with a note that the language toggle is table stakes); other "?" cells remain.
+- [ ] **B2 Competitor matrix.** About 29% of competitor cells in [01](01-market-landscape.md) section 4 are still "?". **Progress:** Spanish crew interface confirmed for Jobber and Housecall Pro (row 22, with a note that the language toggle is table stakes); Housecall Pro routing marked partial with conflicting sources (row 17); other "?" cells remain.
 - [ ] **B3 Competitor capability gaps** flagged by reviewers: payments ([08](08-payments-stripe.md): ServiceTitan, SingleOps, Arborgold, Yardbook, Copilot CRM, SynkedUP), inventory ([13](13-operations-inventory-equipment.md)), HR and payroll ([15](15-team-hr-payroll.md)), marketing ([16](16-marketing-growth-communications.md)), UX claims such as command palettes and Spanish crew UI ([21](21-ux-design-system-sitemaps.md)).
 
 ## C. Product questions reviewers raised (for the founder)

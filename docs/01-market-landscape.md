@@ -575,7 +575,7 @@ quadrantChart
 | Capability | JB | HCP | ST | WZ | GD | ASP | LMN | SO | SYN | AG | RG | SA | CP | YB | QIQ | PRO | YETI | Rootline |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 16. Recurring visits and maintenance schedules | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ●* | ○ | ◐ | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
-| 17. Route optimization on road network (one crew, one day) | ◐ | ? | ◐ | ? | ● | ? | ? | ? | ? | ? | ● | ● | ? | ? | ? | ○ | ? | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
+| 17. Route optimization on road network (one crew, one day) | ◐ | ◐‡ | ◐ | ? | ● | ? | ? | ? | ? | ? | ● | ● | ? | ? | ? | ○ | ? | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
 | 18. Multi-crew VRP (capacity, skills, equipment, time windows) | ○ | ○ | ◐ | ○ | ◐ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [V1] [04](04-scheduling-dispatch-routing.md) |
 | 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] manual bulk moves, [V1] playbooks [04](04-scheduling-dispatch-routing.md) |
 | 20. Crew app with time, photos and checklists | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ◐* | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
@@ -587,6 +587,8 @@ quadrantChart
 | 26. Equipment and fleet maintenance with cost recovery | ○ | ? | ◐* | ? | ? | ● | ◐ | ○* | ? | ○* | ◐ | ○* | ○ | ○ | ? | ○ | ? | ● [MVP] registry, meters and cost per hour; [V1] PM, work orders and actuals-based rates [13](13-operations-inventory-equipment.md) |
 
 † Added November 2026 from search results: Jobber says its app is available in English and Spanish (mobile for non-admin users), and Housecall Pro's pricing page lists a Spanish language option in its mobile app ([Jobber vs LMN](https://www.getjobber.com/comparison/jobber-vs-lmn/), [Housecall Pro pricing](https://www.housecallpro.com/pricing/)). A Spanish crew interface is therefore table stakes against the horizontal leaders; Rootline's edge has to come from Spanish-first content (voice notes, pay explainers, training, hiring), not from offering the language toggle.
+
+‡ Added November 2026: sources conflict on Housecall Pro routing. Older 2026 comparisons say it has no automatic route optimization; newer pricing comparisons place route optimization and route density zones on higher tiers ([Clean Savannah](https://www.cleansavannah.com/post/best-crew-scheduling-software-for-landscaping-companies-2026), [MyQuoteIQ](https://myquoteiq.com/top-10-best-scheduling-software-for-landscaping-businesses-in-2026/)). Shown as partial until a trial confirms it.
 
 **D. Landscape service-line depth**
 
