@@ -710,6 +710,14 @@ Thousands of plants times dozens of Regions times 80-plus traits is millions of 
 | Horticopia | Licensed plant images and horticultural data | Commercial license | License candidate for reference photos and symbols | [V1] evaluate |
 | Perenual, Trefle, crowd-sourced plant databases (Garden.org, Dave's Garden) | Species pages, photos | Restrictive ToS, unreliable service, or user-contributed copyright | **Not ingested.** Curators may consult; nothing is copied | Not planned |
 | OPALS (Ogren Plant Allergy Scale) | Allergy ratings | Proprietary | Only under license | [V2] |
+
+**License check, November 2026 (confirmed via search results; primary terms pages not opened; counsel still reviews each source before ingestion, OD-67):**
+
+- **USDA PLANTS:** the data.gov listing gives the dataset a CC0 (public domain) license; USDA's conditions of use say most PLANTS images need permission unless marked public domain, and every image needs credit. The table's "public domain data, images carry individual credits" stands ([data.gov: PLANTS](https://catalog.data.gov/dataset/plants), [USDA: conditions of image and data use](https://plants.usda.gov/assets/docs/ConditionsofImageandDataUse.pdf)).
+- **Missouri Botanical Garden:** MOBOT's site conditions bar commercial use of its pages, text and images without permission, and image licensing is negotiated case by case. Plant Finder stays "facts with citation" (no copied text or images) until MOBOT grants permission ([MOBOT conditions](https://missouribotanicalgarden.org/conditions), [MOBOT image use policy](https://www.missouribotanicalgarden.org/plan-your-visit/things-to-know/photography/image-use-policy)).
+- **GBIF:** occurrence datasets carry CC0, CC BY or CC BY-NC (a 2014 governing-board decision); CC BY-NC data must not feed commercial outputs, so Rootline filters occurrences to CC0 and CC BY for anything beyond internal range checks ([GBIF terms](https://gbif.org/terms), [GBIF data blog: occurrence licenses](https://data-blog.gbif.org/post/gbif-occurrence-license-processing/)).
+- **Trefle:** Trefle's own about page and repository say CC BY 4.0 (a third-party dump says ODbL). The "not ingested" decision rests on reliability, not license, and can be revisited ([Trefle: about](https://trefle.io/about)).
+- **Not settled in this pass:** POWO and WFO data licenses (Kew's terms page was not retrieved), Perenual's commercial terms, NC State Plant Toolbox, Calscape and Lady Bird Johnson Wildflower Center reuse terms. They keep "verify".
 | Sunset climate zones | Western microclimate zones | Proprietary and trademarked | Only under license | [V2] optional |
 | Nursery brands and growers | Trade names, catalog photos, GTINs, availability | Partnership license | Per contract | [V1] |
 | Wikimedia Commons | Photos | Per-file free licenses (CC0, CC BY, CC BY-SA share-alike) | Allowed licenses only, with attribution; share-alike images not used in composited AI outputs | [MVP] |
