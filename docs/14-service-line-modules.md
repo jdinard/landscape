@@ -398,6 +398,18 @@ Spec:
 - Crew app requires a **sign photo** before the Visit can be completed when signs are required; the photo is geotagged and attached to the Application Record. Missing photo blocks completion unless a crew lead overrides with reason (override audited and flagged in the compliance dashboard).
 - Sign inventory is tracked as a consumable in [13](13-operations-inventory-equipment.md).
 
+**Launch-state check, November 2026 (confirmed via search results; primary pages not opened; not legal advice).** The five Wave 1 states differ in ways the rule packs must carry:
+
+| State | Posting | Registry or prior notice | Records |
+|---|---|---|---|
+| Ohio | Lawn signs stay up 24 hours after a lawn application in municipalities and subdivided townships; people who ask in writing keep getting notice ([OAC 901:5-11-09](https://codes.ohio.gov/ohio-administrative-code/rule-901:5-11-09)) | No statewide sensitive-person registry found (verify with ODA) | Recorded on the day of application, kept 3 years; rule amended December 5, 2024 ([OAC 901:5-11-10](https://codes.ohio.gov/ohio-administrative-code/rule-901:5-11-10), [OSU recordkeeping](https://pested.osu.edu/commercialapplicator/recordkeeping)) |
+| Michigan | Regulation 637 Rule 11: lawn marker at the primary points of entry immediately after application; the customer is told to leave it 24 hours | Rule 5 Pesticide Notification Registry for people with a physician-diagnosed condition: notify listed adjacent addresses at least one business day ahead by phone, or by written notice if the call fails; enrollment by February 1 ([MDARD notification registry](https://www.michigan.gov/mdard/plant-pest/pesticides/notification/pesticide-notification-registry-information-for-businesses), [R 285.637.5](https://www.law.cornell.edu/regulations/michigan/Mich-Admin-Code-R-285-637-5)) | Business record and customer information rules under Regulation 637 (verify current text) |
+| Illinois | Lawn Care Products Application and Notice Act (415 ILCS 65): 4 x 5 in marker on a support at least 12 in above the turf at entry points immediately after application; residents may remove it after 24 hours. **The Act covers fertilizers as well as pesticides** ([415 ILCS 65/3](https://ilga.gov/legislation/ilcs/documents/041500650K3.htm), [Illinois Extension](https://extension.illinois.edu/blogs/pesticide-news/2026-08-06-illinois-lawn-care-application-notice-act-communication-key)) | No statewide sensitive-person registry found; day care centers keep their own notice registry | Verify |
+| Indiana | Commercial lawn posting and customer notice in 357 IAC 1-5-2 and 1-5-3 | The state's registry definition covers school sites only | Commercial applicator use records in 355 IAC 4-4-1 ([OISC use records](https://oisc.purdue.edu/pesticide/commercial_app_use_records.html)) |
+| Wisconsin | ATCP 29.56: signs at least 4 x 5 in, posted at application and kept **at least 72 hours** | Annual DATCP landscape registry: enroll by February 1, in force March 15 to March 14; registry data is public ([ATCP 29.56](https://docs.legis.wisconsin.gov/document/administrativecode/ATCP%2029.56(3)(a))) | The customer gets product names, EPA registration numbers, precautions and label copies |
+
+Product consequences: the sign rule must trigger on fertilizer-only rounds in Illinois; the minimum display period is per state (24 hours in four states, 72 in Wisconsin); and two launch states (Michigan and Wisconsin) run registries, which this doc tags [V1] in 4.1.5. Until that ships, Michigan and Wisconsin Companies would handle registry notices outside Rootline; whether to pull registry notice into the MVP is a founder question, listed in [BACKLOG](BACKLOG.md) section C.
+
 #### 4.1.7 Soil tests [V1]
 
 - **Soil test visit type:** collect cores (e.g., 10-15 cores per sample area at a set depth), bag and label with QR code linking to Property and sample area polygon.
@@ -3054,6 +3066,12 @@ KPI definitions are canonical in [18](18-reporting-analytics.md); module-specifi
 ---
 
 ## Sources
+
+- [Ohio Admin. Code 901:5-11-09, lawn notification](https://codes.ohio.gov/ohio-administrative-code/rule-901:5-11-09) and [901:5-11-10, recordkeeping](https://codes.ohio.gov/ohio-administrative-code/rule-901:5-11-10) (confirmed via search results; primary pages not opened)
+- [MDARD: Pesticide Notification Registry information for businesses](https://www.michigan.gov/mdard/plant-pest/pesticides/notification/pesticide-notification-registry-information-for-businesses)
+- [Illinois: Lawn Care Products Application and Notice Act, 415 ILCS 65/3](https://ilga.gov/legislation/ilcs/documents/041500650K3.htm)
+- [Office of Indiana State Chemist: commercial applicator use records](https://oisc.purdue.edu/pesticide/commercial_app_use_records.html)
+- [Wisconsin ATCP 29.56](https://docs.legis.wisconsin.gov/document/administrativecode/ATCP%2029.56(3)(a))
 
 Verification note: sources reflect public information available as of November 2026; items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. Claims sourced from secondary listings or competitor-written comparison pages are labeled in the text. This doc is cross-checked against [R1](research/R1-field-service-platforms.md), [R2](research/R2-landscape-specific-platforms.md) and the owner docs ([02](02-personas-roles-permissions.md), [07](07-invoicing-billing-contracts.md), [09](09-accounting-ledger-integrations.md), [20](20-architecture-security.md), [22](22-business-model-pricing-gtm.md)); facts drawn from domain knowledge (New York neighbor notification and neonicotinoid restrictions, California automatic renewal amendments, the vacated FTC click-to-cancel rule, snow anti-indemnification statutes, the lighting cable-constant rule of thumb, Stripe's authorization window) are marked "verify" in the text and must be confirmed before external use. Industry practices stated without a citation (e.g., typical round windows, example prices, production rates) are illustrative defaults or estimates, not market statistics.
 
