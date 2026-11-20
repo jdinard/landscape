@@ -1463,7 +1463,7 @@ Each module doc ends with open questions; this section consolidates the ones tha
 | OD-28 | Shared vs per-entity chart of accounts | [09](09-accounting-ledger-integrations.md#14-open-questions) | Shared chart with entity restrictions | Money lead |
 | OD-29 | Cash-basis view timing | [09](09-accounting-ledger-integrations.md#14-open-questions) | V2 unless more than half of pilots report cash-basis to their CPA | Money lead |
 | OD-30 | 1099 e-file and QuickBooks Desktop | [09](09-accounting-ledger-integrations.md#14-open-questions) | Partner for 1099 e-file; buy a Desktop API service if reliable, otherwise build on Web Connector | Money lead |
-| OD-31 | Stripe Tax on connected accounts | [07](07-invoicing-billing-contracts.md#14-open-questions) | Confirm with Stripe; fall back to the calculation API with Company liability and manual rates | Money lead |
+| OD-31 | Stripe Tax on connected accounts | [07](07-invoicing-billing-contracts.md#14-open-questions) | Confirm with Stripe; fall back to the calculation API with Company liability and manual rates. Evidence (Nov 2026, via search): Stripe supports connected-account liability with the Company's own registrations ("Tax for software platforms"); fee placement on direct charges is still to confirm | Money lead |
 | OD-32 | Account codes and event names | [08](08-payments-stripe.md#14-open-questions), [09](09-accounting-ledger-integrations.md#14-open-questions), [04](04-scheduling-dispatch-routing.md#14-open-questions), [07](07-invoicing-billing-contracts.md#14-open-questions) | 09's chart is canonical; restate 08 in the next editorial pass; producer event names canonical in 20's registry | Engineering lead |
 
 ### 8.4 Product scope and UX
