@@ -93,7 +93,7 @@ No step below carries a time or effort estimate. The order within each list is a
 
 ### 2.2 Verification and counsel
 
-- **Research facts.** Competitor prices, features and ownership, vendor API terms and industry numbers carry "verify" markers and the November 2026 date. Live web access during research was limited, so a verification pass with primary sources and hands-on trials of competitor products is needed before anything appears in sales material or an investor deck (OD-07). Checklists are at the end of each research report.
+- **Research facts.** A web-search verification pass has covered the facts behind product decisions (BACKLOG items A1-A13): Stripe Accounts v2 and OAuth, Stripe Tax for connected accounts, Stripe fees, QuickBooks and Xero API terms, launch-state labor, pesticide, surcharging, auto-renewal and late-fee rules, competitor prices, plant data licenses, image-model prices and industry size. Each result is written into the module doc with sources and marked "confirmed via search results" where the primary page could not be opened. Items it could not settle stay "verify" (for example the QuickBooks CDC lookback, the Tap to Pay add-on fee, Chicago's leave accrual rate and several plant-data licenses). The remaining long tail of "verify" markers (A14), hands-on competitor trials and counsel review are still needed before anything appears in sales material or an investor deck (OD-07).
 - **Legal reviews:**
   - payment surcharging rules
   - auto-renewal and late-fee laws
