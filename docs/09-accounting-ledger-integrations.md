@@ -132,6 +132,13 @@ No landscape or field-service product in our research keeps a real general ledge
 | **Construction accounting** (Foundation, Sage 100/300 Contractor, Viewpoint) | A minority of large design-build and commercial install firms that bid bonded public work. | They expect WIP schedules, retainage, certified payroll; we meet the WIP and retainage needs natively and export for the rest. |
 | **Spreadsheets** | WIP schedules, overhead recovery tracking, budgets, cash forecasts, 1099 lists. | Every spreadsheet a CPA maintains outside the system is a feature we should absorb. |
 
+**Verification, November 2026 (confirmed via search results; primary pages not opened unless noted).**
+
+- **QuickBooks Online limits:** Intuit's limits page lists 500 requests per minute per realm ID per app, 10 requests per second per realm ID and app, and a separate 40 batch requests per minute; going over returns HTTP 429 ([Intuit: API call limits and throttles](https://developer.intuit.com/app/developer/qbo/docs/learn/limits-and-throttles)). The CDC lookback of about 30 days was not confirmed in the results found and stays "verify" (4.17).
+- **Intuit App Partner Program:** four tiers, Builder (free), Silver, Gold and Platinum; paid tiers pay a monthly program fee plus metered CorePlus API calls, and premium APIs are limited to paid tiers. Intuit's launch post gives Builder 500,000 CorePlus credits a month and Silver 1 million ([Intuit: Introducing the App Partner Program](https://blogs.intuit.com/2025/05/15/introducing-the-intuit-app-partner-program/), [Intuit: App Partner Program FAQ](https://developer.intuit.com/app/developer/qbo/docs/get-started/partner-faq)). Third-party trackers report about $300, $1,700 and $4,500 a month for Silver, Gold and Platinum, which Rootline should confirm before modeling cost to serve ([Truto](https://truto.one/blog/how-much-does-the-quickbooks-api-cost-2026-pricing-rate-limits/)). Data written into QuickBooks is not the metered part; reads are, which supports the webhook-plus-CDC design.
+- **QuickBooks Desktop:** Intuit stopped selling new Pro Plus, Premier Plus and Mac Plus subscriptions in September 2024, and its discontinuation policy ends Desktop 2023 services after May 31, 2026 ([Intuit: Desktop service discontinuation policy](https://quickbooks.intuit.com/learn-support/en-ca/help-article/feature-preferences/quickbooks-desktop-service-discontinuation-policy/L17cXxlie_CA_en_CA)). No result said whether the Web Connector itself is affected, so the Desktop connector stays [V1] and "verify".
+- **Xero:** a tiered developer model took effect on 2 March 2026. Starter is free for 5 connections; Core, Plus and Advanced allow 50, 1,000 and 10,000 connections with metered egress (data read out of Xero), while data sent into Xero is unlimited. Per-tenant limits are 60 calls a minute, 5 concurrent, and 1,000 calls a day on Starter or 5,000 on paid tiers; the Journals endpoint needs the Advanced tier and a security review ([Xero Developer: pricing](https://developer.xero.com/pricing), [Truto: Xero API pricing changes 2026](https://truto.one/blog/xero-api-pricing-changes-2026-costs-tiers-and-how-to-minimize-egress/)). Rootline's Xero mirror is mostly writes, so egress stays small, but reading Xero journals for reconciliation would need Advanced.
+
 ### 2.3 What users complain about
 
 | Complaint | Evidence | Rootline response |
@@ -1707,7 +1714,7 @@ flowchart LR
 - **Mapping differences from QBO**: Xero contacts can be both customers and suppliers (no display-name collision); **only two active tracking categories** (verify) map to division and branch, so department and job go to the line description or, for job costing, stay in Rootline; invoices (`ACCREC`), bills (`ACCPAY`), credit notes, payments, bank transfers (Stripe payout from a "Stripe Clearing" bank account), manual journals, items, tax rates (including Canadian GST/HST rates).
 - **Rate limits**: per-organization per-minute and daily call limits and a concurrency limit (on the order of 60 per minute, 5,000 per day and 5 concurrent; verify), plus app-wide limits; same token-bucket and backoff strategy as QBO.
 - **Webhooks** for contacts and invoices (verify coverage); polling with modified-since for other objects.
-- **Developer pricing**: Xero moved to tiered developer pricing in 2025-2026 (verify), which affects Rootline's cost to serve ([22](22-business-model-pricing-gtm.md)).
+- **Developer pricing**: Xero moved to tiered developer pricing on 2 March 2026 (Starter, Core, Plus, Advanced by connection count and metered egress; see the verification note in 2.2), which affects Rootline's cost to serve ([22](22-business-model-pricing-gtm.md)).
 - **Bank rec**: in Mode C, Xero's bank reconciliation is used; Rootline's net-of-fee payout transfers make Stripe deposits match.
 
 #### 4.17.5 Sage Intacct [V2]
@@ -2767,6 +2774,14 @@ Edge cases are numbered X1-X35 so they never collide with the worked journal ent
 ---
 
 ## Sources
+
+- [Intuit: API call limits and throttles](https://developer.intuit.com/app/developer/qbo/docs/learn/limits-and-throttles) (confirmed via search results; primary page not opened)
+- [Intuit: Introducing the Intuit App Partner Program](https://blogs.intuit.com/2025/05/15/introducing-the-intuit-app-partner-program/)
+- [Intuit: App Partner Program FAQ](https://developer.intuit.com/app/developer/qbo/docs/get-started/partner-faq)
+- [Intuit: QuickBooks Desktop service discontinuation policy](https://quickbooks.intuit.com/learn-support/en-ca/help-article/feature-preferences/quickbooks-desktop-service-discontinuation-policy/L17cXxlie_CA_en_CA)
+- [Xero Developer: pricing](https://developer.xero.com/pricing)
+- [Truto: QuickBooks API cost and rate limits 2026](https://truto.one/blog/how-much-does-the-quickbooks-api-cost-2026-pricing-rate-limits/) (third party)
+- [Truto: Xero API pricing changes 2026](https://truto.one/blog/xero-api-pricing-changes-2026-costs-tiers-and-how-to-minimize-egress/) (third party)
 
 Sources are cited where used. Verification note: items marked **(verify)** in the text are from secondary sources or general knowledge and need first-hand confirmation before engineering commitments or external use.
 
