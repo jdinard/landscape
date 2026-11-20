@@ -1356,7 +1356,7 @@ Product, technical, AI, payments, compliance, data-licensing and market risks. L
 | # | Category | Risk | L | I | Mitigation | Early warning | Owner |
 |---|---|---|---|---|---|---|---|
 | R1 | Product | MVP breadth spreads quality thin: the sellability tests need many modules, and one shallow module fails T1-T4 for the beachhead buyer | H | H | Core-loop and completes-the-MVP split (3.2), cut order (3.3), scenarios E1-E6 as the acceptance bar, founder-approved scope changes only (OD-71) | Scenario failures or open P1 bugs concentrated in one module during design-partner use | `platform_owner` |
-| R2 | Product | Migrations lose balances, agreements or recurring schedules, burning first impressions | M | H | Proof-based opening balances, AR tie-out to the cent, 7-day rollback, white-glove queue, Spring-Ready deadline | Median migration > 21 days or any AR variance with design partners | `platform_support` lead |
+| R2 | Product | Migrations lose balances, agreements or recurring schedules, burning first impressions | M | H | Proof-based opening balances, AR tie-out to the cent, 72-hour rollback, white-glove queue, Spring-Ready deadline | Median migration > 21 days or any AR variance with design partners | `platform_support` lead |
 | R3 | Product | Design Studio too slow or too complex for designers used to CAD or paper | M | H | Performance budgets, monthly designer usability rounds, renderer spike | Designer task time > 2x target in research | Design and Plants lead |
 | R4 | Product | Crews reject the app (gloves, sun, Spanish, low-end Android, battery) | M | H | Outdoor Mode, field pilots in peak season (shadow mode), Spanish-first content design, battery budget tests | Crash-free < 99%; battery > 10% per shift | Operations and Field lead |
 | R5 | Product | Estimating math does not match LMN-style budgets, so estimators distrust it | M | H | Golden set of 50 partner estimates, LMN budget import, explainable cost sidebar | Any golden-set mismatch | Sales and CRM lead |
@@ -1382,7 +1382,8 @@ Product, technical, AI, payments, compliance, data-licensing and market risks. L
 | R25 | GTM | Incumbents respond (Jobber adds design or AI; ServiceTitan/Aspire bundling; price cuts) | M | M | Speed on the closed loop, ledger and BYO Stripe as hard-to-copy moats, Price Lock Promise | Competitor releases (change monitor) | `platform_owner` |
 | R26 | GTM | CAC higher than plan in the launch region | M | M | ICP scorecard, CPA and association partners, Founding 100, referral credits | Grow CAC payback > 12 months | `platform_owner` |
 | R27 | GTM | Rootline Home and Match seen as channel conflict by Companies | M | M | Opt-in tenants only, client-of-record first, co-branding, pilot gate | Tenant opt-out rate | Growth lead |
-| R28 | Product | The January-April switching peak overwhelms migrations, so Companies miss their spring go-live | M | H | Self-serve imports with AI mapping and switch kits, migration slots booked in advance, 7-day rollback, Spring-Ready deadline | Migration slot backlog > 2 weeks | `platform_support` lead |
+| R28 | Product | The January-April switching peak overwhelms migrations, so Companies miss their spring go-live | M | H | Self-serve imports with AI mapping and switch kits, migration slots booked in advance, 72-hour rollback, Spring-Ready deadline | Migration slot backlog > 2 weeks | `platform_support` lead |
+| R29 | Payments | Stripe stops supporting Connect OAuth for platforms that are not extensions, or keeps OAuth-linked accounts off Accounts v2, so "bring your existing Stripe account" needs a new path | L | H | v1 controller properties for linked accounts, the provider abstraction in [08](08-payments-stripe.md) 4.23, a Stripe App listing as a fallback connection path, and the restricted-key mode [V1] for Companies that refuse Connect | A Stripe changelog or deprecation notice about OAuth or Accounts v1 | Money lead |
 
 ---
 
@@ -1448,7 +1449,7 @@ Each module doc ends with open questions; this section consolidates the ones tha
 
 | # | Decision | Raised in | Recommended default | Owner |
 |---|---|---|---|---|
-| OD-17 | Stripe Accounts v2 at MVP | [08](08-payments-stripe.md#14-open-questions), [20](20-architecture-security.md#14-open-questions) | Use v2 full-dashboard merchant configuration if Stripe confirms OAuth parity; otherwise v1 controller properties with a migration path | Money lead |
+| OD-17 | Stripe Accounts v2 at MVP | [08](08-payments-stripe.md#14-open-questions), [20](20-architecture-security.md#14-open-questions) | Use v2 full-dashboard merchant configuration if Stripe confirms OAuth parity; otherwise v1 controller properties with a migration path. Evidence (Nov 2026, via search): v2 is GA, but OAuth-linked accounts must stay on v1, so parity does not exist today and the fallback applies unless the founder chooses a v1/v2 split ([08](08-payments-stripe.md) 4.1.1) | Money lead |
 | OD-18 | Tap to Pay scope tier | [05](05-field-crew-mobile-app.md#14-open-questions), [08](08-payments-stripe.md#14-open-questions) | V1, iPhone US first (4.6 #3) | Money lead |
 | OD-19 | Surcharging | [08](08-payments-stripe.md#14-open-questions) | V1, behind compliance gating; ACH incentives first | Money lead |
 | OD-20 | MOTO (keyed cards) | [08](08-payments-stripe.md#14-open-questions) | Not at MVP; pay links during calls; QSA opinion before any keyed entry | Security lead |

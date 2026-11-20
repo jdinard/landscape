@@ -200,6 +200,15 @@ In the newer **Accounts v2** API, a single Account object carries **configuratio
 
 For attaching an **existing** Stripe account, Stripe still supports Connect OAuth for "an extension or an application that needs access to an existing account," while recommending Connect Onboarding (Account Links) for creating new Standard-style accounts ([Stripe: Using Standard connected accounts](https://docs.stripe.com/connect/oauth), [Stripe: Standard accounts](https://docs.stripe.com/connect/standard-accounts)).
 
+**Verification, November 2026 (confirmed via search results; primary pages not opened):**
+
+- Accounts v2 reached Stripe's GA channel with API version `2025-12-15.clover`. Stripe recommends it for new Connect integrations and says existing platforms don't need to change their integration ([Stripe changelog: Connect platforms can now use Accounts v2](https://docs.stripe.com/changelog/clover/2025-12-15/accounts-v2)). A later entry extends Accounts v2 to all Stripe users, in public preview, for representing customers ([Stripe changelog: Accounts v2 expanded availability](https://docs.stripe.com/changelog/dahlia/2026-04-22/accounts-v2-expanded-availability)).
+- In v2, the `dashboard` property (`full`, `express`, `none`) must be set when the `merchant` configuration is added, so a full-Dashboard merchant account is supported ([Stripe: configure connected accounts in Accounts v2](https://docs.stripe.com/connect/accounts-v2/connected-account-configuration)).
+- **OAuth is the blocker.** Stripe's Accounts v2 limitations say accounts authenticated with OAuth must stay on Accounts v1, as must accounts on the recipient service agreement and some capabilities (Treasury, card issuing, legacy payments) ([Stripe: Connect and Accounts v2](https://docs.stripe.com/connect/accounts-v2), [Stripe: use Accounts v2 in an existing integration](https://docs.stripe.com/connect/accounts-v2/migrate-integration)). Stripe also discourages maintaining both API versions indefinitely.
+- OAuth for Standard accounts carries a "not recommended for new platforms" notice, while still documented for extensions and apps that need an existing account; since June 2021 a platform using OAuth with `read_write` scope cannot connect an account that another platform controls ([Stripe: Using Standard connected accounts](https://docs.stripe.com/connect/oauth), [Stripe: OAuth changes for Standard platforms](https://docs.stripe.com/connect/oauth-changes-for-standard-platforms)).
+
+What this means for Rootline: "bring your own existing Stripe account" depends on OAuth, and OAuth-linked accounts are v1-only. A v2-for-new, v1-for-linked split works but leaves Rootline on two API versions with no end date. The OD-17 default in [24](24-roadmap-feature-catalog.md) section 8 was conditional on "OAuth parity," which Stripe's docs say does not exist today, so its fallback (v1 controller properties for every account, with a migration path) applies unless the founder decides otherwise. The OAuth deprecation notice is tracked as a product risk: if Stripe ever closes OAuth to platforms that are not extensions, existing accounts would need a new connection path (for example, Rootline listed as a Stripe App).
+
 #### 4.1.2 Decision matrix
 
 Scores: 5 = best for Rootline's strategy; criteria are equally weighted (doubling the weight of liability, portability and existing-user access, the three criteria Express and Custom lose worst, moves the totals to A 87, B 48, C 35, D 74, so A's lead over B and C widens and its 13-point lead over D is unchanged). "Company" = the landscape business.
@@ -2218,7 +2227,7 @@ Targets are internal goals for Rootline, not industry benchmarks. Formal KPI def
 
 ## 14. Open questions
 
-1. **Accounts v2 timing:** when will Rootline's platform be enabled for Accounts v2 with full-dashboard merchant configurations, and does OAuth linking of existing accounts work identically under v2? Decision needed before MVP build start on the connection module.
+1. **Accounts v2 and OAuth:** Accounts v2 is GA (`2025-12-15.clover`), but Stripe's docs say OAuth-linked accounts must stay on v1 (4.1.1, verification note). Open: run every Company on v1 controller properties at MVP (simplest, one API version), or v2 for new accounts and v1 for linked ones (two versions with no end date)? Also ask Stripe whether OAuth for non-extension platforms has a sunset date and whether OAuth-linked accounts will be supported in v2. Decision needed before MVP build starts on the connection module.
 2. **Connect platform costs:** confirm with Stripe that full-Dashboard, Company-paid-fee accounts incur no per-account Connect charges for Rootline, and what pricing tools (if any) apply to application fees (see [Stripe platform pricing tools](https://edge-docs.stripe.com/connect/platform-pricing-tools)).
 3. **Monetization:** launch with Option A only (current recommendation, matching 22), or bring the pay-as-you-grow plan forward to MVP? Needs [22](22-business-model-pricing-gtm.md) modeling and counsel review.
 4. **Surcharging at MVP or V1?** Recommendation is V1 behind compliance gating; founder decision.
@@ -2244,6 +2253,11 @@ Targets are internal goals for Rootline, not industry benchmarks. Formal KPI def
 **Stripe documentation**
 
 - [Stripe: Connect and Accounts v2](https://docs.stripe.com/connect/accounts-v2)
+- [Stripe changelog: Connect platforms can now use Accounts v2 (2025-12-15.clover)](https://docs.stripe.com/changelog/clover/2025-12-15/accounts-v2)
+- [Stripe changelog: Accounts v2 expanded availability (2026-04-22)](https://docs.stripe.com/changelog/dahlia/2026-04-22/accounts-v2-expanded-availability)
+- [Stripe: Use the Accounts v2 API in your existing integration](https://docs.stripe.com/connect/accounts-v2/migrate-integration)
+- [Stripe: Configure the behavior of connected accounts (Accounts v2)](https://docs.stripe.com/connect/accounts-v2/connected-account-configuration)
+- [Stripe: OAuth changes for Standard platforms](https://docs.stripe.com/connect/oauth-changes-for-standard-platforms)
 - [Stripe: Connect and the Accounts v2 API](https://docs.stripe.com/connect/accounts-v2/api)
 - [Stripe edge docs: Accounts v2 connected account configuration](https://edge-docs.stripe.com/connect/accounts-v2/connected-account-configuration)
 - [Stripe: Migrate your Connect integration to use controller properties](https://docs.stripe.com/connect/migrate-to-controller-properties)
