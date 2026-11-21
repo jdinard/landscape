@@ -223,7 +223,7 @@ WT.bts['fx08-capital'] = function (S) {
 
 /* fx09 */
 WT.screens['fx09-esg'] = function (S) {
-  var main = banner('M-09 ESG and sustainability reporting', 'v1', ['v2']) + '<div class="apphead"><span class="crumb">Reports › Maple Ridge HOA</span><h3>Sustainability snapshot · 2027 season</h3></div><div class="wt-kpis"><div class="wt-kpi"><div class="l">Fuel</div><div class="v">412 gal</div><div class="d">fuel cards, this account</div></div><div class="wt-kpi"><div class="l">Est. CO2e</div><div class="v">3.7 t</div><div class="d">fuel × emission factors (verify)</div></div><div class="wt-kpi"><div class="l">Battery equipment</div><div class="v">38%</div><div class="d">of handheld hours</div></div><div class="wt-kpi"><div class="l">Water</div><div class="v">−18%</div><div class="d">vs last season</div></div><div class="wt-kpi"><div class="l">Native plants</div><div class="v">46%</div><div class="d">of new plantings (KB)</div></div></div>' +
+  var main = banner('M-09 ESG and sustainability reporting', 'v1', ['v2']) + '<div class="apphead"><span class="crumb">Reports › Maple Ridge HOA</span><h3>Sustainability snapshot · 2027 season</h3></div><div class="wt-kpis"><div class="wt-kpi"><div class="l">Fuel</div><div class="v">412 gal</div><div class="d">fuel cards, this account</div></div><div class="wt-kpi"><div class="l">Est. CO2e</div><div class="v">3.6 t</div><div class="d">gasoline at EPA\'s 8.78 kg CO2 per gallon</div></div><div class="wt-kpi"><div class="l">Battery equipment</div><div class="v">38%</div><div class="d">of handheld hours</div></div><div class="wt-kpi"><div class="l">Water</div><div class="v">−18%</div><div class="d">vs last season</div></div><div class="wt-kpi"><div class="l">Native plants</div><div class="v">46%</div><div class="d">of new plantings (KB)</div></div></div>' +
     '<div class="panel mt10 tiny">Every number links to its source records. Estimates are labeled as estimates; the board gets a PDF in the portal with the method on the last page.</div>';
   return browser('app.rootline.com/reports/maple-ridge/sustainability', fxShell('Reports', main), 'Sustainability report (concept)');
 };
@@ -231,7 +231,7 @@ WT.bts['fx09-esg'] = function (S) {
   return {
     what: 'Commercial clients and HOA boards increasingly ask for sustainability numbers. Rootline already has fuel from fuel cards, equipment hours, irrigation use and plant origins from the KB, so a snapshot is a report, not a project. Methods and estimates are disclosed with each number.',
     agents: [['Sustainability snapshot', 'Fuel, equipment, water and plant data to a report', 1]],
-    trace: [{ c: 'fuel.sum(Maple Ridge, season)', r: '412 gal', ms: '—', det: true }, { c: 'emissions.estimate(factors)', r: '3.7 t CO2e (estimate)', ms: '', det: true }, { c: 'kb.native_share(new plantings)', r: '46%', ms: '', det: true }],
+    trace: [{ c: 'fuel.sum(Maple Ridge, season)', r: '412 gal', ms: '—', det: true }, { c: 'emissions.estimate(factors)', r: '3.6 t CO2 (412 gal × 8.78 kg)', ms: '', det: true }, { c: 'kb.native_share(new plantings)', r: '46%', ms: '', det: true }],
     hitl: [['Erin', 'reviews before sharing with the board.']],
     creditNote: 'Future bet: a commercial add-on, not AI credits.',
     tags: [['v1', 'first slice: Sustainability Snapshot'], ['v2', 'full ESG reporting']],
