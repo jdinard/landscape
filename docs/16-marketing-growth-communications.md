@@ -2351,3 +2351,13 @@ Collected in November 2026. Vendor pages are marketing material; third-party rev
 - Google for Developers, [RCS Business Messaging](https://developers.google.com/business-communications/rcs-business-messaging)
 - Apple, [Apple Business Connect](https://www.apple.com/business/connect/)
 - Southern Nevada Water Authority, [rebates and Water Smart Landscapes program](https://www.snwa.com/)
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- Twilio: A2P 10DLC brand registration: <https://www.twilio.com/docs/trust-hub/registrations/a2p-10dlc-brand>
+- Twilio: campaign vetting FAQ: <https://support.twilio.com/hc/en-us/articles/11587910480155-A2P-10DLC-Campaign-Vetting-FAQ>
+- Burr & Forman: <https://www.burr.com/telephone-consumer-protection-act/the-fcc-delays-effective-date-of-tcpa-revoke-all-rule-until-january-31-2027>
+- Nelson Mullins: <https://www.nelsonmullins.com/insights/alerts/fcc-download/all/fcc-adopts-overhaul-of-tcpa-consent-revocation-rules-revoke-all-narrowed-exclusive-opt-out-methods-permitted-and-fraud-alert-exemption-expanded>
+- Brownstein: <https://www.bhfs.com/insight/new-tcpa-revocation-of-consent-rules-take-effect-on-november-25/>
+- Google sender guidelines FAQ: <https://support.google.com/a/answer/14229414>
+- FTC announcement: <https://www.ftc.gov/news-events/news/press-releases/2024/08/federal-trade-commission-announces-final-rule-banning-fake-reviews-testimonials>

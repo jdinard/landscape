@@ -2340,3 +2340,23 @@ Targets are internal goals for Rootline, not industry benchmarks. Formal KPI def
 - Nacha 2026 rules: risk-based fraud monitoring phases and effective dates
 - Equal Credit Opportunity Act and Regulation B (financing referral practices)
 - PCI SSC FAQ and SAQ A revision (2025) on payment-page script eligibility; PCI DSS v4.0.1 service-provider validation requirements
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- Swipesum: <https://www.swipesum.com/insights/guide-to-stripe-fees-rates-for-2025>
+- WeAudit: <https://www.weaudit.com/ratings/stripe/stripe-fees/>
+- Checkoutpage: <https://checkoutpage.com/blog/stripe-processing-fees>
+- PaymentReview: <https://paymentreview.com/blog/tap-to-pay-phone-fees-processors/>
+- BizSwoop: <https://www.bizswoop.com/hub/tap-to-pay-on-iphone-stripe-setup-guide-2/>
+- PYMNTS: <https://www.pymnts.com/credit-cards/2026/judge-signals-approval-for-visa-and-mastercard-swipe-fee-settlement/>
+- Payments Dive: <https://www.paymentsdive.com/news/visa-mastercard-reach-legal-pact-with-merchants/805137/>
+- settlement site: <https://paymentcardsettlement.com/>
+- Capitol News Illinois: <https://capitolnewsillinois.com/news/illinois-swipe-fee-law-on-the-brink-after-another-delay-adverse-court-ruling/>
+- Sheppard Mullin: <https://www.sheppard.com/insights/blogs/federal-court-issues-mixed-decision-on-illinois-interchange-fee-law>
+- PaymentCloud: <https://paymentcloudinc.com/blog/credit-card-surcharge-laws-by-state/>
+- Merchant Cost Consulting: Illinois: <https://merchantcostconsulting.com/lower-credit-card-processing-fees/illinois-credit-card-surcharging-laws/>
+- ILGA HB 3128: <https://ilga.gov/legislation/102/HB/10200HB3128lv.htm>
+- Stripe: ACH payment terms: <https://stripe.com/ie/legal/ACH>
+- Stripe support: contest an ACH dispute: <https://support.stripe.com/questions/contest-an-ach-dispute-as-a-merchant>
+- Hookdeck guide: <https://hookdeck.com/webhooks/platforms/guide-to-stripe-webhooks-features-and-best-practices>
+- Nacha Phase 2: <https://www.nacha.org/rules/risk-management-topics-fraud-monitoring-phase-2>

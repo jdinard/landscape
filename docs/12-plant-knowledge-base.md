@@ -2551,3 +2551,22 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 - Texas Property Code section 202.007 (property owners' association restrictions on drought-resistant landscaping): <https://statutes.capitol.texas.gov/>
 
 **Rootline documents this spec depends on:** [02](02-personas-roles-permissions.md), [03](03-crm-sales-estimating-proposals.md), [05](05-field-crew-mobile-app.md), [06](06-customer-portal.md), [10](10-design-studio.md), [11](11-ai-design-mockups.md), [13](13-operations-inventory-equipment.md), [14](14-service-line-modules.md), [16](16-marketing-growth-communications.md), [17](17-ai-copilot-automation.md), [18](18-reporting-analytics.md), [19](19-platform-admin-portal.md), [20](20-architecture-security.md), [21](21-ux-design-system-sitemaps.md), [22](22-business-model-pricing-gtm.md).
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- University of Cincinnati: <https://www.uc.edu/news/articles/2023/01/ohio-bans-pear-trees-to-curb-invasive-species.html>
+- Wisconsin DATCP NR 40 nursery list: <https://datcp.wi.gov/Documents2/NR40NurserySpecies.pdf>
+- Purdue Extension: <https://extension.purdue.edu/news/county/whitley/2025/05/indianas-forbidden-flora.html>
+- Michigan invasive species program: <https://www.michigan.gov/invasives/news/2026/05/21/six-species-added-to-invasive-plant-list>
+- MDARD notice: <https://www.michigan.gov/mdard/about/boards/upcoming-public-events/2026/11/18/public-input-on-proposed-additions-to-michigans-invasive-plant-lists>
+- Illinois Extension: <https://extension.illinois.edu/news-releases/nine-new-invasive-species-regulated-illinois-expansion-exotic-weeds-act>
+- IDNR Part 1100: <https://dnr.illinois.gov/content/dam/soi/en/web/dnr/adrules/documents/17-1100.pdf>
+- data.gov: PLANTS: <https://catalog.data.gov/dataset/plants>
+- USDA: conditions of image and data use: <https://plants.usda.gov/assets/docs/ConditionsofImageandDataUse.pdf>
+- MOBOT conditions: <https://missouribotanicalgarden.org/conditions>
+- MOBOT image use policy: <https://www.missouribotanicalgarden.org/plan-your-visit/things-to-know/photography/image-use-policy>
+- GBIF terms: <https://gbif.org/terms>
+- GBIF data blog: occurrence licenses: <https://data-blog.gbif.org/post/gbif-occurrence-license-processing/>
+- Trefle: about: <https://trefle.io/about>
+- NC State Extension: <https://plants.ces.ncsu.edu/plants/itea-virginica/>
+- Purdue Arboretum: <https://www.arboretum.purdue.edu/explorer/plants/304/>

@@ -2352,3 +2352,34 @@ Verification note: sources below are either (a) research captured elsewhere in t
 - [ADP developer portal](https://developers.adp.com)
 - [Paychex developer portal](https://developer.paychex.com)
 - [Finch developer documentation](https://developer.tryfinch.com)
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- Jobber help: Gusto integration: <https://help.getjobber.com/hc/en-us/articles/15370068136727-Jobber-and-Gusto-Integration>
+- Gusto help: <https://support.gusto.com/article/230913112019060/integrate-with-jobber>
+- EPI 2026 table: <https://www.epi.org/chart/2026-jan-mw-table-2-2025-and-2026-minimum-wages-size-of-increase-and-type-of-increase-by-state/>
+- CBS News: <https://www.cbsnews.com/news/states-raising-minimum-wage-2026-list>
+- IDOL ODRISA: <https://labor.illinois.gov/laws-rules/fls/odrisa.html>
+- LEO ESTA: <https://www.michigan.gov/leo/-/media/Project/Websites/leo/Documents/WAGE-HOUR/LEO-Sick-Time-Act-FINAL.pdf>
+- DLA Piper, April 2026: <https://www.dlapiper.com/insights/publications/2026/04/osha-proposed-heat-rule>
+- 29 CFR 570.33: <https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-570/subpart-C/section-570.33>
+- Greenberg Traurig on Cleveland: <https://www.gtlaw.com/en/insights/2025/7/cleveland-enacts-salary-history-and-pay-transparency-law>
+- Ogletree on Columbus: <https://ogletree.com/insights-resources/blog-posts/columbus-ohio-enacts-new-pay-transparency-ordinance-requiring-salary-ranges-in-job-postings>
+- IRS 2026 W-2 instructions: <https://www.irs.gov/pub/irs-dft/iw2w3--dft.pdf>
+- Journal of Accountancy: <https://www.journalofaccountancy.com/news/2025/aug/draft-2026-form-w-2-includes-boxes-and-codes-for-tips-and-overtime/>
+- IDHR: <https://dhr.illinois.gov/compliance/sexual-harassment-prevention.html>
+- Chicago FAQ: <https://chicago.gov/content/dam/city/depts/bacp/OSL/faqpaidleaveandpaidsickandsafeleavev3.pdf>
+- Chicago paid sick leave: <https://www.chicago.gov/city/en/depts/bacp/supp_info/paidsickleaveinfo.html>
+- Cook County Paid Leave: <https://www.cookcountyil.gov/service/paid-leave-ordinance-and-regulations>
+- eCFR 391.51: <https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-391/subpart-F/section-391.51>
+- FMCSA Clearinghouse guidance: <https://www.fmcsa.dot.gov/regulations/drug-alcohol-testing/when-must-current-and-prospective-employers-conduct-query-cdl>
+- IRS release: <https://www.irs.gov/newsroom/treasury-irs-issue-final-regulations-listing-occupations-where-workers-customarily-and-regularly-receive-tips-under-the-one-big-beautiful-bill>
+- CPA Practice Advisor: <https://www.cpapracticeadvisor.com/2026/04/10/irs-issues-final-regs-on-occupations-eligible-for-obbba-tips-deduction/181462/>
+- DOL Fact Sheet #17I: <https://www.dol.gov/agencies/whd/fact-sheets/17i-overtime-blue-collar>
+- DOL news release: <https://www.dol.gov/newsroom/releases/whd/whd20260514>
+- R.C. 718.011: <https://codes.ohio.gov/ohio-revised-code/section-718.011>
+- RITA guide: <https://www.ritaohio.com/Media/700053/Occasional>
+- Lockton, September 2026: <https://insights.lockton.com/workers-comp-trends-to-watch/sept-2026/heat-regulation-accelerates-at-state-level-federal-rulemaking-remains-uncertain>
+- MIOSHA heat: <https://www.michigan.gov/heat>
+- EY tax news: <https://taxnews.ey.com/news/2025-2281>
+- PayrollOrg: <https://payroll.org/news-resources/news/news-detail/2026/11/13/california-faces-futa-credit-reduction-for-2026>

@@ -2168,3 +2168,8 @@ Estimating method and trade references
 - Total Landscape Care, How to properly cost a job: https://www.totallandscapecare.com/business/article/15034644/how-to-properly-cost-a-job
 - Michigan State University turfgrass archive, 1990 article on composite production rates: https://archive.lib.msu.edu/tic/wetrt/article/1990jan68.pdf
 - Duranta, How to bid landscaping jobs (mulch planning figure): https://getduranta-git-main-duranta-8e88f121.vercel.app/blog/how-to-bid-landscaping-jobs
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- FTC rule page: <https://www.ftc.gov/legal-library/browse/rules/cooling-period-sales-made-home-or-other-locations>
+- Ohio Attorney General: <https://ohioattorneygeneral.gov/Business/Services-for-Business/Business-Guide/Door-To-Door-Sales>

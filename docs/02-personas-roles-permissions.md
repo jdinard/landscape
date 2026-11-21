@@ -2553,3 +2553,8 @@ Verification note: items marked "verify" are from secondary sources or general k
 - Illinois General Assembly - SB 2979 (2024 BIPA amendment; verify bill status and text): https://www.ilga.gov/
 - Stripe - Connect webhooks and connected-account events (for external-account change alerts; verify event names for Standard accounts): https://docs.stripe.com/connect/webhooks
 - Stripe Connect documentation: https://docs.stripe.com/connect
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- Hunton: <https://www.hunton.com/privacy-and-cybersecurity-law-blog/indiana-privacy-law-to-take-effect-january-1-2026>
+- DLA Piper: <https://privacymatters.dlapiper.com/2026/04/seventh-circuit-holds-bipas-2024-damages-amendment-applies-retroactively/>

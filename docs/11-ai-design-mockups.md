@@ -2171,3 +2171,10 @@ Verification note: items marked "verify" are from secondary sources or general k
 - 3D Gaussian Splatting: [arXiv 2308.04079](https://arxiv.org/abs/2308.04079)
 - C2PA Content Credentials: [C2PA specifications](https://c2pa.org/specifications/)
 - EU AI Act Article 50 (transparency obligations): [artificialintelligenceact.eu](https://artificialintelligenceact.eu/article/50/)
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- BFL: model costs: <https://help.bfl.ai/articles/7986977817-what-are-the-costs-associated-with-using-your-models>
+- OpenRouter: FLUX.2 pro: <https://openrouter.ai/black-forest-labs/flux.2-pro>
+- Google Cloud: Gemini 3 Pro Image: <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-pro-image>
+- Hugging Face: Qwen-Image-Edit-2511: <https://huggingface.co/Qwen/Qwen-Image-Edit-2511>

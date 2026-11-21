@@ -1817,3 +1817,14 @@ All links below were collected in November 2026 by the research reports and sibl
 - IRS, About Form 1099-NEC: https://www.irs.gov/forms-pubs/about-form-1099-nec
 - Twilio, A2P 10DLC ISV onboarding: https://www.twilio.com/docs/messaging/compliance/a2p-10dlc/onboarding-isv-api.md
 - LégisQuébec, Charter of the French Language: https://www.legisquebec.gouv.qc.ca/en/document/cs/C-11
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- StartBusinessByState: <https://startbusinessbystate.com/landscaping-industry-statistics/>
+- Vanta Insights: <https://vantainsights.com/industry/561730-landscaping-services>
+- IBISWorld: <https://www.ibisworld.com/united-states/market-size/landscaping-services/1497/>
+- LawnStarter: <https://www.lawnstarter.com/blog/statistics/lawn-care-and-landscaping-industry-statistics/>
+- Federal Register 2026-07519: <https://public-inspection.federalregister.gov/2026-07519.pdf>
+- Patriot Software: <https://www.patriotsoftware.com/blog/accounting/1099-reporting-threshold/>
+- Federal Register 2026-02131: <https://www.govinfo.gov/content/pkg/FR-2026-02-03/pdf/2026-02131.pdf>
+- Fragomen: <https://www.fragomen.com/insights/united-states-dol-and-dhs-temporary-rule-provides-for-additional-64716-h-2b-visas-in-fy-2026.html>

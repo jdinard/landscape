@@ -1921,3 +1921,15 @@ Regulatory references (cited in sibling docs):
 - Card surcharging caps and state rules, as tabulated with sources in [08](08-payments-stripe.md) 4.10.
 
 Related Rootline documents: [01 Market landscape](01-market-landscape.md), [02 Personas and permissions](02-personas-roles-permissions.md), [03 CRM, estimating and proposals](03-crm-sales-estimating-proposals.md), [04 Scheduling](04-scheduling-dispatch-routing.md), [05 Crew app](05-field-crew-mobile-app.md), [06 Customer portal](06-customer-portal.md), [08 Payments](08-payments-stripe.md), [09 Accounting](09-accounting-ledger-integrations.md), [14 Service lines](14-service-line-modules.md), [16 Marketing and comms](16-marketing-growth-communications.md), [17 AI copilot](17-ai-copilot-automation.md), [18 Reporting](18-reporting-analytics.md), [19 Platform admin](19-platform-admin-portal.md), [20 Architecture](20-architecture-security.md).
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- ILGA: 815 ILCS 601: <https://www.ilga.gov/Legislation/ILCS/Articles?ActID=2363&ChapterID=67>
+- Public Act 103-0070: <https://www.ilga.gov/Legislation/publicacts/view/103-0070>
+- Wis. Stat. § 134.49: <https://docs.legis.wisconsin.gov/statutes/statutes/134/49/2>
+- Quarles: <https://www.quarles.com/publications/wisconsins-automatic-renewal-law/>
+- Miller Canfield: <https://www.millercanfield.com/resources-Michigan-Reintroduces-Automatic-Renewal-Law.html>
+- Ohio Department of Taxation: <https://dam.assets.ohio.gov/image/upload/tax.ohio.gov/communications/information_releases/landscaping%20info%20release%2011-2012%20final.pdf>
+- Wisconsin DOR Publication 210: <https://www.revenue.wi.gov/DOR%20Publications/pb210.pdf>
+- Indiana DOR Sales Tax Information Bulletin 21: <https://www.in.gov/dor/files/sib21.pdf>
+- Michigan Treasury construction FAQ: <https://www.michigan.gov/taxes/business-taxes/sales-use-tax/information/construction-faq>

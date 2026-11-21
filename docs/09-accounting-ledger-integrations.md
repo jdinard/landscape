@@ -2834,3 +2834,12 @@ Sources are cited where used. Verification note: items marked **(verify)** in th
 - [Xero Developer documentation](https://developer.xero.com/documentation/) (limits, tracking categories, webhooks, developer pricing)
 
 **Items to verify against primary sources:** Intuit QuickBooks Online API rate limits, batch limits, change-data-capture lookback, webhook format and App Partner Program metering; QuickBooks plan limits for classes, locations and accounts; QuickBooks Desktop Web Connector behavior and Desktop availability; Xero API limits, tracking-category limits and developer pricing; Plaid history limits and Canadian coverage; Sage Intacct API status; IRS Form 1099-NEC/MISC instructions (thresholds after the One Big Beautiful Bill Act, deadlines, e-file mandate, IRIS), TIN matching, backup withholding and Form 4136; MACRS conventions, bonus depreciation and Section 179 limits; the de minimis safe harbor; CRA T5018, T4A, GST/HST Quick Method and CCA class guidance; ASC 606 over-time criteria and ASPE Section 3400; Bank of Canada exchange-rate terms of use; CFPB section 1033 status; Ohio taxability of landscaping and lawn care services, the Franklin County combined rate and Ohio's vendor's discount (E19-E20); which states have self-administered home-rule local sales taxes; state business personal property listing rules; carrier practices on uninsured-subcontractor premium audits; fuel card program export formats.
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- Ohio Department of Taxation landscaping release: <https://dam.assets.ohio.gov/image/upload/tax.ohio.gov/communications/information_releases/landscaping%20info%20release%2011-2012%20final.pdf>
+- Avalara: Franklin County: <https://www.avalara.com/us/en/taxrates/state-rates/ohio/counties/franklin.html>
+- ABC6: <https://abc6onyourside.com/newsletter-daily/franklin-county-sales-tax-increases-8-starting-april-1-tuesday-linkus-development-rapid-transit-transportation-modernization>
+- Bloomberg Tax: <https://news.bloombergtax.com/daily-tax-report-state/ohio-tax-department-issues-update-on-caps-for-vendor-timely-filing-discount>
+- IRS guide to information returns: <https://www.irs.gov/pub/irs-sbse/a-guide-to-information-returns.pdf>
+- IRS Notice 2015-82 release: <https://www.irs.gov/newsroom/for-small-businesses-irs-raises-tangible-property-expensing-threshold-to-2500-simplifies-filing-and-recordkeeping>

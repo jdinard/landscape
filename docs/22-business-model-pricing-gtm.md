@@ -2270,3 +2270,11 @@ Payments (Stripe Connect):
 
 AI model pricing:
 - [Anthropic - API pricing](https://www.anthropic.com/pricing) (model list prices used in 7.4 reflect the October 2026 model table; verify before use)
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- Morrison Foerster: <https://www.mofo.com/resources/insights/250130-eleventh-circuit-vacates-fcc-s-tcpa-one-to-one-consent-rule>
+- Proven Winners event listing: <https://api.provenwinners.com/learn/events/great-lakes-trade-expo>
+- Purdue HLA: <https://www.purdue.edu/hla/sites/hla-happenings/article/another-successful-indiana-green-expo-in-the-books/>
+- Flexprice: <https://flexprice.io/blog/stripe-pricing-breakdown-2026>
+- Morgan Lewis: <https://www.morganlewis.com/pubs/2025/07/ftcs-click-to-cancel-rule-vacated-ahead-of-planned-july-14-effective-date>

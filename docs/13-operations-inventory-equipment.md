@@ -2325,3 +2325,15 @@ Verification note: items marked "verify" in the text are from secondary sources,
 - [R1 - Field service platforms](research/R1-field-service-platforms.md): ServiceTitan suite scope (inventory, purchasing, Fleet Pro add-on), Jobber tier gating of job costing.
 
 Related Rootline documents: [Market landscape](01-market-landscape.md), [Personas and permissions](02-personas-roles-permissions.md), [Estimating](03-crm-sales-estimating-proposals.md), [Scheduling](04-scheduling-dispatch-routing.md), [Crew app](05-field-crew-mobile-app.md), [Customer Portal](06-customer-portal.md), [Invoicing](07-invoicing-billing-contracts.md), [Payments](08-payments-stripe.md), [Ledger](09-accounting-ledger-integrations.md), [Design Studio](10-design-studio.md), [AI design](11-ai-design-mockups.md), [Plant KB](12-plant-knowledge-base.md), [Service lines](14-service-line-modules.md), [Team and payroll](15-team-hr-payroll.md), [Marketing and comms](16-marketing-growth-communications.md), [AI copilot](17-ai-copilot-automation.md), [Reporting](18-reporting-analytics.md), [Platform Admin](19-platform-admin-portal.md), [Architecture](20-architecture-security.md), [UX](21-ux-design-system-sitemaps.md), [Business model](22-business-model-pricing-gtm.md), [Moonshots](23-innovation-moonshots.md), [Product scope and feature catalog](24-roadmap-feature-catalog.md).
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- eCFR 390.5: <https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-390/subpart-A/section-390.5>
+- Federal Register, Dec 18, 2014: <https://www.govinfo.gov/content/pkg/FR-2014-12-18/pdf/2014-29331.pdf>
+- Federal Register, Aug 18, 2020: <https://www.govinfo.gov/content/pkg/FR-2020-08-18/pdf/2020-15667.pdf>
+- eCFR 396.13: <https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-396/section-396.13>
+- eCFR 396.21: <https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-396/section-396.21>
+- FMCSA biennial update: <https://www.fmcsa.dot.gov/BiennialUpdate>
+- eCFR 383.91: <https://www.ecfr.gov/current/title-49/subtitle-B/chapter-III/subchapter-B/part-383/subpart-F/section-383.91>
+- FMCSA testing overview: <https://www.fmcsa.dot.gov/regulations/drug-alcohol-testing/overview-drug-and-alcohol-rules>
+- Federal Register, June 1, 2020: <https://www.federalregister.gov/documents/2020/06/01/2020-11469/hours-of-service-of-drivers>

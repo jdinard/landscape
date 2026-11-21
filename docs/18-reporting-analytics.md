@@ -2259,3 +2259,7 @@ Background references from general knowledge (verify current text and status wit
 Sibling Rootline docs relied on for consistency: [Payments](08-payments-stripe.md) (card and ACH settlement timing), [AI Copilot](17-ai-copilot-automation.md) (`metrics.query`, exploratory SQL, release gates), [Architecture](20-architecture-security.md) (data platform phasing and module names), [UX and design system](21-ux-design-system-sitemaps.md) (Today home, manager mode) and [Pricing and GTM](22-business-model-pricing-gtm.md) (tiers, Rootline Pulse, `benchmark_consent`).
 
 **Verification note:** items marked "verify" are from secondary sources or general knowledge and need first-hand confirmation before build. Statements about ServiceTitan, Aspire and LMN help centers rely on search-result excerpts of those pages; the remaining competitor cells (SynkedUP, Arborgold, Copilot CRM, Yardbook, AI analytics at Jobber and ServiceTitan) come from evidence already cited in [R1](research/R1-field-service-platforms.md) and [R2](research/R2-landscape-specific-platforms.md).
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- EPA hub: <https://www.epa.gov/system/files/documents/2024-02/ghg-emission-factors-hub-2024.pdf>

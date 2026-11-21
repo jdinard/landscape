@@ -3132,3 +3132,13 @@ Verification note: sources reflect public information available as of November 2
 - Colorado Springs Utilities, backflow prevention professionals: [CSU](https://www.csu.org/Pages/BackflowTesters.aspx)
 - City of Gig Harbor, tester resources: [Gig Harbor](https://gigharborwa.gov/856/Tester-Resources)
 - City of Yakima, Tokay user guide: [Yakima](https://www.yakimawa.gov/services/water-irrigation/files/Tokay-User-Guide.pdf)
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- OSU Pesticide Safety Education category list: <https://pested.osu.edu/catlist>
+- Columbus cross-connection control: <https://www.columbus.gov/Backflow>
+- Ohio811: the law: <https://oups.org/law/>
+- Indiana 811 FAQ: <https://indiana811.org/pros/faqs-pros/>
+- ONEOK: one-call state requirements: <https://www.oneok.com/public-awareness/one-call>
+- Illinois 815 ILCS 675: <https://law.justia.com/codes/illinois/2020/chapter-815/act-815-ilcs-675/>
+- Colorado 13-21-129: <https://law.justia.com/codes/colorado/title-13/damages-and-limitations-on-actions/article-21/part-1/section-13-21-129>

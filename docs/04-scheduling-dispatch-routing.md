@@ -2799,3 +2799,7 @@ Citations below come from the repo research reports, sibling module documents an
 - [eCFR 29 CFR 570.65 - Hazardous Occupations Order 14](https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-570/subpart-E/section-570.65) and [EPA - certification standards for pesticide applicators](https://www.epa.gov/pesticide-worker-safety/certification-standards-pesticide-applicators) (via [15](15-team-hr-payroll.md))
 - [Hunter - Hydrawise API information](https://www.hunterirrigation.com/support/hydrawise-api-information) and [rachiopy - Rachio zone API client](https://rachiopy.readthedocs.io/en/latest/zone.html) (via [14](14-service-line-modules.md))
 - Event and payment contracts: [07 - Invoicing, billing and contracts](07-invoicing-billing-contracts.md) (sections 4.3.7, 4.3.8, 8), [08 - Payments](08-payments-stripe.md) (section 8.3), [05 - Field crew mobile app](05-field-crew-mobile-app.md) (section 4.4.5a)
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- 29 CFR 570.33: <https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-570/subpart-C/section-570.33>
