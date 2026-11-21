@@ -550,12 +550,12 @@ quadrantChart
 | Capability | JB | HCP | ST | WZ | GD | ASP | LMN | SO | SYN | AG | RG | SA | CP | YB | QIQ | PRO | YETI | Rootline |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1. Lead and opportunity pipeline | ● | ● | ● | ◐ | ? | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ●* | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 2. Online self-booking with live availability | ● | ● | ◐ | ● | ●° | ? | ? | ◐ | ? | ◐ | ◐ | ? | ◐ | ? | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
+| 2. Online self-booking with live availability | ● | ● | ◐ | ● | ●° | ? | ? | ◐ | ◐° | ◐ | ◐ | ? | ◐ | ? | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
 | 3. Instant online quote from satellite-measured area | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ? | ○ | ● | ? | ? | ○ | ? | ○ | ○ | ● [V1] (turf auto-measure for internal estimating at [MVP]) [16](16-marketing-growth-communications.md) |
 | 4. Production-rate estimating with budget-based overhead recovery (MORS/FLH/SORS) | ○ | ○ | ○ | ○ | ○ | ● | ● | ◐ | ● | ◐ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 5. Options, tiers and optional line items on proposals | ◐ | ● | ● | ? | ? | ◐ | ● | ● | ? | ● | ◐ | ◐ | ◐ | ◐ | ◐* | ◐ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ◐° | ◐◊ | ◐ | ◐ | ? | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 7. Consumer financing inside proposals | ● | ● | ● | ? | ? | ◐§ | ? | ◐§ | ? | ? | ? | ? | ? | ○ | ? | ○ | ○ | ● [V1] [08](08-payments-stripe.md) |
+| 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ◐° | ◐◊ | ◐ | ◐ | ◐° | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
+| 7. Consumer financing inside proposals | ● | ● | ● | ? | ? | ◐§ | ? | ◐§ | ? | ? | ●° | ? | ? | ○ | ? | ○ | ○ | ● [V1] [08](08-payments-stripe.md) |
 
 **B. Measurement, design and plants**
 
@@ -598,7 +598,7 @@ quadrantChart
 
 ◊ Added November 2026 from search results: Aspire's Crew Control routing has a map of scheduled crews and a one-click route optimize, and SynkedUP markets route optimization for maintenance crews (vendor pages); Arborgold's route optimization is reported only in an Aspire-written comparison, so partial until a trial. Aspire customers sign proposals online in its portal, with the rep notified, but no deposit collection at signing was found, so row 6 is partial. LMN's scheduling has built-in route optimization and an optional Smart Scheduling feature that moves future visits when delays happen (partial on row 19, since it is not a weather playbook); SingleOps has a Route Planner on its Plus and Premier tiers and a batch rescheduling tool for weather disruptions ([LMN scheduling](https://golmn.com/products/lmn/scheduling), [SingleOps scheduling docs](https://docs.singleops.com/hc/en-us/sections/43339431581467-Scheduling), [Aspire Crew Control routing](https://www.youraspire.com/crew-control-routing), [SynkedUP routing](https://synkedup.com/features/routing/), [Aspire route-planning comparison](https://www.youraspire.com/blog/best-landscaping-route-planning-apps), [Aspire proposal signing](https://guide.youraspire.com/customer-portal/docs/viewing-accepting-and-signing-proposals)).
 
-° Added November 2026 from search results, mostly vendor or directory pages: QuoteIQ markets native route optimization on its Elite plan; Workiz lists route optimization and a 24/7 self-service booking portal; GorillaDesk routes a week or month of work, offers e-signature on documents and takes payment by link through Stripe or Square, and a review site places its customer portal and online booking on the Pro plan. No deposit collection at signing was found for GorillaDesk, so row 6 is partial ([QuoteIQ routing](https://myquoteiq.com/crm-with-route-optimization-for-lawn-care/), [Workiz](https://www.workiz.com/llms.txt), [GorillaDesk features](https://gorilladesk.com/features/), [GorillaDesk review](https://softwareconnect.com/go/gorilladesk-review-4542f)).
+° Added November 2026 from search results, mostly vendor or directory pages: QuoteIQ markets native route optimization on its Elite plan; Workiz lists route optimization and a 24/7 self-service booking portal; GorillaDesk routes a week or month of work, offers e-signature on documents and takes payment by link through Stripe or Square, and a review site places its customer portal and online booking on the Pro plan. No deposit collection at signing was found for GorillaDesk, so row 6 is partial. RealGreen offers consumer financing through WorkWave's Pay Over Time program, powered by Wisetack. SynkedUP automates website lead intake and consultation scheduling (a consultation request, not live booking of service) and lets customers approve and sign proposals in its portal, with no deposit found, so rows 2 and 6 are partial ([QuoteIQ routing](https://myquoteiq.com/crm-with-route-optimization-for-lawn-care/), [Workiz](https://www.workiz.com/llms.txt), [GorillaDesk features](https://gorilladesk.com/features/), [GorillaDesk review](https://softwareconnect.com/go/gorilladesk-review-4542f), [WorkWave Pay Over Time](https://insights.workwave.com/resources/realgreen-pay-over-time/), [SynkedUP CRM](https://synkedup.com/features/crm/)).
 
 **D. Landscape service-line depth**
 
@@ -1852,3 +1852,5 @@ All links below were collected in November 2026 by the research reports and sibl
 - Workiz: <https://www.workiz.com/llms.txt>
 - GorillaDesk features: <https://gorilladesk.com/features/>
 - GorillaDesk review: <https://softwareconnect.com/go/gorilladesk-review-4542f>
+- WorkWave Pay Over Time: <https://insights.workwave.com/resources/realgreen-pay-over-time/>
+- SynkedUP CRM: <https://synkedup.com/features/crm/>
