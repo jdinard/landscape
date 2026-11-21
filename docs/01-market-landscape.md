@@ -550,11 +550,11 @@ quadrantChart
 | Capability | JB | HCP | ST | WZ | GD | ASP | LMN | SO | SYN | AG | RG | SA | CP | YB | QIQ | PRO | YETI | Rootline |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1. Lead and opportunity pipeline | ● | ● | ● | ◐ | ? | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ●* | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 2. Online self-booking with live availability | ● | ● | ◐ | ● | ? | ? | ? | ◐ | ? | ◐ | ◐ | ? | ◐ | ? | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
+| 2. Online self-booking with live availability | ● | ● | ◐ | ● | ●° | ? | ? | ◐ | ? | ◐ | ◐ | ? | ◐ | ? | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
 | 3. Instant online quote from satellite-measured area | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ? | ○ | ● | ? | ? | ○ | ? | ○ | ○ | ● [V1] (turf auto-measure for internal estimating at [MVP]) [16](16-marketing-growth-communications.md) |
 | 4. Production-rate estimating with budget-based overhead recovery (MORS/FLH/SORS) | ○ | ○ | ○ | ○ | ○ | ● | ● | ◐ | ● | ◐ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 5. Options, tiers and optional line items on proposals | ◐ | ● | ● | ? | ? | ◐ | ● | ● | ? | ● | ◐ | ◐ | ◐ | ◐ | ◐* | ◐ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ? | ◐◊ | ◐ | ◐ | ? | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
+| 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ◐° | ◐◊ | ◐ | ◐ | ? | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 7. Consumer financing inside proposals | ● | ● | ● | ? | ? | ◐§ | ? | ◐§ | ? | ? | ? | ? | ? | ○ | ? | ○ | ○ | ● [V1] [08](08-payments-stripe.md) |
 
 **B. Measurement, design and plants**
@@ -575,7 +575,7 @@ quadrantChart
 | Capability | JB | HCP | ST | WZ | GD | ASP | LMN | SO | SYN | AG | RG | SA | CP | YB | QIQ | PRO | YETI | Rootline |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 16. Recurring visits and maintenance schedules | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ●* | ○ | ◐ | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
-| 17. Route optimization on road network (one crew, one day) | ◐ | ◐‡ | ◐ | ? | ● | ●◊ | ●◊ | ●◊ | ●◊ | ◐◊ | ● | ● | ? | ? | ? | ○ | ? | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
+| 17. Route optimization on road network (one crew, one day) | ◐ | ◐‡ | ◐ | ●° | ● | ●◊ | ●◊ | ●◊ | ●◊ | ◐◊ | ● | ● | ? | ? | ●° | ○ | ? | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
 | 18. Multi-crew VRP (capacity, skills, equipment, time windows) | ○ | ○ | ◐ | ○ | ◐ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [V1] [04](04-scheduling-dispatch-routing.md) |
 | 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ◐◊ | ●◊ | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] manual bulk moves, [V1] playbooks [04](04-scheduling-dispatch-routing.md) |
 | 20. Crew app with time, photos and checklists | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ◐* | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
@@ -597,6 +597,8 @@ quadrantChart
 ¶ Housecall Pro (row 21): its mobile FAQ says job data is the only part of the app stored for offline use, up to a storage limit, and editing without a connection is not supported, so partial ([Housecall Pro mobile FAQ](https://help.housecallpro.com/en/articles/4747652-housecall-pro-mobile-faq)). LMN, from its help center: the LMN Crew app has an Offline Mode that shows job information, clocks crews in and out and records time without signal, provided the day was loaded first, and uploads offline photos when the connection returns; crew tracking records a GPS location at each punch and has a live-tracking view, enabled per user, but no geofence-triggered clock-in was found, hence partial on row 23 ([LMN release update](https://support.golmn.com/hc/en-us/articles/35576807354651), [LMN live tracking guide](https://intercom.help/lmn/en/articles/15938922-live-tracking-a-guide)).
 
 ◊ Added November 2026 from search results: Aspire's Crew Control routing has a map of scheduled crews and a one-click route optimize, and SynkedUP markets route optimization for maintenance crews (vendor pages); Arborgold's route optimization is reported only in an Aspire-written comparison, so partial until a trial. Aspire customers sign proposals online in its portal, with the rep notified, but no deposit collection at signing was found, so row 6 is partial. LMN's scheduling has built-in route optimization and an optional Smart Scheduling feature that moves future visits when delays happen (partial on row 19, since it is not a weather playbook); SingleOps has a Route Planner on its Plus and Premier tiers and a batch rescheduling tool for weather disruptions ([LMN scheduling](https://golmn.com/products/lmn/scheduling), [SingleOps scheduling docs](https://docs.singleops.com/hc/en-us/sections/43339431581467-Scheduling), [Aspire Crew Control routing](https://www.youraspire.com/crew-control-routing), [SynkedUP routing](https://synkedup.com/features/routing/), [Aspire route-planning comparison](https://www.youraspire.com/blog/best-landscaping-route-planning-apps), [Aspire proposal signing](https://guide.youraspire.com/customer-portal/docs/viewing-accepting-and-signing-proposals)).
+
+° Added November 2026 from search results, mostly vendor or directory pages: QuoteIQ markets native route optimization on its Elite plan; Workiz lists route optimization and a 24/7 self-service booking portal; GorillaDesk routes a week or month of work, offers e-signature on documents and takes payment by link through Stripe or Square, and a review site places its customer portal and online booking on the Pro plan. No deposit collection at signing was found for GorillaDesk, so row 6 is partial ([QuoteIQ routing](https://myquoteiq.com/crm-with-route-optimization-for-lawn-care/), [Workiz](https://www.workiz.com/llms.txt), [GorillaDesk features](https://gorilladesk.com/features/), [GorillaDesk review](https://softwareconnect.com/go/gorilladesk-review-4542f)).
 
 **D. Landscape service-line depth**
 
@@ -1846,3 +1848,7 @@ All links below were collected in November 2026 by the research reports and sibl
 - SynkedUP routing: <https://synkedup.com/features/routing/>
 - Aspire route-planning comparison: <https://www.youraspire.com/blog/best-landscaping-route-planning-apps>
 - Aspire proposal signing: <https://guide.youraspire.com/customer-portal/docs/viewing-accepting-and-signing-proposals>
+- QuoteIQ routing: <https://myquoteiq.com/crm-with-route-optimization-for-lawn-care/>
+- Workiz: <https://www.workiz.com/llms.txt>
+- GorillaDesk features: <https://gorilladesk.com/features/>
+- GorillaDesk review: <https://softwareconnect.com/go/gorilladesk-review-4542f>
