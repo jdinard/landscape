@@ -1936,4 +1936,4 @@ Related Rootline documents: [01 Market landscape](01-market-landscape.md), [02 P
 - Michigan Treasury construction FAQ: <https://www.michigan.gov/taxes/business-taxes/sales-use-tax/information/construction-faq>
 - RAB 2023-9: <https://www.michigan.gov/taxes/rep-legal/rab/2023-revenue-administrative-bulletins/revenue-administrative-bulletin-2023-9>
 - TruGreen v. Department of Treasury: <https://law.justia.com/cases/michigan/court-of-appeals-published/2021/344142.html>
-- ILGA: <https://www.ilga.gov/commission/jcar/admincode/086/086001300S19400R.html>
+- 86 Ill. Adm. Code 130.1940, construction contractors (ILGA): <https://www.ilga.gov/commission/jcar/admincode/086/086001300S19400R.html>
