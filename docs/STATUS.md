@@ -6,7 +6,7 @@
 
 - **Done:** competitive research, 24 module and scope documents (about 950,000 words), a 747-feature catalog with scope tiers, a published vision site, static concept screens for every surface, and a clickable prototype of 13 guided walkthroughs (162 steps) covering every persona, from the AI design flow to weekly mowing, the crew's day, the books, hiring, operations, service lines, marketing and the operator console.
 - **Decided:** bring-your-own Stripe, a built-in double-entry ledger, the Great Lakes launch region, Snow Lite in the MVP, pricing tiers, the region-aware Plant Knowledge Base, and "humans approve AI actions by default".
-- **Remains** (the working queue is [BACKLOG.md](BACKLOG.md)): founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, clickable prototypes for the other workflows (the biggest gap: small and recurring jobs such as weekly grass cutting), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
+- **Remains** (the working queue is [BACKLOG.md](BACKLOG.md)): founder review of 70 open product decisions, verification of research facts, counsel reviews, interviews and usability tests with Great Lakes design partners, usability tests on the 13 built walkthroughs (section 2.4), technical proofs of the riskiest ideas, seeding the Plant Knowledge Base, and then the build itself.
 
 ## 1. What's done
 
@@ -70,7 +70,7 @@ Each module doc was written by one agent and then reviewed and deepened by anoth
 | Cataloged features | 747: 442 [MVP], 255 [V1], 46 [V2], 4 [V3] |
 | Open product decisions (with recommended defaults) | 72, of which 2 are decided (launch region, Snow Lite) |
 | Product risks in the register | 29 |
-| "Verify" markers on facts that need first-hand confirmation | About 1,660 |
+| "Verify" markers on facts that need first-hand confirmation | About 1,610 |
 
 ## 2. What remains
 
@@ -93,7 +93,7 @@ No step below carries a time or effort estimate. The order within each list is a
 
 ### 2.2 Verification and counsel
 
-- **Research facts.** A web-search verification pass has covered the facts behind product decisions (BACKLOG items A1-A13): Stripe Accounts v2 and OAuth, Stripe Tax for connected accounts, Stripe fees, QuickBooks and Xero API terms, launch-state labor, pesticide, surcharging, auto-renewal and late-fee rules, competitor prices, plant data licenses, image-model prices and industry size. Each result is written into the module doc with sources and marked "confirmed via search results" where the primary page could not be opened. Items it could not settle stay "verify" (for example the QuickBooks CDC lookback, the Tap to Pay add-on fee, Chicago's leave accrual rate and several plant-data licenses). The remaining long tail of "verify" markers (A14), hands-on competitor trials and counsel review are still needed before anything appears in sales material or an investor deck (OD-07).
+- **Research facts.** A web-search verification pass has covered the facts behind product decisions (BACKLOG items A1-A13): Stripe Accounts v2 and OAuth, Stripe Tax for connected accounts, Stripe fees, QuickBooks and Xero API terms, launch-state labor, pesticide, surcharging, auto-renewal and late-fee rules, competitor prices, plant data licenses, image-model prices and industry size. Each result is written into the module doc with sources and marked "confirmed via search results" where the primary page could not be opened. Items it could not settle stay "verify" (for example the QuickBooks CDC lookback, the Tap to Pay add-on fee and several plant-data licenses). The long tail (A14) is being worked doc by doc, launch-region facts first: so far the federal DOT rules (where the MCS-150 schedule was found backwards and fixed), launch-state HR and payroll rules (Michigan sick time, Chicago leave, Illinois meal periods, Ohio city pay-range laws, the new W-2 codes, the final tipped-occupation list), Ohio sales tax on landscaping (taxable above $5,000 a year) and its vendor's discount cap, the FTC and Ohio in-home cancellation rules, the five launch states' invasive plant rules, the FCC drone action and the Chicago-area leaf-blower rules. The rest of the long tail, hands-on competitor trials and counsel review are still needed before anything appears in sales material or an investor deck (OD-07).
 - **Legal reviews:**
   - payment surcharging rules
   - auto-renewal and late-fee laws
