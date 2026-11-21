@@ -554,7 +554,7 @@ quadrantChart
 | 3. Instant online quote from satellite-measured area | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ? | ○ | ● | ? | ? | ○ | ? | ○ | ○ | ● [V1] (turf auto-measure for internal estimating at [MVP]) [16](16-marketing-growth-communications.md) |
 | 4. Production-rate estimating with budget-based overhead recovery (MORS/FLH/SORS) | ○ | ○ | ○ | ○ | ○ | ● | ● | ◐ | ● | ◐ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 5. Options, tiers and optional line items on proposals | ◐ | ● | ● | ? | ? | ◐ | ● | ● | ? | ● | ◐ | ◐ | ◐ | ◐ | ◐* | ◐ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ? | ? | ◐ | ◐ | ? | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
+| 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ? | ◐◊ | ◐ | ◐ | ? | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 7. Consumer financing inside proposals | ● | ● | ● | ? | ? | ◐§ | ? | ◐§ | ? | ? | ? | ? | ? | ○ | ? | ○ | ○ | ● [V1] [08](08-payments-stripe.md) |
 
 **B. Measurement, design and plants**
@@ -575,9 +575,9 @@ quadrantChart
 | Capability | JB | HCP | ST | WZ | GD | ASP | LMN | SO | SYN | AG | RG | SA | CP | YB | QIQ | PRO | YETI | Rootline |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 16. Recurring visits and maintenance schedules | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ●* | ○ | ◐ | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
-| 17. Route optimization on road network (one crew, one day) | ◐ | ◐‡ | ◐ | ? | ● | ? | ? | ? | ? | ? | ● | ● | ? | ? | ? | ○ | ? | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
+| 17. Route optimization on road network (one crew, one day) | ◐ | ◐‡ | ◐ | ? | ● | ●◊ | ●◊ | ●◊ | ●◊ | ◐◊ | ● | ● | ? | ? | ? | ○ | ? | ● [MVP] [04](04-scheduling-dispatch-routing.md) |
 | 18. Multi-crew VRP (capacity, skills, equipment, time windows) | ○ | ○ | ◐ | ○ | ◐ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [V1] [04](04-scheduling-dispatch-routing.md) |
-| 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] manual bulk moves, [V1] playbooks [04](04-scheduling-dispatch-routing.md) |
+| 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ◐◊ | ●◊ | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] manual bulk moves, [V1] playbooks [04](04-scheduling-dispatch-routing.md) |
 | 20. Crew app with time, photos and checklists | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ◐* | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 21. Documented offline-first crew app | ◐ | ◐¶ | ? | ? | ? | ● | ●¶ | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 22. Spanish crew interface | ●† | ●† | ●† | ? | ? | ●† | ●† | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] [21](21-ux-design-system-sitemaps.md) |
@@ -595,6 +595,8 @@ quadrantChart
 § Added November 2026 from search results: Aspire lists Wisetack as a marketplace financing partner, but payouts from Wisetack are entered into Aspire by hand; SingleOps can show GreenSky financing on proposals, while the charge is approved in GreenSky's own merchant portal. Both are partial: financing is offered, not settled inside the product ([Aspire marketplace: Wisetack](https://marketplace.youraspire.com/partners/wisetack-aspire), [GreenSky](https://resources.greensky.com/home-improvement-blog/how-integrating-financing-drives-customer-satisfaction)).
 
 ¶ Housecall Pro (row 21): its mobile FAQ says job data is the only part of the app stored for offline use, up to a storage limit, and editing without a connection is not supported, so partial ([Housecall Pro mobile FAQ](https://help.housecallpro.com/en/articles/4747652-housecall-pro-mobile-faq)). LMN, from its help center: the LMN Crew app has an Offline Mode that shows job information, clocks crews in and out and records time without signal, provided the day was loaded first, and uploads offline photos when the connection returns; crew tracking records a GPS location at each punch and has a live-tracking view, enabled per user, but no geofence-triggered clock-in was found, hence partial on row 23 ([LMN release update](https://support.golmn.com/hc/en-us/articles/35576807354651), [LMN live tracking guide](https://intercom.help/lmn/en/articles/15938922-live-tracking-a-guide)).
+
+◊ Added November 2026 from search results: Aspire's Crew Control routing has a map of scheduled crews and a one-click route optimize, and SynkedUP markets route optimization for maintenance crews (vendor pages); Arborgold's route optimization is reported only in an Aspire-written comparison, so partial until a trial. Aspire customers sign proposals online in its portal, with the rep notified, but no deposit collection at signing was found, so row 6 is partial. LMN's scheduling has built-in route optimization and an optional Smart Scheduling feature that moves future visits when delays happen (partial on row 19, since it is not a weather playbook); SingleOps has a Route Planner on its Plus and Premier tiers and a batch rescheduling tool for weather disruptions ([LMN scheduling](https://golmn.com/products/lmn/scheduling), [SingleOps scheduling docs](https://docs.singleops.com/hc/en-us/sections/43339431581467-Scheduling), [Aspire Crew Control routing](https://www.youraspire.com/crew-control-routing), [SynkedUP routing](https://synkedup.com/features/routing/), [Aspire route-planning comparison](https://www.youraspire.com/blog/best-landscaping-route-planning-apps), [Aspire proposal signing](https://guide.youraspire.com/customer-portal/docs/viewing-accepting-and-signing-proposals)).
 
 **D. Landscape service-line depth**
 
@@ -1828,3 +1830,19 @@ All links below were collected in November 2026 by the research reports and sibl
 - Patriot Software: <https://www.patriotsoftware.com/blog/accounting/1099-reporting-threshold/>
 - Federal Register 2026-02131: <https://www.govinfo.gov/content/pkg/FR-2026-02-03/pdf/2026-02131.pdf>
 - Fragomen: <https://www.fragomen.com/insights/united-states-dol-and-dhs-temporary-rule-provides-for-additional-64716-h-2b-visas-in-fy-2026.html>
+- Jobber vs LMN: <https://www.getjobber.com/comparison/jobber-vs-lmn/>
+- Housecall Pro pricing: <https://www.housecallpro.com/pricing/>
+- Clean Savannah: <https://www.cleansavannah.com/post/best-crew-scheduling-software-for-landscaping-companies-2026>
+- MyQuoteIQ: <https://myquoteiq.com/top-10-best-scheduling-software-for-landscaping-businesses-in-2026/>
+- ServiceTitan field app: <https://www.servicetitan.com/features/field-service-app>
+- LMN Crew on the App Store: <https://apps.apple.com/us/app/lmn-crew/id6444404165>
+- Aspire language settings: <https://guide.youraspire.com/aspire-mobile/docs/es/language-settings>
+- Aspire dynamic translation: <https://guide.youraspire.com/aspire-mobile/docs/dynamic-translation>
+- Aspire marketplace: Wisetack: <https://marketplace.youraspire.com/partners/wisetack-aspire>
+- GreenSky: <https://resources.greensky.com/home-improvement-blog/how-integrating-financing-drives-customer-satisfaction>
+- LMN scheduling: <https://golmn.com/products/lmn/scheduling>
+- SingleOps scheduling docs: <https://docs.singleops.com/hc/en-us/sections/43339431581467-Scheduling>
+- Aspire Crew Control routing: <https://www.youraspire.com/crew-control-routing>
+- SynkedUP routing: <https://synkedup.com/features/routing/>
+- Aspire route-planning comparison: <https://www.youraspire.com/blog/best-landscaping-route-planning-apps>
+- Aspire proposal signing: <https://guide.youraspire.com/customer-portal/docs/viewing-accepting-and-signing-proposals>
