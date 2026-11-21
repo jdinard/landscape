@@ -28,6 +28,7 @@ The hub is [site/walkthroughs.html](site/walkthroughs.html). Each walkthrough fo
 - [x] **E6 Design Studio depth** (f6f7e5c): [site/wt-design-studio.html](site/wt-design-studio.html).
 - [x] **E7 Getting found** (4b0c0e3): [site/wt-getting-found.html](site/wt-getting-found.html).
 - [x] **E8 Moonshots, clearly labeled** (4d8cc4e): [site/wt-future.html](site/wt-future.html).
+- [x] **E10 Confirmed rules shown in the walkthroughs** (99a38ec, d555200): the home-sale cancellation window on a driveway Quick Quote, Michigan's lawn-care tax pack at onboarding, Ohio's 20-day city-tax count at crew close-out, the Callery pear block citing Ohio's rule, and spec notes that point to confirmed facts instead of "verify".
 - [ ] **E9 Usability tests of the walkthroughs** with Great Lakes design partners (homeowners, owners, office managers, crew leads); record what confused people and fix the screens. Needs real participants, so it waits for the founder.
 
 ## A. Verification pass
