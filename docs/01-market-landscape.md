@@ -579,9 +579,9 @@ quadrantChart
 | 18. Multi-crew VRP (capacity, skills, equipment, time windows) | ○ | ○ | ◐ | ○ | ◐ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [V1] [04](04-scheduling-dispatch-routing.md) |
 | 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] manual bulk moves, [V1] playbooks [04](04-scheduling-dispatch-routing.md) |
 | 20. Crew app with time, photos and checklists | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ◐* | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
-| 21. Documented offline-first crew app | ◐ | ? | ? | ? | ? | ● | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] [05](05-field-crew-mobile-app.md) |
+| 21. Documented offline-first crew app | ◐ | ? | ? | ? | ? | ● | ●¶ | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 22. Spanish crew interface | ●† | ●† | ●† | ? | ? | ? | ●† | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] [21](21-ux-design-system-sitemaps.md) |
-| 23. Live GPS crew tracking and geofenced clock-in | ● | ● | ◐ | ● | ● | ● | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
+| 23. Live GPS crew tracking and geofenced clock-in | ● | ● | ◐ | ● | ● | ● | ◐¶ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 24. Purchasing and POs generated from estimates | ○ | ? | ● | ? | ? | ● | ● | ◐ | ? | ? | ? | ? | ○ | ○ | ? | ○ | ? | ● [MVP] [13](13-operations-inventory-equipment.md) |
 | 25. Inventory with field material usage | ○ | ? | ● | ? | ◐* | ● | ◐ | ◐ | ○* | ? | ◐ | ◐* | ○ | ○ | ? | ○ | ? | ● [MVP] Off and Light modes, [V1] Standard and Advanced [13](13-operations-inventory-equipment.md) |
 | 26. Equipment and fleet maintenance with cost recovery | ○ | ? | ◐* | ? | ? | ● | ◐ | ○* | ? | ○* | ◐ | ○* | ○ | ○ | ? | ○ | ? | ● [MVP] registry, meters and cost per hour; [V1] PM, work orders and actuals-based rates [13](13-operations-inventory-equipment.md) |
@@ -593,6 +593,8 @@ quadrantChart
 †† The † cells for ServiceTitan and LMN were added in the same pass: ServiceTitan's field app lists Spanish (and French) support and its iOS listing shows English, French and Spanish; LMN's Crew app lists English and Spanish in the App Store ([ServiceTitan field app](https://www.servicetitan.com/features/field-service-app), [LMN Crew on the App Store](https://apps.apple.com/us/app/lmn-crew/id6444404165)).
 
 § Added November 2026 from search results: Aspire lists Wisetack as a marketplace financing partner, but payouts from Wisetack are entered into Aspire by hand; SingleOps can show GreenSky financing on proposals, while the charge is approved in GreenSky's own merchant portal. Both are partial: financing is offered, not settled inside the product ([Aspire marketplace: Wisetack](https://marketplace.youraspire.com/partners/wisetack-aspire), [GreenSky](https://resources.greensky.com/home-improvement-blog/how-integrating-financing-drives-customer-satisfaction)).
+
+¶ Added November 2026 from LMN's help center: the LMN Crew app has an Offline Mode that shows job information, clocks crews in and out and records time without signal, provided the day was loaded first, and uploads offline photos when the connection returns; crew tracking records a GPS location at each punch and has a live-tracking view, enabled per user, but no geofence-triggered clock-in was found, hence partial on row 23 ([LMN release update](https://support.golmn.com/hc/en-us/articles/35576807354651), [LMN live tracking guide](https://intercom.help/lmn/en/articles/15938922-live-tracking-a-guide)).
 
 **D. Landscape service-line depth**
 
