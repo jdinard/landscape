@@ -318,7 +318,7 @@ stateDiagram-v2
 ```
 
 Validation rules:
-- An instance cannot move to `scheduled` if any required compliance step is incomplete (registry notification not yet sent, minimum notice hours not elapsed, applicator license for the product category missing on the assigned crew).
+- An instance cannot move to `scheduled` if any required compliance step is incomplete (registry notification not yet sent, minimum notice hours not elapsed, applicator license for the product category missing on the assigned crew). In Ohio, for example, lawn applications need commercial category 8 (turfgrass), bed and shrub weed control needs 6c (ornamental weed), and insect and disease work on outdoor ornamentals and trees needs 6a, whose holders may also make 6c applications (confirmed via search results; primary page not opened; [OSU Pesticide Safety Education category list](https://pested.osu.edu/catlist)); the Ohio rule pack maps product use sites to those categories.
 - `missed` instances raise an ops alert 7 days before window close (configurable) and appear in the Round Planner's "at risk" lane.
 - `skipped` requires a reason code from the closed Visit list in [04](04-scheduling-dispatch-routing.md) 4.1.3 (`client_request`, `no_access` such as a locked gate, `dog_loose`, `weather_unsafe`, `other`) and a photo for access reasons; the code drives the agreement outcome and credit policy in [07](07-invoicing-billing-contracts.md).
 
