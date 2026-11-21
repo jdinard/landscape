@@ -183,7 +183,7 @@ WT.screens['ds04-plants'] = function (S) {
   if (S.placed) {
     vals.push([S.moved ? 'ok' : 'warn', 'Serviceberry \'Autumn Brilliance\': mature spread 15 ft; at 6 ft from the wall it will hit the house.', S.moved ? 'Moved to 9 ft' : '<button type="button" class="btn xs" data-act="moved" data-k="moved">Move to 9 ft</button>']);
     vals.push([S.nepMoved ? 'ok' : 'warn', 'Catmint \'Walker\'s Low\' ×5 in part shade (about 3.5 h of sun); it needs full sun to bloom.', S.nepMoved ? 'Moved to the sunny edge' : '<button type="button" class="btn xs" data-act="nep" data-k="nep">Move to the bed edge</button>']);
-    vals.push(['danger', 'Client asked about a Bradford pear: Callery pear can\'t be sold or planted in Ohio (state invasive plant rule). KB alternatives: serviceberry, redbud.', 'Blocked']);
+    vals.push(['danger', 'Client asked about a Bradford pear: since January 2023 Callery pear and its cultivars can\'t be sold, grown or planted in Ohio (OAC 901:5-30-01). KB alternatives: serviceberry, redbud.', 'Blocked']);
     vals.push(['ok', 'All plants hardy in zone 6b and rated Good or Excellent for Central Ohio.', '']);
   }
   var main = '<div class="apphead"><span class="crumb">Design › Harmon › Option A</span><h3>Planting</h3>' + pill('', 'Central Ohio · 6b') + '</div>' + tools('Plants') +
@@ -204,7 +204,7 @@ WT.bts['ds04-plants'] = function (S) {
     trace: [{ c: 'kb.palette(Central Ohio, 6b, deer: high)', r: '1 tree, 3 + 7 shrubs, 9 perennials', ms: '120 ms', det: true }, { c: 'validate.plants', r: S.placed ? (S.moved && S.nepMoved ? 'all clear; 1 request blocked by law' : 'setback and sun warnings') : '', ms: '14 ms', det: true, pending: !S.placed }, { c: 'fillbed(island, 15 in OC, hex)', r: S.carex ? '143 plugs' : '', ms: '30 ms', det: true, pending: !S.carex }],
     hitl: [['Jess', 'chooses every plant; warnings explain, she decides.']],
     tags: [['mvp', 'KB plant placement, mature-size symbols, live validation, fill-bed']],
-    specs: 'Spec: 10 §4.10, §4.11, §5.5 · 12 (Region ratings, legal status) — verify Ohio\'s invasive plant rule text'
+    specs: 'Spec: 10 §4.10, §4.11, §5.5 · 12 (Region ratings, legal status; launch-state invasive plant rules in §1)'
   };
 };
 

@@ -235,7 +235,7 @@ WT.bts['fx09-esg'] = function (S) {
     hitl: [['Erin', 'reviews before sharing with the board.']],
     creditNote: 'Future bet: a commercial add-on, not AI credits.',
     tags: [['v1', 'first slice: Sustainability Snapshot'], ['v2', 'full ESG reporting']],
-    specs: 'Spec: 23 M-09 · 13 (fuel cards) · 14 (irrigation) · 12 (native status) — verify emission factors'
+    specs: 'Spec: 23 M-09 · 13 (fuel cards) · 14 (irrigation) · 12 (native status) · 18 (EPA emission factors)'
   };
 };
 

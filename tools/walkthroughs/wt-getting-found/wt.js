@@ -216,7 +216,7 @@ WT.bts['gf07-reviews'] = function (S) {
     hitl: [['Erin', 'approves every public reply.']],
     creditNote: 'A Copilot draft is 1 credit.',
     tags: [['mvp', 'review requests, Google monitoring and replies, NPS'], ['v1', 'other review sites, listings consistency, survey builder']],
-    specs: 'Spec: 16 §4.12.1-4.12.3, §4.13 · policy notes cited in doc 16 (verify current Google and FTC rules)'
+    specs: 'Spec: 16 §4.12.1-4.12.3, §4.13 · policy notes cited in doc 16 (the FTC reviews rule, 16 CFR Part 465, and Google\'s bans on review incentives and gating, confirmed)'
   };
 };
 

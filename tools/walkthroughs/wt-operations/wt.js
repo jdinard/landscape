@@ -296,7 +296,7 @@ WT.bts['op09-subpay'] = function (S) {
     trace: [{ c: 'portal.invoice(SWO-118)', r: S.inv ? '$1,450.00 with 4 photos' : 'waiting', ms: '', det: true, pending: !S.inv }, { c: 'lien_waiver.sign(conditional)', r: S.waiver ? 'signed, hash stored' : '', ms: '', det: true, pending: !S.waiver }, { c: 'bill.approve → ap.AP1', r: S.billOk ? 'Dr 5410 / Cr 2000 $1,450.00' : '', ms: S.billOk ? '80 ms' : '', det: true, pending: !S.billOk, human: S.waiver && !S.billOk }],
     hitl: [['Greg', 'invoices and signs.'], ['Priya', 'approves the bill and runs payments.']],
     tags: [['v1', 'sub portal invoices, lien waivers, retainage, payment-run holds']],
-    specs: 'Spec: 13 §4.13.4, §4.13.5 · 09 ap.AP1, ap.AP4, 5410 (verify state waiver rules)'
+    specs: 'Spec: 13 §4.13.4, §4.13.5 · 09 ap.AP1, ap.AP4, 5410 (statutory waiver forms in 12 states, Michigan the only launch state; counsel reviews each form)'
   };
 };
 

@@ -957,7 +957,7 @@ WT.bts['sl04-backflow'] = function (S) {
     trace: [{ c: 'credential.check(Devon, tester + gauge)', r: 'valid', ms: '20 ms', det: true }, { c: 'test.evaluate(PVB, readings)', r: S.readings ? 'pass: 1.4 / 1.6 psid' : 'waiting', ms: '', det: true, pending: !S.readings }, { c: 'filing.prepare(city pack)', r: S.readings ? 'PDF + fields' : '', ms: '', det: true, pending: !S.readings }, { c: 'filing.confirm(number)', r: S.filed ? '7Q42-118' : '', ms: '', det: true, pending: !S.filed }],
     hitl: [['Devon', 'tests and signs.'], ['Tasha', 'files and records the confirmation number.']],
     tags: [['v1', 'backflow tests, jurisdiction packs, filing queue, due-date reminders, commercial compliance view']],
-    specs: 'Spec: 14 §4.2.5, §4.2.8 · 15 (tester credentials) · 07 (pass-through fees) — verify each purveyor\'s rules'
+    specs: 'Spec: 14 §4.2.5, §4.2.8 · 15 (tester credentials) · 07 (pass-through fees) · Columbus rules confirmed in 14 §4.2.5; other purveyors to verify'
   };
 };
 
