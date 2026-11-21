@@ -683,6 +683,13 @@ The platform ships a **default taxability matrix** curated by `platform_finance`
 | Snow removal | Treated as a taxable real-property service in some states, untaxed in others. | Separate `snow_ice_removal` category so it can differ from mowing. |
 | Pesticide/fertilizer applications | Some states tax pest control or lawn treatment specifically. | `pesticide_fertilizer_application` category. |
 
+**Launch-region rows checked (November 2026, confirmed via search results; primary page not opened):**
+
+- **Ohio** taxes landscaping and lawn care services, but a vendor must register and collect only once its sales of that service reach $5,000 in a calendar year, and snow removal is counted separately against its own $5,000. Landscaping is never a construction contract, and nontaxable charges on the same invoice must be split out or the whole invoice is taxed ([Ohio Department of Taxation](https://dam.assets.ohio.gov/image/upload/tax.ohio.gov/communications/information_releases/landscaping%20info%20release%2011-2012%20final.pdf); the bulletin was updated in 2026). The matrix therefore carries a per-category annual threshold, and onboarding asks an Ohio tenant whether it is over it.
+- **Wisconsin** taxes landscaping and lawn maintenance services, including landscape planning, mowing, watering, aerating, raking, planting, spraying, fertilizing and shrub and tree services; fertilizer applied for a customer can be bought for resale, and some real property improvements are not landscaping and are not taxed ([Wisconsin DOR Publication 210](https://www.revenue.wi.gov/DOR%20Publications/pb210.pdf); the edition found is from 2012).
+- **Indiana** treats lawn care as a service that is not subject to sales tax, while the lawn care company pays tax on the chemicals and equipment it buys ([Indiana DOR Sales Tax Information Bulletin 21](https://www.in.gov/dor/files/sib21.pdf)).
+- **Michigan** treats a landscaper as a contractor for materials ([Michigan Treasury construction FAQ](https://www.michigan.gov/taxes/business-taxes/sales-use-tax/information/construction-faq)); whether mowing itself is taxed, and Illinois's treatment, were not settled by official sources in this pass (verify).
+
 **Worked example: one commercial invoice, three tax treatments** (a jurisdiction modeled on the New York pattern; illustrative 8.0% combined rate, verify real rates in the engine). Linden Park HOA, June invoice:
 
 | Line | Tax category | Job treatment | Taxable? | Amount | Tax |
