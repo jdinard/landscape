@@ -555,7 +555,7 @@ quadrantChart
 | 4. Production-rate estimating with budget-based overhead recovery (MORS/FLH/SORS) | ○ | ○ | ○ | ○ | ○ | ● | ● | ◐ | ● | ◐ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 5. Options, tiers and optional line items on proposals | ◐ | ● | ● | ? | ? | ◐ | ● | ● | ? | ● | ◐ | ◐ | ◐ | ◐ | ◐* | ◐ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ? | ? | ◐ | ◐ | ? | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 7. Consumer financing inside proposals | ● | ● | ● | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ○ | ● [V1] [08](08-payments-stripe.md) |
+| 7. Consumer financing inside proposals | ● | ● | ● | ? | ? | ◐§ | ? | ◐§ | ? | ? | ? | ? | ? | ○ | ? | ○ | ○ | ● [V1] [08](08-payments-stripe.md) |
 
 **B. Measurement, design and plants**
 
@@ -580,7 +580,7 @@ quadrantChart
 | 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] manual bulk moves, [V1] playbooks [04](04-scheduling-dispatch-routing.md) |
 | 20. Crew app with time, photos and checklists | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ◐* | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 21. Documented offline-first crew app | ◐ | ? | ? | ? | ? | ● | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] [05](05-field-crew-mobile-app.md) |
-| 22. Spanish crew interface | ●† | ●† | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] [21](21-ux-design-system-sitemaps.md) |
+| 22. Spanish crew interface | ●† | ●† | ●† | ? | ? | ? | ●† | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] [21](21-ux-design-system-sitemaps.md) |
 | 23. Live GPS crew tracking and geofenced clock-in | ● | ● | ◐ | ● | ● | ● | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 24. Purchasing and POs generated from estimates | ○ | ? | ● | ? | ? | ● | ● | ◐ | ? | ? | ? | ? | ○ | ○ | ? | ○ | ? | ● [MVP] [13](13-operations-inventory-equipment.md) |
 | 25. Inventory with field material usage | ○ | ? | ● | ? | ◐* | ● | ◐ | ◐ | ○* | ? | ◐ | ◐* | ○ | ○ | ? | ○ | ? | ● [MVP] Off and Light modes, [V1] Standard and Advanced [13](13-operations-inventory-equipment.md) |
@@ -589,6 +589,10 @@ quadrantChart
 † Added November 2026 from search results: Jobber says its app is available in English and Spanish (mobile for non-admin users), and Housecall Pro's pricing page lists a Spanish language option in its mobile app ([Jobber vs LMN](https://www.getjobber.com/comparison/jobber-vs-lmn/), [Housecall Pro pricing](https://www.housecallpro.com/pricing/)). A Spanish crew interface is therefore table stakes against the horizontal leaders; Rootline's edge has to come from Spanish-first content (voice notes, pay explainers, training, hiring), not from offering the language toggle.
 
 ‡ Added November 2026: sources conflict on Housecall Pro routing. Older 2026 comparisons say it has no automatic route optimization; newer pricing comparisons place route optimization and route density zones on higher tiers ([Clean Savannah](https://www.cleansavannah.com/post/best-crew-scheduling-software-for-landscaping-companies-2026), [MyQuoteIQ](https://myquoteiq.com/top-10-best-scheduling-software-for-landscaping-businesses-in-2026/)). Shown as partial until a trial confirms it.
+
+†† The † cells for ServiceTitan and LMN were added in the same pass: ServiceTitan's field app lists Spanish (and French) support and its iOS listing shows English, French and Spanish; LMN's Crew app lists English and Spanish in the App Store ([ServiceTitan field app](https://www.servicetitan.com/features/field-service-app), [LMN Crew on the App Store](https://apps.apple.com/us/app/lmn-crew/id6444404165)).
+
+§ Added November 2026 from search results: Aspire lists Wisetack as a marketplace financing partner, but payouts from Wisetack are entered into Aspire by hand; SingleOps can show GreenSky financing on proposals, while the charge is approved in GreenSky's own merchant portal. Both are partial: financing is offered, not settled inside the product ([Aspire marketplace: Wisetack](https://marketplace.youraspire.com/partners/wisetack-aspire), [GreenSky](https://resources.greensky.com/home-improvement-blog/how-integrating-financing-drives-customer-satisfaction)).
 
 **D. Landscape service-line depth**
 
