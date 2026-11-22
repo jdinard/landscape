@@ -70,7 +70,7 @@ Each module doc was written by one agent and then reviewed and deepened by anoth
 | Cataloged features | 747: 442 [MVP], 255 [V1], 46 [V2], 4 [V3] |
 | Open product decisions (with recommended defaults) | 72, of which 2 are decided (launch region, Snow Lite) |
 | Product risks in the register | 29 |
-| "Verify" markers on facts that need first-hand confirmation | About 1,600 |
+| "Verify" markers on facts that need first-hand confirmation | About 1,590 |
 
 ## 2. What remains
 
@@ -115,7 +115,7 @@ No step below carries a time or effort estimate. The order within each list is a
 
 ### 2.4 Clickable prototype: what's left
 
-All planned walkthroughs are built, including the small and recurring jobs that were the biggest gap ([site/wt-recurring.html](site/wt-recurring.html)). They now also show rules confirmed in the verification pass: the 3-business-day cancellation window when a quote is signed at the client's home, Michigan's tax treatment of lawn care at onboarding, Ohio's 20-day city income tax count at crew close-out and Ohio's Callery pear ban in the Design Studio. What remains needs people, not pages:
+All planned walkthroughs are built, including the small and recurring jobs that were the biggest gap ([site/wt-recurring.html](site/wt-recurring.html)). A claims audit checked every regulatory statement in the 13 walkthroughs against the confirmed facts (it corrected the youth equipment rule, stale tax tags and an Ohio auto-renewal rule that doesn't exist). They now also show rules confirmed in the verification pass: the 3-business-day cancellation window when a quote is signed at the client's home, Michigan's tax treatment of lawn care at onboarding, Ohio's 20-day city income tax count at crew close-out and Ohio's Callery pear ban in the Design Studio. What remains needs people, not pages:
 
 - Usability tests of the walkthroughs with homeowners, owners, office managers and crew leads in the Wave 1 Regions (see 2.3), then fixes to whatever confuses them.
 - A Spanish pass on the crew-facing screens by native speakers (the crew app screens offer an English and Spanish toggle; the copy has not been reviewed by a translator).
