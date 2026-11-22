@@ -48,7 +48,7 @@ var WT = {
       { h: 'Office', icon: 'leaf', items: [['Luis Ortega', 'operations manager'], ['Tasha Greene', 'office manager'], ['Jess Morales', 'designer, approves substitutions']] },
       { h: 'Agents and rules', icon: 'spark', items: [['Field-Note agent (A4)', 'Spanish voice notes to English summaries'], ['Photo QA (A12)', 'checks photo completeness [V1]'], ['Wind gate and rule packs', 'deterministic compliance checks']] }
     ],
-    extra: '<p class="wt-note mt14">Product names, EPA registration numbers and state rules in this walkthrough are placeholders or marked "verify". Location is collected only while someone is on the clock.</p>'
+    extra: '<p class="wt-note mt14">Product names and EPA registration numbers in this walkthrough are placeholders; the Ohio rules shown (applicator category, lawn markers, DVIR retention) were confirmed by search, not legal review. Location is collected only while someone is on the clock.</p>'
   },
   screens: {}, bts: {}, actions: {}, inputs: {}, ensure: {}
 };

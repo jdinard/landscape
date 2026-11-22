@@ -46,7 +46,7 @@ var WT = {
       { h: 'Outside', icon: 'users', items: [['Ada and Chidi Okafor', 'design-build clients from the AI design walkthrough'], ['Dana Whitaker, CPA', 'Greenleaf\'s outside accountant, firm access'], ['Maple Hill Nursery', 'plant supplier (fictional)']] },
       { h: 'Agents', icon: 'spark', items: [['Collections (A5)', 'reminders and payment-plan offers'], ['Dispute Evidence (A28)', 'assembles the evidence packet'], ['Bookkeeping (A8) and AP (A9)', 'bank categorization and bill capture [V1]']] }
     ],
-    extra: '<p class="wt-note mt14">Account codes follow the chart of accounts in doc 09. Ohio sales tax on landscaping services is shown at 8.0% and marked "verify".</p>'
+    extra: '<p class="wt-note mt14">Account codes follow the chart of accounts in doc 09. Ohio sales tax on landscaping services is shown at Franklin County\'s 8.0% rate.</p>'
   },
   screens: {}, bts: {}, actions: {}, inputs: {}, ensure: {}
 };
@@ -80,7 +80,7 @@ WT.screens['m02-invoice'] = function (S) {
   var doc = '<div class="inv-doc"><div class="hd"><div><b>Greenleaf Grounds Co.</b><div class="tiny faint">Columbus, Ohio · greenleafgrounds.com</div></div><div style="text-align:right"><b>Invoice INV-3121</b><div class="tiny faint">Project P-1203 · Okafor backyard</div></div></div>' +
     '<table class="data tight"><tbody><tr><td>Contract (Better tier, signed)</td><td class="num">$17,590.00</td></tr><tr><td>Milestone 1: deposit at signing (30%), paid</td><td class="num">$5,277.00</td></tr><tr><td><b>Milestone 2: planting complete (40%)</b></td><td class="num"><b>$7,036.00</b></td></tr><tr><td>Remaining after this invoice (30%, at the final walkthrough)</td><td class="num">$5,277.00</td></tr></tbody></table>' +
     '<div class="flex mt10"><span class="tiny">Proof of service:</span>' + pill('', '24 planting photos') + pill('', '70 plants registered for warranty') + pill('', 'As-built plan') + '</div>' +
-    '<div class="wt-note mt6">Sales tax is included in the contract price per Greenleaf\'s terms (Ohio taxability of landscaping: verify).</div>' +
+    '<div class="wt-note mt6">Sales tax is included in the contract price per Greenleaf\'s terms (Ohio taxes landscaping and lawn care once a company sells more than $5,000 of it a year).</div>' +
     '<div class="flex mt10"><a class="btn primary sm" href="#m03-pay">Pay $7,036.00</a><span class="tiny faint">Due on receipt · bank transfer has no fee</span></div></div>';
   var right = ctxCard('Invoices that explain themselves', ['Milestone invoices show the contract, what\'s been paid and what\'s left, so there are no surprises at the end.', 'Proof of service travels with the invoice: photos, registered plants and the as-built plan, which also helps if a payment is ever disputed.', 'Clients pay from the email, a text link or the portal.']);
   return devRow('<div style="flex:1 1 440px;min-width:0">' + browser('portal.greenleafgrounds.com/invoices/INV-3121', '<div style="padding:14px">' + doc + '</div>', 'Client portal: invoice') + '</div>', right);

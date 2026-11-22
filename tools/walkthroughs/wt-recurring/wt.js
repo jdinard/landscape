@@ -55,7 +55,7 @@ var WT = {
       { h: 'Crew 2', icon: 'truck', items: [['Marco Ruiz', 'crew lead'], ['Maria López', 'technician'], ['Javier Torres', 'technician, Spanish-first']] },
       { h: 'Agents', icon: 'spark', items: [['Lead Follow-up (A3)', 'answers new leads in minutes'], ['Scheduling (A7)', 'replans rain days'], ['Field-Note (A4)', 'turns voice notes into upsells'], ['Collections (A5) and Renewal (A13)', 'chase payments, draft renewals']] }
     ],
-    extra: '<p class="wt-note mt14">Prices are illustrative and follow the worked examples in doc 03. Ohio sales tax on lawn care is shown at the Franklin County rate of 8.0% (verify).</p>'
+    extra: '<p class="wt-note mt14">Prices are illustrative and follow the worked examples in doc 03. Ohio sales tax on lawn care is shown at the Franklin County rate of 8.0%.</p>'
   },
   screens: {},
   bts: {},
@@ -150,7 +150,7 @@ WT.screens['r02-book'] = function (S) {
   } else {
     body = '<div class="toast">' + ic('check') + 'You\'re booked. Welcome to Greenleaf!</div><div class="pcard"><dl class="kv"><dt>First visit</dt><dd>Tuesday, week of ' + esc(S.startWk) + '</dd><dt>Crew</dt><dd>Crew 2 · Marco, Maria, Javier</dd><dt>Autopay</dt><dd>Visa ending 4242</dd><dt>Portal</dt><dd>Invite sent to rachel.b@example.com</dd></dl></div><p class="psub">Signed by ' + esc(S.signed || 'Rachel Brennan') + '. A copy of the agreement is in your portal.</p>';
   }
-  var right = ctxCard('Created in Greenleaf\'s account', S.booked ? ['Client: Rachel and Tom Brennan, with a Property at 612 Evening St', 'Service Agreement SA-1042: ' + (S.freq === 'weekly' ? 'weekly' : 'every other week') + ' mowing, ' + n + ' planned visits' + (S.fert ? ', 5-step fertilization program' : ''), 'Visits generated for the season on Crew 2\'s Tuesday route', 'Saved card on Greenleaf\'s Stripe account; SMS consent ' + (S.sms ? 'recorded' : 'not given (email only)')] : ['Route days come from capacity: only days with room on a nearby route are offered.', 'The one-page agreement is e-signed (ESIGN/UETA) and stored on the Client.', 'SMS consent is a separate, unticked box, as TCPA requires.']);
+  var right = ctxCard('Created in Greenleaf\'s account', S.booked ? ['Client: Rachel and Tom Brennan, with a Property at 612 Evening St', 'Service Agreement SA-1042: ' + (S.freq === 'weekly' ? 'weekly' : 'every other week') + ' mowing, ' + n + ' planned visits' + (S.fert ? ', 5-step fertilization program' : ''), 'Visits generated for the season on Crew 2\'s Tuesday route', 'Saved card on Greenleaf\'s Stripe account; SMS consent ' + (S.sms ? 'recorded' : 'not given (email only)')] : ['Route days come from capacity: only days with room on a nearby route are offered.', 'The one-page agreement is e-signed (ESIGN/UETA) and stored on the Client.', 'SMS consent is a separate, unticked box: marketing texts need the client\'s own written consent, and it can\'t be a condition of the service (TCPA).']);
   return devRow(phone(body, { sub: 'Book online', foot: 'greenleafgrounds.com/book', label: 'Homeowner phone: booking' }), right);
 };
 WT.actions.day = function (el, S) { S.day = el.getAttribute('data-v'); };
@@ -254,7 +254,7 @@ WT.screens['r05-agreement'] = function (S) {
     '<div class="panel"><h4>Season of visits</h4>' + bars + '<div class="wt-note mt6">Weekly in spring and fall, every other week in July and August when dry (blue).</div></div></div>' +
     '<div class="panel"><h4>Billing</h4><div class="seg" role="group" aria-label="Billing mode"><button type="button" data-act="billing" data-v="visit" data-k="bv" aria-pressed="' + (S.billing === 'visit') + '">Per visit, monthly</button><button type="button" data-act="billing" data-v="level" data-k="bl" aria-pressed="' + (S.billing === 'level') + '">Level monthly</button></div>' +
     '<table class="data tight mt10"><thead><tr><th>Month</th><th class="num">Basis</th><th class="num">Amount</th></tr></thead><tbody>' + sched + '<tr><td><b>Season</b></td><td></td><td class="num"><b>$2,190.00</b></td></tr></tbody></table>' +
-    '<div class="wt-note mt6">' + (S.billing === 'visit' ? 'Billed for completed visits only; skipped visits are not billed.' : 'Eight equal installments. An earned-value meter compares visits done with installments billed, and the season ends with an automatic true-up.') + ' Fertilization rounds bill as they are applied. Tax added per Ohio rules (verify).</div></div></div>';
+    '<div class="wt-note mt6">' + (S.billing === 'visit' ? 'Billed for completed visits only; skipped visits are not billed.' : 'Eight equal installments. An earned-value meter compares visits done with installments billed, and the season ends with an automatic true-up.') + ' Fertilization rounds bill as they are applied. Tax added per Ohio rules.</div></div></div>';
   return browser('app.rootline.com/t/greenleaf/clients/brennan/agreements/SA-1042', appShell('Clients', main), 'Greenleaf office: service agreement');
 };
 WT.actions.billing = function (el, S) { S.billing = el.getAttribute('data-v'); };
@@ -412,7 +412,7 @@ WT.credits['r10-pay'] = 1;
 /* ---------- r11 renewal ---------- */
 WT.screens['r11-renewal'] = function (S) {
   var main = '<div class="apphead"><h3>Approvals</h3>' + pill('info', S.renewal ? '0 waiting' : '1 waiting') + '</div><div class="panel"><div class="ph">Renewal agent (A13) · SA-1042 · Brennan</div>' +
-    '<div class="wt-cols"><div><dl class="kv"><dt>This season</dt><dd>30 planned · 28 done · 2 weather skips</dd><dt>Price now</dt><dd class="num">$73.00 a visit</dd><dt>Proposed</dt><dd class="num"><b>$76.00</b> (+4.1%, fuel and labor index)</dd><dt>Churn risk</dt><dd>' + pill('ok', 'Low') + ' paid on time, accepted an upsell, 1 positive reply</dd><dt>Notice</dt><dd>30 days before auto-renewal (Ohio rule table, verify)</dd></dl></div>' +
+    '<div class="wt-cols"><div><dl class="kv"><dt>This season</dt><dd>30 planned · 28 done · 2 weather skips</dd><dt>Price now</dt><dd class="num">$73.00 a visit</dd><dt>Proposed</dt><dd class="num"><b>$76.00</b> (+4.1%, fuel and labor index)</dd><dt>Churn risk</dt><dd>' + pill('ok', 'Low') + ' paid on time, accepted an upsell, 1 positive reply</dd><dt>Notice</dt><dd>30 days before auto-renewal (Greenleaf policy; Ohio has no general auto-renewal statute)</dd></dl></div>' +
     '<div class="wt-bubble ai">Hi Rachel and Tom, thanks for a great first season with Greenleaf! Your mowing renews in April at $76 a visit (up $3, mostly fuel and labor). Your aeration is booked for October 6. Nothing to do if you\'d like to continue, or reply with any changes.</div></div>' +
     '<div class="flex mt10">' + (S.renewal ? '<span class="okline">' + ic('check') + 'Approved by Erin · notice scheduled for March 1</span>' : '<button type="button" class="btn sm primary" data-act="renew" data-k="renew">' + ic('check') + 'Approve renewal</button><button type="button" class="btn sm">Keep price at $73</button><span class="cost">2 credits</span>') + '</div></div>';
   return browser('app.rootline.com/t/greenleaf/approvals', appShell('Approvals', main), 'Greenleaf office: renewal approval');
