@@ -2158,7 +2158,7 @@ Verification note: items marked "verify" are from secondary sources or general k
 
 - Gemini image ("Nano Banana") pricing: [BenchLM](https://benchlm.ai/media-pricing/nano-banana); [MyArchitectAI](https://www.myarchitectai.com/blog/nano-banana-api-pricing)
 - FLUX pricing: [Black Forest Labs help](https://help.bfl.ai/articles/7424166364-wip-welcome-to-the-forest); [Puter FLUX API pricing](https://developer.puter.com/tutorials/flux-api-pricing/); [PricePerToken](https://pricepertoken.com/flux-pricing)
-- Anthropic Claude model pricing: Anthropic API pricing as of November 2026 (Opus 5.5 $4/$20, Sonnet 5.5 $2/$10, Haiku 5.5 $0.10/$0.50 per million input/output tokens; verify on Anthropic's pricing page)
+- Anthropic Claude model pricing: Anthropic API pricing as of November 3, 2026 (Opus 5.5 $4/$20, Sonnet 5.5 $2/$10, Haiku 5.5 $0.10/$0.50 per million input/output tokens; Fable 5.2 $8/$40, kept off this module's routes; checked against Anthropic's model and pricing reference)
 
 **Technical references (well-established papers and specs)**
 
