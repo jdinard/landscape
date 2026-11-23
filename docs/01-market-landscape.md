@@ -531,7 +531,7 @@ quadrantChart
 | HCP | Housecall Pro | Medium: prices and payments [S/S3P]; features mostly [B] |
 | ST | ServiceTitan (core trades product, not Aspire) | Medium: deal and AI [S]; product [B] |
 | WZ | Workiz | Low-medium: prices and AI [S3P]; features [B] |
-| GD | GorillaDesk | Low: [B] |
+| GD | GorillaDesk | Medium: help center [S] (November 2026 pass); otherwise [B] |
 | ASP | Aspire (ServiceTitan) | High: help guides, product pages, Capterra [S] |
 | LMN | LMN (Granum) | High: help center, release notes, reviews [S] |
 | SO | SingleOps (Granum) | Medium-high: docs and reviews [S] |
@@ -549,11 +549,11 @@ quadrantChart
 
 | Capability | JB | HCP | ST | WZ | GD | ASP | LMN | SO | SYN | AG | RG | SA | CP | YB | QIQ | PRO | YETI | Rootline |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1. Lead and opportunity pipeline | ● | ● | ● | ◐ | ? | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ●* | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
+| 1. Lead and opportunity pipeline | ● | ● | ● | ◐ | ●° | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ●* | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 2. Online self-booking with live availability | ● | ● | ◐ | ● | ●° | ? | ? | ◐ | ◐° | ◐ | ◐ | ? | ◐ | ? | ? | ○ | ○ | ● [V1] [16](16-marketing-growth-communications.md) |
 | 3. Instant online quote from satellite-measured area | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ? | ○ | ● | ? | ? | ○ | ? | ○ | ○ | ● [V1] (turf auto-measure for internal estimating at [MVP]) [16](16-marketing-growth-communications.md) |
 | 4. Production-rate estimating with budget-based overhead recovery (MORS/FLH/SORS) | ○ | ○ | ○ | ○ | ○ | ● | ● | ◐ | ● | ◐ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
-| 5. Options, tiers and optional line items on proposals | ◐ | ● | ● | ? | ? | ◐ | ● | ● | ? | ● | ◐ | ◐ | ◐ | ◐ | ◐* | ◐ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
+| 5. Options, tiers and optional line items on proposals | ◐ | ● | ● | ? | ●° | ◐ | ● | ● | ? | ● | ◐ | ◐ | ◐ | ◐ | ◐* | ◐ | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 6. E-signature with deposit collected at approval | ● | ● | ● | ◐ | ●° | ◐◊ | ◐ | ◐ | ◐° | ● | ? | ? | ◐ | ? | ? | ? | ○ | ● [MVP] [03](03-crm-sales-estimating-proposals.md) |
 | 7. Consumer financing inside proposals | ● | ● | ● | ? | ? | ◐§ | ? | ◐§ | ? | ? | ●° | ? | ? | ○ | ? | ○ | ○ | ● [V1] [08](08-payments-stripe.md) |
 
@@ -579,12 +579,12 @@ quadrantChart
 | 18. Multi-crew VRP (capacity, skills, equipment, time windows) | ○ | ○ | ◐ | ○ | ◐ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [V1] [04](04-scheduling-dispatch-routing.md) |
 | 19. Weather-driven bulk reschedule | ○ | ○ | ◐ | ○ | ? | ◐ | ◐◊ | ●◊ | ? | ? | ? | ? | ? | ○ | ? | ○ | ? | ● [MVP] manual bulk moves, [V1] playbooks [04](04-scheduling-dispatch-routing.md) |
 | 20. Crew app with time, photos and checklists | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ◐ | ◐* | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
-| 21. Documented offline-first crew app | ◐ | ◐¶ | ? | ? | ? | ● | ●¶ | ? | ? | ? | ●° | ? | ? | ○ | ? | ○ | ? | ● [MVP] [05](05-field-crew-mobile-app.md) |
-| 22. Spanish crew interface | ●† | ●† | ●† | ? | ? | ●† | ●† | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ●° | ● [MVP] [21](21-ux-design-system-sitemaps.md) |
+| 21. Documented offline-first crew app | ◐ | ◐¶ | ? | ? | ◐° | ● | ●¶ | ? | ? | ? | ●° | ? | ? | ○ | ? | ○ | ? | ● [MVP] [05](05-field-crew-mobile-app.md) |
+| 22. Spanish crew interface | ●† | ●† | ●† | ? | ◐° | ●† | ●† | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ●° | ● [MVP] [21](21-ux-design-system-sitemaps.md) |
 | 23. Live GPS crew tracking and geofenced clock-in | ● | ● | ◐ | ● | ● | ● | ◐¶ | ◐° | ? | ? | ◐° | ? | ? | ? | ? | ○ | ● | ● [MVP] [05](05-field-crew-mobile-app.md) |
 | 24. Purchasing and POs generated from estimates | ○ | ◐° | ● | ◐° | ? | ● | ● | ◐ | ? | ? | ? | ? | ○ | ○ | ? | ○ | ? | ● [MVP] [13](13-operations-inventory-equipment.md) |
 | 25. Inventory with field material usage | ○ | ○° | ● | ◐° | ◐* | ● | ◐ | ◐ | ○* | ? | ◐ | ◐* | ○ | ○ | ? | ○ | ? | ● [MVP] Off and Light modes, [V1] Standard and Advanced [13](13-operations-inventory-equipment.md) |
-| 26. Equipment and fleet maintenance with cost recovery | ○ | ? | ◐* | ? | ? | ● | ◐ | ○* | ? | ○* | ◐ | ○* | ○ | ○ | ? | ○ | ? | ● [MVP] registry, meters and cost per hour; [V1] PM, work orders and actuals-based rates [13](13-operations-inventory-equipment.md) |
+| 26. Equipment and fleet maintenance with cost recovery | ○ | ? | ◐* | ? | ○° | ● | ◐ | ○* | ? | ○* | ◐ | ○* | ○ | ○ | ? | ○ | ? | ● [MVP] registry, meters and cost per hour; [V1] PM, work orders and actuals-based rates [13](13-operations-inventory-equipment.md) |
 
 † Added November 2026 from search results: Jobber says its app is available in English and Spanish (mobile for non-admin users), and Housecall Pro's pricing page lists a Spanish language option in its mobile app ([Jobber vs LMN](https://www.getjobber.com/comparison/jobber-vs-lmn/), [Housecall Pro pricing](https://www.housecallpro.com/pricing/)). A Spanish crew interface is therefore table stakes against the horizontal leaders; Rootline's edge has to come from Spanish-first content (voice notes, pay explainers, training, hiring), not from offering the language toggle.
 
@@ -598,7 +598,7 @@ quadrantChart
 
 ◊ Added November 2026 from search results: Aspire's Crew Control routing has a map of scheduled crews and a one-click route optimize, and SynkedUP markets route optimization for maintenance crews (vendor pages); Arborgold's route optimization is reported only in an Aspire-written comparison, so partial until a trial. Aspire customers sign proposals online in its portal, with the rep notified, but no deposit collection at signing was found, so row 6 is partial. LMN's scheduling has built-in route optimization and an optional Smart Scheduling feature that moves future visits when delays happen (partial on row 19, since it is not a weather playbook); SingleOps has a Route Planner on its Plus and Premier tiers and a batch rescheduling tool for weather disruptions ([LMN scheduling](https://golmn.com/products/lmn/scheduling), [SingleOps scheduling docs](https://docs.singleops.com/hc/en-us/sections/43339431581467-Scheduling), [Aspire Crew Control routing](https://www.youraspire.com/crew-control-routing), [SynkedUP routing](https://synkedup.com/features/routing/), [Aspire route-planning comparison](https://www.youraspire.com/blog/best-landscaping-route-planning-apps), [Aspire proposal signing](https://guide.youraspire.com/customer-portal/docs/viewing-accepting-and-signing-proposals)).
 
-° Added November 2026 from search results, mostly vendor or directory pages: QuoteIQ markets native route optimization on its Elite plan; Workiz lists route optimization and a 24/7 self-service booking portal; GorillaDesk routes a week or month of work, offers e-signature on documents and takes payment by link through Stripe or Square, and a review site places its customer portal and online booking on the Pro plan. GorillaDesk collects deposits on estimates sent for e-signature on its Pro and Growth plans, using Stripe or Square ([GorillaDesk deposits](https://intercom.help/gorilladesk/en/articles/9720335-estimates-collecting-deposits)). RealGreen offers consumer financing through WorkWave's Pay Over Time program, powered by Wisetack. SynkedUP automates website lead intake and consultation scheduling (a consultation request, not live booking of service) and lets customers approve and sign proposals in its portal, with no deposit found, so rows 2 and 6 are partial. Housecall Pro's purchase orders exist only in its HVAC, Electrical and Plumbing packages, with manual status updates for self-managed vendors, and no native inventory was found (partner apps such as Ply fill the gap); Workiz has job-linked purchase orders tied to price book items and inventory and equipment tracking on its top tier, but neither generates POs from an estimate. RealGreen Mobile, which replaced Mobile Live, markets full offline mode with offline payment recording and background sync, plus live truck tracking and passive GPS; a technician tracker was still listed as planned, so row 23 is partial ([RealGreen offline](https://www.realgreen.com/blog/lawn-care-software-offline), [RealGreen mobile app](https://www.realgreen.com/features/lawn-care-mobile-app)). Housecall Pro integrates with QuickBooks Desktop (US Windows versions) as well as QuickBooks Online, supports progress invoicing for staged billing (no retainage found, so partial), and sells managed websites; SingleOps offers vehicle and equipment GPS with location history compared against timesheets and job-site entry alerts, but no geofenced crew clock-in was found, so partial ([Housecall Pro QuickBooks](https://www.housecallpro.com/features/quickbooks/), [Housecall Pro features](https://www.housecallpro.com/features), [SingleOps GPS tracking](https://singleops.com/?p=762)). Aspire syncs records automatically to QuickBooks Desktop (with some one-way objects) and publishes a REST API with Swagger docs and API-key authentication; no webhooks were found, so row 51 is partial ([Aspire: syncing to QuickBooks Desktop](https://guide.youraspire.com/docs/syncing-aspire-to-quickbooks-desktop), [Aspire API docs](https://guide.youraspire.com/apidocs)). Yeti imports and builds snow routes ordered for the fastest drive times, and says its crew app is available in English, French and Spanish; its offline behavior was not found ([Yeti Software](https://www.yetisoftware.com), [QuoteIQ routing](https://myquoteiq.com/crm-with-route-optimization-for-lawn-care/), [Workiz](https://www.workiz.com/llms.txt), [GorillaDesk features](https://gorilladesk.com/features/), [GorillaDesk review](https://softwareconnect.com/go/gorilladesk-review-4542f), [WorkWave Pay Over Time](https://insights.workwave.com/resources/realgreen-pay-over-time/), [SynkedUP CRM](https://synkedup.com/features/crm/), [Housecall Pro purchase orders](https://help.housecallpro.com/en/articles/16392937-create-and-manage-purchase-orders), [Workiz purchase orders](https://workiz.com/features/purchase-orders)).
+° Added November 2026 from search results, mostly vendor or directory pages: QuoteIQ markets native route optimization on its Elite plan; Workiz lists route optimization and a 24/7 self-service booking portal; GorillaDesk routes a week or month of work, offers e-signature on documents and takes payment by link through Stripe or Square, and a review site places its customer portal and online booking on the Pro plan. GorillaDesk collects deposits on estimates sent for e-signature on its Pro and Growth plans, using Stripe or Square ([GorillaDesk deposits](https://intercom.help/gorilladesk/en/articles/9720335-estimates-collecting-deposits)). RealGreen offers consumer financing through WorkWave's Pay Over Time program, powered by Wisetack. SynkedUP automates website lead intake and consultation scheduling (a consultation request, not live booking of service) and lets customers approve and sign proposals in its portal, with no deposit found, so rows 2 and 6 are partial. Housecall Pro's purchase orders exist only in its HVAC, Electrical and Plumbing packages, with manual status updates for self-managed vendors, and no native inventory was found (partner apps such as Ply fill the gap); Workiz has job-linked purchase orders tied to price book items and inventory and equipment tracking on its top tier, but neither generates POs from an estimate. RealGreen Mobile, which replaced Mobile Live, markets full offline mode with offline payment recording and background sync, plus live truck tracking and passive GPS; a technician tracker was still listed as planned, so row 23 is partial ([RealGreen offline](https://www.realgreen.com/blog/lawn-care-software-offline), [RealGreen mobile app](https://www.realgreen.com/features/lawn-care-mobile-app)). Housecall Pro integrates with QuickBooks Desktop (US Windows versions) as well as QuickBooks Online, supports progress invoicing for staged billing (no retainage found, so partial), and sells managed websites; SingleOps offers vehicle and equipment GPS with location history compared against timesheets and job-site entry alerts, but no geofenced crew clock-in was found, so partial ([Housecall Pro QuickBooks](https://www.housecallpro.com/features/quickbooks/), [Housecall Pro features](https://www.housecallpro.com/features), [SingleOps GPS tracking](https://singleops.com/?p=762)). Aspire syncs records automatically to QuickBooks Desktop (with some one-way objects) and publishes a REST API with Swagger docs and API-key authentication; no webhooks were found, so row 51 is partial ([Aspire: syncing to QuickBooks Desktop](https://guide.youraspire.com/docs/syncing-aspire-to-quickbooks-desktop), [Aspire API docs](https://guide.youraspire.com/apidocs)). Yeti imports and builds snow routes ordered for the fastest drive times, and says its crew app is available in English, French and Spanish; its offline behavior was not found ([Yeti Software](https://www.yetisoftware.com), [QuoteIQ routing](https://myquoteiq.com/crm-with-route-optimization-for-lawn-care/), [Workiz](https://www.workiz.com/llms.txt), [GorillaDesk features](https://gorilladesk.com/features/), [GorillaDesk review](https://softwareconnect.com/go/gorilladesk-review-4542f), [WorkWave Pay Over Time](https://insights.workwave.com/resources/realgreen-pay-over-time/), [SynkedUP CRM](https://synkedup.com/features/crm/), [Housecall Pro purchase orders](https://help.housecallpro.com/en/articles/16392937-create-and-manage-purchase-orders), [Workiz purchase orders](https://workiz.com/features/purchase-orders)). GorillaDesk runs an opportunity pipeline with custom stages (pipeline reporting on the Growth plan) and dynamic estimates whose items are tagged required, recommended or optional, plus multi-package estimates, on plans above Basic ([GorillaDesk estimate packages](https://intercom.help/gorilladesk/en/articles/9214618-dynamic-estimates-and-estimate-packages), [GorillaDesk Growth plan](https://intercom.help/gorilladesk/en/articles/8569025-features-available-on-the-growth-plan)). Its offline mode stores only the current week, keeps job and invoice details read-only and lets technicians update check-in times, status, notes and materials, so row 21 is partial; Spanish is a company-wide setting for every user, desktop and app, and leaves documents and item names untranslated, so row 22 is partial ([GorillaDesk offline mode](https://intercom.help/gorilladesk/en/articles/6993151-app-offline-mode), [GorillaDesk Spanish version](https://intercom.help/gorilladesk/en/articles/10392686-gorilladesk-spanish-version)). Its QuickBooks sync is a one-way push to QuickBooks Online only, and its help center says Desktop is not supported ([GorillaDesk QuickBooks sync](https://intercom.help/gorilladesk/add-ons/quickbooks-sync), [GorillaDesk accounting FAQ](https://intercom.help/gorilladesk/accounting/accounting-faq-quickbooks)). Review Engine is a Pro-plan add-on that routes customers to Google or Yelp, and a newer MailStream feature sends email and SMS campaigns while an older help article says marketing blasts are not supported, so row 45 is partial ([GorillaDesk Review Engine](https://intercom.help/gorilladesk/en/articles/8923191-review-engine), [GorillaDesk MailStream](https://intercom.help/gorilladesk/en/articles/13731262-mailstream), [GorillaDesk email blasts](https://intercom.help/gorilladesk/emails-and-sms/email-blasts-and-marketing)). GorillaDesk AI Agents answer calls on VoIP numbers (VoIP Pro plan) and also cover SMS, web chat and the portal ([GorillaDesk AI Agents](https://gorilladesk.com/features/ai-agents), [AI Agents VoIP receptionist](https://intercom.help/gorilladesk/en/articles/13444159-ai-agents-voip-receptionist)). Users are Admin or Technician with per-user permission toggles and no custom roles found, so row 50 is partial ([GorillaDesk users and permissions](https://intercom.help/gorilladesk/en/articles/8930961-add-users-and-control-permissions)). A REST API is documented and Zapier offers only create-customer, create-lead and create-booking actions; a community thread reports no outbound triggers, so row 51 is partial ([GorillaDesk Zapier](https://intercom.help/gorilladesk/en/articles/8395797-zapier), [Zapier community thread](https://community.zapier.com/troubleshooting-99/no-trigger-available-from-gorilladesk-to-lead-connector-26117)). Equipment tracking is barcode scanning of traps and devices on site, with no vehicle or equipment maintenance records found, and migration is a free support-led import of customer lists in 24 to 48 hours rather than a productized tool ([GorillaDesk customer import](https://intercom.help/gorilladesk/en/articles/2886147-sending-your-customer-list-to-our-team)).
 
 **D. Landscape service-line depth**
 
@@ -620,7 +620,7 @@ quadrantChart
 | 35. Job costing, estimate vs actual | ◐ | ◐ | ● | ◐ | ○ | ● | ● | ● | ● | ◐ | ◐ | ◐ | ◐ | ○ | ? | ○ | ? | ● [MVP] [09](09-accounting-ledger-integrations.md) |
 | 36. Built-in double-entry general ledger | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ● [MVP] [09](09-accounting-ledger-integrations.md) |
 | 37. QuickBooks Online sync | ◐ | ● | ● | ● | ● | ● | ● | ●* | ●* | ●* | ●* | ●* | ●* | ●* | ? | ○ | ? | ● [MVP] [09](09-accounting-ledger-integrations.md) |
-| 38. QuickBooks Desktop sync | ○ | ●° | ● | ? | ? | ●° | ●* | ●* | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [V1] [09](09-accounting-ledger-integrations.md) |
+| 38. QuickBooks Desktop sync | ○ | ●° | ● | ? | ○° | ●° | ●* | ●* | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [V1] [09](09-accounting-ledger-integrations.md) |
 | 39. Vendor-run payments at vendor-set rates | ● | ● | ● | ● | ● | ●* | ● | ●* | ? | ●* | ●* | ● | ●* | ●* | ●* | ○ | ? | ○ by design [08](08-payments-stripe.md) |
 | 40. Company-owned, portable processor account | ◐ | ? | ? | ? | ? | ? | ○ | ? | ? | ? | ? | ○ | ? | ? | ? | ○ | ? | ● [MVP] [08](08-payments-stripe.md) |
 
@@ -632,9 +632,9 @@ quadrantChart
 | 42. Designs, mockups and plant cards in the portal | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [MVP] [06](06-customer-portal.md) |
 | 43. Commercial multi-property approvals and spend limits | ◐ | ◐ | ● | ◐ | ◐ | ◐ | ○ | ○ | ○ | ○ | ◐ | ○ | ○ | ○ | ? | ○ | ? | ● [V1] [06](06-customer-portal.md) |
 | 44. White-label portal on the Company's own domain | ○ | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] (Grow and up) [06](06-customer-portal.md) |
-| 45. Review requests and marketing campaigns | ◐ | ● | ◐ | ? | ? | ◐ | ◐ | ◐ | ○ | ◐ | ● | ● | ◐ | ○ | ? | ○ | ○ | ● [MVP] reviews and email/SMS campaigns, [V1] journey builder [16](16-marketing-growth-communications.md) |
+| 45. Review requests and marketing campaigns | ◐ | ● | ◐ | ? | ◐° | ◐ | ◐ | ◐ | ○ | ◐ | ● | ● | ◐ | ○ | ? | ○ | ○ | ● [MVP] reviews and email/SMS campaigns, [V1] journey builder [16](16-marketing-growth-communications.md) |
 | 46. Website builder | ◐ | ●° | ○ | ? | ? | ○ | ○ | ○ | ○ | ○ | ● | ○* | ? | ○ | ? | ○ | ○ | ● [V1] (add-on on Starter and Grow) [16](16-marketing-growth-communications.md) |
-| 47. AI receptionist for calls and texts | ◐ | ◐ | ◐ | ◐ | ? | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [V1] (call tracking and missed-call text-back at [MVP]) [16](16-marketing-growth-communications.md) |
+| 47. AI receptionist for calls and texts | ◐ | ◐ | ◐ | ◐ | ●° | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ? | ○ | ○ | ● [V1] (call tracking and missed-call text-back at [MVP]) [16](16-marketing-growth-communications.md) |
 
 **G. Platform, AI and commercial model**
 
@@ -642,32 +642,32 @@ quadrantChart
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 48. Generative AI copilot over company data | ● | ? | ● | ? | ? | ○ | ◐ | ○ | ○ | ○ | ○ | ○ | ○ | ○ | ◐ | ◐ | ? | ● [MVP] [17](17-ai-copilot-automation.md) |
 | 49. Branches and divisions as P&L centers | ○ | ? | ● | ? | ? | ● | ◐* | ○* | ○ | ○* | ◐* | ○* | ○ | ○ | ? | ○ | ? | ● [V1] [09](09-accounting-ledger-integrations.md) |
-| 50. Granular, composable custom roles | ◐ | ? | ● | ? | ? | ● | ◐ | ◐ | ◐ | ◐ | ? | ● | ? | ? | ? | ○ | ? | ● [MVP] [02](02-personas-roles-permissions.md) |
-| 51. Public API and webhooks | ● | ◐ | ● | ● | ? | ◐° | ○ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] core objects, [V1] full surface [20](20-architecture-security.md) |
+| 50. Granular, composable custom roles | ◐ | ? | ● | ? | ◐° | ● | ◐ | ◐ | ◐ | ◐ | ? | ● | ? | ? | ? | ○ | ? | ● [MVP] [02](02-personas-roles-permissions.md) |
+| 51. Public API and webhooks | ● | ◐ | ● | ● | ◐° | ◐° | ○ | ? | ? | ? | ? | ? | ? | ? | ? | ○ | ? | ● [MVP] core objects, [V1] full surface [20](20-architecture-security.md) |
 | 52. Seasonal-friendly seats (unlimited or active-only field users) | ○ | ○ | ○ | ○ | ◐ | ● | ◐ | ○ | ○ | ○ | ◐ | ◐ | ? | ? | ? | ○ | ? | ● [MVP] [22](22-business-model-pricing-gtm.md) |
-| 53. Productized, AI-assisted migration from competitors | ? | ? | ○ | ? | ? | ○ | ○ | ? | ? | ? | ○ | ? | ? | ? | ● | ○ | ? | ● [MVP] [19](19-platform-admin-portal.md) |
+| 53. Productized, AI-assisted migration from competitors | ? | ? | ○ | ? | ○° | ○ | ○ | ? | ? | ? | ○ | ? | ? | ? | ● | ○ | ? | ● [MVP] [19](19-platform-admin-portal.md) |
 
 **Coverage scores (analyst arithmetic over the matrix above) [E].** A crude but useful summary: ● counts 1 and ◐ counts 0.5. Unknowns count 0, so low-evidence columns are understated; read the "unknown" column before drawing conclusions.
 
 | Competitor | Coverage score (● = 1, ◐ = 0.5) out of 53 | Unknown cells (?) |
 |---|---|---|
-| ServiceTitan (core) | 24.5 | 4 |
-| Aspire | 23.5 | 11 |
-| LMN | 18.5 | 10 |
-| Real Green | 18.5 | 13 |
-| Jobber | 18.0 | 3 |
-| SingleOps | 16.0 | 12 |
-| Housecall Pro | 15.0 | 15 |
-| Arborgold | 15.0 | 15 |
+| Aspire | 28.0 | 5 |
+| ServiceTitan (core) | 25.5 | 3 |
+| LMN | 22.5 | 5 |
+| Real Green | 21.0 | 10 |
+| Housecall Pro | 20.0 | 7 |
+| GorillaDesk | 19.5 | 9 |
+| Jobber | 19.0 | 2 |
+| SingleOps | 19.0 | 8 |
+| Arborgold | 15.5 | 14 |
 | Service Autopilot | 14.0 | 16 |
-| GorillaDesk | 12.0 | 22 |
+| Workiz | 12.5 | 16 |
 | Copilot CRM | 11.5 | 18 |
-| Workiz | 10.5 | 19 |
-| QuoteIQ | 7.0 | 40 |
-| SynkedUP | 6.5 | 27 |
+| SynkedUP | 8.5 | 24 |
+| QuoteIQ | 8.0 | 39 |
+| Yeti | 7.0 | 21 |
 | Yardbook | 6.0 | 12 |
 | PRO Landscape+ | 5.0 | 2 |
-| Yeti | 5.0 | 23 |
 | **Rootline (target, all phases)** | 52.0 plus 1 deliberate ○ (no vendor-run payments) | 0 |
 
 ### 4.5 Reading the matrix
@@ -678,7 +678,7 @@ quadrantChart
 4. **The "?" density is a finding.** Spanish crew interfaces (now confirmed for Jobber, Housecall Pro, ServiceTitan, LMN and Aspire, so table stakes against them), offline crew apps (documented by Aspire, LMN and RealGreen, partial at Jobber and Housecall Pro, so offline alone is no longer a headline either), white-label portals on custom domains and portable payment accounts are unverified for almost every vendor. If customer interviews confirm they are absent, they become marketing headlines; until then, Rootline claims only what it does, never what others lack.
 5. **The most complete incumbents (ServiceTitan core, Aspire) are enterprise-priced** and Aspire scores high only with add-ons (PropertyIntel) and partners. Coverage alone is not the competition; coverage **at SMB price with days-not-months onboarding** is.
 
-> **Competitive edge (matrix).** The most complete landscape product in the matrix, Aspire, covers about 23 of 53 capabilities, several through add-ons, at custom enterprise pricing with 90-day implementations. Jobber covers about 18 at SMB prices but none of the design, plant, ledger or landscape-estimating rows. Rootline's plan covers 52, with the 53rd (vendor-run payments) declined on purpose. The honest comparison is the MVP: Rootline's first sellable release covers **30 of the 53 rows in full and 6 more in part** (rows whose Rootline cell starts with [MVP]; tags follow [24](24-roadmap-feature-catalog.md)), about 33 on the same ● = 1, ◐ = 0.5 scale. That already exceeds the best incumbent score (ServiceTitan core at 24.5) and includes four of the five structural differentiators; dimension-aware AI layouts follow at [V1]. The remaining 15 rows (online booking and instant quotes, AI layouts, 3D, multi-crew VRP, financing, snow, retainage, commercial audits and approvals, the website builder, the AI receptionist, QuickBooks Desktop, branches and others) arrive at [V1], and tree inventory at [V2]. Sales must quote the MVP number until V1 ships.
+> **Competitive edge (matrix).** The most complete landscape product in the matrix, Aspire, covers about 28 of 53 capabilities, several through add-ons, at custom enterprise pricing with 90-day implementations. Jobber covers about 19 at SMB prices but none of the design, plant, ledger or landscape-estimating rows. Rootline's plan covers 52, with the 53rd (vendor-run payments) declined on purpose. The honest comparison is the MVP: Rootline's first sellable release covers **30 of the 53 rows in full and 6 more in part** (rows whose Rootline cell starts with [MVP]; tags follow [24](24-roadmap-feature-catalog.md)), about 33 on the same ● = 1, ◐ = 0.5 scale. That already exceeds the best incumbent score (Aspire at 28.0, then ServiceTitan core at 25.5) and includes four of the five structural differentiators; dimension-aware AI layouts follow at [V1]. The remaining 15 rows (online booking and instant quotes, AI layouts, 3D, multi-crew VRP, financing, snow, retainage, commercial audits and approvals, the website builder, the AI receptionist, QuickBooks Desktop, branches and others) arrive at [V1], and tree inventory at [V2]. Sales must quote the MVP number until V1 ships.
 
 ### 4.6 Payments, accounting and AI: how competitors differ
 
@@ -1865,3 +1865,18 @@ All links below were collected in November 2026 by the research reports and sibl
 - SingleOps GPS tracking: <https://singleops.com/?p=762>
 - RealGreen offline: <https://www.realgreen.com/blog/lawn-care-software-offline>
 - RealGreen mobile app: <https://www.realgreen.com/features/lawn-care-mobile-app>
+- GorillaDesk estimate packages: <https://intercom.help/gorilladesk/en/articles/9214618-dynamic-estimates-and-estimate-packages>
+- GorillaDesk Growth plan: <https://intercom.help/gorilladesk/en/articles/8569025-features-available-on-the-growth-plan>
+- GorillaDesk offline mode: <https://intercom.help/gorilladesk/en/articles/6993151-app-offline-mode>
+- GorillaDesk Spanish version: <https://intercom.help/gorilladesk/en/articles/10392686-gorilladesk-spanish-version>
+- GorillaDesk QuickBooks sync: <https://intercom.help/gorilladesk/add-ons/quickbooks-sync>
+- GorillaDesk accounting FAQ: <https://intercom.help/gorilladesk/accounting/accounting-faq-quickbooks>
+- GorillaDesk Review Engine: <https://intercom.help/gorilladesk/en/articles/8923191-review-engine>
+- GorillaDesk MailStream: <https://intercom.help/gorilladesk/en/articles/13731262-mailstream>
+- GorillaDesk email blasts: <https://intercom.help/gorilladesk/emails-and-sms/email-blasts-and-marketing>
+- GorillaDesk AI Agents: <https://gorilladesk.com/features/ai-agents>
+- AI Agents VoIP receptionist: <https://intercom.help/gorilladesk/en/articles/13444159-ai-agents-voip-receptionist>
+- GorillaDesk users and permissions: <https://intercom.help/gorilladesk/en/articles/8930961-add-users-and-control-permissions>
+- GorillaDesk Zapier: <https://intercom.help/gorilladesk/en/articles/8395797-zapier>
+- Zapier community thread: <https://community.zapier.com/troubleshooting-99/no-trigger-available-from-gorilladesk-to-lead-connector-26117>
+- GorillaDesk customer import: <https://intercom.help/gorilladesk/en/articles/2886147-sending-your-customer-list-to-our-team>
