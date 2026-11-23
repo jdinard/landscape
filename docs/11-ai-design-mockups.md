@@ -2181,3 +2181,4 @@ Verification note: items marked "verify" are from secondary sources or general k
 - OpenRouter: FLUX.2 pro: <https://openrouter.ai/black-forest-labs/flux.2-pro>
 - Google Cloud: Gemini 3 Pro Image: <https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-pro-image>
 - Hugging Face: Qwen-Image-Edit-2511: <https://huggingface.co/Qwen/Qwen-Image-Edit-2511>
+- QuoteIQ Before/After Generator: <https://myquoteiq.com/features/before-after-image-generator/>
