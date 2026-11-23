@@ -908,7 +908,7 @@ The Automation Builder is how non-technical owners encode "how we do things here
 | People | `employee.hired`, `certification.expiring` (N days), `timesheet.submitted`, `absence.reported` |
 | Inventory and purchasing | `inventory.below_reorder`, `po.received`, `bill.created` [V1] |
 | Time | Cron schedules ("every weekday 6:00"), relative dates ("14 days after the last visit of season"), seasonal ("first business day of March") |
-| Environment [V1] | `weather.forecast_threshold` (rain, wind, freeze, snow accumulation, heat index) per property or region; `gdd.threshold` (growing degree days, e.g., crabgrass pre-emergent timing at GDD base 50°F around 200-250, verify agronomic thresholds per region) |
+| Environment [V1] | `weather.forecast_threshold` (rain, wind, freeze, snow accumulation, heat index) per property or region; `gdd.threshold` (growing degree days; models differ in base temperature, so each trigger names its base: crabgrass germination begins at about 200 GDD base 50°F per Calhoun's research, while MSU's GDDTracker times crabgrass pre-emergent applications at 250-500 GDD base 32°F, counted from February 15; confirmed via search results; primary page not opened; [Purdue Turfgrass Science](https://turf.purdue.edu/when-should-i-apply-my-preemergence-herbicide-for-crabgrass-control/), [MSU GDDTracker](https://gddtracker.msu.edu/about); soil temperature of 50-55°F at 2 inches is the cross-check) |
 | Metrics [V1] | `metric.threshold` (e.g., AR over 60 days exceeds $20,000; weekly labor efficiency under 85%) |
 | Inbound | `message.received` with AI classification (from Inbox Triage), `email.parsed` |
 | External [V1] | Incoming webhook (unique URL plus secret), Zapier or Make triggers |
@@ -2508,3 +2508,8 @@ Items marked "verify" are from secondary sources or general knowledge and need f
 - [CRTC: Canada's Anti-Spam Legislation](https://crtc.gc.ca/eng/internet/anti.htm)
 - [FTC: Rule on the Use of Consumer Reviews and Testimonials](https://www.ftc.gov/legal-library/browse/rules/rule-use-consumer-reviews-testimonials)
 - [Colorado SB25B-004 (delay of SB24-205)](https://leg.colorado.gov/bills/sb25b-004); [Utah SB 226 (2025), AI disclosure amendments](https://le.utah.gov/~2025/bills/static/SB0226.html); [Illinois General Assembly](https://www.ilga.gov/) (HB 3773, Public Act 103-0804); [California Privacy Protection Agency regulations](https://cppa.ca.gov/regulations/); [California Civil Rights Council](https://calcivilrights.ca.gov/civilrightscouncil/)
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- Purdue Turfgrass Science: <https://turf.purdue.edu/when-should-i-apply-my-preemergence-herbicide-for-crabgrass-control/>
+- MSU GDDTracker: <https://gddtracker.msu.edu/about>
