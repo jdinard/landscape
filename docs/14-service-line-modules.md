@@ -621,7 +621,7 @@ Common contract parameters:
 | Trigger depths and service levels by area | What "triggered" and "open by 7 a.m." mean per polygon | Site map features and priorities (4.3.2) |
 | No-service and client-responsibility areas | Areas the client told you not to treat, in writing | Generates the written confirmation SIMA guidance recommends (4.3.2) |
 | Hazard and incident reporting duty | Client must report known hazards and incidents within a stated time (e.g., 24 hours) | Incident intake (4.3.6) |
-| Indemnification and insurance | Who indemnifies whom; additional insured requirements | **Jurisdiction guardrail:** a number of US states have enacted laws that void snow-contract clauses requiring the contractor to indemnify the property owner for the owner's own negligence, an issue SIMA has campaigned on (verify the current state list before shipping the pack). Where the pack says a one-sided clause is void, the clause library offers the mutual version only and warns the estimator. |
+| Indemnification and insurance | Who indemnifies whom; additional insured requirements | **Jurisdiction guardrail:** a number of US states have enacted laws that void snow-contract clauses requiring the contractor to indemnify the property owner for the owner's own negligence, an issue SIMA and the Accredited Snow Contractors Association have campaigned on. Confirmed so far: Illinois's Snow Removal Service Liability Limitation Act (815 ILCS 675, a launch state; public roads and public bodies excluded), Colorado (2018) and Connecticut (2019) ([815 ILCS 675](https://law.justia.com/codes/illinois/2020/chapter-815/act-815-ilcs-675/), [Lawn & Landscape on hold-harmless clauses](https://www.lawnandlandscape.com/article/ll0815-hold-harmless-agreements-issues); confirmed via search results; primary page not opened); the other launch states and any later enactments still need checking before the pack ships. Where the pack says a one-sided clause is void, the clause library offers the mutual version only and warns the estimator. |
 | Not-to-exceed and approval for extras | Hauling, relocation, standby, extra applications above caps | NTE caps and client approval (portal one-tap) |
 | Seasonal installments and true-ups | Floors, caps, per-inch indexing | Event billing (4.3.8) and season-end true-up |
 
@@ -688,7 +688,7 @@ Rules:
 - Each service log records material type (bulk rock salt, treated salt, bagged ice melt, calcium chloride, liquid brine, sand), quantity and unit (tons, lbs, bags, gallons), method (spreader, hand, sprayer), spreader setting/calibration ID, and area treated.
 - **Application rate check:** quantity / area compared to the Company's target rate table by temperature and condition; out-of-range rates (over 50% above target) prompt a note. This supports sustainability programs such as Ontario's Smart About Salt and similar certifications (verify current program names and requirements) and limits waste.
 - **Inventory:** salt depots and truck loads decrement inventory ([13](13-operations-inventory-equipment.md)); low-stock alerts during `watch` events consider forecast needs.
-- **Liquid program:** pre-treatment (anti-icing) logs include brine concentration (salt brine is typically mixed near 23% sodium chloride, verify Company standard) and gallons per 1,000 sq ft.
+- **Liquid program:** pre-treatment (anti-icing) logs include brine concentration (salt brine is mixed as close to 23.3% sodium chloride as possible, its eutectic point near -6 F, and never above 25%; parking-lot rates in Minnesota's Smart Salting guidance are given in gallons per 1,000 sq ft, about 0.2 to 1.4 by condition) ([TxDOT brine application](https://www.txdot.gov/manuals/mnt/sic/materials/brine_application-i1014644.html), [Minnesota LTAP Smart Salting liquids](https://mnltap.umn.edu/guides/smartwintersalt/property-managers/rates/liquids); confirmed via search results; primary page not opened) and gallons per 1,000 sq ft.
 
 #### 4.3.6 Timestamped GPS proof-of-service for slip-and-fall defense [V1]
 
@@ -773,7 +773,7 @@ Tree care combines consulting (inventories, risk assessments), high-hazard work 
 
 #### 4.4.2 ISA-aligned risk assessment [V2]
 
-The Inspection Engine ships a risk assessment template aligned with ANSI A300 Part 9 and the ISA Tree Risk Assessment Best Management Practices (verify current editions before release):
+The Inspection Engine ships a risk assessment template aligned with ANSI A300 Part 9 (2011, revised in 2017 as Tree Risk Assessment a. Tree Structure Assessment) and the ISA Tree Risk Assessment Best Management Practices; the A300 committee proposed consolidating all A300 parts into one standard in a 2023 public review, so confirm the edition in force before release ([TCIA on ANSI A300 Part 9](https://treecareindustryassociation.org/business-support/ansi-a300-standards/part-9-tree-risk-assessment-a-tree-failure/); confirmed via search results; primary page not opened):
 
 - **Levels:** Level 1 limited visual, Level 2 basic, Level 3 advanced (with sub-forms for resistance drilling, sonic tomography, aerial inspection, root collar excavation; results attachable).
 - **Header:** assessor, ISA Tree Risk Assessment Qualification (TRAQ) status and expiry (from [15](15-team-hr-payroll.md)), date, time frame (e.g., 1 year), tree reference.
@@ -3144,3 +3144,7 @@ Verification note: sources reflect public information available as of November 2
 - Colorado 13-21-129: <https://law.justia.com/codes/colorado/title-13/damages-and-limitations-on-actions/article-21/part-1/section-13-21-129>
 - MSU on timing crabgrass pre-emergence: <https://www.canr.msu.edu/news/timing_crabgrass_pre_emergence_applications>
 - Cornell CALS on the Birds and Bees Protection Act: <https://cals.cornell.edu/integrated-pest-management/research-initiatives/current-projects/about-birds-and-bees-protection-act>
+- Lawn & Landscape on hold-harmless clauses: <https://www.lawnandlandscape.com/article/ll0815-hold-harmless-agreements-issues>
+- TxDOT brine application: <https://www.txdot.gov/manuals/mnt/sic/materials/brine_application-i1014644.html>
+- Minnesota LTAP Smart Salting liquids: <https://mnltap.umn.edu/guides/smartwintersalt/property-managers/rates/liquids>
+- TCIA on ANSI A300 Part 9: <https://treecareindustryassociation.org/business-support/ansi-a300-standards/part-9-tree-risk-assessment-a-tree-failure/>
