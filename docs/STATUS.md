@@ -70,7 +70,7 @@ Each module doc was written by one agent and then reviewed and deepened by anoth
 | Cataloged features | 747: 442 [MVP], 255 [V1], 46 [V2], 4 [V3] |
 | Open product decisions (with recommended defaults) | 72, of which 2 are decided (launch region, Snow Lite) |
 | Product risks in the register | 29 |
-| "Verify" markers on facts that need first-hand confirmation | About 1,570 |
+| "Verify" markers on facts that need first-hand confirmation | About 1,490 |
 
 ## 2. What remains
 
