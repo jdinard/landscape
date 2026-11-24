@@ -758,7 +758,7 @@ CREATE TABLE platform.outbox_event (
 3. **Payload encryption:** a custom payload codec encrypts all workflow payloads with region-specific KMS keys before they leave our VPC. Temporal Cloud stores ciphertext only. A codec server lets the Temporal UI decrypt for authorized engineers.
 4. Task queues by lane: `interactive` (user is waiting), `standard`, `bulk` (imports, backfills), `integrations` and `ai`. Per-tenant activity concurrency caps (4.4.4).
 5. Versioning via worker build IDs. Long-lived workflows use `continue-as-new` at least every 10k events or 30 days.
-6. Namespaces: `rootline-prod-us`, `rootline-prod-ca` and so on. The CA namespace runs in a Canadian region (verify availability, Q3).
+6. Namespaces: `rootline-prod-us`, `rootline-prod-ca` and so on. The CA namespace runs in a Canadian region: AWS Canada (Central), ca-central-1, or Canada West (Calgary), ca-west-1, both of which list Aurora PostgreSQL ([Aurora regions](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html), [AWS Canada West launch](https://aws.amazon.com/blogs/aws/the-aws-canada-west-calgary-region-is-now-available); confirmed via search results; primary page not opened). Aurora global database support in ca-west-1 is still to check (Q3).
 
 **Workflow catalog (examples):**
 
@@ -1193,7 +1193,7 @@ Modes, durations and approvers below are those defined in [02](02-personas-roles
 
 | Practice | Implementation | Priority |
 |---|---|---|
-| Standard | **OWASP ASVS** (current version 5.0; verify) as the requirements baseline: **Level 2** for all surfaces, **Level 3** for authentication, session management, payments, ledger and the Platform Admin console ([OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/)) | [MVP] |
+| Standard | **OWASP ASVS** (version 5.0.0, released May 30, 2025, the current stable release; [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/); confirmed via search results; primary page not opened) as the requirements baseline: **Level 2** for all surfaces, **Level 3** for authentication, session management, payments, ledger and the Platform Admin console ([OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/)) | [MVP] |
 | Secure SDLC | Threat model per new module (STRIDE worksheet in the design doc template). Security champion per stream team. Security review gate for changes touching auth, payments, ledger, sync or tenancy | [MVP] |
 | SAST / SCA / secrets | CodeQL or Semgrep, Renovate + OSV scanning, gitleaks. **Blocking** on critical findings | [MVP] |
 | DAST | Authenticated DAST (ZAP-class) nightly against staging with seeded tenants | [V1] |
@@ -1317,7 +1317,7 @@ All numbers are **planning estimates** for a 10,000-Company scenario, to be reva
 |---|---|---|
 | Field sync writes | 400k visits × ~25 mutations (status, checklist, notes, punches, photo metadata, chemical logs) = 10M mutations/day, concentrated in ~10 h → ~280/s average, ~3× burst | **1,000 mutations/s** |
 | Photo ingest | 3 photos/visit × 400k = 1.2M photos/day × ~1.2 MB = ~1.4 TB/day | 50 uploads/s sustained, 200/s burst |
-| Media storage growth | 60M visits × 3 photos × 1.2 MB ≈ 216 TB/year originals + ~25% derivatives ≈ **~270 TB/year** | At ~$0.004/GB-month in an infrequent-access tier after 180 days (as of Nov 2026, verify), media storage stays a small COGS line. CDN egress is the line to watch |
+| Media storage growth | 60M visits × 3 photos × 1.2 MB ≈ 216 TB/year originals + ~25% derivatives ≈ **~270 TB/year** | At ~$0.004/GB-month in S3 Glacier Instant Retrieval after 180 days (the US East launch price; millisecond reads, a 128 KB minimum billable object and a 90-day minimum duration, so tiny thumbnails stay in a warmer class) ([AWS on Glacier Instant Retrieval](https://aws.amazon.com/blogs/aws/amazon-s3-glacier-is-the-best-place-to-archive-your-data-introducing-the-s3-glacier-instant-retrieval-storage-class); confirmed via search results; current price page not opened), media storage stays a small COGS line. CDN egress is the line to watch |
 | GPS ingest | 60k devices ÷ 30 s = 2,000 points/s; ~900 points/device/day ≈ 54M/day ≈ 5 GB/day raw | **5,000 points/s**; ~500 GB hot (90 days) |
 | API requests | Web: ~25k concurrent office users × 0.2 req/s = 5k/s; sync: 60k devices ≈ 1.5k/s; portal: ~10k concurrent clients × 0.2 = 2k/s; public API/integrations ≈ 1k/s | **~10k req/s peak, provisioned for 20k** (≈ 30-60 API tasks at 2 vCPU, to be confirmed by load test) |
 | OLTP writes | ~3k transactions/s across cells at peak | ~600-900 TPS per US cell writer; well inside a large Aurora instance class (load-test to confirm) |
@@ -2832,3 +2832,9 @@ Format: **Decision**, then the **Context and rationale**, **Alternatives conside
 - Twilio A2P 10DLC compliance: https://www.twilio.com/docs/messaging/compliance/a2p-10dlc
 - Commission d'accès à l'information du Québec (Law 25): https://www.cai.gouv.qc.ca/
 - Claude platform documentation (model tiers, prompt caching, batch processing, structured outputs; pricing as of Nov 2026, verify): https://platform.claude.com/docs
+
+**Verification pass, November 2026** (facts marked "confirmed via search results" in the text; the primary pages were not opened, so each stays subject to counsel or first-hand review)
+
+- Aurora regions: <https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html>
+- AWS Canada West launch: <https://aws.amazon.com/blogs/aws/the-aws-canada-west-calgary-region-is-now-available>
+- AWS on Glacier Instant Retrieval: <https://aws.amazon.com/blogs/aws/amazon-s3-glacier-is-the-best-place-to-archive-your-data-introducing-the-s3-glacier-instant-retrieval-storage-class>
