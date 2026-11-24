@@ -727,7 +727,7 @@ Design system details live in [21](21-ux-design-system-sitemaps.md); field-speci
 ### 4.20 Device performance: low-end Android, battery and data budgets
 
 **4.20.1 Supported devices [MVP] (decision to revisit before MVP).**
-- iOS: the two current major iOS versions plus one prior; with Apple's switch to year-based numbering (iOS 18 followed by iOS 26), that means iOS 18 and newer as of late 2026 (verify against design-partner device mix; Tap to Pay subject to Apple requirements).
+- iOS: the two current major iOS versions plus one prior; with Apple's switch to year-based numbering (iOS 18 followed by iOS 26), that means iOS 18 and newer as of late 2026. Apple's June 2026 figures put iOS 26 on 86% of iPhones introduced in the last four years, and iOS 27 entered beta that month ([MacRumors, June 9, 2026](https://www.macrumors.com/2026/06/09/ios-26-adoption-stats-wwdc/); confirmed via search results; primary page not opened); check the design partners' actual device mix, and Tap to Pay stays subject to Apple's own minimums.
 - Android: Android 10 (API 29) and newer; reference low-end test device class: 3 GB RAM, 32 GB storage, 2019-2021 mid/low-end chipsets (e.g., budget Samsung Galaxy A-series and Moto G-series phones). Tap to Pay on Android requires NFC and Stripe's device requirements.
 - Tablets: iPad (crew devices; no Tap to Pay), Android tablets 8-10 inch.
 
@@ -1951,7 +1951,7 @@ Guardrails: AI never submits time, attestations, chem records or payments; AI-tr
 13. **Auto time-lapse of installs [V2].** Daily photos from a fixed vantage (ghosted framing) stitched into a time-lapse video delivered to the client at project completion and offered for marketing with client consent.
 14. **Dead-zone map [V1].** Aggregated, anonymized connectivity telemetry shows the Company where its crews lose signal, so dispatch can schedule cell-dependent tasks (card payments, AI previews) elsewhere and pre-cache more aggressively for those properties.
 15. **Equipment "pre-flight" for mowers [V1].** 60-second mower checklist (blade sharpness, oil, tire pressure, safety interlock) using the DVIR engine; tied to hour meters to predict blade sharpening and reduce turf tearing complaints.
-16. **H-2B season kit [V1].** Landscaping is one of the largest users of H-2B seasonal visas (verify current DOL certification data). A large share of a crew can arrive in March, new to the Company's systems and often with a new phone and a new number. The kit has four parts:
+16. **H-2B season kit [V1].** Landscaping is the largest H-2B occupation: landscaping and groundskeeping workers were 47.1% of positions certified in DOL's FY2026 Q3 statistics, far ahead of the next occupation at 6.5% ([DOL OFLC H-2B selected statistics, FY2026 Q3](https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/FY26Q3/H-2B_Selected_Statistics_FY2026_Q3.pdf); confirmed via search results; primary page not opened). A large share of a crew can arrive in March, new to the Company's systems and often with a new phone and a new number. The kit has four parts:
     - **Pre-arrival onboarding in Spanish:** the invite link works on any phone number, including WhatsApp OTP per [02](02-personas-roles-permissions.md), so paperwork, safety videos and PIN setup happen before day one.
     - **Returning-worker profile carryover:** certifications, language, glove-mode preference, crew history and badges persist across seasons, and only the PIN is re-confirmed.
     - **Housing and transport roster:** which van picks up whom at what time. It is visible to crew leads and feeds the morning crew punch.
@@ -2057,3 +2057,5 @@ Research for this module combined targeted web research with platform documentat
 - Gibson Dunn on NY and beyond: <https://gibsondunn.com/wp-content/uploads/2022/05/Mufson-Brilliant-Complying-With-Electronic-Monitoring-Laws-In-NY-And-Beyond-Law360-05-19-2022-1.pdf>
 - Justia: <https://law.justia.com/cases/california/court-of-appeal/2014/b247160.html>
 - Jones Day: <https://www.jonesday.com/en/insights/2024/06/california-enacts-first-significant-reforms-to-paga>
+- MacRumors, June 9, 2026: <https://www.macrumors.com/2026/06/09/ios-26-adoption-stats-wwdc/>
+- DOL OFLC H-2B selected statistics, FY2026 Q3: <https://www.dol.gov/sites/dolgov/files/ETA/oflc/pdfs/FY26Q3/H-2B_Selected_Statistics_FY2026_Q3.pdf>
