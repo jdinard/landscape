@@ -1603,7 +1603,7 @@ Ideas the founder did not ask for, each a lever for retention, revenue or deligh
 
 1. **Imagery provider and tracing rights.** Which basemap provider's terms permit tracing and storing derived geometry for commercial use? Do premium aerial licenses allow showing imagery in client portals and PDF exports? Legal review is needed before MVP.
 2. **DWG strategy.** Should we license a commercial DWG SDK (cost, membership terms) for V1 import, or ship DXF-only until V2? GPL-licensed DWG libraries are likely incompatible with our licensing model.
-3. **Parcel data costs and Canada.** [22](22-business-model-pricing-gtm.md) includes 100, 500 or 2,000 parcel lookups per month (Starter, Grow, Pro) and meters extra lookups at $0.10. Open: what are the actual per-lookup vendor costs at our projected volumes, and how good is Canadian parcel coverage?
+3. **Parcel data costs and Canada.** [22](22-business-model-pricing-gtm.md) includes 100, 500 or 2,000 parcel lookups per month (Starter, Grow, Pro) and meters extra lookups at $0.10. Open: what are the actual per-lookup vendor costs at our projected volumes? On Canada, Regrid lists over 9.2 million parcels across all 13 provinces and territories (not full coverage, no owner names, address coverage varying by province), so the parcel boundary usually exists but owner-based features cannot run there ([Regrid Canada FAQ](https://support.regrid.com/parcel-data/canada-faq); confirmed via search results; primary page not opened); the per-province coverage report still needs checking against target markets.
 4. **Manufacturer data licensing.** Will paver, wall, irrigation and lighting manufacturers provide catalogs (dimensions, nozzle performance, photometrics, textures) under a license allowing in-app use? Is there a partnership or co-marketing model?
 5. **3D plant assets.** Do we build archetypes in-house, license a library, or generate them procedurally with AI assistance? What is the budget for the top 300 hero models?
 6. **Renderer choice.** Custom WebGL2 renderer vs a library (PixiJS for 2D, three.js vs Babylon.js for 3D). A technical spike against the performance targets should decide.
@@ -1665,3 +1665,4 @@ Verification note: items marked "verify" in the text are from secondary sources 
 
 - USGS NAIP: <https://www.usgs.gov/centers/eros/science/usgs-eros-archive-aerial-photography-national-agriculture-imagery-program-naip>
 - data.gov NAIP record: <https://catalog.data.gov/dataset/national-agriculture-imagery-program-naip-imagery>
+- Regrid Canada FAQ: <https://support.regrid.com/parcel-data/canada-faq>
