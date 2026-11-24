@@ -303,7 +303,7 @@ Rules: no date of birth, SSN, photo of person, immigration status or criminal hi
 
 **ATS-13 Hiring analytics [V1].** Applicants by source, cost per applicant and per hire (source costs entered), stage conversion, time-to-hire, offer acceptance rate, no-show rate, 90-day retention by source ([12](#12-metrics-and-kpis)).
 
-> **Competitive edge:** None of the landscape suites in [R2](research/R2-landscape-specific-platforms.md) documents a native applicant pipeline [B]. Owners use Indeed's dashboard, texts on a personal phone and a paper application at the yard. Rootline's Spanish voice-answer apply flow and SMS slot booking target the real labor market: people who own a smartphone, have no résumé and will take the first job that texts them back.
+> **Competitive edge:** None of the landscape suites in [R2](research/R2-landscape-specific-platforms.md) documents a native applicant pipeline: a November 2026 search of Aspire, LMN, Jobber and Service Autopilot feature material found no hiring module, and an NALP article describes a landscape company running Workable beside its operations software ([NALP on applicant tracking systems](https://blog.landscapeprofessionals.org/team-building-how-to-choose-and-use-an-applicant-tracking-system-effectively/)) [S, confirmed via search results; primary page not opened]. Owners use Indeed's dashboard, texts on a personal phone and a paper application at the yard. Rootline's Spanish voice-answer apply flow and SMS slot booking target the real labor market: people who own a smartphone, have no résumé and will take the first job that texts them back.
 
 ### 4.3 Onboarding
 
@@ -407,7 +407,7 @@ Example (illustrative): 12 missing workers is about 480 crew-hours per week. Cur
 
 H-2B rules also change with federal rulemaking. DHS's H-2 modernization rule (effective January 2025; verify) changed worker grace periods and employer notification duties. Milestone templates, notice templates and reimbursement rules are therefore versioned like policy packs ([RULE-01](#49-pay-rules-engine-and-jurisdiction-policy-packs)), and every program records the template version it was created with.
 
-> **Competitive edge:** We found no landscape FSM that tracks H-2B milestones, guarantees and reimbursements [B]. Employers rely on their agent's emails plus spreadsheets. Combining program milestones with live hours (three-fourths guarantee), payroll (reimbursements, wage parity) and housing is something only an operations-plus-payroll platform can do.
+> **Competitive edge:** We found no landscape FSM that tracks H-2B milestones, guarantees and reimbursements; a November 2026 search for software that tracks the three-fourths guarantee or H-2B reimbursements returned only the DOL rules (20 CFR 655.20; [DOL fact sheet 78E](https://www.dol.gov/agencies/whd/fact-sheets/78e-h2b-job-hours)) [S, confirmed via search results; primary page not opened]. Employers rely on their agent's emails plus spreadsheets. Combining program milestones with live hours (three-fourths guarantee), payroll (reimbursements, wage parity) and housing is something only an operations-plus-payroll platform can do.
 
 ### 4.5 Certifications, licenses and qualification enforcement
 
@@ -2408,3 +2408,5 @@ Verification note: sources below are either (a) research captured elsewhere in t
 - Housecall Pro time tracking: <https://housecallpro.com/features/time-tracking>
 - Housecall Pro payroll: <https://housecallpro.com/features/payroll>
 - Gusto: integrate with Housecall Pro: <https://support.gusto.com/article/216195419100000/integrate-with-housecall-pro>
+- NALP on applicant tracking systems: <https://blog.landscapeprofessionals.org/team-building-how-to-choose-and-use-an-applicant-tracking-system-effectively/>
+- DOL fact sheet 78E: <https://www.dol.gov/agencies/whd/fact-sheets/78e-h2b-job-hours>
