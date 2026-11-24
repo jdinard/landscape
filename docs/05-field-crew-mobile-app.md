@@ -1689,7 +1689,7 @@ erDiagram
 | Weather (NWS/ECCC or commercial provider) | Chem auto-fill, heat triggers, rain banners | Server-side proxy with caching; provider choice in [20](20-architecture-security.md) |
 | AI Gateway (speech-to-text, Claude for translation/extraction/reports, vision for Spot-it and OCR) | Voice notes, translation, Spot-it classification, meter and receipt AI extraction [V1], end-of-day drafts (MVP receipt header OCR is rules-based and runs outside the gateway, per [09](09-accounting-ledger-integrations.md) AI2) | Metered as AI credits; [17](17-ai-copilot-automation.md) |
 | Push: APNs, FCM (via Expo push or direct) | Notifications, silent sync nudges | |
-| Twilio Proxy / masked calling [V1] | Call clients without exposing numbers | [16](16-marketing-growth-communications.md) |
+| Twilio masked calling on Conversations and Programmable Voice (Twilio Proxy is closed to new customers; see [02](02-personas-roles-permissions.md) section on integrations) [V1] | Call clients without exposing numbers | [16](16-marketing-growth-communications.md) |
 | Telematics (Samsara, Geotab, Verizon Connect, Linxup; verify APIs) [V1] | Vehicle location, engine hours | [13](13-operations-inventory-equipment.md) |
 | MDM (AppConfig, Android Enterprise managed configurations) [V1] | Managed deployment | |
 | On-device ML (ML Kit barcode, on-device face/plate blur [V1]) | Scanning, privacy blur | Offline |
