@@ -172,13 +172,13 @@ Sources: review-site summaries and pricing trackers cited above, plus the synthe
 | Extra seats | Included above | Included above | +1 office seat $39. Field overage: 1 seat x $10 in 8 months = about $7/mo averaged |
 | Marketing, reviews, referrals | Marketing Suite about $79 | Separate review tool about $39 and up (estimate) | Included |
 | AI phone answering | Jobber AI Receptionist $29-$99 (conflicting) | Third-party answering service (not priced here) | AI Receptionist add-on $49 incl. 100 min |
-| Accounting | QuickBooks Online Plus, about $115 (list price as of 2025, verify) | Same | Ledger Plus included (QBO/Xero sync optional) |
+| Accounting | QuickBooks Online Plus $140 (up from $115 for renewals on or after August 1, 2026) ([QuickBooks price changes](https://quickbooks.intuit.com/r/product-update/quickbooks-price-changes/), [Workforce.com](https://www.workforce.com/news/quickbooks-online-price-increase); confirmed via search results; primary page not opened) | Same | Ledger Plus included (QBO/Xero sync optional) |
 | Design tool | PRO Landscape+ about $90 (or $75/mo on annual) | Same | Design Studio 2D + AI mockups included (1 seat) |
 | Website | Website builder about $30-$50 (estimate) | Same | Website + Booking add-on $49 |
-| **Monthly total** | **about $670-$880** | **about $860-$990** | **about $393** |
+| **Monthly total** | **about $695-$905** | **about $885-$1,015** | **about $393** |
 | One-time fees | None reported for Jobber | Implementation about $797-$1,497 reported | Free migration concierge on annual Grow |
 
-Payroll, insurance and payment processing are left out on both sides because they are similar or are add-ons on Rootline too. The example shows about **$280-$600/month in software savings** (estimate) before any value from time saved, bigger design-led tickets or books that close themselves. The calculator presents this as a range, never as a promise.
+Payroll, insurance and payment processing are left out on both sides because they are similar or are add-ons on Rootline too. The example shows about **$300-$620/month in software savings** (estimate) before any value from time saved, bigger design-led tickets or books that close themselves. The calculator presents this as a range, never as a promise.
 
 **Value-based check on the Grow price.** Grow annual costs $2,988/year. One additional design-build job won per year because the proposal carried a mockup of the client's own yard (for example a $14,000 front-yard renovation at a 35% gross margin, about $4,900 of gross profit, estimate) more than pays for the subscription by itself. Recovering about 2 hours a week of office re-typing at a $28/hour loaded wage (about $2,900/year) roughly does too. Together the two levers return about 2.6x the Grow price (($4,900 + $2,900) / $2,988), which is the margin of safety we want in a skeptical, price-sensitive trade. If design-partner data shows neither lever materializing within 6 months, the Grow price is wrong, not the customer.
 
@@ -2280,3 +2280,5 @@ AI model pricing:
 - Morgan Lewis: <https://www.morganlewis.com/pubs/2025/07/ftcs-click-to-cancel-rule-vacated-ahead-of-planned-july-14-effective-date>
 - Lawn & Landscape on MGIX: <https://lawnandlandscape.com/news/cents-rebrands-as-mgix>
 - Lawn & Landscape on Landscape Illinois: <https://lawnandlandscape.com/news/illinois-landscape-contractors-association-rebrands-as-landscape-illinois>
+- QuickBooks price changes: <https://quickbooks.intuit.com/r/product-update/quickbooks-price-changes/>
+- Workforce.com: <https://www.workforce.com/news/quickbooks-online-price-increase>
