@@ -2244,7 +2244,7 @@ Targets are internal goals for Rootline, not industry benchmarks. Formal KPI def
 8. **Unify SaaS billing with Accounts v2 `customer` configuration** or keep the separate Rootline Billing account permanently? Current recommendation: keep separate.
 9. **Card-network pre-dispute alert programs:** availability and cost through Stripe or partners for small merchants.
 10. **Quebec and French-language PAD:** confirm surcharge prohibition and bilingual mandate requirements before Canadian launch outside Ontario/BC/Alberta.
-11. **Offline Tap to Pay:** confirm current Stripe support for offline acceptance on Tap to Pay vs. readers for rural routes.
+11. **Offline Tap to Pay:** answered: Stripe states offline mode is not compatible with Tap to Pay and works only with certain Terminal hardware readers ([Stripe support](https://support.stripe.com/questions/tap-to-pay-on-iphone-or-android-and-stripe-terminal); confirmed via search results; primary page not opened). Remaining choice: whether rural Companies should be offered a supported reader for no-signal sites, or rely on the queued payment link ([05](05-field-crew-mobile-app.md) 4.9.1).
 12. **Multi-entity Companies** (one owner, several LLCs or branches): one Stripe account per entity, or one account with metadata routing? Affects ledger entity design in [09](09-accounting-ledger-integrations.md).
 13. **Dispute responder of record:** if a Company turns on Stripe's own automated dispute handling in its Dashboard, should Rootline default to "Stripe responds, Rootline adds proof-of-service files before the deadline" or "Rootline responds"? Needs a test on real disputes in the pilot cohort; depends on whether Stripe's automation accepts platform-supplied evidence for connected accounts (verify).
 14. **MOTO scope:** confirm with a QSA whether office staff keying cards into a Stripe element inside Rootline changes a Company's SAQ type, and whether Rootline should ship MOTO at all or rely only on "text a pay link while on the phone".
@@ -2372,3 +2372,4 @@ Targets are internal goals for Rootline, not industry benchmarks. Formal KPI def
 - QuoteIQ payments terms: <https://myquoteiq.com/quoteiq-payments-terms-of-service/>
 - Housecall Pro: do I have to use Stripe: <https://help.housecallpro.com/en/articles/362340-do-i-have-to-use-stripe-to-process-credit-cards>
 - Helcim for Housecall Pro: <https://www.helcim.com/integrations/housecallpro/>
+- Stripe support: <https://support.stripe.com/questions/tap-to-pay-on-iphone-or-android-and-stripe-terminal>
