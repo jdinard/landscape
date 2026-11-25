@@ -237,7 +237,7 @@ flowchart LR
 - Crew-facing Spanish names [V1]: curators may add "field names" used by Spanish-speaking crews in a Region (sourced to the curator and two tenant confirmations), flagged `informal`.
 
 **KB-TAX-05 Patents, breeders' rights and trademarks [MVP fields, V1 alerts]**
-- Fields: US plant patent number (`PP` plus digits), filing date, grant date, computed expected expiry (US plant patents run 20 years from filing; label "estimated, verify"), Canadian Plant Breeders' Rights certificate and term, optional EU Community Plant Variety Rights, trademark text and owner.
+- Fields: US plant patent number (`PP` plus digits), filing date, grant date, computed expected expiry (US plant patents run 20 years from the filing date, or an earlier claimed filing date, under 35 USC 161 and MPEP 1601; label "estimated" because fees and continuations can change it), Canadian Plant Breeders' Rights certificate and term (25 years for trees and vines, 20 for other plants; [USPTO MPEP 1601](https://www.uspto.gov/web/offices/pac/mpep/s1601.html), [Plant Breeders' Rights Act](https://laws-lois.justice.gc.ca/eng/acts/P-14.6/page-2.html); confirmed via search results; primary page not opened), optional EU Community Plant Variety Rights, trademark text and owner.
 - Behaviors: a "Propagation restricted" badge shows for patented or PBR-protected plants to Companies that enable in-house propagation in settings [V1]; proposals render ® and ™ correctly; the trade name is never used as the cultivar epithet in schedules.
 - Rootline displays this information as a reference, not legal advice.
 
@@ -300,7 +300,7 @@ flowchart LR
 |---|---|---|---|
 | `usda_zone_min`, `usda_zone_max` | half-zone ordinal (1a=1 through 13b=26) | USDA map is based on average annual extreme minimum temperature in 10°F zones and 5°F half zones (2023 edition uses 1991-2020 data; verify) | [MVP] critical |
 | `canada_zone_min`, `canada_zone_max` | Canadian zone ordinal from 0a up to the warmest subzone on the NRCan map edition in use (ordinal range read from the loaded edition, never hard-coded; verify) | Canada's Natural Resources Canada zones use several climate variables, not only extreme minimum temperature, so they are **not** interchangeable with USDA zones (verify current methodology). Stored separately; never converted | [MVP] critical |
-| `ahs_heat_zone_min`, `ahs_heat_zone_max` | 1-12 | American Horticultural Society heat zones are based on average days per year above 86°F (30°C); map and data licensing to verify | [V1] |
+| `ahs_heat_zone_min`, `ahs_heat_zone_max` | 1-12 | American Horticultural Society heat zones count average days per year above 86°F (30°C), from zone 1 (none) to zone 12 (more than 210); the map dates from 1997 and has not been updated ([Iowa State Extension](https://yardandgarden.extension.iastate.edu/heat-zone-map-iowa); confirmed via search results; primary page not opened), so treat it as a coarse signal; map and data licensing still to clear | [V1] |
 | `chill_hours` | number range | Fruit trees and some bulbs | [V2] |
 | `sun` | set of: full sun (6+ hours direct), part sun (4-6 hours), part shade (2-4 hours or dappled), full shade (under 2 hours) | Maps to the Design Studio sun classes ([10](10-design-studio.md) DS-SUN-02). Region profiles can add "needs afternoon shade here" | [MVP] |
 | `water_need` | very low, low, moderate, high | Generic, all Regions | [MVP] |
@@ -2580,3 +2580,6 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 - OSU BYGL: <https://bygl.osu.edu/node/2083>
 - BB&K on the Zone 0 emergency rules: <https://bbklaw.com/resources/la090926-california-board-of-forestry-adopts-emergency-zone-0-regulations-under-ab-3074>
 - Insurance Journal, Aug. 20, 2026: <https://www.insurancejournal.com/news/west/2026/08/20/882337.htm>
+- USPTO MPEP 1601: <https://www.uspto.gov/web/offices/pac/mpep/s1601.html>
+- Plant Breeders' Rights Act: <https://laws-lois.justice.gc.ca/eng/acts/P-14.6/page-2.html>
+- Iowa State Extension: <https://yardandgarden.extension.iastate.edu/heat-zone-map-iowa>
