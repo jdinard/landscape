@@ -627,7 +627,7 @@ QuickBooks Online (QBO) is the default general ledger for small US and Canadian 
 | Query | SQL-like `SELECT * FROM Invoice WHERE MetaData.LastUpdatedTime > '...' STARTPOSITION 1 MAXRESULTS 1000`; maximum 1,000 rows per page | [B] |
 | Concurrency control | Every entity carries a `SyncToken`; updates must send the current token (optimistic locking); sparse updates supported | [B] |
 | Batch | Batch endpoint accepts up to about 30 operations per request, with its own per-minute limit (verify) | [B] |
-| Change data capture | `cdc` endpoint returns entities changed since a timestamp for up to the last 30 days, with a cap per entity per response (about 1,000, verify) | [B] |
+| Change data capture | `cdc` endpoint returns entities changed since a timestamp for up to the last 30 days, so the poll must run well inside that window ([Intuit CDC docs](https://developer.intuit.com/app/developer/qbo/docs/learn/explore-the-quickbooks-online-api/change-data-capture); confirmed via search results; primary page not opened); a per-entity cap of about 1,000 per response is reported elsewhere but not confirmed in this pass | [S] window, [B] cap |
 | Webhooks | Per-app endpoint receives notifications naming realm, entity, ID and operation (Create, Update, Delete, Merge, Void, Emailed); payload signed with HMAC-SHA256 using the app's verifier token in the `intuit-signature` header; notifications can be delayed and batched, so CDC is still needed as a safety net. Intuit announced a move to a CloudEvents-style webhook format (verify dates) | [B] |
 | Rate limits | Commonly documented as about 500 requests per minute per realm per app and 10 concurrent requests per realm, with lower limits for batch and resource-intensive report endpoints; exceeding returns HTTP 429 | [B] verify |
 | Sandbox | Free sandbox companies per developer account (US, CA and other regions) | [B] |
@@ -714,7 +714,7 @@ Xero is less common than QBO among US landscapers but has a meaningful presence 
 | Aspect | Detail | Evidence |
 |---|---|---|
 | Auth | OAuth 2.0; access tokens about 30 minutes; refresh tokens rotate on use and expire if unused for about 60 days; each call carries a `xero-tenant-id` header | [B] verify |
-| Rate limits | About 60 calls per minute and 5,000 calls per day per tenant per app, 5 concurrent calls per tenant, plus an app-wide per-minute limit across all tenants; response headers report remaining budget; HTTP 429 with `Retry-After` | [B] verify |
+| Rate limits | About 60 calls per minute and 5,000 calls per day per tenant per app, 5 concurrent calls per tenant, plus an app-wide limit of 10,000 calls per minute across all tenants; limits are the same for every app and cannot be raised; HTTP 429 with `Retry-After`; the free Starter tier is reported at 1,000 calls per day ([Xero developer limits FAQ](https://developer.xero.com/faq/limits); confirmed via search results; primary page not opened) | [S] |
 | Incremental sync | `If-Modified-Since` header on most GET endpoints; paging (100 per page by default, larger page sizes on some endpoints) | [B] |
 | Webhooks | Contacts and Invoices events (and app subscription events); signed with HMAC-SHA256 in `x-xero-signature`; "intent to receive" validation; endpoint must respond quickly (about 5 seconds); payloads carry IDs only, so the integrator fetches the record | [B] |
 | Key entities | `Contacts`, `Invoices` (type `ACCREC` for sales, `ACCPAY` for bills), `CreditNotes`, `Payments`, `BatchPayments`, `Overpayments`, `Prepayments`, `BankTransactions`, `BankTransfers`, `ManualJournals`, `Items`, `Accounts`, `TaxRates`, `TrackingCategories`, `Quotes`, `PurchaseOrders`, `Attachments` | [B] |
@@ -722,7 +722,7 @@ Xero is less common than QBO among US landscapers but has a meaningful presence 
 | Projects | Xero Projects API exists for time and cost by project (plan-dependent) | [B] |
 | Payroll | Region-specific payroll APIs (UK, AU, NZ); in the US, Xero partners with Gusto rather than running its own payroll (verify) | [B] |
 | Developer pricing and terms | Xero moved app developers to tiered pricing based on connections and data volume, announced 2025 with changes effective in 2026, and updated developer terms to restrict using API data to train AI models (verify both) | [B] verify; flagged in [09](../09-accounting-ledger-integrations.md) |
-| US strategy | Xero agreed to acquire US bill-pay company Melio in 2025 to grow in the US (verify close and terms) | [B] |
+| US strategy | Xero completed its acquisition of US bill-pay company Melio on October 15, 2025, for US$2.5 billion upfront plus up to US$0.5 billion contingent over three years ([CPA Practice Advisor](https://www.cpapracticeadvisor.com/2025/10/15/xero-acquires-payments-platform-melio-for-2-5b/170967/); confirmed via search results; primary page not opened) | [S] |
 
 **Lessons [E].** Xero's daily per-tenant cap (about 5,000 calls) is tight for a busy maintenance Company that syncs every visit invoice individually. Rootline should sync **summarized** documents where the Company allows it (one invoice per client per billing period, one journal per day for deferred revenue), batch where the API permits, and treat webhooks as hints followed by `If-Modified-Since` fetches.
 
@@ -732,7 +732,7 @@ Xero is less common than QBO among US landscapers but has a meaningful presence 
 
 | Change | Detail | Evidence |
 |---|---|---|
-| QBO list price increases | Intuit has raised QBO list prices in most years since 2022; as of mid-2025 US list prices were reported around $38 (Simple Start), $75 (Essentials), $115 (Plus) and $275 (Advanced) per month before promotions | [B] verify current list prices |
+| QBO list price increases | Intuit has raised QBO list prices in most years since 2022; for renewals on or after August 1, 2026, Essentials rose from $75 to $85, Plus from $115 to $140 and Advanced from $275 to $340 a month, with Simple Start unchanged at $38 ([QuickBooks price changes](https://quickbooks.intuit.com/r/product-update/quickbooks-price-changes/); confirmed via search results; primary page not opened; see [22](../22-business-model-pricing-gtm.md) section 2.5) | [S] |
 | Desktop sunset for new users | No new US subscriptions to Desktop Pro Plus, Premier Plus or Mac Plus after September 30, 2024; Enterprise continues; Desktop is subscription-only with periodic price increases | [B] verify |
 | Feature gating | Class and Location tracking and Projects on Plus/Advanced; bills from Essentials up; user limits per plan | [B] verify ([09](../09-accounting-ledger-integrations.md)) |
 | Payroll and Payments | QuickBooks Payroll and QuickBooks Payments re-priced over the same period | [B] verify |
