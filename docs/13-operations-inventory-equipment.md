@@ -797,11 +797,11 @@ Rules:
 |---|---|---|---|
 | Samsara | Vehicle and equipment GPS, odometer, engine hours, fault codes, idle time; equipment stats via dedicated equipment endpoints | REST API with bearer token; snapshot and history endpoints for vehicle and equipment stats ([Samsara API overview](https://developers.samsara.com/docs/rest-api-overview), [Nexla connector notes](https://docs.nexla.com/user-guides/connectors/samsara_api)) | [V1] |
 | Geotab | GPS (LogRecord), odometer and engine hours (StatusData by diagnostic), faults | MyGeotab API GetFeed with per-type version tokens; about 60 requests per minute and 50,000 results per call on StatusData feeds ([Geotab StatusData](https://developers.geotab.com/myGeotab/apiReference/objects/StatusData/), [Geotab forum](https://support.geotab.com/community/sdk-api/2641/getfeed-statusdata-doesn-t-return-diagnosticenginehoursadjustmentid)); engine-hour and odometer offsets on the device ([CustomVehicleDevice](https://developers.geotab.com/myGeotab/apiReference/objects/CustomVehicleDevice/)) | [V1] |
-| Verizon Connect | GPS, odometer, engine hours, geofence events | Partner API (verify) | [V1] |
+| Verizon Connect | GPS, odometer, engine hours, geofence events | Reveal REST API with credentials issued to a customer-approved partner through the Reveal marketplace consent form; webhooks scoped with Verizon ([Fleetio: Verizon Connect Reveal integration](https://help.fleetio.com/en_US/verizon-connect-reveal-fleetmatics-integration), [ServiceTitan: integrate Verizon Reveal](https://help.servicetitan.com/docs/integrate-verizon-reveal-with-servicetitan); confirmed via search results; primary page not opened) | [V1] |
 | OneStep GPS | GPS, odometer, engine hours | REST API with API key (verify) | [V1] |
 | Linxup | GPS, odometer, engine hours | API (verify) | [V1] |
 | Motive | GPS, engine hours, DVIR, faults | Marketplace app (verify); Motive already lists landscape software in its marketplace ([Motive marketplace](https://marketplace.gomotive.com/app/aspire)) | [V2] |
-| Mixed-fleet OEM telematics | Compact equipment hours and location from OEM portals | ISO 15143-3 (AEMP 2.0) mixed-fleet API where the OEM supports it (verify per OEM) | [V2] |
+| Mixed-fleet OEM telematics | Compact equipment hours and location from OEM portals | ISO 15143-3 (AEMP 2.0) mixed-fleet API: John Deere (OAuth 2) and Caterpillar publish developer APIs, while Bobcat and Kubota issue credentials through the dealer or representative; the AEMP data set is limited (hours, location, fuel, faults) and feeds refresh about every 15 minutes ([John Deere AEMP API](https://developer.deere.com/dev-docs/aemp), [Trackunit ISO feeds](https://developers.trackunit.com/page/iso-feeds); confirmed via search results; primary page not opened) | [V2] |
 | Handheld and mower connectivity | Runtime, location, service alerts for connected outdoor power equipment | OEM fleet platforms (verify availability) | [V2] |
 
 Behaviors:
@@ -2360,3 +2360,7 @@ Related Rootline documents: [Market landscape](01-market-landscape.md), [Persona
 - SynkedUP materials tracking: <https://synkedup.com/?p=23829>
 - GoCanvas truck packing list: <https://www.gocanvas.com/mobile-forms-apps/22144-Hardscaping-Job-Sheet-Truck-Packing-List>
 - FieldCamp loadout sheets: <https://fieldcamp.ai/insulation-software/work-orders-loadout-sheets/>
+- Fleetio: Verizon Connect Reveal integration: <https://help.fleetio.com/en_US/verizon-connect-reveal-fleetmatics-integration>
+- ServiceTitan: integrate Verizon Reveal: <https://help.servicetitan.com/docs/integrate-verizon-reveal-with-servicetitan>
+- John Deere AEMP API: <https://developer.deere.com/dev-docs/aemp>
+- Trackunit ISO feeds: <https://developers.trackunit.com/page/iso-feeds>
