@@ -304,7 +304,7 @@ flowchart LR
 | `chill_hours` | number range | Fruit trees and some bulbs | [V2] |
 | `sun` | set of: full sun (6+ hours direct), part sun (4-6 hours), part shade (2-4 hours or dappled), full shade (under 2 hours) | Maps to the Design Studio sun classes ([10](10-design-studio.md) DS-SUN-02). Region profiles can add "needs afternoon shade here" | [MVP] |
 | `water_need` | very low, low, moderate, high | Generic, all Regions | [MVP] |
-| `wucols` | per California WUCOLS region 1-6: VL, L, M, H, not appropriate, unknown | WUCOLS classes are percentages of reference evapotranspiration (VL under 10%, L 10-30%, M 40-60%, H 70-90%; verify). Used for California water-budget compliance (plant factor) and hydrozoning ([14](14-service-line-modules.md)) | [MVP] schema, data per license |
+| `wucols` | per California WUCOLS region 1-6: VL, L, M, H, not appropriate, unknown | WUCOLS classes are percentages of reference evapotranspiration (VL under 10%, L 10-30%, M 40-60%, H 70-90%, the WUCOLS bands that California WELO plant factors follow; [UCANR Center for Landscape & Urban Horticulture](https://www.ucanr.edu/node/131592); confirmed via search results; primary page not opened; the gaps between bands are deliberate). Used for California water-budget compliance (plant factor) and hydrozoning ([14](14-service-line-modules.md)) | [MVP] schema, data per license |
 | `plant_factor` | 0.0-1.0 | Derived from WUCOLS where available, otherwise curator-set by Region for water budgets | [V1] |
 | `soil_texture` | set of: sand, loam, silt, clay, rocky or gravelly, organic | "Tolerates clay" is the most-used filter in glaciated Midwest soils | [MVP] |
 | `soil_ph_min`, `soil_ph_max` | number range | Plus `acid_loving` derived flag (max pH under 6.5) | [MVP] |
@@ -430,7 +430,7 @@ Example Site Context (illustrative values for a Cedar & Stone client in Upper Ar
 ```
 
 **KB-RGN-05 Hardiness map editions and transitions [MVP]**
-- Every zone value records its map edition (`usda_2012`, `usda_2023`, NRCan edition). The 2023 USDA map moved many locations about half a zone warmer than 2012 (verify the share).
+- Every zone value records its map edition (`usda_2012`, `usda_2023`, NRCan edition). The 2023 USDA map (1991-2020 data, released November 15, 2023) moved about half of the country a half zone warmer than 2012, with the Midwest and central plains warming most and an average shift of about a quarter zone ([USDA ARS announcement](https://www.ars.usda.gov/news-events/news/research-news/2023/usda-unveils-updated-plant-hardiness-zone-map/), [NPR, Nov. 17, 2023](https://npr.org/2023/11/17/1213600629/-it-feels-like-im-not-crazy-gardeners-arent-surprised-as-usda-updates-key-map); confirmed via search results; primary page not opened). The Great Lakes launch Regions sit in the band that shifted most, so the edition tag matters there.
 - Adopting a new edition: recompute all Site Contexts, publish a diff report ("1,240 Properties moved from 6a to 6b"), notify affected tenants, re-run validations on **draft** designs only. Sold designs and their warranties are never rewritten.
 - Plant zone ranges are not automatically shifted by a map change; curators review plants whose ratings were borderline at the old zone.
 
@@ -484,7 +484,7 @@ Legal status is not a property of "today". A Proposal signed in November for an 
 
 | Situation | Severity | Message example (dates hypothetical unless cited) |
 |---|---|---|
-| Check date on or after `sale_prohibited_from` | **Error** (same as `prohibited`) | "Callery pear cannot be sold or installed in Ohio (sale ban in effect since 2023; verify date)." |
+| Check date on or after `sale_prohibited_from` | **Error** (same as `prohibited`) | "Callery pear cannot be sold or installed in Ohio (sale ban in effect since January 2023 under OAC 901:5-30-01)." Source: the rule took effect January 7, 2018 with a five-year delay for Callery pear, so OSU Extension sources give January 7, 2023 while some newsletters say January 1 ([OSU BYGL](https://bygl.osu.edu/node/2083); confirmed via search results; primary page not opened); the rule pack stores January 7, 2023. |
 | Listing `enacted`, effective date within 18 months of today, check date before it | **Warning**, acknowledgment required | "Japanese barberry: sale ban takes effect Oct 1, 2027 in this state. Install is scheduled Sep 12, 2027. If the install slips, the plant cannot be supplied." |
 | Listing `proposed` | Info | "A proposed rule would restrict this plant; comment period ends Mar 3." |
 | Phased design with a later phase after the effective date | Error on the later phase only | Phase 3 (2028) shows the error; phases 1-2 do not |
@@ -516,7 +516,7 @@ Some jurisdictions regulate *how* plants are combined and where they go, not jus
 |---|---|---|---|
 | California MWELO-style water budgets | WUCOLS class per California WUCOLS region and a `plant_factor` per plant (WUCOLS Very Low under 10% of reference ET, Low 10-30%, Moderate 40-60%, High 70-90%; verify) | Design Studio hydrozones and the water-budget worksheet ([10](10-design-studio.md) Beyond the brief 4; formula and adjustment factors per jurisdiction, verify) and irrigation water budgets ([14](14-service-line-modules.md) 4.2.7) | [V1] |
 | Nonfunctional turf restrictions (for example Nevada AB 356, California AB 1572, Colorado SB24-005; verify scopes and dates) | Turfgrass records flagged by function, low-water bed palettes for lawn-to-bed conversion, rebate-eligible plant lists where a utility publishes them | Design validation on commercial, HOA and new-development Properties; rebate packets ([23](23-innovation-moonshots.md) M-10) | [V1] |
-| Defensible space and ember-resistant "Zone 0" (California PRC 4291 and the AB 3074 rulemaking; verify final rule text) | `fire_behavior` by Region; attributes such as `retains_dead_material` and mature size; a "no woody plants within N ft of structure" style placement rule once the final regulation is known | Design Studio placement validation by distance band from the building footprint ([23](23-innovation-moonshots.md) M-27) | [V2] |
+| Defensible space and ember-resistant "Zone 0" (California PRC 4291 and AB 3074; the Board of Forestry adopted emergency Zone 0 regulations on August 19, 2026 and sent them to the Office of Administrative Law on August 28, with OAL approval needed before they take effect and reports conflicting on whether the noncombustible band is 5 ft or a minimum of 1 ft; [BB&K on the Zone 0 emergency rules](https://bbklaw.com/resources/la090926-california-board-of-forestry-adopts-emergency-zone-0-regulations-under-ab-3074), [Insurance Journal, Aug. 20, 2026](https://www.insurancejournal.com/news/west/2026/08/20/882337.htm); confirmed via search results; primary page not opened) | `fire_behavior` by Region; attributes such as `retains_dead_material` and mature size; a "no woody plants within N ft of structure" style placement rule once the final regulation is known | Design Studio placement validation by distance band from the building footprint ([23](23-innovation-moonshots.md) M-27) | [V2] |
 | Street-tree and parking-lot planting lists (municipal) | Approved species lists resolved to KB Plants; minimum caliper and spacing | Commercial bid validation | [V2] (sold as ordinance packs, section 13) |
 | HOA approved and prohibited lists | Client palettes (KB-PAL-07) | Design validation for the Client's Properties | [V1] |
 
@@ -2574,3 +2574,9 @@ AI makes curation at scale possible, but in the KB it **drafts and assists; huma
 - UW-Madison Extension: <https://hort.extension.wisc.edu/maps/>
 - WOSU on Pearmageddon: <https://www.wosu.org/2026-03-13/metroparks-butler-county-callery-pear-trees-pearmageddon>
 - Farm and Dairy: <https://www.farmanddairy.com/?p=867645>
+- UCANR Center for Landscape & Urban Horticulture: <https://www.ucanr.edu/node/131592>
+- USDA ARS announcement: <https://www.ars.usda.gov/news-events/news/research-news/2023/usda-unveils-updated-plant-hardiness-zone-map/>
+- NPR, Nov. 17, 2023: <https://npr.org/2023/11/17/1213600629/-it-feels-like-im-not-crazy-gardeners-arent-surprised-as-usda-updates-key-map>
+- OSU BYGL: <https://bygl.osu.edu/node/2083>
+- BB&K on the Zone 0 emergency rules: <https://bbklaw.com/resources/la090926-california-board-of-forestry-adopts-emergency-zone-0-regulations-under-ab-3074>
+- Insurance Journal, Aug. 20, 2026: <https://www.insurancejournal.com/news/west/2026/08/20/882337.htm>
